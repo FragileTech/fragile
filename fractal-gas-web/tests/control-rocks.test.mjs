@@ -17,7 +17,7 @@ for (const name of ["harvest", "mining"]) {
   );
   test(`${name}: sizes and counts have clear positions and preserve settings`, () => {
     const before = structuredClone(template);
-    for (const scale of [0.5, 1, 2])
+    for (const scale of [0.1, 0.5, 1, 2])
       for (const count of name === "mining" ? [1] : [1, 5, 20]) {
         const scene = configureRocks(template, { scale, count });
         assert.deepEqual(rockOptions(JSON.parse(JSON.stringify(scene))), {
@@ -105,3 +105,56 @@ for (const name of ["harvest", "mining"]) {
     }
   });
 }
+
+test("hook stiffness survives edits and changes spring extension", () => {
+  const source = {
+    task: "harvest",
+    size: [100, 100],
+    bodies: [
+      { controlled: true, position: [40, 50], velocity: [-2, 0], drag: 0 },
+      { cargo: true, position: [44, 50], velocity: [2, 0], drag: 0 },
+    ],
+    tethers: [
+      {
+        a: 0,
+        b: 1,
+        stiffness: 35,
+        damping: 0,
+        break_force: 1e9,
+        rest_length: 4,
+      },
+    ],
+  };
+  const extensions = [];
+  for (const stiffness of [1, 1000000]) {
+    const changed = configureRocks(source, { scale: 0.1, count: 1, stiffness });
+    assert.equal(changed.tethers[0].stiffness, stiffness);
+    const roundtrip = configureRocks(JSON.parse(JSON.stringify(changed)), {
+      scale: 0.2,
+      count: 1,
+    });
+    assert.equal(roundtrip.tethers[0].stiffness, stiffness);
+    const e = new NativeEngine(module, changed);
+    try {
+      e.step(e.neutralAction(), 30);
+      const rows = e.states();
+      assert.ok(rows.every(Number.isFinite));
+      extensions.push(Math.abs(rows[9] - rows[8] - 4));
+    } finally {
+      e.dispose();
+    }
+  }
+  assert.ok(extensions[0] > 1);
+  assert.ok(extensions[1] < 0.01);
+  assert.equal(source.tethers[0].stiffness, 35);
+  for (const stiffness of [-1, NaN, Infinity, 1000001])
+    assert.throws(
+      () => configureRocks(source, { scale: 1, count: 1, stiffness }),
+      RangeError,
+    );
+  for (const scale of [0, 0.09])
+    assert.throws(
+      () => configureRocks(source, { scale, count: 1 }),
+      RangeError,
+    );
+});

@@ -510,29 +510,16 @@ transition is given separately, and explicitly, in
 :::
 
 (sec-fg-faq-spinors)=
-### What does a spinor representation add to the stored data?
+### How are fermionic operators constructed from recorded data?
 
 :::{div} feynman-prose
-A vector already has a transformation law under a change of frame. A spinor
-encoding introduces a particular representation and maps between that
-representation and the quantities being stored. Its reconstruction, frame
-conventions, and covariance must be specified and checked.
-
-The fermionic reconstruction in
-{prf:ref}`thm-lqft-record-fock-reconstruction` starts directly from observables
-and the transition of the stationary conservative algorithm. Its exterior
-operators obey the canonical anticommutation relations, and
-{prf:ref}`thm-lqft-replica-isomorphism` identifies their many-particle evolution
-with the centered antisymmetric sector of independent algorithm replicas.
-This construction needs no Dirac matrices. Spinor coordinates can provide
-another representation of a chosen finite set of modes; recovering a vector
-from those coordinates is a separate inverse-map calculation.
-
-A Dirac equation describes a particular form of spacetime evolution. Proving
-that form requires identifying its differential operator and continuum limit,
-beyond the operator algebra and stochastic covariance identities already
-established here. See {doc}`the Fractal Set <../2_fractal_set/01_fractal_set>`
-and {doc}`lattice QFT <../2_fractal_set/03_lattice_qft>`.
+The reconstruction in {prf:ref}`thm-lqft-record-fock-reconstruction` starts
+from observables and the transition of the stationary conservative algorithm.
+Its exterior operators obey the canonical anticommutation relations, and
+{prf:ref}`thm-lqft-replica-isomorphism` identifies their evolution with the
+centered antisymmetric sector of independent algorithm replicas. Each replica
+retains the interactions among its walkers. The inner products and transition
+matrix elements are computed under the recorded law.
 :::
 
 (sec-fg-faq-ia-edges)=
@@ -654,31 +641,6 @@ requires a consistency and scaling argument for that construction. See
 {doc}`Yang–Mills analysis <../2_fractal_set/05_yang_mills_noether>`.
 :::
 
-(sec-fg-faq-dirac-fermions)=
-### What would establish a Dirac limit?
-
-:::{div} feynman-prose
-The direct fermionic reconstruction already has a specified evolution:
-{prf:ref}`thm-lqft-record-fock-reconstruction` lifts the actual stationary
-conservative transition to exterior sectors, and
-{prf:ref}`thm-lqft-replica-isomorphism` identifies those sectors with
-antisymmetric replica amplitudes. Its one-particle matrix elements reproduce
-the algorithm's connected covariances. A Dirac limit asks the further question
-of whether the relevant continuum evolution has the Dirac differential form.
-
-The algebraic part is explicit: {prf:ref}`thm-sm-dirac-isomorphism` constructs
-the Clifford action on the four-dimensional spinor space
-$\Lambda^*\mathbb C^2$ and proves that its complex Clifford algebra is
-$M_4(\mathbb C)$. On a supplied spin manifold, a frame converts those matrices
-into the corresponding metric-dependent Clifford relations.
-
-A Dirac continuum limit then uses a spin connection, consistent directional
-differences, quadrature convergence, and control of extra lattice modes.
-These are operator and limiting conditions beyond the finite-dimensional
-algebra calculation. See {doc}`lattice QFT <../2_fractal_set/03_lattice_qft>`
-and the {doc}`twistor formulation <../2_fractal_set/08_twistor_formulation>`.
-:::
-
 (sec-fg-faq-gauge-group)=
 ### Does choosing three latent dimensions establish the Standard Model?
 
@@ -693,56 +655,27 @@ and the number of particle generations. That correspondence needs its own
 argument and evidence; it is not fixed by the dimension choice alone.
 :::
 
-(sec-fg-faq-higgs-bifurcation)=
-### Does a bifurcation in the optimization dynamics establish a Higgs mechanism?
-
-:::{div} feynman-prose
-The volume proves the quartic normal-form calculation and the gauge-field mass
-matrix for a supplied electroweak doublet in
-{prf:ref}`thm-sm-higgs-isomorphism`. The normal form determines its minima,
-radial curvature, and barrier. With the stated gauge representation, covariant
-derivative, and canonical kinetic normalization, expansion around the chosen
-vacuum gives the displayed Higgs, W, Z, and photon masses.
-
-Using that result for a swarm requires deriving its order-parameter equation
-and relating its coefficients and observables to the supplied field action.
-A curvature of an optimization potential is a deterministic linearized
-relaxation quantity; the field-action calculation identifies a mass only with
-its kinetic normalization and operator interpretation in place.
-:::
-
 (sec-fg-faq-cp-violation)=
 ### Do different companion ranges establish CP violation?
 
 :::{div} feynman-prose
-The proved test is {prf:ref}`thm-sm-cp-violation`: for a specified CP
-transformation, a nonzero mean of a CP-odd observable rules out invariance of
-that law. {prf:ref}`prop-sm-cp-magnitude` constructs a rephasing-invariant
-quartet from a supplied unitary mixing matrix and bounds its magnitude.
-
-Different real companion ranges change sampling probabilities. Their ratio has
-zero complex argument and cannot itself supply a CP phase. A bandwidth-dependent
-bound for the quartet requires the theorem's exchange symmetry and derivative
-estimate for that family. These give a concrete test of a proposed mapping from
-algorithmic parameters to CP observables.
+Different companion ranges change the actual companion probabilities. To test
+CP symmetry, specify the transformation of the recorded variables and evaluate
+an observable that changes sign under it. As proved in
+{prf:ref}`thm-sm-cp-violation`, a nonzero expectation of that observable
+rules out invariance of the recorded law under the transformation. The
+expectation uses the complete update and its initial law.
 :::
 
 (sec-fg-faq-neutrino-mass)=
-### Can repeated ancestry by itself explain neutrino mass?
+### What does the recorded ancestry determine?
 
 :::{div} feynman-prose
-An ancestry record can define coefficients in a proposed field action. The
-Majorana theorem, {prf:ref}`thm-sm-majorana-mass`, gives the exact gauge-invariance
-condition for its chosen bilinear: $R(g)^{\mathsf T}MR(g)=M$. A neutral singlet
-can satisfy it, while a single field with nonzero unbroken Abelian charge cannot
-have that constant mass term.
-
-For the supplied two-state neutral mass matrix, {prf:ref}`prop-sm-seesaw` proves
-the eigenvalues and the controlled light-mass approximation when the heavy
-scale dominates the mixing. Identifying those coefficients with a swarm record
-requires localization, spinor transport, and action normalization. Repeated
-walker labels in a forward-time genealogy remain distinct events; they supply
-neither a causal cycle nor those mass coefficients by themselves.
+The parent map records which earlier event supplied a clone's ancestry.
+{prf:ref}`def-sm-ancestral-reflection` uses this map to pull an episode
+observable back to its recorded parent. Applying it twice follows two
+ancestry steps. Repeated walker labels at different times remain distinct
+events, and the complete history retains their values and incidences.
 :::
 
 (sec-fg-faq-cross-volume)=

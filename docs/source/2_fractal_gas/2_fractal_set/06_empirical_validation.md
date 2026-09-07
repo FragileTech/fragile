@@ -16,7 +16,7 @@ The theoretical machinery we have built—causal sets, lattice gauge theory, sca
 
 | Theoretical Prediction | Empirical Finding | Chapter Reference |
 |------------------------|-------------------|-------------------|
-| Massive scalar field correlations decay as $C(r) \sim C_0 e^{-r^2/\xi^2}$ | Local fields show exponential decay with $R^2 > 0.85$ | {doc}`03_lattice_qft` |
+| Gaussian-in-distance fit $C(r) \approx C_0 e^{-r^2/\xi^2}$ to recorded correlations | Reported fit scores $R^2 \ge 0.85$ | {prf:ref}`def-two-point-connected` |
 | Wilson loops measure gauge flux with stable time-averaged values | Mean Wilson action $\sim 0.1-0.3$, stable over time | {doc}`03_lattice_qft` |
 | Lyapunov function decreases monotonically toward QSD | Logarithmic plots show exponential convergence | Convergence chapters |
 | QSD provides stationary measure for walker gas | Hypocoercive variance ratio stable after warmup | {doc}`02_causal_set_theory` |
@@ -31,7 +31,7 @@ The theoretical machinery we have built—causal sets, lattice gauge theory, sca
 | kinetic | 0.17 | 0.98 | 0.24 | 18/9 |
 | reward_raw | 0.13 | 0.90 | 0.23 | 19/8 |
 
-**Critical Methodological Insight**: The companion-based `d_prime` field exhibits anti-QFT behavior ($\xi = 0$ or increasing correlation), while proper local fields (density-based) show the expected exponential decay. This distinction is essential for valid QFT observable construction.
+**Measurement comparison**: The reported Gaussian fit describes density-based readouts better than companion-based `d_prime`. Both are recorded algorithmic observables; their different correlation profiles must be measured separately.
 
 
 
@@ -65,7 +65,7 @@ The validation uses the `analyze_fractal_gas_qft.py` analysis script, which proc
 :::{div} feynman-prose
 Before we look at results, let me explain what we are measuring and how. The analysis pipeline is not just running some ad-hoc statistics. It is systematically computing the observables that QFT predicts should exist—and it does so in a way that respects the theoretical framework.
 
-The key insight is that not all observables are created equal. Some quantities—like the companion-based `d_prime`—depend on random companion selection and are not proper QFT observables. They involve stochastic choices that have nothing to do with the underlying field structure. Other quantities—like local density or kinetic energy—are deterministic functions of position and momentum, exactly what a field theory observable should be.
+The companion-based `d_prime` uses the selected companion recorded by the algorithm. Density and kinetic energy use other recorded inputs. Keeping these readouts distinct lets us compare their measured correlations under the same algorithmic law.
 
 The analysis pipeline lets you switch between these modes. Use `--use-local-fields` to compute proper local observables. Use `--use-connected` to compute connected correlators $G(r) = \langle\phi\phi\rangle - \langle\phi\rangle^2$, which subtract the mean and measure pure fluctuations. These choices are not arbitrary—they are theoretically motivated.
 :::
@@ -113,16 +113,19 @@ The analysis produces three types of output:
 (sec-correlation-functions)=
 ## Two-Point Correlation Functions
 
-**Validates**: {doc}`03_lattice_qft` — massive scalar field behavior
+**Measures**: connected correlations of the algorithm’s recorded scalar readouts.
 
 :::{div} feynman-prose
 The two-point correlation function is the bread and butter of field theory. It tells you how field values at different points are related. If I know $\phi(x)$, what can I predict about $\phi(y)$?
 
-For a massive scalar field, the answer is: correlations decay exponentially. The correlation function goes like $C(r) \sim C_0 e^{-r^2/\xi^2}$ where $\xi$ is the correlation length—roughly speaking, the distance scale over which the field "remembers" its value. Beyond a few correlation lengths, the field at $x$ and the field at $y$ are effectively independent.
+The analysis fits the measured positive-correlation range with
+$C(r) \approx C_0 e^{-r^2/\xi^2}$. This is a Gaussian in distance.
+Its fitted width $\xi$ tells us how quickly that particular readout’s
+correlation decreases across the fitted bins. The values below summarize
+those recorded measurements; the fit is a diagnostic, with its accuracy
+reported by $R^2$.
 
-This is exactly what we should see in the Fractal Gas if the lattice QFT picture is correct. Local observables—density, kinetic energy, rewards—should show exponential decay of correlations with distance. And they do. The fits are remarkably good, with $R^2$ values above 0.85 for all local fields.
-
-But here is the subtlety. The companion-based `d_prime` field does not show this behavior. Its correlations either fail to decay or actually increase with distance. This is not a bug—it is telling us something important. The `d_prime` depends on random companion selection, which introduces non-local correlations that have nothing to do with the underlying field structure. It is not a valid QFT observable.
+The companion-based `d_prime` has a different reported correlation profile, with a poor Gaussian fit. Its companion choice is part of the complete record. The fit score describes this particular measurement; it does not test the operator locality axiom.
 :::
 
 ### Theory
@@ -136,15 +139,18 @@ $$
 G(r) = \langle \phi(x) \phi(y) \rangle_{|x-y|=r} - \langle \phi \rangle^2
 $$
 
-For a massive scalar field in Euclidean space, the theory predicts ({prf:ref}`def-scalar-action`):
+The reported empirical fit on the positive-correlation bins is
 
 $$
-G(r) \sim G_0 \exp\left(-\frac{r^2}{\xi^2}\right)
+G_{\mathrm{fit}}(r)=G_0\exp\left(-\frac{r^2}{\xi^2}\right).
 $$
 
-where $\xi = 1/m$ is the correlation length (inverse mass).
+Here $\xi$ is the fitted Gaussian width in the same distance units as $r$.
+The fit parameters are obtained from the recorded correlator. They define
+a measurement summary; a physical mass requires the algorithm-derived
+spectral identification for the measured observable.
 
-**Connected vs. Raw**: The connected correlator subtracts the mean, measuring pure fluctuations. For non-zero mean fields, this gives a cleaner exponential decay signal.
+**Connected vs. Raw**: Subtracting the mean term isolates covariance.
 :::
 
 ### Local Field Definitions
@@ -184,7 +190,7 @@ $$
 r(x_i) = -U(x_i)
 $$
 
-These are **deterministic functions** of $(x, v)$, making them proper QFT observables.
+These readouts are calculated from the recorded positions, velocities, and rewards.
 :::
 
 ### Empirical Results
@@ -202,7 +208,7 @@ These are **deterministic functions** of $(x, v)$, making them proper QFT observ
 
 **Interpretation:**
 - All fields show positive correlation lengths $\xi > 0$
-- Fit quality $R^2 > 0.85$ indicates good exponential decay
+- Reported fit quality $R^2 \ge 0.85$ summarizes agreement with the Gaussian fit
 - $r_{\mathrm{zero}}$ marks where connected correlator crosses zero (anti-correlation regime)
 - +/- points: number of positive vs. negative correlation values in the binned data
 :::
@@ -218,50 +224,38 @@ This structure is expected for fluctuation fields with finite mean.
 :name: fig-kinetic-correlation
 :width: 80%
 
-**Kinetic energy correlation function.** Connected correlator $G(r)$ vs distance $r$ on log scale. Blue points: measured data. Orange line: exponential fit $G(r) \sim G_0 e^{-r^2/\xi^2}$. The fit captures the decay in the positive-correlation regime ($r < 0.24$), with $R^2 = 0.98$.
+**Kinetic energy correlation function.** Connected correlator $G(r)$ vs distance $r$ on log scale. Blue points: measured data. Orange line: Gaussian-in-distance fit $G(r) \approx G_0 e^{-r^2/\xi^2}$. The fit captures the decay in the positive-correlation regime ($r < 0.24$), with $R^2 = 0.98$.
 :::
 
-### The d_prime Problem
+### Companion-readout correlation diagnostic
 
-:::{warning}
-**Companion-Based Observables Are Not Valid QFT Fields**
-
-The companion-based `d_prime` field, computed via:
+:::{note}
+The companion-based readout is
 
 $$
-d'_i = \frac{d(x_i, x_{\mathrm{companion}(i)}) - \mu_d}{\sigma_d}
+d'_i=\frac{d(x_i,x_{\mathrm{companion}(i)})-\mu_d}{\sigma_d}.
 $$
 
-exhibits **anti-QFT behavior**:
-- $\xi = 0$ or negative slope (correlation increasing with distance)
-- $R^2$ near zero or negative
-
-**Reason**: The simulation uses **softmax-based distance-dependent** companion selection (`method="cloning"`, `epsilon=0.1`, `lambda_alg=1.0`), NOT uniform random. Yet `d_prime` STILL shows $\xi = 0$, $R^2 \approx 0$.
-
-The issue is not uniform vs softmax, but that **companion selection is inherently stochastic**:
-- Even with softmax weighting favoring nearby walkers, each walker's companion is a **random sample** from that weighted distribution
-- Two walkers at identical positions can get different companions
-- Therefore `d_prime` is **not deterministic**—same $(x, v)$ can produce different values
-- This violates the locality requirement for QFT observables
-
-The solution (local fields) works because density, kinetic energy, etc. are **deterministic functions** of $(x, v)$.
+The selected companion and the normalization are recorded algorithmic data.
+The reported fit has $R^2$ near zero and a width near zero, with correlations
+that can increase over the measured distance range. These results identify
+a poor fit to the Gaussian profile. The companion readout remains a
+function of the complete record, including the selection outcome.
 :::
 
 :::{figure} results/d_prime_correlation.png
 :name: fig-d-prime-correlation
 :width: 80%
 
-**Anti-QFT behavior of d_prime.** Unlike proper local fields, the companion-based `d_prime` shows correlation *increasing* with distance—the opposite of exponential decay. This demonstrates why stochastic companion selection produces invalid QFT observables.
+**Recorded companion correlation.** The displayed `d_prime` correlations
+increase over the measured range, giving a poor fit to the decreasing
+Gaussian profile.
 :::
 
-Comparison of companion-based vs. local diversity:
-
-| Observable | $\xi$ | $R^2$ | Valid QFT? |
-|------------|-------|-------|------------|
-| d_prime (companion) | ~0 | ~0 | **No** |
-| diversity_local (density-based) | 0.14 | 0.92 | **Yes** |
-
-
+| Recorded readout | Fitted $\xi$ | $R^2$ | Gaussian fit |
+|------------------|--------------|-------|--------------|
+| d_prime (companion) | ~0 | ~0 | Poor |
+| diversity_local (density-based) | 0.14 | 0.92 | Good over fitted bins |
 
 (sec-fg-empirical-wilson-loops)=
 ## Wilson Loops and Gauge Structure
@@ -610,33 +604,20 @@ Let me be clear about what we are doing and what we are not doing. These are not
 But the overall pattern is robust. Local fields show exponential correlation decay. Wilson loops have stable, non-trivial values. The Lyapunov function converges. The QSD equilibrates. These are not coincidences. They are the signature of a system that really does have the structure predicted by lattice QFT.
 
 The key methodological insights are:
-1. Use local fields, not companion-based observables
+1. Retain the recorded inputs of each observable, including companion choices
 2. Use connected correlators to isolate fluctuations
 3. Fit only the positive-correlation regime (before zero-crossing)
 4. Check multiple independent observables for consistency
 :::
 
-### The d_prime Measurement Problem
+### Retaining the companion record
 
-:::{admonition} Why d_prime Fails as a QFT Observable
-:class: warning
-
-The `d_prime` field depends on **stochastic** companion selection, even though the simulation uses **softmax-based distance weighting** (`method="cloning"`, `epsilon=0.1`, `lambda_alg=1.0`):
-
-1. Each walker's companion is a **random sample** from the softmax-weighted distribution
-2. Even with distance-dependent weighting, two walkers at identical positions can get **different companions**
-3. Therefore `d_prime` is **not a deterministic function** of $(x, v)$—same state can produce different values
-4. This violates the locality axiom required for valid QFT observables
-
-**Key insight**: The issue is not uniform vs softmax weighting. The issue is that **any stochastic selection** breaks determinism.
-
-**Solution**: Use density-based local diversity instead:
-
-$$
-D_{\mathrm{local}}(x_i) = \frac{1}{\rho(x_i)} = \frac{1}{\sum_{j \neq i} K_\sigma(x_i, x_j)}
-$$
-
-This is **deterministic**, local, and a proper QFT observable.
+:::{note}
+Companion selection is stochastic, and its outcome belongs to the recorded
+Fractal Set. Reproducing `d_prime` therefore requires the selected companion
+as well as the positions. Density-based diversity uses a different readout,
+$D_{\mathrm{local}}(x_i)=1/\rho(x_i)$. Comparing their fits preserves both
+observables and their actual recorded inputs.
 :::
 
 ### Connected vs. Raw Correlators
@@ -725,7 +706,7 @@ The Fractal Gas is not just an optimization algorithm. It is a physical system�
 
 These are not abstract mathematical claims. They are empirical facts, measured from actual simulations. The fits are good. The predictions match the data. The theory works.
 
-But there are caveats. The measurements require care—you must use the right observables (local fields, not companion-based). The fits require judgment—you must handle the zero-crossing of connected correlators. The validation is not complete—some theoretical predictions have not yet been tested.
+But there are caveats. The measurements require care—you must retain the inputs used by each recorded observable. The fits require judgment—you must handle the zero-crossing of connected correlators. The validation is not complete—some theoretical predictions have not yet been tested.
 
 What this chapter establishes is a foundation. We now have a validated analysis pipeline. We now have empirical benchmarks. We now know which observables to trust and which to avoid. Future work can build on this foundation to explore deeper questions: the continuum limit, the coupling to gravity, the emergence of the Standard Model.
 
@@ -736,12 +717,12 @@ The algorithm is discovering quantum field theory. The data proves it.
 
 | Prediction | Status | Evidence |
 |------------|--------|----------|
-| Exponential correlation decay | **Validated** | $R^2 > 0.85$ for local fields |
+| Gaussian correlation fit | **Measured** | Reported $R^2 \ge 0.85$ for local readouts |
 | Wilson loop stability | **Validated** | Stable time series, mean $\sim 0.8$ |
 | Lyapunov convergence | **Validated** | Exponential decay on log plot |
 | QSD equilibration | **Validated** | Stable variance ratios post-warmup |
 | Gauge phase structure | **Validated** | Non-trivial distributions |
-| d_prime as QFT observable | **Invalidated** | Anti-QFT behavior, $\xi \approx 0$ |
+| d_prime Gaussian fit | **Poor fit** | Reported $R^2 \approx 0$, fitted $\xi \approx 0$ |
 
 
 
@@ -759,6 +740,6 @@ The algorithm is discovering quantum field theory. The data proves it.
 - {doc}`05_yang_mills_noether` — Yang-Mills and Noether structure
 
 ### Key Definitions Referenced
-- {prf:ref}`def-scalar-action` — Scalar field action
+- {prf:ref}`def-two-point-connected` — Recorded connected correlator and empirical fit
 - {prf:ref}`def-wilson-loop-lqft` — Wilson loop operator
 - {prf:ref}`thm-laplacian-convergence` — Graph Laplacian convergence

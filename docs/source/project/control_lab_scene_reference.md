@@ -480,6 +480,17 @@ points. Its restoring action can push as well as pull. A nonautomatic tether wit
 `b: -1` remains detached. A fixed initial target may be any distinct body, not just
 cargo. Reordering `bodies` requires updating every tether index; the editor's delete
 and duplicate operations do the corresponding remapping for you.
+
+In mining scenes, **Hook stiffness (N/m)** adjusts `tethers[].stiffness` for
+the mining hooks. Pause the simulation, change the slider or numeric input, then
+click **Apply rock settings** to restart with the new setting. The same controls
+allow **Rock size** from 0.1× to 2×. Low stiffness lets
+the hook stretch like a rubber band; high stiffness keeps its length approximately
+fixed. This remains a spring, so high stiffness is not an exact rope constraint.
+Setting stiffness to zero removes the restoring force but leaves radial damping
+active. The solver applies an implicit spring-and-damper impulse along the line
+between the bodies. It does not constrain tangential motion, so stiffness alone
+does not prevent a rocket from moving around its cargo.
 :::
 
 ### Reward settings and priority
@@ -506,6 +517,12 @@ to the nearest base. Refinery distance is measured to the zone edge and is zero 
 other target distances use centres. A returning vehicle keeps its refinery target
 even after partially unloading. Gates still take priority over that return target.
 A temporarily empty pickup field does not switch to cargo-body navigation. With no relevant target the distance contribution is zero.
+
+For cargo hauling, the target used to measure progress is held fixed through each
+physical frame. If a hook breaks during that frame, both distance measurements
+still use the same hauling target; the new detached target takes effect next
+frame. Breaking a hook therefore cannot earn a progress bonus merely by switching
+from cargo-to-base distance to rocket-to-cargo distance.
 
 For exact `task: "tandem"` and more than one controlled body, the potential also
 subtracts `rewards.formation` times each body's radial error from the group centroid.

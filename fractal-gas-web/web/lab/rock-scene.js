@@ -12,16 +12,23 @@ const radius = (body) =>
     : (body.radius ?? 0.5);
 
 // Scale the collision hull itself: rendering and physics share these dimensions.
-export function configureRocks(template, { scale, count }) {
+export function configureRocks(template, { scale, count, stiffness }) {
   const previous = rockOptions(template);
   if (!previous) throw new RangeError("This scene has no mining rocks");
-  if (!Number.isFinite(scale) || scale < 0.5 || scale > 2)
+  if (!Number.isFinite(scale) || scale < 0.1 || scale > 2)
     throw new RangeError(
-      "Rock size must be from 0.5 to 2 times the original size",
+      "Rock size must be from 0.1 to 2 times the original size",
     );
   if (!Number.isInteger(count) || count < 1 || count > 20)
     throw new RangeError("Rock count must be an integer from 1 to 20");
+  if (
+    stiffness !== undefined &&
+    (!Number.isFinite(stiffness) || stiffness < 0 || stiffness > 1000000)
+  )
+    throw new RangeError("Hook stiffness must be between 0 and 1000000 N/m");
   const scene = structuredClone(template);
+  if (stiffness !== undefined)
+    for (const tether of scene.tethers || []) tether.stiffness = stiffness;
   scene.boundary ||= [
     [0, 0],
     [scene.size[0], 0],

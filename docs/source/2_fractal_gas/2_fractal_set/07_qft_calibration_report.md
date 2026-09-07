@@ -59,7 +59,7 @@ $$
 
 Here $g_1$ is the hypercharge coupling $g_Y$, not the alternative
 $\sqrt{5/3}\,g_Y$ convention. These relations specify the electroweak target
-normalization discussed in {prf:ref}`prop-sm-unification`.
+normalization used in this calibration.
 :::
 
 :::{div} feynman-prose

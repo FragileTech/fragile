@@ -107,6 +107,20 @@ duration exceeds the configured force threshold. This
 preset omits `break_force`, so the compiler default is 500 N. **Hook range is not
 a breaking distance.**
 
+Open the rock settings to change **Hook stiffness · N/m** for all tow hooks in
+the scene. The allowed range is 0 to 1,000,000 N/m; the supplied mining preset
+keeps its default of 35 N/m. A low positive value permits more stretching, like
+a rubber band. A high value makes the connection approximately fixed in length;
+it remains a spring, not an exact rigid constraint. At zero, the spring force
+vanishes but radial damping remains. Press **Apply rock settings** to use the
+new value: this restarts the scene paused, so compare trials from that restart.
+The same panel's **Rock size** control spans 0.1× to 2×. Apply rock settings
+after changing the size too.
+
+Stiffness resists changes in separation. It does not directly resist motion
+around the rock: a rocket can move tangentially while keeping nearly the same
+tether length. Increasing stiffness therefore cannot, by itself, cure orbiting.
+
 When an automatic tether is disconnected, it searches for active cargo with its
 center strictly within 3.5 m of the rocket's center. Reattachment sets a new
 runtime rest length to the current separation, with a minimum of 0.1 m. Therefore,
@@ -183,6 +197,11 @@ with collision penalties. For an attached rocket, progress follows the
 cargo's distance to a base; for a disconnected rocket, it follows distance to
 active cargo. Positive reward can therefore occur before any delivery.
 
+Each physics frame measures progress toward the target selected at that frame's
+start, using that same target before and after movement. Breaking a tether
+therefore does not earn a bonus merely by switching from the distant base to a
+nearby rock. The next frame can select a new target for the disconnected rocket.
+
 For a controlled benchmark, open **Experiments** with this scene selected, leave
 **All preset scenes** unchecked, and explicitly select **Success metric → Cargo
 deliveries** and **Success target → 1**. Check these fields even if you previously
@@ -210,6 +229,14 @@ rockets are helping. A heavy load responds gradually, and increasing planner
 population does not increase engine strength. If a connection disappears, inspect
 for a delivery or force-induced break, then approach the active cargo within hook
 range. Advancing physics is necessary for reacquisition.
+
+If the rockets orbit rapidly, check **Movement reward** and press **Apply
+settings** after setting it to zero. A positive value rewards displacement in
+any direction, including circling without hauling cargo. Zero removes that
+incentive; it does not remove existing tangential velocity or guarantee that a
+finite search finds a useful pull. Inspect the cargo's progress toward the base
+and compare hook stiffness from the same paused starting state. A tighter spring
+can keep a rocket close to the rock while it continues to circle.
 
 If delivery stays at zero, inspect the cargo's center rather than a rocket's
 position or an attractive search path. If the rock suddenly returns to its spawn

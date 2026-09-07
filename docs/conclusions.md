@@ -239,9 +239,10 @@ approximations are controlled.
 :::{prf:remark} Exact constructions and proved geometric limits
 :label: rem-conclusion-geometric-results
 
-Finite gauge covariance and Wilson-action invariance are proved in
-{prf:ref}`prop-lqft-finite-gauge-covariance` and
-{prf:ref}`thm-wilson-action-gauge-invariance`. The chosen exterior-algebra
+Recorded vector and matrix payloads have the frame covariance proved in
+{prf:ref}`thm-fractal-set-spinor-covariance`. Gauge invariance of the recorded
+Wilson observables is proved in {prf:ref}`thm-wilson-action-gauge-invariance`.
+The chosen exterior-algebra
 representation satisfies the canonical anticommutation relations of
 {prf:ref}`thm-cloning-antisymmetry-lqft`. These identities retain the
 specified edge variables and representations.

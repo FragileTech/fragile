@@ -86,8 +86,12 @@
           >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
         <p class="scenario-description">Changing vehicles restarts the scene paused.</p>
         <div id="rock-controls" hidden>
-          <label class="field">Rock size (×)<input id="rock-size" type="number" min="0.5" max="2" step="0.1" value="1" required /></label>
+          <label class="field">Rock size (×)<input id="rock-size" type="number" min="0.1" max="2" step="0.1" value="1" required /></label>
           <label class="field" id="rock-count-field">Rock count<input id="rock-count" type="number" min="1" max="20" step="1" value="5" required /></label>
+          <label class="field" id="hook-stiffness-field" data-help="Spring constant shared by all tow hooks, in N/m. Low values stretch like a rubber band; high values approximate a fixed-length towline. A rope can still swing sideways. Zero removes spring tension but retains existing radial damping. Apply rock settings to restart with this value.">Hook stiffness (N/m)
+            <input id="hook-stiffness-slider" aria-label="Hook stiffness slider" type="range" min="0" max="6" step="0.01" />
+            <input id="hook-stiffness" type="number" min="0" max="1000000" step="any" value="35" required />
+          </label>
           <button id="apply-rocks">Apply rock settings</button>
           <p class="scenario-description">Size changes the rock hull; mass stays the same. Delivered rocks respawn. Applying restarts the scene paused.</p>
         </div>

@@ -125,3 +125,74 @@ test("explicit zero disables default movement reward", () => {
     engine.dispose();
   }
 });
+
+test("delivery weight changes mining reward, not the rock delivery count", () => {
+  const mining = {
+    size: [100, 100],
+    bodies: [
+      { controlled: true, position: [50, 50] },
+      { cargo: true, position: [20, 20] },
+    ],
+    bases: [{ position: [20, 20], radius: 3 }],
+  };
+  for (const delivery of [0, 37, 100]) {
+    const weights = Object.fromEntries(REWARD_TERMS.map((t) => [t.key, 0]));
+    const engine = new NativeEngine(
+      module,
+      withRewards(mining, { ...weights, delivery }),
+    );
+    try {
+      engine.step(engine.neutralAction(), 1);
+      assert.equal(engine.results()[0], delivery);
+      assert.equal(engine.metrics()[5], 1);
+    } finally {
+      engine.dispose();
+    }
+  }
+});
+
+test("breaking and re-hooking earns no progress without cargo movement", () => {
+  const source = {
+    size: [100, 100],
+    rewards: { distance_squared: 0, collision: 0, progress: 1 },
+    bodies: [
+      { controlled: true, position: [10, 20], drag: 0 },
+      { cargo: true, position: [12, 20], drag: 0 },
+    ],
+    bases: [{ position: [40, 20], radius: 2 }],
+    tethers: [
+      {
+        a: 0,
+        b: 1,
+        automatic: true,
+        hook_range: 3,
+        stiffness: 35,
+        break_force: 0,
+      },
+    ],
+  };
+  for (const automatic of [true, false]) {
+    const e = new NativeEngine(module, {
+      ...source,
+      tethers: [{ ...source.tethers[0], automatic }],
+    });
+    try {
+      for (let i = 0; i < 3; i++) {
+        const rows = e.states(),
+          words = new Uint32Array(rows.buffer);
+        words[e.info[7]] = 2;
+        rows[e.info[7] + 1] = 1; // A stretched hook breaks before transferring impulse.
+        e.restoreRows(rows);
+        e.step(e.neutralAction(), 1);
+        assert.equal(e.results()[0], 0);
+        assert.deepEqual(Array.from(e.states().slice(8, 12)), [10, 12, 20, 20]);
+        assert.equal(
+          new Uint32Array(e.states().buffer)[e.info[7]],
+          automatic ? 2 : 0,
+        );
+      }
+    } finally {
+      e.dispose();
+    }
+  }
+});

@@ -16,13 +16,10 @@ run the implemented step with its random inputs, and encode the result.
 transition kernel. Every integrable finite history observable covered by the
 record keeps its expectation, including the masks used to select samples.
 
-The derivative and LSI bounds then control the specified fields and laws.
-On its identified LSI law, the equilibrium energy construction supplies a
-further evolution with its own generator and time coordinate. The exterior
-construction carries record observables and their evolution to antisymmetric
-replicas of the whole swarm. Comparing these constructions with a proposed
-coupled field action uses the measure and generator calculations below.
-Dirac matrices provide an optional representation of the operator algebra.
+The derivative and LSI bounds control the specified fields under their
+recorded laws. The exterior construction carries record observables and the
+implemented evolution to antisymmetric replicas of the whole swarm. Its
+transition operator comes from the same complete update kernel.
 :::
 
 :::{prf:definition} Scope, dimensions, and phase conventions
@@ -35,12 +32,10 @@ of {prf:ref}`def-sm-direct-observable-law`: complex color vectors, companion
 amplitudes, pair contractions, determinants, and triangle products are
 computed from recorded data. Their finite law is the pushforward of the
 specified record law. This construction uses commuting numerical fields.
-The exterior-algebra and Dirac constructions in
-{ref}`sec-sm-matter-sector` are additional field representations.
-Use $N$ for population size, $d$ for latent spatial dimension, $n$ for a
-chosen color-fiber rank, and $n_g$ for a chosen generation multiplicity.
-These integers describe different spaces. The Standard Model representation
-below uses $n=3$ and may be repeated $n_g$ times.
+The exterior construction in {ref}`sec-sm-matter-sector` represents recorded
+modes and their native transition. Use $N$ for population size, $d$ for latent
+spatial dimension, and $n$ for the color-fiber rank. The three-component
+color descriptor uses $n=3$.
 
 Write $F_i$ or $V_i$ for recorded fitness. An assigned phase must have a
 dimensionless exponent: $\hbar_{\mathrm{eff}}$ has the units of an assigned
@@ -56,18 +51,6 @@ A continuum geometry is supplied under
 {prf:ref}`assm-cst-continuum-geometry`. Its sampling and reconstruction
 requirements are those of {doc}`03_lattice_qft` and
 {prf:ref}`cor-continuum-consistency-conditional`.
-:::
-
-:::{prf:remark} Relation to the agent volume
-:label: remark-sm-vol1-connection
-
-The agent volume also organizes phase, doublet, and component representations.
-Its chart-fission calculation supplies a quartic normal-form calculation
-reused in {prf:ref}`thm-sm-higgs-isomorphism`. Applying that normal form to
-Fractal Gas requires a reduction of its own dynamics with the stated
-coefficients. A common representation or polynomial potential identifies
-that mathematical structure; it does not identify the complete dynamics
-or establish a unique physical theory.
 :::
 
 (sec-sm-gauge-principle)=
@@ -258,9 +241,6 @@ $$
 where $q\in\mathbb Z$ is a chosen charge in this normalization.
 The factor actions commute. Their faithful action is the product divided by
 the subgroup acting trivially on every chosen field representation.
-For the conventional $n=3$ representation constructed in
-{prf:ref}`thm-sm-so10-isomorphism`, this quotient is
-$[SU(3)\times SU(2)\times U(1)]/\mathbb Z_6$.
 
 Independent fiber factors yield this product action even when their
 coefficients depend on the same recorded fitnesses. Statistical independence
@@ -270,8 +250,7 @@ of the three particle mechanisms is neither assumed nor inferred.
 :::{prf:proof}
 Matrices acting on distinct tensor factors commute. The first isomorphism
 theorem identifies the image of a representation with its domain modulo its
-kernel. The $\mathbb Z_6$ calculation is given explicitly in
-{prf:ref}`thm-sm-so10-isomorphism`. $\square$
+kernel. $\square$
 :::
 
 (sec-sm-direct-observables)=
@@ -360,11 +339,12 @@ $$
 
 The zero-denominator indicator is retained with the average. Different pair
 selection, score orientation, weighting, or invalid-sample conventions define
-different observable maps. The result is a law of numerical fields before any
-Dirac or Grassmann representation is introduced. Its normalization follows
-from that of $\mathbb P_{\mathrm{rec}}$. An equilibrium application specifies
-whether the law is stationary for a conservative process, a survival-conditioned
-history, or a history of a Doob-transformed process.
+different observable maps. The result is a law of numerical fields before its
+exterior representation is introduced. Its normalization follows
+from that of $\mathbb P_{\mathrm{rec}}$. Each application specifies whether
+this is a finite recorded law, a conservative stationary history,
+a survival-conditioned history, or a history of the established
+Doob-transformed process.
 :::
 
 :::{prf:definition} Direct color contractions
@@ -1144,9 +1124,7 @@ $C_O(t)=\int e^{-Et}\,d\nu_O(E)$, its decay is a spectral measurement
 for that transfer generator. Without this identification $r_O$ remains
 a recorded decay statistic. An energy interpretation uses a calibrated
 action unit, and a mass interpretation additionally uses the physical time,
-momentum channel, and speed convention. Matrix-valued Dirac bilinears are
-another possible observable map; their comparison with the direct channels
-requires a common law and a verified common spectral sector.
+momentum channel, and speed convention.
 :::
 
 ### Exact invariant coordinates and transport of the established estimates
@@ -1987,11 +1965,7 @@ existing Fractal Gas results.
    $$
 
    Thus a force/velocity alignment spanning a transition is covered using
-   the separation between its recorded blocks. Under
-   {prf:ref}`lem-transfer-matrix-fg`, a bounded direct future functional
-   obeys its reflection factorization when its reconstruction commutes
-   with the specified time reflection. The same measure and time
-   coordinate enter both sides of that identity.
+   the separation between its recorded blocks.
 4. For any supplied smooth scalar reconstruction of a direct channel, the
    spatial limits of {prf:ref}`thm-laplacian-convergence` and
    {prf:ref}`lem-lqft-energy-sampling`, or the spacetime limit of
@@ -2143,7 +2117,7 @@ $$
 where $L$ is precisely the pulled-back Lipschitz constant used in
 {prf:ref}`lem-ym-lsi-moments`.
 
-**3. Temporal blocks and reflection.** Put
+**3. Temporal blocks.** Put
 $f(s)=\mathbb E[F\mid S_0=s]$ and
 $g(s)=\mathbb E[G\mid S_t=s]$. The Markov property separates the past
 and future conditional on the intervening state. Applying it at zero
@@ -2159,19 +2133,7 @@ Both functions are centered. Conditional Jensen gives
 $\|f\|_2^2\le\mathbb E|F|^2$ and
 $\|g\|_2^2\le\mathbb E|G|^2$. Thus the already established estimate
 $\|P_tg\|_2\le M e^{-\lambda t}\|g\|_2$ yields the claimed bound
-by Cauchy--Schwarz. For a direct future functional $F$ whose reconstruction
-intertwines the specified reflection, its pullback $\widetilde F$ obeys
-$\widetilde{\Theta F}=\Theta\widetilde F$. Under the law of
-{prf:ref}`lem-transfer-matrix-fg`, the exact reflected form is consequently
-
-$$
-\mathbb E[\overline{\Theta\widetilde F}\,\widetilde F]
-=\int\left|\mathbb E[\widetilde F\mid S_0=s]\right|^2d\pi(s)
-\ge0.
-$$
-
-This uses the factorization already proved for that law, with no
-replacement of its generator or its time reflection.
+by Cauchy--Schwarz.
 
 **4. Equality of estimators and convergence bounds.** If two coordinate
 representations yield identical reconstructed values $\phi_i$ and identical
@@ -2320,13 +2282,12 @@ mask. Keep those in the transition record, and the same recipe carries their
 joint history law. The theorem below implements this construction for every
 finite recorded history.
 
-There is also an equilibrium evolution built from the energy form on its
-identified LSI law. Its time $\sigma$ measures that derived evolution. The
-table keeps it alongside the algorithm's update times so we can apply each
-estimate to the law and clock for which it was proved.
+The table identifies the law used for each recorded evolution. A survival
+condition changes the path weights, so we retain it explicitly when applying
+the established estimates.
 :::
 
-:::{prf:definition} Complete update state and the two field evolutions
+:::{prf:definition} Complete update state and recorded evolution laws
 :label: def-sm-complete-update-law
 
 Let $s$ contain the walker state and every retained variable read by the next
@@ -2357,10 +2318,9 @@ The notation in the following constructions is fixed by this table.
 | Conservative stationary evolution | $\pi_NP_h=\pi_N$ | the conservative convergence result in its established regime |
 | Quasi-stationary evolution | $\nu_NQ_h=\alpha_h\nu_N$ | the killed-chain QSD result |
 | Stationary Doob evolution | $P_h^\eta=\alpha_h^{-1}\eta^{-1}Q_h\eta$, $\pi_N^\eta=\eta\nu_N$ | {prf:ref}`prop-kl-doob-transform`, with $\nu_N\eta=1$ |
-| Equilibrium energy evolution | $T_\sigma^{\mathrm{eq}}=e^{-\sigma H_{\mathrm{eq}}}$ on the law of its established LSI | {prf:ref}`thm-ym-equilibrium-form-construction` |
 
-The last time coordinate is denoted by $\sigma$. The algorithmic observation
-time remains $h$, $mh$, or $t$ in the already specified continuous model.
+The observation time is $h$, $mh$, or $t$ in the already specified continuous
+model.
 :::
 
 :::{prf:theorem} Exact transition and history isomorphism for the recorded algorithm
@@ -2933,50 +2893,6 @@ $P_t^{\otimes k}$ on its antisymmetric sector, and the same difference
 quotients intertwine their generators. $\square$
 :::
 
-:::{prf:proposition} Criterion for equality with a specified field evolution
-:label: prop-sm-field-generator-comparison
-
-Let $\mathcal W$ be a specified unitary from the represented record Hilbert
-space, or its Fock lift, onto a proposed field Hilbert space. Let $K$ be the
-record generator and $K_{\mathrm{field}}$ the field generator, both generating
-strongly continuous semigroups. If a common dense domain $\mathcal C$ is a
-core for $\mathcal W K\mathcal W^{-1}$ and $K_{\mathrm{field}}$, and
-
-$$
-K_{\mathrm{field}}f=\mathcal W K\mathcal W^{-1}f
-\qquad(f\in\mathcal C),
-$$
-
-then their semigroups intertwine, their spectra agree, and corresponding
-operator correlations agree when the state and observables are also transported
-by $\mathcal W$.
-
-*Proof.* Equality on the common core gives equality of the closed generators,
-since each is the closure of its restriction. Uniqueness of the semigroup
-with that generator gives
-$T_t^{\mathrm{field}}=\mathcal W T_t^{\mathrm{rec}}\mathcal W^{-1}$.
-For a resolvent parameter $z$, conjugation gives
-$(z-K_{\mathrm{field}})^{-1}=\mathcal W(z-K)^{-1}\mathcal W^{-1}$.
-For correlations, conjugate each observable and each transition; adjacent
-$\mathcal W^{-1}\mathcal W$ factors cancel, as in the Fock isomorphism proof.
-This is the operator comparison in
-{prf:ref}`prop-sm-direct-markov-intertwining` applied to the specified field
-model. $\square$
-:::
-
-:::{prf:example} An interaction not supplied by second quantization alone
-:label: ex-sm-replica-interaction-comparison
-
-On $\Lambda^*\mathbb C^2$, put $n_j=a_j^\dagger a_j$ and
-$V=\lambda n_1n_2$, with $\lambda\ne0$. This operator is zero on the vacuum
-and on the one-mode sector, and equals $\lambda I$ on the two-mode sector.
-It cannot equal $d\Gamma(A)$ for a one-mode operator $A$: restriction to the
-one-mode sector would force $A=0$, whereas the two-mode restriction is nonzero.
-Consequently adding a proposed inter-mode interaction to a lifted field
-generator requires the generator comparison above. This does not remove the
-interactions already present within each complete-swarm generator $L$.
-:::
-
 :::{prf:proposition} Exact exterior meaning of the implemented baryon correlator
 :label: prop-sm-baryon-exterior-correlator
 
@@ -3032,7 +2948,7 @@ its determinant-of-covariances formula holds. $\square$
 :::
 
 (sec-sm-matter-sector)=
-## 4. Optional Fermionic and Clifford Representations
+## 4. Recorded Exterior Observables
 
 :::{div} feynman-prose
 Start with linearly independent recorded modes, after removing combinations with
@@ -3052,11 +2968,8 @@ The stochastic update performs a different operation: it averages future
 observables with the transition probabilities. Composing updates advances
 the recorded process; composing insertions builds its alternating observable
 sectors. The exact encoded transition supplies the evolution of each replica,
-and the adjoint of insertion supplies the CAR contraction. The following
-corollary also identifies the separate dual symbols used in a Euclidean
-Grassmann integral. Clifford and Dirac matrices give further representations;
-comparison with a specified gauge or Yukawa evolution uses the stated
-generator domains and intertwining maps.
+and the adjoint of insertion supplies the CAR contraction. These operations
+use the inner product and transition kernel of the recorded modes.
 :::
 
 :::{prf:theorem} Exact cloning antisymmetry and its error for raw scores
@@ -3098,17 +3011,13 @@ They are opposite unless both are zero. $\square$
 :::
 
 :::{div} feynman-prose
-The bar on $\bar\psi$ needs care here. In the Euclidean polynomial algebra,
-it names a generator from the dual mode space. Multiplying by it adds an
-exterior factor, with the same alternating rule as the unbarred generators.
-On the Hilbert exterior space, the adjoint of insertion contracts a mode:
-it lowers the degree and uses the recorded inner product. This contraction
-produces the mixed CAR identity. The two operations therefore have different
-products and different jobs, even though both are built from the same
-recorded modes. The corollary makes each correspondence explicit.
+Inserting a recorded mode adds an exterior factor. Its adjoint removes a
+factor and takes the inner product with that mode. The resulting contraction
+is evaluated under the recorded law, which is why the CAR identity retains
+the mode covariance.
 :::
 
-:::{prf:corollary} Derived exterior representation and Euclidean dual symbols
+:::{prf:corollary} Derived exterior representation of recorded modes
 :label: axm-sm-grassmann
 
 For the finite recorded mode space $E$ in
@@ -3117,239 +3026,30 @@ operators have the faithful exterior representation
 $\mathsf C(e_i)\leftrightarrow\psi_i$.
 Anticommutation and nilpotency are the derived identities
 {ref}`(LQ.A2) <eq-fg-lq-a2>`, and independence of ordered monomials
-is proved by their replica norms. An index $(i,a)$ labels a basis
-mode only after the corresponding recorded functions have been
-identified and their zero-norm relations removed.
+is proved by their replica norms. A basis is chosen after removing the
+zero-norm relations among the recorded functions. For an orthonormal basis,
+the adjoint contractions satisfy
+$\{\mathsf A(e_i),\mathsf C(e_j)\}=\delta_{ij}I$.
 
-The Euclidean polynomial algebra is $\Lambda(E\oplus E^\vee)$ from
-{prf:ref}`post-grassmann`. It gives
-$\{\psi_i,\psi_j\}=\{\bar\psi_i,\bar\psi_j\}
-=\{\psi_i,\bar\psi_j\}=0$ by exterior multiplication.
-The adjoint operators on the undoubled Hilbert exterior space instead
-obey $\{\mathsf A(e_i),\mathsf C(e_j)\}=\delta_{ij}I$.
-These formulas identify the barred integration symbols and the
-adjoint contraction as different constructions from the same mode space.
-
-The actual CAR algebra, positive vacuum state, replica law, and
-completely positive recorded evolution are supplied by
-{prf:ref}`thm-lqft-record-fock-reconstruction`,
+The positive vacuum state, replica law, and completely positive recorded
+evolution are those of {prf:ref}`thm-lqft-record-fock-reconstruction`,
 {prf:ref}`thm-lqft-replica-isomorphism`, and
 {prf:ref}`thm-lqft-record-car-channel`.
-A finite Berezin action also requires its coefficient matrix and
-integration orientation; its determinant identity is
-{prf:ref}`def-fermionic-action`.
 
 *Proof.* The faithful homomorphism and its inverse are
-{ref}`(LQ.A1) <eq-fg-lq-a1>` and the coefficient expansion in its
-orthonormal replica wedges. Taking the direct sum with $E^\vee$
-and polarizing the defining squares gives the three Euclidean
-anticommutators. The adjoint deletion calculation gives the mixed CAR.
-Thus these are constructions and derived representation identities,
-rather than a further assumption on the cloning transition.
-In particular $\bar\psi_j\psi_i=-\psi_i\bar\psi_j$; interchanging the
-indices instead produces a different monomial in general.
-:::
-
-:::{prf:remark} Endpoint and gauge conventions
-:label: remark-sm-fermion-orientation
-
-The source-based bilinear is $\bar\psi_iU_{ij}\psi_j$, with
-$\bar\psi_i\mapsto\bar\psi_i\Omega_i^{-1}$. Its factors all contract at
-the same endpoint. A target-based expression uses $U_{ji}$ and the conjugate
-field at $j$. Reversing an oriented sum also requires transforming its
-weights and links; equality of two actions is then an explicit reindexing
-identity, rather than a consequence of Grassmann signs alone.
-:::
-
-:::{prf:definition} Finite fermionic action with comparison links
-:label: def-sm-fermionic-action
-
-For prescribed quadrature weights $a_{ij},b_{ij}$ and positive increments
-$h_{ij}$, set
-
-$$
-S_{\mathrm f}=-\sum_{(i,j)\in E_{\mathrm{IG}}}
- a_{ij}\bar\psi_i\widetilde K_{ij}U_{ij}\psi_j
- -\sum_{(i,j)\in E_{\mathrm{CST}}}
- b_{ij}\bar\psi_i\frac{U_{ij}\psi_j-\psi_i}{h_{ij}},
-\qquad \widetilde K=K-K^{\mathsf T}.
-$$
-
-Mass and Yukawa terms must use invariant contractions in the selected
-representations. Gauge covariance of the displayed terms follows from the
-comparison convention. The finite Berezin integral is the determinant of
-the coefficient matrix, with the orientation and proof in
-{prf:ref}`def-fermionic-action`.
-:::
-
-:::{prf:theorem} Temporal comparison and the trajectory derivative
-:label: thm-sm-temporal-operator
-
-For a smooth trajectory and field, suppose
-$U_{ij}=I+h_{ij}\mathcal A(\dot\gamma(t_i))+O(h_{ij}^2)$ with uniform
-second-order remainder. Then
-
-$$
-\frac{U_{ij}\psi_j-\psi_i}{h_{ij}}
- =\frac d{dt}\psi(\gamma(t_i))
-  +\mathcal A(\dot\gamma(t_i))\psi(\gamma(t_i))+O(h_{ij}).
-$$
-
-A real assigned edge action defines a unitary phase directly. A node
-potential difference yields pure-gauge links; equality with an integral of
-fitness along a path is an additional relation. A proper-time choice for
-$h_{ij}$ retains the trajectory and calibration conditions in
-{prf:ref}`thm-fractal-faithful-embedding`.
-
-Reflection positivity or unitary reconstruction of a field measure requires
-that measure's transfer representation, such as the sufficient hypotheses
-of {prf:ref}`lem-lqft-positive-transfer`. Neither an arbitrary QSD nor this
-local Taylor formula supplies it. A directed forward-difference matrix
-also need not be Hermitian or approach a Hermitian matrix at a population
-sampling rate.
-:::
-
-:::{prf:proof}
-Taylor expand $\psi(\gamma(t_j))$, multiply by the link expansion, and
-divide the difference by $h_{ij}$, as in
-{prf:ref}`thm-temporal-fermion-op`. For the last assertion, a nonzero directed
-shift has an adjoint supported on the reverse edges. Their difference
-need not shrink when more copies of the same directed stencil are added.
+{ref}`(LQ.A1) <eq-fg-lq-a1>` and the coefficient expansion in orthonormal
+replica wedges. The adjoint deletion calculation gives the mixed CAR.
+Every inner product is therefore computed in the recorded mode law.
 $\square$
 :::
 
-(sec-sm-structural-isomorphisms)=
-### An explicit complex Clifford isomorphism
-
-:::{prf:theorem} Clifford algebra of the specified spinor representation
-:label: thm-sm-dirac-isomorphism
-
-On $S=\Lambda^*\mathbb C^2$ use creation and contraction operators from
-{prf:ref}`thm-dirac-structure-lqft`. The four operators
-
-$$
-\Gamma^{2j-1}=a_j+a_j^\dagger,\qquad
-\Gamma^{2j}=i(a_j^\dagger-a_j),\qquad j=1,2,
-$$
-
-satisfy the Euclidean Clifford relations. Set
-$\gamma^0=i\Gamma^1$, $\gamma^r=\Gamma^{r+1}$ for $r=1,2,3$.
-Then the complex Clifford algebra for signature $(-,+,+,+)$ acts faithfully,
-and
-
-$$
-\mathrm{Cl}_{\mathbb C}(\eta)\cong\operatorname{End}_{\mathbb C}(S)
-\cong M_4(\mathbb C).
-$$
-
-Its algebra dimension is $16$; its irreducible spinor dimension is $4$.
-This is a statement about the specified exterior representation, not an
-isomorphism induced by skewness of $\widetilde K$.
-
-On a supplied spin manifold with an orthonormal frame $e_a^{\ \mu}$,
-$\gamma^\mu=e_a^{\ \mu}\gamma^a$ satisfies
-$\{\gamma^\mu,\gamma^\nu\}=2g^{\mu\nu}I$.
-A Dirac continuum limit additionally requires a spin connection, consistent
-directional differences, quadrature convergence, and control of extra
-lattice modes. The scalar kernel limit does not establish these conditions.
-:::
-
-:::{prf:proof}
-The contraction identity
-$a_i(e_j\wedge\omega)=\delta_{ij}\omega-e_j\wedge a_i\omega$
-gives the CAR, and expansion gives the stated Clifford anticommutators.
-The factor $i$ changes one generator's square to $-I$.
-Clifford relations reorder every word into one of the $2^4$ ordered
-monomials, so the abstract algebra has dimension at most $16$.
-
-Conversely, $a_j$ and $a_j^\dagger$ are linear combinations of the
-$\Gamma$ operators. The vacuum projector
-$P_0=\prod_{j=1}^2(I-a_j^\dagger a_j)$ belongs to their algebra.
-Products $a_I^\dagger P_0 a_J$, with the annihilators ordered to remove the
-basis wedge $e_J$, are the matrix units sending $e_J$ to $e_I$ and all other
-basis wedges to zero, up to a removable sign. They span all $16$ dimensions
-of $\operatorname{End}(S)$. The induced surjective homomorphism is therefore
-an isomorphism. Multiplying the frame coefficients in the anticommutator
-gives $2e_a^{\ \mu}e_b^{\ \nu}\eta^{ab}I=2g^{\mu\nu}I$.
-
-Equal fitnesses give $\widetilde K=0$, whose square cannot be a nonzero
-Clifford metric. This explicit case shows why the score calculation alone
-cannot supply the generators. $\square$
-:::
-
-### Component labels and generation copies
-
-:::{prf:definition} Encoded component index and flavor multiplicity
-:label: def-sm-flavor-index
-
-The index $a=1,\ldots,d$ in the encoded viscous vector $c_i^{(a)}$ labels
-components in a chosen coordinate basis. A generation index instead labels
-copies of the same internal gauge representation $R$:
-
-$$
-\mathcal H_{\mathrm{int}}=R\otimes\mathbb C^{n_g},\qquad
-\rho_{\mathrm{int}}(g)=\rho_R(g)\otimes I_{n_g}.
-$$
-
-A declaration $n_g=d$ specifies such a multiplicity space in a field model.
-It is independent of identifying $n=d$ as a color rank.
-:::
-
-:::{prf:theorem} Multiplicity is independent of coordinate dimension
-:label: thm-sm-generation-dimension
-
-For an irreducible complex gauge representation $R$, gauge-commuting
-endomorphisms of $R\otimes\mathbb C^{n_g}$ have the form
-$I_R\otimes B$, with $B\in M_{n_g}(\mathbb C)$.
-In particular the defining $SU(d)$ representation on $\mathbb C^d$ has one
-copy of its representation, not $d$ invariant generation sectors.
-Any positive integer $n_g$ is compatible with the same latent dimension.
-If a supplied model chooses $n_g=d$, it has $d$ copies by construction.
-:::
-
-:::{prf:proof}
-Write a commuting endomorphism in blocks $A_{\alpha\beta}:R\to R$.
-Each block commutes with $\rho_R(g)$. Over $\mathbb C$, such a block has an
-eigenvalue $\lambda$. Its nonzero eigenspace is invariant, so irreducibility
-makes it all of $R$ and $A_{\alpha\beta}=\lambda I_R$. This proves the
-commutant assertion. A nonzero invariant subspace of the defining $SU(d)$
-representation contains one unit vector and hence all unit vectors by the
-transitivity of $SU(d)$, so that representation is irreducible for $d\ge2$.
-Finally tensoring with $\mathbb C^{n_g}$ changes no coordinate variable,
-proving independence of $n_g$ and latent dimension. $\square$
-:::
-
 (sec-sm-scalar-sector)=
-## 5. Scalar Consistency and Symmetry Breaking
+## 5. Scalar Reconstruction Consistency
 
 :::{div} feynman-prose
-A quartic potential is simple enough that we can find every stationary point
-and every curvature by differentiation. This tells us the local restoring
-forces. To obtain the Higgs mass matrix, we must also choose a complex
-weak doublet and its covariant kinetic term. The extra choice matters:
-a one-dimensional double well and a four-component Higgs field have different
-sets of angular modes.
-:::
-
-:::{prf:definition} Scalar and doublet actions
-:label: def-sm-scalar-action
-
-A neutral real field uses the positive spatial action and vertex quadrature
-of {prf:ref}`def-scalar-action`. A charged doublet instead uses specified
-comparison links and
-
-$$
-S_H^{\mathrm{space}}
- =\frac12\sum_{\{i,j\}}c_{ij}\|U_{ij}H_j-H_i\|^2
-   +\sum_i\mu_i V(H_i^\dagger H_i),\qquad c_{ij}\ge0,\quad\mu_i>0.
-$$
-
-The norm is independent of the chosen orientation because the links are
-unitary. Under $H_i\mapsto\Omega_iH_i$, every term is gauge invariant.
-A Lorentzian action uses the signed operator, normalization, and same-sample
-quadrature assumptions in {prf:ref}`thm-cst-fractal-dalembertian-consistency`.
-A sum of unsigned neighbor slopes is not a directional derivative without
-specified directions and moment conditions.
+A reconstructed scalar channel uses the sample positions and kernel weights.
+Its continuum estimate retains their sampling density: expanding the finite
+sum shows exactly where that density enters.
 :::
 
 :::{prf:theorem} Spatial scalar consistency with the sampling density retained
@@ -3411,250 +3111,8 @@ moment, as proved in {prf:ref}`prop-density-corrected-limit`. The energy
 estimate uses pair quadrature, not pointwise convergence alone. $\square$
 :::
 
-:::{prf:theorem} Quartic normal form and the supplied Higgs mass matrix
-:label: thm-sm-higgs-isomorphism
-
-Suppose a deterministic order parameter $r\in\mathbb R^k$ has the
-specified gradient normal form
-
-$$
-\dot r=a r-\alpha|r|^2r=-\nabla W(r),\qquad
-W(r)=-\frac a2|r|^2+\frac\alpha4|r|^4,\qquad\alpha>0.
-$$
-
-For $a<0$ the origin is the unique minimum. For $a>0$ the minima satisfy
-$|r|^2=a/\alpha$. At a minimum the Hessian is
-$2\alpha r r^{\mathsf T}$: its radial eigenvalue is $2a$ and its $k-1$
-angular eigenvalues are zero. The potential barrier from a minimum to the
-origin is $a^2/(4\alpha)$.
-
-For the additionally supplied electroweak doublet $H\in\mathbb C^2$ of
-hypercharge $Y_H=1/2$, choose
-
-$$
-V(H)=-\mu^2H^\dagger H+\lambda(H^\dagger H)^2,
-\qquad \mu^2,\lambda>0,
-\qquad
-D_\mu H=(\partial_\mu-ig_2\sigma^aW_\mu^a/2-ig_YB_\mu/2)H.
-$$
-
-With canonical field kinetic normalization and a chosen vacuum
-$H_0=(0,v/\sqrt2)^{\mathsf T}$, one has
-
-$$
-v^2=\mu^2/\lambda,\qquad
-m_h^2=2\mu^2,\qquad m_W^2=\frac{g_2^2v^2}{4},\qquad
-m_Z^2=\frac{(g_2^2+g_Y^2)v^2}{4},\qquad m_A^2=0.
-$$
-
-The unbroken infinitesimal generator is $Q=T^3+Y$.
-The first calculation reproduces the quartic calculation of
-{prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts` when its normal
-form applies. Applying it to Fractal Gas requires deriving that normal form
-and its coefficients for its dynamics. Local Hessian curvature is a
-linearized deterministic relaxation rate; a global stochastic spectral gap
-or a quantum mass requires an additional operator identification.
-:::
-
-:::{prf:proof}
-Differentiation gives
-$\nabla W=(-a+\alpha|r|^2)r$ and
-$D^2W=(-a+\alpha|r|^2)I+2\alpha rr^{\mathsf T}$.
-The stationary points, their curvatures, and the barrier follow by
-substitution. For $k=1$ the two minima give a pitchfork; for $k>1$ they form
-a sphere with angular zero modes. Higher-order terms in a reduced model
-must be estimated before using the exact quartic formulas.
-
-Write the four real components of $H$ as $r/\sqrt2$. Then its potential
-is the same polynomial with $a=\mu^2$ and $\alpha=\lambda$.
-Substitute $H=(0,(v+h)/\sqrt2)^{\mathsf T}$ into $V$.
-The linear term vanishes at $v^2=\mu^2/\lambda$, and the quadratic term
-is $\mu^2h^2=\tfrac12m_h^2h^2$.
-At the constant vacuum, direct multiplication gives
-
-$$
-\|D_\mu H_0\|^2
- =\frac{v^2}{8}\left[g_2^2((W_\mu^1)^2+(W_\mu^2)^2)
-                   +(g_2W_\mu^3-g_YB_\mu)^2\right].
-$$
-
-Set $W^\pm=(W^1\mp iW^2)/\sqrt2$ and
-
-$$
-Z=\frac{g_2W^3-g_YB}{\sqrt{g_2^2+g_Y^2}},\qquad
-A=\frac{g_YW^3+g_2B}{\sqrt{g_2^2+g_Y^2}}.
-$$
-
-The quadratic form becomes $m_W^2W^+W^-+\tfrac12m_Z^2Z^2$, with no
-$A^2$ term. Finally $(T^3+Y)H_0=0$. These calculations determine the mass
-matrix of this specified classical field action. $\square$
-:::
-
 (sec-sm-completing)=
-## 6. Internal Representations and Recorded Operators
-
-:::{div} feynman-prose
-The internal charge table can be constructed without guessing its dimension.
-Start with five basis vectors, three carrying color and two carrying weak
-isospin. Form their even exterior products. Counting and decomposing these
-products gives sixteen states with the familiar charges. This proves a
-representation statement for the chosen five-dimensional space.
-
-The same table lets us check the conventional gauge anomalies explicitly.
-Every color and weak multiplicity enters the charge sums; their contributions
-cancel within one generation, and the weak-doublet count is even. These checks
-establish the stated anomaly cancellations for this representation. Identifying
-the representation with recorded dynamics still uses the measure and generator
-maps developed here.
-:::
-
-### A direct Spin(10) branching calculation
-
-:::{prf:theorem} The chosen half-spin representation and one charge generation
-:label: thm-sm-so10-isomorphism
-
-Let $E=\mathbb C^3\oplus\mathbb C^2$ and choose the traceless hypercharge
-operator
-
-$$
-Y=\operatorname{diag}(-1/3,-1/3,-1/3,1/2,1/2).
-$$
-
-The positive half-spin representation of $\mathrm{Spin}(10)$ can be
-realized as $S_+=\Lambda^{\mathrm{even}}E$, of complex dimension $16$.
-Under the subgroup $S(U(3)\times U(2))\subset SU(5)$ it decomposes as
-
-$$
-S_+=(3,2)_{1/6}\oplus(\bar3,1)_{-2/3}
-\oplus(\bar3,1)_{1/3}\oplus(1,2)_{-1/2}
-\oplus(1,1)_1\oplus(1,1)_0.
-$$
-
-These are the conventional left-handed fields
-$Q,u^c,d^c,L,e^c,\nu^c$ of one generation including a neutral singlet.
-The spin representation is a representation of $\mathrm{Spin}(10)$;
-it does not descend to $SO(10)$ because the central element $-1$ acts as
-minus the identity. Choosing this internal field space realizes the stated
-branching. Dimension counting of $(x,v)$ or the CST does not identify it
-with the recorded walker state space.
-:::
-
-:::{prf:proof}
-Use five creation-contraction pairs on $\Lambda^*E$. Their ten Clifford
-generators were constructed in {prf:ref}`thm-dirac-structure-lqft`.
-Products of an even number of generators preserve exterior parity and
-supply the spin action. Matrix units between wedges of the same parity,
-constructed as in {prf:ref}`thm-sm-dirac-isomorphism`, belong to the even
-Clifford algebra. They show irreducibility on each parity sector.
-Its central element $-1$ acts as $-I$.
-The even sector has dimension $\binom50+\binom52+\binom54=1+10+5=16$.
-The $SU(5)$ action on $E$, and hence on its exterior algebra, is the
-restriction of this spin action: its infinitesimal operators are the
-number-preserving bilinears $\sum A_{ij}a_i^\dagger a_j$ with
-$\operatorname{Tr}A=0$, which are the corresponding Clifford bivectors.
-
-Put $C=(3,1)_{-1/3}$ and $W=(1,2)_{1/2}$. The identity
-$\Lambda^r(C\oplus W)=\bigoplus_{p+q=r}\Lambda^pC\otimes\Lambda^qW$
-gives
-
-$$
-\Lambda^2E=(\bar3,1)_{-2/3}\oplus(3,2)_{1/6}\oplus(1,1)_1,
-$$
-
-because $\Lambda^2\mathbb C^3\cong\overline{\mathbb C^3}$ through the
-invariant volume form and $\Lambda^2\mathbb C^2\cong\mathbb C$.
-Similarly
-
-$$
-\Lambda^4E=(\bar3,1)_{1/3}\oplus(1,2)_{-1/2}.
-$$
-
-The first summand uses $p=q=2$ and the second $p=3,q=1$.
-Hypercharges add in exterior products; $\Lambda^0E$ is the neutral singlet.
-This proves the full decomposition, not just its dimension.
-
-For the global group, the map
-
-$$
-(A,B,z)\longmapsto\operatorname{diag}(z^{-2}A,z^3B)
-$$
-
-from $SU(3)\times SU(2)\times U(1)$ onto $S(U(3)\times U(2))$
-has kernel $z^6=1$, $A=z^2I_3$, $B=z^{-3}I_2$.
-Surjectivity follows by choosing $z$ from either block determinant; the
-other is fixed by the determinant-one condition. This gives the quotient
-by $\mathbb Z_6$. Its action on $S_+$ is faithful: an element acting
-trivially on $\Lambda^4E\cong E^*$ acts trivially on $E$.
-$\square$
-:::
-
-:::{prf:proposition} Local anomaly coefficients of the stated generation
-:label: prop-sm-generation-anomaly-cancellation
-
-For the left-handed representations in {prf:ref}`thm-sm-so10-isomorphism`,
-the four-dimensional perturbative gauge and mixed gauge-gravitational anomaly
-coefficients vanish. Normalize the cubic color index of $3$ to one and the
-quadratic index of $3$ and $2$ to $1/2$. The usual mod-two $SU(2)$ doublet
-count is even. These conclusions hold generation by generation, including
-the neutral singlet, and hence for every $n_g$.
-
-*Proof.* Antifundamentals have opposite cubic color index and equal quadratic
-index. Thus the color-cubic coefficient and the two mixed coefficients are
-
-$$
-\begin{aligned}
-\mathcal A_{333}&=2-1-1=0,\\
-\mathcal A_{33Y}&=2\left(\frac16\right)\frac12
- +\left(-\frac23\right)\frac12+\left(\frac13\right)\frac12=0,\\
-\mathcal A_{22Y}&=3\left(\frac16\right)\frac12
- +\left(-\frac12\right)\frac12=0.
-\end{aligned}
-$$
-
-For completeness, the charge and cubic-charge traces, with all internal
-multiplicities included, are
-
-$$
-\begin{aligned}
-\mathcal A_{\mathrm{grav}\,Y}
-&=6\left(\frac16\right)+3\left(-\frac23\right)
- +3\left(\frac13\right)+2\left(-\frac12\right)+1+0=0,\\
-\mathcal A_{YYY}
-&=6\left(\frac16\right)^3+3\left(-\frac23\right)^3
- +3\left(\frac13\right)^3+2\left(-\frac12\right)^3+1+0\\
-&=\frac1{36}-\frac89+\frac19-\frac14+1=0.
-\end{aligned}
-$$
-
-A coefficient with one nonabelian generator and two hypercharges vanishes
-because the nonabelian generator is traceless. Mixed coefficients involving
-both distinct simple factors similarly contain a trace of a single traceless
-generator. For the weak doublet,
-$\{T^b,T^c\}=\delta^{bc}I/2$, so
-$\operatorname{Tr}(T^a\{T^b,T^c\})=0$; this proves the weak-cubic coefficient
-vanishes. Singlets add zero. The four left-handed weak doublets consist of
-three color copies of $Q$ and one $L$, giving $3+1=4$ per generation. The
-usual $SU(2)$ global-anomaly sign for doublets is $(-1)^{4n_g}=1$.
-$\square$
-
-The trace coefficients above use the four-dimensional chiral anomaly criterion
-reviewed in [Bilal, *Lectures on Anomalies*](https://arxiv.org/abs/0802.0634),
-and the doublet sign uses
-[Witten's $SU(2)$ anomaly calculation](https://www.sciencedirect.com/science/article/pii/0370269382907286).
-This verifies these local coefficients and the ordinary doublet parity test
-on spin backgrounds. It neither selects $n_g$ nor establishes every possible
-global anomaly statement for arbitrary bundles of the quotient gauge group.
-The finite Berezin invariance in {prf:ref}`def-sm-total-action` and its continuum
-chiral realization remain distinct calculations.
-:::
-
-This exterior-algebra construction and the distinction between the spin
-group and its orthogonal quotient are developed in
-[Baez and Huerta, *The Algebra of Grand Unified Theories*](https://arxiv.org/abs/0904.1556).
-The representation calculation fixes the chosen charge content; its dynamics
-and any unification scale are additional questions.
-
-### Walker-role observables
+## 6. Recorded Walker Roles
 
 :::{prf:definition} Recorded walker-role partition
 :label: def-sm-walker-role-partition
@@ -3799,7 +3257,7 @@ Further details of these recorded formulas appear in
 role statistics, supplied spinor algebra, and scalar phase proxies.
 
 (sec-sm-coupling-matching)=
-## 7. Coupling Proxies, Mixing, and Mass Models
+## 7. Recorded Coupling Statistics and Symmetry
 
 :::{div} feynman-prose
 A link contains the product of a coupling and a field. Rescaling the field
@@ -3965,96 +3423,7 @@ map can fail to be globally one-to-one, so the last requirements are
 separate. $\square$
 :::
 
-### Conditional perturbative running and unification
-
-:::{prf:corollary} One-loop running for the supplied Standard Model field content
-:label: cor-sm-beta-functions
-
-Suppose the continuum field model has the conventional three generations
-of {prf:ref}`thm-sm-so10-isomorphism`, one complex Higgs doublet, canonical
-kinetic terms, and the usual four-dimensional perturbative gauge theory
-with modified-minimal-subtraction renormalization. At scales where this
-field content is active, its one-loop coefficients are
-
-$$
-\beta(g_1)=\frac{41}{10}\frac{g_1^3}{16\pi^2},\qquad
-\beta(g_2)=-\frac{19}{6}\frac{g_2^3}{16\pi^2},\qquad
-\beta(g_3)=-7\frac{g_3^3}{16\pi^2},
-\qquad g_1=\sqrt{5/3}\,g_Y.
-$$
-
-These are coefficients of that specified perturbative theory. Applying them
-to recorded Fractal Gas proxies requires the continuum field and coupling
-matching hypotheses; changing a companion bandwidth is not by itself this
-renormalization-group flow.
-:::
-
-:::{prf:proof}
-Use the standard one-loop gauge coefficient
-
-$$
-b_0=\frac{11}{3}C_2(G)
- -\frac23\sum_{\text{Weyl}}T(R_f)
- -\frac13\sum_{\text{complex scalar}}T(R_s),
-\qquad \beta(g)=-b_0g^3/(16\pi^2).
-$$
-
-For color, each generation contributes $2$ to the Weyl index sum and the
-Higgs contributes zero, giving $b_3=11-(2/3)6=7$.
-For weak isospin, each generation again contributes $2$ and the complex
-Higgs contributes $1/2$, giving $b_2=22/3-4-1/6=19/6$.
-For the hypercharge convention $Q=T^3+Y$, one generation contributes
-
-$$
-\sum_fY_f^2
-=6(1/6)^2+3(2/3)^2+3(1/3)^2+2(1/2)^2+1=10/3.
-$$
-
-The Higgs contributes $2(1/2)^2=1/2$, so $b_Y=-20/3-1/6=-41/6$.
-Rescaling $g_1=\sqrt{5/3}g_Y$ changes $41/6$ to $41/10$.
-This proves the representation sums conditional on the perturbative loop
-formula; it is not a derivation of that loop formula from the particle
-transition kernel. For general color rank and $n_g$ copies with two color
-Dirac flavors each, the color coefficient is $(11n-4n_g)/3$, whose sign
-requires $11n>4n_g$. $\square$
-:::
-
-The coefficients and normalization are recorded, for example, in the
-[Standard Model part of Appendix B of Fox, Kribs, and Martin](https://link.aps.org/accepted/10.1103/PhysRevD.90.075006).
-They must be distinguished from the running in that paper's additional
-matter sectors and from a finite-record statistical proxy.
-
-:::{prf:proposition} Conditional unification and the Weinberg angle
-:label: prop-sm-unification
-
-If canonically normalized couplings satisfy
-$g_1=g_2=g_3=g_G$ at a supplied unification scale, with
-$g_1=\sqrt{5/3}g_Y$, then
-
-$$
-\sin^2\theta_W=\frac{g_Y^2}{g_Y^2+g_2^2}=\frac38.
-$$
-
-If the proxies $\widehat g_1,\widehat g_2$ have also been matched to
-$g_1,g_2$ at that scale, equality imposes
-
-$$
-\frac{\widehat\epsilon_d^2}{\widehat\epsilon_c^2}
- =\frac{\mathcal N_1 C_2(n)}{2C_2(2)}.
-$$
-
-This is an algebraic constraint at an assumed meeting point. It does not
-establish that such a point exists or that a physical coupling matching
-has been achieved.
-:::
-
-:::{prf:proof}
-The hypercharge normalization gives $g_Y^2=3g_G^2/5$; substitution gives
-$3/8$. Equating the two proxy definitions and cancelling their common
-$\widehat\hbar$ gives the range relation. $\square$
-:::
-
-### CP transformations and unitary mixing
+### CP transformations of the recorded law
 
 :::{div} feynman-prose
 Noncommuting updates do not automatically violate CP. CP is a specified
@@ -4091,7 +3460,7 @@ Thus a nonzero expectation proves failure of CP invariance for that
 specified transformation and law. A zero expectation of one observable is
 not sufficient to prove CP invariance.
 
-For a Markov field model, equivariance
+For the recorded Markov kernel, equivariance
 $P(\Theta s,\Theta B)=P(s,B)$ and an invariant initial distribution imply
 CP invariance at every time. Unequal real radial kernel widths do not by
 themselves contradict this equivariance. In particular Gaussian convolution
@@ -4112,59 +3481,7 @@ Noncommutativity of other update operators, when present, is a separate
 statement from their equivariance under $\Theta$. $\square$
 :::
 
-:::{prf:proposition} A rephasing-invariant phase statistic and a conditional bound
-:label: prop-sm-cp-magnitude
-
-For a supplied unitary mixing matrix $V$, choose distinct rows $a,b$ and
-columns $i,j$ and set
-
-$$
-J_{ab;ij}=\operatorname{Im}
- [V_{ai}V_{bj}\overline{V_{aj}}\,\overline{V_{bi}}].
-$$
-
-This statistic is invariant under independent row and column rephasings,
-changes sign under complex conjugation, and satisfies $|J_{ab;ij}|\le1/4$.
-For a differentiable family $J(s,t)$ whose independently verified exchange
-symmetry is $J(s,t)=-J(t,s)$, a bound $|\partial_1J|\le L$ implies
-$|J(s,t)|\le L|s-t|$. Taking $s=\epsilon_d^2,t=\epsilon_c^2$ is possible
-only if that exchange symmetry has been proved for the chosen family.
-It does not follow from the widths themselves.
-:::
-
-:::{prf:proof}
-In the quartet every row and column phase occurs once with each sign and
-cancels. Complex conjugation negates its imaginary part. Row normalization
-gives $|V_{ai}V_{aj}|\le(|V_{ai}|^2+|V_{aj}|^2)/2\le1/2$ and similarly
-for row $b$, proving the bound. Antisymmetry gives $J(t,t)=0$; integrating
-$\partial_1J$ from $t$ to $s$ gives the last inequality. $\square$
-:::
-
-:::{prf:corollary} Unitary mixing from two orthonormal flavor bases
-:label: cor-sm-ckm-matrix
-
-For two orthonormal eigenbases $U_u,U_d\in U(n_g)$ of supplied flavor mass
-operators, $V=U_u^\dagger U_d$ is unitary. With nondegenerate Dirac masses
-and generic mixing, its physically distinct parameters under row and
-column rephasing consist of $n_g(n_g-1)/2$ angles and
-$(n_g-1)(n_g-2)/2$ phases. This gives one such phase for $n_g=3$.
-A probability-conserving transition matrix or an average of transition
-amplitudes need not be unitary, so it cannot replace these basis hypotheses.
-:::
-
-:::{prf:proof}
-$V^\dagger V=U_d^\dagger U_uU_u^\dagger U_d=I$.
-The real dimension of $U(n_g)$ is $n_g^2$. Row and column phases remove
-$2n_g-1$ independent parameters because a common opposite rephasing acts
-trivially. Of the remaining $(n_g-1)^2$ parameters,
-$n_g(n_g-1)/2$ are real rotation angles; subtraction gives the stated
-phase count. At degeneracies or vanishing mixing angles stabilizers can
-increase and the generic count changes. For comparison,
-$\left(\begin{smallmatrix}1/2&1/2\\1/2&1/2\end{smallmatrix}\right)$
-preserves probabilities but has rank one and is not unitary. $\square$
-:::
-
-### Ancestry, Majorana terms, and the seesaw calculation
+### Recorded ancestral pullback
 
 :::{prf:definition} Ancestral pullback
 :label: def-sm-ancestral-reflection
@@ -4181,193 +3498,8 @@ a pullback, not an involution. It contains no spinor chirality exchange or
 charge conjugation unless those operations are separately defined.
 :::
 
-:::{prf:theorem} Gauge criterion for a chosen Majorana bilinear
-:label: thm-sm-majorana-mass
-
-Let $\chi_a$ be two-component Weyl Grassmann fields and
-$\varepsilon_{\alpha\beta}$ the antisymmetric spinor contraction. Then
-$B_{ab}=\chi_a^\alpha\varepsilon_{\alpha\beta}\chi_b^\beta$ is symmetric
-in the internal labels $a,b$. A Majorana term has the form
-
-$$
-S_M=\frac12\sum_{a,b}M_{ab}B_{ab}+\text{conjugate term},\qquad
-M^{\mathsf T}=M.
-$$
-
-It is gauge invariant precisely when
-$R(g)^{\mathsf T}MR(g)=M$ for its chosen internal representation.
-A single field of nonzero unbroken $U(1)$ charge has no such nonzero
-constant mass term. A neutral singlet can have one.
-
-An ancestral kernel can be used to define coefficients, for example the
-specified energy-scale ansatz
-
-$$
-h_{ij}=\frac{\hbar_{\mathrm{eff}}}{\Delta t_{ij}}
-       \exp[-|\Phi_i-\Phi_j|/\Phi_0],\qquad
-\Phi_0>0,\quad\Delta t_{ij}>0,
-$$
-
-on selected parent-child pairs. Its symmetric, gauge-compatible part gives
-a finite nonlocal bilinear. Identifying a local continuum Majorana mass
-requires localization, spinor transport, and action normalization estimates.
-Neither ancestry nor this assigned exponential proves that the algorithm
-produces that mass coefficient.
-:::
-
-:::{prf:proof}
-Interchange $a,b$, anticommute the two Grassmann generators, and interchange
-the spinor indices. The Grassmann sign cancels the antisymmetry of
-$\varepsilon$, giving $B_{ba}=B_{ab}$. The antisymmetric part of $M$
-therefore contributes zero. Substitution of $\chi\mapsto R(g)\chi$ gives
-the stated invariance criterion. For charge $q$, it becomes
-$e^{2iq\alpha}M=M$ for every $\alpha$, forcing $M=0$ when $q\ne0$.
-A scalar neutral representation has no such obstruction. The ancestral
-formula defines a coefficient with energy units and the stated suppression;
-its local mass interpretation is a separate limiting statement. $\square$
-:::
-
-:::{prf:proposition} Exact two-state seesaw and its hierarchy condition
-:label: prop-sm-seesaw
-
-For the real symmetric neutral mass matrix
-
-$$
-\mathcal M=\begin{pmatrix}0&m_D\\m_D&M\end{pmatrix},\qquad M>0,
-$$
-
-its eigenvalues are $(M\pm\sqrt{M^2+4m_D^2})/2$.
-The absolute value of the light eigenvalue satisfies
-
-$$
-m_{\mathrm{light}}
-=\frac{\sqrt{M^2+4m_D^2}-M}{2},\qquad
-0\le\frac{m_D^2}{M}-m_{\mathrm{light}}
-\le\frac{m_D^4}{M^3}.
-$$
-
-Thus $|m_D|\ll M$ gives the seesaw regime
-$m_{\mathrm{light}}=m_D^2/M+O(m_D^4/M^3)$.
-At fixed $m_D\ne0$, reducing $M$ increases the light eigenvalue's magnitude;
-exponentially suppressing the heavy Majorana coefficient alone does not
-produce this hierarchy. An unbroken electrically charged lepton cannot
-receive a Majorana term of the preceding neutral-singlet form.
-:::
-
-:::{prf:proof}
-Solve $\lambda^2-M\lambda-m_D^2=0$. The positive magnitude of the
-negative root obeys $m_{\mathrm{light}}(M+m_{\mathrm{light}})=m_D^2$.
-Hence $m_{\mathrm{light}}\le m_D^2/M$ and
-$m_D^2/M-m_{\mathrm{light}}=m_{\mathrm{light}}^2/M\le m_D^4/M^3$.
-Differentiation gives
-$\partial_Mm_{\mathrm{light}}=(M/\sqrt{M^2+4m_D^2}-1)/2<0$ for
-$m_D\ne0$. Gauge exclusion for a charged field follows from the preceding
-theorem. $\square$
-:::
-
-(sec-yukawa-hierarchy-optimization)=
-### Conditional Yukawa parameterization and optimization
-
-:::{prf:theorem} Necessary conditions for a supplied spectral optimization model
-:label: thm-yukawa-optimal
-
-Suppose a field model specifies
-$y_f=Y_0e^{-\Delta\Phi_f/\Phi_0}$ with $Y_0,\Phi_0>0$, and a differentiable
-objective $\Lambda(y)$ representing an identified spectral quantity.
-At an unconstrained interior extremum,
-
-$$
-\frac{\partial\Lambda}{\partial\Delta\Phi_f}
- =-\frac{y_f}{\Phi_0}\frac{\partial\Lambda}{\partial y_f}=0.
-$$
-
-The Hessian and any constraints determine whether such a stationary point
-is a maximum. Neither existence nor a hierarchy follows from this necessary
-condition. For example, the proposed leading model
-$\Lambda(y)=\Lambda_0+\sum_fc_fy_f^2$ with $c_f>0$ has no finite interior
-stationary point with all $y_f>0$. On $0<y_f\le Y_0$ its maximum occurs at
-$y_f=Y_0$ for every $f$.
-
-A Fractal Gas application must derive the Yukawa coefficients, the
-identified operator's spectral dependence, and the optimization principle.
-A proved convergence-rate bound is not automatically a physical mass or
-a differentiable exact spectral gap.
-:::
-
-:::{prf:proof}
-Differentiate the specified exponential and apply the chain rule.
-For the quadratic example,
-$\partial\Lambda/\partial\Delta\Phi_f=-2c_fy_f^2/\Phi_0<0$ at every
-finite gap, and $\Lambda$ increases in each $y_f$. This proves both the
-interior and boundary assertions. $\square$
-:::
-
-:::{prf:corollary} Ratios under a common exponential Yukawa ansatz
-:label: cor-fermion-mass-ratios
-
-For diagonal positive Yukawa values
-$y_f=Y_0e^{-\Delta\Phi_f/\Phi_0}$ with a common $Y_0$ and common Higgs
-normalization $m_f=vy_f/\sqrt2$,
-
-$$
-\frac{m_f}{m_{f'}}
- =\exp[-(\Delta\Phi_f-\Delta\Phi_{f'})/\Phi_0].
-$$
-
-Consequently an observed ratio can determine a gap difference within this
-ansatz. Predicting the ratio requires an independent determination of those
-gaps. Non-diagonal Yukawa matrices require their singular values rather than
-entrywise exponentiation of a mass formula.
-:::
-
-:::{prf:proof}
-Divide the two specified mass formulas; their common prefactors cancel.
-For matrices, biunitary diagonalization defines the positive masses as
-singular values, so a formula for individual entries does not substitute
-for diagonalization. $\square$
-:::
-
-(sec-mixing-angles-optimization)=
-### What the proposed mixing objective actually minimizes
-
-:::{prf:proposition} Minimizers of the nonnegative mixing functional
-:label: prop-ckm-angles-spectral
-
-For supplied masses $m_i$ define on $U(n_g)$
-
-$$
-\mathcal F_{\mathrm{mix}}(V)
- =\sum_{i\ne j}|V_{ij}|^2|m_i^2-m_j^2|.
-$$
-
-Its minimum is zero. If the squared masses are pairwise distinct, the
-minimizers are precisely the diagonal unitary matrices. With degeneracies,
-minimizers can mix only inside equal-mass blocks. Thus unitarity alone in
-this objective gives zero inter-mass mixing, not angles proportional to
-$\sqrt{m_i/m_j}$.
-
-Additional nonzero-CP or transition constraints can change the problem,
-but they must be specified and solved. A separate two-state Hermitian mass
-ansatz $\left(\begin{smallmatrix}a&b\\\bar b&c\end{smallmatrix}\right)$
-gives, after rephasing $b$ to be real,
-$\tan(2\theta)=2|b|/(c-a)$ when $c\ne a$.
-A square-root mass-ratio relation would require an additional condition on
-$b$ and the diagonal entries.
-:::
-
-:::{prf:proof}
-Every summand is nonnegative and a diagonal unitary makes them all zero.
-For distinct squared masses, zero energy forces all off-diagonal entries
-to vanish. If masses are degenerate, it only forces entries between
-unequal-mass blocks to vanish; unitarity allows arbitrary unitary matrices
-inside each block. For the two-state formula, use a diagonal rephasing to
-make $b\ge0$ and a real rotation. Setting the rotated off-diagonal entry
-to zero gives $b\cos2\theta-(c-a)\sin2\theta/2=0$.
-$\square$
-:::
-
 (sec-sm-wilson-loops)=
-## 8. Loop Observables and a Finite Field Action
+## 8. Loop Observables and the Recorded Effective Action
 
 :::{div} feynman-prose
 A recorded Wilson loop uses the transport matrices assigned to its edges.
@@ -4401,106 +3533,9 @@ Endpoint gauge transformations cancel except for conjugation at $i_0$,
 so both traces are gauge invariant and $|w|\le1$. For an abelian connection
 on a loop bounding a surface, Stokes' theorem gives its flux expression.
 A nonabelian loop requires the ordered transport product.
-These are the observables of {prf:ref}`def-wilson-loop-lqft` for the supplied
-field representation, independently of the population size $N$.
-:::
-
-:::{prf:proposition} Static potential under an area-law hypothesis
-:label: prop-sm-area-law
-
-For a specified Euclidean field measure, suppose
-$\langle w(R,T)\rangle>0$ and
-
-$$
-\log\langle w(R,T)\rangle=-\sigma RT-\mu_0T+o(T)
-$$
-
-at fixed $R$ as $T\to\infty$. Then its defined static-potential limit is
-$-\lim_{T\to\infty}T^{-1}\log\langle w(R,T)\rangle=\sigma R+\mu_0$.
-The area law must be established for that field measure and loop regime.
-Short-range viscous interactions or concentration in fitness basins alone
-provide no such Wilson-loop estimate.
-:::
-
-:::{prf:proof}
-Divide the assumed logarithmic asymptotics by $-T$ and take the limit.
-This retains any endpoint or perimeter contribution proportional to $T$,
-as required by {prf:ref}`prop-area-law`. $\square$
-:::
-
-(sec-sm-unified-lagrangian)=
-### Specifying the coupled finite model
-
-:::{prf:definition} A finite gauge, matter, Higgs, and Yukawa action
-:label: def-sm-total-action
-
-Choose the gauge representations, links, vertex masses, and edge
-quadrature already specified. A finite model can use
-
-$$
-S_{\mathrm{total}}=S_W+S_{\mathrm f}+S_H+S_Y+S_M,
-\qquad
-S_W=\sum_{G,P}\beta_{G,P}
- \left(1-\frac1{r_G}\operatorname{ReTr}U_G[P]\right),\quad\beta_{G,P}\ge0.
-$$
-
-The actions $S_{\mathrm f}$ and $S_H$ are those defined above. With the
-chosen Standard Model representations, conventional right-handed field
-notation allows the invariant Yukawa contractions
-
-$$
-S_Y=\sum_i\mu_i\left[
-\bar Q_{L,i}\widetilde H_iY_u u_{R,i}
-+\bar Q_{L,i}H_iY_d d_{R,i}
-+\bar L_iH_iY_e e_{R,i}
-+\bar L_i\widetilde H_iY_\nu\nu_{R,i}
-+\text{conjugate terms}\right],
-\quad \widetilde H=i\sigma^2\overline H.
-$$
-
-The matrices $Y_f$ act on the separately specified generation space.
-A neutral Majorana term is included only under
-{prf:ref}`thm-sm-majorana-mass`. The Higgs potential has $\lambda>0$.
-Use normalized Haar integration on independent compact-group links,
-Lebesgue integration for the finite scalar variables, and the fixed Berezin
-orientation for fermions to define
-
-$$
-Z=\int dU\,dH\,[d\bar\psi\,d\psi]\ e^{-S_{\mathrm{total}}}.
-$$
-
-After Grassmann integration the scalar integrand is a polynomial times a
-confining exponential, so the finite integral is absolutely convergent.
-The fermion polynomial can be complex and $Z$ may vanish; a positive
-probability interpretation requires more information.
-
-This is a supplied finite field model on the recorded complex. Equality of
-its correlators with Fractal Gas sampling requires an identity of measures
-or an appropriate weighted estimator. Its continuum application retains
-{prf:ref}`cor-continuum-consistency-conditional`, the scalar estimates above,
-and the additional spinor, gauge-holonomy, and field-measure requirements.
-:::
-
-:::{prf:proof}
-$SU(2)$ invariance of $\varepsilon=i\sigma^2$ gives
-$\varepsilon\overline B=B\varepsilon$ for $B\in SU(2)$, so
-$\widetilde H$ is a doublet with hypercharge $-1/2$.
-The four hypercharge sums are respectively
-$-1/6-1/2+2/3=0$,
-$-1/6+1/2-1/3=0$,
-$1/2+1/2-1=0$, and $1/2-1/2+0=0$.
-Weak and color indices are contracted between conjugate representations;
-the generation matrices commute with the gauge action. This verifies the
-Yukawa invariance. The other finite invariances were proved above.
-
-With finitely many Grassmann generators the exponential has only finitely
-many terms contributing to its integral. Its coefficients are polynomials
-in $H$ with uniformly bounded link coefficients on the compact gauge group.
-The positive quartic part of the Higgs potential dominates every such
-polynomial at infinity. Positive vertex masses and nonnegative kinetic
-terms therefore give an integrable scalar majorant. No positivity of the
-resulting fermion polynomial follows from this convergence argument.
-$\square$
+For the recorded attribution connection, these products use the matrices
+constructed in {prf:ref}`prop-sm-attribution-holonomy-defect`, independently
+of the population size $N$.
 :::
 
 :::{prf:theorem} Descriptor density from the complete path likelihood
@@ -4838,10 +3873,8 @@ identities for the recorded descriptor map.
 
 The nonzero curvature can be realized by the actual same-stage viscous
 feature map, rather than by varying $F$ independently of the swarm.
-Use the active viscous sector of
-{prf:ref}`cor-ym-nonzero-direct-color-sector`. Fix regular positions and
-an interacting pair $i,j$ with $\nu K_{ij}\ne0$, retaining all their
-position-dependent scalar weights. In the force convention of
+At regular positions with an interacting pair $i,j$ satisfying
+$\nu K_{ij}\ne0$, retain all their position-dependent scalar weights. In the force convention of
 {prf:ref}`thm-sm-su3-emergence`, select a fixed $R>\delta_c$ and set
 
 $$
@@ -4876,13 +3909,7 @@ For $\kappa\ne0$ and $0<\theta<\pi/2$ this is a nonzero curvature
 of the actual feature map on a finite-dimensional swarm-state surface.
 The fixed nonzero interaction weight makes that surface smooth in
 $(\theta,u)$; regular position neighborhoods preserve the nonzero-weight
-condition. Positive density of the established product reference, and
-the lower density comparison for its bounded-tilt family, give positive
-probability to open neighborhoods of these regular states. The
-two-dimensional surface itself need not have positive probability.
-This assertion concerns those identified laws; a separately selected
-law uses its own support identification.
-
+condition.
 The finite triangle formula already records the corresponding
 nontrivial overlap phases without taking a limit. For actual constrained
 records, the forms in {ref}`(SM.G7) <eq-fg-sm-g7>` are pulled back along
@@ -4893,45 +3920,6 @@ time evolution are precisely the pushforward law and prediction formulas
 {ref}`(SM.G1) <eq-fg-sm-g1>`--{ref}`(SM.G4) <eq-fg-sm-g4>`.
 $\square$
 :::
-
-
-:::{prf:proposition} Equality of field measures and weighted estimators
-:label: prop-sm-field-measure-comparison
-
-Use the same descriptor space and base measure $\lambda$ as in
-{prf:ref}`thm-sm-path-descriptor-density`. Suppose the integrated finite field
-model is represented there by an integrable density $b$, with
-$Z_b=\int b\,d\lambda\ne0$. Its normalized functional is
-$\langle f\rangle_b=Z_b^{-1}\int fb\,d\lambda$.
-Equality with the direct law for every bounded measurable $f$ holds precisely
-when $b/Z_b=a$ almost everywhere.
-
-An integrable weighting of the direct samples represents this functional
-precisely when $b=0$ almost everywhere on $\{a=0\}$. In that case define
-$w=b/a$ on $\{a>0\}$ and zero elsewhere. For $\int|fb|d\lambda<\infty$,
-
-$$
-\langle f\rangle_b=\frac{\mathbb E_\nu[wf]}{\mathbb E_\nu[w]},
-\qquad \mathbb E_\nu[w]=Z_b,\qquad
-\mathbb E_\nu|w|=\int|b|\,d\lambda.
-$$
-
-For a finite-variance estimator one also checks, for example,
-$\mathbb E_\nu|wf|^2=\int_{a>0}|bf|^2/a\,d\lambda<\infty$.
-These identities concern expectations; a ratio of finite empirical means
-has its own sampling error. A complex fermion density produces complex weights
-and a normalized functional, rather than a positive probability law.
-
-*Proof.* Equality of all bounded integrals is equality of the two finite
-measures, hence equality of their densities. For weighting, multiplication
-by $a$ gives $wa=b$ on $\{a>0\}$ and gives zero on $\{a=0\}$. Thus the
-stated zero-set condition is necessary and sufficient. Integrating the
-identities $wa=b$, $|w|a=|b|$, and $|wf|^2a=|bf|^2/a$ proves each formula.
-If an action is originally defined against a different reference, its
-Radon--Nikodym factor must be included in $b$ on this common space.
-$\square$
-:::
-
 
 
 :::{prf:remark} Dependency order for the represented field theory
@@ -4959,10 +3947,7 @@ derivatives give all channel correlations. The interaction transports
 enter this same descriptor law through
 {prf:ref}`prop-sm-attribution-holonomy-defect`. The full recorded
 kernel also constructs the prediction-complete channel representation
-and its convergent transition matrices. A separately supplied field action
-is compared with this algorithm-derived law using
-{prf:ref}`prop-sm-field-measure-comparison` and
-{prf:ref}`prop-sm-field-generator-comparison`.
+and its convergent transition matrices.
 :::
 
 (sec-sm-dictionary)=
@@ -4971,9 +3956,8 @@ is compared with this algorithm-derived law using
 :::{prf:definition} Mathematical correspondence table
 :label: def-sm-dictionary
 
-The following table records the objects and the conclusions established
-in this chapter. A representation assignment is part of the supplied field
-model; a recorded identity is a statement about the actual finite data.
+The following table records the objects constructed from the recorded data
+and the calculations attached to their algorithmic laws.
 
 | Object | Established statement | Additional identification for physics |
 |---|---|---|
@@ -4985,17 +3969,10 @@ model; a recorded identity is a statement about the actual finite data.
 | Companion amplitudes | Normalization and phase freedom | A nontrivial connection and field measure |
 | Cloning doublet and Fractal Set attribution connection | SU(2) invariant doublet algebra; interaction holonomy and exact IA/IG Wilson mismatch | Evaluate the transports and their correlations through the complete recorded update |
 | Viscous force | Orthogonal covariance and exact force moments | Covariant internal color field |
-| Score antisymmetry and record modes | Weighted sign identity; exact CAR and antisymmetric-replica realization for centered record modes | Equality with the chosen interacting field generator and measure |
-| Exterior spinors | Faithful complex Clifford representation | Spin geometry and a Dirac operator limit |
-| Quartic potential | Minima, Hessian, and chosen Higgs mass matrix | Fractal Gas reduction and field normalization |
-| Spin(10) half-spin field | Sixteen-state branching, vanishing local anomaly coefficients, and even weak-doublet count | A map from recorded states and its dynamics |
-| Generation space | Arbitrary representation multiplicity | A principle determining $n_g$ |
+| Score antisymmetry and record modes | Weighted sign identity; exact CAR and antisymmetric-replica realization for centered record modes | Evaluate the native transition on the chosen modes |
 | Role observables | Exact partition and zero same-frame delta-to-right statistic | A physical spectral channel for another measured statistic |
 | Coupling proxies | Defined moments, units, and bounds | Canonical coupling matching |
-| CP quartet | Rephasing invariant, odd under conjugation | An identified ensemble with nonzero expectation |
-| Neutral mass matrix | Majorana gauge criterion and seesaw estimate | An actual generated coefficient and continuum localization |
-| Yukawa ansatz | Conditional ratios and necessary optimization conditions | Derived gaps and a justified optimization principle |
-| Wilson loops | Gauge invariance and conditional static potential | An area law in the specified field measure |
+| Wilson loops | Gauge invariance of the recorded transport product | Evaluate its moments under the complete recorded path law |
 :::
 
 :::{div} feynman-prose
@@ -5007,11 +3984,7 @@ finite history observable, including masked measurements. The exterior
 isomorphism also supplies the CAR replica representation and its evolution.
 
 The established regularity and LSI results supply estimates through the
-specified pullbacks. The equilibrium energy construction uses its identified
-law to derive another generator, with evolution time $\sigma$. Associating
-each estimator with its law and clock tells us which of these estimates to
-use. The path likelihood and generator comparisons specify how to test a
-proposed coupled field model against the constructed evolution. The charge
-and anomaly calculations establish the representation properties of the
-fields used in that model.
+specified pullbacks. Each estimator retains the recorded law and observation
+time used in its proof. The complete path likelihood determines the joint
+readout moments, and the encoded update determines their evolution.
 :::

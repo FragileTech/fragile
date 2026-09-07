@@ -70,6 +70,10 @@ try {
   );
   await reward.fill("3");
   await movement.fill("2");
+  assert.match(
+    await page.locator("#reward-settings-status").textContent(),
+    /Changes not applied/,
+  );
   assert.equal(
     await initCount(),
     before,
@@ -101,13 +105,24 @@ try {
   assert.equal(init.settings.distance_coef, 2.5);
   assert.equal(init.settings.reward_coef, 3);
   assert.equal(init.scene.rewards.distance_squared, 2);
+  assert.match(
+    await page.locator("#reward-settings-status").textContent(),
+    /^Settings applied/,
+  );
   assert.equal(snapshot.running, false);
   assert.equal(
     await page.locator("#record-count").textContent(),
     "No decisions recorded",
   );
   await page.locator("#run").click();
-  await movement.fill("0");
+  await page
+    .getByRole("slider", { name: "Distance travelled² slider", exact: true })
+    .press("Home");
+  assert.equal(await movement.inputValue(), "0");
+  assert.match(
+    await page.locator("#reward-settings-status").textContent(),
+    /Changes not applied/,
+  );
   const second = await initCount();
   await apply.click();
   await page.waitForFunction(
@@ -135,6 +150,10 @@ try {
     .getByRole("button", { name: "Reset defaults", exact: true })
     .click();
   assert.equal(await movement.inputValue(), "1");
+  assert.match(
+    await page.locator("#reward-settings-status").textContent(),
+    /Changes not applied/,
+  );
   assert.equal(await diversity.inputValue(), "1");
   assert.equal(
     await initCount(),

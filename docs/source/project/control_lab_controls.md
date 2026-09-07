@@ -45,6 +45,22 @@ persist when switching presets within the tab session, and **Reset** retains the
 current scene. **Vehicle count** counts physical vehicles; **Walkers** counts
 planner candidates, each representing a possible future for the whole group.
 
+Mining environments expose **Rock size** from **0.1×** to **2×** in their rock
+settings, allowing rocks down to one tenth of their original size. They also
+expose **Hook stiffness (N/m)**.
+The numeric input accepts values from **0** to **1,000,000** and stays synchronized
+with a logarithmic slider. Press **Apply rock settings** to apply the value to every
+tow hook, rebuild the scene, and leave the new world paused. Pending edits do not
+change the running physics. The presets retain their stiffness defaults: **35 N/m**
+for collaborative mining and **25 N/m** for harvesting.
+
+A low stiffness makes a hook stretch like a rubber band. Raising it makes the
+connection approximately fixed in length, but it remains a spring with finite
+stiffness. It can still swing: resisting changes in length does not stop a rocket
+moving around the rock. At **0**, the spring force disappears while radial damping
+remains, resisting relative motion along the hook. Zero therefore does not detach
+the hook or disable all of its forces.
+
 **Advance Wave population** is an inspection tool for the native Fractal Gas search.
 Its first click initializes a population from the current world; later clicks
 advance that same population. It runs native FMC even when another controller is
@@ -222,6 +238,15 @@ do not contribute, stationary vehicles contribute zero, and respawn teleportatio
 does not count as travel. These frame rewards are summed over an action or journey;
 the total journey distance is not squared. Movement in any direction earns this
 bonus, while **Target progress** separately rewards approaching the task target.
+
+In mining, **Delivery bonus** pays for bringing a rock into the refinery;
+**Target progress** rewards approaching a rock and, once attached, moving the
+hauled rock toward the refinery. Progress now measures both ends of each physics
+frame against the hauling target selected at that frame's start. Breaking a hook
+therefore cannot earn a bonus simply by switching the distance being measured
+from refinery distance to rocket-to-rock distance. This removes an incentive for
+repeated attachment and breakage; it does not prevent physical swinging around a
+rock, or the movement bonus when its weight is positive.
 
 Term weights are saved with the scene; the FMC coefficients retain the planner
 settings keys `distance_coef` and `reward_coef`. A scene that omits

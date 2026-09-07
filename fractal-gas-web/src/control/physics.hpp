@@ -21,7 +21,7 @@ struct Scratch {
   std::vector<Aabb> bounds;
   std::vector<Vec2> old_positions, frame_positions;
   std::vector<float> old_angles, bounded_actions;
-  std::vector<uint32_t> edge_marks;
+  std::vector<uint32_t> edge_marks, frame_tethers;
   uint32_t stamp = 0;
   explicit Scratch(const Scene& s);
 };
@@ -44,7 +44,7 @@ class Physics {
   void edge_candidates(Scratch& scratch, Aabb box);
   void substep(float* row, const float* actions, float h, Scratch& scratch,
                StepResult& result);
-  float potential(const float* row) const;
+  float potential(const float* row, const uint32_t* attachments = nullptr) const;
   void mechanics(float* row, StepResult& result);
 };
 }  // namespace fg::control

@@ -602,10 +602,11 @@ Taking `abs()` yields the displayed $\mathrm{lr\_coupling\_mag}(t)$. Finally, if
 
 ### Dirac-spinor electroweak operator layer
 
-The second electroweak layer uses the Clifford/Dirac structure established in
-{prf:ref}`thm-sm-dirac-isomorphism` together with the chiral projectors from
-{prf:ref}`def-lqft-chiral-projectors`. After mapping color states to Dirac spinors
-$\psi_i \in \mathbb{C}^4$, the implementation constructs
+The second electroweak layer maps recorded color states to four-component
+vectors $\psi_i \in \mathbb{C}^4$ using the implemented map in
+{prf:ref}`prop-qft-ew-spinor-realization`. Its matrix bilinears use the
+chiral projectors from {prf:ref}`def-lqft-chiral-projectors`. The implementation
+constructs the following measurement channels:
 
 $$
 J_L^\mu = \bar\psi\gamma^\mu P_L\psi,

@@ -154,16 +154,23 @@ export class RewardSettings {
       number.setAttribute("aria-label", term.label);
       slider.oninput = () => {
         number.value = slider.value;
+        this.updatePending();
       };
       number.oninput = () => {
         slider.max = Math.max(term.slider, Number(number.value) || 0);
         slider.value = number.value;
+        this.updatePending();
       };
       row.append(slider, number);
       label.append(row);
       container.append(label);
       this.inputs.set(term.key, { number, slider, term });
     }
+    this.pending = document.createElement("p");
+    this.pending.id = "reward-settings-status";
+    this.pending.setAttribute("role", "status");
+    this.pending.textContent =
+      "Settings applied. Changes require Apply settings.";
     this.apply = document.createElement("button");
     this.apply.type = "button";
     this.apply.textContent = "Apply settings";
@@ -186,7 +193,19 @@ export class RewardSettings {
       this.setValues(
         Object.fromEntries(SETTINGS_TERMS.map((t) => [t.key, t.def])),
       );
-    container.append(this.apply, reset);
+    container.append(this.pending, this.apply, reset);
+  }
+  updatePending() {
+    const dirty =
+      this.appliedValues &&
+      [...this.inputs].some(
+        ([key, { number }]) =>
+          number.value === "" ||
+          Number(number.value) !== this.appliedValues[key],
+      );
+    this.pending.textContent = dirty
+      ? "Changes not applied. Click Apply settings to update the running experiment."
+      : "Settings applied. Changes require Apply settings.";
   }
   setValues(values) {
     for (const [key, { number, slider, term }] of this.inputs) {
@@ -194,12 +213,14 @@ export class RewardSettings {
       slider.max = Math.max(term.slider, values[key]);
       slider.value = values[key];
     }
+    this.updatePending();
   }
   render(scene, coefficients = {}) {
-    this.setValues({
+    this.appliedValues = {
       ...rewardValues(scene),
       ...coefficientValues(coefficients),
-    });
+    };
+    this.setValues(this.appliedValues);
   }
   setEnabled(enabled) {
     this.apply.disabled = !enabled;

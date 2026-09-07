@@ -26,19 +26,6 @@ their drift and covariance equations. The paired momentum bound uses this
 same stationary LSI family; the collision calculation explicitly tests why
 its law must be identified.
 
-The same LSI energy constructs a self-adjoint equilibrium transfer, reflection
-positivity, and a temporal gap. Its equilibrium time has its own generator;
-recorded kinetic time retains the algorithm's transition law. For the established
-product and uniformly bounded whole-joint tilt families, the equilibrium
-fluctuations have a subsequential continuum limit with an infinite-dimensional
-OS space and a transfer gap. The product case has an explicitly identified
-Gaussian hierarchy. Bounded tilts also identify the limiting empirical law;
-their fluctuation laws retain the dependence on their joint dynamics.
-Finite mode approximations converge to the equilibrium transfer of the proved
-mean-field marginal. A compressed equilibrium channel closes precisely when
-its observable space is invariant; hard masks retain bounded correlations
-even when they have infinite gradient energy. Relativistic Yang--Mills
-identification retains the spacetime and field requirements specified below.
 :::
 
 (sec-ym-intro)=
@@ -53,10 +40,8 @@ assigns probabilities to these field readouts, including their correlations
 across selected updates.
 
 The effective action expresses that same likelihood in descriptor
-coordinates. The established gradient energy also constructs an equilibrium
-transfer for its specified one-time law. Each calculation below uses the
-corresponding fields, law, and time evolution, so its matrix elements have
-a definite meaning for the recorded observables.
+coordinates. Its correlations use the complete recorded transition, including
+companion selection, cloning, and kinetic transport.
 :::
 
 Write $d$ for spatial dimension and $D=d+1$ for spacetime dimension. A finite
@@ -83,9 +68,8 @@ The finite path likelihood in {prf:ref}`thm-action-from-path-integral`
 uses the full particle kernel and supplies its recorded path measure.
 The Wilson functional is evaluated under this recorded law. Its normalized
 partition and characteristic functional are
-{prf:ref}`def-partition-function-ym`. The displayed Dirac expression is a
-coordinate action template; the native matter observables and their evolution
-are the recorded CAR construction in {doc}`03_lattice_qft`. All uses of the transfer and reconstruction results
+{prf:ref}`def-partition-function-ym`. The native matter observables and their evolution
+use the recorded CAR construction in {doc}`03_lattice_qft`. All uses of the transfer and reconstruction results
 in this chapter retain the same law and operators as their proofs.
 :::
 
@@ -569,65 +553,9 @@ the logarithm defining the native action remains the conditional
 likelihood in {ref}`(YM.Z61) <eq-fg-ym-z61>`.
 :::
 
-:::{prf:lemma} Reversible diffusion and its ground-state transform
-:label: lem-ym-ground-state-transform
 
-Let $\pi(dx)=Z^{-1}e^{-U(x)/T}dx$ on $\mathbb R^m$, $T>0$, with $Z<\infty$,
-$U\in C^2$, and a conservative reversible realization of
-$L=T\Delta-\nabla U\cdot\nabla$. On smooth compactly supported functions the
-unitary map $\mathcal U f=\pi^{1/2}f$ gives
+### 3.2. Recorded interaction connections
 
-(eq-fg-ym-4)=
-$$
- H=-\mathcal U L\mathcal U^{-1}
- =-T\Delta+\frac{|\nabla U|^2}{4T}-\frac{\Delta U}{2}.
-\tag{YM.4}
-$$
-
-Its quadratic-form realization is nonnegative, and its normalized ground
-state is $\pi^{1/2}$.
-:::
-
-:::{prf:proof}
-Integration by parts gives
-$\langle f,-Lf\rangle_\pi=T\int|\nabla f|^2d\pi$.
-Substitute $f=e^{U/(2T)}\psi$ into $Lf$ and differentiate twice. The first
-order derivatives cancel, leaving {ref}`(YM.4) <eq-fg-ym-4>`. The closed nonnegative form
-transports unitarily to the form of $H$. Since $L1=0$, its image
-$\mathcal U1=\pi^{1/2}$ has energy zero.
-:::
-
-A Feynman–Kac weight $e^{-\int V(Y_t)dt}$ defines a killed or tilted process
-for a specified potential $V$. Pairwise cloning reproduces that law only when
-its transition probabilities establish the required identification. The
-kinetic, generally nonreversible Fractal Gas requires its own full kernel in
-{ref}`(YM.2) <eq-fg-ym-2>`. Formula {ref}`(YM.4) <eq-fg-ym-4>` also shows why a stochastic potential cannot simply be
-copied into a Schrödinger action: derivatives of the potential enter the
-transformation.
-
-### 3.2. Chosen matter fields
-
-:::{prf:definition} Matter action and mass matrix
-:label: def-matter-lagrangian-ym
-
-On a supplied Lorentzian spin geometry, choose a Dirac field with an internal
-doublet and write, in units $\hbar=c=1$,
-
-(eq-fg-ym-5)=
-$$
- \mathcal L_m=\overline\Psi(i\gamma^\mu D_\mu-M)\Psi.
-\tag{YM.5}
-$$
-
-For two assigned real coefficients,
-$M=\operatorname{diag}(m_i,m_j)=m_0I+\delta m\,T^3$ with
-$m_0=(m_i+m_j)/2$, $\delta m=m_i-m_j$, and $T^a=\sigma^a/2$.
-Assigning a physical mass to a fitness value additionally specifies its units
-and normalization. Gauge covariance of the mass term requires either a
-commuting fixed $M$ or a transforming field or background $M'=\Omega M\Omega^{-1}$.
-The Clifford and fermionic Fock constructions are those of
-{doc}`03_lattice_qft`; their CAR refer to those constructed operators.
-:::
 
 :::{prf:definition} Interaction connection carried by the Fractal Set
 :label: def-gauge-field-from-phases
@@ -653,7 +581,6 @@ by the reconstruction estimates for the same edge variables. Its unitary,
 determinant-one identities make $\mathcal A$ anti-Hermitian and traceless.
 The finite formulation uses the recorded edge products directly.
 :::
-
 
 
 :::{div} feynman-prose
@@ -1528,18 +1455,12 @@ killing has its own stopped-process or boundary formulation. Tracking those
 terms is what makes the balance equation describe the recorded dynamics.
 :::
 
-### 4.1. Phase current and fitness balance
+### 4.1. Recorded fitness balance
 
-:::{prf:theorem} Phase conservation and the exact stochastic balance
+:::{prf:theorem} Exact stochastic balance of recorded observables
 :label: thm-u1-noether-current
 
-For {ref}`(YM.5) <eq-fg-ym-5>` with Hermitian $M$, the common phase symmetry has current
-$j^\mu=\overline\Psi\gamma^\mu\Psi$. On the field equations,
-$\partial_\mu j^\mu=0$ in flat coordinates, or the corresponding covariant
-divergence vanishes on a supplied curved geometry.
-
-For a recorded Markov chain $S_k$ with kernel $P_h$, any integrable observable
-$Q$ instead has the exact decomposition
+For the recorded chain with transition $P_h$ and an observable $Q$ integrable at each retained step,
 
 (eq-fg-ym-8)=
 $$
@@ -1554,17 +1475,11 @@ when $P_hQ=Q$ on the states considered.
 :::
 
 :::{prf:proof}
-The Dirac equation and its adjoint give
-$\gamma^\mu D_\mu\Psi=-iM\Psi$ and
-$(D_\mu\overline\Psi)\gamma^\mu=i\overline\Psi M$.
-Taking the divergence cancels the two mass terms and the connection terms.
-This proves the phase current identity.
-
 For the chain let
 $\Delta M_{k+1}=Q(S_{k+1})-(P_hQ)(S_k)$. Its conditional expectation given
 $S_0,\ldots,S_k$ vanishes. Summing
 $Q(S_{k+1})-Q(S_k)=\Delta M_{k+1}+(P_hQ-Q)(S_k)$ proves {ref}`(YM.8) <eq-fg-ym-8>`.
-No correspondence between $Q$ and the phase charge is needed for this balance.
+
 :::
 
 For a continuous kinetic jump model, the analogous generator formula is
@@ -1641,51 +1556,8 @@ fixed per-step cloning probability to a continuous jump rate. $\square$
 :::
 
 
+### 4.2. Recorded flow diagnostics
 
-### 4.2. Internal currents and symmetry breaking
-
-:::{prf:theorem} Internal current identity, including chiral sources
-:label: thm-su2-noether-current
-
-For a vectorlike internal representation with Hermitian generator $T$, the
-flat-space Dirac equations without a background connection give
-
-(eq-fg-ym-10)=
-$$
- \partial_\mu(\overline\Psi\gamma^\mu T\Psi)
- =i\overline\Psi[M,T]\Psi.
-\tag{YM.10}
-$$
-
-With a gauge connection, the same identity uses the adjoint covariant
-divergence of the current multiplet. For a left current
-$j_{L,T}^\mu=\overline\Psi\gamma^\mu T P_L\Psi$, with internal $M,T$
-commuting with the spin matrices, the ungauged identity is
-
-(eq-fg-ym-11)=
-$$
- \partial_\mu j_{L,T}^\mu
- =i\overline\Psi(MT P_L-T P_RM)\Psi.
-\tag{YM.11}
-$$
-
-Thus a nonzero scalar Dirac mass sources the left current even when $[M,T]=0$.
-A full gauge-invariant Yukawa model includes the scalar current in its total
-Noether identity.
-:::
-
-:::{prf:proof}
-Differentiate the vector current and substitute the two Dirac equations used
-above. The terms are $i\overline\Psi MT\Psi$ and
-$-i\overline\Psi TM\Psi$. In the chiral calculation use
-$\gamma^\mu P_L=P_R\gamma^\mu$ in the second term, which gives {ref}`(YM.11) <eq-fg-ym-11>`.
-For $M=mI$, its right-hand side is
-$-im\overline\Psi T\gamma^5\Psi$. With a connection, collect its two terms
-into the adjoint commutator in the divergence. Finally, varying a complete
-invariant matter-plus-scalar action with a local symmetry parameter makes
-its coefficient the divergence of the sum of currents, with the field
-Euler–Lagrange terms. On those equations the total source cancels.
-:::
 
 :::{prf:definition} Recorded flow diagnostics
 :label: def-noether-flow-equations
@@ -1695,24 +1567,9 @@ $\mathcal D_hQ=(P_hQ-Q)/h$, or $LQ$ for an identified continuous generator.
 A residual measured over $n$ steps is
 $Q(S_n)-Q(S_0)-h\sum_{k<n}\mathcal D_hQ(S_k)$. By {ref}`(YM.8) <eq-fg-ym-8>` it is a
 martingale residual, whose variance can be estimated from its conditional
-increments. A field-current residual uses {ref}`(YM.10) <eq-fg-ym-10>` or {ref}`(YM.11) <eq-fg-ym-11>` with the
-specified mass, connection, and scalar sources. These are distinct diagnostics.
+increments.
 :::
 
-:::{prf:definition} Hamiltonian field formulation
-:label: def-hamiltonian-formulation-ym
-
-For a chosen Lorentzian field Lagrangian with nonsingular velocity Hessian on
-its unconstrained variables, set
-$\Pi=\partial\mathcal L/\partial\dot\Phi$ and
-$\mathcal H=\Pi\dot\Phi-\mathcal L$. The variational equations become
-$\dot\Phi=\delta H/\delta\Pi$ and
-$\dot\Pi=-\delta H/\delta\Phi$. Gauge components with no time derivatives
-supply constraints, including Gauss' law, rather than invertible Legendre
-coordinates. Friction, stochastic forcing, and cloning remain terms of the
-recorded Markov dynamics; the Legendre transform does not turn them into
-conservative Hamiltonian motion.
-:::
 
 (sec-ym-action)=
 ## 5. Wilson action and discrete field equations
@@ -4456,6 +4313,43 @@ $h^2 g_{ki}^{-1/2}f_{ki}/(2\sqrt N)$, respectively. In particular, for
 an alive slot with invertible $\Sigma_{ki}$, this one-stage source keeps
 its recorded endpoint position fixed precisely when $f_{ki}=0$.
 
+For the latent kinetic update of
+{prf:ref}`def-latent-fractal-gas-kinetic`, the same Gaussian mean-shift
+operation has its own exact tangent. At a fixed pre-O history, write
+$S=c_2G^{1/2}\Sigma_{\mathrm{reg}}$ for the recorded momentum-noise
+amplitude and $u_f$ for the predictable shift of its standardized draw.
+The unchanged latent O and following A maps give
+
+$$
+\begin{gathered}
+p^O(\lambda)=c_1p+S(\xi+\lambda u_f),\qquad
+v=G^{-1}p^O(0),\qquad
+w=\tfrac h2\psi_v(v),\\
+\dot p^O=Su_f,\qquad
+\dot z^{\mathrm{end}}
+=D\operatorname{Exp}_z(w)
+ \left[\tfrac h2D\psi_v(v)G^{-1}Su_f\right].
+\end{gathered}
+$$
+
+For $c=V_{\mathrm{alg}}$, $r=\|v\|_G>0$, and a tangent variation $a$,
+the derivative in this formula is
+
+$$
+D\psi_v(v)a
+=\frac{c}{c+r}a
+ -\frac{c}{(c+r)^2}\frac{\langle v,a\rangle_G}{r}v,
+\qquad D\psi_v(0)=I.
+$$
+
+Its radial eigenvalue is $c^2/(c+r)^2$ and its transverse eigenvalues
+are $c/(c+r)$, so $\|D\psi_v(v)\|_G\le1$. The position endpoint is
+still the squashed exponential-map endpoint in
+{prf:ref}`cor-ym-squashed-kinetic-support`; the final B stage changes
+momentum at fixed position. An earlier source also differentiates the
+base point, metric, and coefficients through their actual preceding
+updates. Both A stages use this squashed transport map.
+
 On a differentiable branch of the remaining executed maps, its endpoint
 velocity derivative is
 
@@ -4579,6 +4473,18 @@ The invertibility assertion follows from $h,c_h>0$ and invertibility of
 $\Sigma_{ki}$. Iterating this derivative through the chronological maps
 gives the multistage formula, at each step keeping the evaluation time
 of every recorded coefficient.
+
+For the latent branch, differentiate the displayed O map to obtain
+$Su_f$. The pre-O base point and metric are fixed for this one-stage
+derivative. Applying the chain rule to the following squashed A map
+gives its displayed endpoint tangent. For $r>0$,
+$Dr(v)a=\langle v,a\rangle_G/r$; differentiating
+$\psi_v(v)=cv/(c+r)$ proves the derivative formula. Decomposing $a$
+into its radial and transverse parts gives the eigenvalues. At zero,
+$\psi_v(a)-a=-\|a\|_Ga/(c+\|a\|_G)=O(\|a\|_G^2)$,
+so the derivative is the identity there as well. This calculation retains
+the differential of the actual exponential map and introduces no linear
+position update in its place.
 
 Differentiate the recorded viscous sum term by term. For the Gaussian
 branch, differentiation of its numerator gives $L_{ij}$ and of its
@@ -4783,38 +4689,6 @@ identity, checked as in
 {prf:ref}`rem-ym-physical-symmetry-application`.
 :::
 
-:::{prf:corollary} Anomaly tests for the established generation
-:label: cor-ym-inherited-anomaly-tests
-
-For the left-handed generation in {prf:ref}`thm-sm-so10-isomorphism`,
-the perturbative gauge and mixed gauge-gravitational coefficients vanish,
-and the ordinary $SU(2)$ doublet parity test is satisfied on spin backgrounds.
-These are the tests established in
-{prf:ref}`prop-sm-generation-anomaly-cancellation`.
-
-*Proof.* With quadratic fundamental index $1/2$ and cubic color index one,
-the nonzero candidate coefficients reduce to
-
-$$
-\begin{aligned}
-\mathcal A_{333}&=2-1-1=0,\\
-\mathcal A_{33Y}&=\tfrac16-\tfrac13+\tfrac16=0,\\
-\mathcal A_{22Y}&=\tfrac14-\tfrac14=0,\\
-\mathcal A_{\mathrm{grav}\,Y}&=1-2+1-1+1=0,\\
-\mathcal A_{YYY}&=\tfrac1{36}-\tfrac89+\tfrac19-\tfrac14+1=0.
-\end{aligned}
-$$
-
-The multiplicities are the six $Q$, three $u^c$, three $d^c$, two $L$,
-one $e^c$, and neutral singlet components. Terms with a single generator
-of a simple factor vanish by tracelessness. For the weak cubic trace,
-$\{T^b,T^c\}=\delta^{bc}I/2$ gives
-$\operatorname{Tr}(T^a\{T^b,T^c\})=0$. The $3+1=4$ weak doublets
-give sign $(-1)^{4n_g}=1$ for $n_g$ generations. These calculations import
-the anomaly criteria with precisely the representation and background scope
-of the cited proposition; regulator construction and other quotient-bundle
-global tests retain their respective requirements. $\square$
-:::
 
 :::{prf:proposition} Recorded density, support, and descriptor refinement
 :label: prop-ym-density-and-support
@@ -4912,47 +4786,6 @@ when traversing a reversed edge. For $SU(2)$ this is real and $|W(C)|\le1$.
 It is gauge invariant by the same cancellation as a face trace.
 :::
 
-:::{prf:theorem} An area law under an explicit plaquette law
-:label: thm-area-law-confinement
-
-Suppose a loop enclosing $k$ faces has holonomy, in a specified gauge,
-$V_1\cdots V_k$, where the $SU(2)$ matrices $V_j$ are independent with a
-common conjugation-invariant law satisfying $\mathbb EV_j=aI$, $0<a<1$.
-Then
-
-(eq-fg-ym-19)=
-$$
- \mathbb EW(C)=a^k=\exp(-\sigma A(C)),
- \qquad \sigma=-\log a/A_0>0,
-\tag{YM.19}
-$$
-
-when each face has area $A_0$ and $A(C)=kA_0$.
-An exact example is the central one-face law
-$Z_\beta^{-1}\exp[(\beta/2)\operatorname{Tr}V]dV$, $\beta>0$, together
-with this independent-face construction. Application to the Fractal Set
-requires establishing its loop factorization and face law, or a suitable
-replacement estimate.
-:::
-
-:::{prf:proof}
-A conjugation-invariant matrix expectation commutes with every $SU(2)$
-matrix and hence is scalar by the block argument of
-{prf:ref}`prop-su2-invariance-ym`. Independence, applied to each matrix entry,
-gives $\mathbb E(V_1\cdots V_k)=a^kI$ even though the matrices need not
-commute. Taking the normalized trace proves {ref}`(YM.19) <eq-fg-ym-19>`.
-
-For the example put $X=\operatorname{Tr}V/2\in[-1,1]$. Haar measure is
-invariant under $V\mapsto-V$, so its $X$ distribution is symmetric. Thus
-$\mathbb E_{\rm Haar}[Xe^{\beta X}]=\mathbb E[X\sinh(\beta X)]>0$.
-The tilted expectation of $X$ is strictly less than one because $X<1$
-almost surely. Therefore $0<a=\mathbb E_\beta X<1$.
-:::
-
-The independent-face example proves a finite area law for a specified model.
-Correlated plaquettes sharing links require a separate integration or expansion
-argument. Exponential relaxation of the walker process controls time
-correlations; it supplies no independent-face factorization.
 
 :::{prf:theorem} Temporal clustering and the geometric condition for spatial decay
 :label: thm-cluster-decomposition
@@ -5017,7 +4850,7 @@ This provides an observable-level uncertainty estimate without identifying
 the time decay rate with a particle mass.
 
 (sec-ym-continuum)=
-## 8. Classical continuum consistency and perturbative running
+## 8. Classical continuum consistency
 
 ### 8.1. The quadratic small-loop limit
 
@@ -5065,7 +4898,7 @@ This is $|1-\cos\theta-\theta^2/2|\le\theta^4/24$ applied to both
 eigenvalues. Also
 $|\|Y+R\|_F^2-\|Y\|_F^2|\le\|R\|_F(2\|Y\|_F+\|R\|_F)$.
 Multiply by $\beta_P$, sum, and use {ref}`(YM.23) <eq-fg-ym-23>`. This is the same local
-quadratic estimate used in {prf:ref}`lem-lqft-wilson-quadratic`.
+quadratic trace estimate $|\operatorname{Tr}(AB)|\le r\|A\|_{\mathrm{op}}\|B\|_{\mathrm{op}}$.
 :::
 
 For example, on a $D$-dimensional cubic mesh of spacing $a$ in a bounded
@@ -5091,57 +4924,6 @@ moment estimates, without replacing the domain by a compact space.
 A quantum continuum limit concerns the measures and their fluctuating fields,
 which need not resemble smooth connections at every scale. Its requirements
 appear in {ref}`sec-qft-axioms-verification`.
-
-### 8.2. Renormalized couplings
-
-:::{prf:definition} Beta function of a specified field model
-:label: def-beta-function-ym
-
-Given a field theory, a renormalization prescription, and a coupling measured
-at momentum scale $\mu$, define $\beta_g(g)=\mu\,dg/d\mu$. A perturbative
-asymptotically free model has
-
-(eq-fg-ym-26)=
-$$
- \beta_g(g)=-\frac{b_0}{16\pi^2}g^3+O(g^5),\qquad b_0>0.
-\tag{YM.26}
-$$
-
-For pure $SU(n)$ Yang–Mills the usual perturbative coefficient is
-$b_0=11n/3$; adding the chosen matter representations changes it. The
-Standard Model matter coefficients and their representation assumptions are
-specified in {doc}`04_standard_model`. These coefficients concern a
-renormalized quantum field model, after its connection to the sampled law is
-established. They do not follow from the mesh size or from a cloning ratio.
-:::
-
-:::{prf:theorem} Running implied by the one-loop equation
-:label: thm-asymptotic-freedom
-
-If the one-loop truncation of {ref}`(YM.26) <eq-fg-ym-26>` is the adopted running equation, then
-
-(eq-fg-ym-27)=
-$$
- \frac1{g^2(\mu)}=\frac1{g^2(\mu_0)}
-   +\frac{b_0}{8\pi^2}\log\frac\mu{\mu_0},
-\tag{YM.27}
-$$
-
-on its positive-coupling branch. Thus $g(\mu)\to0$ as $\mu\to\infty$.
-For the full equation with a remainder bounded by $C g^5$, sufficiently
-small positive initial coupling also decreases to zero toward the ultraviolet.
-:::
-
-:::{prf:proof}
-Differentiate $g^{-2}$ to obtain
-$d(g^{-2})/d\log\mu=b_0/(8\pi^2)$ and integrate. For the full equation,
-choose $g_*$ so the remainder has magnitude at most half the leading cubic
-term for $0<g\le g_*$. In that interval $dg/d\log\mu$ lies between two
-strictly negative constant multiples of $g^3$. Integration of the resulting
-bounds on $g^{-2}$ keeps the solution positive, decreasing, and tending to
-zero. This proves the implication of the beta function; the loop coefficient
-itself is perturbative field-theory input.
-:::
 
 (sec-ym-constants)=
 ## 9. Units and calibration of scales
@@ -5328,16 +5110,12 @@ At fixed $m,c,\hbar_0$, the rescaling
 $\tau\mapsto s\tau$, $\epsilon_c\mapsto\sqrt s\epsilon_c$,
 $\rho\mapsto\sqrt s\rho$ preserves {ref}`(YM.28) <eq-fg-ym-28>` and $\rho/\epsilon_c$, and
 sends $\widehat g_{2,\mathrm{clock}}^{\,2}\mapsto s\widehat g_{2,\mathrm{clock}}^{\,2}$.
-If an ultraviolet momentum is proportional to $1/\rho$, this power law
-has a different form from the logarithmic law {ref}`(YM.27) <eq-fg-ym-27>`.
+
 :::
 
 :::{prf:proof}
-Substitute the three rescalings into {ref}`(YM.28) <eq-fg-ym-28>` and {ref}`(YM.29) <eq-fg-ym-29>`. With
-$\mu\propto1/\rho$, one has $s\propto\mu^{-2}$ along this family,
-whereas {ref}`(YM.27) <eq-fg-ym-27>` gives $g^2\sim1/\log\mu$. Thus this parameter rescaling
-is an algebraic calibration family. A renormalization trajectory must instead
-keep the chosen physical observables fixed and determine its running from them.
+Substitute the three rescalings into {ref}`(YM.28) <eq-fg-ym-28>`
+and {ref}`(YM.29) <eq-fg-ym-29>`.
 :::
 
 :::{prf:definition} Observable validation targets
@@ -5346,8 +5124,7 @@ keep the chosen physical observables fixed and determine its running from them.
 A validation record specifies the link lift and orientations, measured loop
 traces, action normalization, time and length conversions, and the correlation
 channel. It includes uncertainty from {ref}`(YM.21) <eq-fg-ym-21>` or {ref}`(YM.22) <eq-fg-ym-22>` when their law and
-regularity hypotheses hold. Field-current residuals include the sources in
-{ref}`(YM.11) <eq-fg-ym-11>`; fitness residuals use {ref}`(YM.8) <eq-fg-ym-8>`. Reported chirality masks and scalar
+regularity hypotheses hold. Fitness residuals use {ref}`(YM.8) <eq-fg-ym-8>`. Reported chirality masks and scalar
 phase observables retain the operational meanings of
 {prf:ref}`thm-sm-ew-operator-layers`.
 :::
@@ -5559,16 +5336,6 @@ distribution and yield one subsequence on which every correlation order
 converges. Computing the full update then gives the drift and noise terms
 that any identified algorithmic fluctuation evolution must retain.
 
-Next use the gradient energy in that LSI to construct its equilibrium
-transfer. Self-adjointness makes the reflected past and future meet in a
-squared Hilbert-space norm. This proves reflection positivity and supplies
-a temporal gap. For the specified bounded whole-joint tilt family, a lower
-bound also keeps a nonzero fluctuation alive in the continuum limit. Product
-independence goes further and determines the entire Gaussian hierarchy.
-
-There are two clocks here: the recorded algorithmic clock and the equilibrium
-energy clock. Their common one-time law fixes static moments. Their respective
-generators fix the time correlations used in each reconstruction.
 :::
 
 ### 12.1. Fields, covariance, and the spectrum
@@ -6053,9 +5820,8 @@ collisions with unequal velocities add a strictly negative mean contribution
 to the squared-velocity observable. The resulting nonzero residual proves
 that this reference is not stationary for that combined process.
 
-The reference still has its proved LSI and its constructed equilibrium
-theory. To apply an LSI to the selected stationary process, use a route that
-identifies that very joint law. The following remark specifies the existing
+To apply an LSI to the selected stationary process, identify that very
+joint law. The following remark specifies the existing
 density, curvature, and flow criteria; conservation of momentum alone does
 not verify them.
 :::
@@ -6106,8 +5872,7 @@ In particular, whenever the implemented gate accepts an inelastic pair
 with distinct velocities on a set of positive reference rate,
 $\rho_N^0\mathfrak d_N>0$ and this product reference is not
 stationary for the combined generator. The reference LSI continues
-to apply to that reference, and the equilibrium construction on it
-remains the product theory already proved.
+to apply to that reference.
 :::
 
 :::{prf:proof}
@@ -6163,12 +5928,7 @@ each verified inequality on that same law to the field coordinates.
 
 Accordingly the momentum bound
 {ref}`(YM.F13) <eq-fg-ym-f13>` applies to paired Euclidean
-stationary laws already covered by the joint LSI. The nontrivial
-equilibrium hierarchy
-{ref}`(YM.E9) <eq-fg-ym-e9>`--{ref}`(YM.E14) <eq-fg-ym-e14>`
-uses its stated product or bounded whole-joint tilt law. The
-collision residual supplies an explicit applicability calculation
-and prevents replacing either law by the other without identification.
+stationary laws already covered by the joint LSI.
 :::
 
 
@@ -6273,8 +6033,7 @@ $$
 Take the infimum over valid $K$ to obtain
 {ref}`(YM.J2) <eq-fg-ym-j2>`. If none is finite, the extended inequality
 does not assert a finite constant. The proof applies first to the common
-smooth core; truncation and lower semicontinuity give the relaxed energy
-used in {prf:ref}`thm-ym-equilibrium-form-construction`.
+smooth core; truncation extends it wherever both sides remain defined.
 
 **3. Identify the population dependence.** The quantity supplied by this
 calculation is precisely $(C_N/c_N)\mathsf C(\eta_N)$.
@@ -6390,16 +6149,6 @@ $$
 Integrating $f(y)a_K(y)$ against $\mathscr D_\#R$ reproduces
 {ref}`(YM.J5) <eq-fg-ym-j5>` for $F=f\circ\mathscr D$.
 
-**3. Distinguish the equilibrium transfer on the same static law.**
-Equation {ref}`(YM.J3) <eq-fg-ym-j3>` equals $\nu_N$ at time $k$
-exactly when $h_{K-k}=\alpha_N^{K-k}$ $\nu_N$-almost everywhere.
-The QSD identity fixes its integral, not this pointwise equality.
-Thus the static law used in the gradient-energy construction may be the
-selected QSD, while its conservative reversible equilibrium history
-and the survival-conditioned algorithm history have the respective
-transition formulas already given. Equality of their static endpoint
-law does not remove the explicit interior weight in
-{ref}`(YM.J3) <eq-fg-ym-j3>`.
 :::
 
 
@@ -6577,9 +6326,7 @@ independent of population size. Stationary balance then puts a positive lower
 bound on the momentum variance. A short time average retains that variance,
 proving a nonzero subsequential fluctuation limit in the model's kinetic time.
 The collision rule supplies the exact cancellation; membership in the
-stationary joint-LSI family supplies the analytic bound. Gaussian
-identification and reflection positivity retain their separate requirements
-for this law.
+stationary joint-LSI family supplies the analytic bound.
 :::
 
 :::{prf:corollary} Nonzero momentum fluctuations in the established Euclidean paired model
@@ -6718,12 +6465,6 @@ $\widehat K=\Gamma_-(U)K\Gamma_-(U)^{-1}$ with the transported full domain.
 Its semigroups, spectra, and transported bounded operator correlations
 therefore agree exactly with the recorded replica representation.
 
-For comparison with an independently specified field operator, let
-$\mathcal W$ be the comparison unitary. Agreement of
-$K_{\mathrm{field}}$ and $\mathcal W K\mathcal W^{-1}$ on a common
-core of their strongly continuous generators proves the same equality
-for that additional operator.
-
 *Proof.* The difference of wedges has the telescoping expression
 
 $$
@@ -6743,28 +6484,6 @@ whole-swarm replicas before antisymmetrization, as established in
 For the actual encoded field, the difference quotient in {ref}`(SM.K3) <eq-fg-sm-k3>` and
 its exterior version {ref}`(LQ.R3) <eq-fg-lq-r3>` give the full operator equality directly.
 Their explicit conditional-expectation kernel retains each selected update.
-For the additional comparison, if $\mathcal C$ is the common core,
-closedness gives
-
-$$
-K_{\mathrm{field}}
-=\overline{K_{\mathrm{field}}|_{\mathcal C}}
-=\overline{(\mathcal W K\mathcal W^{-1})|_{\mathcal C}}
-=\mathcal W K\mathcal W^{-1}.
-$$
-
-Uniqueness of the generated semigroup then gives
-$T_t^{\mathrm{field}}=\mathcal W T_t^{\mathrm{rec}}\mathcal W^{-1}$.
-For every resolvent parameter,
-$(z-K_{\mathrm{field}})^{-1}=\mathcal W(z-K)^{-1}\mathcal W^{-1}$,
-which proves spectral equality. Transport a state vector and every bounded
-observable by $\mathcal W$ in a finite matrix element; consecutive
-$\mathcal W^{-1}\mathcal W$ factors cancel, proving correlation equality.
-This is {prf:ref}`prop-sm-field-generator-comparison` in the present notation.
-It uses the already constructed CAR and replica representation and requires
-no choice of Dirac matrices. A self-adjoint transfer Hamiltonian is identified
-when this comparison holds with $K_{\mathrm{field}}=-H$ for that Hamiltonian.
-$\square$
 :::
 
 :::{prf:theorem} Covariance under a symmetry of the actual law
@@ -6820,10 +6539,7 @@ implementers either.
 
 The Fractal Set record isomorphism of
 {prf:ref}`prop-fractal-set-analytic-transfer` preserves these conclusions
-by unitary conjugation. Thus a positive equilibrium Hamiltonian is the
-physical generator of this particular pullback representation only if
-its actual translation generator agrees with it; positive spectrum cannot
-be assigned to a different operator while retaining these implementers.
+by unitary conjugation.
 :::
 
 :::{prf:proof}
@@ -7292,1217 +7008,6 @@ seminorm dependence. Bounds at each $n$ are distinct from the growth in $n$
 required by a chosen quantum reconstruction theorem.
 :::
 
-:::{prf:theorem} Euclidean covariance of an invariant field law
-:label: thm-os-os1-fg
-
-If the Euclidean field law is invariant under the pullback of a Euclidean
-isometry $g$, then all of its correlations transform covariantly under $g$.
-Full Euclidean invariance requires this equality for translations and all
-orthogonal transformations of the supplied $D$-dimensional Euclidean space,
-including rotations that mix time with space.
-:::
-
-:::{prf:proof}
-Apply the change of variables $\Phi\mapsto g\Phi$ in
-$\mathbb E\prod_j\Phi(f_j)$. Invariance replaces the transformed law by
-the original law and transforms every test function by the corresponding
-pullback. A spatially isotropic update supplies this equality only for the
-spatial symmetries of the complete law. A confining potential can break
-translations, and a periodic box has its own finite-volume isometries.
-:::
-
-### Equilibrium transfer from the established energy
-
-:::{div} feynman-prose
-The LSI already compares an observable's fluctuations with its gradient
-energy. We can use that very energy to define a time evolution. First close
-the energy: admit limits of smooth observables while keeping track of the
-least energy needed to approximate them. The resulting closed quadratic
-form determines a self-adjoint operator and its equilibrium transfer.
-
-This construction keeps the specified one-time law. The LSI becomes a
-spectral bound for the constructed operator, so centered equilibrium
-observables decay at a controlled rate. The normalization of the gradient
-energy fixes this new clock. An original kinetic trajectory also transports
-position through velocity, and its generator must still be used for recorded
-time correlations. Even when the chosen law is a QSD, the energy construction
-has its own conservative equilibrium evolution.
-:::
-
-:::{prf:theorem} Equilibrium transfer operator of the algorithmic LSI law
-:label: thm-ym-equilibrium-form-construction
-
-Let $\rho_N$ denote the particular continuous joint law already covered by
-{prf:ref}`cor-n-uniform-lsi`, with its proved constant $C_*$. This may be
-the identified invariant law, QSD, or reference law in that corollary; its
-identity is retained. On real smooth bounded functions with bounded
-derivatives, use precisely its full-gradient energy
-
-(eq-fg-ym-e1)=
-$$
-\mathcal E_N^0(f,f)
-=\int\sum_i(|\nabla_{x_i}f|^2+|\nabla_{v_i}f|^2)d\rho_N.
-\tag{YM.E1}
-$$
-
-Its lower semicontinuous energy on $L^2(\rho_N)$ is
-
-(eq-fg-ym-e2)=
-$$
-\mathcal E_N(f,f)
-=\inf_{f_j\to f\ {\rm in}\ L^2(\rho_N)}
-                 \liminf_j\mathcal E_N^0(f_j,f_j),
-\tag{YM.E2}
-$$
-
-where the approximants belong to the stated smooth class. This is a closed,
-densely defined Markov quadratic form. It agrees with the Sobolev closure
-when the original gradient is closable. It satisfies
-
-(eq-fg-ym-e3)=
-$$
-\operatorname{Ent}_{\rho_N}(f^2)\le2C_*\mathcal E_N(f,f),\qquad
-\operatorname{Var}_{\rho_N}f\le C_*\mathcal E_N(f,f).
-\tag{YM.E3}
-$$
-
-There is a unique nonnegative self-adjoint operator $H_N^{\mathrm{eq}}$
-associated with this form. Its semigroup $T_{N,\sigma}^{\mathrm{eq}}$
-is conservative, positivity preserving, reversible with respect to
-$\rho_N$, and satisfies
-
-(eq-fg-ym-e4)=
-$$
-T_{N,\sigma}^{\mathrm{eq}}1=1,\qquad
-\|T_{N,\sigma}^{\mathrm{eq}}f\|_2
-\le e^{-\sigma/C_*}\|f\|_2\quad(\rho_Nf=0).
-\tag{YM.E4}
-$$
-
-The kernel of $H_N^{\mathrm{eq}}$ consists of constants. The complete
-Fractal Set unitary transports this entire construction, including the
-energy domain, resolvent, and gap, to the encoded state.
-:::
-
-:::{prf:proof}
-**Closure without changing the law.** Put $\mathcal H=L^2(\rho_N)$ and
-$\mathcal V=L^2(\rho_N;\mathbb R^{2dN})$. Let $G$ be the closure in
-$\mathcal H\oplus\mathcal V$ of all pairs $(f,\nabla f)$ in the
-smooth class. Smooth bounded functions are dense in $\mathcal H$: first
-approximate by continuous functions on a compact set of arbitrarily large
-probability, then use smooth uniform approximation there. Let
-$V_0=\{v:(0,v)\in G\}$, a closed subspace of $\mathcal V$.
-For each $f$ in the projection of $G$ onto $\mathcal H$, the set of
-vectors $v$ with $(f,v)\in G$ is one coset of $V_0$. Its unique
-minimum-norm representative is $Df=\operatorname{proj}_{V_0^\perp}v$.
-The graph of $D$ is
-$G\cap(\mathcal H\oplus V_0^\perp)$, hence closed. Thus
-$\|Df\|_2^2$ is a closed quadratic form with dense domain.
-
-Choose smooth $f_j$ with $(f_j,\nabla f_j)\to(f,Df)$ to obtain a
-recovery sequence with energies tending to $\|Df\|_2^2$. Conversely,
-if $f_j\to f$ and the gradient energies have finite liminf, pass to a
-subsequence whose gradients converge weakly to $v$. The closed linear
-space $G$ is weakly closed, so $(f,v)\in G$ and
-$\|Df\|_2^2\le\|v\|_2^2\le\liminf\|\nabla f_j\|_2^2$.
-This proves {ref}`(YM.E2) <eq-fg-ym-e2>`. When the gradient is closable, $V_0=\{0\}$ and
-this is its usual Sobolev energy.
-
-For a smooth scalar contraction $\eta$ with $|\eta'|\le1$,
-$\mathcal E_N^0(\eta\circ f_j)\le\mathcal E_N^0(f_j)$.
-Apply a recovery sequence and {ref}`(YM.E2) <eq-fg-ym-e2>`, then approximate the scalar clipping
-map, to obtain
-$\mathcal E_N((0\vee f)\wedge1)\le\mathcal E_N(f)$.
-This is the Markov property. The constant $1$ belongs to the domain and
-has zero energy.
-
-**The same LSI.** If $f_j\to f$ in $L^2$, then $f_j^2\to f^2$ in
-$L^1$. Entropy is lower semicontinuous under this convergence. Indeed,
-for $g\ge0$ its variational expression is
-
-$$
-\operatorname{Ent}_\rho(g)
-=\sup_{b\ \mathrm{bounded}}
- \left\{\rho(gb)-\rho(g)\log\rho(e^b)\right\},
-$$
-
-and every expression in braces is $L^1$ continuous. Apply the upstream
-LSI to a recovery sequence from the preceding paragraph to obtain the first
-inequality in {ref}`(YM.E3) <eq-fg-ym-e3>`. For bounded centered $u$, its application to
-$1+\varepsilon u$ gives
-
-$$
-\operatorname{Ent}_\rho((1+\varepsilon u)^2)
-=2\varepsilon^2\rho(u^2)+o(\varepsilon^2),\qquad
-\mathcal E_N(1+\varepsilon u)=\varepsilon^2\mathcal E_N(u).
-$$
-
-Division and truncation give the second inequality on the full domain.
-
-**Operator and Markov semigroup.** On the complete form domain, for every
-$\lambda>0$ and $g\in\mathcal H$ the equation
-
-(eq-fg-ym-e5)=
-$$
-\lambda\langle u,v\rangle+\mathcal E_N(u,v)=\langle g,v\rangle
-\quad(v\in\operatorname{Dom}\mathcal E_N)
-\tag{YM.E5}
-$$
-
-has a unique solution by the Hilbert-space representation theorem.
-The resulting resolvents are self-adjoint, satisfy the resolvent identity,
-and have norm at most $1/\lambda$. They define the unique nonnegative
-self-adjoint $H_N^{\mathrm{eq}}$ with this form. Equivalently,
-$(I+\tau H_N^{\mathrm{eq}})^{-1}g$ minimizes
-$\|u-g\|_2^2+\tau\mathcal E_N(u)$. For $0\le g\le1$ clipping $u$
-to $[0,1]$ decreases both terms. This proves the interval-preserving
-property of the resolvent; its value at $1$ is $1$. The strong limit
-
-$$
-T_{N,\sigma}^{\mathrm{eq}}
-=\lim_{j\to\infty}(I+\sigma H_N^{\mathrm{eq}}/j)^{-j}
-$$
-
-inherits positivity, the constant function, and self-adjointness.
-Consequently $\rho_N(Tf)=\langle T1,f\rangle=\rho_Nf$.
-For centered $f$, {ref}`(YM.E3) <eq-fg-ym-e3>` gives
-$\mathcal E_N(f)\ge C_*^{-1}\|f\|_2^2$. Spectral calculus, or
-differentiation of $\|T_{N,\sigma}^{\mathrm{eq}}f\|_2^2$, proves
-{ref}`(YM.E4) <eq-fg-ym-e4>`. Zero energy therefore implies a constant function.
-
-**Reconstruction.** Transport the form by
-$\widehat{\mathcal E}_N(Uf,Ug)=\mathcal E_N(f,g)$ on
-$U\operatorname{Dom}\mathcal E_N$. Substituting into {ref}`(YM.E5) <eq-fg-ym-e5>` proves
-the transported resolvent identity and hence
-$\widehat H_N^{\mathrm{eq}}=UH_N^{\mathrm{eq}}U^{-1}$ with equality
-of domains. This is the closed-form completion of
-{prf:ref}`prop-fractal-set-analytic-transfer` and the induced-energy
-calculation in {prf:ref}`thm-sm-direct-existing-machinery`.
-:::
-
-:::{prf:remark} Energy normalization, statuses, and the recorded evolution
-:label: rem-ym-equilibrium-form-identity
-
-The energy in {ref}`(YM.E1) <eq-fg-ym-e1>` fixes equilibrium time. Multiplying it by $a>0$
-multiplies $H_N^{\mathrm{eq}}$ and its gap by $a$. For a smooth positive
-density $\rho_N(ds)=p_N(s)ds$, integration by parts on compactly supported
-tests gives
-
-(eq-fg-ym-e6)=
-$$
-H_N^{\mathrm{eq}}f=-p_N^{-1}\nabla\cdot(p_N\nabla f).
-\tag{YM.E6}
-$$
-
-The closure, rather than this formal expression, fixes its domain. On the
-kinetic product reference, with $\theta=D/\gamma$,
-
-$$
--H_N^{\mathrm{eq}}
-=\Delta_x+\Delta_v-\theta^{-1}\nabla U_N\cdot\nabla_x
-                         -\theta^{-1}v\cdot\nabla_v.
-$$
-
-The actual kinetic generator is the distinct recorded operator containing
-Hamiltonian transport. Its conjugation in {ref}`(SM.K3) <eq-fg-sm-k3>` preserves that transport.
-Equality with $-H_N^{\mathrm{eq}}$ is therefore an operator identity to
-test, rather than a consequence of a shared one-time law. The ground-state
-transform in {prf:ref}`lem-ym-ground-state-transform` is recovered when
-its overdamped energy and normalization are used.
-
-For a marked law, {prf:ref}`prop-kl-status-entropy` contributes
-$\operatorname{Ent}_p(g^2)$ with $g_s=(\rho_s f^2)^{1/2}$.
-The continuous energy alone vanishes on functions constant on each status
-stratum. Its kernel then contains those functions; a full marked-law gap
-uses the already established discrete energy controlling that entropy term.
-Likewise a law on recorded random companions or a transition block retains
-its conditional entropy. Applying {ref}`(YM.E1) <eq-fg-ym-e1>` to a continuous marginal does
-not insert those additional variables into its domain.
-:::
-
-:::{div} feynman-prose
-With the equilibrium transfer in hand, construct a correlation by alternating
-two operations: evolve to the next time, then insert the observable measured
-there. To examine reflection, condition on the state at time zero. The whole
-future experiment becomes a function of that state. Reversibility gives the
-same function for the reflected past, and their pairing is a squared norm.
-
-This works for linear combinations of experiments, which is what reflection
-positivity requires. It also keeps the equal-time moments of the specified
-law exactly. Measurements spanning several times use the newly constructed
-equilibrium transitions, so their values must be read with that clock.
-:::
-
-:::{prf:theorem} Complete equilibrium correlation and reflection construction
-:label: thm-ym-equilibrium-hierarchy
-
-For $\rho_N$ and $T_{N,\sigma}^{\mathrm{eq}}$ just constructed, the
-ordered kernels define a stationary reversible cylinder law. Every bounded
-one-time direct observable $A(s)$ has its original $\rho_N$ distribution
-under this law. Its finite-time correlations are
-
-(eq-fg-ym-e7)=
-$$
-S_N(A_1,\sigma_1;\ldots;A_n,\sigma_n)
-=\langle1,M_{A_1}T_{N,\sigma_2-\sigma_1}^{\mathrm{eq}}M_{A_2}
- \cdots T_{N,\sigma_n-\sigma_{n-1}}^{\mathrm{eq}}M_{A_n}1\rangle,
-\tag{YM.E7}
-$$
-
-for ordered times. At equal times this is $\rho_N(A_1\cdots A_n)$.
-For a future cylinder $F=\prod_{j=1}^nA_j(X_{\sigma_j})$, define
-
-$$
-h_F=T_{N,\sigma_1}^{\mathrm{eq}}M_{A_1}
-       T_{N,\sigma_2-\sigma_1}^{\mathrm{eq}}M_{A_2}\cdots M_{A_n}1.
-$$
-
-Then
-
-(eq-fg-ym-e8)=
-$$
-(F,G)_{\mathrm{OS}}=\langle h_F,h_G\rangle_{\rho_N},\qquad
-\|h_{\tau_\sigma F}-\rho_Nh_F\|_2
-\le e^{-\sigma/C_*}\|h_F-\rho_Nh_F\|_2.
-\tag{YM.E8}
-$$
-
-This constructs the equilibrium transfer Hilbert space, reflection positivity,
-vacuum, and temporal gap for the direct observable algebra. The CAR lift in
-{prf:ref}`cor-lqft-equilibrium-hamiltonian-lift` gives its specified
-fermionic field evolution.
-:::
-
-:::{prf:proof}
-**Cylinder law.** To realize the positive conservative operator by a
-probability kernel, start with a countable uniformly dense rational
-linear subspace of $C_0(\mathbb R^{2dN})$, enlarged to contain compact
-cutoffs $0\le\chi_j\uparrow1$. Choose versions of all their images
-on one common set of full measure. Linearity, positivity, and
-$\|Tf\|_\infty\le\|f\|_\infty$ then hold simultaneously there.
-At each such point these images extend to a bounded positive functional
-on $C_0$, hence to a finite Radon measure. Since $T\chi_j\uparrow1$
-almost surely (monotonicity and $L^2$ convergence give this), that measure
-has mass one. Its integrals on the countable test class are measurable;
-monotone approximation makes its evaluations on Borel sets measurable.
-This gives the required probability kernel. The semigroup identities on
-the same separating test class make the ordered cylinder distributions
-consistent. Invariance makes them stationary, and self-adjointness reverses
-their ordered products. These are the reversible finite-dimensional laws
-used in {prf:ref}`lem-transfer-matrix-fg`.
-
-For bounded $A$, stationarity and self-adjointness imply
-$\mathbb E|A(X_{\sigma+t})-A(X_\sigma)|^2
-=2\langle A,(I-T_{N,t}^{\mathrm{eq}})A\rangle\to0$ for real $A$.
-Thus time-smeared observables also have an $L^2$ definition by approximation
-with step functions, without requiring a pathwise differentiability claim.
-
-**All correlations and reflection.** Conditional expectation successively
-gives {ref}`(YM.E7) <eq-fg-ym-e7>` and the displayed $h_F$. Conditional independence of past
-and future at zero and the established reversibility give {ref}`(YM.E8) <eq-fg-ym-e8>`, exactly
-as in the transfer lemma. In particular, for any coefficients $c_j$,
-$\sum_{i,j}\overline c_i c_j(F_i,F_j)_{\mathrm{OS}}
-=\|\sum_jc_jh_{F_j}\|_2^2\ge0$. Translating every time of a future
-functional by $\sigma$ gives
-$h_{\tau_\sigma F}=T_{N,\sigma}^{\mathrm{eq}}h_F$.
-Apply {ref}`(YM.E4) <eq-fg-ym-e4>` to its centered part. At equal times, each zero-time
-transition is the identity, so {ref}`(YM.E7) <eq-fg-ym-e7>` equals the actual static moment.
-A channel spanning several recorded stages uses all of those times;
-replacing its transition law by $T^{\mathrm{eq}}$ changes that block law.
-
-**Growth and fields.** For bounded insertions,
-$|S_N|\le\prod_j\|A_j\|_\infty$. For the smooth empirical fields
-covered by {ref}`(YM.F1) <eq-fg-ym-f1>`, the newly constructed stationarity and the same LSI
-give {ref}`(YM.F2) <eq-fg-ym-f2>`--{ref}`(YM.F3) <eq-fg-ym-f3>` in equilibrium time. Products and reflected products
-are integrable by these moment estimates, so truncation extends the
-reflection formula to their polynomial algebra.
-
-For the CAR construction set $\mathbb T_\sigma=e^{-\sigma\mathbb H_{\mathrm{eq}}}$.
-A word of bounded CAR insertions has boundary vector
-$v_F=\mathbb T_{\sigma_1}A_1\mathbb T_{\sigma_2-\sigma_1}
-A_2\cdots A_n\Omega$. Its reflected word is the adjoint word, in
-reverse order, and its reflected matrix element is $\langle v_F,v_G\rangle$.
-For example $(a^\dagger(f)a^\dagger(g))^*=a(g)a(f)$; retaining this
-order and then using the CAR gives the determinant in {ref}`(LQ.R4) <eq-fg-lq-r4>`. This fixes
-the signs and proves positivity on these represented words. A classical
-commuting field product retains its own multiplication algebra.
-:::
-
-
-:::{div} feynman-prose
-Suppose you keep only a descriptor of the swarm. A function of that descriptor
-may, after evolution, depend on coordinates you omitted. Projecting back to
-the retained observables removes that dependence. Over a second time interval,
-however, those omitted coordinates can affect a retained observable again.
-This is the origin of the exact channel memory.
-
-For the self-adjoint equilibrium transfer, the calculation below measures
-the two-step discrepancy by the squared norm of the component removed after
-one step. It vanishes at every time precisely when the retained observable
-space stays invariant under evolution. In that case the channel has its own
-exact semigroup and inherits the gap. Otherwise, the complete correlation
-formulas and the memory terms still compute its statistics. Repeating the
-compressed one-step operator alone would omit the calculated contribution.
-:::
-
-:::{prf:theorem} Equilibrium channel closure and its exact projection defect
-:label: thm-ym-equilibrium-channel-closure
-
-Use the established equilibrium law $\rho_N$ and transfer
-$T_\sigma=T_{N,\sigma}^{\mathrm{eq}}$. For a recorded state descriptor
-$q$ let $\Pi=\mathbb E_{\rho_N}[\cdot\mid\sigma(q)]$,
-$R=I-\Pi$, and $\mathcal H_q=\operatorname{Ran}\Pi$. The compressed
-transfers $\overline T_\sigma=\Pi T_\sigma|_{\mathcal H_q}$ satisfy
-
-(eq-fg-ym-p1)=
-$$
-\overline T_{2\sigma}-\overline T_\sigma^2
- =(RT_\sigma|_{\mathcal H_q})^*
-   (RT_\sigma|_{\mathcal H_q})\succeq0.
-\tag{YM.P1}
-$$
-
-For all $\sigma\ge0$, these compressed transfers form a semigroup
-precisely when $\mathcal H_q$ is invariant under every $T_\sigma$.
-In that case it is reducing, its generator is the restriction of
-$H_N^{\mathrm{eq}}$, and it has the same centered gap bound $1/C_*$.
-The restricted closed form specifies the energy and its complete
-domain on the closed channel theory. On smooth pullbacks its energy
-is bounded above by the original gradient energy, with equality
-when that gradient is closable as in the established bounded-tilt family.
-
-Without this invariance, the complete equilibrium correlations remain
-the boundary-vector construction
-{ref}`(YM.E7) <eq-fg-ym-e7>`--{ref}`(YM.E8) <eq-fg-ym-e8>`.
-At any chosen observation spacing their exact channel memory is
-{ref}`(SM.M2) <eq-fg-sm-m2>`, with this same equilibrium kernel
-and this same conditional projection. Formula
-{ref}`(YM.P1) <eq-fg-ym-p1>` measures its two-step defect.
-:::
-
-:::{prf:proof}
-Insert $I=\Pi+R$ between the two factors of $T_{2\sigma}=T_\sigma^2$.
-For $f\in\mathcal H_q$ this gives
-
-$$
-\Pi T_{2\sigma}f
-=\Pi T_\sigma\Pi T_\sigma f+\Pi T_\sigma R T_\sigma f.
-$$
-
-Self-adjointness of $T_\sigma$, $\Pi$, and $R$ identifies the second
-term with the positive operator in
-{ref}`(YM.P1) <eq-fg-ym-p1>`. If the compressed family is a
-semigroup, that positive operator is zero; its quadratic form is
-$\|RT_\sigma f\|_2^2$, so $T_\sigma f\in\mathcal H_q$.
-Conversely invariance removes $R$ from all products and proves
-the semigroup law.
-
-For $g\perp\mathcal H_q$ and $f\in\mathcal H_q$,
-$\langle T_\sigma g,f\rangle=\langle g,T_\sigma f\rangle=0$.
-Thus the orthogonal complement is invariant as well. The projection
-commutes with the transfers and hence with their resolvents and spectral
-projections. Restricting the spectral measure proves the generator
-and domain identification, and gives
-
-$$
-\mathcal E_q(f,f)
-=\int\lambda\,d\langle f,E_H(\lambda)f\rangle
-=\mathcal E_N(f,f),\qquad
-f\in\mathcal H_q\cap\operatorname{Dom}\mathcal E_N.
-$$
-
-This restriction has dense form domain in $\mathcal H_q$:
-the spectral truncations $E_H([0,M])f$ belong to that domain and
-converge to every $f\in\mathcal H_q$. Its constant function is $1$.
-The full-law Poincaré inequality therefore gives the same centered
-gap and its only zero-energy vectors are constants.
-On smooth descriptor pullbacks relaxation gives
-$\mathcal E_N(f)\le\mathcal E_N^0(f)$. When the original gradient
-is closable these energies agree. If those pullbacks also form a
-core for the restricted form, closing their induced energy gives
-that restriction. In every case the displayed spectral restriction
-specifies the complete domain; the bounded-tilt Sobolev realization
-is treated explicitly in the next proposition.
-
-Finally choose $P=T_{\sigma_0}$ in
-{prf:ref}`thm-sm-direct-channel-memory`.
-Self-adjointness makes its blocks satisfy
-$\mathsf B=\mathsf C^*$, so its first memory term
-$\mathsf B\mathsf C$ is exactly
-{ref}`(YM.P1) <eq-fg-ym-p1>` at $\sigma_0$.
-Multiplication by a bounded channel commutes with $\Pi$, which
-identifies every inserted block product with its original
-equilibrium correlation.
-:::
-
-:::{div} feynman-prose
-A validity mask reports zero on one side of a threshold and one on the
-other. Its values are bounded, so inserting it into a correlation is
-straightforward. Gradient energy measures something else: how sharply its
-value changes across nearby states.
-
-Smooth that jump across a layer of width $\varepsilon$. Its slope is of
-order $1/\varepsilon$, so integrating the squared slope across the layer
-costs energy of order $1/\varepsilon$. The proof below establishes this
-divergence on the regular force chart under the specified law. A hard mask
-therefore remains a valid bounded observable while lying outside the
-finite-energy domain. A simulator can use its bounded observable matrix;
-the following threshold calculation gives a quantitative way to approximate
-its bounded correlations by replacing the jump with a ramp.
-:::
-
-:::{prf:proposition} Hard color masks and the inherited energy domain
-:label: prop-ym-color-mask-domain
-
-In the product or bounded-tilt equilibrium family, consider the valid-color
-indicator $m_i=1_{\{\|F_i^{\mathrm{visc}}\|>\delta\}}$ with its positive
-implemented threshold $\delta$. On the regular geometric chart used in
-{prf:ref}`cor-ym-nonzero-direct-color-sector`, take a vertex with
-a nonzero incident force row. Then this indicator has no finite
-full-gradient Sobolev energy. Consequently the restriction of that
-energy to the binary descriptor $q=m_i$ has only constants in its
-form domain and is not densely defined on $L^2(q_*\rho_N)$.
-
-Its bounded recorded and equilibrium correlations are nevertheless
-well-defined by {ref}`(SM.K4) <eq-fg-sm-k4>` and
-{ref}`(YM.E7) <eq-fg-ym-e7>`. The conditional compression and
-memory formulas apply to it. A finite channel simulator must therefore
-distinguish a bounded observable matrix from a finite-energy basis mode.
-:::
-
-:::{prf:proof}
-For fixed positions in that chart,
-$F_i^{\mathrm{visc}}=\nu\sum_jw_{ij}(v_j-v_i)$ is a nonzero
-linear map onto $\mathbb R^d$ in the velocity variables: a nonzero
-scalar coefficient multiplies every component of one velocity.
-On the level set $\|F_i^{\mathrm{visc}}\|=\delta>0$, the gradient
-of its norm in those variables is nonzero. Smooth local coordinates
-therefore give a normal coordinate
-$u=\|F_i^{\mathrm{visc}}\|-\delta$ across a patch of that surface.
-The product density is smooth and positive. The bounded-tilt
-comparison bounds the actual density above and below on a compact
-subpatch, and the coordinate Jacobian has the same bounds.
-
-In these coordinates $m_i=1_{\{u>0\}}$.
-For a test supported in the patch, integration by parts in $u$
-gives its distributional normal derivative as surface measure at
-$u=0$. This measure is nonzero and singular with respect to volume;
-it cannot be represented by an $L^2$ weak derivative.
-The weighted Sobolev domain is locally the ordinary Sobolev domain
-because the density is bounded above and below. Thus $m_i$ does
-not belong to it.
-
-The energy cost can also be seen directly. A smooth transition
-$h_\varepsilon$ from zero at $-\varepsilon$ to one at
-$\varepsilon$ obeys
-
-(eq-fg-ym-p2)=
-$$
-1=\left|\int_{-\varepsilon}^{\varepsilon}
-          h_\varepsilon'(u)\,du\right|^2
-\le2\varepsilon\int_{-\varepsilon}^{\varepsilon}
-                |h_\varepsilon'(u)|^2du.
-\tag{YM.P2}
-$$
-
-Integrating over a fixed tangential subpatch gives an energy cost
-at least a positive constant times $\varepsilon^{-1}$.
-Bounded whole-law density ratios preserve closability of the
-reference gradient and equivalence of its weighted norms, so the
-relaxed form here has this same Sobolev domain.
-
-Both sides of the surface contain open sets of positive probability.
-Every function of the binary descriptor is $a+b m_i$.
-For $b\ne0$ it has the same nonzero surface derivative, while
-$b=0$ gives a constant. The domain on this two-dimensional
-$L^2$ space is therefore only its one-dimensional constant subspace.
-The established bounded-observable correlation formulas require
-no Sobolev derivative of $m_i$, which proves the final assertion.
-:::
-
-
-:::{div} feynman-prose
-Fix the recorded positions and evaluate the implemented viscous force at
-the same stage as the velocities. Under the product reference, this force
-is a linear combination of Gaussian velocities. Its length therefore has
-an explicit radial density. Integrating that density across a narrow shell
-around the validity threshold measures how often smoothing the mask changes
-the color value. Maximizing over the Gaussian scale makes the bound work
-for every force row; a zero row never reaches the positive threshold.
-
-The bounded joint tilt transfers this shell bound to its specified
-equilibrium law. A ramp agrees with the hard mask outside the shell, so
-the shell probability controls the color's squared error. Expanding a pair,
-a determinant, or a product of measurements one changed factor at a time
-then gives the displayed correlation errors. For a normalized frame average,
-the last calculation also retains the recorded weights, denominator, and
-empty-average convention.
-:::
-
-:::{prf:proposition} Quantitative removal of the color-threshold discontinuity
-:label: prop-ym-color-threshold-correlation-limit
-
-Use the product or bounded whole-joint tilt equilibrium family of
-{prf:ref}`thm-ym-equilibrium-fluctuation-limit`, with its bound $B_*$,
-and the same-stage viscous color map of
-{prf:ref}`def-sm-direct-observable-law`. Write $\delta_c>0$ for the
-implemented validity threshold. For $0<\varepsilon<\delta_c/2$, put
-
-(eq-fg-ym-v1)=
-$$
-K_d=\frac{2^{1-d/2}d^{d/2}e^{-d/2}}{\Gamma(d/2)},\qquad
-p_\varepsilon=e^{B_*}K_d
- \log\frac{\delta_c+\varepsilon}{\delta_c-\varepsilon}.
-\tag{YM.V1}
-$$
-
-For every vertex, including a vertex with zero viscous-force row,
-
-(eq-fg-ym-v2)=
-$$
-\rho_N\{\left|\|F_i^{\mathrm{visc}}\|-\delta_c\right|
-                 \le\varepsilon\}
-\le p_\varepsilon
-\le 4e^{B_*}K_d\varepsilon/\delta_c.
-\tag{YM.V2}
-$$
-
-Let $\chi_\varepsilon:[0,\infty)\to[0,1]$ be a continuous ramp,
-zero below $\delta_c-\varepsilon$ and one above
-$\delta_c+\varepsilon$. Replace the hard extension $c_i$ by
-$c_i^\varepsilon=\chi_\varepsilon(\|F_i\|)F_i
-\exp(i\kappa v_i)/\|F_i\|$, with value zero at $F_i=0$.
-For a fixed pair contraction $q_{ij}=c_i^\dagger c_j$ and the
-three-color determinant (in dimension $d=3$) $b_{ijk}=\det[c_i,c_j,c_k]$, this gives
-
-(eq-fg-ym-v3)=
-$$
-\|c_i^\varepsilon-c_i\|_{L^2(\rho_N;\mathbb C^d)}
- \le\sqrt{p_\varepsilon},\qquad
-\|q_{ij}^\varepsilon-q_{ij}\|_2\le2\sqrt{p_\varepsilon},\qquad
-\|b_{ijk}^\varepsilon-b_{ijk}\|_2\le3\sqrt{p_\varepsilon}.
-\tag{YM.V3}
-$$
-
-For any finite collection of such contractions at arbitrary equilibrium
-times, let $r_a=2$ for a pair and $r_a=3$ for a determinant. Then
-
-(eq-fg-ym-v4)=
-$$
-\left|\mathbb E\prod_{a=1}^nO_a^\varepsilon(X_{t_a})
-       -\mathbb E\prod_{a=1}^nO_a(X_{t_a})\right|
-\le\left(\sum_{a=1}^nr_a\right)\sqrt{p_\varepsilon}.
-\tag{YM.V4}
-$$
-
-The constants are independent of $N$ and of the observation times.
-This proves convergence of these actual bounded color insertions under
-threshold-ramp removal. It neither assigns finite gradient energy to the
-hard mask nor asserts convergence of a population-rescaled fluctuation.
-:::
-
-:::{prf:proof}
-**1. Integrate the force-radius shell.** Under the product reference,
-conditional on positions, the velocities are independent centered
-Gaussians with covariance $\theta I_d$. The implemented force is
-$F_i=\nu\sum_jw_{ij}(v_j-v_i)$. Its scalar coefficients depend on
-the positions, so its conditional covariance is $s_i^2 I_d$, where
-$s_i^2=\theta\sum_j a_{ij}^2$ and $a_{ij}$ are its complete velocity
-coefficients. When $s_i=0$, its radius is zero and the shell in
-{ref}`(YM.V2) <eq-fg-ym-v2>` is empty. When $s_i>0$, its radial density is
-
-$$
-f_{s_i}(r)=\frac{2^{1-d/2}}{\Gamma(d/2)}
-              r^{d-1}s_i^{-d}e^{-r^2/(2s_i^2)},\qquad r>0.
-$$
-
-For fixed $r$, differentiation of
-$-d\log s-r^2/(2s^2)$ gives its maximum at $s=r/\sqrt d$.
-Thus $f_s(r)\le K_d/r$ for every positive scale, without needing a
-uniform lower bound on the incident weights. Integrating this bound
-between $\delta_c-\varepsilon$ and $\delta_c+\varepsilon$, then over
-positions, proves the reference bound. The already proved density
-comparison $d\rho_N/dm_U^{\otimes N}\le e^{B_*}$ proves the first
-inequality in {ref}`(YM.V2) <eq-fg-ym-v2>`. Finally
-
-$$
-\log\frac{\delta_c+\varepsilon}{\delta_c-\varepsilon}
-=\int_{\delta_c-\varepsilon}^{\delta_c+\varepsilon}\frac{dr}{r}
-\le\frac{2\varepsilon}{\delta_c-\varepsilon}
-\le\frac{4\varepsilon}{\delta_c}
-$$
-
-proves the second inequality. The calculation uses the same-stage
-position-dependent scalar force weights. It does not replace a different
-velocity-dependent force or a lagged mixed-stage record by this map.
-
-**2. Bound the actual insertions.** Both color extensions have norm at
-most one. Their difference is supported on the shell, with norm at most
-one, proving the first bound in {ref}`(YM.V3) <eq-fg-ym-v3>`.
-The exact telescoping identities are
-
-$$
-\begin{aligned}
-q_{ij}^\varepsilon-q_{ij}
- &=(c_i^\varepsilon-c_i)^\dagger c_j^\varepsilon
-                    +c_i^\dagger(c_j^\varepsilon-c_j),\\
-b_{ijk}^\varepsilon-b_{ijk}
- &=\det[c_i^\varepsilon-c_i,c_j^\varepsilon,c_k^\varepsilon]
- +\det[c_i,c_j^\varepsilon-c_j,c_k^\varepsilon]
- +\det[c_i,c_j,c_k^\varepsilon-c_k].
-\end{aligned}
-$$
-
-Cauchy--Schwarz for pairs, Hadamard's inequality for determinants,
-and the $L^2$ triangle inequality give the remaining bounds.
-All contraction magnitudes are at most one. Telescoping the product
-of $n$ insertions and using stationarity bounds each expectation by
-the corresponding $L^1$, hence $L^2$, error. This proves
-{ref}`(YM.V4) <eq-fg-ym-v4>` for the same joint history law, without
-independence between vertices or observation times.
-
-**3. Retain the recorded averaging denominator.** For a weighted recorded
-average in {prf:ref}`def-sm-direct-observable-law`, let
-$D=\sum_Iw_Im_I$, $D^\varepsilon=\sum_Iw_Im_I^\varepsilon$ and
-$\Delta=\sum_Iw_I|m_I-m_I^\varepsilon|$. With unchanged bounded
-unmasked values $|O_I|\le B$, the numerator difference is at most
-$B\Delta$ and $|D-D^\varepsilon|\le\Delta$. On $D>0$,
-
-$$
-|\mathcal A^\varepsilon(O)-\mathcal A(O)|
-\le\min\{2B,2B\Delta/D\}.
-$$
-
-For $D^\varepsilon>0$ this follows by adding and subtracting its
-numerator divided by $D$; for $D^\varepsilon=0$, $\Delta=D$ and the
-zero-denominator convention gives the same bound. On $D=0$ the hard
-average is zero, while the ramp average is bounded by
-$B\mathbf1_{\{D^\varepsilon>0\}}$. These are the exact denominator
-terms for the implemented normalization. Consequently the fixed-contraction
-bound {ref}`(YM.V4) <eq-fg-ym-v4>` does not silently supply a uniform
-bound for a population-dependent ratio with a small random denominator.
-:::
-
-:::{div} feynman-prose
-Now take the bounded channel value actually computed from each frame,
-including its masks and normalization, and sample it along the constructed
-equilibrium process. A lagged correlation estimate averages products from
-pairs of frames separated by the chosen lag. Nearby products have
-overlapping observation windows, so the proof counts their covariance
-directly. For separated windows, the equilibrium transfer gap bounds the
-remaining covariance by a geometric series.
-
-Adding both contributions gives the explicit mean-square error proportional
-to $1/K$. Subtracting an estimated mean introduces the second displayed
-error term, which is controlled using the same channel bound. Both
-estimates apply to hard masks as recorded, and the mean and lag products
-can be estimated from the same run. This gives a sampling bound for the
-equilibrium correlations of the actual frame channels.
-:::
-
-:::{prf:proposition} Consistent lag correlations of the bounded recorded channels
-:label: prop-ym-channel-lag-estimation
-
-Sample the established equilibrium process of
-{prf:ref}`thm-ym-equilibrium-hierarchy` at spacing $h>0$, and let $O$
-be a bounded actual frame channel from
-{prf:ref}`prop-sm-channel-estimate-routes`, including its masks and
-zero-denominator convention. Put $|O|\le B$, $\mu=\rho_NO$,
-$r=e^{-h/C_*}$ and, for a fixed integer lag $\ell\ge0$,
-
-$$
-\widehat R_{K,\ell}=\frac1K\sum_{a=0}^{K-1}
-            \overline{O(X_{ah})}O(X_{(a+\ell)h}),\qquad
-\Lambda_\ell=1+2\ell+\frac{2r}{1-r}.
-$$
-
-For the same equilibrium two-point function
-$R_\ell=\mathbb E[\overline{O(X_0)}O(X_{\ell h})]$,
-
-(eq-fg-ym-v5)=
-$$
-\mathbb E\widehat R_{K,\ell}=R_\ell,\qquad
-\mathbb E|\widehat R_{K,\ell}-R_\ell|^2
-\le\frac{B^4\Lambda_\ell}{K}.
-\tag{YM.V5}
-$$
-
-If $\widehat\mu_T=T^{-1}\sum_{a=0}^{T-1}O(X_{ah})$ and
-$\widehat C_{K,\ell}=\widehat R_{K,\ell}-|\widehat\mu_T|^2$,
-the connected correlation $C_\ell=R_\ell-|\mu|^2$ satisfies
-
-(eq-fg-ym-v6)=
-$$
-\|\widehat C_{K,\ell}-C_\ell\|_{L^2}
-\le B^2\sqrt{\Lambda_\ell/K}
-             +2B^2\sqrt{\Lambda_0/T}.
-\tag{YM.V6}
-$$
-
-Here $B=1$ for the masked pair and determinant channels, $B=2$ for
-$1-\operatorname{Re}\Pi$ and the bounded standard doublet sums and
-differences. The inequalities hold without smoothness of these channels.
-They give the sampling limit of the identified equilibrium hierarchy;
-survival-conditioned algorithm records retain their exact history law
-in {prf:ref}`prop-ym-qsd-history-identification`.
-:::
-
-:::{prf:proof}
-Set $Z_a=\overline{O(X_{ah})}O(X_{(a+\ell)h})$.
-Stationarity gives $\mathbb EZ_a=R_\ell$ and
-$\mathbb E|Z_a-R_\ell|^2\le B^4$. If $1\le n\le\ell$, the
-windows may overlap, and Cauchy--Schwarz gives
-$|\operatorname{Cov}(Z_0,Z_n)|\le B^4$.
-If $n>\ell$, condition the first centered window on its right endpoint
-and the second on its left endpoint. Both conditional boundary functions
-are centered and have $L^2$ norm at most $B^2$. The Markov property
-separates them by $(n-\ell)h$. The proved equilibrium gap therefore gives
-
-$$
-|\operatorname{Cov}(Z_0,Z_n)|\le B^4r^{n-\ell}.
-$$
-
-This is a conditional-expectation contraction and applies equally to
-complex observables. Expanding the squared error of the average gives
-
-$$
-\begin{aligned}
-\mathbb E|\widehat R_{K,\ell}-R_\ell|^2
-&\le\frac{B^4}{K^2}
-\left[K+2\sum_{n=1}^{K-1}(K-n)
- \left(\mathbf1_{n\le\ell}+r^{n-\ell}\mathbf1_{n>\ell}\right)\right]\\
-&\le\frac{B^4}{K}
-       \left(1+2\ell+2\sum_{j\ge1}r^j\right),
-\end{aligned}
-$$
-
-which proves {ref}`(YM.V5) <eq-fg-ym-v5>`. Applying the same sum to
-the single-time observable yields
-$\|\widehat\mu_T-\mu\|_2\le B\sqrt{\Lambda_0/T}$.
-Since $|\widehat\mu_T|,|\mu|\le B$,
-
-$$
-\big||\widehat\mu_T|^2-|\mu|^2\big|
-\le2B|\widehat\mu_T-\mu|.
-$$
-
-The triangle inequality proves
-{ref}`(YM.V6) <eq-fg-ym-v6>`. No independence between the estimated
-mean and the estimated lag product is used. The result estimates the
-stated correlation; a later logarithmic mass fit retains its denominator
-and signal-sign requirements.
-:::
-
-
-:::{prf:corollary} An infinite-dimensional direct color OS space at finite population
-:label: cor-ym-nonzero-direct-color-sector
-
-For the active viscous color channel of Chapter 04, its coupling $\nu$
-and phase coefficient $\kappa=m\ell_0/\hbar_{\mathrm{eff}}$ are
-nonzero. Evaluate force and velocity at the same recorded stage, with the
-actual positive graph weights on one of its regular geometric charts.
-For the continuous law in the bounded-tilt family of
-{prf:ref}`thm-ym-equilibrium-fluctuation-limit`, a contraction
-$q_{ij}=c_i^\dagger c_j$ between two vertices with nonzero incident
-force rows has a nonconstant real or imaginary component. Its centered
-observable $A$ consequently satisfies
-
-$$
-\|A\|_{L^2(\rho_N)}>0,\qquad
-\langle A,T_{N,2\sigma}^{\mathrm{eq}}A\rangle>0
-\quad(\sigma>0).
-$$
-
-For every integer $q\ge1$ and fixed $\sigma>0$, the future color
-observables $1,A(X_\sigma),\ldots,A(X_\sigma)^q$ have a positive
-definite OS Gram matrix. Thus the OS space generated by the actual direct
-color algebra is infinite dimensional.
-:::
-
-:::{prf:proof}
-Fix positions in the regular chart, so its finite weights $w_{k\ell}$
-are fixed. Choose velocities $v_k=t_ke_1$. The implemented viscous force
-is
-
-$$
-F_k^{\mathrm{visc}}=\nu\left[\sum_\ell
-       w_{k\ell}(t_\ell-t_k)\right]e_1=:b_k(t)e_1.
-$$
-
-For the selected vertices the linear functionals $b_i,b_j$ are nonzero.
-Choose $t$ outside their two zero hyperplanes and scale it until both
-forces exceed the already specified valid-color threshold. On a small
-neighborhood their signs $\epsilon_i,\epsilon_j$ and validity masks
-are fixed. The recorded normalization and phase formula then give
-
-$$
-c_i=\epsilon_i e^{i\kappa t_i}e_1,\qquad
-c_j=\epsilon_j e^{i\kappa t_j}e_1,\qquad
-q_{ij}=\epsilon_i\epsilon_j e^{i\kappa(t_j-t_i)}.
-$$
-
-Changing $t_j-t_i$ by a sufficiently small nonzero amount preserves the
-force signs and changes $q_{ij}$. At least one of its real and imaginary
-components therefore has two distinct values. The regular-chart
-continuity and the strict validity margins give two full-dimensional
-neighborhoods where these component values remain separated. Both have
-positive reference probability, since $m_U^{\otimes N}$ has a strictly
-positive density. The bounded-tilt comparison preserves their positive
-probabilities under $\rho_N$. Hence that component has positive variance,
-including the implemented invalid-sample convention outside the chart.
-
-For the centered component $A$, spectral calculus gives
-$\langle A,T_{N,2\sigma}^{\mathrm{eq}}A\rangle
-=\int e^{-2\sigma\lambda}d\langle A,E_H(\lambda)A\rangle>0$.
-The boundary vector of the future observable $A(X_\sigma)$ has exactly
-this squared norm by {prf:ref}`thm-ym-equilibrium-hierarchy`.
-To compute the higher Gram ranks, restrict the preceding velocity
-variation to a sufficiently short interval where the selected sine or
-cosine component is strictly monotone. Its values fill an interval $I$.
-For every $y\in I$, continuity at a configuration with value $y$ and the
-positive density imply that every neighborhood of $y$ has positive
-pushforward probability. Thus $I$ lies in the support of the law of $A$,
-after its centering translation. A nonzero polynomial $p$ cannot vanish
-on $I$; continuity then gives $\rho_N|p(A)|^2>0$.
-
-The boundary vector of $p(A(X_\sigma))$ is
-$T_{N,\sigma}^{\mathrm{eq}}p(A)$, since all its factors are measured at
-the same time. Consequently, for $p_a(x)=\sum_{j=0}^qa_jx^j$,
-
-$$
-\begin{aligned}
-\sum_{j,k=0}^q\overline{a_j}a_k
- (A(X_\sigma)^j,A(X_\sigma)^k)_{\mathrm{OS}}
-&=\|T_{N,\sigma}^{\mathrm{eq}}p_a(A)\|_2^2\\
-&=\int_{[0,\infty)}e^{-2\sigma\lambda}
-       d\langle p_a(A),E_H(\lambda)p_a(A)\rangle>0
-       \quad(a\ne0).
-\end{aligned}
-$$
-
-The last inequality follows because the spectral measure has total mass
-$\|p_a(A)\|_2^2>0$ and the integrand is strictly positive. These are
-bounded color insertions, so no derivative of a validity mask is taken.
-Arbitrarily large Gram ranks prove the asserted infinite dimension.
-This is a finite-population statement. A population-uniform
-lower bound for a specified normalized color-channel sequence retains
-its actual channel variance and force-normalization estimates; the
-empirical phase-space fluctuation limit does not replace that calculation.
-:::
-
-
-:::{prf:lemma} Reflection factorization for a reversible Markov path law
-:label: lem-transfer-matrix-fg
-
-Let $(X_t)_{t\in\mathbb R}$ have a stationary reversible Markov law with
-invariant probability $\pi$. For bounded future functionals define
-$h_F(x)=\mathbb E[F\mid X_0=x]$. Then
-
-(eq-fg-ym-40)=
-$$
- \mathbb E[\overline{\Theta F}\,G]
- =\int\overline{h_F(x)}h_G(x)\,d\pi(x).
-\tag{YM.40}
-$$
-
-If its strongly continuous Markov semigroup is $P_t$, then $P_t$ is a
-self-adjoint contraction and $P_t=e^{-tH}$ for a self-adjoint $H\ge0$.
-For a functional whose earliest time is $s\ge0$, write
-$h_F=P_s v_F$, where $v_F$ is the conditional future functional translated
-back by $s$. In particular
-$(F,F)_{\rm OS}=\langle v_F,P_{2s}v_F\rangle_\pi\ge0$.
-:::
-
-:::{prf:proof}
-Conditional on $X_0$, the past and future of a two-sided Markov process are
-independent. Stationary reversibility identifies the conditional law of the
-reflected past with that of the future. Their conditional expectations in
-{ref}`(YM.39) <eq-fg-ym-39>` are therefore $\overline{h_F}$ and $h_G$, proving {ref}`(YM.40) <eq-fg-ym-40>`.
-Reversibility gives
-$\langle f,P_tg\rangle_\pi=\langle P_tf,g\rangle_\pi$.
-Jensen's inequality and invariance give $\|P_tg\|_2\le\|g\|_2$.
-Moreover $\langle g,P_tg\rangle=\|P_{t/2}g\|_2^2\ge0$.
-The self-adjoint strongly continuous semigroup has the spectral form
-$e^{-tH}$ with $H\ge0$. The Markov property gives $h_F=P_sv_F$; applying
-self-adjointness and the semigroup law proves the last formula.
-:::
-
-This is a direct construction for the same measure as its correlations.
-For a reversible killed semigroup with a positive ground state, its Doob
-transform supplies one candidate conservative process, but the invariant
-measure is the transformed law {ref}`(YM.18) <eq-fg-ym-18>`.
-
-There is also a finite reversibility calculation for a frozen companion
-selection. If $w_{ij}=w_{ji}\ge0$, $Z_i=\sum_jw_{ij}>0$, and
-$P_{ij}=w_{ij}/Z_i$, then $q_i=Z_i/\sum_kZ_k$ satisfies
-$q_iP_{ij}=q_jP_{ji}$. The resulting chain on companion indices is reversible.
-This proves a property of that frozen chain; reversibility of the complete
-swarm kernel requires every kinetic and cloning component as well.
-
-:::{prf:proposition} Momentum reflection in the existing kinetic reference
-:label: prop-ym-kinetic-reflection-form
-
-For a stationary process with a measure-preserving state involution $R$,
-suppose its already specified transition obeys $P_t^*=RP_tR$. Define
-$\Theta_RF=F((RX_{-t})_{t\ge0})$ on future functionals and
-$h_F(x)=\mathbb E[F\mid X_0=x]$. The exact reflected form is
-
-(eq-fg-ym-r1)=
-$$
-\mathbb E[\overline{\Theta_RF}G]=\langle Rh_F,h_G\rangle_\pi.
-\tag{YM.R1}
-$$
-
-For the harmonic kinetic reference used in
-{prf:ref}`thm-uv-protection-mechanism`, this form takes negative values
-even on position observables, which are even under velocity reversal.
-:::
-
-:::{prf:proof}
-The backward conditional kernel in a stationary process is $P_t^*$.
-Conjugating it by $R$ gives $P_t$, so conditional on $X_0=x$ the
-reflected past has the forward law started at $Rx$. Its conditional
-expectation is $h_F(Rx)$. The past and future are conditionally independent
-given $X_0$, proving {ref}`(YM.R1) <eq-fg-ym-r1>`. The involution $R$ is a self-adjoint unitary;
-its quadratic form is the difference of squared norms of its even and odd
-components, rather than a squared norm in general.
-
-Now use the established kinetic reference in one spatial dimension,
-
-$$
-dX_t=V_tdt,\qquad
-dV_t=-\kappa X_tdt-\gamma V_tdt+\sqrt{2\gamma\theta}\,dW_t.
-$$
-
-Its stationary covariance is $C=\operatorname{diag}(\theta/\kappa,\theta)$.
-For $B=\left(\begin{smallmatrix}0&1\\-\kappa&-\gamma\end{smallmatrix}\right)$
-and $R=\operatorname{diag}(1,-1)$, direct multiplication gives
-
-$$
-BC+CB^{\mathsf T}+2\gamma\theta
- \begin{pmatrix}0&0\\0&1\end{pmatrix}=0,\qquad
-CB^{\mathsf T}C^{-1}=RBR.
-$$
-
-The stationary Gaussian two-time law therefore satisfies $P_t^*=RP_tR$:
-its reversed conditional mean matrix is $Ce^{tB^{\mathsf T}}C^{-1}
-=Re^{tB}R$, and the conditional covariance transforms by the same
-involution. For $\omega=\sqrt{\kappa-\gamma^2/4}>0$,
-
-$$
-\mathbb E[X_t\mid X_0=x,V_0=v]
-=e^{-\gamma t/2}
- \left[\left(\cos\omega t+\frac\gamma{2\omega}\sin\omega t\right)x
-       +\frac{\sin\omega t}{\omega}v\right].
-$$
-
-Let these two coefficients be $a(t)$ and $b(t)$. Since $X_t$ itself is
-even under velocity reversal, {ref}`(YM.R1) <eq-fg-ym-r1>` for $F=X_t$ gives
-
-(eq-fg-ym-r2)=
-$$
-\begin{aligned}
-(F,F)_{\Theta_R}
-&=\frac\theta\kappa a(t)^2-\theta b(t)^2\\
-&=\frac\theta\kappa e^{-\gamma t}
-       \left[\cos(2\omega t)+\frac\gamma{2\omega}\sin(2\omega t)\right].
-\end{aligned}
-\tag{YM.R2}
-$$
-
-At $t=\pi/(2\omega)$ this equals
-$-(\theta/\kappa)e^{-\gamma\pi/(2\omega)}<0$.
-The choice $\kappa=\gamma=\theta=1$ already lies in this reference
-family. Its full-gradient Gaussian LSI constant is one. Bounded
-truncations of $X_t$ converge in $L^2$; by Cauchy--Schwarz their reflected
-forms converge to the same negative value. This proves the failure on
-bounded future observables as well. The equilibrium transfer of {ref}`(YM.E1) <eq-fg-ym-e1>`
-has the positive form {ref}`(YM.E8) <eq-fg-ym-e8>` because it is constructed from the symmetric
-energy, with its own time evolution.
-:::
-
-
-:::{prf:theorem} Reflection positivity under the factorization condition
-:label: thm-os-os2-fg
-
-The path law in {prf:ref}`lem-transfer-matrix-fg` is reflection positive on
-bounded future functionals. More generally, if the actual Euclidean field law
-has a common factorization
-$(F,G)_{\rm OS}=\langle h_F,h_G\rangle_{\mathcal K}$ with a linear map
-$F\mapsto h_F$ into a Hilbert space, it is reflection positive on that algebra.
-The full-gradient LSI of its one-time marginal does not imply this
-factorization.
-:::
-
-:::{prf:proof}
-For $F=\sum_jc_jF_j$, {ref}`(YM.40) <eq-fg-ym-40>` gives
-
-$$
- (F,F)_{\rm OS}
- =\left\|\sum_jc_jh_{F_j}\right\|^2\ge0.
-$$
-
-This proves positivity of every finite Gram matrix and the general
-factorization statement.
-
-For the last assertion, {prf:ref}`prop-ym-kinetic-reflection-form`
-computes the reflected form in the kinetic reference already used in the
-volume. At $\kappa=\gamma=\theta=1$ and $t=\pi/\sqrt3$, it gives
-
-(eq-fg-ym-41)=
-$$
- \mathbb E[X(-t)X(t)]=-e^{-\pi/\sqrt3}<0.
-\tag{YM.41}
-$$
-
-The same law has full-gradient LSI constant one and satisfies the
-momentum-reversal transition identity. The bounded-truncation calculation
-there establishes the failure on the bounded future algebra. Thus neither
-the static LSI nor that reversal identity supplies the positive factorization.
-The equilibrium construction {ref}`(YM.E8) <eq-fg-ym-e8>` establishes it for its own transition.
-
-:::
-
-:::{div} feynman-prose
-Picture the damped harmonic particle in the calculation above. Its stationary
-position and velocity have a Gaussian distribution, and reversing a trajectory
-reverses velocity. Nevertheless, knowing its present velocity helps predict a
-future position: the conditional expectation of that position contains both
-an $x$ term and a $v$ term.
-
-Momentum reflection leaves the first term even and makes the second odd.
-Their contributions to the reflected norm have opposite signs. At the
-displayed underdamped time the negative contribution wins, even though the
-measured position itself is unchanged by velocity reversal. Thus the exact
-momentum-reversal identity can coexist with a negative reflection form.
-The equilibrium construction proves positivity through its own symmetric
-transfer and squared-norm factorization.
-:::
-
-:::{prf:corollary} Positive quotient and its possible dimension
-:label: cor-os2-nondegeneracy
-
-Under reflection positivity, quotient $\mathcal A_+$ by its nullspace
-$\mathcal N=\{F:(F,F)_{\rm OS}=0\}$ and complete it. The result is a
-Hilbert space, isometrically the closure of $\{h_F\}$ when {ref}`(YM.40) <eq-fg-ym-40>` holds.
-The class of $1$ has norm one. Infinite dimension requires arbitrarily large
-positive-rank Gram matrices; it does not follow from positivity alone.
-:::
-
-:::{prf:proof}
-Positivity of the form on $F+zG$ for every complex $z$ implies its
-Cauchy–Schwarz inequality. Hence every null vector is orthogonal to every
-vector, and the form descends to a positive definite inner product on the
-quotient. Formula {ref}`(YM.40) <eq-fg-ym-40>` identifies its nullspace with the kernel of
-$F\mapsto h_F$, proving the isometry. Normalization gives $(1,1)_{\rm OS}=1$.
-The maximal number of linearly independent quotient vectors is exactly the
-supremum of the ranks of their Gram matrices. For the bounded-tilt
-fluctuation hierarchy constructed below, those ranks are explicitly
-unbounded by {prf:ref}`thm-ym-fluctuation-os-infinite-dimension`.
-:::
-
-:::{div} feynman-prose
-The equilibrium gap tells us how a measured average settles down. Two
-observations separated by a long equilibrium time have exponentially small
-covariance. To compute the variance of a time average, add these covariances
-over every pair of observation times. Pairs with separation $u$ contribute
-with weight $T-u$, which gives the integral below.
-
-The result bounds the averaging variance by a constant times $1/T$, with
-the constant supplied by the established LSI and the observable's variance.
-The same temporal decay survives in the limiting OS correlations. Its
-translation into a spatial decay statement uses the transformations actually
-proved to preserve the field law and transfer.
-:::
-
-:::{prf:theorem} Quantitative clustering for the constructed equilibrium transfer
-:label: thm-os-os3-fg
-
-Use the same law, relaxed gradient form, and transfer
-$T_t^{\mathrm{eq}}=e^{-tH^{\mathrm{eq}}}$ constructed in
-{prf:ref}`thm-ym-equilibrium-form-construction`. Their established LSI
-constant $C_*$ gives
-
-(eq-fg-ym-42)=
-$$
- \operatorname{Var}_\rho f\le C_*\mathcal E(f,f),\qquad
- \|T_t^{\mathrm{eq}}f-\rho f\|_2
- \le e^{-t/C_*}\|f-\rho f\|_2.
-\tag{YM.42}
-$$
-
-Thus {prf:ref}`thm-cluster-decomposition` applies to this transfer with
-$M=1$ and $\lambda=1/C_*$. For its stationary process and real
-$A\in L^2(\rho)$, the time average satisfies
-
-(eq-fg-ym-q1)=
-$$
-\operatorname{Var}\left(\frac1T\int_0^T A(X_t)\,dt\right)
-\le\frac{2\operatorname{Var}_\rho A}{T^2}
- \left[C_*T-C_*^2(1-e^{-T/C_*})\right]
-\le\frac{2C_*}{T}\operatorname{Var}_\rho A.
-\tag{YM.Q1}
-$$
-
-The limiting equilibrium hierarchy of
-{prf:ref}`thm-ym-equilibrium-fluctuation-limit` has the same exponential
-bound on centered OS matrix elements. These conclusions concern equilibrium
-time. Spatial clustering follows for the spacetime transformations actually
-proved to preserve this law and transfer, as specified in
-{prf:ref}`thm-cluster-decomposition`.
-:::
-
-:::{prf:proof}
-The relaxed-form Poincaré inequality in
-{prf:ref}`thm-ym-equilibrium-form-construction` is already proved for this
-law. For centered $f$ and $t>0$, spectral calculus gives
-
-$$
-\frac{d}{dt}\|T_t^{\mathrm{eq}}f\|_2^2
-=-2\mathcal E(T_t^{\mathrm{eq}}f,T_t^{\mathrm{eq}}f)
-\le-\frac2{C_*}\|T_t^{\mathrm{eq}}f\|_2^2.
-$$
-
-Integration and strong continuity at zero give
-{ref}`(YM.42) <eq-fg-ym-42>`. Stationarity and the Markov property give,
-with $A_c=A-\rho A$ and $B_c=B-\rho B$,
-
-$$
-\left|\operatorname{Cov}(A(X_0),B(X_t))\right|
-=|\langle A_c,T_t^{\mathrm{eq}}B_c\rangle|
-\le e^{-t/C_*}\sqrt{\operatorname{Var}_\rho A\,
-                              \operatorname{Var}_\rho B}.
-$$
-
-All integrals below are justified by this $L^2$ bound. In particular,
-
-$$
-\begin{aligned}
-\operatorname{Var}\left(T^{-1}\int_0^T A(X_t)dt\right)
-&=\frac2{T^2}\int_0^T(T-u)
-           \langle A_c,T_u^{\mathrm{eq}}A_c\rangle du\\
-&\le\frac{2\operatorname{Var}_\rho A}{T^2}
-            \int_0^T(T-u)e^{-u/C_*}du,\\
-\int_0^T(T-u)e^{-u/C_*}du
-&=C_*T-C_*^2(1-e^{-T/C_*}).
-\end{aligned}
-$$
-
-This proves {ref}`(YM.Q1) <eq-fg-ym-q1>`. For centered future
-polynomials, the boundary-vector construction gives
-
-$$
-|(F_c,\tau_tG_c)_{\mathrm{OS},N}|
-\le e^{-t/C_*}\|F_c\|_{\mathrm{OS},N}\|G_c\|_{\mathrm{OS},N}.
-$$
-
-Every entry here belongs to the common converging polynomial hierarchy.
-Passing to that limit, and then using density in the OS completion, proves
-the asserted limiting bound. This step uses the construction and convergence
-in {prf:ref}`thm-ym-equilibrium-fluctuation-limit`; it is not an input to
-its proof. The velocity-only kinetic dissipation is a different form and
-is governed by its previously proved hypocoercive estimate.
-:::
 
 :::{prf:theorem} Symmetry of bosonic correlations
 :label: thm-os-os4-fg
@@ -8522,913 +7027,9 @@ anticommutation sign, as proved in {doc}`03_lattice_qft`. Permuting walker
 labels does not introduce that algebraic sign into a classical density product.
 :::
 
-### Limits supplied by the equilibrium construction
-
-:::{div} feynman-prose
-An upper fluctuation bound prevents a field from escaping to infinity. To
-obtain a nontrivial limit we also need some fluctuation to survive. In the
-family used here, the density of the entire joint law stays between fixed
-multiples of its product reference density. This gives a variance lower
-bound independent of population size. The bound concerns the whole joint
-tilt, so its constant must remain uniform as particles are added.
-
-The energy estimate then prevents that variance from disappearing immediately
-in equilibrium time. A short time average retains a positive reflected norm,
-which survives the common subsequential limit. The same correlation limits
-construct the limiting transfer and preserve its gap. This proves a
-nontrivial field hierarchy for the stated family. Product independence will
-identify a particular hierarchy explicitly; general bounded tilts retain
-their own subsequential laws.
-:::
-
-:::{prf:theorem} Nontrivial equilibrium fluctuation hierarchy for the established bounded-tilt family
-:label: thm-ym-equilibrium-fluctuation-limit
-
-Use the product or bounded whole-joint tilt family already proved in
-{prf:ref}`cor-n-uniform-lsi`:
-
-(eq-fg-ym-e9)=
-$$
-\rho_N=Z_N^{-1}e^{-B_N}m_U^{\otimes N},\qquad
-\operatorname{osc}B_N\le B_*.
-\tag{YM.E9}
-$$
-
-Here $B_N=0$ includes the product family. Use its actual $B_N$ and the
-equilibrium form {ref}`(YM.E1) <eq-fg-ym-e1>`--{ref}`(YM.E2) <eq-fg-ym-e2>`, with $C_*=e^{B_*}C_0$ as proved
-upstream. The stationary equilibrium fluctuation fields {ref}`(YM.F1) <eq-fg-ym-f1>` have a
-common subsequential continuum hierarchy that is tempered, symmetric,
-invariant under time translation, and reflection positive. Its OS transfer
-semigroup has a unique vacuum and gap at least $1/C_*$ on its nonvacuum
-observable space. This space is nonzero; {prf:ref}`thm-ym-fluctuation-os-infinite-dimension`
-further proves that it is infinite dimensional.
-
-The limit is taken in population size at fixed algorithmic parameters and
-on the actual phase-space test coordinates. Spatial covariance is inherited
-only for transformations that preserve the same law and form. The theorem
-does not identify the equilibrium time with the recorded kinetic time.
-:::
-
-:::{prf:proof}
-**The upper estimates and a lower estimate from the same law.** The
-established density comparison gives
-
-$$
-e^{-B_*}\le\frac{d\rho_N}{dm_U^{\otimes N}}\le e^{B_*}.
-$$
-
-For a smooth compactly supported nonconstant $\varphi$ of one particle,
-put $F_N=N^{-1}\sum_i\varphi(z_i)$ and
-$Y_N=\sqrt N(F_N-\rho_NF_N)$. Minimizing over real constants gives
-
-(eq-fg-ym-e10)=
-$$
-\begin{aligned}
-\rho_N(Y_N^2)
-&=N\inf_b\rho_N[(F_N-b)^2]\\
-&\ge Ne^{-B_*}\inf_bm_U^{\otimes N}[(F_N-b)^2]
-=e^{-B_*}\operatorname{Var}_{m_U}\varphi=:c_\varphi>0.
-\end{aligned}
-\tag{YM.E10}
-$$
-
-The product variance in the last line is computed by expanding the sum:
-off-diagonal centered terms have expectation zero and the $N$ diagonal
-terms each equal $\operatorname{Var}_{m_U}\varphi/N^2$.
-The reference density is positive, so this variance is positive for the
-chosen test. The original smooth function is an admissible approximation
-in {ref}`(YM.E2) <eq-fg-ym-e2>`, and therefore
-
-(eq-fg-ym-e11)=
-$$
-\mathcal E_N(Y_N,Y_N)
-\le\frac1N\sum_i\rho_N|\nabla\varphi(z_i)|^2
-\le\|\nabla\varphi\|_\infty^2=:b_\varphi.
-\tag{YM.E11}
-$$
-
-For $C_N(\sigma)=\langle Y_N,T_{N,\sigma}^{\mathrm{eq}}Y_N\rangle$,
-spectral calculus and $1-e^{-\sigma\lambda}\le\sigma\lambda$ give
-
-(eq-fg-ym-e12)=
-$$
-C_N(\sigma)\ge c_\varphi-\sigma b_\varphi.
-\tag{YM.E12}
-$$
-
-Choose $\delta=c_\varphi/(2b_\varphi)$ and a smooth nonnegative
-time test $a$ supported in $(0,\delta/2)$ with $\int a=1$.
-For the future field $F_N=\mathcal Z_N(a\otimes\varphi)$,
-
-(eq-fg-ym-e13)=
-$$
-(F_N,F_N)_{\mathrm{OS}}
-=\iint a(s)a(t)C_N(s+t)dsdt\ge c_\varphi/2.
-\tag{YM.E13}
-$$
-
-It is centered. This lower bound survives time smearing and reflection;
-it is stronger than a nonzero one-time variance alone.
-
-**Common convergence and reflection.** Apply
-{prf:ref}`thm-ym-spacetime-fluctuation-compactness` to the stationary
-equilibrium processes from {prf:ref}`thm-ym-equilibrium-hierarchy`.
-One subsequence gives weak convergence of the random distributions and
-convergence of every polynomial correlation. Reflection and time
-translation act continuously on the Schwartz test space. The law at each
-$N$ has the corresponding identities, and every reflected polynomial
-product is among those converging correlations. Thus the limit has all
-the stated symmetries and reflection positivity. Bound {ref}`(YM.E13) <eq-fg-ym-e13>` gives a
-nonzero centered vector in its OS quotient.
-
-**The limiting transfer and its gap.** For any future polynomial $F$ let
-$F_c=F-\mathbb E F$. At finite $N$, {ref}`(YM.E8) <eq-fg-ym-e8>` yields
-
-(eq-fg-ym-e14)=
-$$
-\begin{aligned}
-\|\tau_\sigma F_c\|_{\mathrm{OS},N}^2
-&\le e^{-2\sigma/C_*}\|F_c\|_{\mathrm{OS},N}^2,\\
-(F,\tau_\sigma G)_{\mathrm{OS},N}
-&=(\tau_\sigma F,G)_{\mathrm{OS},N},\qquad
-(F,\tau_\sigma F)_{\mathrm{OS},N}\ge0.
-\end{aligned}
-\tag{YM.E14}
-$$
-
-All these are finite combinations of the common hierarchy and pass to the
-limit. They make positive time translation a well-defined self-adjoint
-positive contraction on the OS quotient, with the semigroup law. To verify
-strong continuity, translate each time test in a polynomial. Its difference
-from the original polynomial is a finite telescoping sum with one
-translated-minus-original factor. Hölder's inequality and {ref}`(YM.F2) <eq-fg-ym-f2>` bound
-each term in $L^2$ by a constant times the Schwartz seminorm of that test
-difference, which tends to zero. The absolute reflected pairing is bounded
-by the corresponding $L^2$ norm squared, using Cauchy--Schwarz and time
-reflection invariance. Thus translation is strongly continuous on the
-polynomial quotient and, by contraction and density, on its completion.
-
-The resulting self-adjoint generator $H_\infty^{\mathrm{eq}}\ge0$
-fixes the normalized vector $[1]$. The first inequality in {ref}`(YM.E14) <eq-fg-ym-e14>`
-gives its centered norm bound $e^{-\sigma/C_*}$, and hence its gap.
-If a vector is fixed, subtract its vacuum component and let $\sigma$
-tend to infinity in that bound; its centered part is zero. This proves
-vacuum uniqueness. No independently assumed convergence of embedded
-Hamiltonians is used: the converging correlation forms construct the
-Hilbert space and its transfer together.
-:::
-
-:::{div} feynman-prose
-In the product case, each particle contributes an independent copy of an
-entire equilibrium trajectory. Apply the central-limit calculation to a
-time-smeared measurement of one such trajectory. Its variance is determined
-by the one-particle transfer, which gives the covariance below. The resulting
-Gaussian law fixes every higher correlation through pairings and makes the
-whole population sequence converge.
-
-Independence is doing the identification here. A bounded joint tilt provides
-the preceding survival and compactness estimates, but those estimates do
-not supply independence of the particle trajectories or force the limiting
-fluctuation law to be Gaussian.
-:::
-
-:::{prf:corollary} Identified Gaussian hierarchy in the established product case
-:label: cor-ym-product-equilibrium-hierarchy
-
-For $B_N=0$ in {ref}`(YM.E9) <eq-fg-ym-e9>`, the whole equilibrium fluctuation sequence
-converges. Let $T_\sigma^{(1)}$ be the equilibrium transfer of the already
-specified one-particle law $m_U$. Its limiting centered Gaussian field has
-covariance
-
-(eq-fg-ym-e15)=
-$$
-\mathcal C(\varphi,\psi)
-=\iint\left\langle\varphi(s,\cdot)-m_U\varphi(s,\cdot),
- T_{|t-s|}^{(1)}[\psi(t,\cdot)-m_U\psi(t,\cdot)]
-                 \right\rangle_{m_U}dsdt.
-\tag{YM.E15}
-$$
-
-Odd moments vanish and each even moment is the sum, over pairings of its
-tests, of products of {ref}`(YM.E15) <eq-fg-ym-e15>`. Its nontriviality, reflection positivity,
-and uniform transfer gap are those just constructed.
-:::
-
-:::{prf:proof}
-The product reference has its strictly positive smooth kinetic density.
-Its gradient form is closable: if $f_j\to0$ and $\nabla f_j\to v$
-in their weighted $L^2$ spaces, integration by parts against compactly
-supported smooth vector tests shows $v=0$; the logarithmic density
-derivative is bounded on each such support. On finite sums of smooth
-tensor products the form {ref}`(YM.E1) <eq-fg-ym-e1>` is the sum of the one-particle forms.
-Smooth compactly supported functions and their first derivatives can be
-approximated by such sums, and spatial cutoffs exhaust the weighted Sobolev
-domain. Thus the closed form and its semigroup are the tensor products
-of the one-particle construction. This is the energy realization of the
-product structure used in {prf:ref}`thm-tensorization`.
-
-Consequently the equilibrium paths of different particles are independent.
-For any finite real linear combination of the tests, let
-$Y_i=\int[\varphi(t,X_i(t))-m_U\varphi(t,\cdot)]dt$.
-These variables are independent, identically distributed, centered, and
-have every moment by {ref}`(YM.F2) <eq-fg-ym-f2>` at $N=1$. Taylor's formula gives
-
-$$
-\mathbb E e^{iuY_1/\sqrt N}
-=1-\frac{u^2\mathbb E Y_1^2}{2N}+R_N,
-\qquad
-|R_N|\le\frac{|u|^3\mathbb E|Y_1|^3}{6N^{3/2}}.
-$$
-
-Taking its $N$th power gives
-$\mathbb E e^{iuN^{-1/2}\sum_iY_i}
-\to\exp[-u^2\mathbb E Y_1^2/2]$. Stationarity and the one-particle
-Markov property compute $\mathbb E Y_1^2$ and its polarization as
-{ref}`(YM.E15) <eq-fg-ym-e15>`. This determines every finite-dimensional distribution. The
-distributional tightness already proved makes all subsequential laws equal,
-so the whole sequence converges. Differentiating the Gaussian generating
-function, justified also by the uniform moment bounds, gives the pairing
-formula for its hierarchy.
-
-For a nonzero bounded tilt $B_N$, the same independence step is unavailable.
-Its proven conclusion is {prf:ref}`thm-ym-equilibrium-fluctuation-limit`
-with the actual tilt retained. The product calculation identifies a
-specific family already present in the framework; it does not substitute
-a product law for the selected swarm law.
-:::
-
-:::{div} feynman-prose
-We can identify the bulk empirical law even when the fluctuation law remains
-undetermined. Under the product reference, the mean-square error of a bounded
-empirical average is proportional to $1/N$. The bounded whole-joint density
-ratio can increase that error by only a fixed factor. The error therefore
-still vanishes under the tilted law. If that law is exchangeable, sampling
-a fixed number of distinct particle labels also gives the product marginal
-in the limit.
-
-Now look more closely at the fluctuations. A bias of order $1/\sqrt N$
-disappears from an empirical average but survives after multiplication by
-$\sqrt N$. The centering calculation below keeps this correction explicitly.
-Thus identifying the limiting bulk measure does not replace the finite
-joint laws or determine their fluctuation covariances and equilibrium
-transitions.
-:::
-
-:::{prf:theorem} Empirical and fixed-marginal identification within the bounded-tilt family
-:label: thm-ym-bounded-tilt-bulk-identification
-
-For the same family {ref}`(YM.E9) <eq-fg-ym-e9>`, write $m=m_U$ and
-$L_N=N^{-1}\sum_i\delta_{z_i}$. Every bounded real test $\varphi$ satisfies
-
-(eq-fg-ym-q2)=
-$$
-\mathbb E_{\rho_N}|L_N\varphi-m\varphi|^2
-\le\frac{e^{B_*}}{N}\operatorname{Var}_m\varphi.
-\tag{YM.Q2}
-$$
-
-Hence the empirical law tends to $m$ in probability in the weak topology
-on the finite-dimensional particle state space. For the exchangeable
-members of this family, every fixed marginal tends to $m^{\otimes k}$.
-Whenever the upstream stationary-chaos theorem is applied to this same
-sequence of laws, its one-particle limit $\mu_*$ is therefore $m$.
-:::
-
-:::{prf:proof}
-Let $r_N=d\rho_N/dm^{\otimes N}$. The established bound
-$e^{-B_*}\le r_N\le e^{B_*}$ gives
-
-$$
-\begin{aligned}
-\mathbb E_{\rho_N}|L_N\varphi-m\varphi|^2
-&\le e^{B_*}\mathbb E_{m^{\otimes N}}
- \left|\frac1N\sum_i(\varphi(z_i)-m\varphi)\right|^2\\
-&=\frac{e^{B_*}}{N^2}\sum_i\operatorname{Var}_m\varphi.
-\end{aligned}
-$$
-
-The mixed terms vanish by product independence. This proves
-{ref}`(YM.Q2) <eq-fg-ym-q2>` without requiring independence under $\rho_N$.
-For empirical tightness choose a compact $K$ with $m(K^c)$ small. The same
-density comparison gives
-$\mathbb E_{\rho_N}L_N(K^c)\le e^{B_*}m(K^c)$, and Markov's inequality
-makes the mass outside $K$ small in probability, uniformly in $N$.
-More explicitly, choose compacts $K_j$ with
-$e^{B_*}m(K_j^c)\le\varepsilon 2^{-j}\eta_j$, where $\eta_j\downarrow0$.
-Then the probability that some $L_N(K_j^c)>\eta_j$ is at most
-$\varepsilon$. The probability measures satisfying all these constraints
-form a tight set; its weak closure is compact. Thus the laws of $L_N$ are
-tight. A countable convergence-determining family of bounded continuous
-tests, together with {ref}`(YM.Q2) <eq-fg-ym-q2>`, identifies every
-subsequential limit as the deterministic measure $m$. Convergence in law
-to this constant is convergence in probability.
-
-For bounded tests $f_1,\ldots,f_k$, set $K_f=\prod_j\|f_j\|_\infty$.
-Sampling $k$ indices independently with replacement gives
-$\prod_jL_Nf_j$. Conditional on distinct indices the average is
-$D_{N,k}=(N)_k^{-1}\sum_{i_1,\ldots,i_k\text{ distinct}}
-\prod_j f_j(z_{i_j})$, where $(N)_k=N(N-1)\cdots(N-k+1)$.
-The probability of any collision is at most $k(k-1)/(2N)$, so
-
-(eq-fg-ym-q3)=
-$$
-\left|\mathbb E_{\rho_N}\prod_jL_Nf_j
-       -\mathbb E_{\rho_N}D_{N,k}\right|
-\le\frac{k(k-1)}{N}K_f.
-\tag{YM.Q3}
-$$
-
-Exchangeability identifies the second expectation with
-$\rho_N^{(k)}(f_1\otimes\cdots\otimes f_k)$.
-A telescoping expansion and {ref}`(YM.Q2) <eq-fg-ym-q2>` give
-
-$$
-\mathbb E_{\rho_N}\left|\prod_jL_Nf_j-\prod_jmf_j\right|
-\le\sum_{j=1}^k\left(\prod_{\ell\ne j}\|f_\ell\|_\infty\right)
- \sqrt{\frac{e^{B_*}\operatorname{Var}_m f_j}{N}}
-\longrightarrow0.
-$$
-
-The marginal density comparison also gives
-$\rho_N^{(k)}(A)\le e^{B_*}m^{\otimes k}(A)$, hence tightness.
-Bounded continuous product tests identify the unique weak limit as
-$m^{\otimes k}$. Uniqueness of a weak limit proves the claimed
-identification with $\mu_*^{\otimes k}$ when the stationary-chaos result
-concerns these same laws.
-
-For later use the reference-centered fluctuation and the actual-centered
-one differ by the deterministic quantity
-
-(eq-fg-ym-q4)=
-$$
-\begin{aligned}
-G_N&=\sqrt N(L_N\varphi-m\varphi),\qquad
-Y_N=G_N-\beta_N,\\
-\beta_N&=\mathbb E_{m^{\otimes N}}[(r_N-1)G_N],\qquad
-|\beta_N|\le(e^{B_*}-1)\sqrt{\operatorname{Var}_m\varphi}.
-\end{aligned}
-\tag{YM.Q4}
-$$
-
-The bound follows from Cauchy--Schwarz and
-$\mathbb E_{m^{\otimes N}}G_N^2=\operatorname{Var}_m\varphi$.
-This calculation identifies the bulk law but retains the possible
-order-one fluctuation-centering correction. It neither replaces $\rho_N$
-by a product law nor identifies its equilibrium transitions.
-:::
-
-:::{div} feynman-prose
-A single nonzero fluctuation establishes one direction beyond the vacuum.
-To prove infinite dimension, we need arbitrarily many independent directions.
-Try the powers of one field measurement, from the constant through degree
-$q$. Their Gram matrix tests whether any nonzero polynomial combination
-has zero reflected norm.
-
-The product reference supplies a positive polynomial Gram matrix in the
-large-population limit: a nonzero polynomial cannot vanish almost everywhere
-under a Gaussian with positive variance. The bounded density comparison
-keeps a positive lower bound for the tilted laws, including their bounded
-centering shifts. A sufficiently short future time average then stays close
-enough to the equal-time measurement to preserve that lower bound in the
-reflection form.
-
-All entries pass through the already constructed common hierarchy. For
-every finite $q$, this produces $q+1$ independent vectors. The time window
-may shrink with $q$; a single window need not work for all degrees. The
-Gaussian is used to bound the reference Gram matrix, without identifying
-the tilted fluctuation law as Gaussian.
-:::
-
-:::{prf:theorem} Infinite dimension of the constructed fluctuation OS space
-:label: thm-ym-fluctuation-os-infinite-dimension
-
-Every common subsequential hierarchy constructed in
-{prf:ref}`thm-ym-equilibrium-fluctuation-limit` has an infinite-dimensional
-OS Hilbert space. For each integer $q\ge1$, a single smooth future test
-$a_q\otimes\varphi$ supplies $q+1$ linearly independent vectors
-$[1],[\mathcal Z(a_q\otimes\varphi)],\ldots,
-[\mathcal Z(a_q\otimes\varphi)^q]$.
-:::
-
-:::{prf:proof}
-Fix the real smooth compactly supported test $\varphi$ used in
-{ref}`(YM.E10) <eq-fg-ym-e10>` and put
-$v=\operatorname{Var}_m\varphi>0$, $b=\|\nabla\varphi\|_\infty^2>0$.
-Use $G_N,Y_N,\beta_N$ from {ref}`(YM.Q4) <eq-fg-ym-q4>` and write
-$B_0=(e^{B_*}-1)\sqrt v$.
-
-**A positive polynomial Gram matrix at one time.** Under the product
-reference, expansion of each integer moment gives
-
-$$
-\mathbb E G_N^r
-=N^{-r/2}\sum_{i_1,\ldots,i_r}
- \mathbb E\prod_{j=1}^r\bigl(\varphi(z_{i_j})-m\varphi\bigr).
-$$
-
-A term containing an index exactly once vanishes. For $r=2\ell$, the
-terms with $\ell$ distinct indices all repeated twice contribute
-$(N)_\ell N^{-\ell}(2\ell)!v^\ell/(2^\ell\ell!)$.
-Every other nonzero term has at most $\ell-1$ distinct indices and is
-$O(N^{-1})$ after normalization; boundedness of $\varphi$ bounds its
-coefficient. For $r=2\ell+1$, at most $\ell$ distinct indices occur,
-so the entire moment is $O(N^{-1/2})$. Thus all moments tend to those
-of a real Gaussian $G$ with variance $v$.
-
-For $a\in\mathbb C^{q+1}$ put $p_a(x)=\sum_{j=0}^qa_jx^j$ and define
-
-(eq-fg-ym-q5)=
-$$
-\mu_q=\min_{\|a\|_2=1,\,|\beta|\le B_0}
-       \mathbb E|p_a(G-\beta)|^2>0,\qquad
-\lambda_q=\tfrac12e^{-B_*}\mu_q.
-\tag{YM.Q5}
-$$
-
-The minimum exists by compactness and continuity. A zero minimum would
-make a nonzero polynomial vanish almost everywhere for a Gaussian of
-positive variance, which is impossible since its density is strictly
-positive and a nonzero polynomial has finitely many real zeros.
-Convergence of the finitely many moments up to $2q$ is uniform in
-$\|a\|_2=1$ and $|\beta|\le B_0$: expanding the polynomial gives a
-finite sum of moment errors with uniformly bounded coefficients.
-Consequently, for all sufficiently large $N$,
-
-$$
-\mathbb E_{\rho_N}|p_a(Y_N)|^2
-\ge e^{-B_*}\mathbb E_{m^{\otimes N}}|p_a(G_N-\beta_N)|^2
-\ge\lambda_q\|a\|_2^2.
-$$
-
-**Moving the Gram matrix into strictly positive times.** The LSI moment
-bound already used in {ref}`(YM.F2) <eq-fg-ym-f2>` gives, for $r>0$,
-
-$$
-\|Y_N(t)\|_r\le M_r
-:=\left[2(2C_*)^{r/2}\Gamma(1+r/2)\right]^{1/r}\sqrt b.
-$$
-
-Stationarity, the spectral bound $1-e^{-t\lambda}\le t\lambda$, and
-{ref}`(YM.E11) <eq-fg-ym-e11>` give the increment estimate
-
-(eq-fg-ym-q6)=
-$$
-\mathbb E|Y_N(t)-Y_N(0)|^2
-=2\langle Y_N,(I-T_{N,|t|}^{\mathrm{eq}})Y_N\rangle
-\le2b|t|.
-\tag{YM.Q6}
-$$
-
-Choose $a_\delta\in C_c^\infty(0,\delta)$ nonnegative with integral one
-and set $X_N^\pm=\int a_\delta(t)Y_N(\pm t)dt$.
-Jensen's inequality yields
-$\|X_N^\pm\|_r\le M_r$ for $r\ge1$ and
-$\|X_N^\pm-Y_N(0)\|_2\le\sqrt{2b\delta}$.
-Interpolation between $L^2$ and $L^8$ gives
-
-$$
-\|X_N^\pm-Y_N(0)\|_4
-\le(2b\delta)^{1/6}(2M_8)^{2/3}.
-$$
-
-Indeed $1/4=(1/3)/2+(2/3)/8$ and the $L^8$ norm of this difference
-is at most $2M_8$. For $j\ge1$, factor the difference of powers and
-apply Hölder to each term:
-
-$$
-\|(X_N^\pm)^j-Y_N(0)^j\|_2
-\le j\|X_N^\pm-Y_N(0)\|_4 M_{4(j-1)}^{j-1},
-$$
-
-where the last factor is defined to be $1$ for $j=1$.
-Set
-
-$$
-\begin{aligned}
-U_q&=\left(1+\sum_{j=1}^qM_{2j}^{2j}\right)^{1/2},\\
-K_q&=(2b)^{1/6}(2M_8)^{2/3}
- \left(\sum_{j=1}^qj^2M_{4(j-1)}^{2(j-1)}\right)^{1/2}.
-\end{aligned}
-$$
-
-Cauchy--Schwarz in the coefficient index now gives
-$\|p_a(X_N^\pm)\|_2,\|p_a(Y_N(0))\|_2\le U_q\|a\|_2$ and
-$\|p_a(X_N^\pm)-p_a(Y_N(0))\|_2
-\le K_q\delta^{1/6}\|a\|_2$. Expanding the difference of the two
-pairings and applying Cauchy--Schwarz once more gives
-
-(eq-fg-ym-q7)=
-$$
-\left|\mathbb E\overline{p_a(X_N^-)}p_a(X_N^+)
-             -\mathbb E|p_a(Y_N(0))|^2\right|
-\le2U_qK_q\delta^{1/6}\|a\|_2^2.
-\tag{YM.Q7}
-$$
-
-Choose $0<\delta\le(\lambda_q/(4U_qK_q))^6$ and take
-$a_q=a_\delta$. Reflection positivity makes the first pairing real, and
-{ref}`(YM.Q5) <eq-fg-ym-q5>`--{ref}`(YM.Q7) <eq-fg-ym-q7>` imply
-
-(eq-fg-ym-q8)=
-$$
-\|p_a(\mathcal Z_N(a_q\otimes\varphi))\|_{\mathrm{OS},N}^2
-\ge\tfrac12\lambda_q\|a\|_2^2.
-\tag{YM.Q8}
-$$
-
-**The same Gram matrix in the limit.** Its $(j,k)$ entry is the
-correlation of $j$ reflected copies and $k$ future copies of the fixed
-Schwartz test, with $j+k\le2q$. All these entries converge along the
-common subsequence already constructed. Therefore
-{ref}`(YM.Q8) <eq-fg-ym-q8>` passes to its limiting Gram matrix.
-Its rank is $q+1$. This works for every $q$ on the same limiting
-hierarchy, although the time test may depend on $q$. Hence the OS space
-has arbitrarily large finite-dimensional subspaces and is infinite
-dimensional. The Gaussian calculation was used only under the product
-reference to bound this Gram matrix; it makes no Gaussian identification
-of a bounded-tilt fluctuation limit.
-:::
-
-:::{div} feynman-prose
-There is another useful limit with a different approximation parameter.
-Begin with the mean-field marginal already proved upstream and construct
-its equilibrium energy. Then represent observables using finitely many
-modes. The mass matrix measures their inner products; the stiffness matrix
-measures their energy. Increasing the mode count gives a convergent
-approximation to this fixed operator and its bounded-observable correlations.
-
-Here the number of retained particles $k$ is fixed and the mode count $M$
-grows. The theorem therefore gives a precise route to approximating the
-equilibrium theory of the identified limiting law. Identifying a population
-fluctuation covariance for interacting swarms remains the separate dynamical
-calculation described above.
-:::
-
-:::{prf:theorem} Equilibrium theory on the proved mean-field law and convergent mode approximations
-:label: thm-ym-limit-law-galerkin-transfer
-
-Take the continuous limiting law $\rho^{(k)}$ already identified by the
-stationary-chaos results and covered by
-{prf:ref}`cor-kl-lsi-mean-field-limit`, for fixed $k$. Its smooth-test LSI
-has the same $C_*$. Applying {ref}`(YM.E1) <eq-fg-ym-e1>`--{ref}`(YM.E5) <eq-fg-ym-e5>` in these $k$ particle
-coordinates constructs its equilibrium operator $H_*^{(k)}$ directly.
-For the nondegenerate continuous stationary density $\mu_*$,
-$\rho^{(k)}=\mu_*^{\otimes k}$ has nonconstant modes.
-
-Let $V_M$ be nested finite-dimensional spaces generated by the constant
-and a countable form-dense set of smooth record observables, and let $P_M$
-be their $L^2(\rho^{(k)})$ orthogonal projections. The stiffness and mass
-matrices are the actual form and moment integrals
-
-(eq-fg-ym-e16)=
-$$
-K_{ab}=\mathcal E_*(u_a,u_b),\qquad
-G_{ab}=\langle u_a,u_b\rangle_{\rho^{(k)}}.
-\tag{YM.E16}
-$$
-
-After quotienting zero-norm combinations, these matrices define a
-self-adjoint $H_M$ on $V_M$, with constant vacuum and gap at least
-$1/C_*$. If $J_M:V_M\hookrightarrow L^2(\rho^{(k)})$ is inclusion,
-then for every $\sigma\ge0$,
-
-(eq-fg-ym-e17)=
-$$
-J_Me^{-\sigma H_M}J_M^*\longrightarrow e^{-\sigma H_*^{(k)}}
-\quad\text{strongly}.
-\tag{YM.E17}
-$$
-
-Finite products of these transfers and compressed bounded direct
-observables converge to the corresponding equilibrium correlations.
-This instantiates the embedded-semigroup limit and uniform gap in
-{prf:ref}`thm-mass-gap-rg-fixed-point` for the mode cutoff $M$.
-:::
-
-:::{prf:proof}
-**The identified limiting measure.** For a smooth bounded function of the
-first $k$ particles, every other gradient in the $N$-particle LSI vanishes.
-Weak convergence of the fixed marginal passes its entropy and gradient
-integrals to the identified law, exactly as proved in
-{prf:ref}`cor-kl-lsi-mean-field-limit`. The recovery and entropy argument
-of {ref}`(YM.E2) <eq-fg-ym-e2>`--{ref}`(YM.E3) <eq-fg-ym-e3>` extends it to the closed energy even before a separate
-closability statement. This constructs $H_*^{(k)}$ from the existing
-limit. A continuous probability density is not a point mass: choose two
-disjoint compact neighborhoods of positive probability and a smooth bounded
-function equal to one on one and zero on the other. Its variance is
-positive, providing a nonzero mode. The equilibrium and CAR spectral
-formulas therefore yield nonzero correlations.
-
-**Choice of a form core.** The graph used in {ref}`(YM.E2) <eq-fg-ym-e2>` is a subspace of a
-separable Hilbert direct sum. Choose a countable dense subset of its
-minimum-gradient graph, approximate each pair by the smooth recovery
-sequences used there, and enumerate those smooth functions, together with
-$1$. Their finite spans are form dense. Each such function is a function
-of the already reconstructed particle coordinates, so its values and the
-integrals in {ref}`(YM.E16) <eq-fg-ym-e16>` have the exact record representation. The dense core
-is retained even when a selected finite set of channel observables spans
-only a proper subspace.
-
-**Recovery and lower bound.** Form density gives, for every form-domain
-$u$, elements $u_M\in V_M$ with
-$\|u_M-u\|_2^2+\mathcal E_*(u_M-u)\to0$. Conversely, a sequence with
-bounded $L^2$ norm and bounded form energy is weakly precompact in the
-Hilbert form domain. Any weak $L^2$ limit is the same form-domain limit
-along a further subsequence, and weak lower semicontinuity gives
-$\mathcal E_*(u)\le\liminf_M\mathcal E_*(u_M)$.
-These are the recovery and lower-bound calculations for this particular
-approximation.
-
-**Resolvent and transfer convergence.** Let
-$u=(\lambda+H_*^{(k)})^{-1}f$ and let
-$u_M=(\lambda+H_M)^{-1}P_Mf$. Subtract their variational equations
-{ref}`(YM.E5) <eq-fg-ym-e5>`. For every $v\in V_M$,
-$\lambda\langle u-u_M,v\rangle+\mathcal E_*(u-u_M,v)=0$.
-Thus $u_M$ is the orthogonal projection of $u$ in the form inner product
-$\lambda\langle\cdot,\cdot\rangle+\mathcal E_*$, and
-
-$$
-\lambda\|u-u_M\|_2^2+\mathcal E_*(u-u_M)
-\le\inf_{v\in V_M}
- \{\lambda\|u-v\|_2^2+\mathcal E_*(u-v)\}\longrightarrow0.
-$$
-
-This proves strong convergence of the embedded resolvents. For fixed
-$\sigma>0$, the function
-$r\mapsto\exp[-\sigma(r^{-1}-\lambda)]$ on
-$0<r\le1/\lambda$, extended by zero at $r=0$, is continuous.
-Uniform polynomial approximation with zero constant term and the
-resolvent convergence give {ref}`(YM.E17) <eq-fg-ym-e17>`. At $\sigma=0$ the claim is
-$P_M\to I$, which follows from core density.
-
-The Poincaré inequality on each $V_M$ gives the same gap, and $1\in V_M$
-gives its exact vacuum. A bounded multiplication operator $M_A$ has
-$P_MM_AP_M\to M_A$ strongly with norms at most $\|A\|_\infty$.
-Telescoping a finite product of uniformly bounded strongly convergent
-factors proves convergence of every bounded-insertion correlation. Its
-finite-dimensional reflected word uses the adjoint reversed product, so
-it also has a nonnegative boundary-vector norm. The compressed operator
-need not be a classical Markov kernel; its self-adjoint transfer and
-represented observable matrix elements are the finite mode approximation.
-:::
-
-:::{div} feynman-prose
-The same mass and stiffness matrices now give a finite fermionic simulator.
-Remove the constant mode, form antisymmetric combinations of the retained
-modes, and add their one-mode energies. The empty sector supplies the vacuum;
-every occupied mode costs at least the established gap.
-
-To approximate a chosen correlation, project each insertion mode into the
-retained space and use its finite transfer. Mode convergence then passes
-through each finite exterior sector and each finite operator word. The
-completely positive regression formula expresses its correlations through
-these same transfer products, so those calculations converge as well. Thus
-increasing the mode cutoff approximates the equilibrium fermionic theory
-while preserving a common gap. The finite Hamiltonians use the existing
-mass and stiffness integrals; their time parameter remains the equilibrium
-energy time of the fixed limiting law.
-:::
-
-:::{prf:corollary} Convergent fermionic simulator on the established equilibrium mode spaces
-:label: cor-ym-galerkin-car-convergence
-
-Use the fixed limiting law and the actual nested mode spaces $V_M$ of
-{prf:ref}`thm-ym-limit-law-galerkin-transfer`. Remove the constant
-mode, putting $E_M=V_M\cap1^\perp$ and
-$\mathcal H_*=L^2_0(\rho^{(k)})$. The restriction $h_M$ of $H_M$
-to $E_M$ gives the finite fermionic Hamiltonian
-$\mathbb H_M=d\Gamma_-(h_M)$. The isometric construction in
-{prf:ref}`thm-lqft-record-car-channel`, applied to the contractions
-$e^{-\sigma h_M}$, gives its completely positive CAR evolution.
-These finite theories have their vacuum and gap at least $1/C_*$.
-
-Let $j_M:E_M\hookrightarrow\mathcal H_*$ and
-$h_*=H_*^{(k)}|_{\mathcal H_*}$. Then
-
-(eq-fg-ym-p3)=
-$$
-\Gamma_-(j_M)e^{-\sigma\mathbb H_M}\Gamma_-(j_M)^*
-\longrightarrow e^{-\sigma d\Gamma_-(h_*)}
-\quad\text{strongly for every }\sigma\ge0.
-\tag{YM.P3}
-$$
-
-For every finite CAR word, use the projected modes $j_M^*f$ in
-its finite theory. All its finite-time vacuum matrix elements and
-nested completely positive regression expressions converge to those
-of the limiting equilibrium CAR theory. Its matrices are computed
-from the already specified mass and stiffness integrals
-{ref}`(YM.E16) <eq-fg-ym-e16>`.
-:::
-
-:::{prf:proof}
-The constant mode belongs to every $V_M$ and is annihilated by $H_M$,
-so its orthogonal complement is invariant. Centering
-{ref}`(YM.E17) <eq-fg-ym-e17>` gives the strong convergence of
-contractions
-
-$$
-C_M(\sigma):=j_Me^{-\sigma h_M}j_M^*
-\longrightarrow C_\infty(\sigma):=e^{-\sigma h_*}.
-$$
-
-On a fixed decomposable $r$-wedge, telescope the difference between
-$\bigwedge_{\ell=1}^r C_M(\sigma)f_\ell$ and
-$\bigwedge_{\ell=1}^r C_\infty(\sigma)f_\ell$.
-Each term tends to zero because one factor converges strongly and
-all others have uniformly bounded norms. Density of decomposable
-wedges gives strong convergence on each sector. Truncate the
-sector sum of an arbitrary Fock vector; the common contraction
-bound controls its remaining tail. This proves
-{ref}`(YM.P3) <eq-fg-ym-p3>`, since its left side is
-$\Gamma_-(C_M(\sigma))$. At zero time the same proof uses
-$j_Mj_M^*\to I$.
-
-Projected insertions on the full mode space satisfy
-$\|a^\dagger(j_Mj_M^*f)-a^\dagger(f)\|
-=\|j_Mj_M^*f-f\|\to0$, and the same holds for annihilation.
-Finite products of these insertions and the uniformly bounded
-strongly convergent transfers therefore converge on every vector.
-They leave the finite-mode Fock space invariant, so their vacuum
-matrix elements there are precisely the finite simulator's matrix
-elements. Formula {ref}`(LQ.C4) <eq-fg-lq-c4>` identifies its
-regression expressions with these same products, proving their
-convergence as well.
-
-Finally the Poincaré inequality on $E_M$ gives
-$h_M\ge C_*^{-1}I$. The existing sector-sum calculation gives
-energy at least $r/C_*$ on each nonvacuum $r$-sector.
-This proves the common gap and unique vacuum. The construction
-uses the mode cutoff of the proved limiting law. Its conversion
-to numerical matrices retains an independent basis, its mass
-matrix, and the corresponding generalized eigenvalue problem;
-entrywise sampling errors remain those of the actual estimators.
-:::
-
-
-:::{prf:remark} Which limits have been identified
-:label: rem-ym-identified-equilibrium-limits
-
-The population limit in {prf:ref}`thm-ym-equilibrium-fluctuation-limit`
-uses the actual bounded-tilt laws and constructs a nontrivial subsequential
-hierarchy with a uniform transfer gap. The product case in
-{prf:ref}`cor-ym-product-equilibrium-hierarchy` identifies its entire
-sequence and covariance. The limiting-law construction in
-{prf:ref}`thm-ym-limit-law-galerkin-transfer` uses the already identified
-mean-field marginal and proves convergence of its energy-mode approximation.
-Its index $M$ is a mode cutoff, not the swarm population $N$ or a geometric
-mesh size. The matrices {ref}`(YM.E16) <eq-fg-ym-e16>` specify the mathematical inputs of a
-transfer simulator; convergence of estimators of their entries uses the
-applicable sampling and channel estimates already proved in the volume.
-
-For interacting $\rho_N$, convergence of fixed marginals alone does not
-identify the transitions $T_{N,\sigma}^{\mathrm{eq}}$ or the covariance
-of its fluctuation field. Nor does a mode approximation of the limiting
-law establish that identification. Geometric reconstruction uses the
-separate bandwidth and quadrature estimates of
-{prf:ref}`lem-lqft-energy-sampling` and the continuum discharge chapter.
-Each resulting limit retains its confining envelope and its own scale
-dependence. An independent change of volume, potential, or algorithmic
-timestep is not part of {ref}`(YM.E17) <eq-fg-ym-e17>`.
-:::
-
 
 ### 12.3. Continuum limits established by the framework
 
-:::{div} feynman-prose
-We can now collect the limits that have actually been constructed. Increasing
-the population in the bounded-tilt family gives a common fluctuation
-hierarchy, an infinite-dimensional OS space, and a gapped equilibrium
-transfer. Product independence identifies the entire Gaussian sequence.
-Increasing a mode cutoff on an already identified limiting law instead
-approximates that law's equilibrium operator and its fermionic correlations.
-
-The bulk identification connects these constructions when they concern
-the same exchangeable bounded-tilt laws. It fixes the limiting particle
-measure, while each fluctuation field retains its joint time evolution.
-In each passage, the correlations, positivity, and operator bounds belong
-to the same construction. The scope statements following the theorem
-specify which geometric scales and spacetime identifications remain
-separate from these population and mode limits.
-:::
-
-:::{prf:theorem} Continuum identification for the constructed field families
-:label: thm-infinite-volume-limit
-
-The preceding constructions supply the following limits without a separate
-continuum assumption.
-
-1. For the established bounded whole-joint tilt family
-   {ref}`(YM.E9) <eq-fg-ym-e9>`, the population fluctuation fields have
-   a common subsequential, all-order tempered correlation hierarchy.
-   It is symmetric, stationary in equilibrium time, and reflection
-   positive. Its strongly continuous OS transfer has a unique vacuum,
-   an infinite-dimensional Hilbert space, and gap at least $1/C_*$.
-2. For the product member of that family, the whole sequence converges
-   to the Gaussian hierarchy with covariance
-   {ref}`(YM.E15) <eq-fg-ym-e15>`.
-3. On each already identified fixed-marginal mean-field law, the inherited
-   LSI and the form approximations of
-   {prf:ref}`thm-ym-limit-law-galerkin-transfer` give strong convergence
-   of the embedded equilibrium transfers and their bounded-observable
-   correlations. The centered fermionic lift and its CAR correlations
-   converge as proved in {prf:ref}`cor-ym-galerkin-car-convergence`.
-
-Within the exchangeable bounded-tilt family, the fixed-marginal law in
-item 3 is $m_U^{\otimes k}$ by
-{prf:ref}`thm-ym-bounded-tilt-bulk-identification`. This identifies the
-bulk law shared by those constructions; each fluctuation transfer still
-uses its own equilibrium joint dynamics.
-:::
-
-:::{prf:proof}
-For item 1, {prf:ref}`thm-ym-spacetime-fluctuation-compactness` supplies
-a single distributional subsequence and uniform moments at every order.
-For fixed tests $f_1,\ldots,f_n$, Hölder gives
-
-$$
-\sup_N\mathbb E\left|\prod_{j=1}^n\mathcal Z_N(f_j)\right|^2
-\le\prod_{j=1}^n
- \left(\sup_N\mathbb E|\mathcal Z_N(f_j)|^{2n}\right)^{1/n}<\infty.
-$$
-
-The products are therefore uniformly integrable. Their convergence in
-law under the continuous test pairings implies convergence of their
-expectations, which are precisely $S_n(f_1,\ldots,f_n)$. The common
-test-seminorm bound in {ref}`(YM.F3) <eq-fg-ym-f3>` passes to these
-limits and gives their tempered extensions. For any fixed future
-polynomials $F_1,\ldots,F_r$ and coefficients $c_1,\ldots,c_r$,
-
-$$
-\sum_{i,j}\overline{c_i}c_j
- \mathbb E[\overline{F_i(\theta\mathcal Z)}F_j(\mathcal Z)]
-=\lim_N\sum_{i,j}\overline{c_i}c_j
- \mathbb E[\overline{F_i(\theta\mathcal Z_N)}F_j(\mathcal Z_N)]
-\ge0.
-$$
-
-This proves reflection positivity on the same limiting hierarchy.
-Permutation and time-translation identities pass through those same
-entries. Equation {ref}`(YM.E14) <eq-fg-ym-e14>` constructs its
-strongly continuous transfer and proves vacuum uniqueness and the gap;
-{ref}`(YM.Q8) <eq-fg-ym-q8>` proves infinite dimension.
-The limiting centered matrix elements obey the explicit clustering bound
-of {prf:ref}`thm-os-os3-fg`.
-
-For item 2, the characteristic-function calculation in
-{prf:ref}`cor-ym-product-equilibrium-hierarchy` identifies every finite
-collection of test pairings. Tightness and this unique identification
-force full-sequence convergence. The same uniform integrability argument
-gives every moment, with the Gaussian pairing formula stated there.
-
-For item 3, the upstream fixed-marginal limit first inherits its LSI;
-the form recovery and resolvent calculation then yield
-{ref}`(YM.E17) <eq-fg-ym-e17>`. To see explicitly why bounded
-insertions also converge, denote the embedded transfers by $S_M(t)$,
-with $S_M(t)\to S(t)$ strongly, and let
-$B_{j,M}=P_MB_jP_M$ for fixed bounded $B_j$. The projections tend
-strongly to the identity, so $B_{j,M}\to B_j$ strongly with
-$\|B_{j,M}\|\le\|B_j\|$. For any finite product of these factors,
-write $A_{j,M}$ for a transfer or insertion and $A_j$ for its limit.
-The exact telescoping identity is
-
-$$
-\left(\prod_{j=1}^rA_{j,M}-\prod_{j=1}^rA_j\right)u
-=\sum_{j=1}^r\left(\prod_{i<j}A_{i,M}\right)
- (A_{j,M}-A_j)\left(\prod_{i>j}A_i\right)u.
-$$
-
-Each difference acts on a fixed vector and tends to zero; the preceding
-factors are uniformly bounded. Taking vacuum matrix elements proves
-convergence of the finite correlation words. The Fock lift in
-{ref}`(YM.P3) <eq-fg-ym-p3>` supplies the same strong convergence and
-bounds for CAR words, so this calculation applies there as well.
-Finally {ref}`(YM.Q2) <eq-fg-ym-q2>`--{ref}`(YM.Q3) <eq-fg-ym-q3>`
-identify the common bulk law when the bounded-tilt and stationary-chaos
-constructions concern the same exchangeable sequence. None of these
-steps uses its eventual limiting identity to establish an upstream LSI.
-:::
-
-:::{prf:remark} Scales retained by the continuum construction
-:label: rem-ym-continuum-scale-scope
-
-These are limits in population size or energy-mode cutoff, with the
-confining envelope and geometric scales fixed. Geometric reconstruction
-uses the observable, bandwidth, and quadrature identifications in
-{prf:ref}`lem-lqft-energy-sampling` and the continuum discharge chapter.
-Full spacetime covariance and relativistic field-domain control must be
-established for those reconstructed observables before applying the
-relativistic Osterwalder--Schrader reconstruction. They are distinct from
-the equilibrium time-transfer reconstruction proved here.
-
-Population-uniform constants do not automatically control an independently
-increasing geometric volume. For example, on a circle of length $L$ with
-uniform probability, $f(x)=\cos(2\pi x/L)$ satisfies
-$\operatorname{Var}f=1/2$ and
-$\int|f'|^2=(2\pi/L)^2/2$. Its Poincaré constant is at least
-$L^2/(4\pi^2)$. The limits above retain their actual confinement and
-therefore do not make this change of volume implicitly.
-:::
 
 (sec-ym-physical-correspondence-checks)=
 ### 12.3.1. Application to physical spacetime observables
@@ -9591,8 +7192,7 @@ Q^{\mathrm{phys}}_{ij}
 \tag{YM.Z85}
 $$
 
-This substitutes the reconstructed readouts into
-{ref}`(YM.Z76) <eq-fg-ym-z76>` and fixes its left-hand side. It
+This evaluates the reflected product under the recorded law and
 requires no reversal of the sampling record. Localizing an entire recorded
 face to a physical half-space additionally retains its vertex masks, as
 calculated in {prf:ref}`prop-ym-native-physical-reflection-calculation`.
@@ -9615,10 +7215,7 @@ actual readout law makes the geometric action unitary; the isometry
 Likewise {ref}`(YM.Z85) <eq-fg-ym-z85>` defines the actual physical
 reflection form, while its positivity is a property to check under that
 law. The map $\mathcal J_{\mathrm{rec}}$ is an ordinary probability-space
-isometry. The OS isometry $V$ in
-{ref}`(YM.Z78) <eq-fg-ym-z78>` additionally preserves the reflected
-forms. These formulas identify the concrete algorithmic quantities in
-both checks without selecting a new hierarchy to satisfy them.
+isometry.
 :::
 
 :::{prf:lemma} Bounds for recorded gauge words and localized face sums
@@ -10379,12 +7976,7 @@ it does not by itself compare these two variances.
 **Relation to the existing bounds.** Where the existing LSI controls
 these particular readouts, it bounds the variance of each readout from
 above by its own energy. Such upper bounds do not evaluate the difference
-$A-B$ in {ref}`(YM.Z89) <eq-fg-ym-z89>`. The equilibrium-transfer
-factorization supplies a nonnegative Gram form for its specified
-$\sigma$-hierarchy. Formula {ref}`(YM.Z87) <eq-fg-ym-z87>` is the
-physical $x^0$-reflection calculation under the original execution law.
-The comparison in {ref}`(YM.Z76) <eq-fg-ym-z76>` must evaluate these
-same entries. No sampling-time adjoint is used in the present calculation.
+$A-B$ in {ref}`(YM.Z89) <eq-fg-ym-z89>`.
 :::
 
 :::{prf:proposition} Physical reflection on the full native color algebra
@@ -10781,10 +8373,8 @@ The physical coordinate and the recorded readout action in this check
 are constructed in {prf:ref}`prop-ym-recorded-physical-transformations`.
 The physical Euclidean coordinate is $x\in\mathbb R^4$.
 Write $g x=Qx+b$, $Q\in O(4)$. The sampling parameter of a
-Parisi–Wu realization is denoted by $\tau$, and the equilibrium transfer
-parameter in {prf:ref}`thm-ym-equilibrium-hierarchy` by $\sigma$.
-A translation of $x^0$, a shift of $\tau$, and a shift of $\sigma$
-are three separately specified operations.
+record is denoted by $\tau$. A translation of $x^0$ and a shift of
+$\tau$ act on their respective recorded coordinates.
 
 The geometric action on a realized embedded regulator $\mathsf r$
 sends every vertex $x_v$ to $gx_v$, preserves incidence, and transports
@@ -11225,173 +8815,6 @@ with its physical observable correspondence, before applying a same-law
 translation argument to that different state space.
 :::
 
-:::{prf:remark} Common hierarchy and physical reflection check
-:label: rem-ym-physical-hierarchy-application
-
-There are two established continuum constructions to compare.
-{prf:ref}`thm-ym-native-fiber-continuum` retains the native descriptor,
-geometry, source curves, and their conditional likelihoods on a common
-subsequence. {prf:ref}`thm-ym-equilibrium-fluctuation-limit` constructs
-the nontrivial hierarchy of the specified equilibrium fluctuation fields,
-with reflection in $\sigma$. Its lower reflected-norm estimate is
-{ref}`(YM.E13) <eq-fg-ym-e13>`. These conclusions, including their
-population-independent constants, are already available.
-
-In the comparison below, $S^{\mathrm{phys}}$ denotes moments of the
-physical gauge readouts under the actual selected recorded law, or their
-identified common limit. Every physical word is evaluated under that law.
-For physical scalar observables, set
-$\vartheta(x^0,\mathbf x)=(-x^0,\mathbf x)$ and
-$\Theta_{\mathrm{phys}}O(f)=O(\overline{f\circ\vartheta})$
-for Hermitian $O$. Tensor observables additionally carry the reflection
-matrix from {ref}`(YM.Z73) <eq-fg-ym-z73>` on each spacetime index.
-On products use the adjoint order and conjugate coefficients; this also
-fixes the convention for represented fermionic words. These operations
-refer to support in physical spacetime, independently of $\tau$ and
-$\sigma$.
-
-Let $\iota$ denote a proposed identification of the physical future
-observable words with words of the established equilibrium hierarchy.
-It must specify each observable, smearing, normalization, and support.
-For any finite list $F_1,\ldots,F_k$, the quantities to compare are
-
-(eq-fg-ym-z76)=
-$$
-Q^{\mathrm{phys}}_{ij}
- =S^{\mathrm{phys}}(\Theta_{\mathrm{phys}}F_i\,F_j),\qquad
-Q^{\mathrm{eq}}_{ij}
- =S^{\mathrm{eq}}(\Theta_\sigma\iota F_i\,\iota F_j),\qquad
-\epsilon_{ij}=|Q^{\mathrm{phys}}_{ij}-Q^{\mathrm{eq}}_{ij}|.
-\tag{YM.Z76}
-$$
-
-The established equilibrium reflection calculation gives
-$Q^{\mathrm{eq}}_{ij}=\langle h_{\iota F_i},h_{\iota F_j}\rangle$.
-Consequently, whenever both matrices are defined at the comparison
-scale, their Hermitian quadratic forms obey
-
-(eq-fg-ym-z77)=
-$$
-\operatorname{Re}\sum_{i,j}\overline c_i c_jQ^{\mathrm{phys}}_{ij}
-\ge-\sum_{i,j}|c_i||c_j|\epsilon_{ij}.
-\tag{YM.Z77}
-$$
-
-This follows by subtracting the two matrices, bounding each error entry,
-and using positivity of the equilibrium Gram matrix. If the limiting
-entries agree, the physical matrix equals that Gram matrix and is
-positive Hermitian. For a retained witness $F$ with equilibrium
-reflected norm at least $c>0$, its physical reflected norm has real
-part at least $c-\epsilon_{FF}$. Thus the already proved nontriviality
-passes with the same observable once this error tends to zero.
-The complete hierarchy comparison uses all finite observable words;
-reflected words are the particular products required for this positivity
-calculation. A common subsequence is sufficient for these passages.
-
-**Direct color application.**
-{prf:ref}`thm-ym-native-physical-gauge-hierarchy` identifies the bounded
-physical Gram, complex determinant, and triangle words on the native
-subsequence. Their actual mixed reflected entries are those of
-{prf:ref}`prop-ym-native-color-reflected-matrices`, including their
-full-support masks, selected likelihood, and regulator marginal.
-That proposition reduces the sign calculation for continuous cylinders
-to the native polynomial matrices.
-{prf:ref}`prop-ym-native-labeled-color-reflection-sign` evaluates a
-polynomial test in the full labeled algebra and gives a strictly negative
-form whenever its localized diagonal channel has a nonzero one-point
-function. Thus the full descriptor cannot be admitted wholesale as the
-physical OS future algebra. The sign calculation for the prescribed
-summed physical readouts retains their cross-label correlations. This
-direct calculation uses no identification $\iota$ with the equilibrium
-transfer.
-
-For the alternative equilibrium comparison in
-{ref}`(YM.Z76) <eq-fg-ym-z76>`, the error $\epsilon_{ij}$ concerns these
-same mixed entries. The equilibrium theorem identifies one-time static
-moments with its specified $\rho_N$ moments and retains a separate law
-for blocks spanning recorded stages. A comparison using that theorem
-therefore has to evaluate the cross-plane entries, with their complex
-marks and normalization, before applying
-{ref}`(YM.Z77) <eq-fg-ym-z77>`. The direct hierarchy theorem establishes
-passage of their expectations; the sign is the additional native matrix
-inequality in {ref}`(YM.Z89) <eq-fg-ym-z89>`.
-:::
-
-:::{prf:remark} Physical Hamiltonian, sector, and time normalization
-:label: rem-ym-physical-gap-application
-
-The established equilibrium OS transfer has generator $H_{\mathrm{eq}}$
-and centered gap $\lambda_*=1/C_*$ in
-{prf:ref}`thm-ym-equilibrium-fluctuation-limit`. The application to a
-physical hierarchy can be checked directly from the preceding word map.
-Equality of its reflected Gram matrices defines an isometry
-
-(eq-fg-ym-z78)=
-$$
-V[F]_{\mathrm{phys}}=[\iota F]_{\mathrm{eq}}.
-\tag{YM.Z78}
-$$
-
-To verify this, the norm squared of any finite linear combination on
-either side is the same matrix quadratic form in
-{ref}`(YM.Z76) <eq-fg-ym-z76>`. Null vectors therefore map to null
-vectors; the map extends by completion to an isometry with closed image.
-The constant word supplies the same vacuum when $\iota1=1$.
-
-The physical time check is, for a fixed $\kappa>0$,
-
-(eq-fg-ym-z79)=
-$$
-V T_t^{\mathrm{phys}}=T_{\kappa t}^{\mathrm{eq}}V,
-\qquad \sigma=\kappa t.
-\tag{YM.Z79}
-$$
-
-This is checked on translated future words and then extended by their
-density and contraction of the transfers. It makes $\operatorname{Ran}V$
-invariant under every $T_{\kappa t}^{\mathrm{eq}}$. Self-adjointness
-also makes its orthogonal complement invariant: for $u\perp\operatorname{Ran}V$
-and $v\in\operatorname{Ran}V$,
-$\langle T^{\mathrm{eq}}u,v\rangle
-=\langle u,T^{\mathrm{eq}}v\rangle=0$.
-The generator and its domain are consequently
-
-(eq-fg-ym-z80)=
-$$
-\begin{gathered}
-H_{\mathrm{phys}}=\kappa V^*H_{\mathrm{eq}}V,\qquad
-\operatorname{Dom}H_{\mathrm{phys}}
- =\{u:Vu\in\operatorname{Dom}H_{\mathrm{eq}}\},\\
-\|T_t^{\mathrm{phys}}u\|
-\le e^{-\kappa t/C_*}\|u\|\quad(u\perp\Omega_{\mathrm{phys}}),
-\qquad
-\operatorname{spec}H_{\mathrm{phys}}
- \subset\{0\}\cup[\kappa/C_*,\infty).
-\end{gathered}
-\tag{YM.Z80}
-$$
-
-The domain identity follows either from the strong derivative of the
-intertwined semigroups or their spectral resolution on the reducing
-image. The norm bound follows by applying the equilibrium bound to
-$Vu$, whose orthogonality to the vacuum is preserved. With the calibrated
-action unit, the energy gap is at least
-$\hbar_{\mathrm{eff}}\kappa/C_*$. A positive reflected witness from
-{ref}`(YM.Z77) <eq-fg-ym-z77>` ensures a nonzero physical nonvacuum
-space; an isometry of the vacuum alone would not establish this.
-
-**Application status.** These calculations specify the sector, domain,
-and time factor needed to apply the existing gap. The chapter already
-constructs the equilibrium operator and its limiting gap, so that route
-needs no second operator-limit argument. If instead the physical operator
-is constructed as a separate cutoff limit, the embeddings and strong
-semigroup convergence in {prf:ref}`thm-mass-gap-rg-fixed-point` must
-be identified for that cutoff family. The current native source-limit
-construction does not supply the word map in
-{ref}`(YM.Z78) <eq-fg-ym-z78>` or physical time intertwining in
-{ref}`(YM.Z79) <eq-fg-ym-z79>`. Its source derivatives and their
-bounds remain valid without making either identification.
-:::
 
 ### 12.4. Local algebras and their conditional spacetime structure
 
@@ -11417,256 +8840,8 @@ functions, or their unitary exponentials when defined, as generators.
 An unbounded operator itself is not an element of a von Neumann algebra
 of bounded operators.
 
-The existing equilibrium/OS observable representation and its exact
-Fractal Set transport are instantiated in
-{prf:ref}`thm-ym-equilibrium-quantum-net-inputs`. This construction uses
-the quantum unitaries of its already proved Hamiltonian. Geometric support
-uses the episode map of {prf:ref}`assm-cst-continuum-geometry` with its
-stated comparison hypotheses.
-
-The recorded CAR construction is a separate application of this definition:
-its bounded even generators and vacuum sector are calculated in
-{prf:ref}`thm-ym-hk-record-instantiation`. Its pullback symmetry tests
-refer to those specific implementers and do not restrict the quantum
-unitary group of the equilibrium/OS reconstruction.
 :::
 
-:::{prf:theorem} Quantum evolution and observable sector of the existing equilibrium reconstruction
-:label: thm-ym-equilibrium-quantum-net-inputs
-
-Use the already constructed law $\rho_N$, Hamiltonian
-$H=H_N^{\mathrm{eq}}$, vacuum $\Omega=1$, and bounded self-adjoint
-insertion algebra of {prf:ref}`thm-ym-equilibrium-hierarchy`. Its OS
-boundary-vector map identifies the OS Hilbert space with the closed span
-of its existing vectors $h_F$ in $L^2(\rho_N)$. Denote this span by
-$\mathcal H_{\mathrm{OS}}$. The identity in (YM.E8) gives an isometry
-onto this span, after quotienting zero OS norm.
-
-The following are consequences of that existing reconstruction.
-
-1. $\mathcal H_{\mathrm{OS}}$ reduces $H$ and every bounded insertion
-   $M_A$ in the specified algebra. The quantum time-translation unitaries
-   and evolved observables on this same space are
-
-   $$
-   U_{\mathrm{eq}}(t)=e^{itH}|_{\mathcal H_{\mathrm{OS}}},\qquad
-   A(t)=U_{\mathrm{eq}}(t)M_AU_{\mathrm{eq}}(-t).
-   $$
-
-   The unitaries form a strongly continuous group, fix $\Omega$, and have
-   nonnegative generator with the existing gap at least $1/C_*$. Their
-   invariant vectors are exactly the multiples of $\Omega$.
-
-2. $\Omega$ is cyclic for the bounded algebra generated by all these
-   evolved insertions. Its state is positive and normalized. In
-   particular this quantum evolution and vacuum are obtained from the
-   original transfer construction without identifying a recorded Markov
-   channel with an automorphism group.
-
-3. The original real conjugation $Jf=\overline f$ preserves this observable
-   sector and satisfies
-
-   $$
-   JHJ=H,\qquad
-   JU_{\mathrm{eq}}(t)J=U_{\mathrm{eq}}(-t).
-   $$
-
-   Thus the symmetric-spectrum conclusion for the distinct pullback
-   action in {prf:ref}`lem-ym-pullback-translation-spectrum` does not
-   apply to these quantum time translations.
-
-4. The existing record isomorphism $\mathcal U$ of
-   {prf:ref}`prop-fractal-set-analytic-transfer`, with the transported
-   closed form of {prf:ref}`thm-ym-equilibrium-form-construction`, gives
-
-   $$
-   \widehat U_{\mathrm{eq}}(t)=\mathcal U U_{\mathrm{eq}}(t)\mathcal U^{-1},
-   \qquad
-   \widehat A(t)=\mathcal U A(t)\mathcal U^{-1},\qquad
-   \widehat\Omega=\mathcal U\Omega.
-   $$
-
-   It preserves all finite quantum matrix elements, observable
-   commutators, cyclicity, the generator domain, and the gap. For local
-   algebras generated by the corresponding recorded insertions it also
-   transports the double commutants, and hence every established local-net
-   identity, on the same region labels.
-
-The time $t$ is the real continuation of the existing equilibrium time
-$\sigma$. Identifying it with physical time uses the correspondence in
-{prf:ref}`rem-ym-physical-gap-application`. The source law, bounded
-insertions, and geometric labels remain those of this theorem's specified
-reconstruction. A nontrivial relativistic HK application additionally uses
-its physical spacelike commutators and its joint spacetime covariance;
-nonnegative spectrum of this time generator is already proved here.
-:::
-
-:::{prf:proof}
-Write $T_s=e^{-sH}$. Translating a future cylinder gives
-$h_{\tau_sF}=T_sh_F$ by (YM.E8), so its closed span is invariant under
-every $T_s$. Self-adjointness makes the orthogonal complement invariant
-as well. Its projection therefore commutes with the resolvents and the
-spectral measure of $H$, proving reduction and the restriction of its
-complete generator domain. Multiplying a future cylinder by a bounded
-zero-time insertion gives $h_{A(X_0)F}=M_Ah_F$. Applying this to $A$ and
-its adjoint proves that the same subspace reduces the insertion operators.
-The spectral calculus on this subspace gives the stated strongly continuous
-unitary group. Restriction preserves the positive spectrum and the gap of
-(YM.E4). That gap makes $\Omega$ the unique invariant vector up to scale.
-
-To verify cyclicity for the real-time algebra, let $\mathcal C$ be the
-closed span of its words acting on $\Omega$. It contains $\Omega$ and
-is invariant under every bounded insertion and its adjoint. Since
-$U_{\mathrm{eq}}(t)\Omega=\Omega$, time conjugation of a word proves
-invariance of $\mathcal C$ under every $U_{\mathrm{eq}}(t)$ and its
-inverse. Thus $\mathcal C$ reduces this group and its spectral measure,
-and is invariant under every $T_s$. It consequently contains every
-alternating transfer-and-insertion vector $h_F$, so
-$\mathcal H_{\mathrm{OS}}\subset\mathcal C$. The reverse inclusion follows
-from the reduction already proved. Positivity is
-$\omega(B^*B)=\|B\Omega\|^2\ge0$, with $\omega(I)=1$.
-
-The equilibrium form is real, so its resolvents and $T_s$ commute with
-$J$. Complex conjugation preserves the insertion algebra and sends each
-boundary vector to the vector for its conjugate cylinder. It therefore
-preserves $\mathcal H_{\mathrm{OS}}$ and commutes with its $H$.
-Antiunitarity conjugates $i$ to $-i$, yielding
-$JU_{\mathrm{eq}}(t)J=U_{\mathrm{eq}}(-t)$. This is the quantum
-unitary group of the positive Hamiltonian, as opposed to a pullback group
-commuting with $J$.
-
-The transported resolvent and domain identities (YM.E5) imply the
-unitary-group identity by the spectral calculus. Conjugating each
-insertion proves the evolved-observable identity. Consecutive
-$\mathcal U^{-1}\mathcal U$ factors cancel in every matrix element and
-commutator. Unitary conjugation preserves commutants, so it transports
-local double commutants as well. No independent reconstruction of a
-Hamiltonian or new field law enters these calculations.
-:::
-
-:::{prf:proposition} Spatial-translation test in the constructed equilibrium OS hierarchy
-:label: prop-ym-equilibrium-hk-translation-test
-
-Use exactly the fixed-parameter bounded whole-joint tilt family and its
-continuum hierarchy in {prf:ref}`thm-ym-equilibrium-fluctuation-limit`:
-$\rho_N=Z_N^{-1}e^{-B_N}m_U^{\otimes N}$,
-$\operatorname{osc}B_N\le B_*$. Let $z=(x,v)$ be its existing one-particle
-coordinates. Choose the nonconstant real
-$\varphi\in C_c^\infty$ used in that theorem's nontriviality calculation,
-and translate its position argument by $a$ in a fixed spatial direction:
-$\varphi_a(x,v)=\varphi(x-a,v)$. In particular this translation leaves
-the equilibrium time and all velocity arguments unchanged.
-
-Write $Y_{N,\varphi}$ for the already defined centered fluctuation in
-(YM.F1), with its own $\rho_N$ centering for each test. Define the
-existing constants
-
-$$
-c_\varphi=e^{-B_*}\operatorname{Var}_{m_U}\varphi>0,
-\qquad b_\varphi=\|\nabla\varphi\|_\infty^2>0.
-$$
-
-Take the future time smearing used in the equilibrium nontriviality proof:
-$\eta\ge0$, $\eta\in C_c^\infty((0,\delta))$, $\int\eta=1$, where
-$0<\delta\le c_\varphi/(4b_\varphi)$. Its existing OS boundary vectors
-are
-
-$$
-h_{N,\varphi}=\int\eta(s)T_{N,s}^{\mathrm{eq}}Y_{N,\varphi}\,ds,
-\qquad
-h_{N,\varphi_a}=\int\eta(s)T_{N,s}^{\mathrm{eq}}Y_{N,\varphi_a}\,ds.
-$$
-
-The same-law estimates give, for every $N$,
-
-$$
-\|h_{N,\varphi}\|^2\ge\frac{c_\varphi}{2},
-\qquad
-\|h_{N,\varphi_a}\|^2
-\le e^{B_*}\operatorname{Var}_{m_U}\varphi_a
-\le e^{B_*}m_U(\varphi_a^2).
-$$
-
-Since $m_U$ is the fixed confining probability law,
-$m_U(\varphi_a^2)\to0$ as $|a|\to\infty$. Therefore one fixed spatial
-translation $a$ satisfies, uniformly in $N$,
-
-$$
-\|h_{N,\varphi}\|^2-\|h_{N,\varphi_a}\|^2
-\ge\frac{c_\varphi}{4}>0.
-$$
-
-All these are reflected second moments in the existing common hierarchy.
-The same strict inequality consequently holds for its limiting OS vectors.
-Thus this hierarchy admits no vacuum-preserving spatial translation
-unitary that implements $\varphi\mapsto\varphi_a$ on these observable
-insertions and commutes with its quantum time translations. In particular,
-if these recorded position translations are claimed as its physical spatial
-translations, this hierarchy fails that HK covariance requirement. The
-failure holds in the specified limit, not just at a finite cutoff.
-
-This statement keeps the original normalization, centering, law, and fixed
-confining parameters. The QSD covariance under simultaneous translation of
-the background in {prf:ref}`lem-ym-native-qsd-translation` concerns the
-corresponding family of laws and is consistent with this fixed-law test.
-The proposition concerns the stated fluctuation algebra; applying it to a
-smaller physical gauge algebra requires that the tested insertions belong
-to that algebra with the same localization and law.
-:::
-
-:::{prf:proof}
-The lower variance and energy bounds are exactly (YM.E10) and (YM.E11).
-The matching upper variance comparison follows using the same density
-bound and minimizing over constants:
-
-$$
-\begin{aligned}
-\operatorname{Var}_{\rho_N}(Y_{N,\varphi_a})
-&=N\inf_b\rho_N[(F_N(\varphi_a)-b)^2]\\
-&\le Ne^{B_*}\inf_bm_U^{\otimes N}
-                 [(F_N(\varphi_a)-b)^2]\\
-&=e^{B_*}\operatorname{Var}_{m_U}\varphi_a.
-\end{aligned}
-$$
-
-This uses the actual $\rho_N$ centering on the left; choosing the product
-mean only in the upper-bound minimization changes no observable.
-Self-adjointness and the semigroup law give
-
-$$
-\|h_{N,\varphi}\|^2
-=\iint\eta(s)\eta(t)
- \langle Y_{N,\varphi},T_{N,s+t}^{\mathrm{eq}}Y_{N,\varphi}\rangle\,dsdt.
-$$
-
-Insert (YM.E12) to bound this below by
-$c_\varphi-2\delta b_\varphi\ge c_\varphi/2$.
-The contraction bound and $\int\eta=1$ instead give
-$\|h_{N,\varphi_a}\|\le\|Y_{N,\varphi_a}\|$, proving the stated upper
-bound. These are the existing equilibrium reflection and energy estimates
-applied to the two specified tests.
-
-Let $K_x$ be the compact position projection of $\operatorname{supp}\varphi$.
-Then
-$m_U(\varphi_a^2)\le\|\varphi\|_\infty^2
- m_U\{x\in K_x+a\}$. A fixed probability law assigns mass tending to
-zero to this compact set translated to infinity. Choose a fixed $a$ for
-which $e^{B_*}m_U(\varphi_a^2)\le c_\varphi/4$.
-This choice is independent of $N$. The two time-smeared words are among
-the tests in {prf:ref}`thm-ym-equilibrium-fluctuation-limit`, so their
-reflected second moments converge on its common subsequence and preserve
-the strict difference.
-
-Finally, spatial and time translations commute in a spacetime translation
-representation. A proposed vacuum-preserving spatial implementer $V_a$
-therefore commutes with $H$ and $e^{-sH}$. If it implements the prescribed
-field translation, it sends the time-smeared boundary vector $h_\varphi$
-to $h_{\varphi_a}$. Unitarity would equate their squared norms,
-contradicting the proved strict inequality. This argument uses the
-quantum representation of the already reconstructed hierarchy; it invokes
-neither classical pullback spectral symmetry nor a different stochastic
-process.
-:::
 
 :::{prf:theorem} Isotony
 :label: thm-hk-isotony-fg
@@ -11705,24 +8880,28 @@ hold.
 :::
 
 :::{div} feynman-prose
-Take two of the constructed gauge readouts, with their existing regional
-masks. In the multiplication representation, applying their bounded
-functions in either order multiplies by the same two numbers on each
-record. Their commutator therefore vanishes before any averaging. This
-holds under each retained native law and in the existing limiting
-probability representation; statistical independence is unnecessary.
-The double-commutant argument carries this commutation to the generated
-local algebras.
+Start with the prescribed regional gauge readout. Decode a complete Fractal
+Set, apply its original mask, and evaluate the observable. The result is
+exactly the original readout by {prf:ref}`thm-fractal-set-lossless`; a face
+retains its complete vertex mask. The unitary in
+{prf:ref}`prop-fractal-set-analytic-transfer` carries its regional observable
+space to the encoded space. Conjugating an already constructed operator by
+this unitary preserves products and commutators. Reconstruction therefore
+lets us carry an operator calculation through the record without changing
+its regional assignment.
 
-For propagation, follow the specified latent A step:
-$z\mapsto\operatorname{Exp}_z((h/2)\psi_v(G^{-1}p))$.
-The algorithm applies this squashed velocity both before and after O.
-A Gaussian draw can make momentum arbitrarily large, but the velocity
-entering either position update stays below $V_{\mathrm{alg}}$.
-The sampling-path cone therefore follows from the actual update, as proved
-in {prf:ref}`lem-no-signaling-fg`. This path bound and the multiplication
-identity each retain their precise meaning; neither by itself establishes
-unequal-time commutation of reconstructed quantum operators.
+For the multiplication operators below, the calculation is pointwise:
+either order multiplies by the same two scalar readouts. No independence
+of the readouts is needed.
+
+Now follow the actual kinetic transport. Both A stages use
+$\operatorname{Exp}_z((h/2)\psi_v(G^{-1}p))$, including the stage after O.
+However large the Gaussian momentum draw, the transported velocity remains
+below $V_{\mathrm{alg}}$. This gives the kinetic support in
+{prf:ref}`cor-ym-squashed-kinetic-support`, with cloning stages recorded
+separately. The trajectory uses sampling time $\tau$; physical regions retain their
+declared $x^0$ coordinate. Each transported operator identity retains its
+specified representation and clock.
 :::
 
 :::{prf:theorem} Exact HK locality of the native multiplication representation
@@ -11814,10 +8993,6 @@ of {prf:ref}`thm-ym-native-multiplication-locality`. Recorded temporal
 correlations use the complete native kernel in
 {prf:ref}`thm-sm-instantiated-record-transition`; interventions use the
 same-kernel source likelihood in {prf:ref}`lem-no-signaling-fg`.
-The equilibrium Hamiltonian in
-{prf:ref}`thm-ym-equilibrium-quantum-net-inputs` retains its own transfer
-coordinate $\sigma$. Its unitary group is not substituted for the native
-update or for translation in the recorded physical coordinate $x^0$.
 :::
 
 :::{prf:theorem} Covariance of the local net
@@ -11832,11 +9007,7 @@ $$
 $$
 
 For each fixed bounded $A$, $g\mapsto\alpha_g(A)$ is strongly operator
-continuous. For the quantum time subgroup of the existing equilibrium
-reconstruction, {prf:ref}`thm-ym-equilibrium-quantum-net-inputs` supplies
-these unitary implementers and their exact record transport. This is a statement in the fixed represented algebra; pointwise
-norm continuity on its entire von Neumann closure is a stronger property.
-Full Poincaré covariance uses the same physical implementers as the spectrum
+continuous. Full Poincaré covariance uses the same physical implementers as the spectrum
 condition in {prf:ref}`thm-wightman-w2-fg`. For the recorded pullback
 representation of {prf:ref}`thm-wightman-w1-fg`, the mode, region, and
 vacuum-sector calculation is {prf:ref}`thm-ym-hk-record-instantiation`,
@@ -11870,19 +9041,6 @@ spectral point outside the forward cone. The self-adjoint semigroup argument
 in {ref}`(YM.33) <eq-fg-ym-33>`--{ref}`(YM.34) <eq-fg-ym-34>` gives the stated additional gap. Spatial periodicity or
 positivity of one time generator alone supplies only the corresponding
 finite-volume symmetry or positive-energy assertion.
-The positive quantum time generator and its exact record transport are
-already supplied by {prf:ref}`thm-ym-equilibrium-quantum-net-inputs`.
-Its conjugation law is $JU_{\mathrm{eq}}(t)J=U_{\mathrm{eq}}(-t)$.
-The symmetric-spectrum result in
-{prf:ref}`lem-ym-pullback-translation-spectrum` concerns the different
-pullback unitaries commuting with $J$; it gives no obstruction to this
-quantum evolution. The joint forward-cone conclusion uses the specified
-physical spatial translations and boosts with this same time generator.
-For the fixed-confinement fluctuation hierarchy,
-{prf:ref}`prop-ym-equilibrium-hk-translation-test` computes a nonvanishing
-spatial covariance defect on its actual future-word norms. Consequently
-that hierarchy, with those position-localized insertions, does not meet
-the spatial-translation hypothesis of this application.
 :::
 
 :::{prf:theorem} Ground-state uniqueness in the specified representation
@@ -11997,11 +9155,6 @@ two descriptors are assigned spacelike separated regions. This checks
 even observables themselves, rather than inferring their noncommutation
 from a nonzero odd anticommutator.
 
-Thus the orthogonality proved for the specified supported, zero-mean
-product-family modes in {prf:ref}`cor-lqft-product-locality-cutoff`
-establishes locality for those regional algebras. Its Galerkin estimate
-passes that locality to the corresponding identified limit. An application
-to other regions or another law evaluates their actual cross covariances.
 The causal episode map specifies which regions are spacelike; the
 operator commutators use these covariance coefficients.
 For a split at an existing recorded history, the inherited contribution
@@ -12045,13 +9198,7 @@ $$
 $$
 
 Consequently this prescribed map gives CAR automorphisms when $C_t$ is
-unitary; the recorded contraction formula alone gives channels. The
-equilibrium operator in
-{prf:ref}`cor-lqft-equilibrium-hamiltonian-lift` has its proved positive
-spectrum and vacuum on its specified law space. If that law is $\pi$ and
-$\mathcal K$ reduces its one-mode Hamiltonian, its exterior Hamiltonian
-reduces $\mathcal H_{\mathrm{vac}}$ and retains the proved gap bound there.
-The physical spectrum assertion of {prf:ref}`thm-hk-spectrum-fg` uses the
+unitary; the recorded contraction formula alone gives channels. The physical spectrum assertion of {prf:ref}`thm-hk-spectrum-fg` uses the
 generators of the same physical translation implementers as the covariance
 assertion. The pullback implementers specifically have the spectral
 restriction in {prf:ref}`lem-ym-pullback-translation-spectrum`.
@@ -12084,8 +9231,7 @@ Apply the exact word estimate (LQ.S3) in
 to the reducing vacuum sector. Its operator norm cannot increase.
 Orthogonal mode spaces therefore give commuting even generators, and
 {prf:ref}`thm-hk-locality-fg` passes this to the von Neumann algebras.
-The product-family and cutoff applications retain exactly the modes,
-law, and limits stated in {prf:ref}`cor-lqft-product-locality-cutoff`.
+
 
 For the number operators, apply the CAR once to each product; their
 four-operator terms cancel, giving the displayed commutator. On the
@@ -12113,276 +9259,7 @@ hypotheses used in {prf:ref}`thm-hk-covariance-fg` for precisely the
 same-law symmetries specified in the statement.
 
 The channel defect is the established identity (LQ.C3) applied in this
-representation. The equilibrium reduction follows by restricting each
-sector sum of the one-mode Hamiltonian to wedges over a reducing
-$\mathcal K$ and then to even degree. Its inherited gap implies vacuum
-uniqueness by {prf:ref}`thm-hk-vacuum-fg` on that sector. This identifies
-which existing operator supplies the bound and preserves the distinction
-between its equilibrium time and the physical translations.
-:::
-
-(sec-spectral-gap-variational)=
-## 13. Optimizing a specified relaxation gap
-
-:::{div} feynman-prose
-You can optimize a sampler by making its slowest mode decay faster. First you
-must fix the clock: multiplying every transition rate by ten makes the gap ten
-times larger without changing the stationary distribution. Once the allowed
-parameters, the gap, and the time unit are fixed, existence of an optimizer is
-a theorem under compactness and continuity. Relating that optimizer to nature
-is a separate physical conjecture.
-:::
-
-:::{prf:definition} Fixed-clock gap-selection model
-:label: def-maximal-convergence-selection
-
-Let $K$ be the admissible parameter set. For each $p\in K$, let $L_p$ be the
-declared generator in one common time coordinate, and let
-$\lambda_{\rm gap}(p)\in[0,\infty)$ be its specified relaxation gap. For a
-reversible generator with invariant law $\pi_p$, one possible choice is the
-Poincare gap
-
-$$
- \lambda_{\rm gap}(p)=
- \inf_{\substack{f\in\mathsf D(\mathcal E_p)\\
-                         \operatorname{Var}_{\pi_p}(f)>0}}
- \frac{\mathcal E_p(f,f)}{\operatorname{Var}_{\pi_p}(f)}.
-$$
-
-For a self-adjoint transfer generator $H_p\ge0$ with ground-space projection
-$P_{0,p}$, the same notation denotes the lower edge of the spectrum of
-$H_p$ restricted to $\operatorname{Ran}(I-P_{0,p})$. The gap notion, generator
-family, clock, and parameterization are part of the model. Define the
-optimizer set by
-
-(eq-fg-ym-44)=
-$$
- \mathcal P_*:=\operatorname*{argmax}_{p\in K}\lambda_{\rm gap}(p).
- \tag{YM.44}
-$$
-
-The selection model chooses a member of $\mathcal P_*$ whenever this set is
-nonempty. A parameter-dependent rescaling $L_p\mapsto c(p)L_p$ changes the
-objective and is therefore excluded by the fixed-clock declaration.
-:::
-
-:::{prf:theorem} Existence and uniqueness of a fixed-clock gap optimizer
-:label: thm-maximal-convergence-existence
-
-Assume that $K$ is a nonempty compact metric space, that every $L_p$ in
-{prf:ref}`def-maximal-convergence-selection` uses the same time coordinate,
-and that $p\mapsto\lambda_{\rm gap}(p)$ is finite and continuous on $K$. Then
-$\mathcal P_*$ is nonempty and compact, and every $p_*\in\mathcal P_*$
-satisfies
-
-$$
- \lambda_{\rm gap}(p_*)=\max_{p\in K}\lambda_{\rm gap}(p).
-$$
-
-If, in addition, $K$ is convex in a normed vector space and
-$\lambda_{\rm gap}$ is strictly concave on $K$, then $\mathcal P_*$ is a
-singleton. The theorem is a statement about the specified mathematical
-family; it does not identify a physical parameter.
-:::
-
-:::{prf:proof}
-By compactness and continuity, the extreme-value theorem gives a point
-$p_*$ at which $\lambda_{\rm gap}$ attains its supremum. Thus
-$\mathcal P_*$ is nonempty. It is the inverse image of the closed singleton
-$\{\lambda_{\rm gap}(p_*)\}$, so it is closed in the compact set $K$ and is
-therefore compact. If two distinct points $p_0,p_1$ were maximizers, strict
-concavity would give
-
-$$
- \lambda_{\rm gap}(tp_0+(1-t)p_1)
- >t\lambda_{\rm gap}(p_0)+(1-t)\lambda_{\rm gap}(p_1)
- =\lambda_{\rm gap}(p_0)
-$$
-
-for $0<t<1$, contradicting maximality.
-:::
-
-:::{prf:theorem} Stability of the gap optimizer under objective errors
-:label: thm-maximal-convergence-stability
-
-Let $K$ be compact, let $\lambda_{\rm gap}$ be continuous with unique
-maximizer $p_*$, and let $\widetilde\lambda$ be another continuous objective
-on the same fixed-clock parameter set. If
-
-$$
- \sup_{p\in K}|\widetilde\lambda(p)-\lambda_{\rm gap}(p)|\le\varepsilon,
-$$
-
-then every $\widetilde p\in\operatorname*{argmax}_{p\in K}
-\widetilde\lambda(p)$ satisfies
-
-(eq-fg-ym-44a)=
-$$
- 0\le\lambda_{\rm gap}(p_*)-\lambda_{\rm gap}(\widetilde p)
- \le 2\varepsilon.
- \tag{YM.44a}
-$$
-
-If a neighborhood $U$ of $p_*$ has a strict margin
-
-$$
- \lambda_{\rm gap}(p_*)-\sup_{p\in K\setminus U}\lambda_{\rm gap}(p)
- \ge\eta_U>0,
-$$
-
-then $\widetilde p\in U$ whenever $2\varepsilon<\eta_U$. More quantitatively,
-if for some metric $d$ and $m>0$
-
-$$
- \lambda_{\rm gap}(p_*)-\lambda_{\rm gap}(p)
- \ge\frac m2d(p,p_*)^2\qquad(p\in K),
-$$
-
-then $d(\widetilde p,p_*)\le2\sqrt{\varepsilon/m}$.
-:::
-
-:::{prf:proof}
-Optimality of $\widetilde p$ and the uniform error bound give
-
-$$
- \lambda_{\rm gap}(p_*)-\lambda_{\rm gap}(\widetilde p)
- \le [\lambda_{\rm gap}(p_*)-\widetilde\lambda(p_*)]
-   +[\widetilde\lambda(\widetilde p)-\lambda_{\rm gap}(\widetilde p)]
- \le2\varepsilon.
-$$
-
-The margin condition rules out $K\setminus U$ when $2\varepsilon<\eta_U$.
-Combining the quadratic margin with {ref}`(YM.44a) <eq-fg-ym-44a>` gives
-$m d(\widetilde p,p_*)^2/2\le2\varepsilon$, which is the final bound.
-:::
-
-The continuity hypothesis can be checked in a concrete model by transporting
-the specified invariant observables and their law through the orbit and
-measure isomorphisms
-{prf:ref}`thm-sm-direct-orbit-isomorphism` and
-{prf:ref}`thm-sm-direct-measure-isomorphism`, and then applying the existing
-gap and convergence estimates in
-{prf:ref}`thm-sm-direct-existing-machinery`. This transport preserves the
-represented observables and their correlations; it does not supply the
-continuity estimate automatically.
-
-:::{prf:conjecture} Physical maximal-convergence identification
-:label: conj-physical-maximal-convergence
-
-After the gauge/field observable representation has been specified, the
-physical parameter $p_{\rm phys}$ is conjectured to obey
-
-(eq-fg-ym-44b)=
-$$
- p_{\rm phys}\in\mathcal P_*.
- \tag{YM.44b}
-$$
-
-This is a physical identification, not a consequence of
-{prf:ref}`thm-maximal-convergence-existence` or of the Fractal Gas gap
-estimates. The orbit and measure isomorphisms
-{prf:ref}`thm-sm-direct-orbit-isomorphism` and
-{prf:ref}`thm-sm-direct-measure-isomorphism` establish the mathematical
-correspondence between the invariant recorded observables and the auxiliary
-field representation. They do not prove that nature selects the maximizing
-parameter. That final identification remains conjectural and requires a
-declared physical parameter map, common time normalization, and empirical or
-independent theoretical support.
-:::
-
-(sec-strong-cp-solution)=
-### 13.1. A conditional theta-selection calculation
-
-:::{prf:theorem} Theta maximization under a controlled spectral expansion
-:label: thm-strong-cp-spectral
-
-Suppose a specified gap-selection model has a $2\pi$-periodic parameter
-$\theta$ and
-
-(eq-fg-ym-45)=
-$$
- \lambda(\theta)=\lambda_0-\kappa(1-\cos\theta)+R(\theta),
- \quad \kappa>0,
- \quad |R(\theta)-R(0)|\le r_\kappa(1-\cos\theta),
- \quad r_\kappa<\kappa.
-\tag{YM.45}
-$$
-
-Then its unique maximizing parameter is $\theta=0$ modulo $2\pi$.
-One sufficient remainder condition is that $R$ is even, periodic, twice
-continuously differentiable, and
-$\|R''\|_\infty\le C\kappa^2$ with $C\pi^2\kappa/4<1$.
-Identification of this parameter with the physical strong-CP parameter requires
-an actual gauge-theory spectral family obeying {ref}`(YM.45) <eq-fg-ym-45>` and the selection model
-{ref}`(YM.44) <eq-fg-ym-44>`; that identification is the conjecture
-{prf:ref}`conj-physical-maximal-convergence`.
-:::
-
-:::{prf:proof}
-Subtract the value at zero. The remainder bound gives
-
-$$
- \lambda(\theta)-\lambda(0)
- \le-(\kappa-r_\kappa)(1-\cos\theta),
-$$
-
-which is strictly negative unless $\theta=0$ modulo $2\pi$.
-For the sufficient condition restrict by periodicity to $|\theta|\le\pi$.
-Evenness gives $R'(0)=0$, so Taylor's integral remainder gives
-$|R(\theta)-R(0)|\le C\kappa^2\theta^2/2$.
-Concavity of sine on $[0,\pi/2]$ gives
-$\sin(|\theta|/2)\ge|\theta|/\pi$, hence
-$1-\cos\theta\ge2\theta^2/\pi^2$.
-Take $r_\kappa=C\pi^2\kappa^2/4$ to obtain {ref}`(YM.45) <eq-fg-ym-45>`.
-:::
-
-:::{prf:lemma} The sign of theta dependence is not fixed by reversibility
-:label: lem-ym-theta-gap-examples
-
-Let a two-state continuous-time chain have generator
-
-$$
- L_\theta=\begin{pmatrix}-r(\theta)&r(\theta)\\r(\theta)&-r(\theta)\end{pmatrix},
- \qquad r(\theta)=r_0\pm\kappa\cos\theta,
- \qquad r_0>\kappa>0.
-$$
-
-Both choices are reversible with respect to the same uniform probability and
-are even in $\theta$. Their gaps are $2r(\theta)$. The plus choice has its
-gap maximum at zero; the minus choice has its minimum there.
-:::
-
-:::{prf:proof}
-The rows sum to zero and the off-diagonal rates are positive. The two basis
-vectors $(1,1)$ and $(1,-1)$ have eigenvalues $0$ and $-2r(\theta)$.
-Symmetry of the matrix proves reversibility; the cosine proves evenness.
-The locations of the maxima and minima follow immediately.
-:::
-
-For a differentiable finite-dimensional self-adjoint family
-$H_\theta$ with simple normalized eigenvectors $u_j(\theta)$,
-differentiating $H_\theta u_j=E_j u_j$ and taking the inner product with
-$u_j$ gives $E_j'=\langle u_j,H_\theta'u_j\rangle$.
-Thus the derivative of a spectral gap $E_1-E_0$ is the difference of two
-matrix elements, with no universal sign. A theta-dependent Euclidean phase
-weight also need not be a positive Markov transition law. An instanton
-amplitude or a symmetry argument alone therefore cannot substitute for the
-spectral estimate {ref}`(YM.45) <eq-fg-ym-45>`.
-
-:::{prf:corollary} Scope of the theta-selection model
-:label: cor-no-axions
-
-Under {ref}`(YM.45) <eq-fg-ym-45>` and the selection model {ref}`(YM.44) <eq-fg-ym-44>`, the specified model selects
-$\theta=0$ without adding another variable to that optimization problem.
-An inference about the physical strong-CP problem or the presence or absence
-of axion fields requires the additional physical identifications stated in
-{prf:ref}`thm-strong-cp-spectral`.
-:::
-
-:::{prf:proof}
-Apply the strict maximization result to the stated one-parameter family.
-The result concerns the parameters of that family; it contains no statement
-about the spectrum or field content of a different physical theory.
+representation.
 :::
 
 :::{prf:remark} Dependency order of the Yang--Mills comparisons
@@ -12395,22 +9272,10 @@ independently proved law-specific convergence, LSI, regularity, and
 ellipticity results. Their use in {ref}`(YM.F1) <eq-fg-ym-f1>`--{ref}`(YM.F12) <eq-fg-ym-f12>` retains the original
 state, observation domain, and update convention.
 
-The equilibrium energy closure {ref}`(YM.E2) <eq-fg-ym-e2>` uses that identified LSI law and
-constructs its own self-adjoint transfer before applying the reflection
-lemma. The bounded-tilt comparison supplies the nontriviality estimate;
-the common correlation limit and transfer inequality {ref}`(YM.E14) <eq-fg-ym-e14>` then
-construct its continuum OS space and gap. The product limit and the
-limiting-law mode approximation have the distinct proofs {ref}`(YM.E15) <eq-fg-ym-e15>` and
-{ref}`(YM.E17) <eq-fg-ym-e17>`. The synthesis below records these dependencies explicitly.
-
-The Wilson variation, independent-plaquette area law, and smooth-connection
-continuum limit keep their specified link sectors. None of those field
-models supplies an input to the record, LSI, or equilibrium construction.
-
 :::
 
 (sec-ym-algorithmic-qft-synthesis)=
-## 14. The connected algorithmic and equilibrium field theory
+## 14. The connected algorithmic field theory
 
 :::{div} feynman-prose
 Now follow a recorded interaction through the whole construction. Its IA and
@@ -12449,27 +9314,9 @@ coordinates reappear in their exact memory terms. These are computed from
 the complete transition, so compressing the record still leaves a precise
 account of its time dependence.
 
-The gradient energy of the specified one-time law supplies a second,
-equilibrium evolution. We have constructed its self-adjoint transfer,
-reflection form, and gap. For the product and uniformly bounded joint-tilt
-families, the polynomial Gram bounds preserve arbitrarily many independent
-observable vectors through the population limit. In the product case the
-Gaussian covariance is explicit. The bounded-tilt comparison identifies
-the empirical bulk measure while retaining each fluctuation law's joint
-dynamics. Starting instead from the proved mean-field marginal, increasing
-a form-dense mode cutoff approximates that law's equilibrium operator.
-
-For equilibrium channels the positive two-step defect tests closure
-directly. The mask calculation also identifies which bounded insertions
-have no finite gradient energy. These facts determine how channel
-observables and energy modes enter a simulation.
-
-The theorem gathers these connections with each law, clock, and limit intact.
-These distinctions tell us which correlations a simulation computes and
-which further spacetime properties a relativistic reconstruction would need.
 :::
 
-:::{prf:theorem} Algorithmic QFT from reconstruction, recorded evolution, and equilibrium energy
+:::{prf:theorem} Algorithmic QFT from recorded evolution and native bounds
 :label: thm-ym-algorithmic-qft-synthesis
 
 The existing Volume 2 constructions and the calculations in this chapter
@@ -12503,47 +9350,11 @@ give the following connected theory, in their identified law families.
    For the selected QSD, the complete block kernel gives its actual density
    comparison in {prf:ref}`prop-ym-selected-qsd-block-density`, and
    {prf:ref}`prop-ym-qsd-history-identification` computes every
-   survival-conditioned history weight. The implemented same-stage color
-   threshold and bounded channel correlations have the explicit
-   approximation and sampling bounds in
-   {prf:ref}`prop-ym-color-threshold-correlation-limit` and
-   {prf:ref}`prop-ym-channel-lag-estimation`, with the law specified there.
-   The full complex color invariant algebra and its bounded physical
+   survival-conditioned history weight. The full complex color invariant algebra and its bounded physical
    reflected words belong to one native subsequence by
    {prf:ref}`thm-ym-native-physical-gauge-hierarchy`; their explicit
    uniform-integrability and reconstruction bounds are
    {prf:ref}`lem-ym-physical-gauge-word-uniform-integrability`.
-3. **Equilibrium transfer.** The full-gradient LSI law has the closed
-   equilibrium energy {ref}`(YM.E2) <eq-fg-ym-e2>`, self-adjoint operator, and gap {ref}`(YM.E4) <eq-fg-ym-e4>`.
-   Its direct observable hierarchy is {ref}`(YM.E7) <eq-fg-ym-e7>`--{ref}`(YM.E8) <eq-fg-ym-e8>`, and its
-   fermionic Hamiltonian is {ref}`(LQ.R5) <eq-fg-lq-r5>`. All static moments of the same
-   one-time observables agree with their identified algorithmic law.
-   The nonzero finite-population color sector is
-   {prf:ref}`cor-ym-nonzero-direct-color-sector`. The actual color feature
-   map has the state-space curvature calculated in
-   {prf:ref}`prop-sm-recorded-color-connection-curvature`. The distinct
-   Fractal Set attribution connection has its triangle holonomy and
-   Wilson defect in {prf:ref}`prop-sm-attribution-holonomy-defect`.
-   Channel closure is tested
-   by {prf:ref}`thm-ym-equilibrium-channel-closure`; hard mask domains are
-   calculated in {prf:ref}`prop-ym-color-mask-domain`.
-4. **Constructed limits.** The established product and uniformly bounded
-   joint-tilt families give a reflection-positive subsequential equilibrium
-   fluctuation hierarchy with a uniform transfer gap and infinite-dimensional
-   OS space by {prf:ref}`thm-ym-fluctuation-os-infinite-dimension`. In the
-   product case the whole hierarchy converges to the explicitly calculated
-   Gaussian law {ref}`(YM.E15) <eq-fg-ym-e15>`. The already proved mean-field marginal has its
-   own directly constructed equilibrium transfer, approximated strongly
-   by the energy-mode matrices {ref}`(YM.E16) <eq-fg-ym-e16>`--{ref}`(YM.E17) <eq-fg-ym-e17>`.
-   The resulting finite fermionic simulators converge by
-   {prf:ref}`cor-ym-galerkin-car-convergence`. Within the same exchangeable
-   bounded-tilt family, {prf:ref}`thm-ym-bounded-tilt-bulk-identification`
-   identifies the fixed-marginal mean-field law explicitly.
-
-All four parts use the original reconstruction maps and the stated laws.
-The recorded evolution and the equilibrium energy evolution share their
-identified static observables. Their time-dependent correlations are
-specified by their respective transition operators.
 :::
 
 :::{prf:proof}
@@ -12580,32 +9391,7 @@ selected eigenmeasure gives {ref}`(YM.J1) <eq-fg-ym-j1>`; the explicit
 entropy comparison gives the corresponding same-law constant
 {ref}`(YM.J2) <eq-fg-ym-j2>`. The cancellation of successive survival
 weights proves {ref}`(YM.J5) <eq-fg-ym-j5>` for the full conditioned
-history. For the established equilibrium family, the Gaussian force-radius
-calculation and bounded-product telescoping give
-{ref}`(YM.V2) <eq-fg-ym-v2>`--{ref}`(YM.V4) <eq-fg-ym-v4>` for the
-implemented color threshold. The stationary window calculation gives
-{ref}`(YM.V5) <eq-fg-ym-v5>`--{ref}`(YM.V6) <eq-fg-ym-v6>` for its
-measured correlations, including overlap and empirical centering.
-
-The same established LSI closes the energy through {ref}`(YM.E2) <eq-fg-ym-e2>`, producing its
-resolvent, gap, and conservative reversible transfer. The boundary-vector
-calculation then establishes reflection positivity for this constructed
-law, and the previously defined exterior construction lifts its Hamiltonian.
-Neither the kinetic Hamiltonian transport nor a centered cloning noise is
-used as a symmetry assertion. Indeed {ref}`(YM.R2) <eq-fg-ym-r2>` computes the obstruction to
-the momentum-reflection shortcut in the existing kinetic reference.
-
-Finally, the actual bounded-tilt estimate gives {ref}`(YM.E10) <eq-fg-ym-e10>`, while the
-equilibrium energy gives {ref}`(YM.E12) <eq-fg-ym-e12>`. They preserve a positive reflected
-norm through the common subsequential limit. Inequality {ref}`(YM.E14) <eq-fg-ym-e14>`
-constructs its gapped transfer on the same limiting hierarchy. The
-polynomial Gram estimate {ref}`(YM.Q8) <eq-fg-ym-q8>` proves infinite
-dimension, and {ref}`(YM.Q1) <eq-fg-ym-q1>` computes its finite-law
-time-average control. The product characteristic-function calculation identifies its full-sequence
-limit in that family. The separate fixed-marginal limit inherits its LSI
-from the upstream chaos theorem; the explicit form recovery and resolvent
-calculation then prove {ref}`(YM.E17) <eq-fg-ym-e17>`. Each arrow thus has a calculation for
-its own law and limit, with no use of its eventual conclusion upstream.
+history.
 :::
 
 :::{prf:remark} Consequences for simulation and relativistic reconstruction
@@ -12621,28 +9407,11 @@ The native fermion generator and regional covariance are computed in
 transition matrices in {ref}`(SM.T3) <eq-fg-sm-t3>` give a convergent
 approximation of these recorded observables and their CAR evolution.
 A compressed channel simulator retains {ref}`(SM.M2) <eq-fg-sm-m2>` until
-closure is established. A simulator of the equilibrium
-transfer uses the mass and stiffness matrices {ref}`(YM.E16) <eq-fg-ym-e16>`, the specified
-observable matrices, and the fermionic lift {ref}`(LQ.R5) <eq-fg-lq-r5>`.
-The finite-energy core and bounded masked insertions have the distinct
-domains proved in {prf:ref}`prop-ym-color-mask-domain`. These definitions
-identify what each numerical matrix element estimates.
-
-The existing equilibrium/OS quantum representation supplies the positive
-Hamiltonian, quantum time automorphisms, cyclic vacuum sector, and exact
-record transport in {prf:ref}`thm-ym-equilibrium-quantum-net-inputs`.
-For its fixed-confinement fluctuation limit,
-{prf:ref}`prop-ym-equilibrium-hk-translation-test` proves a strictly
-positive, population-uniform difference between the OS norms of a
-localized future word and a fixed spatial translate. The same difference
-survives the existing continuum limit, excluding vacuum-preserving spatial
-translation covariance for that specified observable hierarchy.
-The separate recorded CAR local-net application is
+closure is established. The separate recorded CAR local-net application is
 {prf:ref}`thm-ym-hk-record-instantiation`. It establishes isotony,
 positivity, and global cyclicity in the even observable vacuum sector,
 uses the existing regional covariance coefficients for locality, and
-lifts the actual same-law symmetries to that sector. The recorded channel
-and the equilibrium Hamiltonian retain their computed, distinct dynamics.
+lifts the actual same-law symmetries to that sector. The recorded channel retains the complete native transition.
 The native multiplication representation satisfies HK locality by
 {prf:ref}`thm-ym-native-multiplication-locality`, directly for the
 configured recorded readouts and their law. The prescribed kinetic
@@ -12652,17 +9421,6 @@ are retained as specified in
 {prf:ref}`rem-ym-hk-microcausality-verdict`.
 {prf:ref}`lem-ym-pullback-translation-spectrum` checks the physical
 spectrum condition specifically for the pullback implementers.
-
-The hierarchy in {prf:ref}`thm-ym-equilibrium-fluctuation-limit` is a
-constructed continuum field theory with positive time reflection and a
-uniform transfer gap in the stated family. Full Euclidean spacetime
-covariance, the specific interacting selected-law fluctuation limit, and
-an independently varying geometric or volume limit retain their separate
-identification requirements. The present construction proves neither an
-equality of the full recorded generator with $-H_{\mathrm{eq}}$ nor a
-four-dimensional relativistic Yang--Mills identification. A use of the
-already cited OS reconstruction theorem keeps those exact spacetime and
-field-domain requirements for the same hierarchy.
 
 For the full direct color algebra,
 {prf:ref}`thm-ym-native-physical-gauge-hierarchy` retains the complex Gram,
@@ -12715,8 +9473,6 @@ the selected law, its observable normalization, or its physical coordinates.
 The finite constructions and analytic estimates are developed in
 {doc}`01_fractal_set`, {doc}`02_causal_set_theory`, {doc}`03_lattice_qft`,
 {doc}`04_standard_model`, and the convergence chapters cited above.
-The perturbative group coefficient used in {ref}`(YM.26) <eq-fg-ym-26>` is the specialization of
-{prf:ref}`cor-sm-beta-functions` to zero matter content.
 
 The distinction between a classical Yang–Mills action and the quantum
 existence-and-gap problem follows the

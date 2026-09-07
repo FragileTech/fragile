@@ -299,6 +299,10 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
   const rocks = rockOptions(scene);
   $("rock-controls").hidden = !rocks;
   if (rocks) {
+    $("hook-stiffness-field").hidden = !scene.tethers?.length;
+    const stiffness = scene.tethers?.[0]?.stiffness ?? 25;
+    $("hook-stiffness").value = stiffness;
+    $("hook-stiffness-slider").value = Math.log10(stiffness + 1);
     $("rock-size").value = rocks.scale;
     $("rock-count").value = rocks.count;
     $("rock-count-field").hidden = scene.rock_options?.collaborative ?? scene.name === "Collaborative mining";
@@ -695,13 +699,30 @@ $("ants-vehicle-count").onchange = () => {
     error(e);
   }
 };
+$("hook-stiffness-slider").oninput = () => {
+  const value = +$("hook-stiffness-slider").value;
+  $("hook-stiffness").value = value === 6 ? 1000000 : Math.round(10 ** value - 1);
+};
+$("hook-stiffness").oninput = () => {
+  $("hook-stiffness-slider").value = Math.log10(
+    Math.max(0, +$("hook-stiffness").value) + 1,
+  );
+};
 $("apply-rocks").onclick = () => {
   if (!currentScene || !rockOptions(currentScene)) return;
   for (const id of ["rock-size", "rock-count"]) {
     if (!$(id).reportValidity()) return;
   }
   try {
-    const options = { scale: +$("rock-size").value, count: +$("rock-count").value };
+    if (currentScene.tethers?.length && !$("hook-stiffness").reportValidity())
+      return;
+    const options = {
+      scale: +$("rock-size").value,
+      count: +$("rock-count").value,
+      ...(currentScene.tethers?.length
+        ? { stiffness: +$("hook-stiffness").value }
+        : {}),
+    };
     const scene = configureRocks(currentScene, options);
     miningOptions.set($("scenario").value, options);
     editor.clearHistory();

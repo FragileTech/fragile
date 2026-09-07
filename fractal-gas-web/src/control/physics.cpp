@@ -214,6 +214,7 @@ Scratch::Scratch(const Scene& s) {
   bounds.resize(n);
   old_positions.resize(n);
   frame_positions.resize(s.controlled.size());
+  frame_tethers.resize(s.tethers.size());
   old_angles.resize(n);
   bounded_actions.resize(s.channels.size());
   edge_marks.resize(s.edges.size());
@@ -502,7 +503,7 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
       position(r, l, c.b, position(r, l, c.b) + c.normal * (correction * ib));
   }
 }
-float Physics::potential(const float* r) const {
+float Physics::potential(const float* r, const uint32_t* attachments) const {
   const auto& s = *scene;
   const auto& l = s.layout;
   float total = 0;
@@ -526,9 +527,11 @@ float Physics::potential(const float* r) const {
       if (best == 1e6f) best = 0;
     } else if (!s.bases.empty()) {
       int attached = -1;
-      for (size_t i = 0; i < s.tethers.size(); ++i)
-        if (s.tethers[i].a == b && word(r, l.joints + 2 * i))
-          attached = int(word(r, l.joints + 2 * i)) - 1;
+      for (size_t i = 0; i < s.tethers.size(); ++i) {
+        const uint32_t target =
+            attachments ? attachments[i] : word(r, l.joints + 2 * i);
+        if (s.tethers[i].a == b && target) attached = int(target) - 1;
+      }
       if (attached >= 0) {
         best = 1e6f;
         for (const auto& base : s.bases)
@@ -680,13 +683,19 @@ void Physics::step_world(float* r, const float* actions, int frames,
   actions = bounded.data();
   for (int frame = 0; frame < frames && !word(r, 7); ++frame) {
     float before = potential(r);
+    auto& attachments = scratch_[slot].frame_tethers;
+    for (size_t t = 0; t < s.tethers.size(); ++t)
+      attachments[t] = word(r, s.layout.joints + 2 * t);
     auto& starts = scratch_[slot].frame_positions;
     if (s.distance_squared_reward > 0)
       for (size_t c = 0; c < s.controlled.size(); ++c)
         starts[c] = position(r, s.layout, s.controlled[c]);
     for (int k = 0; k < s.substeps; ++k)
       substep(r, actions, s.dt / s.substeps, scratch_[slot], result);
-    result.reward += s.progress_reward * (potential(r) - before);
+    // Compare movement against the same hauling target on both sides. A
+    // broken/re-hooked rope must not earn a bonus for changing target distance.
+    result.reward +=
+        s.progress_reward * (potential(r, attachments.data()) - before);
     // Per-physics-frame displacement, averaged over vehicles. Evaluate before
     // mechanics/extension respawns, so teleportation never earns travel reward.
     if (s.distance_squared_reward > 0 && !s.controlled.empty()) {

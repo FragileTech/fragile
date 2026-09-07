@@ -3,7 +3,13 @@
 Unreleased
 ----------
 
+* Expose mining hook stiffness, allow rock sizes down to 0.1×, and prevent false target-progress reward when tow hooks break.
+
+* Mark unapplied Lab reward-slider edits explicitly and verify that applying a zero movement reward preserves the running world.
+
 * Prefer alive final paths in Wave Jump; when every final walker is dead, execute only the first action of the highest-scoring path before replanning.
+
+* Remove alternate equilibrium/OS/Galerkin dynamics and independent field-model additions from the algorithmic QFT chapters; retain native recorded operators, laws, sources, and bounds, and update dependent documentation.
 
 * Express the smaller physical-gauge descriptor's projected source covariance through its native polynomial Gram matrices and source responses, with projection-error and occupation bounds.
 
