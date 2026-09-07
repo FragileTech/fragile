@@ -284,15 +284,22 @@ and a positive integer physics-frame duration; the controller removes zero-durat
 edges before returning it. The ordinary `action` remains the trajectory's first
 action. `selectedLeaf` is the selected final walker's native tree node ID, and
 `selectedReward` is its accumulated path reward. The adapter's `bestLeaf()` calls
-`fgc_plan_best_leaf`, which ranks final walkers by accumulated reward, includes
-terminal walkers, and breaks ties by lower walker index. Wave Jump retains at least
+`fgc_plan_best_leaf`, which selects the alive final walker with the highest accumulated
+reward and breaks ties by lower walker index. Alive means nonterminal in the native
+physics state. If every final walker is terminal, the accessor returns the
+highest-reward final walker, with the same tie-breaking rule. Wave Jump checks the
+selected leaf's terminal flag: an alive winner supplies its full ancestral path;
+a terminal winner supplies only the first positive-duration action on its path,
+with that action's original recorded frame duration. Wave Jump retains at least
 pruned native ancestry internally even when public tree recording is disabled.
 
 The planner worker validates and transfers the trajectory. Live Wave Jump hosts
 keep physics paused throughout search, including with the real-time clock, then
-execute all edges through ordinary physics stepping before requesting another
-search. Experiment hosts also check their stopping conditions after every executed
-frame. Controllers that omit `trajectory` retain the single-action contract.
+execute the returned edges through ordinary physics stepping before requesting
+another search. Thus the all-dead fallback triggers a new search after one recorded
+action, unless the actual world terminates. Experiment hosts also check their
+stopping conditions after every executed frame. Controllers that omit `trajectory`
+retain the single-action contract.
 
 Optional `checkpoint()`/`restore(saved)` preserve algorithm memory, RNG, partial work,
 and root; `dispose()` releases controller-owned resources. Native engine checkpoints

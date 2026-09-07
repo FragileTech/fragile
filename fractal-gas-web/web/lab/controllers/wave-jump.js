@@ -29,6 +29,9 @@ registerController("wave-jump", {
         tree.meta.findIndex(
           (value, i) => i % 5 === 0 && value === selectedLeaf,
         ) / 5;
+      // A terminal winner means no final walker survived. Commit only the
+      // first executable action, then let the host search from the new world.
+      if (tree.meta[row * 5 + 4] & 1) trajectory.splice(1);
       return {
         action: trajectory[0].action,
         trajectory,

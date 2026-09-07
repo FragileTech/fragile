@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Prefer alive final paths in Wave Jump; when every final walker is dead, execute only the first action of the highest-scoring path before replanning.
+
 * Express the smaller physical-gauge descriptor's projected source covariance through its native polynomial Gram matrices and source responses, with projection-error and occupation bounds.
 
 * Prove exact disjoint-source covariance cancellation from the native likelihood and occupation identities, to all derivative orders, retaining the descriptor projection and survival normalization formulas.

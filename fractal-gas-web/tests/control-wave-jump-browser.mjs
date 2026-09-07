@@ -39,7 +39,11 @@ try {
       elites: 0,
       recording: 0,
     };
-    const make = async (mode = "reproducible") => {
+    const make = async (
+      mode = "reproducible",
+      worldScene = scene,
+      plannerSettings = settings,
+    ) => {
       const worker = new Worker(
         new URL("./simulation-worker.js", location.href),
         { type: "module" },
@@ -78,8 +82,8 @@ try {
         });
       worker.postMessage({
         type: "init",
-        scene,
-        settings,
+        scene: worldScene,
+        settings: plannerSettings,
         mode,
         seed: 7,
         revision: 1,
@@ -103,6 +107,59 @@ try {
         start,
       );
     };
+    const doomed = {
+      size: [1000, 1000],
+      physics: { lethal_walls: true },
+      bodies: [
+        { controlled: true, position: [100, 500], velocity: [300, 0], drag: 0 },
+      ],
+    };
+    const fallback = await make("realtime", doomed, {
+      ...settings,
+      frames: 60,
+    });
+    let fallbackResult;
+    try {
+      fallback.send({ type: "run", value: true });
+      await fallback.wait(
+        (d) =>
+          d.type === "frame" &&
+          d.tick > 0 &&
+          d.trajectoryProgress?.remaining < 60,
+      );
+      fallback.send({ type: "run", value: false });
+      let start = fallback.messages.length;
+      fallback.send({ type: "checkpoint" });
+      const saved = await fallback.wait((d) => d.type === "checkpoint", start);
+      const restored = await make("realtime", doomed, {
+        ...settings,
+        frames: 60,
+      });
+      try {
+        start = restored.messages.length;
+        restored.send({ ...saved, type: "restore-checkpoint" });
+        await restored.wait((d) => d.type === "checkpoint-restored", start);
+        const completed = await finishStep(fallback);
+        await finishStep(restored);
+        const originalWorld = await snapshot(fallback),
+          restoredWorld = await snapshot(restored);
+        const next = await finishStep(restored);
+        fallbackResult = {
+          completedTick: completed.tick,
+          nextTick: next.tick,
+          decisions: next.decisions,
+          originalWorld,
+          restoredWorld,
+          edges: saved.execution.trajectory.length,
+          deadRatio: fallback.messages.find((d) => d.type === "diagnostics")
+            .metrics[9],
+        };
+      } finally {
+        restored.worker.terminate();
+      }
+    } finally {
+      fallback.worker.terminate();
+    }
     const a = await make("realtime");
     try {
       a.send({ type: "run", value: true });
@@ -158,6 +215,7 @@ try {
             return {
               paused,
               stillPaused,
+              fallbackResult,
               checkpointHasExecution: !!checkpoint.execution,
               finalA,
               finalB,
@@ -191,6 +249,15 @@ try {
       a.worker.terminate();
     }
   });
+  assert.equal(results.fallbackResult.deadRatio, 1);
+  assert.equal(results.fallbackResult.edges, 1);
+  assert.equal(results.fallbackResult.completedTick, 60);
+  assert.equal(results.fallbackResult.nextTick, 120);
+  assert.equal(results.fallbackResult.decisions, 2);
+  assert.deepEqual(
+    results.fallbackResult.originalWorld,
+    results.fallbackResult.restoredWorld,
+  );
   assert.equal(results.checkpointHasExecution, true);
   assert.deepEqual(results.paused, results.stillPaused);
   assert.deepEqual(results.finalA, results.finalB);

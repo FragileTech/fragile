@@ -193,6 +193,11 @@ test("Wave Jump skips zero-duration ancestry and reports an empty path", () => {
   });
   assert.deepEqual(
     controller.result().trajectory.map((e) => [e.action[0], e.frames]),
+    [[0.5, 2]],
+  );
+  tree.meta[19] = 0; // An alive winner still executes the entire branch.
+  assert.deepEqual(
+    controller.result().trajectory.map((e) => [e.action[0], e.frames]),
     [
       [0.5, 2],
       [1, 1],
@@ -200,4 +205,46 @@ test("Wave Jump skips zero-duration ancestry and reports an empty path", () => {
   );
   engine.bestLeaf = () => 1;
   assert.throws(() => controller.result(), /no executable trajectory/);
+});
+
+test("all-dead lookahead commits one safe action and experiments replan", async () => {
+  const doomed = {
+    size: [100, 100],
+    physics: { lethal_walls: true },
+    bodies: [
+      { controlled: true, position: [50, 50], velocity: [60, 0], drag: 0 },
+    ],
+  };
+  const config = { ...settings, horizon: 12, frames: 11, elites: 0 };
+  const world = new NativeEngine(module, doomed),
+    strategy = createController(module, doomed, config);
+  try {
+    strategy.controller.begin(world.snapshot(), 7);
+    while (!strategy.controller.advance()) {}
+    const result = strategy.controller.result();
+    assert.equal(result.metrics[9], 1);
+    assert.equal(result.selectedReward, result.metrics[12]);
+    const tree = strategy.engine.tree();
+    const row =
+      tree.meta.findIndex((v, i) => i % 5 === 0 && v === result.selectedLeaf) /
+      5;
+    assert.ok(tree.meta[row * 5 + 2] > 1);
+    assert.equal(result.trajectory.length, 1);
+    assert.equal(result.trajectory[0].frames, 11);
+    world.step(result.action, 11);
+    assert.equal(world.metrics()[3], 0);
+    const { stats } = await runEpisode({
+      module,
+      scene: doomed,
+      settings: config,
+      seed: 7,
+      maxFrames: 22,
+    });
+    assert.equal(stats.frames, 22);
+    assert.equal(stats.decisions, 2);
+    assert.equal(stats.dead, false);
+  } finally {
+    strategy.dispose();
+    world.dispose();
+  }
 });

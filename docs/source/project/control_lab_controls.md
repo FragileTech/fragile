@@ -4,7 +4,8 @@
 :::{div} feynman-prose
 The laboratory has one executed world and a collection of possible futures. **Step**
 asks the controller to examine those futures and apply its decision to the executed
-world: one action for FMC, or a complete selected trajectory for Wave Jump. The
+world: one action for FMC, or a selected trajectory for Wave Jump (one action if
+all final walkers are dead). The
 bright vehicle shows what happened; the paths and cloud show what the planner
 considered. Keeping those two roles separate makes the controls
 much easier to understand.
@@ -33,7 +34,7 @@ and resets leave the new world paused.
 | **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 5. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
 | **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. Wave Jump preserves its remaining trajectory for resumption. |
-| **Step** | Plan once, then execute one action, or the complete selected trajectory for Wave Jump. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
+| **Step** | Plan once, then execute one action, or the selected trajectory for Wave Jump; if all final walkers are dead, execute only its first positive-duration action. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
 | **↺** (Reset) | Rebuild the current scene with the current seed. | Resets task progress and recordings; preserves scene edits and selected settings. |
 | **Advance Wave population** | Advance the native FMC population by one Wave iteration. | Displays population row zero as the world, with a labeled **Wave selection** recording cut. |
 :::
@@ -158,8 +159,9 @@ cloning supplies the implicit weighting. If no population members survive, it
 returns the neutral action. It does not simply choose the highest-reward leaf.
 
 **Wave Jump** uses the same search parameters and cloning procedure as FMC. After
-the search, it selects the final walker with the highest accumulated path reward,
-including terminal walkers; ties choose the lower walker index. It follows that
+the search, it selects the alive final walker with the highest accumulated path
+reward; ties choose the lower walker index. Alive means nonterminal according to
+the native physics. It follows that
 walker's recorded parent links back to the root and executes the resulting action
 sequence in forward order. This follows the ancestry through cloning, rather than
 reading successive actions from one walker slot. Selection always uses accumulated
@@ -167,9 +169,11 @@ reward, independently of any reward-signal setting used by resampling.
 
 Imagine the search finds a useful sequence of turns. FMC uses its population to
 choose the next turn, then searches again. Wave Jump commits to the whole selected
-sequence before it searches again. It therefore makes one planning decision per
-trajectory. The best final walker need not be the best node ever sampled, and a
-large accumulated reward does not guarantee that its endpoint is nonterminal.
+sequence before it searches again. If every final walker is dead, it selects the
+highest accumulated-reward final walker, with the same tie rule, but executes only
+the first positive-duration action for its recorded frame count before replanning.
+It therefore makes one planning decision per executed trajectory, including this
+one-action fallback. The best final walker need not be the best node ever sampled.
 Execution stops if the actual world terminates. An empty executable path stops
 with a status message instead of starting repeated searches.
 
@@ -361,7 +365,8 @@ disable recording. For that, change **Tree** below the world view.
 
 :::{div} feynman-prose
 For Wave Jump, the selected path reward describes the chosen final walker and
-trajectory progress describes execution of that path. These are separate from
+trajectory progress describes execution of the full path or its one-action
+all-dead fallback. These are separate from
 search progress: completing the search starts the journey.
 
 Three measurements answer different questions: simulation time measures what the

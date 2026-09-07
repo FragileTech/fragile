@@ -29,14 +29,18 @@ The experiment worker loads the serial WebAssembly module. Setting the live
 Keep this distinction in mind when comparing their timing with the live planner.
 
 Select **Wave Jump** (`wave-jump`) in either variant to compare trajectory commitment
-with FMC. Both use the same FMC search parameters. Wave Jump selects the final
-walker with the highest accumulated reward and follows its ancestral action
-sequence for the recorded duration of every edge before searching again. Terminal
-final walkers remain eligible; ties go to the lower walker index. Selection uses
+with FMC. Both use the same FMC search parameters. Wave Jump selects the alive
+walker with the highest accumulated reward in the final population and follows its
+ancestral action sequence for the recorded duration of every positive-duration
+edge before searching again. Alive means nonterminal according to the physics.
+If every final walker is dead, it selects the highest-scoring final walker but
+executes only the first positive-duration action for its recorded frames, then
+searches again. Ties go to the lower walker index in either case. Selection uses
 accumulated reward even when FMC resampling uses a different reward setting.
 
 Imagine the search proposes three turns. FMC commits to one action and asks again;
-Wave Jump commits to the selected sequence. A Wave Jump decision therefore means
+Wave Jump commits to the selected sequence when its leaf is alive, or just its
+first executable action when all leaves are dead. A Wave Jump decision therefore means
 one search and its trajectory, which can contain several actions. Compare executed
 frames and simulated planning work alongside decision counts: an equal number of
 decisions does not imply an equal amount of movement.
@@ -102,7 +106,8 @@ limit. The runner checks after every frame, even when an action was planned to l
 longer. A terminal frame cannot also count as success: the implementation requires
 the world to be nonterminal when its goal threshold is met.
 These checks also apply to every frame inside a Wave Jump trajectory: reaching the
-goal or frame limit stops execution without finishing the remaining sequence.
+goal, actual death, or frame limit stops execution without finishing the remaining
+sequence, including during the all-dead fallback action.
 :::
 
 :::{div} feynman-added

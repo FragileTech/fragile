@@ -588,7 +588,16 @@ TEST_CASE(control_wave_best_leaf_uses_final_rewards_and_stable_ties) {
   CHECK(wave.best_leaf() == wave.node_ids[1]);
   word(wave.current.row(3), 7, 1);
   wave.rewards[3] = 4;
+  CHECK(wave.best_leaf() == wave.node_ids[1]);
+  word(wave.current.row(1), 7, 1);
+  CHECK(wave.best_leaf() == wave.node_ids[2]);
+  word(wave.current.row(2), 7, 1);
+  CHECK(wave.best_leaf() == wave.node_ids[0]);
+  word(wave.current.row(0), 7, 1);
   CHECK(wave.best_leaf() == wave.node_ids[3]);
+  wave.rewards = {-5, -2, -2, -10};
+  CHECK(wave.best_leaf() == wave.node_ids[1]);
+  wave.rewards[3] = 4;
   const auto branch = wave.tree.branch(wave.best_leaf());
   CHECK(branch.size() == 3);
   CHECK(wave.tree.node(branch.back()).id == wave.node_ids[3]);

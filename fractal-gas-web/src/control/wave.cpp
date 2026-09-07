@@ -194,8 +194,13 @@ uint32_t PackedWave::best_leaf() const {
   if (tree.mode == RecordingMode::Off || stats.iterations == 0)
     throw std::logic_error("Best leaf requires a recorded search");
   size_t best = 0;
-  for (size_t i = 1; i < rewards.size(); ++i)
-    if (rewards[i] > rewards[best]) best = i;
+  for (size_t i = 1; i < rewards.size(); ++i) {
+    const bool alive = !word(current.row(i), 7);
+    const bool best_alive = !word(current.row(best), 7);
+    if ((alive && !best_alive) ||
+        (alive == best_alive && rewards[i] > rewards[best]))
+      best = i;
+  }
   return node_ids[best];
 }
 
