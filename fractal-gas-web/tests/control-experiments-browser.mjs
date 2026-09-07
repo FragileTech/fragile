@@ -41,6 +41,17 @@ const upload = async (id, file) => {
 try {
   await page.goto(base);
   await ready();
+  // Keep the replay fixture at six frames after checking the new default.
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000012",
+  );
+  await page.locator("#frames").fill("6");
+  await page.locator("#frames").press("Tab");
+  await ready();
+  await page.locator("#step").click();
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000006",
+  );
   await tick(6);
   // Set all dimensions together; the selected controller triggers one rebuild.
   await page.evaluate(() => {
@@ -100,7 +111,7 @@ try {
   assert.deepEqual(await readFile(restored), await readFile(expected));
   await page.locator("#inspect-physics").uncheck();
   await page
-    .locator(".controls summary")
+    .locator(".controls summary").filter({ hasText: "Planner settings" })
     .evaluate((e) => (e.parentElement.open = true));
   await page.locator("#wave").click();
   await page.waitForFunction(

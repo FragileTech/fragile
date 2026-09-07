@@ -63,7 +63,7 @@ committed assets and scenes work offline once the application has loaded.
 The supplied server sends COOP/COEP headers. On hosts without these headers,
 the existing isolation service worker can supply isolation; otherwise the lab
 uses its single-thread module. The HUD reports the actual thread count.
-The **Worker threads** control accepts 1–64 (default 4) for the live planner,
+The **Worker threads** control accepts 1–64 (default 8) for the live planner,
 including FMC, iCEM, and MPPI. The calling thread participates, so selecting 64
 prewarms 63 additional pthread workers; smaller settings allocate smaller pools.
 Native Python also accepts `ControlEngine(scene, worlds=256, threads=64)`.

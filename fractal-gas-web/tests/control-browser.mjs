@@ -39,6 +39,17 @@ async function graphicsReady() {
 try {
   await page.goto(base);
   await ready();
+  // Keep the replay fixture at six frames after checking the new default.
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000012",
+  );
+  await page.locator("#frames").fill("6");
+  await page.locator("#frames").press("Tab");
+  await ready();
+  await page.locator("#step").click();
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000006",
+  );
   await idle();
   assert.match(
     await page.locator("#backend").innerText(),
@@ -133,7 +144,7 @@ try {
   );
   assert.deepEqual(errors, []);
   await page.setViewportSize({ width: 1536, height: 1000 });
-  await page.locator(".controls summary").click();
+  await page.locator(".controls summary").filter({ hasText: "Planner settings" }).click();
   assert.equal(await page.locator("#threads").getAttribute("max"), "64");
   await page.locator("#threads").fill("64");
   await page.locator("#threads").press("Tab");

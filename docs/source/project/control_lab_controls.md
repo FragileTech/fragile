@@ -93,7 +93,7 @@ throttling therefore prevents this mode from being a hard real-time guarantee.
 | Session control | Default and range | Meaning |
 |---|---|---|
 | **Clock** (`clock`) | `reproducible`; alternative `realtime` | Worker scheduling policy. Changing it restarts the current scene. |
-| **Worker threads** (`threads`) | 4; integers 1–64 | Total native simulation threads in the live planning engine, including its calling thread. |
+| **Worker threads** (`threads`) | 8; integers 1–64 | Total native simulation threads in the live planning engine, including its calling thread. |
 :::
 
 :::{div} feynman-prose
@@ -128,8 +128,8 @@ UI ranges; lower-level APIs can have different limits.
 |---|---|---|---|
 | **Controller** | `algorithm` | `fmc` | `fmc`, `random`, `cem`, `icem`, or `mppi`. |
 | **Walkers** | `walkers` | 128; integers 1–8192 | FMC population or shooting batch capacity. Random control does not use a rollout population. |
-| **Horizon** | `horizon` | 16; integers 1–4096 | FMC iterations per decision; action depth per shooting round. Ignored by random action selection. |
-| **Action frames** | `frames` | 6; integers 1–60 | Physics frames per candidate action and executed control action. Applies to all controllers. |
+| **Horizon** | `horizon` | 32; integers 1–4096 | FMC iterations per decision; action depth per shooting round. Ignored by random action selection. |
+| **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action and executed control action. Applies to all controllers. |
 | **Seed** | `seed` | 7; integers 0–4294967295 | World reset seed and base planner seed; successive decisions derive seeds by adding the decision count modulo `2^32`. |
 | **Distance weight** | `distance_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled observation distance in cloning fitness. |
 | **Reward weight** | `reward_coef` | 1; 0–10, increment 0.1 | FMC exponent on rescaled reward signal in cloning fitness. Does not edit scene reward coefficients. |

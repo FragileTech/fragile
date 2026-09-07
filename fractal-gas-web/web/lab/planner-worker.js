@@ -18,7 +18,7 @@ self.onmessage = async ({ data }) => {
     if (data.type === "init") {
       revision = data.revision;
       settings = data.settings;
-      const requestedThreads = controlThreads(data.threads ?? 4);
+      const requestedThreads = controlThreads(data.threads ?? 8);
       let threaded = !!self.crossOriginIsolated,
         module;
       try {

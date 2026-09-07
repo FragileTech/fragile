@@ -1,13 +1,13 @@
 // Thin memory adapter. Physics, state restoration and Wave all live in C++.
 export const MAX_CONTROL_THREADS = 64;
-export function controlThreads(value = 4) {
+export function controlThreads(value = 8) {
   if (!Number.isInteger(value) || value < 1 || value > MAX_CONTROL_THREADS)
     throw new RangeError(
       `Worker threads must be an integer from 1 to ${MAX_CONTROL_THREADS}`,
     );
   return value;
 }
-export async function loadNative(threaded = false, threads = 4) {
+export async function loadNative(threaded = false, threads = 8) {
   threads = threaded ? controlThreads(threads) : 1;
   const { default: create } = await import(
     threaded ? "./engine/control-threaded.mjs" : "./engine/control.mjs"
