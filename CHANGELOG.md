@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Refine all eight Lab vehicle designs with concept-inspired armor panels, baked fasteners and wear, aged metals, darker glazing, and adjusted drone and hopper shapes; enforce their previous geometry, draw-batch, texture-memory and download budgets.
+
 * Lighten the Lab's playable arena floors and racing tracks with matte slate and warm stone colors, improving agent and planning-trace visibility against dark out-of-bounds areas in both styles.
 
 * Respawn delivered mining rocks at seeded random clear positions throughout the playable map, avoiding walls, holes, active bodies, and delivery bases while preserving exact replay.

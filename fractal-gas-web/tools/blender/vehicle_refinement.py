@@ -70,9 +70,26 @@ def mechanical_finish(b):
         tex = mat.node_tree.nodes.new("ShaderNodeTexImage")
         tex.image = im
         mat.node_tree.links.new(tex.outputs["Color"], p.inputs["Roughness"])
+    # The sheets use aged brass/copper, not uniformly bright orange hardware.
+    for key, color in (
+        [("trim", (0.38, 0.255, 0.095)), ("copper", (0.32, 0.12, 0.052))]
+        if b.steam
+        else [("trim", (0.19, 0.22, 0.25)), ("copper", (0.075, 0.065, 0.095))]
+    ):
+        b.mats[key].node_tree.nodes.get("Principled BSDF").inputs["Base Color"].default_value = (
+            *color,
+            1,
+        )
     glass = b.mats["glass"].node_tree.nodes.get("Principled BSDF")
     glass.inputs["Metallic"].default_value = 0.15
     glass.inputs["Roughness"].default_value = 0.10
+    glass.inputs["Base Color"].default_value = (
+        (0.22, 0.085, 0.015, 1) if b.steam else (0.008, 0.055, 0.075, 1)
+    )
+    glass.inputs["Emission Strength"].default_value = 0
+    b.mats["energy"].node_tree.nodes.get("Principled BSDF").inputs[
+        "Emission Strength"
+    ].default_value = 0.65
     if b.kind == "rocket":
         # Tinted, ordinary alpha glazing avoids a transmission/refraction render pass.
         # Crowds use an opaque approximation, so their instanced path stays opaque.
@@ -401,8 +418,8 @@ def drone(b):
             "Layered avionics armor",
             [
                 (-1.03, 0.24, 0.58, 0.72),
-                (-0.55, 0.48, 0.59, 0.82),
-                (0.35, 0.50, 0.57, 0.81),
+                (-0.55, 0.56, 0.59, 0.75),
+                (0.35, 0.58, 0.57, 0.74),
                 (0.93, 0.26, 0.50, 0.64),
             ],
             "plate",
@@ -459,6 +476,17 @@ def drone(b):
 def harvester(b):
     # The concept puts the intake inside a heavy articulated casing, with covered
     # wheel arches and a visibly sloping hopper rather than exposed box primitives.
+    # Reprofile existing hopper walls and cargo, preserving topology and pivots.
+    # The concepts have tapered heavy bins and low, irregular loads.
+    for obj in b.scene.objects:
+        if obj.name.startswith("Flared cargo hopper side"):
+            for vertex in obj.data.vertices:
+                if vertex.co.z < 0:
+                    vertex.co.x *= 0.83
+        elif obj.name.startswith("Collected mineral"):
+            obj.scale.z = 0.65
+            obj.rotation_euler.x = 0.27 * math.sin(obj.location.x * 17)
+            obj.rotation_euler.y = 0.35 * math.cos(obj.location.y * 19)
     for s in [-1, 1]:
         side_plate(
             b,

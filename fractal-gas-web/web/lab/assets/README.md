@@ -129,6 +129,18 @@ Rocket close-up models use dark tinted alpha glazing without a refraction pass;
 their crowd LOD keeps opaque glazing. Futuristic drone armor uses the concept's
 graphite finish and a lower hull; the steampunk diamond panels form its outer shell.
 
+The surface pass adds chamfered access-panel outlines, recessed seams, fastener
+heads, edge wear and restrained patina to the existing vehicle texture atlases.
+Neutral alloy and charcoal armor contrast with darker cab glazing; steampunk
+hardware uses aged brass and copper. The drone's upper armor is wider and lower,
+and harvesters have tapered hopper walls and a lower, irregular crystal load.
+These shape changes reuse existing vertices and retain all animation pivots.
+
+`tests/fixtures/vehicle-render-budgets.json` records the preceding vehicle exports.
+The asset tests enforce those per-model triangle, draw-batch, material, texture-pixel
+and download-size ceilings for both LODs. This pass adds no texture slots, shader
+effects or rendering passes. The original concept PNGs remain unchanged.
+
 ### Regeneration
 
 Use the installed Blender MCP's `execute_blender_code` tool to run the following,

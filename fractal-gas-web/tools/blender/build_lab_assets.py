@@ -51,7 +51,7 @@ def material(name, color, metallic=0.7, rough=0.36, emission=0, texture=None):
     return mat
 
 
-def panel_maps(style, pale=False, n=512):
+def panel_maps(style, pale=False, n=512, concept=False):
     """Bake a deterministic original panel/rivet/wear atlas into packed PBR maps."""
     y, x = np.mgrid[0:n, 0:n] / n
     rng = np.random.default_rng(1841)
@@ -72,6 +72,41 @@ def panel_maps(style, pale=False, n=512):
     rgb[height > 0.06] = [0.50, 0.53, 0.56] if style == "futuristic" else [0.55, 0.34, 0.12]
     scratches = (noise > 0.997) | ((x < 0.035) & (noise > 0.70))
     rgb[scratches] *= 1.7
+    if concept:
+        # Panel breaks, fasteners and worn edges live in the existing atlas: no
+        # extra geometry, texture slots or runtime shader work at either LOD.
+        edge = np.minimum.reduce([x, 1 - x, y, 1 - y])
+        cut = np.maximum(np.abs(x - 0.5) - 0.28, np.abs(y - 0.5) - 0.31)
+        hatch = (cut < 0) & (np.abs(x - 0.5) + np.abs(y - 0.5) < 0.51)
+        border = hatch & ((cut > -0.009) | (np.abs(x - 0.5) + np.abs(y - 0.5) > 0.498))
+        rib = np.abs(x - (0.74 + 0.11 * np.sin(y * math.pi))) < 0.006
+        seams = seam | border | (rib & ~hatch)
+        patina = np.sin(x * 19 + np.sin(y * 11)) * np.sin(y * 23 + x * 7)
+        # Neutral alloy and charcoal iron, with restrained burgundy enamel.
+        base = np.array(
+            ([0.39, 0.42, 0.44] if pale else [0.105, 0.125, 0.145])
+            if style == "futuristic"
+            else ([0.15, 0.030, 0.022] if pale else [0.085, 0.076, 0.058])
+        )
+        rgb = np.broadcast_to(base, (n, n, 3)).copy()
+        rgb *= (0.96 + patina * 0.13 + (noise - 0.5) * 0.09)[..., None]
+        rgb[hatch] *= 0.80
+        rgb[seams] *= 0.23
+        height[seams] = -0.18
+        wear = ((edge < 0.035) | (border & (noise > 0.6))) & (noise > 0.70)
+        metal = np.array([0.47, 0.49, 0.50] if style == "futuristic" else [0.36, 0.24, 0.095])
+        rgb[wear] = metal * 0.80
+        for u in [0.055, 0.945]:
+            for v in [0.055, 0.27, 0.50, 0.73, 0.945]:
+                r = np.hypot(x - u, y - v)
+                collar = r < 0.011
+                head = r < 0.006
+                rgb[collar] *= 0.35
+                rgb[head] = metal
+                height[head] = 0.18
+        # Long hairline wear reads as worked metal instead of salt-and-pepper noise.
+        scratch = (np.abs(np.sin(y * 227 + x * 11)) < 0.018) & (patina > 0.40)
+        rgb[scratch & ~seams] = metal * 0.65
     dy, dx = np.gradient(height)
     normal = np.stack([-dx * 18, -dy * 18, np.ones_like(x)], axis=-1)
     normal /= np.linalg.norm(normal, axis=-1, keepdims=True)
@@ -106,13 +141,17 @@ class Builder:
             "dark": material(
                 "Riveted iron" if self.steam else "Ceramic graphite",
                 (0.12, 0.105, 0.085) if self.steam else (0.055, 0.072, 0.09),
-                texture=panel_maps(style),
+                texture=panel_maps(
+                    style, concept=kind in {"rocket", "kart", "drone", "harvester"}
+                ),
             ),
             "plate": material(
                 "Burgundy enamel" if self.steam else "Brushed pale alloy",
                 (0.18, 0.027, 0.024) if self.steam else (0.48, 0.56, 0.62),
                 rough=0.42,
-                texture=panel_maps(style, True),
+                texture=panel_maps(
+                    style, True, concept=kind in {"rocket", "kart", "drone", "harvester"}
+                ),
             ),
             "trim": material(
                 "Machined brass" if self.steam else "Titanium edges",

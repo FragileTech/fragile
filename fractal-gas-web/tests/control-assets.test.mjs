@@ -8,6 +8,15 @@ import { chooseLod } from "../web/lab/visuals/body-layer.js";
 import { retainAsset, disposeGroup } from "../web/lab/visuals/resources.js";
 import { StyleService, styleStorageKey } from "../web/lab/visual-style.js";
 
+// Captured before the concept-surface refinement. Fidelity improvements must
+// fit the existing GPU workload, not merely the looser absolute LOD ceilings.
+const vehicleBudgets = JSON.parse(
+  await readFile(
+    new URL("./fixtures/vehicle-render-budgets.json", import.meta.url),
+    "utf8",
+  ),
+);
+
 for (const style of ["futuristic", "steampunk"]) {
   for (const model of [
     "rocket",
@@ -40,6 +49,46 @@ for (const style of ["futuristic", "steampunk"]) {
               sum + json.accessors[primitive.indices].count / 3,
             0,
           );
+        const budget = vehicleBudgets[`${style}/${model}-${lod}`];
+        if (budget) {
+          assert(
+            triangles <= budget.triangles,
+            "no additional vehicle triangles",
+          );
+          assert(
+            json.meshes.reduce(
+              (sum, mesh) => sum + mesh.primitives.length,
+              0,
+            ) <= budget.primitives,
+            "no additional material draw batches",
+          );
+          assert(
+            json.materials.length <= budget.materials,
+            "no additional materials",
+          );
+          assert(
+            json.images.length <= budget.images,
+            "no additional texture images",
+          );
+          const binaryOffset = 28 + bytes.readUInt32LE(12);
+          const pixels = json.images.reduce((sum, image) => {
+            const view = json.bufferViews[image.bufferView];
+            const offset = binaryOffset + (view.byteOffset || 0);
+            assert.equal(
+              bytes.toString("ascii", offset + 1, offset + 4),
+              "PNG",
+            );
+            return (
+              sum +
+              bytes.readUInt32BE(offset + 16) * bytes.readUInt32BE(offset + 20)
+            );
+          }, 0);
+          assert(
+            pixels <= budget.texturePixels,
+            "no additional decoded texture memory",
+          );
+          assert(bytes.length <= budget.bytes, "no additional download bytes");
+        }
         assert(
           triangles <=
             (lod === "low"
