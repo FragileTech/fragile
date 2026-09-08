@@ -1,11 +1,19 @@
 set(OPT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
+add_library(fg_coco STATIC ${OPT_ROOT}/third_party/coco/coco.c)
+target_include_directories(fg_coco PUBLIC ${OPT_ROOT}/third_party/coco)
+set_target_properties(fg_coco PROPERTIES POSITION_INDEPENDENT_CODE ON C_STANDARD 99)
+if(NOT MSVC)
+  target_compile_options(fg_coco PRIVATE -ffp-contract=off)
+  target_link_libraries(fg_coco PUBLIC m)
+endif()
 add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/benchmark.cpp
+  ${OPT_ROOT}/src/optimization/coco_benchmark.cpp
   ${OPT_ROOT}/src/optimization/perturbation.cpp
   ${OPT_ROOT}/src/optimization/environment.cpp
   ${OPT_ROOT}/src/optimization/gas.cpp
   ${OPT_ROOT}/src/optimization/engine.cpp)
-target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core)
+target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core fg_coco)
 set_target_properties(fg_optimization_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(fg_optimization_core PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off)
@@ -17,6 +25,8 @@ if(EMSCRIPTEN)
   target_link_options(fg_optimization PRIVATE --no-entry -fexceptions -O3
     "-sMODULARIZE=1" "-sEXPORT_ES6=1" "-sEXPORT_NAME=createOptimizationModule"
     "-sENVIRONMENT=worker,node" "-sALLOW_MEMORY_GROWTH=1" "-sINITIAL_MEMORY=33554432"
+    # COCO rotation generation nests 48 KiB and 16 KiB scratch arrays.
+    "-sSTACK_SIZE=1048576" "-sSTACK_OVERFLOW_CHECK=2"
     "-sEXPORTED_RUNTIME_METHODS=HEAPU8,HEAPF32,HEAPF64,UTF8ToString,stringToUTF8,lengthBytesUTF8"
     "-sEXPORTED_FUNCTIONS=_malloc,_free")
   set_target_properties(fg_optimization PROPERTIES OUTPUT_NAME optimization SUFFIX .mjs
@@ -24,7 +34,10 @@ if(EMSCRIPTEN)
 else()
   add_library(fg_optimization SHARED ${OPT_ROOT}/src/optimization/c_api.cpp)
   add_executable(fg_optimization_tests ${OPT_ROOT}/tests/test_main.cpp
-    ${OPT_ROOT}/tests/optimization/test_optimization.cpp)
+    ${OPT_ROOT}/tests/optimization/test_optimization.cpp
+    ${OPT_ROOT}/tests/optimization/test_coco.cpp)
+  target_compile_definitions(fg_optimization_tests PRIVATE
+    COCO_FIXTURES="${OPT_ROOT}/tests/optimization/coco-fixtures.json")
   target_include_directories(fg_optimization_tests PRIVATE ${OPT_ROOT}/tests)
   target_link_libraries(fg_optimization_tests PRIVATE fg_optimization_core)
   add_test(NAME fg_optimization_tests COMMAND fg_optimization_tests)

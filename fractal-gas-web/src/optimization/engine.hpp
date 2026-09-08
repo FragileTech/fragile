@@ -13,6 +13,7 @@ struct Settings {
   std::string algorithm, companion, clone_companion, objective, perturbation;
   int walkers, max_walkers, seed, dt_min, dt_max, clone_every, substeps, elites;
   int horizon, max_horizon;
+  uint64_t max_evaluations;
   double proposal, gamma, beta, delta_t, epsilon, clone_epsilon, lambda_alg,
       reward_coef, distance_coef, eta, sigma_min, amplitude, epsilon_dist, rho,
       p_max, epsilon_clone, sigma_x, restitution;
@@ -54,6 +55,8 @@ class Algorithm {
   virtual void step() = 0;
   virtual const Population& population() const = 0;
   virtual uint64_t evaluations() const = 0;
+  // Conservative admission check; never split or alter an optimizer's step.
+  virtual uint64_t next_evaluations_upper_bound() const = 0;
   // Expose the direction-adjusted score on a common baseline, including any
   // cumulative reward held by the underlying algorithm.
   virtual double objective_score(int i) const = 0;

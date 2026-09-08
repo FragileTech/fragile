@@ -47,6 +47,7 @@ class ArcadePlanner {
   int depth() const { return depth_; }
   bool done() const { return done_; }
   bool search_advanced() const { return search_advanced_; }
+  bool execution_pending() const { return next_action_ < plan_.actions.size(); }
   const char* phase() const { return done_ ? "ended" : (search_advanced_ ? "planning" : "playing"); }
   const std::string& execution_mode() const { return plan_.mode; }
 

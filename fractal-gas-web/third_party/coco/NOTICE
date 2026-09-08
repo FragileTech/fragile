@@ -1,0 +1,180 @@
+Copyright (c) 2013-2024 by the NumBBO/CoCO team. See AUTHORS file and
+remarks below for exceptions and more details.
+
+Apart from the below mentioned exceptions, this code is distributed under 
+the 3-clause BSD License. 
+
+### 3-clause BSD License ###
+
+Redistribution and use in source and binary forms of the software as well
+as documentation, with or without modification, are permitted provided
+that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright
+  notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above
+  copyright notice, this list of conditions and the following
+  disclaimer in the documentation and/or other materials provided
+  with the distribution.
+
+3. The names of the contributors may not be used to endorse or
+  promote products derived from this software without specific
+  prior written permission.
+
+THIS SOFTWARE AND DOCUMENTATION IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE AND DOCUMENTATION, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
+DAMAGE.
+
+### Remarks/Additions ###
+
+Note that some parts of the provided software have been written by contributors
+outside the NumBBO/CoCO team as indicated in AUTHORS and therefore covered by
+different licenses than the above. We acknowledge in particular:
+
+* the AVL tree code by Michael H. Buselli and Wessel Dankers in
+  `src/mo_avl_tree.c`, distributed under the terms of the GNU Lesser General
+  Public License
+* the hypervolume code of the SMS-EMOA from the Shark library in
+  `examples/bbob-biobj-matlab-smsemoa/`, distributed under the terms of the GNU
+  General Public License and the non-dominated sorting part as written by Y. Cao
+* the MinUnit code used as the basis for the implementation in
+  `test/unit-test/minunit_c89.h`, distributed under the terms of the MIT
+  Licence.
+* the Rust code by Leopold Luley in `build/rust/`, distributed unter the terms
+  of both the MIT License and the Apache 2.0 License.
+* the code for Brent's method in ``src/brentq.c`` is a modified copy of
+  ``scipy.optimize.brentq`` originally written by Charles Harris and distributed
+  under the BSD 3-Clause "New" or "Revised" License.
+
+
+Contributors to NumBBO/CoCO have been
+
+- Ouassim Ait ElHara (2)
+- Youhei Akimoto
+- Asma Atamna (2)
+- Anne Auger (2)
+- Umut Batu (2)
+- Bernd Bischl
+- Dimo Brockhoff (3)
+- Alexandre Chotard
+- Lorenzo Consoli
+- Paul Dufosse (3)
+- Steffen Finck
+- Nikolaus Hansen (3)
+- Verena Heidrich-Meisner
+- Kacper Kafara
+- Leopold Luley
+- Filip Matzner
+- Olaf Mersmann (3)
+- Duc Manh Nguyen 
+- Petr Posik
+- Mike Preuss
+- Raymond Ros (3)
+- Phillipe R. Sampaio (2)
+- Marc Schoenauer
+- Thanh-Do Tran
+- Heike Trautmann
+- Dejan Tusar (3)
+- Tea Tusar (3)
+- Konstantinos Varelas (2)
+
+(2): main contributor
+(3): power contributor
+
+
+
+Upstream brentq.c:
+/*
+    This is a modification of the original file:
+    Written by Charles Harris charles.harris@sdl.usu.edu
+
+    Edited by Paul Dufosse paul.dufosse@inria.fr
+    - make it standalone
+      - removing SciPy-dependent stuff
+      - merging with zeros.h declaration file
+    - wrapping in brentinv(f, y, ...)
+      - automatic range interval computation [xa, xb]
+      - assume f has fixed point in 0
+
+    Copyright (c) 2001-2002 Enthought, Inc. 2003-2022, SciPy Developers.
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions
+    are met:
+
+    1. Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
+
+    2. Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following
+       disclaimer in the documentation and/or other materials provided
+       with the distribution.
+
+    3. Neither the name of the copyright holder nor the names of its
+       contributors may be used to endorse or promote products derived
+       from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+
+Upstream mo_avl_tree.c:
+/*****************************************************************************
+
+ avl.c - Source code for libavl
+
+ Copyright (c) 1998  Michael H. Buselli <cosine@cosine.org>
+ Copyright (c) 2000-2009  Wessel Dankers <wsl@fruit.je>
+
+ This file is part of libavl.
+
+ libavl is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as
+ published by the Free Software Foundation, either version 3 of
+ the License, or (at your option) any later version.
+
+ libavl is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ and a copy of the GNU Lesser General Public License along with
+ libavl.  If not, see <http://www.gnu.org/licenses/>.
+
+ Augmented AVL-tree. Original by Michael H. Buselli <cosine@cosine.org>.
+
+ Modified by Wessel Dankers <wsl@fruit.je> to add a bunch of bloat
+ to the source code, change the interface and replace a few bugs.
+ Mail him if you find any new bugs.
+
+ Renamed and additionally modified by BOBBies to fit the COCO platform.
+
+ *****************************************************************************/
+
+Full GNU license texts accompany this notice as COCO-COPYING.txt and
+COCO-COPYING.LESSER.txt.
+
+Source and rebuild instructions: https://github.com/FragileTech/fragile/tree/main/fractal-gas-web
+Pinned upstream: https://github.com/numbbo/coco-experiment/tree/e5d068f69e36f346c86cc2934413369abe36fc22

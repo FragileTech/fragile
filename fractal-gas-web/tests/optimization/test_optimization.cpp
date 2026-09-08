@@ -18,11 +18,12 @@ TEST_CASE(optimization_benchmark_values) {
   CHECK_CLOSE(lj.evaluate(atoms), -1, 1e-6);
   atoms[3] = 0;
   CHECK(!std::isfinite(lj.evaluate(atoms)));
-  CHECK(JsonReader(catalog_json()).read()["benchmarks"].array.size() == 13);
+  CHECK(JsonReader(catalog_json()).read()["benchmarks"].array.size() == 37);
 }
 TEST_CASE(optimization_gradients) {
   auto catalog = JsonReader(catalog_json()).read();
   for (auto& entry : catalog["benchmarks"].array) {
+    if (entry["suite"].str() == "bbob") continue;
     auto c = config(R"({"dimensions":2,"n_atoms":2})");
     c.object["benchmark"] = entry["id"];
     Benchmark b(c);

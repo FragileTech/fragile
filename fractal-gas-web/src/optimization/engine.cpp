@@ -158,7 +158,14 @@ class ExistingSwarm final : public Algorithm {
     update();
   }
   const Population& population() const override { return p; }
-  uint64_t evaluations() const override { return env.evals; }
+  uint64_t evaluations() const override { return env.b.evaluations; }
+  uint64_t next_evaluations_upper_bound() const override {
+    if (planner && planner->execution_pending()) return 1;
+    return uint64_t(swarm->n_walkers()) +
+           (s.algorithm == "graph"
+                ? std::min(s.walkers, s.max_walkers - swarm->n_walkers())
+                : 0);
+  }
   double objective_score(int i) const override {
     if (!planner) return swarm->walker_cum_reward(i);
     if (i == swarm->n_walkers()) return s.score(p.objective.at(i));
@@ -246,6 +253,11 @@ Session::Session(const Json& config)
   auto it = factories().find(settings.algorithm);
   if (it == factories().end())
     throw std::invalid_argument("Unknown optimization algorithm");
+  if (settings.max_evaluations &&
+      settings.max_evaluations <
+          uint64_t(settings.planning() ? 1 : settings.walkers))
+    throw std::invalid_argument(
+        "Evaluation budget is too small to initialize the swarm");
   if (benchmark.stochastic) {
     settings.potential_force = false;
     Json off;
@@ -255,9 +267,18 @@ Session::Session(const Json& config)
   best = settings.worst();
   config_json = stringify(settings.json);
   algorithm = it->second(benchmark, settings);
+  if (settings.max_evaluations &&
+      benchmark.evaluations > settings.max_evaluations)
+    throw std::invalid_argument("Initialization exceeds the evaluation budget");
   capture();
 }
 void Session::step() {
+  if (settings.max_evaluations &&
+      algorithm->next_evaluations_upper_bound() >
+          settings.max_evaluations - benchmark.evaluations)
+    throw std::runtime_error(
+        "Evaluation budget reached: paused before the next complete step would "
+        "exceed it. Save the run or reset with a larger budget.");
   const auto& p = algorithm->population();
   if (std::none_of(p.alive.begin(), p.alive.end(),
                    [](uint8_t v) { return v != 0; }))
@@ -284,12 +305,14 @@ void Session::capture() {
     }
   }
   if (settings.better(current, best)) best = current;
+  if (settings.better(benchmark.best_observed, best))
+    best = benchmark.best_observed;
   snapshot = {1,
               double(p.n),
               double(p.d),
               double(p.has_velocity),
               double(iteration),
-              double(algorithm->evaluations()),
+              double(benchmark.evaluations),
               double(alive),
               double(cloned),
               current,

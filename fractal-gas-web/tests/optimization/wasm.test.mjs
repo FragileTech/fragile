@@ -21,7 +21,7 @@ test(
   { skip: !available },
   async () => {
     const native = new NativeOptimization(await create());
-    assert.equal(native.catalog().benchmarks.length, 13);
+    assert.equal(native.catalog().benchmarks.length, 37);
     assert.deepEqual(
       native
         .catalog()
@@ -171,6 +171,147 @@ test(
                 );
             });
           }
+    } finally {
+      native.dispose();
+    }
+  },
+);
+
+test(
+  "COCO BBOB catalog, instances, fixed budgets and surface isolation",
+  { skip: !available },
+  async () => {
+    const native = new NativeOptimization(await create());
+    try {
+      const bbob = native
+        .catalog()
+        .benchmarks.filter((b) => b.suite === "bbob");
+      assert.equal(bbob.length, 24);
+      for (const entry of bbob) {
+        for (const dimensions of entry.dimensions) {
+          const cfg = native.create({
+            benchmark: entry.id,
+            dimensions,
+            coco_instance: 2,
+            walkers: 8,
+          });
+          assert.equal(cfg.coco_version, "2.8.2");
+          assert.ok(
+            cfg.coco_problem_id.endsWith(
+              `_i02_d${String(dimensions).padStart(2, "0")}`,
+            ),
+          );
+          assert.ok(Number.isFinite(cfg.reference_minimum));
+          assert.equal(cfg.potential_force, false);
+          const before = native.snapshot();
+          const sampled = native.sample(
+            Float32Array.from(
+              { length: dimensions },
+              (_, k) => [0.37, 0.83, -1.1][k % 3],
+            ),
+            dimensions,
+          );
+          assert.ok(Number.isFinite(sampled[0]));
+          assert.deepEqual(native.snapshot(), before);
+          native.step();
+        }
+      }
+      for (const algorithm of [
+        "euclidean",
+        "wave",
+        "graph",
+        "fmc",
+        "wave_jump",
+      ]) {
+        const resolved = native.create({
+          benchmark: "bbob_21",
+          dimensions: 5,
+          coco_instance: 3,
+          walkers: 8,
+          max_walkers: 64,
+          algorithm,
+          horizon: 2,
+          periodic: true,
+          max_evaluations: 65,
+          perturbation_std: 0.1,
+        });
+        const recording = new Recording(resolved);
+        recording.append(native.snapshot());
+        let stopped = false;
+        for (let i = 0; i < 100 && !stopped; i++) {
+          const before = native.snapshot();
+          try {
+            recording.append(native.step());
+          } catch (e) {
+            assert.match(e.message, /Evaluation budget reached/);
+            assert.deepEqual(native.snapshot(), before);
+            stopped = true;
+          }
+          assert.ok(frameInfo(native.snapshot()).evaluations <= 65);
+        }
+        assert.ok(stopped);
+        assert.deepEqual(
+          importRecording(recording.export()).frames,
+          recording.frames,
+        );
+        assert.equal(
+          importRecording(recording.export()).config.coco_instance,
+          3,
+        );
+      }
+      assert.throws(
+        () => native.create({ benchmark: "bbob_24", dimensions: 4 }),
+        /dimensions/,
+      );
+      assert.throws(
+        () => native.create({ benchmark: "bbob_1", coco_instance: 0 }),
+        /instance/,
+      );
+    } finally {
+      native.dispose();
+    }
+  },
+);
+
+test(
+  "COCO native/WASM problem parity for all functions and hard instances",
+  { skip: !available || !existsSync(library) },
+  async () => {
+    const native = new NativeOptimization(await create());
+    try {
+      for (let f = 1; f <= 24; f++) {
+        const config = {
+          benchmark: `bbob_${f}`,
+          dimensions: 5,
+          coco_instance: 15,
+          algorithm: "wave",
+          walkers: 8,
+          periodic: true,
+          perturbation_std: 0.1,
+        };
+        native.create(config);
+        for (let i = 0; i < 3; i++) native.step();
+        const result = spawnSync(
+          "python3",
+          [new URL("./native_reference.py", import.meta.url).pathname],
+          {
+            input: JSON.stringify({ config, steps: 3 }),
+            encoding: "utf8",
+            timeout: 10000,
+          },
+        );
+        assert.equal(result.status, 0, result.stderr || result.error?.message);
+        const expected = JSON.parse(result.stdout),
+          actual = native.snapshot();
+        expected.forEach((v, i) => {
+          if (v === null) assert.ok(!Number.isFinite(actual[i]));
+          else
+            assert.ok(
+              Math.abs(v - actual[i]) <= 3e-6 * Math.max(1, Math.abs(v)),
+              `${config.benchmark} word ${i}: ${actual[i]} != ${v}`,
+            );
+        });
+      }
     } finally {
       native.dispose();
     }

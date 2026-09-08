@@ -9,7 +9,6 @@ class BenchmarkEnvironment final : public BatchEnv {
  public:
   Benchmark& b;
   Settings s;
-  uint64_t evals = 0;
   BenchmarkEnvironment(Benchmark&, const Settings&);
   int32_t n_actions() const override { return 1 << 24; }
   int32_t obs_dim() const override { return b.d; }

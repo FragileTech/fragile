@@ -33,6 +33,10 @@ Settings::Settings(const Json& input) : json(input) {
     return t;
   };
   algorithm = s("algorithm", "euclidean");
+  double budget = f("max_evaluations", 0, 0, 1e12);
+  if (std::floor(budget) != budget)
+    throw std::invalid_argument("Evaluation budget must be an integer");
+  max_evaluations = uint64_t(budget);
   objective = s("objective", "minimize");
   if (objective != "minimize" && objective != "maximize")
     throw std::invalid_argument("Objective must be minimize or maximize");
@@ -79,7 +83,8 @@ Settings::Settings(const Json& input) : json(input) {
   sigma_x = f("sigma_x", 1e-6, 0, 1e6);
   restitution = f("restitution", .5, 0, 1);
   periodic = b("periodic", false);
-  potential_force = b("potential_force", true);
+  potential_force =
+      b("potential_force", input["coco_version"].kind == Json::Null);
   cloning = b("cloning", true);
   kinetic = b("kinetic", true);
 }
@@ -278,7 +283,8 @@ void baoab(Population& p, const Settings& s, const Benchmark& b, Rng& rng,
   auto kick = [&] {
     if (s.potential_force && !b.stochastic)
       for (int i = 0; i < p.n; ++i)
-        b.gradient(p.x.data() + size_t(i) * p.d, grad.data() + size_t(i) * p.d);
+        b.gradient(p.x.data() + size_t(i) * p.d, grad.data() + size_t(i) * p.d,
+                   true);
     for (size_t j = 0; j < p.x.size(); ++j)
       p.v[j] += float(.5 * s.delta_t * s.score(grad[j]));
   };
@@ -309,13 +315,12 @@ class Euclidean final : public Algorithm {
   OptimizationRng rng;
   std::unique_ptr<Perturbation> noise;
   Population p;
-  uint64_t ticks = 0, evals = 0;
+  uint64_t ticks = 0;
   void evaluate() {
     for (int i = 0; i < p.n; ++i) {
       float* x = p.x.data() + size_t(i) * p.d;
       if (s.periodic) b.wrap(x);
-      p.objective[i] = b.evaluate(x, &rng);
-      ++evals;
+      p.objective[i] = b.evaluate_optimization(x, &rng);
       p.alive[i] = b.valid(x) && std::isfinite(p.objective[i]);
       for (int k = 0; k < p.d; ++k)
         if (!std::isfinite(p.v[size_t(i) * p.d + k])) p.alive[i] = false;
@@ -334,7 +339,13 @@ class Euclidean final : public Algorithm {
     evaluate();
   }
   const Population& population() const override { return p; }
-  uint64_t evaluations() const override { return evals; }
+  uint64_t evaluations() const override { return b.evaluations; }
+  uint64_t next_evaluations_upper_bound() const override {
+    return uint64_t(p.n) *
+           (1 + (s.kinetic && s.potential_force && !b.stochastic
+                     ? 2 * uint64_t(s.substeps) * b.gradient_evaluations()
+                     : 0));
+  }
   double objective_score(int i) const override {
     return s.score(p.objective.at(i));
   }

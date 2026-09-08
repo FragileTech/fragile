@@ -1,6 +1,7 @@
 import { EngineClient } from "./client.js";
 import { frameInfo, row } from "./native.js";
 import { Recording, importRecording, RECORDING_LIMIT } from "./recording.js";
+import { exportFixedBudgetCSV } from "./fixed-budget.js";
 import { SwarmRenderer, MoleculeRenderer } from "./renderer.js";
 const $ = (id) => document.getElementById(id),
   form = $("configuration");
@@ -8,10 +9,12 @@ const client = new EngineClient();
 let catalog,
   config,
   recording,
+  recordingEnabled = false,
   index = 0,
   selected = -1,
   running = false,
   busy = false,
+  budgetStopped = false,
   creating = false,
   imported = false,
   epoch = 0,
@@ -243,7 +246,15 @@ function algorithmFields(values = {}) {
       ["cloning", "Enable cloning"],
       ["kinetic", "Enable kinetics"],
     ])
-      content.append(checkInput(key, label, values[key] ?? true));
+      content.append(
+        checkInput(
+          key,
+          label,
+          values[key] ??
+            (key !== "potential_force" ||
+              !$("benchmark").value.startsWith("bbob_")),
+        ),
+      );
   }
 }
 function benchmarkFields(values = {}) {
@@ -264,13 +275,15 @@ function benchmarkFields(values = {}) {
       vev: "Vacuum expectation value",
       field_scale: "Field scale",
       tilt: "Tilt",
+      coco_instance: "COCO instance",
     };
     panel.append(
       numeric(
         key,
         labels[key] || key,
         values[key] ?? value,
-        key === "tilt" ? -1e6 : 0,
+        key === "tilt" ? -1e6 : key === "coco_instance" ? 1 : 0,
+        key === "coco_instance" ? 1000 : 1e12,
       ),
     );
   }
@@ -280,6 +293,18 @@ function benchmarkFields(values = {}) {
     (entry.id === "lennard_jones"
       ? 3 * (values.n_atoms ?? 10)
       : Math.max(entry.minDimension || 1, values.dimensions ?? 3));
+  $("dimensions").min = entry.minDimension || 1;
+  $("dimensions").max = entry.maxDimension || 4096;
+  if (
+    entry.dimensions &&
+    !entry.dimensions.includes(Number($("dimensions").value))
+  )
+    $("dimensions").value = 3;
+  if (entry.suite === "bbob" && values.reference_minimum !== undefined)
+    $("benchmark-note").textContent =
+      `${entry.group} · Instance ${values.coco_instance} · Reference minimum ${number(values.reference_minimum)}. Dimensions: ${entry.dimensions.join(", ")}.`;
+  const instance = panel.querySelector('[name="coco_instance"]');
+  if (instance) instance.step = "1";
   $("low").value = values.low ?? entry.bounds[0];
   $("high").value = values.high ?? entry.bounds[1];
 }
@@ -410,6 +435,7 @@ function controls() {
   $("run").disabled =
     !ready ||
     creating ||
+    budgetStopped ||
     running ||
     imported ||
     index !== recording.frames.length - 1;
@@ -417,16 +443,18 @@ function controls() {
   $("step").disabled =
     !ready ||
     creating ||
+    budgetStopped ||
     running ||
     busy ||
     imported ||
     index !== recording.frames.length - 1;
   $("reset").disabled = !ready || creating;
-  $("save").disabled = !ready;
+  $("save").disabled = !ready || !recordingEnabled;
+  $("export-csv").disabled = !ready || !recordingEnabled;
   $("load").disabled = !catalog;
   $("replay").disabled = !ready || recording.frames.length < 2;
-  $("latest").disabled = !ready;
-  $("timeline").disabled = !ready;
+  $("latest").disabled = !ready || !recordingEnabled;
+  $("timeline").disabled = !ready || !recordingEnabled;
   $("reset").textContent = imported ? "Rerun settings" : "Reset";
 }
 function stopReplay() {
@@ -452,6 +480,10 @@ function convergence() {
   ctx.clearRect(0, 0, w, h);
   if (!recording?.frames.length) return;
   const frames = recording.frames;
+  const evaluationAxis = $("chart-axis").value === "evaluations";
+  const columnX = evaluationAxis ? 5 : 4;
+  const lastX = Math.max(1, frames.at(-1)[columnX]);
+  const chartX = (frame) => 12 + (frame[columnX] / lastX) * (w - 24);
   const finite = frames.flatMap((f) => [f[9], f[10]]).filter(Number.isFinite);
   if (!finite.length) return;
   let min = finite.reduce((a, b) => Math.min(a, b), Infinity),
@@ -477,7 +509,7 @@ function convergence() {
         connected = false;
         return;
       }
-      const x = 12 + (i / Math.max(1, frames.length - 1)) * (w - 24),
+      const x = chartX(f),
         y = h - 20 - (transform(f[column]) / scale) * (h - 40);
       connected ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
       connected = true;
@@ -489,13 +521,13 @@ function convergence() {
   }
   ctx.strokeStyle = "#d0a9e2";
   ctx.beginPath();
-  const marker = 12 + (index / Math.max(1, frames.length - 1)) * (w - 24);
+  const marker = chartX(frames[index]);
   ctx.moveTo(marker, 18);
   ctx.lineTo(marker, h - 18);
   ctx.stroke();
   ctx.fillStyle = "#b5a6c0";
   ctx.fillText(
-    "Objective (asinh scale) · Iteration",
+    `Objective (asinh scale) · ${evaluationAxis ? "Evaluations" : "Iteration"}`,
     Math.max(120, w - 200),
     h - 3,
   );
@@ -577,13 +609,23 @@ function renderFrame() {
   $("best").textContent = number(info.best);
   $("mean").textContent = number(info.mean);
   $("alive").textContent = `${info.alive} / ${info.n}`;
-  $("evaluations").textContent = info.evaluations;
+  $("evaluations").textContent = config.max_evaluations
+    ? `${info.evaluations} / ${config.max_evaluations}`
+    : info.evaluations;
+  $("reference-metric").hidden =
+    !Number.isFinite(config.reference_minimum) ||
+    config.objective === "maximize";
+  $("optimality-gap").textContent = number(
+    info.best - config.reference_minimum,
+  );
   $("timings").textContent =
     `Step ${simulationMs.toFixed(1)} ms · Draw ${renderer.renderMs.toFixed(1)} ms`;
   $("timeline").max = recording.frames.length - 1;
   $("timeline").value = index;
   $("frame-label").textContent =
-    `Frame ${index + 1} / ${recording.frames.length}`;
+    recordingEnabled
+      ? `Frame ${index + 1} / ${recording.frames.length}`
+      : "Live · recording off";
   $("scene-title").textContent =
     catalog.benchmarks.find((b) => b.id === config.benchmark)?.name ||
     config.benchmark;
@@ -624,13 +666,15 @@ async function createSession(next, loaded = null) {
     const result = await client.request("create", { config: next });
     if (token !== epoch) return;
     config = result.config;
-    recording = loaded || new Recording(config);
+    recordingEnabled = !!loaded || $("record-history").checked;
+    recording = loaded || new Recording(config, undefined, recordingEnabled);
     if (!loaded) recording.append(result.frame);
     imported = !!loaded;
     index = 0;
     selected = -1;
     $("walker-index").value = "";
     simulationMs = 0;
+    budgetStopped = false;
     renderer.setConfig(config);
     populateForm(config);
     objectiveNote();
@@ -659,7 +703,7 @@ async function step() {
   const token = epoch;
   try {
     const result = await client.request("step", {
-      remaining: RECORDING_LIMIT - recording.bytes,
+      remaining: recordingEnabled ? RECORDING_LIMIT - recording.bytes : Infinity,
     });
     if (token !== epoch) return;
     const atLatest = index === recording.frames.length - 1;
@@ -677,7 +721,8 @@ async function step() {
   } catch (error) {
     if (token === epoch) {
       pause();
-      status(error.message, true);
+      budgetStopped = error.message.startsWith("Evaluation budget reached");
+      status(error.message, !budgetStopped);
     }
   } finally {
     busy = false;
@@ -692,7 +737,12 @@ form.addEventListener("submit", (e) => {
   e.preventDefault();
   if (form.reportValidity()) createSession(readConfig());
 });
-$("benchmark").addEventListener("change", () => benchmarkFields());
+$("benchmark").addEventListener("change", () => {
+  benchmarkFields();
+  const force = form.elements.namedItem("potential_force");
+  if (force) force.checked = !$("benchmark").value.startsWith("bbob_");
+});
+$("chart-axis").addEventListener("change", convergence);
 $("algorithm").addEventListener("change", () => algorithmFields());
 $("perturbation").addEventListener("change", () => perturbationFields());
 $("objective").addEventListener("change", objectiveNote);
@@ -796,6 +846,22 @@ $("save").onclick = () => {
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
+$("export-csv").onclick = () => {
+  try {
+    const csv = exportFixedBudgetCSV(recording);
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${config.benchmark}-${config.algorithm}-${config.seed}.csv`;
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    status(
+      "CSV exported. In IOHanalyzer, choose custom CSV and map evaluations, best, function, algorithm, dimension, and run. Use this run’s objective direction.",
+    );
+  } catch (error) {
+    status(error.message, true);
+  }
+};
 $("load").onclick = () => $("file").click();
 $("file").onchange = async () => {
   const file = $("file").files[0];
@@ -820,8 +886,20 @@ window.addEventListener("pagehide", () => {
 });
 try {
   catalog = await client.request("catalog");
-  for (const entry of catalog.benchmarks)
-    $("benchmark").add(new Option(entry.name, entry.id));
+  const groups = new Map();
+  for (const entry of catalog.benchmarks) {
+    const name =
+      entry.suite === "bbob"
+        ? `COCO BBOB · ${entry.group}`
+        : "Classic benchmarks";
+    if (!groups.has(name)) {
+      const group = document.createElement("optgroup");
+      group.label = name;
+      groups.set(name, group);
+      $("benchmark").append(group);
+    }
+    groups.get(name).append(new Option(entry.name, entry.id));
+  }
   for (const entry of catalog.algorithms)
     $("algorithm").add(new Option(entry.name, entry.id));
   for (const entry of catalog.perturbations)

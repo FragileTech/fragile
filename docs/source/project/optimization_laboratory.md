@@ -35,13 +35,14 @@ Use HTTP rather than opening `index.html` as a local file. The initial session i
 paused: **Euclidean Gas**, **256 walkers**, **3D Rastrigin**, **seed 7**, and the
 **spatial view**. **Objective** defaults to **Minimize**, and **Perturbation** to
 **Gaussian (mean 0)** with **Standard deviation = 1**. One simulation worker owns
-the engine.
+the engine. The evaluation budget defaults to **0**, meaning unlimited.
 
 1. Wait for **C++ / WebAssembly**, then press **Step**. Inspect the objective values
    and the change in the cloud before advancing again.
 2. Press **Run**, let the swarm advance, and press **Pause**. The convergence chart
-   follows best and mean objective values over optimization iterations, using an
-   inverse-hyperbolic-sine (`asinh`) scale to compress large value ranges.
+   follows best and mean objective values. **Convergence axis** defaults to
+   **Evaluations** and also offers **Iteration**; an inverse-hyperbolic-sine
+   (`asinh`) scale compresses large value ranges vertically.
 3. Select a walker to inspect its complete coordinates and available diagnostics.
 4. Change the dimension or algorithm in the configuration panel, then press
    **Apply and reset** once. This starts a new session with the edited settings.
@@ -137,10 +138,12 @@ bounds, and apply a reset to recover.
 ## Choose a benchmark and its dimension
 
 :::{div} feynman-prose
-The catalog supplies each function's dimension restrictions, default bounds,
-parameters, gradient availability, and any known minimum or reference value.
-The table below describes minimization experiments. A catalog reference minimum
-remains a minimum when you choose **Maximize**; it is not a maximization target.
+The catalog contains **37 benchmarks**: the 13 functions below and all 24 functions
+in COCO's noiseless, single-objective BBOB suite. Each entry supplies dimension
+restrictions, default bounds, parameters, gradient availability, and any known
+minimum or reference value. The table below describes minimization experiments.
+A catalog reference minimum remains a minimum when you choose **Maximize**; it
+is not a maximization target.
 Changing the number of displayed axes never reduces the dimension passed to the
 objective. A ten-dimensional walker still has ten coordinates even when you see
 only three of them.
@@ -176,11 +179,62 @@ values. Rotating the camera or resampling a slice consumes no simulation random
 numbers. Potential forces are disabled for this benchmark because its noise is
 not a differentiable spatial landscape.
 
-Smooth functions use analytic gradients. EggHolder and Holder Table use a central
-finite-difference fallback at nonsmooth locations; this gives a numerical force,
-not a proof that a derivative exists there. Singular or nonfinite evaluations,
+Smooth functions in this original group use analytic gradients. EggHolder and
+Holder Table use a central finite-difference fallback at nonsmooth locations;
+this gives a numerical force, not a proof that a derivative exists there.
+Singular or nonfinite evaluations,
 such as coincident Lennard–Jones atoms, remain invalid. They do not become best
 candidates, and the surface omits triangles with invalid samples.
+:::
+
+:::{div} feynman-prose
+Choose an entry beginning **BBOB f** to use the official COCO problem. The IDs are
+`bbob_1` through `bbob_24`; accepted dimensions are **2, 3, 5, 10, 20, and 40**.
+The **COCO instance** selects one of **1–1000**, default **1**, independently of
+the swarm's random seed. The default domain is **[-5, 5]** in each coordinate.
+
+An instance includes the shifts, rotations, and other transformations specified
+for its function. Its optimum value can differ from zero and from another
+instance's optimum. Retain the function, dimension, instance, and resolved
+reference minimum together. In BBOB minimization runs, **Gap to minimum** displays
+the best observed value minus that instance's reference minimum. It is hidden
+when maximizing. The suite's function groups are listed in the
+[official BBOB overview](https://coco-platform.org/testsuites/bbob/overview.html).
+:::
+
+:::{div} feynman-added
+| BBOB IDs | Functions in numerical order |
+|---|---|
+| `bbob_1`–`bbob_5` | Sphere; separable Ellipsoid; separable Rastrigin; Bueche–Rastrigin; Linear slope. |
+| `bbob_6`–`bbob_9` | Attractive sector; Step ellipsoid; original Rosenbrock; rotated Rosenbrock. |
+| `bbob_10`–`bbob_14` | Rotated Ellipsoid; Discus; Bent cigar; Sharp ridge; Different powers. |
+| `bbob_15`–`bbob_19` | Rotated Rastrigin; Weierstrass; Schaffer F7, condition 10; Schaffer F7, condition 1000; Griewank–Rosenbrock. |
+| `bbob_20`–`bbob_24` | Schwefel; Gallagher 101 peaks; Gallagher 21 peaks; Katsuura; Lunacek bi-Rastrigin. |
+:::
+
+:::{div} feynman-prose
+Use these functions to isolate different difficulties. On the
+[rotated Ellipsoid](https://coco-platform.org/testsuites/bbob/functions/f10.html),
+the directions of steep and shallow change no longer align with the coordinate
+axes. A displacement that moves far enough along the valley can overshoot across
+it. Compare this with the separable Ellipsoid before attributing the problem only
+to a small step size.
+
+[Gallagher's peaks](https://coco-platform.org/testsuites/bbob/functions/f21.html)
+have independently arranged locations and heights; finding one attractive basin
+does not reveal a dependable route to the best one.
+[Katsuura](https://coco-platform.org/testsuites/bbob/functions/f23.html) is rugged
+and repetitive across fine scales, so a coarse surface can conceal structure the
+optimizer still evaluates. [Lunacek bi-Rastrigin](https://coco-platform.org/testsuites/bbob/functions/f24.html)
+combines two broad funnels with many smaller local optima. Watch whether the
+swarm concentrates in one funnel before it has adequately explored the other.
+
+For BBOB, **Potential force** starts disabled. Enabling it explicitly uses central
+finite differences with coordinate step `1e-5 * max(1, abs(x[k]))`; one gradient
+costs **2 × dimension** objective calls. These calls count against the evaluation
+budget. A finite-difference force on a rugged or nonsmooth function is a numerical
+choice, not an analytic gradient supplied by COCO. Surface sampling remains
+separate from optimization and does not consume that budget.
 :::
 
 (sec-optimization-views)=
@@ -199,10 +253,14 @@ position after the search rows, so a planner configured with 256 walkers display
 257 rows. **Role** in the inspector distinguishes **Search walker** from
 **Committed position**.
 
-The best and mean statistics include valid search candidates and the committed
-row. A better candidate found during planning is not necessarily a position the
-planner has executed. Inspect the committed row's **Objective** to track the
-executed route; its pre-step fitness is not a search-selection diagnostic.
+**Mean** summarizes the valid rows currently displayed, including a planner's
+committed row. **Best** retains the best valid objective query observed anywhere
+in the run, including finite-difference probes and search candidates later
+discarded. It can therefore be better than every visible walker. Gold marks the
+best current row, rather than the historical query behind **Best**. A candidate
+found during planning is not necessarily a position the planner has executed.
+Inspect the committed row's **Objective** to track the executed route; its
+pre-step fitness is not a search-selection diagnostic.
 
 Open **Display and slices** for **Point size**, **Opacity**, and **Links**.
 The link choices are **Distance companions**, **Clone companions**, and
@@ -240,6 +298,11 @@ components of that candidate, rather than additional optimization walkers.
 ## Save, inspect, and replay a run
 
 :::{div} feynman-prose
+**Record history** is off by default and takes effect on reset. With recording
+off, only the current frame is retained; replay, trails, convergence history, and
+exports are unavailable. Enable **Record history** before **Apply and reset**
+to retain the run history. Imported recordings remain available for replay and export.
+
 Use **Save recording** to export a versioned `.fgopt` file. It contains the active
 configuration, realized benchmark parameters, engine version, metrics, and
 recorded snapshot arrays. These snapshots preserve the full coordinate vectors,
@@ -253,9 +316,10 @@ not restore an earlier random-generator or algorithm state.
 
 **Load recording** validates the file format and array shapes before replacing
 the displayed session. Loaded recordings provide exact visual replay of their
-frames. The current engine identifies itself as `fgopt-2`; earlier `fgopt-1`
-files retain exact replay of their saved frames. Exporting an imported recording
-preserves its original engine identifier.
+frames. The current engine identifies itself as `fgopt-3`; earlier `fgopt-1` and
+`fgopt-2` files retain exact replay of their saved frames. Exporting an imported
+recording preserves its original engine identifier and stored metrics, including
+the earlier engine's evaluation-count and best-value semantics.
 
 The **Reset** button becomes **Rerun settings**: use it to start a fresh run with
 the saved settings, including realized mixture parameters. This rerun uses the
@@ -270,6 +334,81 @@ dimensions fill that budget sooner. Save the current history, then reset to begi
 a new recording. If an imported file is rejected, keep the current session and
 inspect the reported validation error rather than treating a partial file as a
 usable run.
+:::
+
+(sec-optimization-budgets)=
+## Compare results at an evaluation budget
+
+:::{div} feynman-prose
+A screen frame is not a unit of search effort. Neither is an iteration: one
+iteration can ask the objective many times, especially when a finite-difference
+force is enabled. An evaluation budget gives each run a limit on those queries.
+IOHanalyzer's **Fixed-Budget Results** analyzes solution quality against function
+evaluations; it is an analysis view of the continuous problems already in the
+catalog. See the [IOHanalyzer GUI guide](https://iohprofiler.github.io/IOHanalyzer/GUI/).
+
+Set **Evaluation budget (0 = unlimited)** (`max_evaluations`) before **Apply and
+reset**. A positive budget must cover initialization. The counter includes every
+optimization objective query, including initialization,
+finite-difference force probes, and evaluations of proposals that are later
+discarded or invalid. Invalid values cannot improve **Best**. Drawing surfaces,
+changing slice coordinates, and reading the reference optimum do not increment
+the optimization counter.
+
+The engine checks the next complete step before starting it. If its evaluation
+bound exceeds the remaining budget, the run pauses with its last frame and
+history unchanged.
+It does not shrink the population, shorten a planner search step, or partially
+execute an integration step to fill the remainder. Graph uses a conservative
+bound because its population can change, so it can stop with unused budget even
+when the next step would actually have been cheaper. Report the final actual
+**Evaluations** count alongside the requested cap.
+
+For a first comparison, choose one BBOB function, dimension, and COCO instance;
+keep those fixed while changing algorithm and swarm seed across separate runs.
+Set the same evaluation cap, then choose **Convergence axis → Evaluations**.
+The **Iteration** view remains useful for understanding the algorithm's phases.
+Keep minimization selected for the ordinary BBOB task; maximization explores a
+different objective direction even though it uses the same function evaluator.
+
+Use **Export CSV** to save checkpoint results for IOHanalyzer. The export contains
+`evaluations`, `best`, `function`, `algorithm`, `dimension`, and `run`, followed by
+`instance`, `seed`, `objective`, `budget`, `engine`, `perturbation`, and
+`perturbation_std`. Enable IOHanalyzer's **use custom csv format**, then map
+the first six columns to evaluation counter, function values, function ID,
+algorithm ID, problem dimension, and run ID respectively. Set its minimization/maximization
+option to match the run. Keep the evaluation column mapped: these checkpoints
+are not sequential single-query observations. See the
+[custom CSV data format](https://iohprofiler.github.io/IOHanalyzer/data/).
+
+Each CSV row describes a saved snapshot checkpoint; duplicate evaluation counts
+and checkpoints without a finite best value are omitted. The actual evaluation
+count and best value at that checkpoint are recorded; the export does not invent the
+query at which an improvement occurred between snapshots. For fixed-budget
+analysis, choose budgets supported by the recorded checkpoints and inspect how
+the analyzer handles sparse data or runs that stop early. Do not interpret a
+plotted interpolation as an additional measured result. For shifted BBOB
+instances, compare raw values within the same instance or derive an objective
+gap using that run's saved `reference_minimum` before aggregating instances.
+When combining different parameter variants with the same algorithm and seed,
+assign distinct algorithm or run IDs in the combined data before import so the
+analyzer does not merge their checkpoints into one run.
+
+CSV exports use IOHanalyzer's custom format. The app also retains `.fgopt` visual
+recordings; it does not emit an official COCO observer/postprocessing archive.
+Discrete pseudo-Boolean optimization (PBO) suites are not included in this
+continuous-domain integration.
+:::
+
+:::{warning}
+:class: feynman-added
+
+Using the official COCO evaluator does not by itself reproduce an unmodified
+official BBOB experimental protocol. The Lab stores walker coordinates as
+float32; maximization, periodic wrapping, custom domain bounds, and optional
+finite-difference potential forces also change the experimental procedure or
+numerical assumptions. Identify these settings when comparing or reporting runs.
+The custom CSV export is not an official COCO observer archive.
 :::
 
 (sec-optimization-engine)=
@@ -287,6 +426,15 @@ version of the objective or advance the algorithm during rendering.
 adapters configure those classes; they do not reimplement the swarm or planning
 algorithms. The config IDs are `wave`, `graph`, `fmc`, and `wave_jump`; the general
 Euclidean Gas implementation uses `euclidean`.
+
+BBOB evaluation compiles the pinned official **COCO 2.8.2** C source at revision
+`e5d068f69e36f346c86cc2934413369abe36fc22` into both native and WebAssembly builds.
+The app neither rewrites these benchmark formulas nor adds a replacement
+optimizer for them. The active configuration records `coco_version`,
+`coco_problem_id`, and `reference_minimum`. The COCO adapter owns separate
+simulation and display problem objects. Both evaluate the same instance; only
+the display object is used to read the reference optimum. Visualization cannot
+alter the simulation object's counters or reveal an optimum to its search.
 
 Start in `fractal-gas-web/src/optimization/`: the benchmark implementation supplies
 the catalog, values, gradients, initialization, and boundary behavior; the engine
@@ -321,6 +469,13 @@ recording format can then consume the result without requiring an
 algorithm-specific copy of the application. Keep stored objective values raw;
 use `Settings::score` and `Settings::better` when the algorithm needs the selected
 optimization direction.
+
+Route objective queries through the benchmark's optimization evaluation path so
+evaluation counts and best-observed values include all attempted candidates.
+Implement `next_evaluations_upper_bound()` for a new algorithm; the session uses
+it to admit whole steps within `max_evaluations`. Account for initialization and
+any finite-difference queries without changing the underlying optimizer's step
+semantics. Keep display sampling on the separate evaluation path.
 
 The C API is declared in `c_api.h`. Returned strings and snapshot pointers are
 borrowed; copy data needed beyond the next mutation of that session. The snapshot
@@ -374,10 +529,17 @@ directions, perturbation moments and replay, cloning and kinetic operators,
 cumulative-score ranking, committed planner motion, deterministic resets,
 recording round trips, and native/WebAssembly agreement. Browser verification
 should exercise all five algorithms, both views, dimension changes,
-Lennard–Jones inspection, loading either recording engine version, and reset
+Lennard–Jones inspection, loading all supported recording engine versions, and reset
 while a worker request is outstanding. The **Step** and **Draw** timings report
 simulation and rendering duration separately; either can explain a slow-looking
 experiment.
+
+For BBOB, check all 24 functions, supported dimensions, multiple instances,
+reference values, native/WebAssembly agreement, and independence of display
+sampling. Budget checks should cover initialization rejection, finite-difference
+costs, the last admitted step, Graph's conservative bound, and best values from
+discarded candidates. Verify CSV column mapping and sparse checkpoints alongside
+`.fgopt` compatibility.
 
 The browser CI runs Chromium and Firefox on `ubuntu-latest`. For Ubuntu 24.04,
 reproduce its Xvfb and software Mesa setup, using `LIBGL_ALWAYS_SOFTWARE=1` and
@@ -386,7 +548,7 @@ renderer. Startup checks report browser and WebGL errors immediately instead of
 waiting for an unexplained readiness timeout. Reproduce that display setup when
 investigating a Linux CI startup failure.
 
-Geometry and fluid benchmarks, additional optimizers, experiment comparisons,
+Geometry and fluid benchmarks, additional optimizers, automated experiment suites,
 adaptive or viscous physics, and resumable checkpoints are outside this release.
 For the related continuous-control engine and its separate world-state contracts,
 see {doc}`control_lab_architecture`.

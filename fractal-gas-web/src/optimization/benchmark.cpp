@@ -6,6 +6,8 @@
 #include <numeric>
 #include <sstream>
 
+#include "optimization/coco_benchmark.hpp"
+
 namespace fg::optimization {
 Json number(double v) {
   Json j;
@@ -90,8 +92,11 @@ double normal(Rng& rng) {
   return std::sqrt(-2 * std::log(radial)) * std::cos(2 * pi * angular);
 }
 const std::string& catalog_json() {
-  static const std::string s =
-      R"json({"version":"fgopt-2","algorithms":[{"id":"fmc","name":"FMC","velocity":false},{"id":"wave_jump","name":"Wave Jump","velocity":false},{"id":"euclidean","name":"Euclidean Gas","velocity":true},{"id":"wave","name":"Wave","velocity":false},{"id":"graph","name":"Graph","velocity":false}],"benchmarks":[
+  static const std::string s = [] {
+    auto catalog =
+        JsonReader(
+            std::string(
+                R"json({"version":"fgopt-3","algorithms":[{"id":"fmc","name":"FMC","velocity":false},{"id":"wave_jump","name":"Wave Jump","velocity":false},{"id":"euclidean","name":"Euclidean Gas","velocity":true},{"id":"wave","name":"Wave","velocity":false},{"id":"graph","name":"Graph","velocity":false}],"benchmarks":[
 {"id":"sphere","name":"Sphere","bounds":[-1000,1000],"minDimension":1,"minimum":0,"gradient":"analytic"},
 {"id":"quadratic","name":"Quadratic Well","bounds":[-10,10],"minDimension":1,"minimum":0,"parameters":{"alpha":0.1},"gradient":"analytic"},
 {"id":"mexican_hat","name":"Mexican Hat","bounds":[-10,10],"minDimension":1,"parameters":{"lambda_h":0.13,"vev":246,"field_scale":246,"tilt":0},"reference":"Ring minima only when tilt is zero","gradient":"analytic"},
@@ -105,7 +110,11 @@ const std::string& catalog_json() {
 {"id":"constant","name":"Constant","bounds":[-10,10],"minDimension":1,"minimum":0,"gradient":"zero"},
 {"id":"stochastic_gaussian","name":"Stochastic Gaussian","bounds":[-10,10],"minDimension":1,"stochastic":true,"parameters":{"std":1},"reference":"Expected value 0; no spatial optimum","gradient":"disabled"},
 {"id":"gaussian_mixture","name":"Mixture of Gaussians","bounds":[-10,10],"minDimension":1,"parameters":{"n_gaussians":3,"benchmark_seed":42},"reference":"Component centers are reference points, not guaranteed minima","gradient":"analytic"}
-]})json";
+]})json"))
+            .read();
+    append_coco_catalog(catalog.object["benchmarks"]);
+    return stringify(catalog);
+  }();
   return s;
 }
 Benchmark::Benchmark(const Json& input) : config(input) {
@@ -132,6 +141,23 @@ Benchmark::Benchmark(const Json& input) : config(input) {
     d = 3 * atoms;
     config.object["n_atoms"] = number(atoms);
   }
+  coco = (*entry)["suite"].str() == "bbob";
+  if (coco) {
+    const int instance =
+        integer(config["coco_instance"], 1, 1, 1000, "COCO instance");
+    coco_problem = std::make_unique<CocoBenchmark>(
+        int((*entry)["function"].num()), d, instance);
+    config.object["coco_instance"] = number(instance);
+    config.object["reference_minimum"] = number(coco_problem->minimum());
+    auto put = [&](const char* key, const std::string& value) {
+      config.object[key].kind = Json::String;
+      config.object[key].string = value;
+    };
+    put("coco_version", "2.8.2");
+    put("coco_problem_id", coco_problem->problem_id());
+  }
+  best_observed =
+      config["objective"].str("minimize") == "maximize" ? -INFINITY : INFINITY;
   config.object["dimensions"] = number(d);
   low = bounded(config["low"], (*entry)["bounds"].array[0].num(), -1e6, 1e6,
                 "lower bound");
@@ -190,7 +216,9 @@ Benchmark::Benchmark(const Json& input) : config(input) {
     config.object["n_gaussians"] = number(components);
   }
 }
+Benchmark::~Benchmark() = default;
 double Benchmark::value(const std::vector<double>& x) const {
+  if (coco_problem) return coco_problem->evaluate(x.data());
   double s = 0;
   if (id == "constant" || stochastic) return 0;
   if (id == "sphere" || id == "quadratic" || id == "mexican_hat") {
@@ -254,7 +282,39 @@ double Benchmark::evaluate(const float* x, Rng* rng) const {
   if (stochastic && rng) return stddev * normal(*rng);
   return value(std::vector<double>(x, x + d));
 }
-void Benchmark::gradient(const float* p, float* out) const {
+void Benchmark::observe(const double* x, double y) const {
+  ++evaluations;
+  if (!std::isfinite(y)) return;
+  for (int k = 0; k < d; ++k)
+    if (!std::isfinite(x[k]) || x[k] < low || x[k] > high) return;
+  const bool maximize = config["objective"].str("minimize") == "maximize";
+  if (maximize ? y > best_observed : y < best_observed) best_observed = y;
+}
+double Benchmark::evaluate_optimization(const float* x, Rng* rng) const {
+  std::vector<double> point(x, x + d);
+  const bool finite = std::all_of(point.begin(), point.end(),
+                                  [](double v) { return std::isfinite(v); });
+  double y = coco_problem && finite ? coco_problem->evaluate(point.data(), true)
+                                    : evaluate(x, rng);
+  observe(point.data(), y);
+  return y;
+}
+void Benchmark::gradient(const float* p, float* out, bool optimization) const {
+  if (coco_problem) {
+    std::vector<double> x(p, p + d);
+    for (int k = 0; k < d; ++k) {
+      const double v = x[k], h = 1e-5 * std::max(1.0, std::abs(v));
+      x[k] = v + h;
+      const double hi = coco_problem->evaluate(x.data(), optimization);
+      if (optimization) observe(x.data(), hi);
+      x[k] = v - h;
+      const double lo = coco_problem->evaluate(x.data(), optimization);
+      if (optimization) observe(x.data(), lo);
+      x[k] = v;
+      out[k] = float((hi - lo) / (2 * h));
+    }
+    return;
+  }
   std::vector<double> x(p, p + d), g(d, 0);
   double r2 = 0;
   for (auto v : x) r2 += v * v;
@@ -338,8 +398,10 @@ void Benchmark::gradient(const float* p, float* out) const {
         double h = 1e-5 * std::max(1.0, std::abs(x[k])), v = x[k];
         x[k] = v + h;
         double a = value(x);
+        if (optimization) observe(x.data(), a);
         x[k] = v - h;
         double b = value(x);
+        if (optimization) observe(x.data(), b);
         x[k] = v;
         g[k] = (a - b) / (2 * h);
       }

@@ -17,12 +17,10 @@ void BenchmarkEnvironment::reset(std::vector<char>& state,
                                  std::vector<float>& obs) {
   state.assign(bytes(), 0);
   obs.assign(b.d, 0);
-  evals = 0;
   if (s.planning()) {
     OptimizationRng rng(s.seed);
     b.initial(obs.data(), rng);
-    const double u = b.evaluate(obs.data(), &rng);
-    ++evals;
+    const double u = b.evaluate_optimization(obs.data(), &rng);
     encode(state, obs.data(), u);
   }
 }
@@ -57,8 +55,7 @@ void BenchmarkEnvironment::step_batch(
       if (s.periodic) b.wrap(x);
       if (!b.valid(x)) break;
     }
-    const double u = b.evaluate(x, &rng);
-    ++evals;
+    const double u = b.evaluate_optimization(x, &rng);
     const bool valid = b.valid(x) && std::isfinite(u) &&
                        std::isfinite(float(u)) &&
                        std::isfinite(float(s.score(u) - s.score(old)));

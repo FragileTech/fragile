@@ -21,3 +21,15 @@ await copyFile(
   new URL("LICENSE-three.txt", vendor),
 );
 console.log("Optimization Lab renderer bundled.");
+for (const name of [
+  "LICENSE",
+  "COPYING",
+  "COPYING.LESSER",
+  "AUTHORS",
+  "NOTICE",
+]) {
+  await copyFile(
+    new URL(`third_party/coco/${name}`, root),
+    new URL(`COCO-${name}.txt`, vendor),
+  );
+}

@@ -115,7 +115,7 @@ def test_mixture_realized_parameters_and_lennard_jones(native):
 
 
 def test_catalog_noise_and_invalid_handles(native):
-    assert len(json.loads(native.fgo_catalog())["benchmarks"]) == 13
+    assert len(json.loads(native.fgo_catalog())["benchmarks"]) == 37
     handle = create(native, {"benchmark": "stochastic_gaussian", "dimensions": 3, "walkers": 4})
     try:
         initial = np.ctypeslib.as_array(

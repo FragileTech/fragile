@@ -17,6 +17,7 @@
         >
       </nav>
       <span id="engine-status">Loading engine…</span>
+      <a href="vendor/COCO-NOTICE.txt" class="hint">COCO licenses</a>
     </header>
     <main>
       <aside class="configuration" aria-label="Simulation configuration">
@@ -92,9 +93,30 @@
               max="2147483647"
               required
           /></label>
+          <label
+            >Evaluation budget (0 = unlimited)<input
+              name="max_evaluations"
+              type="number"
+              min="0"
+              max="1000000000000"
+              step="1"
+              value="0"
+              required
+          /></label>
+          <p class="hint">
+            Pauses before a complete step would exceed the budget. Surface
+            sampling is excluded.
+          </p>
           <label class="check"
             ><input name="periodic" type="checkbox" />Periodic boundaries</label
           >
+          <label class="check">
+            <input id="record-history" type="checkbox" />Record history
+          </label>
+          <p class="hint">
+            Off by default. Enable before reset for replay, trails, convergence
+            history, and exports (64 MiB limit).
+          </p>
           <div id="algorithm-parameters"></div>
           <button id="apply" class="primary" type="submit">
             Apply and reset
@@ -111,6 +133,7 @@
           ><button id="step" disabled>Step</button
           ><button id="reset" disabled>Reset</button><span class="spacer"></span
           ><button id="save" disabled>Save recording</button
+          ><button id="export-csv" disabled>Export CSV</button
           ><button id="load" disabled>Load recording</button
           ><input type="file" id="file" accept=".fgopt" hidden />
         </div>
@@ -201,9 +224,17 @@
           ><span>Mean <strong id="mean">—</strong></span
           ><span>Alive <strong id="alive">—</strong></span
           ><span>Evaluations <strong id="evaluations">0</strong></span
+          ><span id="reference-metric" hidden
+            >Gap to minimum <strong id="optimality-gap">—</strong></span
           ><span id="timings"></span>
         </div>
         <div class="history">
+          <label class="chart-axis"
+            >Convergence axis<select id="chart-axis">
+              <option value="evaluations">Evaluations</option>
+              <option value="iteration">Iteration</option>
+            </select></label
+          >
           <canvas
             id="convergence"
             aria-label="Best and mean objective versus iteration"

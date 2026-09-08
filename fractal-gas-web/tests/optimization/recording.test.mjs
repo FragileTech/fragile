@@ -106,3 +106,16 @@ test("legacy replay retains its engine version when exported again", () => {
   assert.equal(JSON.parse(loaded.export()).engine, "fgopt-1");
   assert.equal(loaded.config.proposal, 0.025);
 });
+
+test("live mode retains only the latest frame without accumulating recording bytes", () => {
+  const live = new Recording({ dimensions: 2 }, undefined, false);
+  const configBytes = live.bytes;
+  for (let i = 0; i < 100; i++) {
+    const latest = frame(i);
+    live.append(latest);
+    assert.deepEqual(live.frames, [latest]);
+    assert.equal(live.bytes, configBytes + latest.byteLength);
+  }
+  live.bytes = RECORDING_LIMIT;
+  assert.doesNotThrow(() => live.append(frame(100)));
+});

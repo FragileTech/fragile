@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -44,16 +45,27 @@ double bounded(const Json& value, double fallback, double low, double high,
 double normal(Rng& rng);
 const std::string& catalog_json();
 
+class CocoBenchmark;
 class Benchmark {
  public:
   explicit Benchmark(const Json& config);
+  ~Benchmark();
   std::string id;
   int d;
   double low, high;
   bool stochastic = false;
+  bool coco = false;
   Json config;
   double evaluate(const float* x, Rng* rng = nullptr) const;
-  void gradient(const float* x, float* out) const;
+  double evaluate_optimization(const float* x, Rng* rng = nullptr) const;
+  void gradient(const float* x, float* out, bool optimization = false) const;
+  mutable uint64_t evaluations = 0;
+  mutable double best_observed = INFINITY;
+  // Upper bound: nonsmooth classic functions only use queries at a cusp.
+  uint64_t gradient_evaluations() const {
+    return coco || id == "eggholder" || id == "holder_table" ? 2 * uint64_t(d)
+                                                             : 0;
+  }
   void initial(float* x, Rng& rng) const;
   bool valid(const float* x) const;
   void wrap(float* x) const;
@@ -62,6 +74,8 @@ class Benchmark {
   double alpha = .1, lambda = .13, radius = 1, tilt = 0, stddev = 1;
   int components = 3;
   std::vector<double> centers, stds, weights;
+  std::unique_ptr<CocoBenchmark> coco_problem;
   double value(const std::vector<double>& x) const;
+  void observe(const double* x, double y) const;
 };
 }  // namespace fg::optimization

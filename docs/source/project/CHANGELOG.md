@@ -2,6 +2,11 @@
 
 ## Optimization Lab
 
+- Make history recording opt-in; keep only the live frame by default and enable replay and exports when recording is selected.
+
+- Integrate all 24 COCO BBOB functions from pinned upstream COCO 2.8.2 C source, including shifted and rotated instances, official dimensions, and reference minima.
+- Add evaluation budgets, convergence by evaluations, and IOHanalyzer custom CSV export; count optimization queries and finite-difference forces while excluding visualization samples.
+
 - Reuse the shared FMC and Wave Jump planners in Optimization Lab alongside Wave, Graph, and Euclidean Gas; expose planning horizons and the committed position.
 - Add extensible perturbation strategies with zero-mean Gaussian noise and configurable standard deviation, plus a uniform strategy; share the controls and recording settings across algorithms.
 - Default to minimization and add maximization, with consistent fitness, potential forces, and best-objective metrics. Preserve visual replay of earlier recordings.

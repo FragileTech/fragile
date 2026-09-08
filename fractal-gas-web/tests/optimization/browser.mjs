@@ -54,9 +54,12 @@ for (const [name, type] of [
     assert.equal(await page.locator("#iteration").textContent(), "0");
     const apply = async () => {
       await page.locator("#apply").click();
-      await page.waitForFunction(() =>
-        document.getElementById("status").textContent.startsWith("Ready."),
-      );
+      await page.waitForFunction(() => {
+        const status = document.getElementById("status");
+        if (status.classList.contains("error"))
+          throw new Error(status.textContent);
+        return status.textContent.startsWith("Ready.");
+      });
     };
     const step = async () => {
       const before = Number(await page.locator("#iteration").textContent());
@@ -67,6 +70,13 @@ for (const [name, type] of [
         before,
       );
     };
+    assert.equal(await page.locator("#record-history").isChecked(), false);
+    await step();
+    await step();
+    assert.equal(await page.locator("#frame-label").textContent(), "Live · recording off");
+    assert.equal(await page.locator("#save").isDisabled(), true);
+    assert.equal(await page.locator("#timeline").isDisabled(), true);
+    await page.locator("#record-history").check();
     assert.equal(await page.locator("#objective").inputValue(), "minimize");
     assert.equal(await page.locator("#perturbation").inputValue(), "gaussian");
     for (const algorithm of [
@@ -117,6 +127,54 @@ for (const [name, type] of [
         );
       }
     }
+    // Hard COCO functions, staged instances, budget stop and analyzer export.
+    await page.locator("#objective").selectOption("minimize");
+    await page.locator("#benchmark").selectOption("bbob_21");
+    await page.locator("#dimensions").fill("5");
+    await page.locator('[name="coco_instance"]').fill("3");
+    await page.locator('[name="walkers"]').fill("8");
+    await page.locator('[name="max_evaluations"]').fill("65");
+    await apply();
+    assert.match(
+      await page.locator("#benchmark-note").textContent(),
+      /Instance 3/,
+    );
+    assert.equal(await page.locator("#chart-axis").inputValue(), "evaluations");
+    await page.locator("#run").click();
+    await page.waitForFunction(() =>
+      document
+        .getElementById("status")
+        .textContent.startsWith("Evaluation budget reached"),
+    );
+    assert.equal(await page.locator("#step").isDisabled(), true);
+    assert.ok(
+      Number(
+        (await page.locator("#evaluations").textContent()).split("/")[0],
+      ) <= 65,
+    );
+    const csvDownload = page.waitForEvent("download");
+    await page.locator("#export-csv").click();
+    const csvPath = `${output}/${name}-fixed-budget.csv`;
+    await (await csvDownload).saveAs(csvPath);
+    assert.match(
+      await readFile(csvPath, "utf8"),
+      /"evaluations","best","function"/,
+    );
+    await page.locator("#chart-axis").selectOption("iteration");
+    for (const functionId of ["bbob_23", "bbob_24"]) {
+      await page.locator("#benchmark").selectOption(functionId);
+      await page.locator('[name="max_evaluations"]').fill("0");
+      await apply();
+      await page.locator("#view").selectOption("landscape");
+      await step();
+      await page.locator("#view").selectOption("spatial");
+      await step();
+    }
+    await page.screenshot({
+      path: `${output}/${name}-coco.png`,
+      fullPage: true,
+    });
+    await page.locator("#objective").selectOption("maximize");
     await page.locator("#algorithm").selectOption("euclidean");
     await page.locator("#benchmark").selectOption("rosenbrock");
     await page.locator("#dimensions").fill("2");

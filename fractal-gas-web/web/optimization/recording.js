@@ -2,7 +2,8 @@ import { encode, decode, checksum } from "../lab/binary.js";
 import { ENGINE_VERSION, frameInfo } from "./native.js";
 export const RECORDING_LIMIT = 64 * 1024 * 1024;
 export class Recording {
-  constructor(config, engine = ENGINE_VERSION) {
+  constructor(config, engine = ENGINE_VERSION, retainHistory = true) {
+    this.retainHistory = retainHistory;
     this.engine = engine;
     this.config = structuredClone(config);
     this.frames = [];
@@ -13,6 +14,12 @@ export class Recording {
       throw new Error("Configuration exceeds the 64 MiB recording limit");
   }
   append(frame) {
+    if (!this.retainHistory) {
+      this.bytes -= this.frames[0]?.byteLength || 0;
+      this.frames = [frame];
+      this.bytes += frame.byteLength;
+      return;
+    }
     if (this.bytes + frame.byteLength > RECORDING_LIMIT)
       throw new Error(
         "Recording reached 64 MiB. Save this run and reset to continue.",
@@ -91,7 +98,7 @@ export function importRecording(text) {
   if (
     value.format !== "fgopt" ||
     value.version !== 1 ||
-    !["fgopt-1", ENGINE_VERSION].includes(value.engine) ||
+    !["fgopt-1", "fgopt-2", ENGINE_VERSION].includes(value.engine) ||
     !value.config ||
     typeof value.config !== "object" ||
     !Array.isArray(value.frames) ||

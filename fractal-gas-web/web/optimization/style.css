@@ -461,3 +461,15 @@ details.advanced > div {
     scroll-behavior: auto;
   }
 }
+/* Keep convergence controls compact beside the full-width chart. */
+.chart-axis {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: fit-content;
+  font-size: 0.7rem;
+  margin: 0.25rem 0 0.4rem;
+}
+.chart-axis select {
+  width: 8rem;
+}
