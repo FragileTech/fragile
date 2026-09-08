@@ -8,7 +8,7 @@ import {
 } from "../web/lab/reward-settings.js";
 const module = await loadNative();
 const base = {
-  task: "harvest",
+  task: "navigation",
   size: [100, 100],
   physics: { dt: 0.1, substeps: 2 },
   bodies: [

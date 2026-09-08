@@ -106,7 +106,12 @@ void clone(Population& p, const std::vector<double>& flow, Rng& rng) {
   }
 }
 void propose(const float* original, float* out, int d, const Benchmark& b,
-             bool periodic, const Perturbation& noise, double phi, Rng& rng) {
+             bool periodic, const Perturbation& noise, double phi, Rng& rng,
+             PerturbationTransition* accepted) {
+  if (accepted) {
+    *accepted = {};
+    accepted->origin.assign(original, original + d);
+  }
   std::vector<float> delta(d);
   PerturbationContext context{phi};
   double scale = 1;
@@ -114,7 +119,16 @@ void propose(const float* original, float* out, int d, const Benchmark& b,
     noise.sample_with_context(original, delta.data(), d, rng, &context);
     for (int k = 0; k < d; ++k) out[k] = float(original[k] + scale * delta[k]);
     if (periodic) b.wrap(out);
-    if (b.valid(out)) return;
+    if (b.valid(out)) {
+      if (accepted) {
+        accepted->draws = 1;
+        accepted->scale = scale;
+        accepted->displacement.resize(d);
+        for (int k = 0; k < d; ++k)
+          accepted->displacement[k] = scale * delta[k];
+      }
+      return;
+    }
   }
   std::copy_n(original, d, out);
 }
@@ -269,12 +283,19 @@ class Gas2017 final : public Algorithm {
     std::vector<float> candidate(p.d);
     for (int i = 0; i < p.n; ++i) {
       float* x = p.x.data() + size_t(i) * p.d;
+      const double previous = p.objective[i];
+      PerturbationTransition accepted;
       gas2017::propose(x, candidate.data(), p.d, b, s.periodic, *noise, phi[i],
-                       rng);
+                       rng, &accepted);
       std::copy(candidate.begin(), candidate.end(), x);
       p.objective[i] = b.evaluate_optimization(x, &rng);
       p.alive[i] = b.valid(x) && std::isfinite(p.objective[i]);
+      if (p.alive[i] && std::isfinite(previous) && accepted.draws > 0) {
+        accepted.improvement = s.score(p.objective[i]) - s.score(previous);
+        noise->observe(accepted);
+      }
     }
+    noise->update();
   }
 };
 std::unique_ptr<Algorithm> make_gas2017(Benchmark& b, const Settings& s) {

@@ -49,6 +49,7 @@ inline float angle(const float* r, const Layout& l, int b) {
 inline float omega(const float* r, const Layout& l, int b) {
   return r[8 + 5 * l.bodies + b];
 }
+// Active | delivered represents retained cargo locked until it exits a drop zone.
 constexpr uint32_t active_flag = 1, delivered_flag = 2;
 
 struct StateBatch {

@@ -7,6 +7,12 @@
 
 namespace fg::control {
 namespace {
+// Delivered retained cargo stays active for physics, but cannot be a target.
+bool available_cargo(const Scene& s, const float* r, size_t b) {
+  const auto flags = word(r, s.layout.flags + b);
+  return s.bodies[b].cargo && (flags & active_flag) &&
+         (!s.keep_delivered_rocks || !(flags & delivered_flag));
+}
 bool respawn_cargo(const Scene& s, float* r, size_t b) {
   const auto& l = s.layout;
   const auto& body = s.bodies[b];
@@ -323,23 +329,31 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     if (b < 0 || !(word(r, l.flags + def.a) & active_flag) ||
         !(word(r, l.flags + b) & active_flag))
       continue;
-    Vec2 d = position(r, l, b) - position(r, l, def.a);
+    const Vec2 ra = rotate(def.anchor_a, angle(r, l, def.a));
+    const Vec2 rb = rotate(def.anchor_b, angle(r, l, b));
+    Vec2 d = position(r, l, b) + rb - position(r, l, def.a) - ra;
     float dist = length(d);
     Vec2 n = normalized(d);
-    float inv = 1 / s.bodies[def.a].mass + 1 / s.bodies[b].mass;
+    float ca = cross(ra, n), cb = cross(rb, n);
+    float inv = 1 / s.bodies[def.a].mass + 1 / s.bodies[b].mass +
+                ca * ca / s.bodies[def.a].inertia + cb * cb / s.bodies[b].inertia;
     float gamma = h * (def.damping + h * def.stiffness);
     if (gamma <= 0) continue;
     gamma = 1 / gamma;
     float bias = (dist - r[l.joints + 2 * t + 1]) * h * def.stiffness * gamma;
-    float j = -(dot(velocity(r, l, b) - velocity(r, l, def.a), n) + bias) /
-              (inv + gamma);
-    if (std::abs(j) > def.break_force * h) {
+    const Vec2 relative_velocity = velocity(r, l, b) + perp(rb) * omega(r, l, b) -
+                                   velocity(r, l, def.a) - perp(ra) * omega(r, l, def.a);
+    float j = -(dot(relative_velocity, n) + bias) / (inv + gamma);
+    if (def.permanent) j = std::min(0.f, j);  // A cable pulls; it never pushes.
+    if (!def.permanent && std::abs(j) > def.break_force * h) {
       word(r, l.joints + 2 * t, 0);
       continue;
     }
     velocity(r, l, def.a,
              velocity(r, l, def.a) - n * (j / s.bodies[def.a].mass));
     velocity(r, l, b, velocity(r, l, b) + n * (j / s.bodies[b].mass));
+    omega(r, l, def.a) -= ca * j / s.bodies[def.a].inertia;
+    omega(r, l, b) += cb * j / s.bodies[b].inertia;
   }
   for (size_t b = 0; b < s.bodies.size(); ++b) {
     if (!(word(r, l.flags + b) & active_flag)) continue;
@@ -514,7 +528,25 @@ float Physics::potential(const float* r, const uint32_t* attachments) const {
     int b = s.controlled[c];
     Vec2 p = position(r, l, b);
     float best = 0;
-    if (!s.gates.empty())
+    if (s.task == "harvest") {
+      int hook = -1, attached = -1;
+      for (size_t t = 0; t < s.tethers.size(); ++t)
+        if (s.tethers[t].owner == b) {
+          hook = s.tethers[t].a;
+          attached = int(attachments ? attachments[t] : word(r, l.joints + 2 * t)) - 1;
+          break;
+        }
+      best = 1e6f;
+      if (attached >= 0) {
+        for (const auto& base : s.bases)
+          best = std::min(best, length(position(r, l, attached) - base.position));
+      } else if (hook >= 0) {
+        for (size_t i = 0; i < s.bodies.size(); ++i)
+          if (available_cargo(s, r, i))
+            best = std::min(best, length(position(r, l, hook) - position(r, l, i)));
+      }
+      if (best == 1e6f) best = 0;
+    } else if (!s.gates.empty())
       best =
           length(p - s.gates[word(r, l.gates + c) % s.gates.size()].position);
     else if (s.cargo_capacity > 0 && r[l.cargo + 4 * c + 1] > 0) {
@@ -543,7 +575,7 @@ float Physics::potential(const float* r, const uint32_t* attachments) const {
       } else {
         best = 1e6f;
         for (size_t i = 0; i < s.bodies.size(); ++i)
-          if (s.bodies[i].cargo && (word(r, l.flags + i) & active_flag))
+          if (available_cargo(s, r, i))
             best = std::min(best, length(p - position(r, l, i)));
         if (best == 1e6f) best = 0;
       }
@@ -641,29 +673,46 @@ void Physics::mechanics(float* r, StepResult& result) {
     }
   for (size_t b = 0; b < s.bodies.size(); ++b) {
     if (!s.bodies[b].cargo) continue;
-    if (s.bodies[b].respawn && word(r, l.flags + b) == delivered_flag)
+    if (s.keep_delivered_rocks &&
+        word(r, l.flags + b) == (active_flag | delivered_flag)) {
+      const Vec2 p = position(r, l, b);
+      const bool outside = std::all_of(s.bases.begin(), s.bases.end(),
+          [&](const Zone& base) {
+            return length2(p - base.position) > base.radius * base.radius;
+          });
+      if (outside) word(r, l.flags + b, active_flag);
+      // Do not count another delivery while inside either ring. Acquisition
+      // below can resume on this frame once all outer zones have been exited.
+      continue;
+    }
+    if (!s.keep_delivered_rocks && s.bodies[b].respawn &&
+        word(r, l.flags + b) == delivered_flag)
       respawn_cargo(s, r, b);
     if (word(r, l.flags + b) & active_flag)
       for (const auto& base : s.bases)
         if (length2(position(r, l, b) - base.position) <
-            base.radius * base.radius) {
-          word(r, l.flags + b, delivered_flag);
+            base.radius * base.radius * (s.keep_delivered_rocks ? .25f : 1.f)) {
+          word(r, l.flags + b,
+               delivered_flag | (s.keep_delivered_rocks ? active_flag : 0));
           word(r, 4, word(r, 4) + 1);
           result.reward += s.delivery_reward;
           for (size_t t = 0; t < s.tethers.size(); ++t)
             if (word(r, l.joints + 2 * t) == b + 1)
               word(r, l.joints + 2 * t, 0);
-          if (s.bodies[b].respawn) respawn_cargo(s, r, b);
+          if (!s.keep_delivered_rocks && s.bodies[b].respawn) respawn_cargo(s, r, b);
           break;
         }
   }
   for (size_t t = 0; t < s.tethers.size(); ++t) {
     const auto& def = s.tethers[t];
-    if (!def.automatic || word(r, l.joints + 2 * t)) continue;
+    if (!def.automatic || word(r, l.joints + 2 * t) ||
+        !(word(r, l.flags + def.a) & active_flag) ||
+        (def.owner >= 0 && !(word(r, l.flags + def.owner) & active_flag)))
+      continue;
     int best = -1;
     float dist = def.hook_range;
     for (size_t b = 0; b < s.bodies.size(); ++b)
-      if (s.bodies[b].cargo && (word(r, l.flags + b) & active_flag)) {
+      if (available_cargo(s, r, b)) {
         float d = length(position(r, l, def.a) - position(r, l, b));
         if (d < dist) {
           best = int(b);
@@ -671,6 +720,7 @@ void Physics::mechanics(float* r, StepResult& result) {
         }
       }
     if (best >= 0) {
+      if (s.task == "harvest") result.reward += s.catch_reward;
       word(r, l.joints + 2 * t, uint32_t(best + 1));
       r[l.joints + 2 * t + 1] = std::max(.1f, dist);
     }
@@ -731,8 +781,11 @@ void Physics::step_world(float* r, const float* actions, int frames,
       result.reward += s.hooked_rock_distance_reward * distance;
     }
     mechanics(r, result);
-    for (const auto& extension : s.extensions)
+    for (const auto& extension : s.extensions) {
+      const float earned = result.reward;
       if (extension.step) extension.step(s, extension, r, actions, result);
+      if (s.task == "harvest") result.reward = earned;
+    }
     word(r, 0, word(r, 0) + 1);
     ++result.frames;
     if (word(r, 7)) word(r, 3, word(r, 3) + 1);

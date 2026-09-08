@@ -1,5 +1,15 @@
 // Defaults and limits mirror Scene::compile. Weights travel with scene JSON.
+const HARVEST_REWARDS = new Set(["progress", "distance_squared", "catch"]);
 export const REWARD_TERMS = Object.freeze([
+  {
+    key: "catch",
+    label: "Asteroid catch bonus",
+    def: 10,
+    max: 10000,
+    slider: 100,
+    step: 1,
+    help: "Bonus on every asteroid catch, including re-catching after a break. Harvesting only.",
+  },
   {
     key: "distance_squared",
     label: "Distance travelled²",
@@ -25,7 +35,7 @@ export const REWARD_TERMS = Object.freeze([
     max: 1000,
     slider: 10,
     step: 0.1,
-    help: "Reward for getting closer to the next gate, refinery, pickup or cargo target. Moving away gives a penalty. Also scales formation shaping.",
+    help: "Reward for getting closer to the next gate, refinery, pickup or cargo target. In harvesting, measures hook-to-nearest-asteroid distance when empty and attached asteroid-to-discharge-center distance when towing. Moving away gives a penalty. Also scales formation shaping.",
   },
   {
     key: "collision",
@@ -117,9 +127,11 @@ export function rewardValues(scene) {
   return Object.fromEntries(
     REWARD_TERMS.map((t) => [
       t.key,
-      t.key === "full_reward"
-        ? (scene.cargo?.full_reward ?? scene.rewards?.pickup ?? t.def)
-        : (scene.rewards?.[t.key] ?? t.def),
+      scene.task === "harvest" && !HARVEST_REWARDS.has(t.key)
+        ? 0
+        : t.key === "full_reward"
+          ? (scene.cargo?.full_reward ?? scene.rewards?.pickup ?? t.def)
+          : (scene.rewards?.[t.key] ?? t.def),
     ]),
   );
 }
@@ -127,7 +139,10 @@ export function withRewards(scene, values) {
   const next = structuredClone(scene);
   next.rewards = { ...next.rewards };
   for (const t of REWARD_TERMS) {
-    const v = values[t.key];
+    const v =
+      scene.task === "harvest" && !HARVEST_REWARDS.has(t.key)
+        ? 0
+        : values[t.key];
     if (!Number.isFinite(v) || v < 0 || v > t.max)
       throw new RangeError(`${t.label} must be between 0 and ${t.max}`);
     if (t.key === "full_reward") {
@@ -200,7 +215,16 @@ export class RewardSettings {
     reset.textContent = "Reset defaults";
     reset.onclick = () =>
       this.setValues(
-        Object.fromEntries(SETTINGS_TERMS.map((t) => [t.key, t.def])),
+        Object.fromEntries(
+          SETTINGS_TERMS.map((t) => [
+            t.key,
+            this.harvest &&
+            REWARD_TERMS.includes(t) &&
+            !HARVEST_REWARDS.has(t.key)
+              ? 0
+              : t.def,
+          ]),
+        ),
       );
     container.append(this.pending, this.apply, reset);
   }
@@ -225,6 +249,13 @@ export class RewardSettings {
     this.updatePending();
   }
   render(scene, coefficients = {}) {
+    this.harvest = scene.task === "harvest";
+    for (const [key, { number }] of this.inputs)
+      number.closest("label").hidden =
+        scene.task === "harvest"
+          ? !HARVEST_REWARDS.has(key) &&
+            !COEFFICIENTS.some((t) => t.key === key)
+          : key === "catch";
     this.appliedValues = {
       ...rewardValues(scene),
       ...coefficientValues(coefficients),

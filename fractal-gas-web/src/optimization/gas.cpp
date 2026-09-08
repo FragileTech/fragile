@@ -68,6 +68,7 @@ Settings::Settings(const Json& input) : json(input) {
           ? proposal * (input["high"].num(5.12) - input["low"].num(-5.12))
           : 1;
   f("perturbation_std", legacy_std, 0, 1e6);
+  f("covariance_learning_rate", .1, 0, 1);
   gamma = f("gamma", 1, 1e-9, 1e6);
   beta = f("beta", 1, 1e-9, 1e12);
   delta_t = f("delta_t", .002, 1e-9, 1);

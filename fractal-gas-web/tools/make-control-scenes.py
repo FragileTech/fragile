@@ -56,6 +56,13 @@ def save(key, name, description, task, lethal_walls=True, **data):
         },
         **data,
     )
+    if task == "harvest":
+        scene["hook_mass"] = 0.25
+        scene["rewards"] = dict(progress=1, distance_squared=1, catch=10,
+                                collision=0, delivery=0, pickup=0, gate=0,
+                                formation=0, hooked_rock_distance=0)
+    if key == "harvest":
+        scene["keep_delivered_rocks"] = True
     scene["agent_types"] = json.loads((DEST.parent / "agent-catalog.json").read_text())
     for body in scene["bodies"]:
         if body.get("controlled"):
@@ -88,11 +95,11 @@ save(
     holes=holes,
     bodies=[
         ship(16, 16, 0.45),
-        dict(rock(19, 19), respawn=True),
-        dict(rock(45, 31, 1.6, 5), respawn=True),
-        dict(rock(47, 12, 1.1, 2), respawn=True),
-        dict(rock(16, 31, 0.9, 2), respawn=True),
-        dict(rock(41, 9, 1.4, 4), respawn=True),
+        dict(rock(19, 19, mass=0.03), respawn=True),
+        dict(rock(45, 31, 1.6, 0.05), respawn=True),
+        dict(rock(47, 12, 1.1, 0.02), respawn=True),
+        dict(rock(16, 31, 0.9, 0.02), respawn=True),
+        dict(rock(41, 9, 1.4, 0.04), respawn=True),
     ],
     bases=[{"position": [12, 11], "radius": 3}],
     gravity=[{"position": [46, 22], "strength": 28, "softening": 3}],

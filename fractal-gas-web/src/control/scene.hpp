@@ -32,7 +32,9 @@ struct Zone {
   float radius = 2;
 };
 struct TetherDef {
-  int a = 0, b = -1;
+  int a = 0, b = -1, owner = -1;
+  Vec2 anchor_a{}, anchor_b{};
+  bool permanent = false;
   float rest = 2, stiffness = 25, damping = 6, break_force = 500,
         hook_range = 2;
   bool automatic = false;
@@ -74,10 +76,12 @@ struct Scene {
   int substeps = 4, solver_iterations = 8;
   float collision_penalty = 2, progress_reward = 1, pickup_reward = 10,
         delivery_reward = 100, distance_squared_reward = 1, hooked_rock_distance_reward = 1;
+  float catch_reward = 0;
   float gate_reward = 30, formation_reward = .15f, formation_distance = 3,
         respawn_seconds = 4;
   float downward_gravity = 9.81f;
   bool lethal_walls = false, lethal_bodies = false, flight_mode = false;
+  bool keep_delivered_rocks = false;
   Layout layout;
   uint64_t fingerprint = 0;
   // Immutable uniform-grid index for boundary edges; one copy per compiled

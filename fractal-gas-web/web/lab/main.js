@@ -14,6 +14,7 @@ const workspaceUI = mountWorkspace();
 const workspace = new WorkspaceState();
 const transitions = new ConfigurationTransition();
 let runSession, driveControl, nextParent, presetLoading;
+import { withHookMass } from "./harvest-hooks.js";
 import { configureRocks, rockOptions } from "./rock-scene.js";
 import { rockLiftBudget } from "./rock-lift.js";
 import {
@@ -475,6 +476,10 @@ function commitScene(
       $("track").add(new Option("Current / imported circuit", "", true, true));
     }
   }
+  $("hook-mass-field").hidden = scene.task !== "harvest";
+  $("keep-delivered-rocks").checked = scene.keep_delivered_rocks === true;
+  $("hook-mass").value = scene.hook_mass ?? 0.25;
+  $("hook-mass-slider").value = Math.log10(scene.hook_mass ?? 0.25);
   const rocks = rockOptions(scene);
   $("rock-controls").hidden = !rocks;
   if (rocks) {
@@ -552,7 +557,8 @@ function commitScene(
         ...data.settings,
         ...data.coefficients,
       });
-      editor.updateRewards(currentScene);
+      editor.setScene(currentScene);
+      renderRockWeight();
       appliedCoefficients = data.coefficients;
       rewardSettings.render(currentScene, appliedCoefficients);
       rewardSettings.setEnabled(true);
@@ -568,7 +574,7 @@ function commitScene(
       playbackDecision = undefined;
       updateDiagnostics();
       if (!replay.active) renderer.diagnostics();
-      status("Reward settings applied. World and recording preserved.");
+      status("Run settings applied. World and recording preserved.");
       return;
     }
     if (data.type === "ready") {
@@ -1004,6 +1010,31 @@ $("flight-mode").onchange = () => {
 
   stageScene(scene);
 };
+$("hook-mass-slider").oninput = () => {
+  $("hook-mass").value = Number(
+    (10 ** +$("hook-mass-slider").value).toPrecision(5),
+  );
+  stageHookMass();
+};
+$("hook-mass").oninput = () => {
+  if ($("hook-mass").checkValidity()) {
+    $("hook-mass-slider").value = Math.log10(+$("hook-mass").value);
+    stageHookMass();
+  }
+};
+function stageHookMass() {
+  workspace.draft.scene = withHookMass(
+    workspace.draft.scene,
+    +$("hook-mass").value,
+  );
+  workspace.changed();
+}
+$("apply-hook-mass").onclick = () => {
+  if ($("hook-mass").reportValidity()) {
+    stageHookMass();
+    applyConfiguration();
+  }
+};
 $("hook-stiffness-slider").oninput = () => {
   const value = +$("hook-stiffness-slider").value;
   $("hook-stiffness").value =
@@ -1023,6 +1054,19 @@ $("fit-rock-lift").onclick = () => {
   renderRockWeight();
   $("apply-rocks").click();
 };
+$("keep-delivered-rocks").onchange = () => {
+  const keepDeliveredRocks = $("keep-delivered-rocks").checked;
+  miningOptions.set($("scenario").value, {
+    ...(miningOptions.get($("scenario").value) ||
+      rockOptions(workspace.draft.scene)),
+    keepDeliveredRocks,
+  });
+  // A delivery-mode edit must not rewrite individual rocks' respawn settings.
+  stageScene({
+    ...workspace.draft.scene,
+    keep_delivered_rocks: keepDeliveredRocks,
+  });
+};
 $("apply-rocks").onclick = () => {
   if (!currentScene || !rockOptions(currentScene)) return;
   for (const id of ["rock-size", "rock-count"]) {
@@ -1035,6 +1079,7 @@ $("apply-rocks").onclick = () => {
       scale: +$("rock-size").value,
       count: +$("rock-count").value,
       weight: rockWeight(),
+      keepDeliveredRocks: $("keep-delivered-rocks").checked,
       ...(currentScene.tethers?.length
         ? { stiffness: +$("hook-stiffness").value }
         : {}),
@@ -1227,6 +1272,15 @@ $("import-run").onclick = () =>
         ).decision;
       }
     }
+    if (
+      importPending.motion?.scene?.task === "harvest" &&
+      importPending.motion.info[1] === importPending.motion.scene.bodies.length
+    ) {
+      importPending.scene.legacy_hook_layout = true;
+      importPending.motion.scene.legacy_hook_layout = true;
+      for (const change of importPending.motion.rewardChanges)
+        change.scene.legacy_hook_layout = true;
+    }
     const configuration = importPending.motion?.rewardConfiguration();
     importPending.root = configuration?.root;
     await loadScene(configuration?.scene || importPending.scene, false, {
@@ -1341,6 +1395,10 @@ function renderSetupDraft(scene) {
   $("ants-vehicle-count").value = vehicleCount(scene);
   $("ants-vehicle-type").value = vehicleType(scene) || "";
   updateFlightControl(scene);
+  $("hook-mass-field").hidden = scene.task !== "harvest";
+  $("keep-delivered-rocks").checked = scene.keep_delivered_rocks === true;
+  $("hook-mass").value = scene.hook_mass ?? 0.25;
+  $("hook-mass-slider").value = Math.log10(scene.hook_mass ?? 0.25);
   const rocks = rockOptions(scene);
   $("rock-controls").hidden = !rocks;
   if (rocks) {
@@ -1375,7 +1433,7 @@ function refreshPending() {
     }),
   );
   const rewardOnly = changes.every((c) =>
-    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|settings\.(reward_coef|distance_coef)$)/.test(
+    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|scene\.hook_mass$|settings\.(reward_coef|distance_coef)$)/.test(
       c.path,
     ),
   );
@@ -1403,7 +1461,7 @@ async function applyConfiguration() {
   const changes = workspace.changes;
   if (!changes.length) return true;
   const rewardOnly = changes.every((c) =>
-    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|settings\.(reward_coef|distance_coef)$)/.test(
+    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|scene\.hook_mass$|settings\.(reward_coef|distance_coef)$)/.test(
       c.path,
     ),
   );

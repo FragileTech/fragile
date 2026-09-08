@@ -1,6 +1,15 @@
 # Changelog
 
+- Add persistent dropped asteroids with inner delivery and outer re-hook release zones.
+
+- Add persistent weighted harvesting hooks, live hook mass controls, and approach/catch/movement rewards.
+- Make the default asteroid masses light enough for solo rocket towing at 1× in flight mode.
+
 ## Optimization Lab
+
+- Enable adaptive local covariance perturbations in GAS (2017), learning from accepted jumps while preserving retry scaling and existing defaults.
+
+- Add local covariance Gaussian perturbations for Wave, FMC, and Wave Jump, with bounded local learning and frozen planner geometry for action replay.
 
 - Add GAS (2017) with objective-adaptive Gaussian jumps, independently switchable tabu memory and bounded L-BFGS-B searches, and shared recording/evaluation-budget support.
 

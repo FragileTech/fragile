@@ -152,10 +152,14 @@ class ExistingSwarm final : public Algorithm {
     update();
   }
   void step() override {
-    if (planner)
+    if (planner) {
+      if (planner->new_search_pending()) env.update_perturbation();
+      env.collect_perturbations(!planner->execution_pending());
       planner->advance();
-    else
+    } else {
       swarm->step();
+      env.update_perturbation();
+    }
     update();
   }
   const Population& population() const override { return p; }

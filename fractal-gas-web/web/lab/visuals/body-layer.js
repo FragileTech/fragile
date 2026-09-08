@@ -99,6 +99,17 @@ export class BodyLayer {
         this.controlled.push(i);
         if (!groups.has(key)) groups.set(key, []);
         groups.get(key).push(i);
+      } else if (b.hook) {
+        model = worldModel(style, "capture-clamp", [0.4, 0.4, 0.4]);
+        if (!model)
+          model = new T.Mesh(
+            new T.SphereGeometry(0.2),
+            new T.MeshStandardMaterial({
+              color: 0xffcc55,
+              metalness: 0.7,
+              roughness: 0.3,
+            }),
+          );
       } else {
         const vertices =
           b.vertices ||

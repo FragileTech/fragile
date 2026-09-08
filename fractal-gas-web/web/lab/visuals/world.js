@@ -242,7 +242,7 @@ export class WorldDynamics {
       }
       return model;
     });
-    this.tethers = (scene.tethers || []).map(() => {
+    this.tethers = (scene.tethers || []).map((t) => {
       const group = new T.Group(),
         cable = tube();
       const clamp = worldModel(style, "capture-clamp"),
@@ -253,7 +253,7 @@ export class WorldDynamics {
       if (latch) group.add(latch);
       if (fitting) group.add(fitting);
       group.visible = false;
-      tetherParent.add(group);
+      (scene.task === "harvest" ? parent : tetherParent).add(group);
       return { group, cable, clamp, latch, fitting };
     });
     this.effects = bodyLayer.controlled.map((i) => {
@@ -390,7 +390,15 @@ export class WorldDynamics {
         a = scene.tethers[i].a;
       entry.group.visible = b >= 0;
       if (b < 0) return;
-      const start = this.start.set(state[8 + a], state[8 + n + a], 0.4),
+      const anchor = scene.tethers[i].anchor_a || [0, 0];
+      const theta = state[8 + 4 * n + a];
+      const ax = Math.cos(theta) * anchor[0] - Math.sin(theta) * anchor[1];
+      const ay = Math.sin(theta) * anchor[0] + Math.cos(theta) * anchor[1];
+      const start = this.start.set(
+          state[8 + a] + ax,
+          state[8 + n + a] + ay,
+          0.4,
+        ),
         end = this.end.set(state[8 + b], state[8 + n + b], 0.4);
       const delta = this.delta.copy(end).sub(start),
         length = delta.length(),

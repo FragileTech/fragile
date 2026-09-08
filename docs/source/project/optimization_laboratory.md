@@ -135,6 +135,109 @@ Reduce the perturbation standard deviation or kinetic step size, review the
 bounds, and apply a reset to recover.
 :::
 
+(sec-optimization-local-covariance)=
+### Adaptive local Gaussian perturbations
+
+:::{div} feynman-prose
+Select **Adaptive local Gaussian** (`local_covariance`) with **Wave**, **FMC**,
+**Wave Jump**, or **GAS (2017)** to learn the shape of position perturbations from
+previous moves.
+Imagine a narrow valley: coordinated changes in two coordinates may carry a
+walker along it, while independent changes send it into a wall. A covariance
+matrix describes that coordination. Each walker still starts its move at its
+own post-cloning position; the population's dynamic cloning continues as before.
+
+The strategy remains Gaussian. Its learned covariance is a CMA-inspired proposal
+geometry, or curvature proxy, rather than a measured Hessian. Successful moves
+contain information about slope, location, and noise as well as curvature.
+Learning from those moves does not separate these effects. Local neighborhoods
+help avoid interpreting the separation between distinct reward peaks as a useful
+perturbation direction.
+:::
+
+:::{prf:definition} Adaptive local proposal in Optimization Lab
+:label: def-optimization-local-covariance
+
+Let $d$ be the coordinate dimension and $\sigma$ the **Standard deviation** in
+coordinate units. At an action's post-cloning origin $x$, select the nearest
+spatial anchor and its dimensionless covariance $C$, normalized so that
+$\operatorname{tr}(C)=d$. Retain its factor for every draw in that action:
+
+$$
+C_{\mathrm{used}}=0.95C+0.05I,
+\qquad LL^\top=C_{\mathrm{used}},
+\qquad \delta_k=\sigma Lz_k,
+\qquad z_k\sim\mathcal N(0,I).
+$$
+
+Thus each proposal draw has expected squared displacement $d\sigma^2$ before GAS
+retry scaling, acceptance filtering, or boundary handling, although individual
+coordinate variances can differ. With $\sigma=0$,
+displacements are zero and learning is skipped.
+
+The archive holds the latest 512 valid search transitions: origin, total
+unwrapped displacement $\delta$, number of draws $n$, retry scale $s$, and
+objective improvement in the selected optimization direction. GAS records only
+accepted random jumps and retains its retry halving; $s$ is the scale of the
+accepted retry and is $1$ for the other algorithms. Initialization, invalid
+outcomes, zero-length actions, committed planner execution replays, rejected
+GAS retries, local-search moves, and tabu moves are excluded.
+At each update, choose up to 16 distinct anchors deterministically by farthest-point
+selection from archived origins, starting with the newest origin. Distances use
+the minimum-image convention in periodic domains.
+
+At each anchor, take the nearest 32 transitions and rank positive objective
+improvements per draw. With normalized positive logarithmic rank weights $w_i$,
+form
+
+$$
+y_i=\frac{\delta_i}{\sigma s_i\sqrt{n_i}},\qquad
+S=\sum_i w_i y_i y_i^\top,\qquad
+C_{\mathrm{new}}=(1-\eta)C_{\mathrm{old}}
+ +\eta\frac{dS}{\operatorname{tr}(S)}.
+$$
+
+The covariance learning rate $\eta$ defaults to $0.1$. Initialize geometry with
+the identity and retain the previous local covariance when fewer than four
+improving transitions are available. Normalize the resulting covariance to
+trace $d$ and cache the regularized Cholesky factor for sampling.
+:::
+
+:::{div} feynman-prose
+**Standard deviation** controls average squared step length; **Covariance learning
+rate** (`covariance_learning_rate`) controls how quickly the shape changes.
+The five-percent isotropic component keeps every direction available. The archive,
+anchor, and neighborhood limits are internal defaults, so increasing the run
+length does not keep growing the estimator's memory. Displacements are accumulated
+before periodic wrapping: crossing a seam should not look like a jump across the
+whole box to the estimator.
+
+Wave and GAS update geometry after each complete population step. All walkers
+in that step therefore see one model snapshot. GAS measures each accepted random
+jump from its post-cloning origin, using its unwrapped displacement and dividing
+out the retry scale when learning. Its default remains `gas_adaptive`; select
+`local_covariance` explicitly to use this variant. FMC and Wave Jump update before a new
+planning cycle and freeze geometry throughout search and execution. Replaying a
+chosen action uses the same factor and action seed as its search trial, including
+the same stochastic objective draw. Executing that trial does not count as a new
+training observation.
+
+Learning reuses objective evaluations already made by the optimizer and introduces
+no extra objective queries. **Reset** clears the learned archive and geometry.
+Recordings retain the strategy settings and displayed frames through the ordinary
+recording path; loading frames does not restore a resumable covariance model.
+:::
+
+:::{warning}
+:class: feynman-added
+
+Changing perturbation geometry changes the mutation part of the population
+process. Faster progress toward a good objective value does not establish a
+better approximation to the intended reward density. Compare mode coverage and
+relative population mass as well as best objective values, using matching
+evaluation budgets and several seeds.
+:::
+
 (sec-optimization-gas-2017)=
 ### GAS (2017): adaptive jumps and optional local refinement
 
@@ -149,10 +252,10 @@ The default perturbation, `gas_adaptive`, gives better walkers smaller jumps.
 For a coordinate whose domain width is 10, a best walker has jump standard
 deviation 0.0001, while a worst walker has standard deviation 1. These are widths
 of random distributions, not fixed jump lengths. A good position can therefore
-be explored finely while other walkers search farther away. Gaussian and uniform
-perturbations remain available as explicit GAS variants; their scale is the
-ordinary **Standard deviation** control, rather than the adaptive domain fraction.
-The adaptive strategy appears only for GAS.
+be explored finely while other walkers search farther away. Gaussian, uniform,
+and **Adaptive local Gaussian** perturbations are explicit GAS variants; their
+scale is the ordinary **Standard deviation** control, rather than the adaptive
+domain fraction. The default `gas_adaptive` strategy appears only for GAS.
 :::
 
 :::{prf:definition} GAS conventions in Optimization Lab

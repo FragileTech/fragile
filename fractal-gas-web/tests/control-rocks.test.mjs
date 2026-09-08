@@ -54,7 +54,10 @@ for (const name of ["harvest", "mining"]) {
               radius(template.bodies.find((b) => b.cargo)),
           ) < 1e-10,
         );
-        const engine = new NativeEngine(module, scene);
+        const engine = new NativeEngine(module, {
+          ...scene,
+          keep_delivered_rocks: false,
+        });
         try {
           engine.step(engine.neutralAction(), 1);
           assert([...engine.results()].every(Number.isFinite));
@@ -106,7 +109,10 @@ for (const name of ["harvest", "mining"]) {
       scale: 2,
       count: name === "mining" ? 1 : 20,
     });
-    const engine = new NativeEngine(module, scene);
+    const engine = new NativeEngine(module, {
+      ...scene,
+      keep_delivered_rocks: false,
+    });
     try {
       engine.reset(73);
       const cargo = scene.bodies.findIndex((b) => b.cargo);
@@ -169,7 +175,15 @@ test("hook stiffness survives edits and changes spring extension", () => {
       e.step(e.neutralAction(), 30);
       const rows = e.states();
       assert.ok(rows.every(Number.isFinite));
-      extensions.push(Math.abs(rows[9] - rows[8] - 4));
+      const hook = e.bodies - 1;
+      extensions.push(
+        Math.abs(
+          Math.hypot(
+            rows[9] - rows[8 + hook],
+            rows[8 + e.bodies + 1] - rows[8 + e.bodies + hook],
+          ) - rows[e.info[7] + 1],
+        ),
+      );
     } finally {
       e.dispose();
     }

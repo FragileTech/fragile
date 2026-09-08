@@ -10,7 +10,8 @@ void clone(Population&, const std::vector<double>&, Rng&);
 std::vector<double> flows(Population&, const Settings&, const Population*,
                           Rng&);
 void propose(const float*, float*, int, const Benchmark&, bool,
-             const Perturbation&, double phi, Rng&);
+             const Perturbation&, double phi, Rng&,
+             PerturbationTransition* accepted = nullptr);
 struct Candidate {
   std::vector<float> x;
   double value;

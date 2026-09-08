@@ -4,9 +4,12 @@
 namespace fg::optimization {
 // Action IDs are seeds, exactly representable in the existing float action
 // recorder. A recorded (state, action, dt) reproduces proposals and noisy
-// rewards.
+// rewards. Adaptive proposals additionally require the same frozen model;
+// planner search and execution share that model until the next cycle.
 class BenchmarkEnvironment final : public BatchEnv {
  public:
+  void collect_perturbations(bool enabled) { collecting = enabled; }
+  void update_perturbation() { perturbation->update(); }
   Benchmark& b;
   Settings s;
   BenchmarkEnvironment(Benchmark&, const Settings&);
@@ -27,6 +30,7 @@ class BenchmarkEnvironment final : public BatchEnv {
                   std::vector<uint8_t>&) override;
 
  private:
+  bool collecting = true;
   std::unique_ptr<Perturbation> perturbation;
   size_t bytes() const { return 1 + sizeof(double) + sizeof(float) * b.d; }
   void encode(std::vector<char>&, const float*, double) const;

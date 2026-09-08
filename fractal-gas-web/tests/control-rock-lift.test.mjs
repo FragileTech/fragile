@@ -14,16 +14,16 @@ const module = await loadNative();
 test("mining lift budget accounts for rocket weight and respects thrust settings", () => {
   const budget = rockLiftBudget(mining);
   assert.equal(budget.thrust, 32);
-  assert.ok(Math.abs(budget.load - 21.9744) < 1e-8);
+  assert.ok(Math.abs(budget.load - 26.8794) < 1e-8);
   assert.equal(budget.canLift, true);
-  assert.ok(budget.suggestedWeight >= 1 && budget.suggestedWeight < 2);
+  assert.ok(budget.suggestedWeight >= 0.01 && budget.suggestedWeight < 1);
   const light = configureRocks(mining, {
     scale: 1,
     count: 1,
     weight: budget.suggestedWeight,
   });
   assert.ok(rockLiftBudget(light).canLift);
-  assert.ok((1 + light.bodies[2].mass) * 9.81 <= 0.8 * 16);
+  assert.ok((1.25 + light.bodies[2].mass) * 9.81 <= 0.8 * 16);
   assert.equal(rockLiftBudget(light).suggestedWeight, budget.suggestedWeight);
   const boosted = withActionMultipliers(mining, { rocket: { thrust: 10 } });
   assert.equal(rockLiftBudget(boosted).thrust, 320);
@@ -95,16 +95,73 @@ test("WASM physics lifts the default mining rock off the floor, but not an overl
       engine.step(action, 120);
       const result = engine.states();
       assert.ok([...result].every(Number.isFinite));
-      const rise = result[11] - initial[11];
+      const rise =
+        result[8 + engine.bodies + 1] - initial[8 + engine.bodies + 1];
       if (weight === 10) assert.ok(rise < 0.1, `heavy rock rose ${rise}`);
       else {
-        assert.ok(rise > 3, `lighter rock rose only ${rise}`);
-        assert.ok(result[15] > 2, "rock must still have upward velocity");
+        assert.ok(rise > 2, `lighter rock rose only ${rise}`);
+        assert.ok(
+          result[8 + 3 * engine.bodies + 1] > 2,
+          "rock must still have upward velocity",
+        );
       }
       // Confirm deterministic continuation through the same floor contact.
       engine.restore(checkpoint);
       engine.step(action, 120);
       assert.deepEqual(engine.states(), result);
+    } finally {
+      engine.dispose();
+    }
+  }
+});
+
+test("every stock asteroid lifts with one rocket and the default hook at 1×", async () => {
+  const harvest = JSON.parse(
+    await readFile(
+      new URL("../web/lab/scenarios/harvest.json", import.meta.url),
+    ),
+  );
+  const baseline = configureRocks(harvest, { scale: 1, count: 5, weight: 1 });
+  const rocks = baseline.bodies.filter((b) => b.cargo);
+  assert.deepEqual(
+    rocks.map((b) => b.mass),
+    [0.03, 0.05, 0.02, 0.02, 0.04],
+  );
+  assert.equal(baseline.rock_options.weight, 1);
+  const budget = rockLiftBudget(baseline);
+  assert.equal(budget.thrust, 16);
+  assert.ok(Math.abs(budget.load - 12.753) < 1e-8);
+  assert.ok(budget.load <= 0.8 * budget.thrust);
+  assert.ok(budget.suggestedWeight >= 1);
+  for (const rock of rocks) {
+    const scene = structuredClone(baseline);
+    scene.size = [200, 200];
+    delete scene.boundary;
+    scene.holes = [];
+    scene.bases = [];
+    scene.physics.lethal_walls = false;
+    scene.environment = { flight: true };
+    const radius = Math.max(...rock.vertices.map(([x, y]) => Math.hypot(x, y)));
+    const cargoY = radius + 0.1;
+    const vehicle = {
+      ...scene.bodies[0],
+      position: [100, cargoY + radius + 0.2 + 0.65 + 2.5],
+      angle: Math.PI / 2,
+    };
+    scene.bodies = [vehicle, { ...rock, position: [100, cargoY] }];
+    scene.tethers = [{ ...scene.tethers[0], a: 0, b: 1 }];
+    const engine = new NativeEngine(module, scene);
+    try {
+      const initial = engine.states();
+      engine.step(Float32Array.of(1, 0), 120);
+      const rows = engine.states();
+      const rise = rows[8 + engine.bodies + 1] - initial[8 + engine.bodies + 1];
+      assert.ok(rise > 2, `${rock.mass} kg rock rose only ${rise} m at 1×`);
+      assert.ok(
+        rows[8 + 3 * engine.bodies + 1] > 1,
+        "cargo must still be climbing",
+      );
+      assert.equal(engine.results()[2], 0, "lift must not terminate the world");
     } finally {
       engine.dispose();
     }

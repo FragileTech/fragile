@@ -262,7 +262,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
     t.rest = number(
         j["rest_length"],
         t.b >= 0 ? length(s->bodies[t.a].position - s->bodies[t.b].position)
-                 : 2,
+                 : (s->task == "harvest" ? 2.5f : 2.f),
         0, 10000);
     t.stiffness = number(j["stiffness"], 25, 0, 1000000);
     t.damping = number(j["damping"], 6, 0, 100000);
@@ -270,6 +270,52 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
     t.hook_range = number(j["hook_range"], 2, 0, 1000);
     t.automatic = j["automatic"].flag();
     s->tethers.push_back(t);
+  }
+  if (s->task == "harvest") {
+    s->keep_delivered_rocks = root["keep_delivered_rocks"].flag();
+    s->catch_reward = number(reward["catch"], 10, 0, 10000);
+    s->collision_penalty = s->pickup_reward = s->delivery_reward = 0;
+    s->gate_reward = s->formation_reward = s->full_reward = 0;
+    s->hooked_rock_distance_reward = 0;
+    const float mass = number(root["hook_mass"], .25f, .01f, 100);
+    const size_t count = root["legacy_hook_layout"].flag() ? 0 : s->tethers.size();
+    for (size_t i = 0; i < count; ++i) {
+      auto& tow = s->tethers[i];
+      if (!s->bodies[tow.a].controlled) continue;
+      const int owner = tow.a;
+      const auto vehicle = s->bodies[owner];
+      BodyDef hook;
+      hook.radius = .2f;
+      hook.mass = mass;
+      hook.inertia = .5f * mass * hook.radius * hook.radius;
+      const Vec2 anchor{-vehicle.radius, 0};
+      hook.position = vehicle.position + rotate(anchor, vehicle.angle) +
+                      (s->flight_mode ? Vec2{0, -tow.rest}
+                                      : rotate(Vec2{-tow.rest, 0}, vehicle.angle));
+      if (tow.b >= 0) {
+        const auto& rock = s->bodies[tow.b];
+        tow.rest = rock.radius + hook.radius;
+        hook.position = rock.position +
+                        normalized(vehicle.position - rock.position) * tow.rest;
+      }
+      // An edited scene may put a vehicle next to a boundary. Start the hook
+      // at the vehicle if the extended position is outside free space.
+      if (!s->inside(hook.position)) hook.position = vehicle.position;
+      hook.velocity = vehicle.velocity +
+                      perp(hook.position - vehicle.position) * vehicle.omega;
+      TetherDef cable = tow;
+      cable.rest = number(root["tethers"].items()[i]["rest_length"], 2.5f, 0, 10000);
+      cable.a = owner;
+      cable.b = int(s->bodies.size());
+      cable.anchor_a = anchor;
+      cable.automatic = false;
+      cable.permanent = true;
+      tow.owner = owner;
+      tow.a = cable.b;
+      s->bodies.push_back(hook);
+      s->tethers.push_back(cable);
+    }
+    if (s->bodies.size() > 4096) throw std::invalid_argument("Too many hook bodies");
   }
   for (const auto& definition : root["extensions"].items()) {
     auto extension = compile_world_extension(definition);
@@ -293,6 +339,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   if (s->layout.words > 100000)
     throw std::invalid_argument("Scene state exceeds 100000 float32 words");
   s->fingerprint = 14695981039346656037ULL;
+  root.object.erase("legacy_hook_layout");
   hash_json(s->fingerprint, root);
   s->cell_size = std::max(2.f, std::max(s->size.x, s->size.y) / 128.f);
   s->grid_w = int(std::ceil(s->size.x / s->cell_size)) + 1;

@@ -47,12 +47,18 @@ export function rockLiftBudget(scene, weight = rockOptions(scene)?.weight) {
     ...bodies.filter((b) => b.cargo).map((b) => (b.mass ?? 1) / options.weight),
   );
   const thrust = thrusts.reduce((a, b) => a + b, 0);
-  const vehicleMass = haulers.reduce((sum, b) => sum + (b.mass ?? 1), 0);
+  const hookMass = scene.hook_mass ?? 0.25;
+  const vehicleMass = haulers.reduce(
+    (sum, b) => sum + (b.mass ?? 1) + hookMass,
+    0,
+  );
   const load = (vehicleMass + baseMass * weight) * gravity;
   // Leave 20% of thrust in reserve, and size for the weakest solo hauler.
   // Round down onto the logarithmic weight slider's 0.01 tick grid.
   const soloMass = Math.min(
-    ...haulers.map((b, i) => (0.8 * thrusts[i]) / gravity - (b.mass ?? 1)),
+    ...haulers.map(
+      (b, i) => (0.8 * thrusts[i]) / gravity - (b.mass ?? 1) - hookMass,
+    ),
   );
   const limit = Math.min(10, soloMass / baseMass);
   const suggestedWeight =

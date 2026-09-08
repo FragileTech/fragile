@@ -260,9 +260,12 @@ TEST_CASE(optimization_registry_exposes_extensions) {
 }
 
 TEST_CASE(optimization_planners_reuse_arcade_execution) {
+  for (auto strategy : {"gaussian", "local_covariance"})
   for (auto name : {"fmc", "wave_jump"}) {
     auto cfg = config(
         R"({"benchmark":"stochastic_gaussian","walkers":12,"horizon":2,"dt_max":3,"periodic":true,"consensus_prefix":false,"objective":"maximize"})");
+    cfg.object["perturbation"].kind = Json::String;
+    cfg.object["perturbation"].string = strategy;
     cfg.object["algorithm"].kind = Json::String;
     cfg.object["algorithm"].string = name;
     Session session(cfg);
@@ -298,9 +301,29 @@ TEST_CASE(optimization_planners_reuse_arcade_execution) {
             std::equal(x.begin(), x.end(), p.x.begin() + size_t(i) * bench.d));
       }
       session.step();
+      if (planner.new_search_pending()) env.update_perturbation();
+      env.collect_perturbations(!planner.execution_pending());
       const auto info = planner.advance();
       CHECK(session.snapshot[7] ==
             (planner.search_advanced() ? info.num_cloned : 0));
+      if (planner.search_advanced() && std::string(strategy) == "local_covariance") {
+        // Reconstruct a searched lineage with the frozen model, even after
+        // covariance has learned across multiple planning cycles.
+        const auto& tree = gas.exploration_tree();
+        std::vector<std::vector<char>> replay(1);
+        replay[0].assign(tree.root_snapshot.begin(), tree.root_snapshot.end());
+        std::vector<float> observations(bench.d), rewards(1);
+        std::vector<uint8_t> dones(1), truncated(1);
+        env.collect_perturbations(false);
+        for (auto id : tree.branch(gas.state().lineage[0])) {
+          const auto& node = tree.node(id);
+          if (node.frames == 0) continue;
+          env.step_batch(replay, {int32_t(tree.action(id)[0])}, {int32_t(node.frames)},
+                         replay, observations, rewards, dones, truncated);
+          CHECK(rewards[0] == node.step_reward);
+        }
+        CHECK(replay[0] == gas.walker_state(0));
+      }
       executed += !planner.search_advanced();
     }
     CHECK(executed > 0);
@@ -308,7 +331,7 @@ TEST_CASE(optimization_planners_reuse_arcade_execution) {
 }
 
 TEST_CASE(optimization_perturbations_replay_actions) {
-  for (auto strategy : {"gaussian", "uniform"}) {
+  for (auto strategy : {"gaussian", "uniform", "local_covariance"}) {
     auto cfg = config(
         R"({"algorithm":"fmc","benchmark":"stochastic_gaussian","dimensions":3,"periodic":true,"perturbation_std":0.3})");
     cfg.object["perturbation"].kind = Json::String;
@@ -362,7 +385,7 @@ TEST_CASE(optimization_perturbation_extension_and_force_direction) {
       },
       config("[]"));
   const auto catalog = JsonReader(discovery_json()).read();
-  CHECK(catalog["perturbations"].array.size() == 4);
+  CHECK(catalog["perturbations"].array.size() == 5);
   auto cfg = config(
       R"({"algorithm":"fmc","benchmark":"quadratic","dimensions":2,"perturbation":"fixed"})");
   Benchmark b(cfg);
@@ -411,4 +434,115 @@ TEST_CASE(optimization_perturbation_extension_and_force_direction) {
     caught = true;
   }
   CHECK(caught);
+}
+
+TEST_CASE(optimization_local_covariance_geometry) {
+  auto cfg = config(R"({"algorithm":"wave","benchmark":"quadratic","dimensions":2,"perturbation":"local_covariance","covariance_learning_rate":1})");
+  Benchmark b(cfg);
+  auto noise = make_perturbation(b, cfg);
+  float origin[] = {0, 0}, delta[2];
+  // Four independent trials along a rotated valley establish off-diagonal shape.
+  for (int i = 0; i < 4; ++i)
+    noise->observe({{0, 0}, {1., 1.}, 1, double(i + 1)});
+  noise->update();
+  OptimizationRng rng(41);
+  double xx = 0, yy = 0, xy = 0;
+  for (int i = 0; i < 20000; ++i) {
+    noise->sample(origin, delta, 2, rng);
+    xx += delta[0] * delta[0]; yy += delta[1] * delta[1]; xy += delta[0] * delta[1];
+  }
+  xx /= 20000; yy /= 20000; xy /= 20000;
+  CHECK_CLOSE(xx + yy, 2, .07);
+  CHECK(xy > .9);
+  CHECK(xx * yy - xy * xy > 0);
+  CHECK_CLOSE(xx + yy - 2 * xy, .1, .01);
+  // Identical history and seeds reproduce geometry; n draws use sqrt(n).
+  auto repeated = make_perturbation(b, cfg);
+  for (int i = 0; i < 4; ++i)
+    repeated->observe({{0, 0}, {2., 2.}, 4, double(4 * (i + 1))});
+  repeated->update();
+  OptimizationRng a(8), c(8);
+  float other[2];
+  noise->sample(origin, delta, 2, a);
+  repeated->sample(origin, other, 2, c);
+  CHECK_CLOSE(delta[0], other[0], 1e-7);
+  CHECK_CLOSE(delta[1], other[1], 1e-7);
+  CHECK(b.evaluations == 0);
+  noise->reset();
+  auto fresh = make_perturbation(b, cfg);
+  OptimizationRng reset_rng(19), fresh_rng(19);
+  noise->sample(origin, delta, 2, reset_rng);
+  fresh->sample(origin, other, 2, fresh_rng);
+  CHECK(delta[0] == other[0]); CHECK(delta[1] == other[1]);
+}
+
+TEST_CASE(optimization_local_covariance_sparse_and_local) {
+  auto cfg = config(R"({"algorithm":"wave","benchmark":"quadratic","dimensions":2,"perturbation":"local_covariance","covariance_learning_rate":1})");
+  Benchmark b(cfg);
+  auto noise = make_perturbation(b, cfg), fresh = make_perturbation(b, cfg);
+  for (int i = 0; i < 3; ++i) noise->observe({{0, 0}, {1., 1.}, 1, 1});
+  noise->observe({{0, 0}, {NAN, 0}, 1, 1});
+  noise->observe({{0, 0}, {1, 1}, 0, 1});
+  noise->update();
+  float x[2] = {0, 0}, d[2], e[2];
+  OptimizationRng a(5), c(5);
+  noise->sample(x, d, 2, a); fresh->sample(x, e, 2, c);
+  CHECK(d[0] == e[0]); CHECK(d[1] == e[1]);
+  for (int i = 0; i < 40; ++i) {
+    noise->observe({{-4, 0}, {1, 1}, 1, 1});
+    noise->observe({{4, 0}, {1, -1}, 1, 1});
+  }
+  noise->update();
+  double left = 0, right = 0;
+  for (int i = 0; i < 3000; ++i) {
+    x[0] = -4; noise->sample(x, d, 2, a); left += d[0] * d[1];
+    x[0] = 4; noise->sample(x, d, 2, a); right += d[0] * d[1];
+  }
+  CHECK(left > 2000); CHECK(right < -2000);
+  cfg.object["perturbation_std"] = number(0);
+  noise = make_perturbation(b, cfg);
+  noise->observe({{0, 0}, {1, 1}, 1, 1}); noise->update();
+  noise->sample(x, d, 2, a);
+  CHECK(d[0] == 0); CHECK(d[1] == 0);
+}
+
+class TransitionProbe final : public Perturbation {
+ public:
+  std::vector<PerturbationTransition> transitions;
+  void sample(const float*, float* d, int n, fg::Rng&) const override {
+    std::fill(d, d + n, 20.f);
+  }
+  void observe(const PerturbationTransition& t) override { transitions.push_back(t); }
+};
+TEST_CASE(optimization_transition_observation_and_replay) {
+  static TransitionProbe* probe = nullptr;
+  register_perturbation("transition_probe", "Transition probe",
+    [](const Benchmark&, const Json&) {
+      auto result = std::make_unique<TransitionProbe>(); probe = result.get(); return result;
+    }, config("[]"));
+  auto cfg = config(R"({"algorithm":"fmc","benchmark":"quadratic","dimensions":2,"periodic":true,"perturbation":"transition_probe"})");
+  Benchmark b(cfg); Settings s(b.config); BenchmarkEnvironment env(b, s);
+  std::vector<char> root; std::vector<float> obs;
+  env.reset(root, obs);
+  std::vector<std::vector<char>> next(1);
+  std::vector<float> x(2), rewards(1);
+  std::vector<uint8_t> done(1), truncated(1);
+  env.step_batch({root}, {42}, {3}, next, x, rewards, done, truncated);
+  CHECK(probe->transitions.size() == 1);
+  CHECK(probe->transitions[0].origin == obs);
+  CHECK(probe->transitions[0].draws == 3);
+  CHECK(probe->transitions[0].displacement[0] == 60);
+  CHECK_CLOSE(probe->transitions[0].improvement, rewards[0], 1e-4);
+  env.collect_perturbations(false);
+  const auto expected = next;
+  env.step_batch({root}, {42}, {3}, next, x, rewards, done, truncated);
+  CHECK(next == expected); CHECK(probe->transitions.size() == 1);
+  env.collect_perturbations(true);
+  env.step_batch({root}, {42}, {0}, next, x, rewards, done, truncated);
+  CHECK(probe->transitions.size() == 1);
+  env.s.periodic = false;
+  env.step_batch({root}, {42}, {1}, next, x, rewards, done, truncated);
+  CHECK(done[0]); CHECK(probe->transitions.size() == 1);
+  // The registry keeps no reference to stack storage.
+  probe = nullptr;
 }

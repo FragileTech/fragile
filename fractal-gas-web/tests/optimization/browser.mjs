@@ -70,6 +70,29 @@ for (const [name, type] of [
         before,
       );
     };
+    for (const algorithm of ["wave", "fmc", "wave_jump", "gas"]) {
+      await page.locator("#algorithm").selectOption(algorithm);
+      await page.locator("#perturbation").selectOption("local_covariance");
+      await page.locator('[name="walkers"]').fill("16");
+      await page.locator('[name="covariance_learning_rate"]').fill("0.2");
+      await apply();
+      await step();
+      assert.equal(
+        await page.locator('[name="covariance_learning_rate"]').inputValue(),
+        "0.2",
+      );
+      assert.match(
+        await page.locator("#perturbation-note").textContent(),
+        /local proposal/,
+      );
+    }
+    await page.locator("#algorithm").selectOption("graph");
+    assert.equal(
+      await page
+        .locator('#perturbation option[value="local_covariance"]')
+        .count(),
+      0,
+    );
     await page.locator("#algorithm").selectOption("gas");
     assert.equal(
       await page.locator("#perturbation").inputValue(),

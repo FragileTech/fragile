@@ -14,7 +14,10 @@ export function prepareRewardEngines(
   rows,
   root,
 ) {
-  const normalized = withRewards(scene, rewardValues(values));
+  const normalized = withRewards(
+    { ...scene, hook_mass: values.hook_mass ?? scene.hook_mass },
+    rewardValues(values),
+  );
   // A historical snapshot may use omitted defaults; preserve its exact scene hash.
   const nextScene = root ? structuredClone(values) : normalized;
   const nextCoefficients = coefficientValues(coefficients);

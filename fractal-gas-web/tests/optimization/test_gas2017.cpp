@@ -84,18 +84,26 @@ TEST_CASE(gas_adaptive_scale_and_boundaries) {
   }
   CHECK(threw);
   ConstantNoise fixed;
-  gas2017::propose(x, high, 1, b, false, fixed, 0, a);
+  PerturbationTransition accepted;
+  gas2017::propose(x, high, 1, b, false, fixed, 0, a, &accepted);
   CHECK(high[0] == 1);
   CHECK(fixed.calls == 2);
+  CHECK(accepted.draws == 1);
+  CHECK(accepted.scale == .5);
+  CHECK(accepted.origin == std::vector<float>({0}));
+  CHECK(accepted.displacement == std::vector<double>({1}));
   fixed.calls = 0;
   fixed.value = INFINITY;
-  gas2017::propose(x, high, 1, b, false, fixed, 0, a);
+  gas2017::propose(x, high, 1, b, false, fixed, 0, a, &accepted);
   CHECK(high[0] == x[0]);
   CHECK(fixed.calls == 64);
+  CHECK(accepted.draws == 0);
   fixed.value = 3;
-  gas2017::propose(x, high, 1, b, true, fixed, 0, a);
+  gas2017::propose(x, high, 1, b, true, fixed, 0, a, &accepted);
   CHECK(b.valid(high));
   CHECK(high[0] == -1);
+  CHECK(accepted.displacement[0] == 3);
+  CHECK(accepted.scale == 1);
 }
 TEST_CASE(gas_local_search_bounds_and_cap) {
   Benchmark wide(config(R"({"benchmark":"sphere","dimensions":2})"));
@@ -208,4 +216,37 @@ TEST_CASE(gas_centroid_and_memory_replacement) {
   const auto old = p.objective;
   gas2017::insert_memory(p, s, {{0}, INFINITY}, rng);
   CHECK(p.objective == old);
+}
+
+TEST_CASE(gas_local_covariance_learns_without_extra_queries) {
+  auto cfg = config(R"({"algorithm":"gas","benchmark":"rosenbrock","dimensions":2,"walkers":32,"periodic":true,"gas_local_search":false,"gas_tabu":false,"perturbation":"local_covariance","perturbation_std":0.2})");
+  Session learned(cfg), repeated(cfg);
+  cfg.object["covariance_learning_rate"] = number(0);
+  Session frozen(cfg);
+  for (int i = 0; i < 12; ++i) {
+    learned.step(); repeated.step(); frozen.step();
+    CHECK(learned.snapshot == repeated.snapshot);
+    CHECK(learned.algorithm->population().n == 32);
+    CHECK(learned.algorithm->evaluations() == uint64_t(32 * (i + 2)));
+  }
+  CHECK(learned.algorithm->population().x != frozen.algorithm->population().x);
+}
+
+TEST_CASE(gas_local_covariance_retry_scale_does_not_change_learned_shape) {
+  auto cfg = config(R"({"algorithm":"gas","benchmark":"sphere","dimensions":2,"perturbation":"local_covariance","covariance_learning_rate":1})");
+  Benchmark b(cfg);
+  auto full = make_perturbation(b, cfg), retried = make_perturbation(b, cfg);
+  for (int i = 0; i < 4; ++i) {
+    const double scale = std::pow(.5, i);
+    std::vector<double> displacement(2, 0);
+    displacement[i % 2] = 1;
+    full->observe({{0, 0}, displacement, 1, double(i + 1)});
+    displacement[i % 2] *= scale;
+    retried->observe({{0, 0}, displacement, 1, double(i + 1), scale});
+  }
+  full->update(); retried->update();
+  OptimizationRng a(8), c(8);
+  float origin[2] = {0, 0}, x[2], y[2];
+  full->sample(origin, x, 2, a); retried->sample(origin, y, 2, c);
+  CHECK(x[0] == y[0]); CHECK(x[1] == y[1]);
 }

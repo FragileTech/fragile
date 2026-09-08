@@ -331,5 +331,17 @@
         "color": "#b88a43"
       }
     }
+  },
+  "hook_mass": 0.25,
+  "rewards": {
+    "progress": 1,
+    "distance_squared": 1,
+    "catch": 10,
+    "collision": 0,
+    "delivery": 0,
+    "pickup": 0,
+    "gate": 0,
+    "formation": 0,
+    "hooked_rock_distance": 0
   }
 }

@@ -15,6 +15,8 @@ void BenchmarkEnvironment::encode(std::vector<char>& state, const float* x,
 }
 void BenchmarkEnvironment::reset(std::vector<char>& state,
                                  std::vector<float>& obs) {
+  perturbation->reset();
+  collecting = true;
   state.assign(bytes(), 0);
   obs.assign(b.d, 0);
   if (s.planning()) {
@@ -47,10 +49,17 @@ void BenchmarkEnvironment::step_batch(
     const bool initialized = states[i].size() == bytes() && states[i][0];
     const double old = initialized ? decode(states[i], x) : 0;
     if (!initialized) b.initial(x, rng);
+    PerturbationTransition transition;
+    transition.origin.assign(x, x + b.d);
+    transition.displacement.assign(b.d, 0);
     for (int t = 0; t < dt[i]; ++t) {
       if (initialized || t > 0) {
-        perturbation->sample(x, delta.data(), b.d, rng);
-        for (int k = 0; k < b.d; ++k) x[k] += delta[k];
+        perturbation->sample_action(transition.origin.data(), x, delta.data(), b.d, rng);
+        ++transition.draws;
+        for (int k = 0; k < b.d; ++k) {
+          x[k] += delta[k];
+          transition.displacement[k] += delta[k];
+        }
       }
       if (s.periodic) b.wrap(x);
       if (!b.valid(x)) break;
@@ -59,6 +68,10 @@ void BenchmarkEnvironment::step_batch(
     const bool valid = b.valid(x) && std::isfinite(u) &&
                        std::isfinite(float(u)) &&
                        std::isfinite(float(s.score(u) - s.score(old)));
+    if (collecting && initialized && valid && transition.draws > 0) {
+      transition.improvement = s.score(u) - s.score(old);
+      perturbation->observe(transition);
+    }
     encode(next[i], x, u);
     rewards[i] = valid ? float(s.score(u) - s.score(old)) : 0;
     dones[i] = !valid;

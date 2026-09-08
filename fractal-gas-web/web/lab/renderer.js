@@ -1,3 +1,4 @@
+import { harvestPresentation } from "./harvest-hooks.js";
 import { treePoseDim, treeWidth } from "./actions.js";
 import { laboratoryEnvironment } from "./visuals/lighting.js";
 import { createEnvironment } from "./visuals/environments/index.js";
@@ -314,6 +315,7 @@ export class LabRenderer {
     this.animationPulseUntil = performance.now() + 120;
   }
   load(scene, info, channels) {
+    scene = harvestPresentation(scene, info);
     this.clearPan();
     this.simulationTime = 0;
     this.animationPulseUntil = 0;
@@ -417,9 +419,47 @@ export class LabRenderer {
         mesh.position.set(...def.position, 0);
         group.add(mesh);
         if (kind === "bases") bases.push(mesh);
+        const retained =
+          kind === "bases" &&
+          scene.task === "harvest" &&
+          scene.keep_delivered_rocks;
+        if (retained) {
+          for (const [name, radius, ringColor, dashed] of [
+            ["Delivery", (def.radius ?? 1) * 0.5, palette.green, false],
+            ["Release", def.radius ?? 1, palette.gold, true],
+          ]) {
+            const ring = line(
+              Array.from({ length: 97 }, (_, k) => {
+                const angle = (k * Math.PI * 2) / 96;
+                return [
+                  Math.cos(angle) * radius,
+                  Math.sin(angle) * radius,
+                  0.25,
+                ];
+              }),
+              ringColor,
+              dashed,
+            );
+            ring.name = `${name} boundary`;
+            ring.userData.radius = radius;
+            ring.material.depthTest = false;
+            ring.renderOrder = 10;
+            ring.position.set(...def.position, 0);
+            group.add(ring);
+            this.label(
+              name.toUpperCase(),
+              [def.position[0], def.position[1] + radius + 0.25, 0.3],
+              ringColor,
+              2.2,
+              group,
+            );
+          }
+        }
         this.label(
           kind === "bases"
-            ? "RECOVERY / 01"
+            ? retained
+              ? "DROP / RELEASE"
+              : "RECOVERY / 01"
             : `GATE / ${String(i + 1).padStart(2, "0")}`,
           [...def.position, 0.3],
           style === "steampunk" ? stylePalette[style].accent : color,

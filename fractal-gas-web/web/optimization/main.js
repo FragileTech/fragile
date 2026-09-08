@@ -170,11 +170,13 @@ function gasLocalSearchNote() {
 }
 function perturbationNote() {
   $("perturbation-note").textContent =
-    $("perturbation").value === "gas_adaptive"
-      ? "Objective-dependent Gaussian jumps: standard deviation ranges from 0.00001 to 0.1 of the domain width."
-      : $("algorithm").value === "euclidean"
-        ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
-        : "Standard deviation is measured in coordinate units for each proposal step.";
+    $("perturbation").value === "local_covariance"
+      ? "Learns local proposal directions from search outcomes. Standard deviation sets average coordinate variance; planner geometry stays fixed through search and execution."
+      : $("perturbation").value === "gas_adaptive"
+        ? "Objective-dependent Gaussian jumps: standard deviation ranges from 0.00001 to 0.1 of the domain width."
+        : $("algorithm").value === "euclidean"
+          ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
+          : "Standard deviation is measured in coordinate units for each proposal step.";
 }
 function objectiveNote() {
   $("objective-note").textContent =

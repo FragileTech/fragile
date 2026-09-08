@@ -117,7 +117,7 @@
         19,
         19
       ],
-      "mass": 3,
+      "mass": 0.03,
       "cargo": true,
       "drag": 0.08,
       "vertices": [
@@ -157,7 +157,7 @@
         45,
         31
       ],
-      "mass": 5,
+      "mass": 0.05,
       "cargo": true,
       "drag": 0.08,
       "vertices": [
@@ -197,7 +197,7 @@
         47,
         12
       ],
-      "mass": 2,
+      "mass": 0.02,
       "cargo": true,
       "drag": 0.08,
       "vertices": [
@@ -237,7 +237,7 @@
         16,
         31
       ],
-      "mass": 2,
+      "mass": 0.02,
       "cargo": true,
       "drag": 0.08,
       "vertices": [
@@ -277,7 +277,7 @@
         41,
         9
       ],
-      "mass": 4,
+      "mass": 0.04,
       "cargo": true,
       "drag": 0.08,
       "vertices": [
@@ -465,5 +465,18 @@
         "color": "#b88a43"
       }
     }
-  }
+  },
+  "hook_mass": 0.25,
+  "rewards": {
+    "progress": 1,
+    "distance_squared": 1,
+    "catch": 10,
+    "collision": 0,
+    "delivery": 0,
+    "pickup": 0,
+    "gate": 0,
+    "formation": 0,
+    "hooked_rock_distance": 0
+  },
+  "keep_delivered_rocks": true
 }

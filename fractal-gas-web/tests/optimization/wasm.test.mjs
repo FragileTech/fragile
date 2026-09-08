@@ -29,9 +29,9 @@ test(
         .sort(),
       ["euclidean", "fmc", "gas", "graph", "wave", "wave_jump"],
     );
-    assert.equal(native.catalog().perturbations.length, 3);
+    assert.equal(native.catalog().perturbations.length, 4);
     for (const objective of ["minimize", "maximize"])
-      for (const perturbation of ["gaussian", "uniform"])
+      for (const perturbation of ["gaussian", "uniform", "local_covariance"])
         for (const algorithm of [
           "euclidean",
           "wave",
@@ -39,6 +39,11 @@ test(
           "fmc",
           "wave_jump",
         ]) {
+          if (
+            perturbation === "local_covariance" &&
+            !["wave", "fmc", "wave_jump"].includes(algorithm)
+          )
+            continue;
           const cfg = {
             benchmark: "quadratic",
             dimensions: 5,
@@ -122,7 +127,7 @@ test(
     const native = new NativeOptimization(await create());
     try {
       for (const objective of ["minimize", "maximize"])
-        for (const perturbation of ["gaussian", "uniform"])
+        for (const perturbation of ["gaussian", "uniform", "local_covariance"])
           for (const algorithm of [
             "euclidean",
             "wave",
@@ -130,6 +135,11 @@ test(
             "fmc",
             "wave_jump",
           ]) {
+            if (
+              perturbation === "local_covariance" &&
+              !["wave", "fmc", "wave_jump"].includes(algorithm)
+            )
+              continue;
             const config = {
               algorithm,
               objective,
@@ -331,7 +341,12 @@ test(
       );
       for (const gas_tabu of [false, true])
         for (const gas_local_search of [false, true])
-          for (const perturbation of ["gas_adaptive", "gaussian", "uniform"])
+          for (const perturbation of [
+            "gas_adaptive",
+            "gaussian",
+            "uniform",
+            "local_covariance",
+          ])
             for (const objective of ["minimize", "maximize"]) {
               const config = {
                 algorithm: "gas",
@@ -411,5 +426,64 @@ test(
     } finally {
       engine.dispose();
     }
+  },
+);
+
+test(
+  "local covariance config, reset, budget and recording in Wave and planners",
+  { skip: !available },
+  async () => {
+    const engine = new NativeOptimization(await create());
+    const entry = engine
+      .catalog()
+      .perturbations.find((p) => p.id === "local_covariance");
+    assert.deepEqual(entry.algorithms, ["wave", "fmc", "wave_jump", "gas"]);
+    for (const algorithm of entry.algorithms) {
+      const cfg = {
+        algorithm,
+        perturbation: "local_covariance",
+        covariance_learning_rate: 0.2,
+        benchmark: "rastrigin",
+        walkers: 24,
+        dimensions: 2,
+        periodic: true,
+        horizon: 2,
+        max_horizon: 4,
+        dt_max: 3,
+        gas_local_search: false,
+        max_evaluations: 2000,
+        seed: 17,
+      };
+      const resolved = engine.create(cfg);
+      assert.equal(resolved.covariance_learning_rate, 0.2);
+      const recording = new Recording(resolved);
+      for (let i = 0; i < 40; ++i) recording.append(engine.step());
+      const expected = engine.snapshot();
+      assert.ok(frameInfo(expected).evaluations <= 2000);
+      assert.equal(
+        frameInfo(expected).n,
+        ["wave", "gas"].includes(algorithm) ? 24 : 25,
+      );
+      const imported = importRecording(recording.export());
+      assert.deepEqual(imported.frames, recording.frames);
+      engine.create(cfg);
+      for (let i = 0; i < 40; ++i) engine.step();
+      assert.deepEqual(engine.snapshot(), expected);
+    }
+    for (const algorithm of ["graph", "euclidean"])
+      assert.throws(
+        () => engine.create({ algorithm, perturbation: "local_covariance" }),
+        /not supported/,
+      );
+    assert.throws(
+      () =>
+        engine.create({
+          algorithm: "wave",
+          perturbation: "local_covariance",
+          covariance_learning_rate: 2,
+        }),
+      /covariance/,
+    );
+    engine.dispose();
   },
 );
