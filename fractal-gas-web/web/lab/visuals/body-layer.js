@@ -1,4 +1,4 @@
-import { actionLayout, visualInput } from "../actions.js";
+import { actionLayout, createActionBinding } from "../actions.js";
 import { contactShadow } from "./lighting.js";
 import * as T from "../vendor/three.module.js";
 import { palette } from "./primitives.js";
@@ -42,6 +42,10 @@ export class BodyLayer {
     this.animations = [];
     this.presentations = [];
     this.animationInputs = [];
+    this.actionBindings = [];
+    this.commands = [];
+    this.active = [];
+    this.presentationVersion = 0;
     this.animationsEnabled = true;
     this.animationElapsed = 0;
     this.animationTime = 0;
@@ -146,7 +150,12 @@ export class BodyLayer {
       });
       this.animations.push(animation);
       this.presentations.push(animation.pose);
+      const actionBinding = createActionBinding(this.channels, b, i);
+      this.actionBindings.push(actionBinding);
+      this.commands.push(actionBinding.commands);
       this.animationInputs.push({
+        commands: actionBinding.commands,
+        commandsOnly: false,
         time: 0,
         speed: 0,
         signedSpeed: 0,
@@ -155,20 +164,8 @@ export class BodyLayer {
         modelScale: model.scale.x,
         wheelTravel: 0,
         mechanicalTime: 0,
-        throttleChannel: this.channels.findIndex(
-          (c) => c.body === i && c.name === "throttle",
-        ),
-        brakeChannel: this.channels.findIndex(
-          (c) => c.body === i && c.name === "brake",
-        ),
-        throttle: 0,
-        brake: 0,
-        displayThrottle: 0,
-        displayBrake: 0,
         idleTime: 0,
         enabled: true,
-        displayThrust: 0,
-        displaySteer: 0,
       });
     });
     if (crowd)
@@ -187,13 +184,15 @@ export class BodyLayer {
       }
   }
   update(state, action) {
+    this.presentationVersion++;
     const n = this.models.length,
       bits = new Uint32Array(state.buffer, state.byteOffset, state.length),
       time = bits[0] * this.dt;
     this.models.forEach((model, i) => {
       model.position.set(state[8 + i], state[8 + n + i], 0.1);
       model.rotation.z = state[8 + 4 * n + i];
-      model.visible = !!(bits[this.info[5] + i] & 1);
+      this.active[i] = !!(bits[this.info[5] + i] & 1);
+      model.visible = this.active[i];
     });
     for (const b of this.controlled) {
       const input = this.animationInputs[b];
@@ -202,13 +201,7 @@ export class BodyLayer {
       input.signedSpeed =
         state[8 + 2 * n + b] * Math.cos(this.models[b].rotation.z) +
         state[8 + 3 * n + b] * Math.sin(this.models[b].rotation.z);
-      Object.assign(input, visualInput(this.channels, action, b));
-      input.throttle =
-        input.throttleChannel >= 0
-          ? action?.[input.throttleChannel] || 0
-          : input.thrust;
-      input.brake =
-        input.brakeChannel >= 0 ? action?.[input.brakeChannel] || 0 : 0;
+      this.actionBindings[b].sample(action);
       input.enabled = this.animationsEnabled;
       // Once display animation starts, retain its last pose between state
       // deliveries. In particular, a throttled crowd must not snap back to
@@ -219,6 +212,10 @@ export class BodyLayer {
         input.idleTime = undefined;
         animateAgent(this.animations[b], input);
         input.wheelTravel = travel;
+      } else {
+        input.commandsOnly = true;
+        animateAgent(this.animations[b], input);
+        input.commandsOnly = false;
       }
     }
     if (this.instances.length) {
@@ -233,6 +230,7 @@ export class BodyLayer {
     this.resetAnimation();
   }
   resetAnimation() {
+    this.presentationVersion++;
     this.animationStarted = false;
     this.animationElapsed = 0;
     this.animationTime = 0;
@@ -240,12 +238,8 @@ export class BodyLayer {
       const input = this.animationInputs[b];
       input.wheelTravel = 0;
       input.mechanicalTime = 0;
-      input.displayThrottle = 0;
-      input.displayBrake = 0;
       input.idleTime = 0;
       input.enabled = false;
-      input.displayThrust = 0;
-      input.displaySteer = input.steer;
       animateAgent(this.animations[b], input);
     }
     if (this.instances.length) this.updateInstances();
@@ -262,6 +256,7 @@ export class BodyLayer {
     const delta = this.animationElapsed;
     this.animationElapsed = 0;
     this.animationTime += delta;
+    this.presentationVersion++;
     this.animationStarted = true;
     for (const b of this.controlled) {
       const active = this.instances.length
@@ -276,24 +271,7 @@ export class BodyLayer {
         input.wheelTravel += input.signedSpeed * delta * speed;
         input.mechanicalTime += delta * speed;
       }
-      const thrust = input.thrust,
-        steer = input.steer,
-        throttle = input.throttle,
-        brake = input.brake;
-      const response = 1 - Math.exp(-delta * 10);
-      input.displayThrust += (thrust - input.displayThrust) * response;
-      input.displaySteer += (steer - input.displaySteer) * response;
-      input.displayThrottle += (throttle - input.displayThrottle) * response;
-      input.displayBrake += (brake - input.displayBrake) * response;
-      input.throttle = input.displayThrottle;
-      input.brake = input.displayBrake;
-      input.thrust = input.displayThrust;
-      input.steer = input.displaySteer;
       animateAgent(this.animations[b], input);
-      input.thrust = thrust;
-      input.steer = steer;
-      input.throttle = throttle;
-      input.brake = brake;
     }
     if (this.instances.length) this.updateInstances();
   }
@@ -343,14 +321,19 @@ export class BodyLayer {
         changed ||= this.inView[b] !== visible;
         this.inView[b] = visible;
       }
-      if (changed) this.updateInstances();
+      if (changed) {
+        this.presentationVersion++;
+        this.updateInstances();
+      }
     }
     const pixelsPerUnit = viewportHeight / (camera.top - camera.bottom);
     for (const entry of this.lods) {
+      const previous = entry.current;
       entry.current = chooseLod(
         (entry.span ?? 1.52) * entry.model.scale.x * pixelsPerUnit,
         entry.current,
       );
+      if (previous !== entry.current) this.presentationVersion++;
       entry.high.visible = entry.current === "high";
       entry.low.visible = entry.current === "low";
     }

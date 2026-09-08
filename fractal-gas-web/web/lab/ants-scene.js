@@ -1,3 +1,5 @@
+import { VEHICLE_TYPES } from "./agent-types.js";
+
 export const DEFAULT_ANTS_OPTIONS = { agentType: "harvester", count: 5 };
 export const MAX_ANTS_VEHICLES = 128;
 
@@ -36,8 +38,8 @@ export function clearance(point, ring) {
 
 // Build only from the preset template; saved scenes already contain concrete bodies.
 export function configureAntsScene(template, { agentType, count }) {
-  if (!["harvester", "drone"].includes(agentType))
-    throw new RangeError("Choose Harvesters or Drones");
+  if (!VEHICLE_TYPES.includes(agentType))
+    throw new RangeError("Choose Rockets, Drones, Karts or Harvesters");
   if (!Number.isInteger(count) || count < 1 || count > MAX_ANTS_VEHICLES)
     throw new RangeError(
       `Vehicle count must be an integer from 1 to ${MAX_ANTS_VEHICLES}`,
@@ -80,7 +82,7 @@ export function antsOptionsFromScene(scene) {
   if (
     count >= 1 &&
     count <= MAX_ANTS_VEHICLES &&
-    ["harvester", "drone"].includes(agentType) &&
+    VEHICLE_TYPES.includes(agentType) &&
     scene.bodies.every((body) => body.agent_type === agentType)
   )
     return { agentType, count };

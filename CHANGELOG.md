@@ -3,7 +3,17 @@
 Unreleased
 ----------
 
-* Add auto-detected and explicitly configurable rocket/drone flight mode with downward gravity and side-on/overhead camera views.
+* Apply Lab rewards mid-run without resetting the world, camera, or recording, and retain reward-change boundaries for replay and saved runs.
+
+* Allow Rockets, Drones, Karts and Harvesters in every Lab environment and racing track, preserving world setup when switching the fleet and remembering each environment’s selection during the session.
+
+* Add static actuator cues that remain visible with animations off, optional signed action guides relative to configured limits, and catalog-based Workshop sliders with neutral/max presets and independent-thruster previews.
+
+* Add per-agent-type action multiplier controls from 0× to 10× for independently scaling every built-in actuator degree of freedom, including rocket thrust and torque.
+
+* Preserve per-agent actuator multipliers when applying mining rock settings, so a 10× rocket thrust and 0.01× rock mass take effect together.
+
+* Add auto-detected and explicitly configurable rocket/drone flight mode with downward gravity, a sidebar checkbox, and side-on/overhead camera views.
 
 * Add optional vehicle and world animations with a persistent reduced-motion-aware switch, paused idle motion, and Workshop preview controls.
 
@@ -18,6 +28,8 @@ Unreleased
 * Evaluate native gauge locality coefficients by signed history cancellation and full-face tuple products, retaining original weights, masks, and selected laws.
 
 * Reward hooked rock travel by distinct-rock distance, with an adjustable weight and no credit for respawn teleportation or duplicate tow hooks.
+
+* Extend the Lab rock-weight control down to 0.01×, allowing rocks to be one hundred times lighter while retaining the 10× upper bound.
 
 * Expose mining hook stiffness, allow rock sizes down to 0.1×, and prevent false target-progress reward when tow hooks break.
 

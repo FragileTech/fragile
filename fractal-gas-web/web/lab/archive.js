@@ -32,13 +32,17 @@ export function exportRecording(scene, settings, entries, motion) {
           dt: motion.dt,
           segments: motion.segments,
           events: motion.events,
+          rewardChanges: motion.rewardChanges.map((change) => ({
+            ...change,
+            root: encode(change.root),
+          })),
           frames: encode(frames),
           checksum: checksum(frames),
         }
       : undefined,
     engine: "fractal-control-1",
-    scene,
-    settings,
+    scene: motion?.scene || scene,
+    settings: motion?.settings || settings,
     entries: entries.map((e) => ({
       decision: e.decision,
       risk: e.risk,
@@ -106,6 +110,14 @@ export function importRecording(text) {
     motion = new MotionRecording(m.info, decode(m.root), m.dt);
     motion.append(frames);
     motion.validate();
+    motion.scene = data.scene;
+    motion.settings = data.settings;
+    motion.restoreRewardChanges(
+      (m.rewardChanges || []).map((change) => ({
+        ...change,
+        root: decode(change.root),
+      })),
+    );
     if (
       !motion.length ||
       !Array.isArray(m.segments) ||

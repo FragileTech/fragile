@@ -45,11 +45,23 @@
         </fieldset>
         <label
           class="animation-control"
-          data-help="Decorative motion only. Turn off to freeze cosmetic animation and effects while physics, steering and cargo state remain accurate."
-          title="Decorative motion only; turning off keeps physics and controls active."
+          data-help="Turn off idle motion, wheel and rotor animation. Static flame size, steering, brake lights and action guides still show current commands; physics and cargo keep updating."
+          title="Stop animated motion while keeping static command cues and physics active."
         >
           <input type="checkbox" name="animations" aria-label="Animations" />
           <span>Animations</span>
+        </label>
+        <label
+          class="animation-control"
+          data-help="Show signed force and torque guides for the selected vehicle. Guides follow current actions even when decorative animation is off."
+          title="Show force and torque commands for the selected vehicle."
+        >
+          <input
+            type="checkbox"
+            name="action-guides"
+            aria-label="Action guides"
+          />
+          <span>Action guides</span>
         </label>
         <div class="style-feedback">
           <span id="style-status" role="status" aria-live="polite"></span
@@ -83,6 +95,32 @@
             ><button data-view="top">Top</button>
           </div>
         </div>
+        <section
+          id="action-preview"
+          class="workshop-action-preview"
+          aria-label="Actuator preview"
+        >
+          <div class="action-preview-header">
+            <label id="actuator-variant-label"
+              >Actuator
+              <select id="actuator-variant">
+                <option value="rocket">Vector rocket</option>
+                <option value="thruster_tug">Independent thrusters</option>
+              </select></label
+            >
+            <span id="actuator-kind"></span>
+            <div>
+              <button type="button" id="action-neutral">Neutral</button>
+              <button type="button" id="action-max">Max</button>
+            </div>
+          </div>
+          <p>
+            Preview current commands. Values stay fixed during playback; physics
+            is not simulated here.
+          </p>
+          <div id="action-sliders" class="action-sliders"></div>
+          <output id="action-guide-readout" aria-live="polite" hidden></output>
+        </section>
         <div class="workshop-canvas">
           <canvas
             id="asset-world"

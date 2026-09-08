@@ -49,7 +49,7 @@ export class ReplayPanel {
         const rows = r.getRows ? await r.getRows(index) : r.rows(index);
         if (this.recording !== r) return;
         this.playback.live();
-        resume(rows);
+        resume(rows, r.rewardConfiguration(index));
       } catch (e) {
         error(e);
       }
@@ -80,7 +80,10 @@ export class ReplayPanel {
   }
   append(data) {
     if (data.initial && this.recording.length) return;
+    const boundary = this.recording.length;
     this.recording.append(data.packet, data.label);
+    if (this.recording.rewardChanges.at(-1)?.frame === boundary)
+      this.recording.addEvent(boundary, "Reward settings changed", "rewards");
     this.update();
   }
   update() {

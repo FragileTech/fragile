@@ -9,7 +9,7 @@ const browser = await chromium.launch({
 try {
   const page = await browser.newPage({
     serviceWorkers: "block",
-    viewport: { width: 1536, height: 1100 },
+    viewport: { width: 1536, height: 2400 },
   });
   page.on("pageerror", (e) => console.error(e.message));
   await page.route("**/lab/main.js", async (route) => {
@@ -47,7 +47,7 @@ try {
     });
   const box = await page.locator("#world").boundingBox();
   const x = box.x + box.width / 2,
-    y = box.y + box.height / 2;
+    y = Math.min(box.y + box.height / 2, page.viewportSize().height - 80);
   await page.evaluate(() => {
     window.cameraClicks = 0;
     document
@@ -164,7 +164,12 @@ try {
     const position = { x: r.state[8 + i], y: r.state[8 + r.info[1] + i] };
     r.resize();
     r.camera.updateMatrixWorld(true);
-    const p = new Vector3(position.x, position.y, 0).project(r.camera);
+    const side = r.flightMode && !r.top;
+    const p = new Vector3(
+      position.x,
+      side ? 0 : position.y,
+      side ? position.y : 0,
+    ).project(r.camera);
     const rect = r.canvas.getBoundingClientRect();
     return {
       i,
@@ -217,6 +222,23 @@ try {
   assert(Math.abs(flightView.center[0] - 32) < 0.02);
   assert(Math.abs(flightView.center[1] - 22) < 0.02);
   assert.equal(flightView.label, "Side / overhead");
+  const flightControl = await page.evaluate(() => ({
+    checked: document.querySelector("#flight-mode").checked,
+    indeterminate: document.querySelector("#flight-mode").indeterminate,
+    state: document.querySelector("#flight-mode-state").textContent,
+  }));
+  assert.equal(flightControl.checked, true);
+  assert.equal(flightControl.indeterminate, true);
+  assert.equal(flightControl.state, "AUTO");
+  await page.locator("#flight-mode").click();
+  await page.waitForFunction(
+    () => cameraTest.renderer.state && !cameraTest.renderer.flightMode,
+  );
+  assert.equal(await page.locator("#flight-mode-state").textContent(), "OFF");
+  await page.locator("#flight-mode").click();
+  await page.waitForFunction(
+    () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
+  );
   await page.locator("#view").click();
   const overheadView = await page.evaluate(() => {
     const r = cameraTest.renderer;

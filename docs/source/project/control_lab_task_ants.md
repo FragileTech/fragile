@@ -4,7 +4,8 @@
 :::{div} feynman-prose
 In **Ants & drops**, you control a fleet in a bounded arena. A vehicle collects a
 drop by touching it, filling its onboard deposit one unit at a time. Both
-harvesters and drones start empty and hold **5 drops** by default. A full vehicle
+harvesters and drones start empty and hold **5 drops** by default. The same cargo
+settings apply when you choose rockets or karts. A full vehicle
 must return to the shared refinery and discharge its cargo before collecting
 again. Collection and unloading are automatic; neither needs a button.
 
@@ -16,9 +17,11 @@ home.
 
 Start here to learn how physical vehicle count differs from planner population,
 how harvesters and drones move, and how to measure a foraging trial. Harvesters
-remain planar kart vehicles. Selecting **Drones** automatically enables their
-side-on flight mode and downward gravity, so a drone must use thrust to stay
-aloft. Launch the
+remain planar kart vehicles. **Vehicle type** offers Rockets, Drones, Karts, and
+Harvesters in every environment. Unless you have explicitly set **Flight mode**,
+choosing drones or rockets automatically enables side-on flight and downward
+gravity, so a drone must use thrust to stay aloft. An explicit flight setting is
+preserved when changing type. Launch the
 application using {doc}`control_lab_getting_started`; return to
 {doc}`control_lab_tasks` for the other tasks. Keep
 {doc}`control_lab_controls` nearby for the complete operating reference.
@@ -67,8 +70,9 @@ promise that the first decision will collect food.
    A fresh page can have already executed an initial decision. Selecting the
    preset and resetting below gives this exercise a known starting point.
 2. Set **Vehicle count** to **5** and **Vehicle type** to **Harvesters**. These
-   controls sit beneath the environment selector. Each change rebuilds the
-   original preset and leaves the new world paused.
+   controls sit beneath the environment selector. Each change restarts the
+   scene paused, preserving world edits and settings. Type changes also preserve
+   vehicle count and starting positions; count changes preserve existing starts.
 3. Choose **Fractal Monte Carlo** under **Controller**. Set **Walkers** to **128**,
    **Horizon** to **16**, **Action frames** to **6**, and **Seed** to **7**. Leave
    the other FMC fields at their defaults documented in the controls reference.
@@ -104,9 +108,11 @@ more expensive even when Walkers stays fixed.
 ## Compare four harvesters with four drones
 
 :::{div} feynman-prose
-Use four vehicles for a small comparison of the two vehicle types. Export a run
-you want to keep before changing these controls: both reconstruct the preset,
-clear the current run and editor history, and discard local scene edits.
+Use four vehicles to compare harvesters with drones. Export a run you want to
+keep before changing these controls: both restart the scene paused and clear the
+current run, replay, and editor history. World edits and settings remain intact.
+Changing type preserves the count and starting positions while replacing each
+vehicle's physical and visual defaults.
 
 1. Pause, set **Vehicle count** to **4**, and commit the input by leaving the
    field. Observe that the scene returns to a paused starting state with four
@@ -115,8 +121,9 @@ clear the current run and editor history, and discard local scene edits.
    short run. Four bodies are easier to distinguish from their search overlays.
 3. Change **Vehicle type** to **Drones**. Observe the second reset: these drones
    start a new run rather than transforming the moving harvesters in place.
-4. Selecting **Drones** automatically enables side-on 3D flight and downward
-   gravity. Let the camera switch to its side-on view, then press **Step** once.
+4. Without an explicit **Flight mode** override, selecting **Drones** automatically
+   enables side-on 3D flight and downward gravity. Let the camera switch to its
+   side-on view, then press **Step** once.
    Use the **Side / overhead** control when you want to inspect the same scene from
    above. Compare the state with the figure. Counts and settings matter more
    than an exact pixel match, which also depends on camera and display size.
@@ -130,7 +137,9 @@ drone flight plane, downward gravity is always acting, so the vertical force
 component is also what keeps a drone from sinking. This changes both motion and
 physical parameters, including radius and mass. A type comparison is therefore
 a comparison of these complete vehicle definitions, not an isolated test of
-steering alone.
+steering alone. Rockets use two action channels per vehicle; drones, karts, and
+harvesters each use three. The controls and planner update to match the selected
+type.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/ants-detail.png
@@ -241,7 +250,7 @@ wall-clock time.
 | Keyboard has no effect | Enable its checkbox, remove focus from text/numeric fields, and select a controlled body. Check actuator-specific mappings. |
 | A drone will not brake with Space | Use its force channels to counter motion; this actuator has no kart brake. |
 | A drone drops out of the side-on view | It is falling under the preset's downward gravity. Apply the upward body-local force and keep advancing physics. |
-| Scene edits disappeared | Vehicle count/type reconstruct the original preset. Reimport your saved scene and use Reset for subsequent trials. |
+| Run or editor history disappeared after changing count/type | These changes restart the scene paused and clear run, replay, and editor history. World edits and settings are preserved; export a run before changing either control if you want to keep it. |
 | A count is rejected | Enter a whole number from 1 through 128. Invalid input leaves the existing scene intact. |
 | Planning feels slow | Pause and use four vehicles first. Reduce Walkers only as a documented new configuration; changing it resets the run. |
 :::

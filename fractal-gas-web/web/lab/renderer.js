@@ -12,6 +12,8 @@ import { labStyle } from "./visual-style.js";
 import { flightMode } from "./agent-types.js";
 import { labAnimations } from "./animations.js";
 import { AnimationClock } from "./animation-clock.js";
+import { labActionGuides } from "./action-guides.js";
+import { ActionEffects } from "./visuals/action-effects.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -44,6 +46,15 @@ function prop(kind, style, radius = 1, color = palette.gold) {
 export class LabRenderer {
   constructor(canvas, { isEditing = () => false } = {}) {
     this.canvas = canvas;
+    this.actionGuidesEnabled = labActionGuides.enabled;
+    this.unsubscribeActionGuides = labActionGuides.subscribe((enabled) => {
+      this.actionGuidesEnabled = enabled;
+      this.refreshActionGuides();
+    });
+    this.actionReadout = document.createElement("output");
+    this.actionReadout.className = "action-guide-readout";
+    this.actionReadout.hidden = true;
+    canvas.parentElement.append(this.actionReadout);
     this.animationClock = new AnimationClock();
     this.animationStep = { playing: false, speed: 1 };
     this.animationsEnabled = labAnimations.enabled;
@@ -267,6 +278,20 @@ export class LabRenderer {
       this.animationPulseUntil = 0;
     }
   }
+  setActionGuideBody(index) {
+    this.actionGuideBody = index;
+    this.refreshActionGuides();
+  }
+  refreshActionGuides() {
+    if (!this.actionEffects) return;
+    const text = this.actionEffects.updateGuides(
+      this.actionGuideBody,
+      this.actionGuidesEnabled,
+    );
+    if (text !== this.actionReadout.textContent)
+      this.actionReadout.textContent = text;
+    this.actionReadout.hidden = !text;
+  }
   pulseAnimation() {
     this.animationPulseUntil = performance.now() + 120;
   }
@@ -283,6 +308,8 @@ export class LabRenderer {
     this.channels = channels;
     this.state = null;
     this.action = null;
+    this.actionGuideBody = undefined;
+    this.actionReadout.hidden = true;
     this.flightMode = flightMode(scene);
     this.top = false;
     this.size = scene.size || [64, 44];
@@ -313,6 +340,11 @@ export class LabRenderer {
       this.bodyLayer,
       this.bodyGroup,
       this.tethers,
+    );
+    this.actionEffects = new ActionEffects(
+      this.bodyLayer,
+      this.bodyGroup,
+      this.style,
     );
     this.food = this.worldDynamics.pickups;
     this.setAnimationsEnabled(this.animationsEnabled);
@@ -436,7 +468,7 @@ export class LabRenderer {
     const environment = laboratoryEnvironment(this.renderer, style);
     const bodyGroup = new T.Group();
     const tetherGroup = new T.Group();
-    let presentation, bodyLayer, worldDynamics;
+    let presentation, bodyLayer, worldDynamics, actionEffects;
     try {
       if (this.config) {
         presentation = this.makeStatic(this.config, style);
@@ -455,6 +487,7 @@ export class LabRenderer {
           bodyGroup,
           tetherGroup,
         );
+        actionEffects = new ActionEffects(bodyLayer, bodyGroup, style);
         bodyLayer.setAnimationsEnabled(this.animationsEnabled);
         worldDynamics.setAnimationsEnabled(this.animationsEnabled);
         if (this.state) {
@@ -500,6 +533,7 @@ export class LabRenderer {
         dispose(this.tethers);
         this.tethers.add(tetherGroup);
         this.worldDynamics = worldDynamics;
+        this.actionEffects = actionEffects;
         this.food = worldDynamics.pickups;
         if (this.state) this.update(this.state, this.action);
       },
@@ -558,6 +592,8 @@ export class LabRenderer {
       this.canvas.clientHeight,
     );
     this.bodyLayer.updateLod(this.camera, this.canvas.clientHeight);
+    this.actionEffects?.update();
+    this.refreshActionGuides();
     this.static.traverse((object) => {
       if (!object.userData.refinery) return;
       const pixels =
@@ -792,6 +828,8 @@ export class LabRenderer {
     this.inputController.abort();
     this.unsubscribeStyle();
     this.unsubscribeAnimations();
+    this.unsubscribeActionGuides();
+    this.actionReadout.remove();
     this.canvas.removeEventListener(
       "webglcontextrestored",
       this.restoreContext,
@@ -836,6 +874,11 @@ export class LabRenderer {
       }
       animationCpuMs = performance.now() - animationStart;
     }
+    // Static action cues also follow authoritative state with animation off.
+    // Versioning skips uploads when neither pose nor visibility changed.
+    this.actionEffects?.update();
+    if (this.actionReadout && this.actionEffects)
+      this.actionReadout.hidden = !this.actionEffects.guides.visible;
     this.renderer.render(this.world, this.camera);
     const previous = this.performance || {};
     this.performance = {

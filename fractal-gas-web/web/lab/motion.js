@@ -58,6 +58,49 @@ export class MotionRecording {
     this.length = 0;
     this.chunks = [];
     this.segments = [];
+    this.rewardChanges = [];
+  }
+  rewardConfiguration(frame = this.length - 1) {
+    const change = this.rewardChanges.findLast((entry) => entry.frame <= frame);
+    return (
+      change || { scene: this.scene, settings: this.settings, root: this.root }
+    );
+  }
+  rewardConfigurationForRoot(root, decision = Infinity) {
+    const sameScene = (candidate) =>
+      root.subarray(8, 16).every((v, i) => v === candidate.root[8 + i]);
+    return (
+      this.rewardChanges.findLast(
+        (change) =>
+          sameScene(change) &&
+          (change.decision == null || change.decision < decision),
+      ) ||
+      (sameScene(this)
+        ? { scene: this.scene, settings: this.settings, root: this.root }
+        : undefined)
+    );
+  }
+  addRewardChange(change) {
+    this.rewardChanges.push(structuredClone({ ...change, frame: this.length }));
+  }
+  restoreRewardChanges(changes = []) {
+    if (!Array.isArray(changes)) throw new Error("Invalid reward history");
+    for (const [i, change] of changes.entries()) {
+      if (
+        !Number.isInteger(change.frame) ||
+        change.frame < 0 ||
+        change.frame >= this.length ||
+        (i && change.frame <= changes[i - 1].frame) ||
+        !Number.isInteger(change.tick) ||
+        change.tick < 0 ||
+        !change.scene ||
+        !change.settings ||
+        !change.coefficients
+      )
+        throw new Error("Invalid reward change boundary");
+      new MotionRecording(this.info, change.root, this.dt);
+    }
+    this.rewardChanges = structuredClone(changes);
   }
   get bytes() {
     return this.length * this.frameBytes + this.root.length;

@@ -1,5 +1,7 @@
 // Scene archetypes are portable data, shared by native physics and rendering.
 // Physics overlays are shallow; shape arrays replace inherited arrays in full.
+export const VEHICLE_TYPES = ["rocket", "drone", "kart", "harvester"];
+
 export function resolveAgentTypes(definitions = {}) {
   if (
     !definitions ||

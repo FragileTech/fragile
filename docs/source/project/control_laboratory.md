@@ -737,7 +737,7 @@ paths, the future-state cloud, tethers, and collision geometry independently.
 :::{div} feynman-added
 | Preset | Experiment |
 |---|---|
-| Ants & drops | Joint control of 1–128 harvesters or drones, defaulting to 5 harvesters. Each of the 24 pickups returns at a seeded random playable position three simulation seconds after collection, indefinitely. |
+| Ants & drops | Joint control of 1–128 rockets, drones, karts or harvesters, defaulting to 5 harvesters. Each of the 24 pickups returns at a seeded random playable position three simulation seconds after collection, indefinitely. |
 | Asteroid harvesting | Attach cargo and deliver it through an arena with obstacles and gravity. |
 | Tandem flight | Coordinate two bodies through sequential gates with a formation reward. |
 | Collaborative mining | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. |

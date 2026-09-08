@@ -344,7 +344,8 @@ export class WorldDynamics {
           );
       }
       if (thrust) {
-        thrust.visible = active && playing && power > 0.01;
+        thrust.visible =
+          !this.bodyLayer.commands && active && playing && power > 0.01;
         thrust.position
           .copy(source.position)
           .add(

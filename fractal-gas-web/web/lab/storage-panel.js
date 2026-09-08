@@ -127,6 +127,8 @@ export class StoragePanel {
         })
       : new MotionRecording(info, root, dt);
     r.channels = channels;
+    r.scene = structuredClone(getScene());
+    r.settings = structuredClone(getSettings());
     return r;
   }
   async import(file) {

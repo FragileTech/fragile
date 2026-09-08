@@ -10,6 +10,17 @@ import { labAnimations } from "./animations.js";
 import { installAnimationControls } from "./animation-controls.js";
 import { worldCatalog } from "./visuals/world-catalog.js";
 import { animateWorld } from "./visuals/world.js";
+import { actionLayout, createActionBinding } from "./actions.js";
+import { resolveAgentTypes } from "./agent-types.js";
+import { ActionEffects } from "./visuals/action-effects.js";
+import {
+  labActionGuides,
+  installActionGuideControls,
+} from "./action-guides.js";
+
+const catalogResponse = await fetch("./agent-catalog.json");
+if (!catalogResponse.ok) throw new Error("Could not load actuator catalog");
+const agentCatalog = resolveAgentTypes(await catalogResponse.json());
 
 const canvas = document.getElementById("asset-world");
 const renderer = new T.WebGLRenderer({ canvas, antialias: true });
@@ -17,6 +28,7 @@ renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = T.ACESFilmicToneMapping;
 const world = new T.Scene();
 const camera = new T.OrthographicCamera(-1.5, 1.5, 1, -1, 0.01, 50);
+const cameraOffset = new T.Vector3();
 camera.up.set(0, 0, 1);
 const holder = new T.Group();
 world.add(holder);
@@ -36,6 +48,16 @@ let center = new T.Vector3(0, 0, 0.4),
   modelSpan = 2;
 const select = document.getElementById("vehicle");
 const playButton = document.getElementById("animate-parts");
+const variant = document.getElementById("actuator-variant");
+const sliderPanel = document.getElementById("action-sliders");
+const guideReadout = document.getElementById("action-guide-readout");
+let binding,
+  actionEffects,
+  previewLayer,
+  actionValues,
+  actionChannels = [];
+const rememberedActions = new Map();
+const sliderControls = [];
 let previewPlaying = false,
   previewTime = 0,
   lastTime;
@@ -62,7 +84,105 @@ function resetPreview() {
   motion.enabled = motion.playing = false;
   animateAgent(parts, motion);
   if (model) animateWorld(model, 0, { enabled: false });
+  refreshActionPresentation();
 }
+function refreshActionPresentation() {
+  if (!binding) return;
+  motion.commands = binding.sample(actionValues);
+  animateAgent(parts, motion);
+  actionEffects?.update();
+  guideReadout.textContent =
+    actionEffects?.updateGuides(0, labActionGuides.enabled) || "";
+  guideReadout.hidden = !labActionGuides.enabled;
+}
+function prepareActuator(style) {
+  actionEffects?.dispose();
+  actionEffects = previewLayer = binding = undefined;
+  motion.commands = undefined;
+  sliderPanel.replaceChildren();
+  sliderControls.length = 0;
+  const typeName = select.value === "rocket" ? variant.value : select.value;
+  const definition = agentCatalog.get(typeName);
+  document.getElementById("action-preview").hidden = !definition;
+  document.getElementById("actuator-variant-label").hidden =
+    select.value !== "rocket";
+  if (!definition) {
+    guideReadout.hidden = true;
+    return;
+  }
+  const body = { ...definition.physics, visual: { ...definition.visual } };
+  actionChannels = actionLayout({ bodies: [body] });
+  actionValues = rememberedActions.get(typeName);
+  if (!actionValues) {
+    actionValues = new Float32Array(actionChannels.length);
+    rememberedActions.set(typeName, actionValues);
+  }
+  binding = createActionBinding(actionChannels, body, 0);
+  motion.commands = binding.sample(actionValues);
+  previewLayer = {
+    models: [model],
+    controlled: [0],
+    commands: [motion.commands],
+    bodies: [body],
+    presentations: [parts.pose],
+    inView: [true],
+    active: [true],
+  };
+  actionEffects = new ActionEffects(previewLayer, holder, style);
+  document.getElementById("actuator-kind").textContent = {
+    vector: "Thrust and torque",
+    kart: "Drive, steering and brake",
+    holonomic: "Planar force and torque",
+    thrusters: "Independent thruster commands",
+  }[body.actuator.kind];
+  actionChannels.forEach((channel, index) => {
+    const label = document.createElement("label");
+    const name = channel.name.startsWith("thruster_")
+      ? `Thruster ${Number(channel.name.slice(9)) + 1}`
+      : channel.name.replaceAll("_", " ").replace(/^./, (c) => c.toUpperCase());
+    const title = document.createElement("span");
+    title.textContent = name;
+    const value = document.createElement("output");
+    const input = document.createElement("input");
+    input.type = "range";
+    input.id = `preview-${channel.name}`;
+    input.min = channel.low;
+    input.max = channel.high;
+    input.step = 0.01;
+    input.value = actionValues[index];
+    input.setAttribute("aria-label", name);
+    value.htmlFor = input.id;
+    const update = () => {
+      actionValues[index] = Number(input.value);
+      value.textContent = Number(input.value).toFixed(2);
+      input.setAttribute("aria-valuetext", value.textContent);
+    };
+    update();
+    input.addEventListener("input", () => {
+      update();
+      refreshActionPresentation();
+    });
+    sliderControls.push({ input, update });
+    label.append(title, value, input);
+    sliderPanel.append(label);
+  });
+  refreshActionPresentation();
+}
+variant.addEventListener("change", () => {
+  if (model) prepareActuator(labStyle.current);
+});
+for (const [id, maximum] of [
+  ["action-neutral", false],
+  ["action-max", true],
+])
+  document.getElementById(id).addEventListener("click", () => {
+    sliderControls.forEach(({ input, update }, index) => {
+      input.value = maximum ? actionChannels[index].high : 0;
+      update();
+    });
+    refreshActionPresentation();
+  });
+labActionGuides.subscribe(refreshActionPresentation);
 function syncPlayback() {
   playButton.disabled = !labAnimations.enabled;
   playButton.textContent = previewPlaying
@@ -135,7 +255,7 @@ function poseCamera() {
   camera.position
     .copy(center)
     .add(
-      new T.Vector3(
+      cameraOffset.set(
         modelSpan * 1.5 * Math.cos(angle) * Math.sin(turn),
         -modelSpan * 1.5 * Math.cos(angle) * Math.cos(turn),
         modelSpan * 1.5 * Math.sin(angle),
@@ -154,6 +274,8 @@ function prepare(style) {
       disposeGroup(next);
     },
     commit() {
+      actionEffects?.dispose();
+      actionEffects = binding = undefined;
       disposeGroup(holder);
       environment?.dispose();
       environment = nextEnvironment;
@@ -183,6 +305,7 @@ function prepare(style) {
         holder.add(helper);
       }
       parts = animatedParts(model, { kind: select.value, style });
+      prepareActuator(style);
       resetPreview();
       const name = select.selectedOptions[0].text;
       document.getElementById("asset-title").textContent = name;
@@ -264,13 +387,12 @@ function animate(time) {
       lastTime === undefined ? 0 : Math.min((time - lastTime) / 1000, 0.05);
     previewTime += dt;
     motion.time = motion.idleTime = previewTime;
-    motion.speed = 0.4 + Math.sin(previewTime * 0.7) * 0.18;
-    motion.thrust = 0.5 + Math.sin(previewTime * 0.7) * 0.2;
-    motion.steer = Math.sin(previewTime * 0.5) * 0.6;
-    motion.wheelTravel += motion.speed * dt;
+    // Actions come only from sliders; playback advances decorative clocks.
+    motion.speed = 0;
     motion.enabled = motion.playing = true;
     animateAgent(parts, motion);
     if (model) animateWorld(model, previewTime);
+    actionEffects?.update();
   }
   lastTime = time;
   poseCamera();
@@ -278,5 +400,6 @@ function animate(time) {
 }
 installStyleControls();
 installAnimationControls();
+installActionGuideControls();
 syncPlayback();
 requestAnimationFrame(animate);

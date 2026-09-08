@@ -1,16 +1,17 @@
 import { configureRocks, rockOptions } from "./rock-scene.js";
-import { configureVehicleCount, vehicleCount } from "./vehicle-scene.js";
+import {
+  configureVehicleCount,
+  configureVehicleType,
+  vehicleCount,
+  vehicleType,
+} from "./vehicle-scene.js";
 import {
   RewardSettings,
   withRewards,
   coefficientValues,
 } from "./reward-settings.js";
+import { ActionSettings, withActionMultipliers } from "./action-settings.js";
 import { treePoseDim, treeWidth } from "./actions.js";
-import {
-  configureAntsScene,
-  antsOptionsFromScene,
-  DEFAULT_ANTS_OPTIONS,
-} from "./ants-scene.js";
 import { bytesOf } from "./motion.js";
 import { ExperimentPanel } from "./experiment-panel.js";
 import { ControllerSettings } from "./controller-settings.js";
@@ -24,6 +25,7 @@ import { installManualControl } from "./manual-control.js";
 import { LabRenderer } from "./renderer.js";
 import { installStyleControls } from "./style-controls.js";
 import { installAnimationControls } from "./animation-controls.js";
+import { installActionGuideControls } from "./action-guides.js";
 import { initHelp } from "../help.js";
 import { Recording, exportRecording, importRecording } from "./archive.js";
 const $ = (id) => document.getElementById(id),
@@ -33,9 +35,11 @@ const renderer = new LabRenderer($("world"), {
 });
 installStyleControls();
 installAnimationControls();
+installActionGuideControls();
 const vehicleCounts = new Map();
+const vehicleTypes = new Map();
 const miningOptions = new Map();
-let antsOptions = { ...DEFAULT_ANTS_OPTIONS },
+let agentCatalog = {},
   presetRequest = 0;
 let worker,
   currentScene,
@@ -89,8 +93,10 @@ const replay = new ReplayPanel({
       $("run-state").textContent = "PAUSED";
     }
   },
-  resume(rows) {
-    worker.postMessage({ type: "resume-motion", rows });
+  resume(rows, configuration) {
+    if (configuration?.scene) {
+      applyRewardUpdate(configuration.scene, coefficientValues(configuration.settings), rows, configuration.root);
+    } else worker.postMessage({ type: "resume-motion", rows });
   },
   async decision(number) {
     if (number === playbackDecision) return;
@@ -179,8 +185,10 @@ const storage = new StoragePanel({
       lastRows: last ? await motion.getRows(motion.length - 1) : undefined,
       lastDecision: last?.decision || 0,
     };
-    applySettings(motion.settings);
-    loadScene(motion.scene);
+    const configuration = motion.rewardConfiguration();
+    importPending.root = configuration.root;
+    applySettings(configuration.settings);
+    loadScene(configuration.scene);
   },
   saveCheckpoint() {
     if (!ready) {
@@ -214,18 +222,35 @@ const controllerSettings = new ControllerSettings(
   $("algorithm"),
   () => loadScene(currentScene),
 );
+const actionSettings = new ActionSettings(
+  $("agent-action-settings"),
+  $("apply-action-settings"),
+  (values) => {
+    if (!ready) return;
+    try {
+      actionSettings.setEnabled(false);
+      const next = withActionMultipliers(currentScene, values);
+      editor.clearHistory();
+      loadScene(next);
+    } catch (e) {
+      actionSettings.setEnabled(true);
+      error(e);
+    }
+  },
+);
 let rewardChangePending;
 let appliedCoefficients = coefficientValues();
+function applyRewardUpdate(scene, coefficients, rows, root, replayBranch) {
+  if (!ready || rewardChangePending) return;
+  rewardChangePending = { scene, coefficients };
+  rewardSettings.setEnabled(false);
+  status("Applying reward settings at the current world state…");
+  worker.postMessage({ type: "update-rewards", scene, coefficients, rows, root, replayBranch });
+}
 const rewardSettings = new RewardSettings($("reward-terms"), (values) => {
   if (!ready || rewardChangePending) return;
   try {
-    rewardChangePending = {
-      scene: withRewards(currentScene, values),
-      coefficients: coefficientValues(values),
-    };
-    rewardSettings.setEnabled(false);
-    status("Applying reward settings at the current world state…");
-    worker.postMessage({ type: "reward-state" });
+    applyRewardUpdate(withRewards(currentScene, values), coefficientValues(values));
   } catch (e) {
     rewardChangePending = undefined;
     error(e);
@@ -288,6 +313,29 @@ function updateViewControls() {
     ? "SCROLL TO ZOOM · SIDE / OVERHEAD TO CHANGE VIEW"
     : "SCROLL TO ZOOM · 2D / 3D TO CHANGE VIEW";
 }
+function updateFlightControl(scene, effective = renderer.flightMode) {
+  const input = $("flight-mode"),
+    label = $("flight-control");
+  const override = scene.environment?.flight;
+  const automatic = override == null;
+  const enabled = automatic ? !!effective : override;
+  input.checked = enabled;
+  input.indeterminate = automatic;
+  input.setAttribute("aria-checked", automatic ? "mixed" : String(enabled));
+  label.dataset.mode = automatic ? "auto" : enabled ? "on" : "off";
+  $("flight-mode-state").textContent = automatic
+    ? "AUTO"
+    : enabled
+      ? "ON"
+      : "OFF";
+}
+function rockWeight() {
+  return 10 ** +$("rock-weight-slider").value;
+}
+function renderRockWeight() {
+  const value = rockWeight();
+  $("rock-weight-value").textContent = `${Number(value.toPrecision(3))}×`;
+}
 function settings() {
   return {
     ...controllerSettings.values(),
@@ -311,6 +359,7 @@ function stop() {
 function loadScene(scene, autoStep = false, continuation = undefined) {
   ++presetRequest;
   rewardChangePending = undefined;
+  $("flight-mode").disabled = true;
   rewardSettings.render(scene, appliedCoefficients);
   rewardSettings.setEnabled(false);
   const isCircuit = scene.environment?.kind === "circuit";
@@ -333,19 +382,16 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     $("hook-stiffness").value = stiffness;
     $("hook-stiffness-slider").value = Math.log10(stiffness + 1);
     $("rock-size").value = rocks.scale;
+    $("rock-weight-slider").value = Math.log10(rocks.weight);
+    renderRockWeight();
     $("rock-count").value = rocks.count;
     $("rock-count-field").hidden =
       scene.rock_options?.collaborative ??
       scene.name === "Collaborative mining";
   }
   $("ants-vehicle-count").value = vehicleCount(scene);
-  const loadedAntsOptions = antsOptionsFromScene(scene);
-  $("ants-controls").hidden = !loadedAntsOptions;
-  if (loadedAntsOptions) {
-    antsOptions = loadedAntsOptions;
-    $("ants-vehicle-type").value = antsOptions.agentType;
-    $("ants-vehicle-count").value = antsOptions.count;
-  }
+  $("ants-vehicle-type").value = vehicleType(scene) || "";
+  $("ants-vehicle-type").disabled = vehicleCount(scene) === 0;
   if (worker) {
     worker.postMessage({ type: "close" });
     const previous = worker;
@@ -360,6 +406,8 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
   currentScene = copy(scene);
   renderer.setAnimationPlayback({ playing: false, seek: true });
   editor.setScene(scene);
+  actionSettings.render(scene);
+  actionSettings.setEnabled(false);
   $("focus").textContent = "Follow agent";
   record = new Recording();
   $("run").disabled = $("step").disabled = true;
@@ -387,27 +435,45 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     if (data.type === "error") {
       rewardChangePending = undefined;
       rewardSettings.setEnabled(ready);
+      actionSettings.setEnabled(ready);
       error(data.message);
       return;
     }
-    if (data.type === "reward-state" && rewardChangePending) {
-      const next = rewardChangePending;
-      appliedCoefficients = next.coefficients;
-      loadScene(next.scene, false, {
-        rows: data.rows,
-        info: currentInfo,
-        running: data.running,
+    if (data.type === "rewards-error") {
+      rewardChangePending = undefined;
+      rewardSettings.setEnabled(ready);
+      status(data.message, true);
+      return;
+    }
+    if (data.type === "rewards-updated") {
+      rewardChangePending = undefined;
+      currentScene = copy(data.scene);
+      editor.updateRewards(currentScene);
+      appliedCoefficients = data.coefficients;
+      rewardSettings.render(currentScene, appliedCoefficients);
+      rewardSettings.setEnabled(true);
+      replay.recording.addRewardChange({
+        scene: currentScene, settings: { ...data.settings, seed: +$("seed").value },
+        coefficients: data.coefficients, root: data.root, tick: data.tick, decision: data.decisions,
       });
+      lastDiagnostics = undefined;
+      playbackDecision = undefined;
+      updateDiagnostics();
+      if (!replay.active) renderer.diagnostics();
+      status("Reward settings applied. World and recording preserved.");
       return;
     }
     if (data.type === "ready") {
       ready = true;
       currentInfo = data.info;
       currentChannels = data.channels;
+      actionSettings.render(currentScene, currentChannels);
       $("controller-label").textContent = settings().algorithm.toUpperCase();
       try {
         renderer.load(currentScene, data.info, data.channels);
         updateViewControls();
+        updateFlightControl(currentScene);
+        $("flight-mode").disabled = false;
         replay.attach(
           importPending?.motion ||
             storage.create(
@@ -423,6 +489,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       }
       $("run").disabled = $("step").disabled = false;
       rewardSettings.setEnabled(true);
+      actionSettings.setEnabled(true);
       $("backend").textContent =
         `${data.threads} ${data.threads === 1 ? "THREAD" : "THREADS"} / WEBASSEMBLY`;
       $("state-size").textContent = `${data.info[4] * 4} BYTES / WORLD`;
@@ -543,7 +610,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     threads: +$("threads").value,
     recordingDecision: importPending?.lastDecision || 0,
     recordingInfo: importPending?.motion?.info,
-    recordingRoot: importPending?.motion?.root,
+    recordingRoot: importPending?.root || importPending?.motion?.root,
     recordingLast: importPending?.lastRows,
     continuationRows: continuation?.rows,
     continuationInfo: continuation?.info,
@@ -683,13 +750,13 @@ async function preset() {
     if (!response.ok) throw new Error("Unable to load scenario");
     const template = await response.json();
     if (request !== presetRequest) return;
-    let scene =
-      scenario === "ants"
-        ? configureAntsScene(template, antsOptions)
-        : configureVehicleCount(
-            template,
-            vehicleCounts.get(scenario) ?? vehicleCount(template),
-          );
+    let scene = vehicleTypes.has(scenario)
+      ? configureVehicleType(template, vehicleTypes.get(scenario), agentCatalog)
+      : template;
+    scene = configureVehicleCount(
+      scene,
+      vehicleCounts.get(scenario) ?? vehicleCount(template),
+    );
     if (rockOptions(scene))
       scene = configureRocks(
         scene,
@@ -714,9 +781,18 @@ $("track").onchange = () => {
   preset();
 };
 $("ants-vehicle-type").onchange = () => {
-  antsOptions.agentType = $("ants-vehicle-type").value;
-  $("scenario").value = "ants";
-  preset();
+  if (!currentScene) return;
+  const input = $("ants-vehicle-type");
+  try {
+    const scene = configureVehicleType(currentScene, input.value, agentCatalog);
+    vehicleTypes.set($("scenario").value, input.value);
+    vehicleCounts.set($("scenario").value, vehicleCount(scene));
+    editor.clearHistory();
+    loadScene(scene);
+  } catch (e) {
+    input.value = vehicleType(currentScene) || "";
+    error(e);
+  }
 };
 $("ants-vehicle-count").onchange = () => {
   const input = $("ants-vehicle-count");
@@ -726,18 +802,24 @@ $("ants-vehicle-count").onchange = () => {
   }
   try {
     const count = +input.value;
-    const loadedAnts = antsOptionsFromScene(currentScene);
-    const scene = loadedAnts
-      ? configureAntsScene(currentScene, { ...loadedAnts, count })
-      : configureVehicleCount(currentScene, count);
+    const scene = configureVehicleCount(currentScene, count);
     vehicleCounts.set($("scenario").value, count);
-    if (antsOptionsFromScene(currentScene)) antsOptions.count = count;
     editor.clearHistory();
     loadScene(scene);
   } catch (e) {
     input.value = vehicleCount(currentScene);
     error(e);
   }
+};
+$("flight-mode").onchange = () => {
+  if (!currentScene) return;
+  const scene = copy(currentScene);
+  scene.environment = {
+    ...(scene.environment || {}),
+    flight: $("flight-mode").checked,
+  };
+  editor.clearHistory();
+  loadScene(scene);
 };
 $("hook-stiffness-slider").oninput = () => {
   const value = +$("hook-stiffness-slider").value;
@@ -749,6 +831,7 @@ $("hook-stiffness").oninput = () => {
     Math.max(0, +$("hook-stiffness").value) + 1,
   );
 };
+$("rock-weight-slider").oninput = renderRockWeight;
 $("apply-rocks").onclick = () => {
   if (!currentScene || !rockOptions(currentScene)) return;
   for (const id of ["rock-size", "rock-count"]) {
@@ -760,6 +843,7 @@ $("apply-rocks").onclick = () => {
     const options = {
       scale: +$("rock-size").value,
       count: +$("rock-count").value,
+      weight: rockWeight(),
       ...(currentScene.tethers?.length
         ? { stiffness: +$("hook-stiffness").value }
         : {}),
@@ -861,6 +945,12 @@ $("replay").onclick = () => {
   if (entry) {
     replay.playback.live();
     stop();
+    const configuration = replay.recording?.rewardConfigurationForRoot(entry.tree.root, entry.decision);
+    if (configuration?.scene) {
+      applyRewardUpdate(configuration.scene, coefficientValues(configuration.settings), undefined,
+        configuration.root, { tree: entry.tree, node: +$("node").value });
+      return;
+    }
     worker.postMessage({
       type: "replay",
       tree: entry.tree,
@@ -926,8 +1016,10 @@ $("import-run").onclick = () =>
         ).decision;
       }
     }
-    applySettings(importPending.settings);
-    loadScene(importPending.scene);
+    const configuration = importPending.motion?.rewardConfiguration();
+    importPending.root = configuration?.root;
+    applySettings(configuration?.settings || importPending.settings);
+    loadScene(configuration?.scene || importPending.scene);
   });
 installManualControl({
   isReady: () => ready,
@@ -947,6 +1039,9 @@ initHelp();
 
 async function loadPresets() {
   try {
+    const catalogResponse = await fetch("./agent-catalog.json");
+    if (!catalogResponse.ok) throw new Error("Unable to load vehicle catalog");
+    agentCatalog = await catalogResponse.json();
     const response = await fetch("./scenario-catalog.json");
     if (!response.ok) throw new Error("Unable to load environment catalog");
     const entries = await response.json();

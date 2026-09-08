@@ -2,6 +2,11 @@ import { loadNative, NativeEngine } from "./native.js";
 import { WorldCapture } from "./motion.js";
 import { acceptPlan, branchActions } from "./timing.js";
 import { TrajectoryCursor } from "./trajectory.js";
+import { prepareRewardEngines } from "./live-rewards.js";
+let updating = false,
+  plannerThreads,
+  stagedPlanner;
+const deferredMessages = [];
 let trajectoryCursor,
   trajectoryRoot,
   selectedReward,
@@ -73,6 +78,7 @@ function publish(extra = {}) {
   );
 }
 function request() {
+  if (updating) return;
   if (busy || trajectoryCursor || !ready || (!running && !single)) return;
   if (isJump() && engine.metrics()[3] > 0) {
     running = single = false;
@@ -145,6 +151,7 @@ function trajectoryTick() {
   request();
 }
 function realtimeTick() {
+  if (updating) return;
   if (isJump()) {
     try {
       trajectoryTick();
@@ -183,11 +190,17 @@ function realtimeTick() {
 }
 self.onmessage = async ({ data }) => {
   try {
+    if (updating && data.type !== "close") {
+      if (data.type === "run") running = data.value;
+      else if (data.type !== "update-rewards") deferredMessages.push(data);
+      return;
+    }
     if (data.type === "init") {
       scene = data.scene;
       settings = data.settings;
       revision = data.revision;
       seed = data.seed;
+      plannerThreads = data.threads;
       decisions = data.recordingDecision || 0;
       mode = data.mode;
       const module = await loadNative(false);
@@ -218,8 +231,11 @@ self.onmessage = async ({ data }) => {
       planner = new Worker(new URL("./planner-worker.js", import.meta.url), {
         type: "module",
       });
-      planner.onerror = (e) => sendError(e.message);
-      planner.onmessage = ({ data: result }) => {
+      planner.onerror = (e) => {
+        if (!updating) sendError(e.message);
+      };
+      const handlePlanner = ({ data: result, currentTarget }) => {
+        if (updating || (currentTarget && currentTarget !== planner)) return;
         try {
           if (result.type === "error") {
             busy = false;
@@ -299,6 +315,7 @@ self.onmessage = async ({ data }) => {
           sendError(error);
         }
       };
+      planner.onmessage = handlePlanner;
       planner.postMessage({
         type: "init",
         scene,
@@ -309,16 +326,120 @@ self.onmessage = async ({ data }) => {
       timer = setInterval(realtimeTick, 8);
       return;
     }
-    if (data.type === "reward-state") {
-      clearTrajectory();
-      const wasRunning = running;
-      running = single = ready = false;
-      revision++;
-      pending = undefined;
-      const rows = engine.states();
-      postMessage({ type: "reward-state", rows, running: wasRunning }, [
-        rows.buffer,
-      ]);
+    if (data.type === "update-rewards") {
+      updating = true;
+      let prepared, candidate;
+      try {
+        prepared = prepareRewardEngines(
+          engine,
+          scene,
+          data.scene,
+          data.coefficients,
+          data.rows,
+          data.root,
+        );
+        const nextSettings = { ...settings, ...prepared.coefficients };
+        candidate = stagedPlanner = new Worker(
+          new URL("./planner-worker.js", import.meta.url),
+          {
+            type: "module",
+          },
+        );
+        await new Promise((resolve, reject) => {
+          const timeout = setTimeout(
+            () => reject(new Error("Reward planner preparation timed out")),
+            30000,
+          );
+          const finish = (error) => {
+            clearTimeout(timeout);
+            if (error) reject(error);
+            else resolve();
+          };
+          candidate.onerror = (e) => finish(new Error(e.message));
+          candidate.onmessage = ({ data: result }) => {
+            if (result.type === "ready") finish();
+            if (result.type === "error") finish(new Error(result.message));
+          };
+          candidate.postMessage({
+            type: "init",
+            scene: prepared.scene,
+            settings: nextSettings,
+            revision: revision + 1,
+            threads: plannerThreads,
+          });
+        });
+        const root = prepared.engine.snapshot();
+        const nextAction = prepared.engine.neutralAction();
+        const nextTick = new Uint32Array(prepared.engine.states().buffer)[0];
+        const nextCapture = new WorldCapture(
+          prepared.engine,
+          (message, transfer) => postMessage(message, transfer),
+        );
+        const packet = nextCapture.packet(1);
+        nextCapture.write(packet, 0, nextAction, decisions);
+        const handler = planner.onmessage;
+        planner.onmessage = null;
+        planner.terminate();
+        engine.dispose();
+        predict.dispose();
+        engine = prepared.engine;
+        predict = prepared.predict;
+        scene = prepared.scene;
+        settings = nextSettings;
+        planner = candidate;
+        candidate.onmessage = handler;
+        candidate.onerror = (e) => {
+          if (!updating) sendError(e.message);
+        };
+        revision++;
+        clearTrajectory();
+        pending = undefined;
+        waveStarted = busy = single = false;
+        action = nextAction;
+        capture = nextCapture;
+        tick = nextTick;
+        postMessage({
+          type: "rewards-updated",
+          scene,
+          coefficients: prepared.coefficients,
+          settings,
+          root,
+          tick,
+          decisions,
+        });
+        postMessage(
+          {
+            type: "motion",
+            packet,
+            label: data.rows
+              ? "Continued from replay · rewards restored"
+              : "Reward settings changed",
+          },
+          [packet.buffer],
+        );
+        if (data.replayBranch)
+          deferredMessages.unshift({ type: "replay", ...data.replayBranch });
+      } catch (error) {
+        candidate?.terminate();
+        prepared?.engine.dispose();
+        prepared?.predict.dispose();
+        // A result may have arrived while preparation suspended its handler.
+        busy = false;
+        revision++;
+        pending = undefined;
+        postMessage({
+          type: "rewards-error",
+          message: String(error.message || error),
+        });
+      } finally {
+        stagedPlanner = undefined;
+        updating = false;
+        nextTime = performance.now();
+      }
+      publish();
+      for (const message of deferredMessages.splice(0))
+        await self.onmessage({ data: message });
+      request();
       return;
     }
     if (data.type === "run") {
@@ -497,6 +618,7 @@ self.onmessage = async ({ data }) => {
     }
     if (data.type === "close") {
       clearInterval(timer);
+      stagedPlanner?.terminate();
       planner?.terminate();
       engine?.dispose();
       predict?.dispose();

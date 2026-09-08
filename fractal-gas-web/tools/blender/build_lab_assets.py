@@ -1573,7 +1573,10 @@ def build_asset(style, kind, render=False):
     studio(high)
     preview = ROOT / "previews" / style
     preview.mkdir(parents=True, exist_ok=True)
-    for name, pos in [("hero", (2.8, -3.4, 2.5)), ("side", (0, -4, 0.9)), ("top", (0, 0, 5))]:
+    views = [("hero", (2.8, -3.4, 2.5)), ("side", (0, -4, 0.9)), ("top", (0, 0, 5))]
+    if kind in {"rocket", "kart", "drone", "harvester"}:
+        views.append(("rear", (-3, -3, 1.8)))
+    for name, pos in views:
         frame_camera(high.scene, pos)
         if render:
             high.scene.render.filepath = str(preview / f"{kind}-{name}.png")

@@ -1199,9 +1199,311 @@ def optimize_small_fittings(builder):
                     modifier.segments = 1
 
 
+def recessed_nozzle(b, name, center, radius, depth, axis="x", direction=-1):
+    """A real open bell with a recessed throat, batched into existing materials."""
+    n = 8 if b.low else 12
+
+    def point(z, r, a):
+        p = [r * math.cos(a), r * math.sin(a), z * direction]
+        if axis == "x":
+            p = [p[2], p[0], p[1]]
+        return tuple(center[i] + p[i] for i in range(3))
+
+    sections = [(-depth, radius * 0.52), (0, radius), (0, radius * 0.82)]
+    vertices = [point(z, r, i * math.tau / n) for z, r in sections for i in range(n)]
+    faces = [
+        (k * n + i, k * n + (i + 1) % n, (k + 1) * n + (i + 1) % n, (k + 1) * n + i)
+        for k in range(2)
+        for i in range(n)
+    ]
+    shell = b.mesh(name + " rolled lip", vertices, faces, "trim")
+    for p in shell.data.polygons:
+        p.use_smooth = p.index < n
+    vertices = [
+        point(z, r, i * math.tau / n)
+        for z, r in [(0, radius * 0.82), (-depth * 0.82, radius * 0.23)]
+        for i in range(n)
+    ]
+    interior = b.mesh(
+        name + " recessed carbon interior",
+        vertices,
+        [(i, (i + 1) % n, (i + 1) % n + n, i + n) for i in range(n)],
+        "dark",
+    )
+    for p in interior.data.polygons:
+        p.use_smooth = True
+    vertices = [point(-depth * 0.83, radius * 0.23, i * math.tau / n) for i in range(n)]
+    b.mesh(
+        name + " deep ignition face", vertices, [tuple(range(n))], "energy" if b.steam else "light"
+    )
+
+
+def rear_brake_hardware(b, x, y, z):
+    """Visible brake locations; animated illumination lives in the shared runtime batch."""
+    # Clear the processor's overlapping armor without extending its native envelope.
+    lens_offset = 0.068 if b.kind == "harvester" and not b.steam else 0.059
+    for side in [-1, 1]:
+        b.box(
+            "Rear brake lamp armored pocket",
+            (x, side * y, z),
+            (0.11, 0.24, 0.13),
+            "dark",
+            bevel=0.015,
+        )
+        b.box(
+            "Rear brake lamp lens",
+            (x - lens_offset, side * y, z),
+            (0.012, 0.18, 0.065),
+            "light",
+            bevel=0,
+        )
+        socket = b.empty(
+            "Rear brake socket L" if side < 0 else "Rear brake socket R",
+            (x - 0.075, side * y, z),
+            b.root,
+        )
+        socket["effectSocket"] = "brake"
+        socket["outwardAxis"] = "-X"
+    # Fixed housing sockets for the shared runtime illumination batch.
+    reverse_pos = (
+        (-1.532, 0, 0.30)
+        if b.kind == "kart"
+        else ((-1.89, 0, 1.3) if b.steam else (-2.17, 0, 0.94))
+    )
+    if b.kind == "kart":
+        drive_pos = (-1.475, 0, 0.76) if b.steam else (-1.44, 0, 0.54)
+    else:
+        drive_pos = (-1.65, 0.15, 2.12) if b.steam else (-2.17, 0, 1.42)
+    for effect, pos in [("reverse", reverse_pos), ("drive", drive_pos)]:
+        socket = b.empty("Rear " + effect + " socket", pos, b.root)
+        socket["effectSocket"] = effect
+        socket["outwardAxis"] = "-X"
+
+
+def mechanical_second_pass(b):
+    """Expose functional mechanisms using the existing draw/material palette."""
+    if b.kind == "rocket":
+        remove(b, "Rear exhaust bell", "Exhaust throat", "Vernier nozzle")
+        for side in [-1, 1]:
+            recessed_nozzle(b, "Main expansion nozzle", (-1.929, side * 0.78, 0.54), 0.31, 0.34)
+            recessed_nozzle(
+                b, "Vernier control nozzle", (0.15, side * 0.45, 0.085), 0.105, 0.15, "z"
+            )
+            b.pipe(
+                "Vernier supply coupling",
+                [(0.15, side * 0.45, 0.30), (0.15, side * 0.39, 0.38)],
+                0.033,
+                "trim",
+            )
+            b.cyl(
+                "Nozzle gimbal trunnion",
+                (-1.59, side * 1.015, 0.54),
+                0.065,
+                0.09,
+                "dark",
+                "y",
+                segments=6,
+            )
+        # Preserve the existing thrust pivots; reduce invisible cone circumference.
+        for obj in list(b.scene.objects):
+            if obj.name.startswith("Exhaust flame"):
+                parent = obj.parent
+                bpy.data.objects.remove(obj, do_unlink=True)
+                b.cyl(
+                    "Tapered exhaust core",
+                    (-0.22, 0, 0),
+                    0.001,
+                    0.44,
+                    "energy" if b.steam else "light",
+                    "x",
+                    0.13,
+                    parent,
+                    segments=8 if b.low else 12,
+                )
+    elif b.kind == "kart":
+        rear_brake_hardware(b, -1.43, 0.29, 0.41)
+        b.cyl("Steering rack housing", (0.47, 0, 0.28), 0.065, 0.53, "dark", "y", segments=8)
+        b.pipe("Steering column lower knuckle", [(0.30, 0, 0.40), (0.47, 0, 0.28)], 0.032, "trim")
+        b.cyl("Rear drive axle", (-1.02, 0, 0.43), 0.065, 1.25, "trim", "y", segments=8)
+        b.cyl(
+            "Rear differential casing",
+            (-1.02, 0, 0.43),
+            0.145,
+            0.27,
+            "dark",
+            "y",
+            segments=12 if not b.low else 8,
+        )
+        for side in [-1, 1]:
+            b.pipe(
+                "Steering tie rod",
+                [(0.47, side * 0.23, 0.28), (0.94, side * 0.59, 0.36)],
+                0.024,
+                "trim",
+            )
+            b.cyl(
+                "Drive axle coupling",
+                (-1.02, side * 0.48, 0.43),
+                0.088,
+                0.095,
+                "dark",
+                "y",
+                segments=8,
+            )
+            b.box(
+                "Rear brake caliper",
+                (-0.87, side * 0.59, 0.56),
+                (0.14, 0.075, 0.15),
+                "trim",
+                bevel=0.01,
+            )
+            if not b.low:
+                b.pipe(
+                    "Brake pressure line",
+                    [
+                        (-1.28, side * 0.36, 0.32),
+                        (-1.14, side * 0.55, 0.31),
+                        (-0.87, side * 0.59, 0.50),
+                    ],
+                    0.014,
+                    "dark",
+                )
+    elif b.kind == "drone":
+        reach = 1.12 if b.steam else 0.83
+        for x in [-0.73, 0.70]:
+            for side in [-1, 1]:
+                b.cyl(
+                    "Rotor lower drive housing",
+                    (x, side * reach, 0.34),
+                    0.145,
+                    0.14,
+                    "dark",
+                    r2=0.10,
+                    segments=8 if b.low else 12,
+                )
+                b.cyl(
+                    "Rotor drive retaining collar",
+                    (x, side * reach, 0.38),
+                    0.15,
+                    0.035,
+                    "trim",
+                    segments=8 if b.low else 12,
+                )
+        for obj in b.scene.objects:
+            if obj.name.startswith("Rotor motor hub"):
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 0:
+                        vertex.co.x *= 0.63
+                        vertex.co.y *= 0.63
+            elif obj.name.startswith("Twisted propeller blade"):
+                for vertex in obj.data.vertices:
+                    vertex.co.z += (vertex.co.x - 0.08) * vertex.co.y * 1.3
+        if not b.steam:
+            remove(b, "Rear vector jet")
+            recessed_nozzle(b, "Rear vector expansion nozzle", (-1.36, 0, 0.49), 0.16, 0.30)
+    elif b.kind == "harvester":
+        rear_brake_hardware(b, -1.819 if b.steam else -2.11, 0.60, 1.13 if b.steam else 0.86)
+        b.cyl(
+            "Protected longitudinal drive shaft",
+            (-0.17, 0, 0.54),
+            0.085,
+            2.42,
+            "trim",
+            "x",
+            segments=8,
+        )
+        for x in [0.93, -0.18, -1.27]:
+            b.cyl(
+                "Heavy transverse drive axle", (x, 0, 0.58), 0.115, 1.63, "trim", "y", segments=8
+            )
+            b.cyl(
+                "Heavy differential housing",
+                (x, 0, 0.58),
+                0.23,
+                0.35,
+                "dark",
+                "y",
+                segments=8 if b.low else 12,
+            )
+            for side in [-1, 1]:
+                b.box(
+                    "Heavy wheel brake caliper",
+                    (x - 0.22, side * 0.73, 0.80),
+                    (0.18, 0.11, 0.23),
+                    "trim",
+                    bevel=0.018,
+                )
+        for side in [-1, 1]:
+            b.pipe(
+                "Intake hydraulic ram",
+                [(0.36, side * 0.82, 1.21), (1.28, side * 0.86, 0.93)],
+                0.055,
+                "dark",
+            )
+            b.pipe(
+                "Intake polished piston",
+                [(1.28, side * 0.86, 0.93), (1.57, side * 0.90, 0.73)],
+                0.032,
+                "trim",
+            )
+
+
+def reclaim_mechanical_detail(b):
+    """Exchange subpixel circumference samples for the functional geometry above."""
+    if b.low:
+        current = {
+            "futuristic": {"rocket": 1338, "kart": 2456, "drone": 1960, "harvester": 4066},
+            "steampunk": {"rocket": 1904, "kart": 2610, "drone": 2288, "harvester": 4318},
+        }
+        b.triangle_budget = current[b.style][b.kind]
+        return
+    for obj in list(b.scene.objects):
+        if obj.type != "MESH":
+            continue
+        old = obj.data
+        vertices, faces = None, None
+        if obj.name.startswith("Coil suspension spring") and len(old.vertices) == 12:
+            r = math.hypot(old.vertices[0].co.x, old.vertices[0].co.y)
+            vertices = [
+                (r * math.cos(j * math.tau / 4), r * math.sin(j * math.tau / 4), z)
+                for z in [old.vertices[0].co.z, old.vertices[6].co.z]
+                for j in range(4)
+            ]
+            faces = [(3, 2, 1, 0), (4, 5, 6, 7)] + [
+                (j, (j + 1) % 4, (j + 1) % 4 + 4, j + 4) for j in range(4)
+            ]
+        elif obj.name.startswith(("Propeller protective shroud", "Lower rotor safety ring")):
+            # Original24 major-circle samples retain every other sector here.
+            if len(old.vertices) == 96:
+                vertices = [
+                    tuple(old.vertices[i * 4 + j].co) for i in range(0, 24, 2) for j in range(4)
+                ]
+                faces = [
+                    (
+                        i * 4 + j,
+                        ((i + 1) % 12) * 4 + j,
+                        ((i + 1) % 12) * 4 + (j + 1) % 4,
+                        i * 4 + (j + 1) % 4,
+                    )
+                    for i in range(12)
+                    for j in range(4)
+                ]
+        if vertices is not None:
+            key = next(k for k, mat in b.mats.items() if mat == old.materials[0])
+            temp = b.mesh(obj.name + " efficient mechanics", vertices, faces, key)
+            obj.data = temp.data
+            for p in obj.data.polygons:
+                p.use_smooth = True
+            bpy.data.objects.remove(temp, do_unlink=True)
+            if old.users == 0:
+                bpy.data.meshes.remove(old)
+
+
 def repair_vehicle_normals(builder):
     """Reorient closed shells after mirrored panels and Y-axis primitives."""
+    mechanical_second_pass(builder)
     optimize_small_fittings(builder)
+    reclaim_mechanical_detail(builder)
     for obj in builder.scene.objects:
         if obj.type != "MESH" or len(obj.data.polygons) < 2:
             continue

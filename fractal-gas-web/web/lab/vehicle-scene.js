@@ -1,9 +1,96 @@
-import { resolveBodies } from "./agent-types.js";
-import { inside, clearance } from "./ants-scene.js";
+import {
+  resolveAgentTypes,
+  resolveBodies,
+  VEHICLE_TYPES,
+} from "./agent-types.js";
+import { inside, clearance, antsOptionsFromScene } from "./ants-scene.js";
 
 export const MAX_VEHICLES = 128;
 export const vehicleCount = (scene) =>
   resolveBodies(scene).filter((body) => body.controlled).length;
+
+// Recognize tuned variants such as racing_kart without rewriting their defaults.
+export function vehicleType(scene) {
+  const vehicles = resolveBodies(scene).filter((body) => body.controlled);
+  const type = vehicles[0]?.visual?.model;
+  const kind = {
+    rocket: "vector",
+    drone: "holonomic",
+    kart: "kart",
+    harvester: "kart",
+  }[type];
+  if (
+    VEHICLE_TYPES.includes(type) &&
+    vehicles.every(
+      (body) =>
+        body.visual?.model === type &&
+        (body.actuator?.kind || "vector") === kind,
+    )
+  )
+    return type;
+}
+
+function updateDescription(scene) {
+  const options = antsOptionsFromScene(scene);
+  // Update the generated fleet prefix without overwriting an edited description
+  // or its cargo/respawn instructions.
+  if (options && typeof scene.description === "string") {
+    const { agentType, count } = options;
+    scene.description = scene.description.replace(
+      /^\d+ (?:rockets?|drones?|karts?|harvesters?)\./,
+      `${count} ${agentType}${count === 1 ? "" : "s"}.`,
+    );
+  }
+  return scene;
+}
+
+// Physical defaults belong to the selected type; instance state and task roles
+// survive a switch. Include engine defaults not normally present in the catalog.
+const vehiclePhysics = [
+  "radius",
+  "vertices",
+  "mass",
+  "inertia",
+  "drag",
+  "angular_drag",
+  "thrust",
+  "torque",
+  "restitution",
+  "friction",
+  "controlled",
+  "flight_capable",
+  "actuator",
+];
+
+export function configureVehicleType(template, agentType, catalog = {}) {
+  if (!VEHICLE_TYPES.includes(agentType))
+    throw new RangeError("Choose Rockets, Drones, Karts or Harvesters");
+  const scene = structuredClone(template);
+  const bodies = resolveBodies(scene);
+  if (!bodies.some((body) => body.controlled))
+    throw new RangeError("This scene has no vehicles to replace");
+  // Imported scenes may omit unused types. Copy missing catalog definitions as
+  // resolved data so exports remain portable, without changing existing types.
+  const available = resolveAgentTypes(catalog);
+  scene.agent_types ||= {};
+  for (const name of VEHICLE_TYPES)
+    if (!Object.hasOwn(scene.agent_types, name) && available.has(name)) {
+      const { extends: parent, ...definition } = available.get(name);
+      scene.agent_types[name] = structuredClone(definition);
+    }
+  const selected = resolveAgentTypes(scene.agent_types).get(agentType);
+  if (!selected?.physics?.controlled)
+    throw new RangeError(`Missing controlled vehicle type: ${agentType}`);
+  scene.bodies = scene.bodies.map((body, i) => {
+    if (!bodies[i].controlled) return body;
+    const next = { ...bodies[i] };
+    for (const key of vehiclePhysics) delete next[key];
+    delete next.visual;
+    next.agent_type = agentType;
+    return next;
+  });
+  return updateDescription(scene);
+}
 
 function radius(body) {
   return body.vertices?.length
@@ -88,5 +175,5 @@ export function configureVehicleCount(template, count) {
     scene.bodies.push(body);
     occupied.push({ ...resolved[source], position: body.position });
   }
-  return scene;
+  return updateDescription(scene);
 }

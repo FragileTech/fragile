@@ -292,6 +292,12 @@ planner to use it. Channel values are dimensionless and clamped to their bounds.
 | `"thrusters"` | `thruster_0`, `thruster_1`, … | One channel per thruster; `[0,1]` normally or `[-1,1]` when reversible. |
 :::
 
+:::{div} feynman-added
+| Field | Default; range | Meaning |
+|---|---|---|
+| `actuator.action_multipliers` | Omitted means `1` for every channel; each value `[0,10]` | Per-channel scale for the compiled action range and the corresponding built-in force, torque, steering, braking, or thruster output. For example, `{"thrust": 3, "torque": 0.5}` gives vector channels `thrust [0,3]` and `torque [-0.5,0.5]`. A value of `0` disables that degree of freedom. |
+:::
+
 ### Kart parameters
 
 :::{div} feynman-added
@@ -496,7 +502,7 @@ and duplicate operations do the corresponding remapping for you.
 In mining scenes, **Hook stiffness (N/m)** adjusts `tethers[].stiffness` for
 the mining hooks. Pause the simulation, change the slider or numeric input, then
 click **Apply rock settings** to restart with the new setting. The same controls
-allow **Rock size** from 0.1× to 2×. Low stiffness lets
+allow **Rock size** from 0.1× to 2× and **Rock weight** from 0.01× to 10×. Low stiffness lets
 the hook stretch like a rubber band; high stiffness keeps its length approximately
 fixed. This remains a spring, so high stiffness is not an exact rope constraint.
 Setting stiffness to zero removes the restoring force but leaves radial damping
@@ -774,8 +780,10 @@ parsing rejects duplicate object keys and non-finite numbers; avoid duplicate ke
 even in the browser, where ordinary JSON parsing keeps the last occurrence. The
 combined action space is limited to
 8192 channels. A registered actuator can expose 1–64 channels and up to 256 initial
-state values; its channels need nonempty names and finite increasing bounds. These
-plugin limits do not enlarge the built-in 32-thruster limit. There may be at most
+state values; plugin channels need nonempty names and finite strictly increasing
+bounds. Built-in action multipliers may reduce a channel to equal zero bounds
+when a degree of freedom is disabled. These limits do not enlarge the built-in
+32-thruster limit. There may be at most
 64 world extensions, each with at most 4096 initial state values and 4096 observation
 values. Combined auxiliary state and extension observations are each limited to
 65536 values, and total world state to 100000 float32 words. Enabled vehicle

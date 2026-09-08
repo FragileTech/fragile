@@ -137,6 +137,7 @@ export function animatedParts(
         scale: part.scale.clone(),
         ancestors: animationAncestors(part, model),
         intake: /intake/i.test(part.name),
+        rotorSide: part.position.y >= 0 ? 1 : -1,
       });
   });
   // Cache independent child branches once. Wheels and their steering carriers
@@ -180,9 +181,24 @@ export function animateAgent(
     mechanicalTime = time,
     throttle = thrust,
     brake = 0,
+    commands,
+    commandsOnly = false,
   },
 ) {
+  if (commands) {
+    thrust = commands.kind === "vector" ? Math.max(0, commands.thrust) : 0;
+    steer = commands.kind === "kart" ? commands.steering : 0;
+    throttle = commands.throttle;
+    brake = commands.brake;
+  }
+  const torque = commands?.torque ?? steer;
   for (const binding of parts) {
+    if (
+      commandsOnly &&
+      binding.part.userData.motion !== "thrust" &&
+      binding.part.userData.motion !== "steer"
+    )
+      continue;
     if (enabled && idleTime != null && !animationVisible(binding)) continue;
     const { part, rotation, scale } = binding;
     part.rotation.copy(rotation);
@@ -190,18 +206,12 @@ export function animateAgent(
     part.visible = true;
     switch (part.userData.motion) {
       case "thrust":
-        part.visible = enabled && thrust > 0.01;
-        part.scale.x = enabled
-          ? scale.x *
-            (0.35 +
-              thrust *
-                (0.85 +
-                  0.1 *
-                    Math.sin(
-                      (idleTime ?? time) *
-                        (parts.style === "steampunk" ? 23 : 45),
-                    )))
-          : scale.x;
+        // Exhaust is an immediate command cue, including when cosmetic motion
+        // is disabled. Its length strictly increases with forward thrust.
+        part.visible = thrust > 0;
+        part.scale.x = scale.x * (0.12 + 1.4 * Math.max(0, thrust));
+        part.scale.y = scale.y * (0.65 + 0.35 * Math.max(0, thrust));
+        part.scale.z = scale.z * (0.65 + 0.35 * Math.max(0, thrust));
         break;
       case "steer":
         part.rotation.z += steer * 0.35;
@@ -216,11 +226,14 @@ export function animateAgent(
             mechanicalTime * (parts.style === "steampunk" ? 1.4 : 2);
         break;
       case "rotor":
-        part.rotation.z += enabled ? (idleTime ?? time) * 32 : 0;
+        part.rotation.z += enabled
+          ? (idleTime ?? time) * (32 + torque * binding.rotorSide * 7)
+          : 0;
         break;
     }
   }
   if (
+    !commandsOnly &&
     parts.presentation &&
     ((enabled && idleTime != null) || parts.cosmeticActive)
   ) {
@@ -235,14 +248,17 @@ export function animateAgent(
     const weight = parts.kind === "harvester" ? 0.4 : 1;
     const bank = active
       ? airborne
-        ? -steer * (drone ? 0.07 : 0.045)
+        ? -(drone && commands?.kind === "holonomic"
+            ? commands.forceY
+            : torque) * (drone ? 0.07 : 0.045)
         : ground
           ? -steer * Math.min(1, Math.abs(speed)) * 0.012 * weight
           : 0
       : 0;
     const pitch = active
       ? airborne
-        ? thrust * 0.025
+        ? (drone && commands?.kind === "holonomic" ? commands.forceX : thrust) *
+          0.025
         : ground
           ? (-throttle + brake * 1.4) * 0.009 * weight
           : 0

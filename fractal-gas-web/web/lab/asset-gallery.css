@@ -92,3 +92,61 @@
     padding: 16px;
   }
 }
+
+.workshop-action-preview {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 24px;
+  background: var(--panel);
+}
+.workshop-action-preview[hidden] {
+  display: none;
+}
+.action-preview-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.action-preview-header label {
+  font-size: 12px;
+}
+.action-preview-header select {
+  margin-left: 8px;
+}
+.workshop-action-preview p {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 8px 0;
+}
+.action-sliders {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.action-sliders label {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 10px;
+  min-width: 150px;
+  flex: 1;
+  font-size: 12px;
+}
+.action-sliders input {
+  width: 100%;
+  grid-column: 1 / -1;
+  accent-color: var(--accent);
+}
+.action-sliders output {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+#action-guide-readout {
+  display: block;
+  font-size: 12px;
+  color: var(--accent);
+  margin-top: 10px;
+}
+#action-guide-readout[hidden] {
+  display: none;
+}

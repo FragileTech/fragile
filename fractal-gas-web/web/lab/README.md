@@ -24,6 +24,12 @@ is used only for rendering.
 
 ## Run the laboratory
 
+Reward **Apply settings** works mid-run: it preserves the world, camera, selection,
+and recording while preparing a new planner. Running experiments resume after a
+brief synchronization pause; paused experiments stay paused. Recording boundaries
+retain the reward weights and coefficients for replay continuation and export.
+Earlier reward values are not recalculated. Failed updates keep the previous settings.
+
 On GitHub Pages the lab is published at `/fragile/lab/`, alongside the arcade
 at `/fragile/`, the documentation portal at `/fragile/docs/`, the lectures at
 `/fragile/docs/theory/`, and the lab guide at `/fragile/docs/lab/`. The Pages
@@ -134,6 +140,9 @@ auto-enable the mode when a controlled body has `flight_capable: true`. Flight
 scenes apply `environment.downward_gravity` (default `9.81 m/s²`) to every body;
 there is no hover assist, so rockets and drones must use their existing actuator
 forces to stay aloft.
+The sidebar's **Flight mode** checkbox sits beside the rock properties: `AUTO`
+preserves capability-based detection, while clicking it forces `ON` or `OFF` and
+reloads the scene paused.
 
 For B bodies, C controlled bodies, T tether slots, P pickups and A optional extension fields:
 
@@ -179,7 +188,7 @@ The files under `scenarios/` are editable examples:
 | Preset | Bodies controlled | Task |
 | --- | ---: | --- |
 | Asteroid harvesting | 1 | Hook polygon ore and deliver it to a base under local gravity |
-| Ants & drops | 1–128 (default 5) | Choose harvesters or drones; three action channels per vehicle and seeded drop respawning |
+| Ants & drops | 1–128 (default 5) | Choose any of the four vehicle types; seeded drop respawning |
 | Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
 | Collaborative mining | 2 | Two elastic tethers carrying the same heavy asteroid |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
@@ -187,15 +196,22 @@ The files under `scenarios/` are editable examples:
 
 ### Ants & drops
 
-Choose **Vehicle type** (Harvesters or Drones) and **Vehicle count** beneath the
-environment selector. The default is 5 harvesters; counts from 1 to 128 are
-supported. These are vehicles in the live world, distinct from the planner's
+Every environment and racing track offers **Vehicle type** (Rockets, Drones,
+Karts or Harvesters) and **Vehicle count** beneath the environment selector.
+Ants & drops defaults to 5 harvesters; counts from 1 to 128 are supported. These are vehicles in the live world, distinct from the planner's
 population of candidate worlds. Each vehicle uses its archetype's physics and model.
+Rockets have two action channels; drones, karts and harvesters have three.
 
-Changing either control rebuilds the original preset, clears the run and editor
-history, and leaves it paused. Reset retains the current scene. Your fleet selection
-persists when switching presets within the same tab; exported scenes and recordings
-store the actual bodies and restore them without regenerating the fleet.
+Changing type replaces the whole fleet’s physics and visuals, preserving the world
+setup, vehicle count, starting positions, rocks, tethers and environment settings.
+Changing count preserves existing vehicles and places additional vehicles in clear
+space. Both controls restart paused and clear run, replay and editor history.
+Reset retains the current scene. Each environment remembers its type selection
+within the tab session; Racing shares its selection across tracks. Existing preset
+defaults remain until a type is explicitly selected. Explicit Flight mode settings
+are preserved; otherwise rockets and drones automatically enable flight.
+Exported scenes and recordings restore their actual bodies without regeneration.
+Mixed or unrecognized fleets show **Mixed / custom** until a standard type is chosen.
 
 There are 24 drop slots. Each collected drop returns at a seeded random playable
 position after three **simulation seconds**, indefinitely—even after the entire
@@ -262,11 +278,16 @@ Actions have shape `[worlds, action_dim]`. Query `engine.channels`, `action_low`
 and `action_high`; dimension and bounds come from compiled actuators. The default
 vector actuator has thrust `[0,1]` and torque `[-1,1]`; karts have signed throttle,
 signed steering, and brake `[0,1]`. Holonomic drives have three signed channels;
-thruster arrays have one bounded channel per independent thruster. The catalog
-includes a three-thruster tug. Kart forces model lateral grip, velocity-dependent
-steering and braking. Positive thrust points along local +X. Position uses metres,
-time seconds, mass kilograms, force newtons, torque N·m and angle radians.
-Physics advances at `dt=1/60` by default, with four fixed substeps.
+thruster arrays have one bounded channel per independent thruster. Each built-in
+actuator also accepts an optional `action_multipliers` object, keyed by channel
+name, with values from `0` to `10`. The multiplier scales that channel's native
+range and corresponding physical output; `0` disables it and omitted values are
+`1`. The Lab exposes these values as per-agent-type sliders under Problem
+properties. The catalog includes a three-thruster tug. Kart forces model lateral
+grip, velocity-dependent steering and braking. Positive thrust points along local
++X. Position uses metres, time seconds, mass kilograms, force newtons, torque N·m
+and angle radians. Physics advances at `dt=1/60` by default, with four fixed
+substeps.
 Actions can repeat for 0–4096 frames; planning uses 1–4096 frames per transition.
 
 The engine implements circles and convex polygon rigid bodies, angular inertia,
@@ -582,13 +603,28 @@ offers Retry.
 
 **Animations** beside the style selector enables vehicle suspension, banking,
 rotors, wheels, engine motion and world effects. Paused scenes keep gentle idle
-motion. Turn it off to stop cosmetic updates; physics, steering, cargo levels,
-pickups and diagnostics continue normally. The preference is remembered across
-Lab tabs and defaults off when your system requests reduced motion. Crowds above
-16 agents update secondary vehicle motion at 30 Hz, and hidden tabs skip it.
-The Workshop starts with its preview paused; **Play animation** enables motion,
-while **Side** and **Top** restore a still inspection pose. The master switch
-also controls previews.
+motion. Turning it off freezes decorative motion and skips its update loops.
+Static thrust and independent-jet cues, steering, and reverse/brake lamps still
+follow current commands; physics, cargo levels, pickups and diagnostics continue
+normally. The preference is remembered across Lab tabs and defaults off when your
+system requests reduced motion. Crowds above 16 agents update secondary vehicle
+motion at 30 Hz, and hidden tabs skip it.
+
+**Action guides** defaults off and remembers your explicit choice across Lab
+tabs. It shows signed command arrows and a numeric readout for the selected
+controlled body, falling back to the first controlled body. Percentages express
+commands relative to each channel's configured action limits, not measured forces.
+Guides remain available with animations off.
+
+The Workshop starts with neutral actuator sliders and its preview paused. Sliders
+use the selected asset's catalog actuator; rocket variants expose vector
+thrust/torque or individual thrusters. **Neutral** sets every channel to zero and
+**Max** sets each to its upper bound. Static action cues update while animations
+are off. **Play animation** advances decorative motion using those fixed commands;
+it does not simulate physics or invent changing inputs. **Side** and **Top** reset
+motion while preserving slider values. Values also survive style, detail and asset
+changes within the workshop session. The master **Animations** switch controls
+preview playback.
 
 **Models** opens the [Vehicle Workshop](asset-gallery.html), where all eight
 Blender-authored vehicles can be rotated beside their concept sheets and downloaded
@@ -685,6 +721,7 @@ CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-replay-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-experiments-browser.mjs
 CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ node tests/control-racing-browser.mjs
+CONTROL_TEST_URL=http://127.0.0.1:8080/lab/ npm run test:lab-vehicles
 ```
 
 Native tests cover conservation/free flight, downward flight gravity, gravity
@@ -740,4 +777,4 @@ normalized vector to the nearest refinery. Motion recordings accept the appended
 layout and record full, unloading/resumed, and empty events. Legacy recordings
 without cargo retain their original layout.
 
-Mining environments provide **Rock size (×)** from 0.5 to 2. Asteroid harvesting also provides **Rock count** from 1 to 20; collaborative mining keeps one shared rock. Apply rock settings restarts paused and clears the run. Size scales collision geometry and visuals while preserving mass. Delivered rocks respawn in clear space, reusing their existing body slots. These settings are saved with exported scenes.
+Mining environments provide **Rock size (×)** from 0.1 to 2 and **Rock weight (×)** from 0.01 to 10. Asteroid harvesting also provides **Rock count** from 1 to 20; collaborative mining keeps one shared rock. Apply rock settings restarts paused and clears the run. Size scales collision geometry and visuals while weight scales mass. Delivered rocks respawn in clear space, reusing their existing body slots. These settings are saved with exported scenes.

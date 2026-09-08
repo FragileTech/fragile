@@ -33,28 +33,42 @@ include progress, collisions, and formation penalties as well as completed objec
 | Environment | What to try | Main score |
 |---|---|---|
 | **Asteroid harvesting** | Guide the tug, acquire cargo with its automatic tether, and bring ore into the delivery base. | Cargo deliveries |
-| **Ants & drops** | Coordinate 1–128 harvesters or drones collecting food; defaults to 5 harvesters. | Food collected |
+| **Ants & drops** | Coordinate 1–128 rockets, drones, karts, or harvesters collecting food; defaults to 5 harvesters. | Food collected |
 | **Tandem flight** | Guide a pair through ordered checkpoint zones while maintaining formation. | Gates crossed |
 | **Collaborative mining** | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. | Cargo deliveries |
 | **Thinking graphs** | Use the harvesting task to inspect alternative futures, cloning, and ancestry. | Cargo deliveries |
 | **Racing** | Choose a circuit with **Select track**, then drive its checkpoint zones in order. | Laps completed; next checkpoint |
 :::
 
-### Configure Ants & Drops
+### Choose vehicles for any environment
 
 :::{div} feynman-prose
-Choose **Ants & drops**, then use **Vehicle type** and **Vehicle count** beneath
-**Environment**. Choose either **Harvesters** or **Drones** for the whole group and
-enter a whole-number count from 1 to 128. The default is 5 harvesters. Each type
-uses its own physics and visual model, with three action channels per vehicle.
+Use **Vehicle type** and **Vehicle count** beneath **Environment** in any of the six
+environments, including every racing track. Choose **Rockets**, **Drones**, **Karts**,
+or **Harvesters** for the whole group and enter a whole-number count from 1 to 128.
+Presets retain their original defaults until you change them; Ants & drops starts
+with 5 harvesters. Rockets use two action channels per vehicle; the other three
+types use three.
 The count determines how many vehicles move in the arena; **Walkers** determines
 how many possible futures the planner considers.
 
-Changing either vehicle setting rebuilds the original preset, clears the current
-run and editor history, and leaves the world paused. **Reset** retains the current
-scene and vehicle configuration. Switching to another environment and back retains
-your vehicle selections within the tab session.
+Changing type preserves the vehicle count and starting positions, world edits,
+rocks, tethers, rewards, and environment settings, while replacing vehicle physics
+and visuals with the selected type's defaults. Count changes preserve existing
+starting positions and world edits. Either change restarts the scene paused and
+clears the run, replay, and editor history. **Reset** retains the current scene and
+vehicle configuration. Each environment remembers your selected type within the
+tab session; Racing shares its choice across all tracks. Explicit **Flight mode**
+settings remain in force; otherwise rockets and drones automatically use flight.
 
+Loading a saved scene preserves its concrete bodies. A fleet that does not match
+one standard type displays the disabled **Mixed / custom** placeholder. Choosing a
+standard type then replaces the whole fleet's vehicle definitions.
+:::
+
+### Configure Ants & Drops
+
+:::{div} feynman-prose
 The arena has 24 pickup slots. Collect a drop and that slot returns after three
 simulation seconds at a seeded random playable position. This repeats indefinitely:
 an empty arena can mean that all 24 slots are waiting to return. Pausing the world
@@ -74,8 +88,9 @@ Choose **Racing** in **Environment**, then use **Select track** to choose a circ
 The tracks are ordered from Easy to Hard. Start with Violet Circuit or Roots Oval to get a feel for steering. Then try Fearless
 Circuit: a corner now sets up the next one, so entering too quickly can leave you
 poorly placed for the following bend. The Hard circuits add close hairpins or
-obstacles that leave less room to recover. Every circuit uses the same kart physics;
-the difficulty labels describe the route you must drive.
+obstacles that leave less room to recover. Every circuit starts with the same kart
+physics; **Vehicle type** lets you try any of the four vehicles on that route.
+The difficulty labels describe the route you must drive.
 
 The preview beneath **Select track** shows the active scene's outline, difficulty,
 racing direction, and checkpoint count. Historical circuits also link to a reference
@@ -248,7 +263,8 @@ not permanently removed.
    Verify the workshop scene title and its one drone and three pickups. After a
    custom import, **Environment** may still display the previously selected preset
    name; the title and loaded contents identify your current scene. Selecting a
-   preset from that dropdown reloads its original scene.
+   preset from that dropdown reloads its scene with the vehicle choices retained
+   for that environment during the tab session.
 2. Set **Tool** to **Select & move**. Click the pickup at `[16, 8]`. The heading
    should say `pickups / 0`; if it says `bodies / 0`, you selected the drone.
 3. In the numeric fields set **position · 0** to `18`, **position · 1** to `10`, and

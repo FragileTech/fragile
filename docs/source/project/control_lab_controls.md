@@ -40,8 +40,9 @@ of its thrust countering gravity before that thrust can produce upward accelerat
 | **Environment** | Load a preset from the scene catalog. | Rebuilds physics and clears the current in-memory history. |
 | **Flight override** (`environment.flight`) | Omitted/null, `true`, or `false` | Omitted/null auto-detects flight from a controlled `flight_capable` body; `true` enables flight; `false` disables it. |
 | **Downward gravity** (`environment.downward_gravity`) | 9.81 m/s²; scene value | Downward acceleration used in flight mode. A rocket or drone's propulsion must counter it to climb or hover. |
-| **Vehicle type** | Choose **Harvesters** or **Drones** in Ants & Drops. | Rebuilds the original preset with one type for all vehicles, clears run and editor history, and leaves the world paused. Defaults to **Harvesters**. |
-| **Vehicle count** | Set the Ants & Drops vehicle count to a whole number from 1 to 128. | Defaults to 5. Applies the same rebuild as **Vehicle type**; invalid entries leave the scene intact. |
+| **Vehicle type** | Choose **Rockets**, **Drones**, **Karts**, or **Harvesters** in any environment or racing track. | Replaces physics and visuals for all controlled vehicles, preserves the edited world, clears run/replay and editor history, and restarts paused. Each preset keeps its default until you choose a type. |
+| **Vehicle count** | Set the vehicle count to a whole number from 1 to 128 in any environment. | Starts from the preset's count. Rebuilds the scene paused; invalid entries leave the scene intact. |
+| **Problem properties** | Set each controlled agent type's action multiplier from `0×` to `10×`, independently for every compiled degree of freedom. | `1×` keeps the native range; `0×` disables a channel; larger values expand the action range and its built-in physical output. Applying rebuilds the scene paused and saves the values in the scene's agent type properties. |
 | **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
 | **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. Wave Jump preserves its remaining trajectory for resumption. |
 | **Step** | Plan once, then execute one action, or the selected trajectory for Wave Jump; if all final walkers are dead, execute only its first positive-duration action. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
@@ -50,19 +51,36 @@ of its thrust countering gravity before that thrust can produce upward accelerat
 :::
 
 :::{div} feynman-prose
-The Ants & Drops vehicle controls appear beneath **Environment**. Their selections
-persist when switching presets within the tab session, and **Reset** retains the
-current scene. **Vehicle count** counts physical vehicles; **Walkers** counts
-planner candidates, each representing a possible future for the whole group.
+The vehicle controls appear beneath **Environment** in all six environments.
+The tab remembers your chosen type separately for each environment, with one
+shared choice across racing tracks. Changing type keeps the vehicle count and
+starting positions, world edits, rocks, tethers, rewards, and environment settings.
+An explicit **Flight mode** choice remains in effect; automatic mode detects
+flight for rockets and drones. **Reset** retains the current scene.
 
-Mining environments expose **Rock size** from **0.1×** to **2×** in their rock
-settings, allowing rocks down to one tenth of their original size. They also
-expose **Hook stiffness (N/m)**.
+Imported scenes load unchanged. A mixed or unrecognized fleet displays the
+disabled **Mixed / custom** placeholder; choosing a standard type replaces the
+whole controlled fleet. **Vehicle count** counts physical vehicles; **Walkers**
+counts planner candidates, each representing a possible future for the whole group.
+
+Mining environments expose **Rock size** from **0.1×** to **2×** and **Rock weight**
+from **0.01×** to **10×** in their rock settings. Weight can make a rock one
+hundred times lighter or ten times heavier without changing its hull or rendered
+size. They also expose **Hook stiffness (N/m)**.
 The numeric input accepts values from **0** to **1,000,000** and stays synchronized
 with a logarithmic slider. Press **Apply rock settings** to apply the value to every
 tow hook, rebuild the scene, and leave the new world paused. Pending edits do not
 change the running physics. The presets retain their stiffness defaults: **35 N/m**
 for collaborative mining and **25 N/m** for harvesting.
+
+Beside the rock properties, the **Flight mode** control makes that scene choice
+visible without editing JSON. **AUTO** preserves capability-based detection: flight
+is enabled when a controlled body is marked `flight_capable`. From **AUTO**, the
+first click forces the opposite of the current effective mode: **OFF** for an
+auto-detected rocket/drone scene, or **ON** for an auto-planar scene. Subsequent
+clicks toggle the forced **ON**/**OFF** state. Applying either forced choice
+rebuilds the scene and leaves the new world paused. The control changes the mode
+for the rebuilt scene, not the already-running physics.
 
 A low stiffness makes a hook stretch like a rubber band. Raising it makes the
 connection approximately fixed in length, but it remains a spring with finite
@@ -262,11 +280,19 @@ deliveries, checkpoints, formation, and full loads. Those reward weights also
 affect the futures evaluated by the shooting controllers.
 
 Edits stay pending until you press **Apply settings**. This applies the coefficients
-and term weights together, preserves the current physical world, discards previous
-plans, and starts a new recording under the applied settings. An experiment that
-was running resumes; a paused experiment stays paused. Export the previous
-recording first if you want to keep it. Recordings and exports use applied settings,
-so typing a pending value does not relabel an existing run.
+and term weights together. At a physics-frame boundary, the lab prepares replacement
+native engines and a planner, discards old plans, and carries across the current
+world state, tick, cargo, camera, selection, and decision count. A running
+experiment resumes; a paused experiment remains paused. If preparation fails, the
+existing world and settings are retained.
+
+Think of the recording as a continuous film with markers, not a stack of unrelated
+films. Applying a reward configuration adds a configuration and snapshot boundary;
+it does not rewind the world or recalculate earlier rewards. Replay continuation
+restores the historical reward configuration at each such boundary, so the old
+frames keep the rewards they actually recorded. Typing a pending value therefore
+changes neither the running physics nor the existing recording until **Apply
+settings** succeeds.
 
 **Distance travelled²** defaults to weight **1**; set it explicitly to **0** to
 disable the movement bonus. At each physics frame, each controlled vehicle
@@ -429,9 +455,11 @@ the world.
 :::{div} feynman-added
 | Layer/control | Default | Visible meaning |
 |---|---|---|
-| **Animations** (beside **Visual style**) | On; off when the system requests reduced motion and no explicit choice is saved | Enables cosmetic vehicle motion and effects across live views, replay, comparisons, and the workshop. Your explicit choice persists in this browser. Off skips cosmetic animation updates; native movement, cargo amounts, pickup visibility, tether connections, and diagnostics still update. Toggling does not reset the simulation or change recordings. |
+| **Animations** (beside **Visual style**) | On; off when the system requests reduced motion and no explicit choice is saved | Enables cosmetic vehicle motion and effects across live views, replay, comparisons, and the workshop. Your explicit choice persists in this browser. Off freezes decorative motion and skips its updates. Static thrust and individual-jet cues, steering, reverse/brake lamps, and enabled action guides still follow current commands; native movement, cargo amounts, pickup visibility, tether connections, and diagnostics still update. Toggling does not reset the simulation or change recordings. |
+| **Action guides** (beside **Animations**) | Off; explicit choice persists across Lab tabs | Shows signed command arrows and a numeric readout for the selected controlled body, falling back to the first controlled body. Percentages are relative to each channel’s configured action limits, not measured forces. Guides remain available with animations off. |
 | **Pause experiment** with animations on | Gentle idle motion continues | Stops simulation-dependent wheel motion and event progression while retaining small hover and engine motion. Turn **Animations** off for a still presentation of the paused world. |
-| Workshop **Play animation / Pause animation** | Stopped initially | Runs or stops a repeatable asset demonstration. The global **Animations** switch takes precedence; it must be on to play. Selecting **Side** or **Top** stops playback and resets the asset pose for inspection. |
+| Workshop **Play animation / Pause animation** | Stopped initially | Advances or pauses decorative motion using the current actuator sliders; playback does not change commands or simulate physics. The global **Animations** switch must be on to play. Selecting **Side** or **Top** resets decorative motion while preserving slider values. |
+| Workshop actuator sliders and **Neutral / Max** | Neutral commands | Shows the selected asset’s catalog actuator channels with their signed bounds. **Neutral** sets all channels to zero; **Max** sets each to its upper bound. Rocket variants expose vector thrust/torque or individual thrusters. Values persist across asset, style, and detail changes during the workshop session; static action cues update even with animations off. |
 | **Rollout paths** | On | Recorded controlled-body paths, available for FMC and Wave Jump. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
 | **Future-state cloud** | On | Controlled-body positions in the planner's returned world batch, which may be at a partial horizon in deadline mode. |
 | **Tethers & formation** | On | Current tether geometry linking bodies. |

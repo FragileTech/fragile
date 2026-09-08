@@ -22,7 +22,8 @@ const units = {
 };
 const pretty = (key) => key.replaceAll("_", " ");
 const propertyHelp = {
-  position: "World position in meters. Moving an entity changes the initial scene geometry.",
+  position:
+    "World position in meters. Moving an entity changes the initial scene geometry.",
   velocity: "Initial linear velocity in meters per second.",
   angle: "Initial heading in radians.",
   mass: "Body mass in kilograms. Heavier agents accelerate more slowly under the same thrust.",
@@ -30,10 +31,14 @@ const propertyHelp = {
   thrust: "Maximum forward force in newtons for this body.",
   torque: "Maximum turning torque in newton-meters for this body.",
   drag: "Linear damping coefficient. Higher values remove speed faster.",
-  angular_drag: "Angular damping coefficient. Higher values stop rotation faster.",
-  strength: "Gravity-well strength. Positive values attract bodies; negative values repel them.",
-  softening: "Gravity-well softening distance in meters; it avoids a singular force at the center.",
-  wheelbase: "Ground-vehicle wheelbase in meters, used to convert steering into turning.",
+  angular_drag:
+    "Angular damping coefficient. Higher values stop rotation faster.",
+  strength:
+    "Gravity-well strength. Positive values attract bodies; negative values repel them.",
+  softening:
+    "Gravity-well softening distance in meters; it avoids a singular force at the center.",
+  wheelbase:
+    "Ground-vehicle wheelbase in meters, used to convert steering into turning.",
   steering_limit: "Maximum steering angle in radians.",
   lateral_grip: "How strongly a ground vehicle removes sideways slip.",
   yaw_response: "Angular response of a ground vehicle to steering input.",
@@ -114,7 +119,9 @@ export function actionSliders(container, channels) {
     input.type = "range";
     input.min = channel.low;
     input.max = channel.high;
-    input.step = (channel.high - channel.low) / 200;
+    const span = channel.high - channel.low;
+    input.step = span ? span / 200 : "any";
+    input.disabled = !span;
     input.value = action[index];
     input.oninput = () => {
       action[index] = +input.value;

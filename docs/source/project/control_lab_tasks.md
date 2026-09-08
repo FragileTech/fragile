@@ -20,7 +20,7 @@ Keep {doc}`control_lab_controls` nearby for shared settings and diagnostics.
 | Environment and tutorial | What you will learn | Task progress to inspect |
 |---|---|---|
 | {doc}`Asteroid harvesting <control_lab_task_harvest>` | Approach cargo, acquire an automatic tether, and tow a moving rock into a base. | Cargo deliveries; the rocket reaching the base alone does not count. |
-| {doc}`Ants & drops <control_lab_task_ants>` | Start with five harvesters, fill five-drop tanks, and return to the refinery to unload; try drones and other fleet sizes. | Collected food, delivered units, and completed loads; full tanks must empty before collecting again. |
+| {doc}`Ants & drops <control_lab_task_ants>` | Start with five harvesters, fill five-drop tanks, and return to the refinery to unload; try rockets, drones, karts and other fleet sizes. | Collected food, delivered units, and completed loads; full tanks must empty before collecting again. |
 | {doc}`Tandem flight <control_lab_task_tandem>` | Guide two rockets through ordered checkpoints and investigate formation settings. | Gates crossed, together with each rocket's individual checkpoint progress. |
 | {doc}`Collaborative mining <control_lab_task_mining>` | Inspect two tethers and coordinate transport of one heavy cargo. | Cargo deliveries and the rock's arrival at a base. |
 | {doc}`Thinking graphs <control_lab_task_rocket>` | Record candidate futures, inspect ancestry, select a node, and replay an alternative branch. | Deliveries in the physical task; a saved and reconstructed decision for this tutorial. |

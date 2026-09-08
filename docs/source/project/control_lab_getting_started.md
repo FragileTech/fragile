@@ -175,7 +175,7 @@ success criterion specifies exactly what counts as a successful trial.
 | Environment | Controlled bodies | What to try and watch |
 |---|---:|---|
 | {doc}`Asteroid harvesting <control_lab_task_harvest>` | 1 | Hook ore and deliver it to a base; watch local gravity and tether motion. |
-| {doc}`Ants & drops <control_lab_task_ants>` | 1–128 (default 5) | Choose harvesters or drones beneath **Environment**; each vehicle adds three action channels. Collected drops return after three simulation seconds at seeded random positions. |
+| {doc}`Ants & drops <control_lab_task_ants>` | 1–128 (default 5) | Choose Rockets, Drones, Karts or Harvesters beneath **Environment**, as in every environment; rockets add two action channels and other vehicles add three. Collected drops return after three simulation seconds at seeded random positions. |
 | {doc}`Tandem flight <control_lab_task_tandem>` | 2 | Visit ordered checkpoints while maintaining a formation; observe the cost of poor coordination. |
 | {doc}`Collaborative mining <control_lab_task_mining>` | 2 | Haul one heavy asteroid: slow with one rocket, faster with two; delivery immediately replenishes it. |
 | {doc}`Thinking graphs <control_lab_task_rocket>` | 1 | Inspect tethered rocket search, cloning, ancestry, and short continuation risk. |

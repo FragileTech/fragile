@@ -58,7 +58,7 @@ export class ShootingController {
         (c) =>
           !Number.isFinite(c.low) ||
           !Number.isFinite(c.high) ||
-          c.low >= c.high,
+          c.low > c.high,
       )
     )
       throw new Error("Invalid shooting engine descriptor");

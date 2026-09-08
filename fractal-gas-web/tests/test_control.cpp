@@ -419,6 +419,41 @@ TEST_CASE(control_variable_actuator_channels_and_kart_grip) {
   }
 }
 
+TEST_CASE(control_action_multipliers_scale_builtin_channels_and_force) {
+  auto s = Scene::compile(R"({"size":[100,100],"physics":{"dt":0.1,"substeps":1},
+    "bodies":[{"controlled":true,"position":[30,30],"drag":0,"angular_drag":0,
+      "thrust":4,"torque":3,"actuator":{"kind":"vector",
+      "action_multipliers":{"thrust":2,"torque":0.5}}}]})");
+  CHECK(s->channels.size() == 2);
+  CHECK(s->channels[0].low == 0);
+  CHECK(s->channels[0].high == 2);
+  CHECK(s->channels[1].low == -0.5f);
+  CHECK(s->channels[1].high == 0.5f);
+
+  Physics p(s);
+  StateBatch a(1, *s), b(1, *s);
+  a.reset(*s, 0);
+  float action[2] = {2, 0.5f};
+  int32_t frames = 1;
+  StepResult result;
+  p.step(a, nullptr, action, &frames, b, &result);
+  CHECK_CLOSE(velocity(b.row(0), s->layout, 0).x, 0.8f, 1e-5);
+  CHECK_CLOSE(omega(b.row(0), s->layout, 0), 1.2f, 1e-5);
+
+  auto disabled = Scene::compile(R"({"bodies":[{"controlled":true,
+    "actuator":{"kind":"vector","action_multipliers":{"thrust":0,"torque":0}}}]})");
+  CHECK(disabled->channels[0].low == disabled->channels[0].high);
+  CHECK(disabled->channels[1].low == disabled->channels[1].high);
+  CHECK(throws([] {
+    Scene::compile(R"({"bodies":[{"controlled":true,"actuator":{
+      "kind":"vector","action_multipliers":{"thrust":-0.1}}}]})");
+  }));
+  CHECK(throws([] {
+    Scene::compile(R"({"bodies":[{"controlled":true,"actuator":{
+      "kind":"vector","action_multipliers":{"torque":10.1}}}]})");
+  }));
+}
+
 TEST_CASE(control_custom_actuator_state_clones_and_replays) {
   register_actuator(
       "test_accumulator",

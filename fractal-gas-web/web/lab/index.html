@@ -52,9 +52,13 @@
             ></label
           >
         </fieldset>
-        <label class="animation-control" data-help="Decorative motion only. Turn off to freeze cosmetic animation and effects while physics, steering and cargo state remain accurate." title="Decorative motion only; turning off keeps physics and controls active.">
+        <label class="animation-control" data-help="Turn off idle motion, wheel and rotor animation. Static flame size, steering, brake lights and action guides still show current commands; physics and cargo keep updating." title="Stop animated motion while keeping static command cues and physics active.">
           <input type="checkbox" name="animations" aria-label="Animations" />
           <span>Animations</span>
+        </label>
+        <label class="animation-control" data-help="Show signed force and torque guides for the selected vehicle. Guides follow current actions even when decorative animation is off." title="Show force and torque commands for the selected vehicle.">
+          <input type="checkbox" name="action-guides" aria-label="Action guides" />
+          <span>Action guides</span>
         </label>
         <div class="style-feedback">
           <span id="style-status" role="status" aria-live="polite"></span
@@ -79,25 +83,43 @@
             disabled
           ></select
         ></label>
-        <div id="ants-controls" hidden>
-          <label class="field" data-help="Choose the vehicle model and physics for the whole group. Changing this rebuilds Ants & Drops and clears the current run."
+        <div id="ants-controls">
+          <label class="field" data-help="Choose Rockets, Drones, Karts or Harvesters for the whole group in any environment. Changing type preserves the world setup and starting positions, replaces vehicle physics and visuals, and restarts paused with cleared run history."
             >Vehicle type<select id="ants-vehicle-type">
-              <option value="harvester">Harvesters</option>
+              <option value="" disabled>Mixed / custom</option>
+              <option value="rocket">Rockets</option>
               <option value="drone">Drones</option>
+              <option value="kart">Karts</option>
+              <option value="harvester">Harvesters</option>
             </select></label>
         </div>
         <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it restarts the scene and clears the current run."
           >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
         <p class="scenario-description">Changing vehicles restarts the scene paused.</p>
+        <div id="flight-controls">
+          <label id="flight-control" class="check flight-toggle" data-help="Apply downward gravity and use propulsors to stay aloft. When the scene has no explicit override, the lab detects flight automatically from controlled rockets and drones. Clicking this control forces flight on or off and resets the scene paused.">
+            <input id="flight-mode" type="checkbox" aria-describedby="flight-mode-state" disabled />
+            <span>Flight mode</span>
+            <output id="flight-mode-state" for="flight-mode">AUTO</output>
+          </label>
+        </div>
         <div id="rock-controls" hidden>
           <label class="field">Rock size (×)<input id="rock-size" type="number" min="0.1" max="2" step="0.1" value="1" required /></label>
+          <label class="field rock-weight-field" data-help="Multiply each rock's mass from 0.01× (one hundred times lighter) to 10× (ten times heavier). The midpoint, 1×, is the scenario default. Weight changes physics without changing the rock hull or its rendered size.">
+            Rock weight (×)
+            <span class="rock-range">
+              <input id="rock-weight-slider" aria-label="Rock weight slider" type="range" min="-2" max="1" step="0.01" value="0" />
+              <output id="rock-weight-value" for="rock-weight-slider">1×</output>
+            </span>
+            <span class="rock-range-labels" aria-hidden="true"><span>100× lighter</span><span>10× heavier</span></span>
+          </label>
           <label class="field" id="rock-count-field">Rock count<input id="rock-count" type="number" min="1" max="20" step="1" value="5" required /></label>
           <label class="field" id="hook-stiffness-field" data-help="Spring constant shared by all tow hooks, in N/m. Low values stretch like a rubber band; high values approximate a fixed-length towline. A rope can still swing sideways. Zero removes spring tension but retains existing radial damping. Apply rock settings to restart with this value.">Hook stiffness (N/m)
             <input id="hook-stiffness-slider" aria-label="Hook stiffness slider" type="range" min="0" max="6" step="0.01" />
             <input id="hook-stiffness" type="number" min="0" max="1000000" step="any" value="35" required />
           </label>
           <button id="apply-rocks">Apply rock settings</button>
-          <p class="scenario-description">Size changes the rock hull; mass stays the same. Delivered rocks respawn. Applying restarts the scene paused.</p>
+          <p class="scenario-description">Size changes the rock hull; weight changes its mass. Delivered rocks respawn. Applying restarts the scene paused.</p>
         </div>
         <label id="track-control" class="field" hidden
           >Select track<select id="track" aria-label="Select track"></select></label>
@@ -113,10 +135,16 @@
             ↺
           </button>
         </div>
+        <details id="problem-settings" open hidden>
+          <summary>Problem properties</summary>
+          <div id="agent-action-settings"></div>
+          <button id="apply-action-settings">Apply problem settings</button>
+          <p class="scenario-description">Adjust the action magnitude independently for every degree of freedom on each controlled agent type. 1× is the native range; 0× disables a channel and 10× allows ten times the native force or torque. Applying restarts the scene paused.</p>
+        </details>
         <details id="reward-settings" open>
           <summary>Reward terms</summary>
           <div id="reward-terms"></div>
-          <p class="scenario-description">Edit coefficients and reward weights, then Apply settings to keep the current world, replan, and start a new recording. Reward weights are saved with the scene. Distance travelled² defaults to 1; zero disables it.</p>
+          <p class="scenario-description">Edit coefficients and reward weights, then Apply settings to replan mid-run without resetting the world, camera, or recording. Running experiments resume after a brief preparation pause; paused experiments stay paused. Reward changes are marked in the recording. Distance travelled² defaults to 1; zero disables it.</p>
         </details>
         <label class="check keyboard-toggle" data-help="Drive the selected agent directly with the keyboard instead of committing planner actions. W/S throttle, A/D steer, Q/E strafe when supported, and Space brakes."
           >

@@ -216,7 +216,7 @@ async function checkAntsControls(page) {
           .textContent.startsWith(`${count} BODIES`),
       { count, type },
     );
-  assert.equal(await page.locator("#ants-controls").isVisible(), false);
+  assert.equal(await page.locator("#ants-controls").isVisible(), true);
   await page.locator("#scenario").selectOption("ants");
   await ready(5, "harvesters");
   console.log("Ants & Drops: default fleet loaded");
@@ -291,7 +291,7 @@ async function checkAntsControls(page) {
   await page.waitForFunction(
     () =>
       !document.getElementById("run").disabled &&
-      document.getElementById("ants-controls").hidden,
+      document.getElementById("ants-vehicle-type").value === "kart",
   );
   await page.locator("#scenario").selectOption("ants");
   await ready(3, "drones");

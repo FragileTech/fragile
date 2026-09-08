@@ -103,6 +103,9 @@ export function createSceneEditor({
       : "";
     properties.show(resolvedSelection());
     renderer.selectMany(selections.map((s) => s.pos));
+    renderer.setActionGuideBody?.(
+      selected?.key === "bodies" ? selected.i : undefined,
+    );
     onSelection?.();
   }
   $("world").addEventListener("worldclick", (event) => {
@@ -364,6 +367,14 @@ export function createSceneEditor({
     clearHistory() {
       undo = [];
       redo = [];
+    },
+    updateRewards(scene) {
+      // Reward changes are not geometry edits and must not clear selection.
+      for (const target of [currentScene, ...undo, ...redo]) {
+        target.rewards = copy(scene.rewards);
+        if (target.cargo && scene.cargo)
+          target.cargo.full_reward = scene.cargo.full_reward;
+      }
     },
     setScene(scene) {
       currentScene = copy(scene);

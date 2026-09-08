@@ -27,6 +27,9 @@ void builtin_channels(const ActuatorDef&, int, std::vector<ActionChannel>&);
 ActuatorDef compile_builtin(const Json& j) {
   if (j.kind != Json::Null && j.kind != Json::Object)
     throw std::invalid_argument("actuator must be an object");
+  const Json& multipliers = j["action_multipliers"];
+  if (multipliers.kind != Json::Null && multipliers.kind != Json::Object)
+    throw std::invalid_argument("action_multipliers must be an object");
   ActuatorDef a;
   const auto kind = j["kind"].str("vector");
   if (kind == "vector")
@@ -62,7 +65,12 @@ ActuatorDef compile_builtin(const Json& j) {
     throw std::invalid_argument("Unknown actuator kind: " + kind);
   std::vector<ActionChannel> channels;
   builtin_channels(a, 0, channels);
-  for (const auto& c : channels) a.channels.push_back({c.name, c.low, c.high});
+  for (const auto& c : channels) {
+    const float multiplier = parameter(multipliers[c.name], 1, 0, 10);
+    const float low = c.low * multiplier, high = c.high * multiplier;
+    a.channels.push_back({c.name, low == 0 ? 0.f : low,
+                          high == 0 ? 0.f : high});
+  }
   return a;
 }
 void builtin_channels(const ActuatorDef& a, int body,
@@ -97,22 +105,23 @@ ActuatorForce builtin_force(const BodyDef& b, Vec2 v, float theta, float w,
   const auto& a = b.actuator;
   ActuatorForce result;
   Vec2 forward{std::cos(theta), std::sin(theta)}, side = perp(forward);
-  auto signed_input = [&](int i) { return std::clamp(u[i], -1.f, 1.f); };
+  auto bounded_input = [&](size_t i) {
+    return std::clamp(u[i], a.channels[i].low, a.channels[i].high);
+  };
   switch (a.kind) {
     case ActuatorDef::Vector:
-      result.force = forward * (b.thrust * std::clamp(u[0], 0.f, 1.f));
-      result.torque = b.torque * signed_input(1);
+      result.force = forward * (b.thrust * bounded_input(0));
+      result.torque = b.torque * bounded_input(1);
       break;
     case ActuatorDef::Holonomic:
       result.force =
-          (forward * signed_input(0) + side * signed_input(1)) * b.thrust;
-      result.torque = b.torque * signed_input(2);
+          (forward * bounded_input(0) + side * bounded_input(1)) * b.thrust;
+      result.torque = b.torque * bounded_input(2);
       break;
     case ActuatorDef::Thrusters:
       for (size_t i = 0; i < a.thrusters.size(); ++i) {
         const auto& t = a.thrusters[i];
-        float power =
-            std::clamp(u[i], t.reversible ? -1.f : 0.f, 1.f) * t.force;
+        float power = bounded_input(i) * t.force;
         result.force +=
             (forward * t.direction.x + side * t.direction.y) * power;
         result.torque += cross(t.point, t.direction) * power;
@@ -120,14 +129,14 @@ ActuatorForce builtin_force(const BodyDef& b, Vec2 v, float theta, float w,
       break;
     case ActuatorDef::Kart: {
       const float longitudinal = dot(v, forward), lateral = dot(v, side);
-      const float brake = std::clamp(u[2], 0.f, 1.f) * a.brake_deceleration;
+      const float brake = bounded_input(2) * a.brake_deceleration;
       const float braking = std::copysign(
           std::min(std::abs(longitudinal) / h, brake), longitudinal);
       result.force =
-          forward * (b.thrust * signed_input(0) - b.mass * braking) -
+          forward * (b.thrust * bounded_input(0) - b.mass * braking) -
           side * (b.mass * lateral * (1 - std::exp(-a.lateral_grip * h)) / h);
       const float target = longitudinal / a.wheelbase *
-                           std::tan(signed_input(1) * a.steering_limit);
+                           std::tan(bounded_input(1) * a.steering_limit);
       result.torque =
           b.inertia * (target - w) * (1 - std::exp(-a.yaw_response * h)) / h;
     } break;
@@ -176,9 +185,11 @@ ActuatorDef compile_actuator(const Json& j) {
   a.dimensions = uint32_t(a.channels.size());
   if (!a.dimensions || a.dimensions > 64 || a.initial_state.size() > 256)
     throw std::invalid_argument("Invalid actuator plugin dimensions");
+  const bool builtin = name == "vector" || name == "kart" ||
+                       name == "holonomic" || name == "thrusters";
   for (const auto& c : a.channels)
     if (c.name.empty() || !std::isfinite(c.low) || !std::isfinite(c.high) ||
-        c.low >= c.high)
+        c.low > c.high || (!builtin && c.low == c.high))
       throw std::invalid_argument("Invalid actuator bounds");
   for (float v : a.initial_state)
     if (!std::isfinite(v))

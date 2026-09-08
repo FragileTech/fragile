@@ -1,13 +1,13 @@
 {
   "high": {
-    "sourceTriangles": 12384,
+    "sourceTriangles": 11958,
     "drawMeshes": 14,
-    "bytes": 1569748
+    "bytes": 1548460
   },
   "low": {
-    "sourceTriangles": 2544,
+    "sourceTriangles": 2794,
     "drawMeshes": 14,
-    "bytes": 658452
+    "bytes": 648856
   },
   "style": "futuristic",
   "model": "drone"

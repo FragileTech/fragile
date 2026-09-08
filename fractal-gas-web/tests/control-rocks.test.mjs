@@ -23,6 +23,7 @@ for (const name of ["harvest", "mining"]) {
         assert.deepEqual(rockOptions(JSON.parse(JSON.stringify(scene))), {
           scale,
           count,
+          weight: 1,
         });
         const rocks = scene.bodies.filter((b) => b.cargo);
         assert.equal(rocks.length, count);
@@ -70,6 +71,35 @@ for (const name of ["harvest", "mining"]) {
       { scale: 1, count: 1.5 },
     ])
       assert.throws(() => configureRocks(template, options), RangeError);
+  });
+  test(`${name}: weight scales rock mass and survives later edits`, () => {
+    const before = structuredClone(template);
+    const count = name === "mining" ? 1 : 5;
+    const originalRocks = template.bodies
+      .filter((body) => body.cargo)
+      .slice(0, count);
+    const originalHulls = originalRocks.map((body) => body.vertices);
+    for (const weight of [0.01, 0.1, 1, 10]) {
+      const changed = configureRocks(template, { scale: 1, count, weight });
+      assert.deepEqual(rockOptions(changed), { scale: 1, count, weight });
+      const rocks = changed.bodies.filter((body) => body.cargo);
+      for (const [i, rock] of rocks.entries()) {
+        assert.equal(rock.mass, originalRocks[i].mass * weight);
+        assert.deepEqual(rock.vertices, originalHulls[i]);
+      }
+      const reset = configureRocks(changed, { scale: 0.5, count, weight: 1 });
+      assert.deepEqual(rockOptions(reset), { scale: 0.5, count, weight: 1 });
+      for (const [i, rock] of reset.bodies
+        .filter((body) => body.cargo)
+        .entries())
+        assert.ok(Math.abs(rock.mass - originalRocks[i].mass) < 1e-10);
+    }
+    assert.deepEqual(template, before);
+    for (const weight of [0, 0.009, 10.01, Infinity, NaN])
+      assert.throws(
+        () => configureRocks(template, { scale: 1, count, weight }),
+        RangeError,
+      );
   });
   test(`${name}: repeated deliveries replenish every slot and replay exactly`, () => {
     const scene = configureRocks(template, {

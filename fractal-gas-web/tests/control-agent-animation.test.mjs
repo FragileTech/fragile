@@ -12,6 +12,9 @@ function fixture(kind, count = 1) {
   const scene = {
     bodies: Array.from({ length: count }, () => ({
       controlled: true,
+      actuator: {
+        kind: kind === "kart" || kind === "harvester" ? "kart" : "vector",
+      },
       visual: { model: kind },
       position: [0, 0],
     })),
@@ -26,7 +29,7 @@ function fixture(kind, count = 1) {
     state[8 + 2 * count + i] = -1;
   }
   const layer = new BodyLayer(scene, info, new T.Group());
-  layer.update(state, new Float32Array(count * 2).fill(0.5));
+  layer.update(state, new Float32Array(layer.channels.length).fill(0.5));
   layer.testState = state;
   return layer;
 }
@@ -46,7 +49,7 @@ test("cosmetic hover leaves root and shadow anchored; off restores all poses and
   layer.setAnimationsEnabled(false);
   assert.equal(layer.presentations[0].position.z, 0);
   for (const { part, rotation: rest } of layer.animations[0]) {
-    if (part.userData.motion === "thrust") assert.equal(part.visible, false);
+    if (part.userData.motion === "thrust") assert.equal(part.visible, true);
     else assert(part.rotation.equals(rest));
   }
   layer.animate(0.1, 50, { playing: true });
@@ -148,7 +151,10 @@ test("crowd state deliveries retain the last cosmetic pose on throttled frames",
   const angle = wheel.part.rotation.y;
   const pitch = layer.presentations[0].rotation.y;
   new Uint32Array(layer.testState.buffer)[0] = 600;
-  layer.update(layer.testState, new Float32Array(34).fill(0.5));
+  layer.update(
+    layer.testState,
+    new Float32Array(layer.channels.length).fill(0.5),
+  );
   layer.animate(1 / 60, 0, { playing: true });
   assert.equal(wheel.part.rotation.y, angle);
   assert.equal(layer.presentations[0].rotation.y, pitch);

@@ -1,0 +1,777 @@
+{
+  "version": 1,
+  "date": "2026-09-08",
+  "scope": "Vehicle mechanical refinement; no scenery changes",
+  "summary": {
+    "trianglesSaved": 10722,
+    "bytesSaved": 599788,
+    "drawBatchesUnchanged": true,
+    "materialsUnchanged": true,
+    "textureImagesAndPixelsUnchanged": true,
+    "nativeNormalizationAndMotionTagsUnchanged": true
+  },
+  "validation": {
+    "exportSocketTests": 8,
+    "assetTests": 19,
+    "sourceScenes": 16,
+    "sourceAudit": "Blender MCP; final futuristic harvester socket positions rechecked with Blender MCP CLI",
+    "reviewedViews": [
+      "hero",
+      "rear",
+      "side",
+      "top"
+    ],
+    "rootTransformTolerance": 1e-06,
+    "rearLensVisibility": "Blender MCP CLI raycasts hit both futuristic harvester brake lenses first in high and low scenes at x=-2.184, inside original x=-2.185 extent."
+  },
+  "sourceChecks": [
+    {
+      "style": "futuristic",
+      "model": "rocket",
+      "lod": "low",
+      "sockets": 0,
+      "nozzleDepth": [
+        0.27880001068115234,
+        0.27880001068115234
+      ]
+    },
+    {
+      "style": "futuristic",
+      "model": "rocket",
+      "lod": "high",
+      "sockets": 0,
+      "nozzleDepth": [
+        0.27880001068115234,
+        0.27880001068115234
+      ]
+    },
+    {
+      "style": "futuristic",
+      "model": "kart",
+      "lod": "low",
+      "sockets": 4
+    },
+    {
+      "style": "futuristic",
+      "model": "kart",
+      "lod": "high",
+      "sockets": 4
+    },
+    {
+      "style": "futuristic",
+      "model": "drone",
+      "lod": "low",
+      "sockets": 0
+    },
+    {
+      "style": "futuristic",
+      "model": "drone",
+      "lod": "high",
+      "sockets": 0
+    },
+    {
+      "style": "futuristic",
+      "model": "harvester",
+      "lod": "low",
+      "sockets": 4,
+      "cargoCount": 8,
+      "maxBedGap": 5.960464477539063e-08
+    },
+    {
+      "style": "futuristic",
+      "model": "harvester",
+      "lod": "high",
+      "sockets": 4,
+      "cargoCount": 24,
+      "maxBedGap": 5.960464477539063e-08
+    },
+    {
+      "style": "steampunk",
+      "model": "rocket",
+      "lod": "low",
+      "sockets": 0,
+      "nozzleDepth": [
+        0.27880001068115234,
+        0.27880001068115234
+      ]
+    },
+    {
+      "style": "steampunk",
+      "model": "rocket",
+      "lod": "high",
+      "sockets": 0,
+      "nozzleDepth": [
+        0.27880001068115234,
+        0.27880001068115234
+      ]
+    },
+    {
+      "style": "steampunk",
+      "model": "kart",
+      "lod": "low",
+      "sockets": 4
+    },
+    {
+      "style": "steampunk",
+      "model": "kart",
+      "lod": "high",
+      "sockets": 4
+    },
+    {
+      "style": "steampunk",
+      "model": "drone",
+      "lod": "low",
+      "sockets": 0
+    },
+    {
+      "style": "steampunk",
+      "model": "drone",
+      "lod": "high",
+      "sockets": 0
+    },
+    {
+      "style": "steampunk",
+      "model": "harvester",
+      "lod": "low",
+      "sockets": 4,
+      "cargoCount": 8,
+      "maxBedGap": 2.9802322387695312e-08
+    },
+    {
+      "style": "steampunk",
+      "model": "harvester",
+      "lod": "high",
+      "sockets": 4,
+      "cargoCount": 28,
+      "maxBedGap": 5.960464477539063e-08
+    }
+  ],
+  "assets": {
+    "futuristic/rocket-high": {
+      "before": {
+        "triangles": 8022,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1358188,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 7782,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1349348,
+        "texturePixels": 1310720
+      },
+      "sha256": "905841694faf2ed371a13baa4e3ff902135c8a56c7f17f8357f744c1cc9e51fa",
+      "effectSockets": []
+    },
+    "futuristic/rocket-low": {
+      "before": {
+        "triangles": 1338,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 648996,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1253,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 646568,
+        "texturePixels": 1064960
+      },
+      "sha256": "1f34b787c3f34f2bc70f2921f919e482f572a21068b8063304a7f129fe1aa2c8",
+      "effectSockets": []
+    },
+    "futuristic/kart-high": {
+      "before": {
+        "triangles": 17520,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1900940,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 15968,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1823052,
+        "texturePixels": 1310720
+      },
+      "sha256": "bd8531a0b8c45d1328854bcd42515b7aa414647ec45ed1d1dc00d22b23094d10",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.5049998760223389,
+            -0.28999996185302734,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.5049998760223389,
+            0.28999996185302734,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.440000057220459,
+            0,
+            0.5400000214576721
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.5320000648498535,
+            0,
+            0.30000001192092896
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "futuristic/kart-low": {
+      "before": {
+        "triangles": 2456,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 727940,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2274,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 724760,
+        "texturePixels": 1064960
+      },
+      "sha256": "6463825016d085bc4ab8b03ed241bc4f214e32d420226fe9a13d745fe5e2a172",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.5049999952316284,
+            -0.28999996185302734,
+            0.4099999666213989
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.5049999952316284,
+            0.28999996185302734,
+            0.4099999666213989
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.440000057220459,
+            0,
+            0.5400000214576721
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.531999945640564,
+            0,
+            0.30000001192092896
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "futuristic/drone-high": {
+      "before": {
+        "triangles": 12384,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1569748,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 11958,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1548460,
+        "texturePixels": 1310720
+      },
+      "sha256": "4b3cb3ced549d1aeea8ab13b7cca5619c40cadbb6dd6559c4ddd2a450a02d421",
+      "effectSockets": []
+    },
+    "futuristic/drone-low": {
+      "before": {
+        "triangles": 1960,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 658452,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1761,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 648856,
+        "texturePixels": 1064960
+      },
+      "sha256": "a9787e0361cde6ed99e012a2caf66b2f40c1772513352dab0bca5ae09e1c1df2",
+      "effectSockets": []
+    },
+    "futuristic/harvester-high": {
+      "before": {
+        "triangles": 31222,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2750576,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 28850,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2632244,
+        "texturePixels": 1310720
+      },
+      "sha256": "7617707f075371f1801f25db025f4cdf042d788f191c035eed47e017c774d270",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -2.184999704360962,
+            -0.6000000238418579,
+            0.8600000143051147
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -2.184999704360962,
+            0.6000000238418579,
+            0.8600000143051147
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -2.1700000762939453,
+            0,
+            1.4199998378753662
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -2.1700000762939453,
+            0,
+            0.9399999976158142
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "futuristic/harvester-low": {
+      "before": {
+        "triangles": 4066,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 832748,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 3774,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 826168,
+        "texturePixels": 1064960
+      },
+      "sha256": "617bf075ddc82eb946b2b666f96edbc7525bd3083b765407b7e23b92da4d4196",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -2.184999942779541,
+            -0.6000000238418579,
+            0.8600000143051147
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -2.184999942779541,
+            0.6000000238418579,
+            0.8600000143051147
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -2.1700000762939453,
+            0,
+            1.4200000762939453
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -2.1700000762939453,
+            0,
+            0.940000057220459
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "steampunk/rocket-high": {
+      "before": {
+        "triangles": 9672,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1239156,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 9432,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1230304,
+        "texturePixels": 1310720
+      },
+      "sha256": "ccd445a98a1baba360d65673b69958f25c3131593ef9dc64ffcf3b3e27b17e13",
+      "effectSockets": []
+    },
+    "steampunk/rocket-low": {
+      "before": {
+        "triangles": 1904,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 493092,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 1780,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 491384,
+        "texturePixels": 1064960
+      },
+      "sha256": "677141762295669ada42de59c1a5dc3613668e02e19cf990f0749898ee81dace",
+      "effectSockets": []
+    },
+    "steampunk/kart-high": {
+      "before": {
+        "triangles": 19124,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1789664,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 17572,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1711744,
+        "texturePixels": 1310720
+      },
+      "sha256": "f2c6ecc22a98c3f885b8864cb9f4949943747213cfda69e55e542a589a9c867a",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.505000114440918,
+            -0.28999999165534973,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.505000114440918,
+            0.28999999165534973,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.4750001430511475,
+            0,
+            0.7600000500679016
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.5320000648498535,
+            0,
+            0.30000004172325134
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "steampunk/kart-low": {
+      "before": {
+        "triangles": 2610,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 549504,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2428,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 547416,
+        "texturePixels": 1064960
+      },
+      "sha256": "884d689564a2e42325bcbaf951f1468890754a00bd5dd79ab60218f0a1c2c76f",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.505000114440918,
+            -0.28999999165534973,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.505000114440918,
+            0.28999999165534973,
+            0.4099999964237213
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.4750001430511475,
+            0,
+            0.7600000500679016
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.5320000648498535,
+            0,
+            0.30000004172325134
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "steampunk/drone-high": {
+      "before": {
+        "triangles": 15996,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1663296,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 15580,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1588208,
+        "texturePixels": 1310720
+      },
+      "sha256": "c52289ba096e41139bb6add9e2e84f6100dc55f706776cbab4d5e03b709bcde9",
+      "effectSockets": []
+    },
+    "steampunk/drone-low": {
+      "before": {
+        "triangles": 2288,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 585304,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 2088,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 523460,
+        "texturePixels": 1064960
+      },
+      "sha256": "160bfd8809b644c302f585e79ca02b220e50169d390ee891835363ca3423ce15",
+      "effectSockets": []
+    },
+    "steampunk/harvester-high": {
+      "before": {
+        "triangles": 35064,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2770712,
+        "texturePixels": 1310720
+      },
+      "after": {
+        "triangles": 32692,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2652204,
+        "texturePixels": 1310720
+      },
+      "sha256": "3c6d463bec204ab4e59b40ad75ff7abaec4800c863f2b1bfde657575916992ae",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.8939999341964722,
+            -0.6000000238418579,
+            1.1299998760223389
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.8939999341964722,
+            0.6000000238418579,
+            1.1299998760223389
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.6499998569488525,
+            0.15000000596046448,
+            2.119999885559082
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.8899999856948853,
+            0,
+            1.2999999523162842
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    },
+    "steampunk/harvester-low": {
+      "before": {
+        "triangles": 4318,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 657816,
+        "texturePixels": 1064960
+      },
+      "after": {
+        "triangles": 4030,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 652168,
+        "texturePixels": 1064960
+      },
+      "sha256": "37db10457c964a63e5bee6dd4ec38855acc59e2ebe645c7891e39100d17b8183",
+      "effectSockets": [
+        {
+          "effect": "brake",
+          "position": [
+            -1.8940000534057617,
+            -0.6000000238418579,
+            1.1299999952316284
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "brake",
+          "position": [
+            -1.8940000534057617,
+            0.6000000238418579,
+            1.1299999952316284
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "drive",
+          "position": [
+            -1.649999976158142,
+            0.15000000596046448,
+            2.119999885559082
+          ],
+          "outwardAxis": "-X"
+        },
+        {
+          "effect": "reverse",
+          "position": [
+            -1.8899998664855957,
+            0,
+            1.2999999523162842
+          ],
+          "outwardAxis": "-X"
+        }
+      ]
+    }
+  },
+  "sourceSha256": {
+    "futuristic/rocket": "12ffc79d7be113872ae250bd898e3caf55b5670d5df9ff43b48c0f394e412245",
+    "futuristic/kart": "d4e0137da0bf858d858440279f4edf9b461511e54b7640671279fff84c630faf",
+    "futuristic/drone": "ff5daf6ec3e51649aab982849d08cd31d443ede619ce221d473896bde4d6cd3f",
+    "futuristic/harvester": "198710e0f08bf9c8d4576d5c39cb0abc034306c7d5662449d69a596baedf0176",
+    "steampunk/rocket": "5cac27f845ee219d97fb2a441ddc4a69b31d038f962d4fc2c3550ed5f9ad5e67",
+    "steampunk/kart": "429e0da1f533a005667bd73837c63b2203968c6df852432c4a23abe4b56ccfe0",
+    "steampunk/drone": "4566e908dc852fe1d8289add53c4cc98aee869032b4c64282a089caab695ab61",
+    "steampunk/harvester": "8d80014e2ba83ea1fa0ca32fb99cf7b09377a452d209181472bc0cb3ad5b1d8d"
+  }
+}

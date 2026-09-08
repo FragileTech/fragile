@@ -33,29 +33,42 @@ try {
   await page.locator("#scenario").selectOption("mining");
   await ready();
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "35");
+  assert.equal(await page.locator("#rock-weight-slider").inputValue(), "0");
+  assert.equal(await page.locator("#rock-weight-value").textContent(), "1×");
   await page.locator("#rock-size").fill("0.1");
+  await page.locator("#rock-weight-slider").press("Home");
+  assert.equal(await page.locator("#rock-weight-value").textContent(), "0.01×");
   await page.locator("#hook-stiffness").fill("3000");
   await apply();
   let init = await latest();
   assert.equal(init.scene.rock_options.scale, 0.1);
+  assert.equal(init.scene.rock_options.weight, 0.01);
+  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 0.24);
   assert.ok(init.scene.tethers.every((t) => t.stiffness === 3000));
   assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
   await page.locator("#scenario").selectOption("harvest");
   await ready();
+  assert.equal(await page.locator("#rock-weight-slider").inputValue(), "0");
+  assert.equal(await page.locator("#rock-weight-value").textContent(), "1×");
   await page.locator("#scenario").selectOption("mining");
   await ready();
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "3000");
   assert.equal(await page.locator("#rock-size").inputValue(), "0.1");
+  assert.equal(await page.locator("#rock-weight-slider").inputValue(), "-2");
+  assert.equal(await page.locator("#rock-weight-value").textContent(), "0.01×");
   await page.locator("#hook-stiffness-slider").press("Home");
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "0");
   await apply();
   assert.ok((await latest()).scene.tethers.every((t) => t.stiffness === 0));
   await page.locator("#hook-stiffness-slider").press("End");
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "1000000");
+  await page.locator("#rock-weight-slider").press("End");
+  assert.equal(await page.locator("#rock-weight-value").textContent(), "10×");
   await apply();
-  assert.ok(
-    (await latest()).scene.tethers.every((t) => t.stiffness === 1000000),
-  );
+  init = await latest();
+  assert.equal(init.scene.rock_options.weight, 10);
+  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 240);
+  assert.ok(init.scene.tethers.every((t) => t.stiffness === 1000000));
   const n = await count();
   await page.locator("#rock-size").fill("0.09");
   await page.locator("#apply-rocks").click();
@@ -69,7 +82,7 @@ try {
   });
   assert.deepEqual(errors, []);
   console.log(
-    "Mining controls: 0.1× rocks, spring-constant slider, validation, paused reset and persistence passed",
+    "Mining controls: rock size/weight, spring-constant slider, validation, paused reset and persistence passed",
   );
 } finally {
   await browser.close();

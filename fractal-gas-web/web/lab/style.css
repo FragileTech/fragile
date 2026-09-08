@@ -341,6 +341,37 @@ input[type="number"] {
   padding: 8px 9px;
   font: 11px var(--mono);
 }
+.rock-range {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 7px;
+}
+.rock-range input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--accent);
+  background: transparent;
+  border: 0;
+  cursor: ew-resize;
+}
+.rock-range output {
+  min-width: 42px;
+  color: var(--ink);
+  font: 12px var(--mono);
+  text-align: right;
+}
+.rock-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  color: #718096;
+  font: 8px var(--mono);
+}
 select {
   cursor: pointer;
 }
@@ -415,6 +446,27 @@ details .field {
   width: 12px;
   height: 12px;
   margin: 0;
+}
+#flight-controls {
+  margin: 2px 0 4px;
+}
+.flight-toggle {
+  width: 100%;
+  margin: 8px 0;
+}
+.flight-toggle span {
+  margin-right: auto;
+}
+.flight-toggle output {
+  color: var(--gold);
+  font: 9px var(--mono);
+  letter-spacing: 0.8px;
+}
+.flight-toggle[data-mode="off"] output {
+  color: #718096;
+}
+.flight-toggle[data-mode="auto"] output {
+  color: var(--muted);
 }
 
 /* Shared help treatment used by the arcade and the laboratory. The icon is
@@ -958,10 +1010,14 @@ dialog .control-heading {
   .controls-footer {
     display: none;
   }
+  .controls #problem-settings,
   .controls #reward-settings {
     display: block;
     grid-column: 1/-1;
     min-width: 0;
+  }
+  #problem-settings .scenario-description {
+    display: block;
   }
   #reward-settings .scenario-description {
     display: block;
@@ -970,6 +1026,14 @@ dialog .control-heading {
     margin: 0;
   }
   .controls .keyboard-toggle {
+    display: flex;
+    grid-column: 1/-1;
+  }
+  .controls #flight-controls {
+    display: block;
+    grid-column: 1/-1;
+  }
+  .controls #flight-controls .check {
     display: flex;
     grid-column: 1/-1;
   }
@@ -1314,7 +1378,51 @@ dialog .control-heading {
 
 #cargo-status { position: absolute; bottom: 3.2rem; left: 1rem; z-index: 3; padding: .45rem .7rem; background: #111a25e8; color: #f1d8a1; border: 1px solid #86734c; font: 12px monospace; pointer-events: none; }
 
+#problem-settings,
 #reward-settings { grid-column: 1 / -1; }
+#problem-settings[hidden] { display: none !important; }
+.action-type-settings {
+  min-width: 0;
+  margin: 0 0 12px;
+  padding: 10px 10px 2px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #0b121d80;
+}
+.action-type-settings legend {
+  padding: 0 5px;
+  color: var(--ink);
+  font: 10px var(--mono);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+.action-multiplier-field { margin-bottom: 10px; }
+.action-multiplier-inputs {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 6px;
+}
+.action-multiplier-inputs input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--gold);
+  background: transparent;
+  border: 0;
+  cursor: ew-resize;
+}
+.action-multiplier-inputs output {
+  min-width: 35px;
+  color: var(--ink);
+  font: 11px var(--mono);
+  text-align: right;
+}
+#agent-action-settings + button { width: 100%; }
+#problem-settings .scenario-description { margin-top: 12px; }
 .reward-inputs { display: grid; grid-template-columns: minmax(0, 1fr) 5.5rem; gap: .6rem; align-items: center; }
 .reward-inputs input { min-width: 0; width: 100%; }
 #reward-terms > button { margin: .3rem .3rem .3rem 0; }
@@ -1335,3 +1443,22 @@ body #world.panning { cursor: grabbing; }
 }
 
 .editing .camera-hint { display: none; }
+
+.action-guide-readout {
+  position: absolute;
+  left: 16px;
+  bottom: 36px;
+  max-width: calc(100% - 32px);
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--panel) 90%, transparent);
+  color: var(--ink);
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  white-space: pre-line;
+  pointer-events: none;
+  z-index: 5;
+}
+.action-guide-readout[hidden] { display: none; }

@@ -3,12 +3,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:lab-live-rewards": "node tests/control-live-rewards.test.mjs",
+    "test:lab-live-rewards-browser": "node tests/control-live-rewards-browser.mjs",
     "build:lab": "node tools/build-lab.mjs",
-    "test:lab": "node tests/control-wave-jump.test.mjs && node tests/control-web.test.mjs && node tests/control-flight.test.mjs && node tests/control-rewards.test.mjs && node tests/control-rock-reward.test.mjs && node tests/control-rocks.test.mjs && node tests/control-motion.test.mjs && node tests/control-ants.test.mjs && node tests/control-vehicles.test.mjs && node tests/control-cargo.test.mjs && node tests/control-refinery-assets.test.mjs && node tests/control-extensions.test.mjs && node tests/control-shooting.test.mjs && node tests/control-racing.test.mjs && node tests/control-assets.test.mjs && node tests/control-render-budgets.test.mjs && node tests/control-world-assets.test.mjs && node tests/control-animation-preferences.test.mjs && node tests/control-animation-clock.test.mjs && node tests/control-agent-animation.test.mjs && node tests/control-world-animation.test.mjs",
+    "test:lab": "node tests/control-wave-jump.test.mjs && node tests/control-web.test.mjs && node tests/control-flight.test.mjs && node tests/control-rewards.test.mjs && node tests/control-live-rewards.test.mjs && node tests/control-rock-reward.test.mjs && node tests/control-rocks.test.mjs && node tests/control-action-settings.test.mjs && node tests/control-motion.test.mjs && node tests/control-ants.test.mjs && node tests/control-vehicles.test.mjs && node tests/control-cargo.test.mjs && node tests/control-refinery-assets.test.mjs && node tests/control-extensions.test.mjs && node tests/control-shooting.test.mjs && node tests/control-racing.test.mjs && node tests/control-assets.test.mjs && node tests/control-render-budgets.test.mjs && node tests/control-world-assets.test.mjs && node tests/control-animation-preferences.test.mjs && node tests/control-animation-clock.test.mjs && node tests/control-agent-animation.test.mjs && node tests/control-world-animation.test.mjs && node tests/control-action-readability.test.mjs && node tests/control-action-effects.test.mjs && node tests/control-action-guides.test.mjs && node tests/control-vehicle-mechanics.test.mjs",
+    "test:lab-vehicles": "node tests/control-vehicles-browser.mjs",
     "test:lab-camera": "node tests/control-camera-browser.mjs",
     "test:lab-docs": "node tests/control-doc-examples.test.mjs",
     "capture:lab-docs": "node tools/capture-lab-docs.mjs",
-    "test:lab-animations": "node tests/control-animation-browser.mjs && node tests/control-animation-controls-browser.mjs"
+    "test:lab-animations": "node tests/control-animation-browser.mjs && node tests/control-animation-controls-browser.mjs",
+    "test:lab-action-guides": "node tests/control-action-guides-browser.mjs",
+    "test:lab-action-readability": "node tests/control-action-readability-browser.mjs"
   },
   "dependencies": {
     "three": "0.180.0"

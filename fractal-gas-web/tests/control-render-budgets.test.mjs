@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { glbJson } from "./helpers/asset-glb.mjs";
 
-// Freeze the actual exports before the concept-fidelity pass. Absolute model
+// Freeze the accepted export costs, including the refined vehicles. Absolute model
 // limits alone would permit a visual refinement to increase rendering costs.
 const budgets = JSON.parse(
   await readFile(
