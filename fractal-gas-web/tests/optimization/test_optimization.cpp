@@ -362,7 +362,7 @@ TEST_CASE(optimization_perturbation_extension_and_force_direction) {
       },
       config("[]"));
   const auto catalog = JsonReader(discovery_json()).read();
-  CHECK(catalog["perturbations"].array.size() == 3);
+  CHECK(catalog["perturbations"].array.size() == 4);
   auto cfg = config(
       R"({"algorithm":"fmc","benchmark":"quadratic","dimensions":2,"perturbation":"fixed"})");
   Benchmark b(cfg);

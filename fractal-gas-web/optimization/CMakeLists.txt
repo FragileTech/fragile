@@ -12,8 +12,12 @@ add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/perturbation.cpp
   ${OPT_ROOT}/src/optimization/environment.cpp
   ${OPT_ROOT}/src/optimization/gas.cpp
+  ${OPT_ROOT}/src/optimization/gas2017.cpp
   ${OPT_ROOT}/src/optimization/engine.cpp)
 target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core fg_coco)
+target_include_directories(fg_optimization_core SYSTEM PRIVATE
+  ${OPT_ROOT}/third_party/lbfgspp/include ${OPT_ROOT}/third_party/eigen)
+target_compile_definitions(fg_optimization_core PRIVATE EIGEN_MPL2_ONLY EIGEN_DONT_PARALLELIZE EIGEN_DONT_VECTORIZE)
 set_target_properties(fg_optimization_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(fg_optimization_core PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off)
@@ -35,7 +39,8 @@ else()
   add_library(fg_optimization SHARED ${OPT_ROOT}/src/optimization/c_api.cpp)
   add_executable(fg_optimization_tests ${OPT_ROOT}/tests/test_main.cpp
     ${OPT_ROOT}/tests/optimization/test_optimization.cpp
-    ${OPT_ROOT}/tests/optimization/test_coco.cpp)
+    ${OPT_ROOT}/tests/optimization/test_coco.cpp
+    ${OPT_ROOT}/tests/optimization/test_gas2017.cpp)
   target_compile_definitions(fg_optimization_tests PRIVATE
     COCO_FIXTURES="${OPT_ROOT}/tests/optimization/coco-fixtures.json")
   target_include_directories(fg_optimization_tests PRIVATE ${OPT_ROOT}/tests)

@@ -12,6 +12,7 @@
 
 namespace fg::optimization {
 std::unique_ptr<Algorithm> make_euclidean(Benchmark&, const Settings&);
+std::unique_ptr<Algorithm> make_gas2017(Benchmark&, const Settings&);
 // Capture the existing Wave operator's draws without changing its decisions.
 class ObservedCloning final : public FractalCloningOperator {
  public:
@@ -179,6 +180,7 @@ class ExistingSwarm final : public Algorithm {
 };
 static std::map<std::string, Factory>& factories() {
   static std::map<std::string, Factory> f{
+      {"gas", make_gas2017},
       {"euclidean", make_euclidean},
       {"fmc",
        [](Benchmark& b, const Settings& s) {
@@ -203,6 +205,15 @@ static std::map<std::string, Json>& descriptions() {
     const auto catalog = JsonReader(catalog_json()).read();
     for (const auto& entry : catalog["algorithms"].array)
       result.emplace(entry["id"].str(), entry);
+    result.emplace("gas", JsonReader(std::string(R"json({
+      "id":"gas", "name":"GAS (2017)", "velocity":false,
+      "parameters":[
+        {"id":"gas_tabu", "label":"Tabu memory", "type":"boolean", "default":true},
+        {"id":"gas_local_search", "label":"L-BFGS-B local search", "type":"boolean", "default":true},
+        {"id":"gas_local_evaluations", "label":"Evaluations per local search",
+         "type":"integer", "default":200, "min":1, "max":1000000}
+      ]
+    })json")).read());
     return result;
   }();
   return entries;
@@ -242,7 +253,10 @@ Session::Session(const Json& config)
   // Enforce bounded allocations before native or WASM construction.
   uint64_t count =
       settings.algorithm == "graph" ? settings.max_walkers : settings.walkers;
-  if (count * uint64_t(benchmark.d) * 32 > 128 * 1024 * 1024)
+  const uint64_t state_bytes = count * uint64_t(benchmark.d) *
+      (settings.algorithm == "gas" ? 64 : 32) +
+      (settings.algorithm == "gas" ? uint64_t(benchmark.d) * 4096 + count * 256 : 0);
+  if (state_bytes > 128 * 1024 * 1024)
     throw std::invalid_argument(
         "Swarm exceeds 128 MiB state budget; reduce walkers or dimensions");
   if (settings.algorithm == "euclidean" && settings.walkers > 4096 &&
@@ -263,7 +277,15 @@ Session::Session(const Json& config)
     Json off;
     off.kind = Json::Boolean;
     settings.json.object["potential_force"] = off;
+    if (settings.algorithm == "gas") {
+      settings.gas_local_search = false;
+      settings.json.object["gas_local_search"] = off;
+    }
   }
+  if (settings.algorithm == "gas" && settings.max_evaluations &&
+      settings.max_evaluations < uint64_t(settings.walkers) +
+          (settings.gas_local_search ? uint64_t(settings.gas_local_evaluations) : 0))
+    throw std::invalid_argument("Evaluation budget is too small for GAS initialization and local search cap");
   best = settings.worst();
   config_json = stringify(settings.json);
   algorithm = it->second(benchmark, settings);

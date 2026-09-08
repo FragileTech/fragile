@@ -70,10 +70,55 @@ for (const [name, type] of [
         before,
       );
     };
+    await page.locator("#algorithm").selectOption("gas");
+    assert.equal(
+      await page.locator("#perturbation").inputValue(),
+      "gas_adaptive",
+    );
+    assert.equal(await page.locator('[name="gas_tabu"]').isChecked(), true);
+    assert.equal(
+      await page.locator('[name="gas_local_search"]').isChecked(),
+      true,
+    );
+    await page.locator('[name="walkers"]').fill("8");
+    for (const tabu of [false, true])
+      for (const local of [false, true]) {
+        await page.locator('[name="gas_tabu"]').setChecked(tabu);
+        await page.locator('[name="gas_local_search"]').setChecked(local);
+        await apply();
+        await step();
+        assert.equal(await page.locator('[name="gas_tabu"]').isChecked(), tabu);
+        assert.equal(
+          await page.locator('[name="gas_local_search"]').isChecked(),
+          local,
+        );
+      }
+    await page.locator("#benchmark").selectOption("stochastic_gaussian");
+    assert.equal(
+      await page.locator('[name="gas_local_search"]').isDisabled(),
+      true,
+    );
+    assert.match(
+      await page.locator("#gas-local-note").textContent(),
+      /disabled for stochastic/,
+    );
+    await apply();
+    await step();
+    await page.locator("#benchmark").selectOption("rastrigin");
+    await page.locator("#algorithm").selectOption("euclidean");
+    assert.equal(
+      await page.locator('#perturbation option[value="gas_adaptive"]').count(),
+      0,
+    );
+    assert.equal(await page.locator("#perturbation").inputValue(), "gaussian");
+    await apply();
     assert.equal(await page.locator("#record-history").isChecked(), false);
     await step();
     await step();
-    assert.equal(await page.locator("#frame-label").textContent(), "Live · recording off");
+    assert.equal(
+      await page.locator("#frame-label").textContent(),
+      "Live · recording off",
+    );
     assert.equal(await page.locator("#save").isDisabled(), true);
     assert.equal(await page.locator("#timeline").isDisabled(), true);
     await page.locator("#record-history").check();

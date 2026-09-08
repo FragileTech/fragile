@@ -4,6 +4,10 @@ import { frameInfo } from "./native.js";
 // no interpolation or extrapolation invents quality at unobserved budgets.
 export function exportFixedBudgetCSV(recording) {
   const c = recording.config;
+  const gasFields =
+    c.algorithm === "gas"
+      ? ["gas_tabu", "gas_local_search", "gas_local_evaluations"]
+      : [];
   const columns = [
     "evaluations",
     "best",
@@ -18,6 +22,7 @@ export function exportFixedBudgetCSV(recording) {
     "engine",
     "perturbation",
     "perturbation_std",
+    ...gasFields,
   ];
   const rows = [columns];
   let previous = -1;
@@ -38,7 +43,8 @@ export function exportFixedBudgetCSV(recording) {
       c.max_evaluations ?? 0,
       recording.engine,
       c.perturbation ?? "gaussian",
-      c.perturbation_std ?? "",
+      c.perturbation === "gas_adaptive" ? "" : (c.perturbation_std ?? ""),
+      ...gasFields.map((key) => c[key]),
     ]);
   }
   if (rows.length === 1)

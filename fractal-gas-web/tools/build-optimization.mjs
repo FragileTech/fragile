@@ -21,6 +21,17 @@ await copyFile(
   new URL("LICENSE-three.txt", vendor),
 );
 console.log("Optimization Lab renderer bundled.");
+for (const [source, target] of [
+  ["lbfgspp/LICENSE.md", "LBFGSpp-LICENSE.md"],
+  ["lbfgspp/README.fragile.md", "LBFGSpp-NOTICE.md"],
+  ["eigen/COPYING.MPL2", "Eigen-COPYING.MPL2"],
+  ["eigen/COPYING.BSD", "Eigen-COPYING.BSD"],
+  ["eigen/README.fragile.md", "Eigen-NOTICE.md"],
+])
+  await copyFile(
+    new URL(`third_party/${source}`, root),
+    new URL(target, vendor),
+  );
 for (const name of [
   "LICENSE",
   "COPYING",

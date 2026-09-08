@@ -42,3 +42,24 @@ test("CSV rejects recordings without finite objectives", () => {
   const recording = new Recording({ dimensions: 3 });
   assert.throws(() => exportFixedBudgetCSV(recording), /No finite/);
 });
+
+test("GAS CSV identifies feature switches without claiming a fixed adaptive deviation", () => {
+  const recording = new Recording({
+    algorithm: "gas",
+    benchmark: "sphere",
+    dimensions: 2,
+    gas_tabu: false,
+    gas_local_search: true,
+    gas_local_evaluations: 200,
+    perturbation: "gas_adaptive",
+    perturbation_std: 1,
+    seed: 7,
+  });
+  const frame = new Float64Array(12);
+  frame[5] = 20;
+  frame[9] = 0;
+  recording.append(frame);
+  const csv = exportFixedBudgetCSV(recording);
+  assert.match(csv, /"gas_tabu","gas_local_search","gas_local_evaluations"/);
+  assert.match(csv, /"gas_adaptive","","false","true","200"/);
+});

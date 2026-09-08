@@ -2,6 +2,8 @@
 
 ## Optimization Lab
 
+- Add GAS (2017) with objective-adaptive Gaussian jumps, independently switchable tabu memory and bounded L-BFGS-B searches, and shared recording/evaluation-budget support.
+
 - Make history recording opt-in; keep only the live frame by default and enable replay and exports when recording is selected.
 
 - Integrate all 24 COCO BBOB functions from pinned upstream COCO 2.8.2 C source, including shifted and rotated instances, official dimensions, and reference minima.

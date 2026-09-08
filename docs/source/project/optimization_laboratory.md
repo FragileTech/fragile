@@ -61,8 +61,8 @@ from the same seed.
 ## Choose how the swarm explores
 
 :::{div} feynman-prose
-Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, or **Euclidean Gas** under
-**Algorithm**. All five support **Objective → Minimize** and **Maximize**. The
+Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, **Euclidean Gas**, or
+**GAS (2017)** under **Algorithm**. All six support **Objective → Minimize** and **Maximize**. The
 selection score is the negative of the function value for minimization and the
 function value itself for maximization. Surfaces, colors, and the inspector keep
 the raw objective convention: maximizing does not flip the landscape upside down.
@@ -124,7 +124,8 @@ standard deviation matches that variance but does not reproduce the Gaussian
 Ornstein–Uhlenbeck transition law. The perturbation setting does not replace the
 separate **Clone position jitter** control.
 
-The bounded-domain mode marks out-of-bounds walkers as dead. Periodic boundaries
+For Wave, Graph, the planners, and Euclidean Gas, bounded-domain mode marks
+out-of-bounds walkers as dead. GAS uses the retry rule described below. Periodic boundaries
 instead wrap coordinates across the box when enabled. Wrapping changes the
 boundary rule; it does not make an arbitrary benchmark smooth across that seam.
 Wave, Graph, and Euclidean Gas stop when every walker becomes invalid. FMC and
@@ -132,6 +133,105 @@ Wave Jump can use the shared planner's all-dead search fallback while their
 committed position remains valid; an invalid committed position ends the run.
 Reduce the perturbation standard deviation or kinetic step size, review the
 bounds, and apply a reset to recover.
+:::
+
+(sec-optimization-gas-2017)=
+### GAS (2017): adaptive jumps and optional local refinement
+
+:::{div} feynman-prose
+**GAS (2017)** (`gas`) implements General Algorithmic Search from
+[Hernández, Duran, and Amigó, Section 2](https://arxiv.org/pdf/1705.08691).
+It maintains positions, applies flow-based cloning, and proposes random jumps.
+Euclidean Gas has a separate velocity state and BAOAB integration; selecting GAS
+does not enable another kinetic mode of that integrator.
+
+The default perturbation, `gas_adaptive`, gives better walkers smaller jumps.
+For a coordinate whose domain width is 10, a best walker has jump standard
+deviation 0.0001, while a worst walker has standard deviation 1. These are widths
+of random distributions, not fixed jump lengths. A good position can therefore
+be explored finely while other walkers search farther away. Gaussian and uniform
+perturbations remain available as explicit GAS variants; their scale is the
+ordinary **Standard deviation** control, rather than the adaptive domain fraction.
+The adaptive strategy appears only for GAS.
+:::
+
+:::{prf:definition} GAS conventions in Optimization Lab
+:label: def-optimization-gas-conventions
+
+Let $g_i=f(x_i)$ for minimization and $g_i=-f(x_i)$ for maximization. Among finite
+objective values, define the dimensionless normalized objective
+
+$$
+\phi_i=\frac{g_i-\min_j g_j}{\max_j g_j-\min_j g_j},
+$$
+
+with $\phi_i=0$ when all finite values coincide. For a random distinct distance
+companion $j$ and a sampled tabu entry $t_r$, the swarm flow is
+
+$$
+F_i=(1+\phi_i)^2\lVert x_i-x_j\rVert^2\delta_{i,r}^2,
+\qquad
+\delta_{i,r}^2=
+\begin{cases}
+\lVert x_i-t_r\rVert^2,&x_i\ne t_r,\\
+1,&x_i=t_r.
+\end{cases}
+$$
+
+When tabu memory is disabled, omit $\delta_{i,r}^2$. Distances are ordinary
+Euclidean distances, including in periodic mode. For a random distinct cloning
+companion $k$, use $P_{i,k}=\max(0,\min(1,(F_i-F_k)/F_i))$ when $F_i>0$ and
+$P_{i,k}=0$ otherwise. Apply accepted clones simultaneously from a population
+snapshot, then recompute $\phi$.
+
+For coordinate width $L^{(n)}$, the adaptive Gaussian displacement has standard
+deviation $L^{(n)}10^{-5+4\phi_i}$ in coordinate units. This implementation
+interprets the paper's jump parameter as a standard deviation. In bounded mode,
+redraw from the original position, halving the scale after rejection; after 64
+unsuccessful attempts, retain that position. Periodic mode wraps proposals.
+
+The local-search centroid is
+
+$$
+x_{\mathrm{cm}}=\frac{\sum_i\phi_i x_i}{\sum_i\phi_i},
+$$
+
+with the arithmetic mean used when the denominator vanishes. Dividing by the
+weight sum is an explicit clarification of the paper's unnormalized centroid
+expression. These weights are larger for worse objectives.
+:::
+
+:::{div} feynman-prose
+**Tabu memory** (`gas_tabu`) and **L-BFGS-B local search** (`gas_local_search`)
+both default to enabled and can be changed independently. With both enabled,
+initialization refines the best sampled walker and fills an N-entry memory with
+that result. Each iteration refines the centroid and best walker, inserts each
+result into a random memory slot, and runs memory flow and cloning after each
+insertion. Memory flow uses the same objective normalization and pair-distance
+factor, without another tabu-distance factor.
+
+Turning off local search leaves tabu memory initialized from the best sampled
+walker; each iteration inserts the current best walker. Turning off tabu memory
+leaves local refinement active, with refined candidates contributing to **Best**
+without allocating memory. Turning off both leaves swarm cloning and random
+proposals. Tabu memory influences selection through its distance factor; it does
+not impose a forbidden region on the benchmark.
+
+Each bounded local search has an objective-query cap, `gas_local_evaluations`,
+default **200**, and a maximum of **100 iterations**. It uses the benchmark's
+gradient path, including finite differences where needed. A cap, a nonfinite
+result, or solver failure ends that search while retaining its best finite
+candidate. Every objective query counts, including finite-difference probes and
+rejected line-search trials. A refined candidate may improve **Best** without
+appearing as a displayed walker.
+
+Stochastic benchmarks disable local search and show the reason in the controls.
+The active configuration and recording retain this effective setting. The
+evaluation budget must cover the conservative initialization bound; later steps
+reserve their full bound before starting. GAS can consequently stop with unused
+budget even when a local search would have converged before reaching its cap.
+Use actual **Evaluations**, and retain both switches and the local-search cap,
+when comparing recorded results.
 :::
 
 (sec-optimization-benchmarks)=
@@ -381,6 +481,11 @@ option to match the run. Keep the evaluation column mapped: these checkpoints
 are not sequential single-query observations. See the
 [custom CSV data format](https://iohprofiler.github.io/IOHanalyzer/data/).
 
+GAS exports additionally include `gas_tabu`, `gas_local_search`, and
+`gas_local_evaluations`. With `gas_adaptive`, `perturbation_std` is empty because
+the scale depends on each walker's objective. Other algorithms retain their
+existing CSV columns.
+
 Each CSV row describes a saved snapshot checkpoint; duplicate evaluation counts
 and checkpoints without a finite best value are omitted. The actual evaluation
 count and best value at that checkpoint are recorded; the export does not invent the
@@ -427,6 +532,11 @@ adapters configure those classes; they do not reimplement the swarm or planning
 algorithms. The config IDs are `wave`, `graph`, `fmc`, and `wave_jump`; the general
 Euclidean Gas implementation uses `euclidean`.
 
+GAS (2017) uses `gas` and registers its adaptive position proposal as
+`gas_adaptive`. Its bounded local solver and dependencies are shared by native
+and WebAssembly builds. GAS settings travel through the existing configuration
+and recording paths; its population uses the existing snapshot layout.
+
 BBOB evaluation compiles the pinned official **COCO 2.8.2** C source at revision
 `e5d068f69e36f346c86cc2934413369abe36fc22` into both native and WebAssembly builds.
 The app neither rewrites these benchmark formulas nor adds a replacement
@@ -469,6 +579,14 @@ recording format can then consume the result without requiring an
 algorithm-specific copy of the application. Keep stored objective values raw;
 use `Settings::score` and `Settings::better` when the algorithm needs the selected
 optimization direction.
+
+For an objective-dependent proposal, override `sample_with_context` and read the
+optional `PerturbationContext` supplied by the algorithm. GAS passes the walker's
+normalized objective through this interface. The default method forwards to
+`sample`, preserving existing distribution implementations; GAS adaptive
+sampling without context reports an error. Optional `algorithms` compatibility
+metadata restricts a perturbation to supported algorithm IDs. The UI filters
+its choices using that metadata, and backend validation enforces the same rule.
 
 Route objective queries through the benchmark's optimization evaluation path so
 evaluation counts and best-observed values include all attempted candidates.
@@ -528,7 +646,7 @@ Relevant checks include benchmark values and gradients, both objective
 directions, perturbation moments and replay, cloning and kinetic operators,
 cumulative-score ranking, committed planner motion, deterministic resets,
 recording round trips, and native/WebAssembly agreement. Browser verification
-should exercise all five algorithms, both views, dimension changes,
+should exercise all six algorithms, both views, dimension changes,
 Lennard–Jones inspection, loading all supported recording engine versions, and reset
 while a worker request is outstanding. The **Step** and **Draw** timings report
 simulation and rendering duration separately; either can explain a slow-looking
@@ -539,7 +657,12 @@ reference values, native/WebAssembly agreement, and independence of display
 sampling. Budget checks should cover initialization rejection, finite-difference
 costs, the last admitted step, Graph's conservative bound, and best values from
 discarded candidates. Verify CSV column mapping and sparse checkpoints alongside
-`.fgopt` compatibility.
+`.fgopt` compatibility. For GAS, also check all four tabu/local-search switch
+combinations, flat objectives, coincident walkers, simultaneous cloning, adaptive
+jump scales, bounded retries, and periodic wrapping. Verify local convergence,
+per-search caps, finite-difference accounting, solver failure recovery, and
+stochastic-benchmark disabling. Include effective GAS settings in configuration
+reload and recording round-trip checks.
 
 The browser CI runs Chromium and Firefox on `ubuntu-latest`. For Ubuntu 24.04,
 reproduce its Xvfb and software Mesa setup, using `LIBGL_ALWAYS_SOFTWARE=1` and

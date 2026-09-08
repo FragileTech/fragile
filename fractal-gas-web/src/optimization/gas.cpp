@@ -40,7 +40,10 @@ Settings::Settings(const Json& input) : json(input) {
   objective = s("objective", "minimize");
   if (objective != "minimize" && objective != "maximize")
     throw std::invalid_argument("Objective must be minimize or maximize");
-  perturbation = s("perturbation", "gaussian");
+  perturbation = s("perturbation", algorithm == "gas" ? "gas_adaptive" : "gaussian");
+  gas_tabu = b("gas_tabu", true);
+  gas_local_search = b("gas_local_search", true);
+  gas_local_evaluations = i("gas_local_evaluations", 200, 1, 1000000);
   companion = s("companion", "cloning");
   clone_companion = s("clone_companion", "cloning");
   for (auto& name : {companion, clone_companion})

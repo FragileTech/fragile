@@ -13,6 +13,8 @@ struct Settings {
   std::string algorithm, companion, clone_companion, objective, perturbation;
   int walkers, max_walkers, seed, dt_min, dt_max, clone_every, substeps, elites;
   int horizon, max_horizon;
+  int gas_local_evaluations;
+  bool gas_tabu, gas_local_search;
   uint64_t max_evaluations;
   double proposal, gamma, beta, delta_t, epsilon, clone_epsilon, lambda_alg,
       reward_coef, distance_coef, eta, sigma_min, amplitude, epsilon_dist, rho,

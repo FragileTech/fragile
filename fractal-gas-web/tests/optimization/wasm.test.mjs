@@ -27,9 +27,9 @@ test(
         .catalog()
         .algorithms.map((a) => a.id)
         .sort(),
-      ["euclidean", "fmc", "graph", "wave", "wave_jump"],
+      ["euclidean", "fmc", "gas", "graph", "wave", "wave_jump"],
     );
-    assert.equal(native.catalog().perturbations.length, 2);
+    assert.equal(native.catalog().perturbations.length, 3);
     for (const objective of ["minimize", "maximize"])
       for (const perturbation of ["gaussian", "uniform"])
         for (const algorithm of [
@@ -314,6 +314,102 @@ test(
       }
     } finally {
       native.dispose();
+    }
+  },
+);
+
+test(
+  "GAS switches, adaptive jumps, budgets, and portable recordings",
+  { skip: !available },
+  async () => {
+    const engine = new NativeOptimization(await create());
+    try {
+      assert.deepEqual(
+        engine.catalog().perturbations.find((p) => p.id === "gas_adaptive")
+          .algorithms,
+        ["gas"],
+      );
+      for (const gas_tabu of [false, true])
+        for (const gas_local_search of [false, true])
+          for (const perturbation of ["gas_adaptive", "gaussian", "uniform"])
+            for (const objective of ["minimize", "maximize"]) {
+              const config = {
+                algorithm: "gas",
+                benchmark: "sphere",
+                dimensions: 3,
+                walkers: 8,
+                low: -1,
+                high: 1,
+                gas_tabu,
+                gas_local_search,
+                perturbation,
+                objective,
+                gas_local_evaluations: 30,
+                max_evaluations: 500,
+                seed: 7,
+              };
+              const resolved = engine.create(config);
+              const recording = new Recording(resolved);
+              recording.append(engine.snapshot());
+              for (let i = 0; i < 3; ++i) recording.append(engine.step());
+              assert.equal(resolved.gas_tabu, gas_tabu);
+              assert.equal(resolved.gas_local_search, gas_local_search);
+              const restored = importRecording(recording.export());
+              assert.deepEqual(restored.config, recording.config);
+              assert.deepEqual(restored.frames, recording.frames);
+              const expected = engine.snapshot();
+              engine.create(restored.config);
+              for (let i = 0; i < 3; ++i) engine.step();
+              assert.deepEqual(engine.snapshot(), expected);
+              assert.ok(expected[5] <= config.max_evaluations);
+              if (existsSync(library)) {
+                const result = spawnSync(
+                  "python3",
+                  [new URL("./native_reference.py", import.meta.url).pathname],
+                  {
+                    input: JSON.stringify({ config, steps: 3 }),
+                    encoding: "utf8",
+                    timeout: 10000,
+                  },
+                );
+                assert.equal(
+                  result.status,
+                  0,
+                  result.stderr || result.error?.message,
+                );
+                JSON.parse(result.stdout).forEach((v, i) => {
+                  assert.ok(
+                    Math.abs(v - expected[i]) <=
+                      2e-6 * Math.max(1, Math.abs(v)),
+                    `GAS ${gas_tabu}/${gas_local_search}/${perturbation}/${objective} word ${i}: ${expected[i]} != ${v}`,
+                  );
+                });
+              }
+            }
+      engine.create({
+        algorithm: "gas",
+        benchmark: "constant",
+        walkers: 8,
+        gas_local_search: false,
+        max_evaluations: 16,
+      });
+      engine.step();
+      const before = engine.snapshot();
+      assert.throws(() => engine.step(), /Evaluation budget reached/);
+      assert.deepEqual(engine.snapshot(), before);
+      const noisy = engine.create({
+        algorithm: "gas",
+        benchmark: "stochastic_gaussian",
+        walkers: 8,
+      });
+      assert.equal(noisy.gas_local_search, false);
+      assert.throws(
+        () =>
+          engine.create({ algorithm: "wave", perturbation: "gas_adaptive" }),
+        /not supported/,
+      );
+    } finally {
+      engine.dispose();
     }
   },
 );

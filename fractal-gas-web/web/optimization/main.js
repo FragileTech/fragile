@@ -132,12 +132,49 @@ function perturbationFields(values = {}) {
     (p) => p.id === $("perturbation").value,
   );
   parameterFields(panel, descriptor?.parameters || [], values);
+  perturbationNote();
+}
+function perturbationOptions(values = {}) {
+  const algorithm = $("algorithm").value;
+  const current = $("perturbation").value;
+  const savedParameters = readConfig();
+  const selected =
+    values.perturbation ??
+    (algorithm === "gas"
+      ? "gas_adaptive"
+      : catalog.perturbations.some(
+            (entry) =>
+              entry.id === current &&
+              (!entry.algorithms || entry.algorithms.includes(algorithm)),
+          )
+        ? current
+        : "gaussian");
+  $("perturbation").replaceChildren();
+  for (const entry of catalog.perturbations)
+    if (!entry.algorithms || entry.algorithms.includes(algorithm))
+      $("perturbation").add(new Option(entry.name, entry.id));
+  $("perturbation").value = selected;
+  perturbationFields({ ...savedParameters, ...values });
+}
+function gasLocalSearchNote() {
+  const local = form.elements.namedItem("gas_local_search");
+  if (!local) return;
+  const stochastic = catalog.benchmarks.find(
+    (b) => b.id === $("benchmark").value,
+  )?.stochastic;
+  local.disabled = Boolean(stochastic);
+  if (stochastic) local.checked = false;
+  $("gas-local-note").textContent = stochastic
+    ? "L-BFGS-B is disabled for stochastic objectives. Tabu memory and GAS jumps remain available."
+    : "Each local search counts toward the evaluation budget.";
 }
 function perturbationNote() {
   $("perturbation-note").textContent =
-    $("algorithm").value === "euclidean"
-      ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
-      : "Standard deviation is measured in coordinate units for each proposal step.";
+    $("perturbation").value === "gas_adaptive"
+      ? "Objective-dependent Gaussian jumps: standard deviation ranges from 0.00001 to 0.1 of the domain width."
+      : $("algorithm").value === "euclidean"
+        ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
+        : "Standard deviation is measured in coordinate units for each proposal step.";
 }
 function objectiveNote() {
   $("objective-note").textContent =
@@ -154,6 +191,12 @@ function algorithmFields(values = {}) {
   const descriptor = catalog.algorithms.find((a) => a.id === algorithm);
   if (Array.isArray(descriptor?.parameters)) {
     parameterFields(panel, descriptor.parameters, values);
+    if (algorithm === "gas") {
+      const note = document.createElement("p");
+      note.id = "gas-local-note";
+      panel.append(note);
+      gasLocalSearchNote();
+    }
     return;
   }
   if (!["euclidean", "wave", "graph", "fmc", "wave_jump"].includes(algorithm))
@@ -327,7 +370,7 @@ function populateForm(values) {
   $("benchmark").value = values.benchmark;
   $("algorithm").value = values.algorithm;
   $("objective").value = values.objective ?? "minimize";
-  $("perturbation").value = values.perturbation ?? "gaussian";
+  perturbationOptions(values);
   benchmarkFields(values);
   algorithmFields(values);
   perturbationFields(values);
@@ -337,6 +380,7 @@ function populateForm(values) {
     if (input.type === "checkbox") input.checked = value;
     else input.value = value;
   }
+  gasLocalSearchNote();
 }
 function viewSettings() {
   return {
@@ -622,10 +666,9 @@ function renderFrame() {
     `Step ${simulationMs.toFixed(1)} ms · Draw ${renderer.renderMs.toFixed(1)} ms`;
   $("timeline").max = recording.frames.length - 1;
   $("timeline").value = index;
-  $("frame-label").textContent =
-    recordingEnabled
-      ? `Frame ${index + 1} / ${recording.frames.length}`
-      : "Live · recording off";
+  $("frame-label").textContent = recordingEnabled
+    ? `Frame ${index + 1} / ${recording.frames.length}`
+    : "Live · recording off";
   $("scene-title").textContent =
     catalog.benchmarks.find((b) => b.id === config.benchmark)?.name ||
     config.benchmark;
@@ -703,7 +746,9 @@ async function step() {
   const token = epoch;
   try {
     const result = await client.request("step", {
-      remaining: recordingEnabled ? RECORDING_LIMIT - recording.bytes : Infinity,
+      remaining: recordingEnabled
+        ? RECORDING_LIMIT - recording.bytes
+        : Infinity,
     });
     if (token !== epoch) return;
     const atLatest = index === recording.frames.length - 1;
@@ -739,11 +784,15 @@ form.addEventListener("submit", (e) => {
 });
 $("benchmark").addEventListener("change", () => {
   benchmarkFields();
+  gasLocalSearchNote();
   const force = form.elements.namedItem("potential_force");
   if (force) force.checked = !$("benchmark").value.startsWith("bbob_");
 });
 $("chart-axis").addEventListener("change", convergence);
-$("algorithm").addEventListener("change", () => algorithmFields());
+$("algorithm").addEventListener("change", () => {
+  perturbationOptions();
+  algorithmFields();
+});
 $("perturbation").addEventListener("change", () => perturbationFields());
 $("objective").addEventListener("change", objectiveNote);
 $("run").onclick = () => {
@@ -902,12 +951,9 @@ try {
   }
   for (const entry of catalog.algorithms)
     $("algorithm").add(new Option(entry.name, entry.id));
-  for (const entry of catalog.perturbations)
-    $("perturbation").add(new Option(entry.name, entry.id));
-  $("perturbation").value = "gaussian";
-  perturbationFields();
   $("benchmark").value = "rastrigin";
   $("algorithm").value = "euclidean";
+  perturbationOptions();
   benchmarkFields();
   algorithmFields();
   await createSession(readConfig());
