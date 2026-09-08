@@ -79,7 +79,8 @@ Key arguments:
 
 The [documentation portal](https://fragiletech.github.io/fragile/docs/) links to the
 two-volume [Theory lectures](https://fragiletech.github.io/fragile/docs/theory/) and
-the independent [Control Laboratory guide](https://fragiletech.github.io/fragile/docs/lab/).
+the independent [Laboratory guide](https://fragiletech.github.io/fragile/docs/lab/),
+which includes continuous-control, optimization, and arcade laboratories.
 
 ```bash
 make docs    # build the portal, Theory, and Lab sites
@@ -88,8 +89,9 @@ make docs-serve  # serve an existing build without rebuilding
 ```
 
 Open <http://127.0.0.1:8000/docs/>; the server root redirects to this portal.
-Theory lives at `/docs/theory/`, the lab guide at `/docs/lab/`, and the simulator
-at `/lab/`. Set `DOCS_PORT=8001` to use another port. Documentation dependencies
+Theory lives at `/docs/theory/`, the lab guide at `/docs/lab/`, and the simulators
+at `/lab/`, `/optimization/`, and `/web/`. Set `DOCS_PORT=8001` to use another
+port. Documentation dependencies
 run in an isolated `uv` environment, without installing the training stack.
 
 To build the simulator, run `make control-web`, then `make control-lab` and open

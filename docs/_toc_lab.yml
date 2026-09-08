@@ -33,3 +33,12 @@ chapters:
   title: Engine architecture and extensions
 - file: source/project/optimization_laboratory
   title: Optimization Lab
+- file: source/project/arcade_laboratory
+  title: Arcade Lab
+  sections:
+  - file: source/project/arcade_lab_getting_started
+    title: Getting started
+  - file: source/project/arcade_lab_environments
+    title: Environments
+  - file: source/project/arcade_lab_controls
+    title: Controls and settings

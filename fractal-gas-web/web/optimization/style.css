@@ -1,20 +1,11 @@
 :root {
-  color-scheme: dark;
-  --bg: #15111b;
-  --panel: #1d1825;
-  --text: #f1eaf5;
-  --muted: #b5a6c0;
-  --lavender: #d0a9e2;
-  --teal: #7ef5df;
-  --gold: #efc87b;
-  --line: #3b3048;
   font:
     14px/1.45 system-ui,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  color: var(--text);
+  color: var(--ink);
   background: var(--bg);
   font-variant-numeric: tabular-nums;
 }
@@ -55,6 +46,8 @@ nav {
 #engine-status {
   font-size: 12px;
   color: var(--muted);
+  font-family: var(--mono);
+  letter-spacing: 0.6px;
 }
 main {
   display: grid;
@@ -93,9 +86,9 @@ select,
 button {
   font: inherit;
   color: var(--text);
-  background: #292131;
-  border: 1px solid #51415f;
-  border-radius: 5px;
+  background: var(--panel-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   padding: 7px 9px;
   min-width: 0;
 }
@@ -109,7 +102,7 @@ button {
 }
 button:hover:not(:disabled) {
   border-color: var(--lavender);
-  background: #3d2c4b;
+  background: #352743;
 }
 button:disabled {
   opacity: 0.4;
@@ -122,7 +115,7 @@ button:disabled {
   font-weight: 650;
 }
 .primary:hover:not(:disabled) {
-  background: #e5c1f5;
+  background: var(--accent-hover);
   color: var(--bg);
 }
 :focus-visible {

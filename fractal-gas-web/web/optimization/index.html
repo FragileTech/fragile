@@ -4,20 +4,30 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Optimization Lab · Fragile</title>
+    <link rel="stylesheet" href="../theme.css" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <header>
-      <a class="brand" href="../">Fragile</a>
-      <h1>Optimization Lab</h1>
-      <nav>
-        <a href="../lab/">Control Lab</a
-        ><a href="../docs/lab/source/project/optimization_laboratory.html"
-          >Guide</a
-        >
+    <header class="app-header optimization-header">
+      <a class="brand app-brand" href="../" aria-label="Fragile Tech home">
+        <img
+          class="app-brand-logo"
+          src="../lab/branding/logo.png"
+          alt=""
+          width="48"
+          height="48"
+        />
+        <span>fragile.tech<span class="app-brand-sub">Optimization Lab</span></span>
+      </a>
+      <h1 class="app-page-title">Optimization Lab</h1>
+      <nav class="app-nav" aria-label="Laboratory navigation">
+        <a href="../">Arcade</a>
+        <a href="../lab/">Control Lab</a>
+        <span class="is-active" aria-current="page">Optimization Lab</span>
+        <a href="../docs/lab/source/project/optimization_laboratory.html">Guide ↗</a>
       </nav>
-      <span id="engine-status">Loading engine…</span>
-      <a href="vendor/COCO-NOTICE.txt" class="hint">COCO licenses</a>
+      <span id="engine-status" class="app-connection">Loading engine…</span>
+      <a href="vendor/COCO-NOTICE.txt" class="hint app-license-link">COCO licenses</a>
     </header>
     <main>
       <aside class="configuration" aria-label="Simulation configuration">

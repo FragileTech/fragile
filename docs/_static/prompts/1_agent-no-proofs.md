@@ -1396,8 +1396,7 @@ where $\ell_{\mathrm{step}}$ is a declared coordinate step and $\bar G_n$ is
 the metric averaged over the sampled chart interiors. This is a calibration
 heuristic, not an intrinsic injectivity-radius identity.
 
-*Cross-reference:* The screening length $\ell_{\text{screen}} =
-1/\kappa_{\mathrm{scr}}$ from {ref}`Section 24.2
+*Cross-reference:* The screening length $\ell_{\text{screen}} = 1/\kappa_{\mathrm{scr}}$ from {ref}`Section 24.2
 <sec-the-bulk-potential-screened-poisson-equation>` is a spatial
 discount-induced/value-field scale. It is distinct from the WFR reaction
 length $\lambda$ (and from the temporal discount rate used to define
@@ -2241,6 +2240,7 @@ The Boris-BAOAB integrator splits the Lorentz-Langevin dynamics into five subste
      $p^- \leftarrow p - \frac{h}{2}(d\Phi-\gamma G u_\pi)$.
    - If $\mathcal{F}\neq0$, apply the Cayley update for the velocity-dependent term. With
      $A=\beta_{\text{curl}}\mathcal{F}G^{-1}$,
+
      $$
      p^+ \leftarrow \left(I-\frac{h}{2}A\right)^{-1}
        \left(I+\frac{h}{2}A\right)p^-.
@@ -2653,8 +2653,7 @@ $$
 
 is a fibrewise diffeomorphism. For
 $L=\tfrac12\|\dot q\|_{G_{\mathcal Q}}^2-V(q)$, the induced momentum is
-$p=G_{\mathcal Q}(q)\dot q$. On a lifted visual chart $(U_\alpha,
-T\phi_\alpha)$, an induced action chart can therefore use
+$p=G_{\mathcal Q}(q)\dot q$. On a lifted visual chart $(U_\alpha, T\phi_\alpha)$, an induced action chart can therefore use
 
 $$
 \psi_\beta\circ\mathcal L_L\circ(T\phi_\alpha)^{-1}(q,\dot q)
@@ -3213,6 +3212,7 @@ In this theorem $V$ denotes the reward-side score $V_{\mathrm{rew}}=\Phi$;
 the control-loop cost critic is $V_{\mathrm{cost}}=-\Phi$ and has source
 $\rho_c=-\rho_r$.
 The smooth Bellman equation has continuous-time form
+
 $$
 \partial_tV+\mathcal LV-\lambda V+r=0.
 $$
@@ -3220,6 +3220,7 @@ In its stationary zero-drift sector,
 $(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
 $\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
 instead defines the wave operator
+
 $$
 \Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
 \qquad(\Box_g+\kappa^2)V=\rho_r.
@@ -3681,6 +3682,7 @@ At this limit, the DPI constraint $I_{\text{bulk}} \le C_\partial$ is satisfied 
 
 The following Schwarzschild-style expression is a formal radial ansatz for exploring a
 capacity-saturation regime:
+
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}}
 - \frac{\Lambda_{\mathrm{eff}}r^2}{n(n-1)} \right)^{-1}.
@@ -3697,6 +3699,7 @@ metric.
 
 Under an explicit capacity permit that identifies stable representational information with
 boundary area at resolution $\ell_L$, define the operational capacity
+
 $$
 I_{\max}:=\nu_D\,\frac{\operatorname{Area}(\partial\mathcal Z)}{\ell_L^{D-1}}.
 $$
@@ -3717,6 +3720,7 @@ conditions, and dimensional normalization that establish the permit.
 Assume the conditional capacity formula above, the formal spherical ansatz, bounded radial force,
 and $G^{rr}\to0$ at the selected horizon. Then the radial component of an overdamped drift
 satisfies
+
 $$
 v^r=-G^{rr}\partial_r\Phi_{\mathrm{eff}}\longrightarrow0.
 $$
@@ -3798,10 +3802,11 @@ $$
 
 $$
 where $\epsilon_{\text{purity}} \in (0, 0.5)$ is the purity threshold. Define the transition-chart set
-\[
+
+$$
 \mathcal{T}:=\mathcal{K}\setminus\bigcup_{y\in\mathcal{Y}}\mathcal{A}_y
  = \left\{k:\max_y P(Y=y\mid K=k)\le 1-\epsilon_{\text{purity}}\right\}.
-\]
+$$
 
 *Interpretation:* $\mathcal{A}_y$ is the **sub-atlas** of charts predominantly associated with class $y$. A chart $k$ belongs to $\mathcal{A}_y$ if, given that a sample routes to chart $k$, the probability of class $y$ exceeds $1 - \epsilon_{\text{purity}}$.
 
@@ -5974,8 +5979,7 @@ The **Carnot limit** for cognitive systems is $\eta_{\text{thought}} = 1$, achie
 
 Let $U_t$ denote hidden environment state not included in $z_t$, and let the structural transition be
 $P_\partial(z_{t+1}\mid z_t,a_t,U_t)$. We define the **Interventional Operator**
-$\mathfrak{I}: \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z}) \to
-\mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z})$—equivalent to Pearl's $do(a_t)$
+$\mathfrak{I}: \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z}) \to \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z})$—equivalent to Pearl's $do(a_t)$
 {cite}`pearl2009causality`—as a surgery that replaces the policy-induced action law by an exogenous action.
 
 Geometrically, $\mathfrak{I}$ replaces the policy-induced motor flux by an exogenous motor flux. The sensory
@@ -6002,6 +6006,7 @@ where $P_{\text{pre}}(\tilde{z})$ is the pre-intervention distribution over late
 :label: lem-the-interventional-singularity
 
 For a fixed intervention $do(a=a_0)$, the post-intervention joint has the factorization
+
 $$
 P_{\mathrm{pre}}(z)\,\delta_{a_0}(a)\,P_\partial(z'\mid z,a_0,u)P(u\mid z),
 $$
@@ -6031,6 +6036,7 @@ policy; a max or a different design distribution would define a different state 
 :label: thm-the-interventional-gap
 
 Let $U$ be a hidden environment variable. Define
+
 $$
 P_{\text{obs}}(z'|z,a):=\int P_\partial(z'|z,a,u)P(u|z,a)\,du,
 \qquad
@@ -6369,13 +6375,19 @@ This gives exponential saturation: $f(x) \approx x$ for $x \ll 1$ (linear regime
 As $B(t) \to 0$, the following degenerations occur:
 
 1. **Resolution Loss:** Geodesic distances collapse:
-   $$d_G^{\text{eff}}(z, z') = \sqrt{f(B/B_{\text{crit}})} \cdot d_G(z, z') \to 0$$
+
+   $$
+   d_G^{\text{eff}}(z, z') = \sqrt{f(B/B_{\text{crit}})} \cdot d_G(z, z') \to 0
+   $$
    Distinct concepts become indistinguishable.
 
 2. **Inertia Loss:** The mass term in the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) vanishes. The agent loses momentum and becomes dominated by thermal noise.
 
 3. **Causal Dissolution:** The Causal Information Bound ({ref}`sec-causal-information-bound`, Theorem {prf:ref}`thm-causal-information-bound`) collapses:
-   $$I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0$$
+
+   $$
+   I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0
+   $$
    The agent's representational capacity vanishes.
 
 4. **Control Loss:** The policy gradient $\nabla_z \Phi_{\text{eff}}$ scales with metric, so control authority degrades.
@@ -7447,8 +7459,8 @@ where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`t
 :label: def-agent-specific-boundary-interface
 
 Each agent $i$ possesses its own symplectic boundary $(\partial\mathcal{Z}^{(i)}, \omega^{(i)})$ with:
-- **Dirichlet component** (sensors): $\phi^{(i)}(x) = $ observation stream
-- **Neumann component** (motors): $j^{(i)}_{\text{motor}}(x) = $ action flux
+- **Dirichlet component** (sensors): $\phi^{(i)}(x)$ is the observation stream
+- **Neumann component** (motors): $j^{(i)}_{\text{motor}}(x)$ is the action flux
 - **Reward component** (source): boundary reward flux $J_r^{(i)}$ (1-form); conservative case reduces to scalar charge
   density $\sigma_r^{(i)}$ (Definition {prf:ref}`def-the-reward-flux`)
 
@@ -7465,11 +7477,11 @@ applied per-agent.
 Let $d_{\mathcal{E}}^{ij}$ denote the **environment distance** between agents $i$ and $j$—the geodesic length in the environment manifold $\mathcal{E}$ that information must traverse. This may differ from the latent distance $d_G(z^{(i)}, z^{(j)})$.
 
 *Examples:*
-- **Physical agents:** $d_{\mathcal{E}}^{ij} = $ spatial separation in meters
-- **Networked agents:** $d_{\mathcal{E}}^{ij} = $ network hop distance or latency
+- **Physical agents:** $d_{\mathcal{E}}^{ij}$ is the spatial separation in meters
+- **Networked agents:** $d_{\mathcal{E}}^{ij}$ is the network hop distance or latency
 - **Co-located agents:** $d_{\mathcal{E}}^{ij} = 0$ (shared boundary)
 
-*Units:* $[d_{\mathcal{E}}^{ij}] = $ meters or equivalent environment-specific units.
+*Units:* $[d_{\mathcal{E}}^{ij}]$ is measured in meters or equivalent environment-specific units.
 
 :::
 
@@ -7717,6 +7729,7 @@ For the diffusion and discount already used in
 {prf:ref}`thm-the-hjb-helmholtz-correspondence`, write
 $\mathcal L=b\cdot\nabla+T_c\Delta_G$ and $\gamma_h=e^{-\lambda h}$.
 The smooth Bellman equation has continuous-time form
+
 $$
 \partial_tV+\mathcal LV-\lambda V+r=0.
 $$
@@ -7724,6 +7737,7 @@ In its stationary zero-drift sector,
 $(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
 $\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
 instead defines the wave operator
+
 $$
 \Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
 \qquad(\Box_g+\kappa^2)V=\rho_r.
@@ -7792,6 +7806,7 @@ For $\kappa > 0$, the retarded kernel acquires an interior light-cone tail with 
 Use the smooth local best-response branch and Strategic Jacobian already
 specified in {prf:ref}`def-strategic-jacobian`. With the intrinsic connection
 on agent $j$'s manifold define the covariant tensor
+
 $$
 H^{(i)}_{jj,mn}=\nabla^{(j)}_m\nabla^{(j)}_nV^{(i)},\qquad
 \mathcal G^{(i)}_{ij,ab}=\mathcal J_{ji}^{m}{}_{a}
@@ -7806,6 +7821,7 @@ The curvature equation {prf:ref}`thm-capacity-constrained-metric-law` remains
 a separate differential identity; this algebraic prescription is not its solution.
 
 For a $C^2$ response $y=b(x)$, direct differentiation gives
+
 $$
 \partial_{ab}V(x,b(x))=V_{ab}+V_{am}b^m_b+V_{bm}b^m_a
 +V_{mn}b^m_ab^n_b+V_m\partial_{ab}b^m.
@@ -7814,6 +7830,7 @@ Thus the pulled-back $H_{jj}$ is one contribution, not the full Hessian of
 the composed value. The final term vanishes at a stationary point in $y$.
 For the positive metric $\widetilde G=G+h$, subtraction of the two
 metric-compatible torsion-free connections gives the exact identity
+
 $$
 \widetilde\Gamma^a_{bc}-\Gamma^a_{bc}
 =\tfrac12\widetilde G^{ad}
@@ -7828,8 +7845,7 @@ $\widetilde G^{-1}-G^{-1}=-G^{-1}h\widetilde G^{-1}$.
 :label: thm-adversarial-mass-inflation
 
 For the strategic metric prescription, the exact difference is
-$\xi^\top(\widetilde G-G)\xi=\sum_j\beta_{ij}
-(\mathcal J_{ji}\xi)^\top H^{(i)}_{jj}(\mathcal J_{ji}\xi)$.
+$\xi^\top(\widetilde G-G)\xi=\sum_j\beta_{ij} (\mathcal J_{ji}\xi)^\top H^{(i)}_{jj}(\mathcal J_{ji}\xi)$.
 Every positive-semidefinite summand with nonnegative coefficient increases
 the quadratic form; hence a sum of such contributions gives
 $\widetilde G\succeq G$. A negative cooperative contribution must be included
@@ -7854,6 +7870,7 @@ kernel of {prf:ref}`def-retarded-interaction-potential`.
 :label: prop-retarded-metric-propagation
 
 For differentiable coefficients, the product rule gives
+
 $$
 \dot h=\sum_j\left[\dot\beta_jJ_j^*H_jJ_j+
 \beta_j\dot J_j^*H_jJ_j+\beta_jJ_j^*\dot H_jJ_j+
@@ -7948,6 +7965,7 @@ required for validity. The continuum objects are the density fields $\rho$ at fi
 
 For a test agent and a defined pulled-back Hessian kernel $K_{ab}(z,\zeta)$,
 the normalized interaction has
+
 $$
 h_{N,ab}(z)=\frac\alpha N\sum_{j\ne i}K_{ab}(z,z_j)
 =\alpha\int K_{ab}(z,\zeta)d\mu_N(\zeta)
@@ -7957,6 +7975,7 @@ This is an exact finite identity, obtained by adding and subtracting the
 diagonal term. Weak convergence evaluates bounded continuous kernels; it
 does not by itself evaluate a singular Green-function Hessian.
 For an explicitly resolved kernel $K_\ell$ the exact comparison is
+
 $$
 |h_{N,\ell}(z)-\alpha\int K_\ell(z,\zeta)d\mu(\zeta)|
 \le |\alpha|\left|\int K_\ell(z,\zeta)d(\mu_N-\mu)(\zeta)\right|
@@ -7976,10 +7995,8 @@ mean-field limit. $\square$
 :label: thm-metabolic-tracking-bound
 
 The established transport cost gives, along an exactly tracked differentiable
-target, $\dot{\mathcal M}=\tfrac12\sigma_{\mathrm{met}}
-\|\dot z^*\|_{\widetilde G}^2$. Hence the budget implies
-$\|\dot z^*\|_{\widetilde G}\le
-\sqrt{2\dot{\mathcal M}_{\max}/\sigma_{\mathrm{met}}}$.
+target, $\dot{\mathcal M}=\tfrac12\sigma_{\mathrm{met}} \|\dot z^*\|_{\widetilde G}^2$. Hence the budget implies
+$\|\dot z^*\|_{\widetilde G}\le \sqrt{2\dot{\mathcal M}_{\max}/\sigma_{\mathrm{met}}}$.
 This follows by substituting $v=\dot z^*$ into the cost and solving the
 inequality. It is a necessary budget test, not a sufficiency proof for
 tracking with delayed observations, noise, or restricted controls. $\square$
@@ -8167,10 +8184,12 @@ $$
 :label: thm-gauge-covariant-klein-gordon
 
 For $D_\mu=\partial_\mu-igA_\mu$, define
+
 $$
 \Box_A\psi=-|g|^{-1/2}D_\mu(\sqrt{|g|}g^{\mu\nu}D_\nu\psi).
 $$
 For $g=\operatorname{diag}(-c^2,\widetilde G(t,z))$ with constant $c$,
+
 $$
 \Box_A\psi=c^{-2}\left[D_t^2\psi+
 \partial_t\log\sqrt{|\widetilde G|}\,D_t\psi\right]
@@ -8229,8 +8248,7 @@ the base geometry are invariant. For a charged vector derivative $u_a$, the
 bilinear form $\operatorname{Re}\langle u_a,u_b\rangle$ is invariant:
 $\langle Uu_a,Uu_b\rangle=\langle u_a,u_b\rangle$ by unitarity.
 For endomorphism derivatives $M_a$, cyclicity gives
-$\operatorname{Tr}[(UM_aU^{-1})(UM_bU^{-1})]
-=\operatorname{Tr}(M_aM_b)$. These are the appropriate scalar contractions
+$\operatorname{Tr}[(UM_aU^{-1})(UM_bU^{-1})] =\operatorname{Tr}(M_aM_b)$. These are the appropriate scalar contractions
 for their respective representations. Adding them to a metric still uses
 the explicit positive-definiteness test of the metric prescription;
 invariance and positivity are separate algebraic properties. $\square$
@@ -8296,6 +8314,7 @@ On a test section $u$, expansion gives
 $[D_\rho,F_{\mu\nu}]u=(\mathcal D_\rho F_{\mu\nu})u$.
 Insert $[D_\mu,D_\nu]=-igF_{\mu\nu}$ into
 $[D_\rho,[D_\mu,D_\nu]]+\mathrm{cyclic}=0$. Dividing by $-ig$ gives
+
 $$
 \mathcal D_\rho F_{\mu\nu}+\mathcal D_\mu F_{\nu\rho}
 +\mathcal D_\nu F_{\rho\mu}=0.
@@ -8360,6 +8379,7 @@ by $\operatorname{Tr}(T_aT_b)=\delta_{ab}$ in the gauge action. Matter
 representation matrices retain the same Lie-algebra basis. For
 $S_{\mathrm{YM}}=-\tfrac14\int\operatorname{Tr}F_{\mu\nu}F^{\mu\nu}d\mu_g$,
 stationarity of the total action gives
+
 $$
 \mathcal D_\mu F^{\mu\nu}=J^\nu,\qquad
 J^{\nu,a}=-\frac{\delta\mathcal L_m}{\delta A_\nu^a},\qquad
@@ -8396,6 +8416,7 @@ This recovers the **Maxwell equations** of electromagnetism in covariant form.
 :label: prop-gauge-energy-momentum
 
 Metric variation of the gauge action gives
+
 $$
 T_{\mu\nu}=\operatorname{Tr}\left(F_{\mu\rho}F_\nu{}^\rho
 -\tfrac14g_{\mu\nu}F_{\rho\sigma}F^{\rho\sigma}\right).
@@ -8412,6 +8433,7 @@ The gauge equation gives $\mathcal D_\nu J^\nu=0$.
 :label: def-complete-lagrangian
 
 For the scalar belief multiplets already defined, use
+
 $$
 \mathcal L=-\tfrac14\operatorname{Tr}F_{\mu\nu}F^{\mu\nu}
 -\sum_i\left[(D_\mu\psi_i)^\dagger D^\mu\psi_i+m_i^2\psi_i^\dagger\psi_i\right]
@@ -8436,6 +8458,7 @@ For the stable quartic potential already specified, $\lambda>0$ and
 $\mu^2<0$, write $\Phi_0=(v/\sqrt2)n$, $n^\dagger n=1$ and
 $v^2=-\mu^2/\lambda$. The radial mass is $m_h^2=2\lambda v^2$.
 The gauge quadratic term is $-\tfrac12A_\mu^a(M^2)_{ab}A^{\mu b}$ with
+
 $$
 (M^2)_{ab}=g^2\Phi_0^\dagger\{T_a,T_b\}\Phi_0.
 $$
@@ -8474,6 +8497,7 @@ substitution of $e^{-i\omega t}\phi_n$ gives
 $\omega_n=c\sqrt{\kappa^2+\lambda_n}$.
 For $a=\kappa^2+\lambda_0>0$ and $x=\lambda_n-\lambda_0\ge0$,
 Taylor's integral formula gives
+
 $$
 \left|\omega_n-c\sqrt a-\frac{cx}{2\sqrt a}\right|
 \le\frac{cx^2}{8a^{3/2}}.
@@ -8494,6 +8518,7 @@ The Causal Information Bound controls its defined representational information.
 It does not identify that quantity with an unnormalized integral of field
 correlations. For finite normalized subsystems, the established relative-entropy
 bound gives
+
 $$
 I(A:B)\ge\frac{|\langle XY\rangle-\langle X\rangle\langle Y\rangle|^2}
 {2\|X\|^2\|Y\|^2}.
@@ -8616,8 +8641,7 @@ from the space of mathematical or computational constructions.
 :label: def-computational-swampland
 
 For a specified represented information functional $I(R)$ and capacity
-$C(R)$, define the violating set by $\{\mathcal T:\exists R,
-I_{\mathcal T}(R)>C_{\mathcal T}(R)\}$. Membership is tested using these
+$C(R)$, define the violating set by $\{\mathcal T:\exists R, I_{\mathcal T}(R)>C_{\mathcal T}(R)\}$. Membership is tested using these
 same quantities. It is not equivalent by definition to masslessness,
 vanishing lattice spacing, or algebraic correlation decay.
 :::
@@ -8626,8 +8650,7 @@ vanishing lattice spacing, or algebraic correlation decay.
 :label: thm-cft-swampland
 
 For $0<2\Delta<d$, rescaling $x=Ru,y=Rv$ gives
-$\int_{B_R}\int_{B_R}|x-y|^{-2\Delta}dxdy
-=R^{2d-2\Delta}\int_{B_1}\int_{B_1}|u-v|^{-2\Delta}dudy$.
+$\int_{B_R}\int_{B_R}|x-y|^{-2\Delta}dxdy =R^{2d-2\Delta}\int_{B_1}\int_{B_1}|u-v|^{-2\Delta}dudy$.
 The last integral is finite by local integrability of $r^{d-1-2\Delta}$.
 This proves the scaling of a correlation integral. It supplies no lower
 bound for the represented information functional: such an identification
@@ -8833,6 +8856,7 @@ $\square$
 :label: prop-operator-ordering-invariance
 
 The kinetic quadratic form fixes the divergence realization
+
 $$
 \Delta_B\psi=|G|^{-1/2}D_i(\sqrt{|G|}G^{ij}D_j\psi)
 =G^{ij}(D_iD_j-\Gamma^k_{ij}D_k)\psi.
@@ -8968,12 +8992,12 @@ same product-rule calculation with and without the compensation.
 For the positive block metric $\widetilde G=\bigoplus_i\widetilde G_i(\mathbf z)$,
 let $w=\sqrt{\det\widetilde G}=\prod_i\sqrt{\det\widetilde G_i}$.
 The joint kinetic operator is
+
 $$
 H_{\mathrm{kin}}=-\frac{\sigma^2}{2w}\sum_i
 D_{ia}\left(w\widetilde G_i^{ab}D_{ib}\right).
 $$
-Its form is $\tfrac{\sigma^2}{2}\int\sum_i
-\widetilde G_i^{ab}\overline{D_{ia}\Psi}D_{ib}\Psi\,w\,d\mathbf z$.
+Its form is $\tfrac{\sigma^2}{2}\int\sum_i \widetilde G_i^{ab}\overline{D_{ia}\Psi}D_{ib}\Psi\,w\,d\mathbf z$.
 Integration by parts proves the operator formula on its form realization.
 The derivatives of $w$ include all block determinants, even those of other
 agents, because the metric depends on the full configuration.
@@ -9028,6 +9052,7 @@ actual objectives and by evaluating their global inequalities.
 :label: cor-vanishing-probability-current
 
 For $\psi=\sqrt\rho e^{iV/\sigma}$ and $D=\nabla-iB/\sigma$,
+
 $$
 J=\sigma\operatorname{Im}(\bar\psi\,G^{-1}D\psi)
 =\rho G^{-1}(dV-B).
@@ -9043,6 +9068,7 @@ connection or another state retains its explicitly computed current.
 
 For the fixed scalar self-adjoint realization with ground projection $P_0$,
 the spectral theorem gives
+
 $$
 e^{-\tau(H-E_0)/\sigma}\Psi\longrightarrow P_0\Psi.
 $$
@@ -9080,6 +9106,7 @@ $$
 :label: thm-tunneling-probability
 
 For the scalar Hamiltonian of Appendix E.7 the forbidden-region action is
+
 $$
 d_E(A,B)=\inf_\gamma\int_\gamma\sqrt{2(U-E)_+}\,d\ell_{\widetilde G}.
 $$
@@ -9135,6 +9162,7 @@ assert a finite sufficient state for the hidden process. $\square$
 
 Use Hermitian generators, $D_\mu=\partial_\mu-igA_\mu$, and $\Phi'=U\Phi$.
 For nonzero coupling $g$, covariance fixes
+
 $$
 A'_\mu=UA_\mu U^{-1}-\frac{i}{g}(\partial_\mu U)U^{-1}.
 $$
@@ -9145,6 +9173,7 @@ $$
 
 For the established scalar amplitude $\psi=\sqrt\rho e^{iV/\sigma}$,
 $D_i=\partial_i-iA^{\rm ext}_i/\sigma$ gives the spatial transport current
+
 $$
 j^i=\sigma\operatorname{Im}(\bar\psi G^{ij}D_j\psi)
 =\rho G^{ij}(\partial_jV-A^{\rm ext}_j).
@@ -9164,6 +9193,7 @@ separate from the internal matrix comparison connection.
 
 The amplitude of {prf:ref}`def-belief-wave-function` admits the local
 coordinate change
+
 $$
 V'=V+\sigma q\alpha,\qquad
 \psi'=e^{iq\alpha}\psi,\qquad B'=B+g_1^{-1}d\alpha,
@@ -9178,6 +9208,7 @@ It preserves $|\psi|^2$ and $\operatorname{Im}(\bar\psi D\psi)$.
 Write $q=Y/2$. For the phase representation in
 {prf:ref}`ax-local-utility-invariance`, set
 $D_\mu=\partial_\mu-ig_1qB_\mu$. The first-order action density
+
 $$
 \mathcal L_{\rm kin}=\frac{i\sigma}{2}
  (\bar\psi D_t\psi-\overline{D_t\psi}\,\psi)
@@ -9202,6 +9233,7 @@ do not identify Lorentz chirality or a full mode-mixing symmetry.
 
 For a nonzero linear CP operation $\mathcal E$ on the finite belief-operator
 space of {prf:ref}`def-belief-operator`, define
+
 $$
 r(\mathcal E)=\operatorname{rank}J(\mathcal E),\qquad
 J(\mathcal E)=\sum_{ij}|i\rangle\langle j|\otimes
@@ -9223,6 +9255,7 @@ between the two spaces. The case $r=2$ labels the doublet comparison.
 
 The existing GKSL model ({prf:ref}`def-gksl-generator`) supplies a CPTP
 semigroup on the finite belief-operator space. An outcome operation has
+
 $$
 \mathcal E_y(\rho)=\sum_aK_{ya}\rho K_{ya}^\dagger,
 \quad\sum_aK_{ya}^\dagger K_{ya}\preceq I,
@@ -9313,6 +9346,7 @@ $\psi_{\text{act}}^{\text{proj}}$ transforms with charge $Y_L - Y_\phi$, matchin
 
 For the specified $SU(r)$ representation on the active internal fiber,
 $W_\mu=W_\mu^aT_a$ defines
+
 $$
 D_\mu\Psi_L=(\partial_\mu-ig_2W_\mu-ig_1Y_LB_\mu/2)\Psi_L.
 $$
@@ -9367,6 +9401,7 @@ the frame-group calculation does not establish those decoder identities.
 
 With $t_a=\lambda_a/2$, $\operatorname{tr}(t_at_b)=\delta_{ab}/2$,
 $D_\mu=\partial_\mu-ig_sG_\mu^at_a$ has curvature
+
 $$
 F^a_{G,\mu\nu}=\partial_\mu G_\nu^a-\partial_\nu G_\mu^a
 +g_sf^{bc}{}_aG_\mu^bG_\nu^c.
@@ -9377,6 +9412,7 @@ $$
 :label: cor-standard-model-symmetry
 
 The specified mode and feature actions define a representation of
+
 $$
 G_0=SU(N_f)\times SU(r)\times U(1)
 $$
@@ -9389,6 +9425,7 @@ where $R$ is the combined representation on all fields and readout data.
 
 On the four-dimensional spin background of {prf:ref}`def-loc-spin-g`, the
 comparison fields are sections of
+
 $$
 (S_L\otimes E_L)\oplus(S_R\otimes E_R),\quad
 E_L=\mathbb C^r\otimes\mathbb C^{N_f},\quad E_R=\mathbb C^{N_f}.
@@ -9405,6 +9442,7 @@ in an orthonormal frame $(\gamma^{\hat0})^2=I$ and
 $\bar\Psi=\Psi^\dagger\gamma^{\hat0}$.
 The positive one-particle density is the contraction of the conserved
 current with the future Cauchy normal:
+
 $$
 \|\Psi\|_\Sigma^2=-\int_\Sigma n_\mu j^\mu\,d\Sigma,
 \qquad j^\mu=\bar\Psi\gamma^\mu\Psi.
@@ -9428,6 +9466,7 @@ spin and internal connection, using the Clifford convention in
 {prf:ref}`def-cognitive-spinor`. Its covariant connection wave operator is
 $\Box_D=g^{\mu\nu}(D_\mu D_\nu-\Gamma^\lambda_{\mu\nu}D_\lambda)$.
 For a constant scalar mass on the same bundle,
+
 $$
 (P-m)(P+m)=\Box_D-m^2
 -\frac14[\gamma^\mu,\gamma^\nu][D_\mu,D_\nu].
@@ -9484,9 +9523,10 @@ D_\mu \phi &= \left(\partial_\mu - i g_1 \frac{Y_\phi}{2} B_\mu - i g_2 T^a W^a_
 $$
 
 Gauge invariance of the Yukawa term $\bar{\Psi}_L \phi \Psi_R$ requires
-$
+
+$$
 Y_R = Y_L - Y_\phi.
-$
+$$
 
 :::
 
@@ -9512,6 +9552,7 @@ The commutator of the covariant derivatives $[D_\mu, D_\nu]$ generates three dis
 Ontological stress is the conditional mutual information of
 {prf:ref}`def-ontological-stress`. If $C=(K_t,z_{n,t},K_t^{\rm act})$,
 its exact expression is
+
 $$
 \Xi=\int D_{\rm KL}\big(P_{X,Y\mid C=c}\Vert
 P_{X\mid C=c}\otimes P_{Y\mid C=c}\big)\,P_C(dc),
@@ -9526,6 +9567,7 @@ values). A connection matrix alone does not determine this joint law.
 :label: cor-gauge-invariant-action
 
 For the product representation, the action
+
 $$
 S_g=-\frac14\int\big(B_{\mu\nu}B^{\mu\nu}
 +W^a_{\mu\nu}W^{a\mu\nu}+G^a_{\mu\nu}G^{a\mu\nu}\big)d\mu_g
@@ -9573,6 +9615,7 @@ Write $a=\Xi-\Xi_{\rm crit}$ and use the drift
 $b(r)=ar-\alpha r^3$ of
 {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`.
 At fixed $a,\alpha$ its radial potential, up to an additive constant, is
+
 $$
 \mathcal V(r)=-\frac a2r^2+\frac\alpha4r^4
 =-\mu^2r^2+\lambda r^4,
@@ -9585,6 +9628,7 @@ $$
 
 For the established $\alpha>0$, hence $\lambda>0$, the minimum is at
 $\phi=0$ for $\mu^2\le0$. For $\mu^2>0$, put
+
 $$
 v^2=\frac{\mu^2}{2\lambda}=\frac{\Xi-\Xi_{\rm crit}}{\alpha}.
 $$
@@ -9597,6 +9641,7 @@ Use $\mathcal L_\phi=-(D_\mu\phi)^\dagger D^\mu\phi-\mathcal V(\phi)$
 with signature $(-+++)$ and $\phi_0=vn_0$, $n_0^\dagger n_0=1$.
 For the combined Hermitian generators
 $Q_A=(g_2T_a,g_1Y_\phi I/2)$, the real vector mass matrix is
+
 $$
 (M^2)_{AB}=v^2n_0^\dagger\{Q_A,Q_B\}n_0,
 \qquad\mathcal L_{\rm mass}=-\tfrac12(M^2)_{AB}A_\mu^A A^{B\mu}.
@@ -9621,6 +9666,7 @@ and the gauge orbit retain their separate established definitions.
 :label: def-decision-coupling
 
 For the specified chiral comparison fields and scalar, define
+
 $$
 \mathcal L_Y=-\sum_{ij}\left[
 Y_{ij}\bar\Psi_{L,i}^{\,a}\phi_a\Psi_{R,j}
@@ -9689,11 +9735,13 @@ Use the fixed-metric polar construction of {prf:ref}`thm-madelung-transform`.
 On a positive-density chart put $a=\sqrt\rho$, $\psi=ae^{iV/\sigma}$,
 $p=dV-B$, $v=G^{-1}p$, $D_i=\partial_i-iB_i/\sigma$, and
 $Q=-\sigma^2\Delta_Ga/(2a)$. The Hamilton--Jacobi and mass equations
+
 $$
 \partial_sV+\tfrac12|p|_G^2+\Phi=0,\qquad
 \partial_s\rho+\operatorname{div}_G(\rho v)=r\rho
 $$
 are equivalent on this chart to
+
 $$
 i\sigma\partial_s\psi=
 \left[-\frac{\sigma^2}{2}\Delta_B+\Phi-Q+\frac{i\sigma r}{2}\right]\psi.
@@ -9706,6 +9754,7 @@ Here $r$ is the reaction rate, not the internal mode dimension.
 :label: def-cognitive-lagrangian
 
 The specified matrix and chiral fields define the classical density
+
 $$
 \begin{aligned}
 \mathcal L_{\rm cmp}={}&-\tfrac14B_{\mu\nu}B^{\mu\nu}
@@ -9779,8 +9828,7 @@ Osterwalder-Schrader axioms {cite}`osterwalder1973axioms,osterwalder1975axioms` 
 2. **OS1 Euclidean Covariance:** $S_n$ is invariant under the Euclidean group $E(4)$.
 3. **OS2 Reflection Positivity:** For any polynomial $F$ of smeared fields with support in positive
    Euclidean time, $\langle \Theta F \cdot F \rangle_E \ge 0$, where $\Theta$ is time reflection.
-4. **OS3 Cluster Property:** $S_{m+n}(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to
-   S_m(x_1,\ldots,x_m)\,S_n(x_{m+1},\ldots,x_{m+n})$ as $|a|\to\infty$.
+4. **OS3 Cluster Property:** $S_{m+n}(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to S_m(x_1,\ldots,x_m)\,S_n(x_{m+1},\ldots,x_{m+n})$ as $|a|\to\infty$.
 5. **OS4 Symmetry:** $S_n$ is symmetric under permutations (graded symmetry for fermions).
 
 The full reconstruction theorem also includes growth control on the correlation family; the index OS0 here includes that requirement when the theorem is invoked. Vacuum uniqueness is the vacuum-sector property associated with clustering.
@@ -9798,8 +9846,7 @@ $(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})$
 3. $P_G$ is a principal $G$-bundle over $\mathcal{M}$ (fixed topology).
 4. $A^{\text{ext}}$ is a fixed background 1-form (the external drive).
 
-Morphisms $\chi:(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})
-\to (\mathcal{M}', g', \mathfrak{o}', \mathfrak{t}', \mathcal{S}', P_G', A^{\text{ext}\prime})$
+Morphisms $\chi:(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}}) \to (\mathcal{M}', g', \mathfrak{o}', \mathfrak{t}', \mathcal{S}', P_G', A^{\text{ext}\prime})$
 are smooth isometric embeddings with causally convex image that preserve $\mathfrak{o}$ and
 $\mathfrak{t}$, admit a lift to the spin bundles, and are covered by a bundle morphism
 $\tilde{\chi}:P_G \to P_G'$ with $\chi^*A^{\text{ext}\prime} = A^{\text{ext}}$.
@@ -9896,10 +9943,11 @@ category does not construct its interacting field functor.
 For each oriented Riemannian manifold $(\mathcal{M}, g)$ (boundary allowed), there is a net of
 local observable *-algebras $\mathcal{A}_{\mathcal{M}}(\mathcal{O})$ for open regions
 $\mathcal{O} \subset \mathcal{M}$ with isotony:
-$
+
+$$
 \mathcal{O}_1 \subset \mathcal{O}_2 \Rightarrow
 \mathcal{A}_{\mathcal{M}}(\mathcal{O}_1) \subset \mathcal{A}_{\mathcal{M}}(\mathcal{O}_2).
-$
+$$
 Algebras of causally disjoint regions commute (graded for fermions) with causal separation defined
 by Definition {prf:ref}`def-causal-interval`.
 :::
@@ -9909,10 +9957,11 @@ by Definition {prf:ref}`def-causal-interval`.
 
 There is a compact gauge group $G$ acting locally on fields. The physical observable algebra is
 the gauge-invariant subalgebra:
-$
+
+$$
 \mathcal{A}^{\mathrm{phys}}_{\mathcal{M}}(\mathcal{O}) =
 \mathcal{A}_{\mathcal{M}}(\mathcal{O})^{G}.
-$
+$$
 Only gauge-invariant elements represent physical observables.
 :::
 
@@ -10149,6 +10198,7 @@ Let $P_t=e^{tL}$ be its transition semigroup with stationary law $\pi$ and
 detailed balance $\pi_xP_t(x,y)=\pi_yP_t(y,x)$. For the stationary two-sided
 path law and a bounded cylinder functional $F$ of positive times, define
 $\Theta F$ by complex conjugation and time reflection. Then
+
 $$
 \mathbb E[\Theta F\,F]
 =\sum_x\pi_x\left|\mathbb E[F\mid X_0=x]\right|^2\ge0.
@@ -10168,6 +10218,7 @@ not identify a separate field measure with that semigroup.
 :label: rem-os2-gauge-fixing-wilson
 
 For a matrix connection define
+
 $$
 W_R(C)=\operatorname{tr}_R\mathcal P\exp
 \left(i g\oint_C A_\mu\,dx^\mu\right).
@@ -10724,9 +10775,15 @@ where $dg$ is the normalized Haar measure on $G$ (unique bi-invariant measure wi
 1. **Inner product structure:** $\langle \cdot, \cdot \rangle_G$ satisfies linearity, symmetry, and positive definiteness. For $z \neq 0$, we have $\langle \rho_0(g) z, \rho_0(g) z \rangle_0 > 0$ for all $g$ (since $\rho_0(g)$ is invertible). By compactness of $G$ and continuity, the integral $\langle z, z \rangle_G > 0$.
 
 2. **$G$-invariance:** For any $h \in G$:
-   $$\langle \rho_0(h) z, \rho_0(h) z' \rangle_G = \int_G \langle \rho_0(g) \rho_0(h) z, \rho_0(g) \rho_0(h) z' \rangle_0 \, dg$$
+
+   $$
+   \langle \rho_0(h) z, \rho_0(h) z' \rangle_G = \int_G \langle \rho_0(g) \rho_0(h) z, \rho_0(g) \rho_0(h) z' \rangle_0 \, dg
+   $$
    Substituting $g' = gh$ and using left-invariance of Haar measure ($dg' = dg$):
-   $$= \int_G \langle \rho_0(g') z, \rho_0(g') z' \rangle_0 \, dg' = \langle z, z' \rangle_G$$
+
+   $$
+   = \int_G \langle \rho_0(g') z, \rho_0(g') z' \rangle_0 \, dg' = \langle z, z' \rangle_G
+   $$
    Therefore $\rho_0(h)$ is orthogonal (actually unitary) with respect to $\langle \cdot, \cdot \rangle_G$ for all $h \in G$.
 
 We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
@@ -10764,7 +10821,7 @@ $$
 \end{array}
 $$
 
-**Units:** If $[z] = [z']$ (both in units of $\sqrt{\text{nat}}$), then $[f(z)] = [z']$ and $[\rho(g)] = [\rho'(g)] = $ dimensionless.
+**Units:** If $[z] = [z']$ (both in units of $\sqrt{\text{nat}}$), then $[f(z)] = [z']$ and $[\rho(g)] = [\rho'(g)]$ (dimensionless).
 :::
 
 :::{prf:definition} Fragile Gauge Group
@@ -10822,17 +10879,29 @@ $$
    1. **Identity preservation:** $I_N + i \cdot 0 \mapsto \mathrm{diag}(I_N, I_N) = I_{2N}$ ✓
 
    2. **Multiplicativity:** For $U_1, U_2 \in SU(N)$ with $U_k = A_k + iB_k$, the product $U_1 U_2 = (A_1 A_2 - B_1 B_2) + i(A_1 B_2 + B_1 A_2)$ satisfies:
-      $$\rho_{\mathbb{R}}(U_1 U_2) = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -(A_1 B_2 + B_1 A_2) \\ A_1 B_2 + B_1 A_2 & A_1 A_2 - B_1 B_2 \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U_1 U_2) = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -(A_1 B_2 + B_1 A_2) \\ A_1 B_2 + B_1 A_2 & A_1 A_2 - B_1 B_2 \end{pmatrix}
+      $$
       Direct computation of block matrix multiplication gives:
-      $$\rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2) = \begin{pmatrix} A_1 & -B_1 \\ B_1 & A_1 \end{pmatrix} \begin{pmatrix} A_2 & -B_2 \\ B_2 & A_2 \end{pmatrix} = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -A_1 B_2 - B_1 A_2 \\ B_1 A_2 + A_1 B_2 & -B_1 B_2 + A_1 A_2 \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2) = \begin{pmatrix} A_1 & -B_1 \\ B_1 & A_1 \end{pmatrix} \begin{pmatrix} A_2 & -B_2 \\ B_2 & A_2 \end{pmatrix} = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -A_1 B_2 - B_1 A_2 \\ B_1 A_2 + A_1 B_2 & -B_1 B_2 + A_1 A_2 \end{pmatrix}
+      $$
       Therefore $\rho_{\mathbb{R}}(U_1 U_2) = \rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2)$, confirming the homomorphism property.
 
    3. **Orthogonality:** The unitarity condition $U^* U = I$ for $U = A + iB$ decomposes into $A^T A + B^T B = I_N$ (real part) and $A^T B = B^T A$ (imaginary part, implying $A^T B$ is symmetric). Computing:
-      $$\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = \begin{pmatrix} A^T & B^T \\ -B^T & A^T \end{pmatrix} \begin{pmatrix} A & -B \\ B & A \end{pmatrix} = \begin{pmatrix} A^T A + B^T B & -A^T B + B^T A \\ -B^T A + A^T B & B^T B + A^T A \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = \begin{pmatrix} A^T & B^T \\ -B^T & A^T \end{pmatrix} \begin{pmatrix} A & -B \\ B & A \end{pmatrix} = \begin{pmatrix} A^T A + B^T B & -A^T B + B^T A \\ -B^T A + A^T B & B^T B + A^T A \end{pmatrix}
+      $$
       Using $A^T B = B^T A$ and $A^T A + B^T B = I_N$ yields $\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = I_{2N}$, so $\rho_{\mathbb{R}}(U) \in O(2N)$.
 
    4. **Determinant:** Using the block determinant identity:
-      $$\det(\rho_{\mathbb{R}}(U)) = \det(A + iB)\det(A - iB) = \det(U)\det(\bar{U}) = |\det(U)|^2 = 1$$
+
+      $$
+      \det(\rho_{\mathbb{R}}(U)) = \det(A + iB)\det(A - iB) = \det(U)\det(\bar{U}) = |\det(U)|^2 = 1
+      $$
       confirming $\rho_{\mathbb{R}}: SU(N) \to SO(2N)$.
 
    **Implementation note:** The faithful $SO(2n_b)$ realification doubles the bundle-index dimension. In practice, the full $SU(n_b)$ symmetry is **broken to a discrete subgroup** (permutations and sign flips of bundles), which naturally embeds in $SO(n_b)$ as signed permutation matrices. This is enforced implicitly through the isotropic architecture design, not by explicitly constructing gauge transformations.
@@ -11443,7 +11512,10 @@ where the right-hand side is left-multiplication on $SE(2)$: $(L_{g_0} f)(g) = f
 - **LHS:** $(L(L_{g_0} I))(x, \theta) = \sum_i (\psi_i^{(\theta)} * (L_{g_0} I))(x) \cdot e_i$
 - Change variables in convolution: $(\psi_i^{(\theta)} * (L_{g_0} I))(x) = \int \psi_i(R_\theta^{-1}(x - y)) I(R_{\theta_0}^{-1}(y - x_0)) dy$
 - Substitute $u = R_{\theta_0}^{-1}(y - x_0)$, so $y = R_{\theta_0} u + x_0$:
-  $$= \int \psi_i(R_\theta^{-1}(x - x_0 - R_{\theta_0} u)) I(u) du = \int \psi_i(R_{\theta - \theta_0}^{-1}(R_{\theta_0}^{-1}(x - x_0) - u)) I(u) du$$
+
+  $$
+  = \int \psi_i(R_\theta^{-1}(x - x_0 - R_{\theta_0} u)) I(u) du = \int \psi_i(R_{\theta - \theta_0}^{-1}(R_{\theta_0}^{-1}(x - x_0) - u)) I(u) du
+  $$
 - **RHS:** $(L_{g_0}(L I))(g) = (L I)(g_0^{-1} g)$ where $g_0^{-1} = (-R_{\theta_0}^{-1} x_0, R_{\theta_0}^{-1})$
 - $g_0^{-1} g = (R_{\theta_0}^{-1}(x - x_0), R_{\theta - \theta_0})$ (using SE(2) multiplication)
 - $(L I)(R_{\theta_0}^{-1}(x - x_0), \theta - \theta_0) = \sum_i (\psi_i^{(\theta - \theta_0)} * I)(R_{\theta_0}^{-1}(x - x_0)) \cdot e_i$
@@ -11694,7 +11766,10 @@ In typical settings with $L_g > 0$ and $R_{\max} \gtrsim 1$, the radial term $R_
 - For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.129$ (same critical point)
 
 **Derivation of critical point:**
-$$g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \phi(x)(2 - x^2)$$
+
+$$
+g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \phi(x)(2 - x^2)
+$$
 Setting $g''(x) = 0$ yields $x^2 = 2$, so $x^* = \sqrt{2}$ (taking positive root). At this point: $g'(\sqrt{2}) = \Phi(\sqrt{2}) + \sqrt{2}\phi(\sqrt{2}) \approx 0.9214 + 0.2075 \approx 1.129$.
 
 Thus $L_g \approx 1.129$ and
@@ -12681,9 +12756,9 @@ z_0 = E(x_0), \quad z_{t+1} = D(z_t, a_t), \quad a_t = P(z_t)
 $$
 
 **Units:**
-- $[\mathcal{X}] = $ dimensionless (pixel intensities in $[0, 1]$ or normalized sensor values)
+- $[\mathcal{X}]$ is dimensionless (pixel intensities in $[0, 1]$ or normalized sensor values)
 - $[\mathcal{Z}] = \sqrt{\text{nat}}$ (latent space has information-theoretic units; $\sqrt{\text{nat}}$ arises from the Fisher-Rao metric on probability distributions, where distances have units of $\sqrt{\text{information}}$)
-- $[\mathcal{Y}] = $ task-dependent (e.g., dimensionless for discrete actions, physical units for continuous control)
+- $[\mathcal{Y}]$ is task-dependent (e.g., dimensionless for discrete actions, physical units for continuous control)
 :::
 
 :::{prf:definition} Gauge-Equivariant Architecture
@@ -13207,10 +13282,16 @@ has solution $W^{\text{mix}} \approx 0$.
 Each `SoftEquivariantLayer` forward pass can be interpreted as a single BAOAB integration step:
 
 **B (Momentum update):** Equivariant pathway computes geodesic velocity
-$$v_i \to v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$$
+
+$$
+v_i \to v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
+$$
 
 **A (Position update, first half):** Mixing pathway introduces cross-bundle coupling
-$$v_i \to v_i + \sum_j W_{ij} v_j$$
+
+$$
+v_i \to v_i + \sum_j W_{ij} v_j
+$$
 
 **O (Ornstein-Uhlenbeck thermostat):** Implicit in activation nonlinearity (GELU in norm MLP)
 
@@ -13228,7 +13309,9 @@ $$v_i \to v_i + \sum_j W_{ij} v_j$$
 
 The L1 regularization strength adapts based on current equivariance violation:
 
-$$\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)$$
+$$
+\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)
+$$
 
 where:
 - $\epsilon(t) = \mathcal{L}_{\text{equiv}}(t)$: Current equivariance violation
@@ -13730,8 +13813,7 @@ $$
 \omega_{\partial} := \frac{1}{\eta_\ell}\, dA_G,
 
 $$
-so that $C_{\partial}(\partial_{\varepsilon}\mathcal Z)=
-\oint_{\partial_{\varepsilon}\mathcal Z}\omega_{\partial}$ (Definition
+so that $C_{\partial}(\partial_{\varepsilon}\mathcal Z)= \oint_{\partial_{\varepsilon}\mathcal Z}\omega_{\partial}$ (Definition
 {prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`). If no
 geometric cutoff is part of the model, replace this area expression by the
 interface-channel capacity.
@@ -14242,6 +14324,7 @@ Distances may vanish within an allowed connected region.
 
 For an eigenfunction $(H_\sigma-E)u=0$ in the scalar realization and a
 bounded smooth real weight $f$, put $v=e^{f/\sigma}u$. Then
+
 $$
 \frac{\sigma^2}{2}\int|\nabla v|^2
 +\int\left(U-E-\frac12|\nabla f|^2\right)|v|^2=0.
@@ -14256,8 +14339,7 @@ give the local form, with their explicit derivative terms retained.
 :label: cor-e7-adversarial-suppression
 
 For $g_1\succeq g_0$ and the same $U,E$, every path obeys
-$\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_1}
-\ge\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_0}$.
+$\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_1} \ge\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_0}$.
 Taking infima gives $d_E^{g_1}\ge d_E^{g_0}$. This compares barrier
 actions at the same energy. Changing a Hamiltonian generally changes its
 ground energy as well, so one cannot substitute two different ground
@@ -14270,11 +14352,13 @@ transition probabilities from two upper bounds. $\square$
 
 Let $X_s$ have generator $\Delta_{\widetilde G}/2$, killed at a Dirichlet
 boundary or reflected for the Neumann realization. Then
+
 $$
 (e^{-tH_\sigma/\sigma^2}\phi)(x)
 =\mathbb E_x\left[e^{-\sigma^{-2}\int_0^tU(X_s)ds}\phi(X_t)\right],
 $$
 with the survival indicator in the killed case. To obtain the ground vector,
+
 $$
 e^{tE_0/\sigma^2}e^{-tH_\sigma/\sigma^2}\phi
 \longrightarrow\langle u_0,\phi\rangle u_0
@@ -14289,8 +14373,7 @@ For any absolutely continuous path in the forbidden region, set
 $a=|\dot\gamma|_{\widetilde G}$, $b=\sqrt{2(U-E)}$. Then
 $a^2/2+U-E-ab=(a-b)^2/2\ge0$.
 Integration gives
-$\int(|\dot\gamma|^2/2+U-E)dt
-\ge\int\sqrt{2(U-E)}|\dot\gamma|dt$.
+$\int(|\dot\gamma|^2/2+U-E)dt \ge\int\sqrt{2(U-E)}|\dot\gamma|dt$.
 Equality is attained on a parametrization with $a=b$ wherever that
 parametrization is defined. This relates an action to barrier length.
 An asymptotic probability additionally belongs to a specified stochastic
@@ -15362,7 +15445,10 @@ def class_modulated_jump_rate(
 **Purpose:** Computes class-consistent jump rates that suppress transitions between charts of different dominant classes, implementing the class-modulated rate from Definition {prf:ref}`def-class-consistent-jump-rate`.
 
 **Mathematical operation:**
-$$\lambda_{kk'}^{\text{sup}} = \lambda_{kk'}^{\text{base}} \cdot \exp(-\gamma_{\text{sep}} \cdot D_{\text{class}}(k, k'))$$
+
+$$
+\lambda_{kk'}^{\text{sup}} = \lambda_{kk'}^{\text{base}} \cdot \exp(-\gamma_{\text{sep}} \cdot D_{\text{class}}(k, k'))
+$$
 
 where $D_{\text{class}}(k, k') = 1$ if charts $k$ and $k'$ have different dominant classes, else $0$.
 
@@ -15465,7 +15551,10 @@ class CausalMask(nn.Module):
 **Purpose:** Computes the causal mask from the light cone structure, enforcing that attention is zero outside the causal past $J^-(z, t)$.
 
 **Mathematical operation:**
-$$M_{\text{causal}}(z, t; z', t') = \mathbf{1}\left[ t' < t \text{ and } d_G(z, z') \leq c_{\text{info}}(t - t') \right]$$
+
+$$
+M_{\text{causal}}(z, t; z', t') = \mathbf{1}\left[ t' < t \text{ and } d_G(z, z') \leq c_{\text{info}}(t - t') \right]
+$$
 
 **Key insight:** This is spacetime causality, not just temporal ordering. Events must be both in the past *and* within the light cone defined by the information speed $c_{\text{info}}$.
 
@@ -15498,7 +15587,10 @@ class TemporalChristoffelQuery(nn.Module):
 **Purpose:** Extends the geodesic Query projection to include temporal Christoffel terms for the Lorentzian metric.
 
 **Mathematical operation:**
-$$Q_{\text{geo}}(x, z, t, v) = W_Q x + W_{Qz} z + W_{Qt} t + W_{Qv} v + W_{Q,\Gamma}(z, z) + W_{Q,t}(t, t) + W_{Q,zt}(z, t)$$
+
+$$
+Q_{\text{geo}}(x, z, t, v) = W_Q x + W_{Qz} z + W_{Qt} t + W_{Qv} v + W_{Q,\Gamma}(z, z) + W_{Q,t}(t, t) + W_{Q,zt}(z, t)
+$$
 
 **Christoffel structure:** For the Lorentzian metric $g_{\mu\nu} = \text{diag}(-c^2\lambda^2, \lambda^2 I_d)$:
 - Spatial: $\Gamma^k_{ij} = \frac{2}{1-|z|^2}(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k)$
@@ -15616,7 +15708,10 @@ class WilsonLineApprox(nn.Module):
 - `theta_opportunity` – $U(1)_Y$ connection coefficient
 
 **Mathematical operation:**
-$$U(z, z') \approx I - i\Theta(z) \cdot (z - z')$$
+
+$$
+U(z, z') \approx I - i\Theta(z) \cdot (z - z')
+$$
 
 where $\Theta$ encodes the total gauge connection $A_\mu = g_s G_\mu + g_2 W_\mu + g_1 B_\mu$.
 
@@ -15690,7 +15785,10 @@ class ChristoffelQuery(nn.Module):
 **Purpose:** Implements the geodesic Query projection encoding Christoffel symbols via linear + quadratic terms.
 
 **Mathematical operation:**
-$$Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} v_{\text{feat}} + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)$$
+
+$$
+Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} v_{\text{feat}} + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)
+$$
 
 **Learnable parameters:**
 - `W_Q` – Feature projection
@@ -15728,7 +15826,10 @@ class ChiralProjector(nn.Module):
 **Purpose:** Implements the $SU(2)_L$ chiral projector that extracts committed actions from the observation-action doublet using the value gradient direction.
 
 **Mathematical operation:**
-$$\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})$$
+
+$$
+\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})
+$$
 
 where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices.
 
@@ -15774,7 +15875,10 @@ class AreaLawScreening(nn.Module):
 **Purpose:** Implements $SU(N_f)_C$ area law screening for texture confinement. Suppresses attention between positions at different representation levels.
 
 **Mathematical operation:**
-$$\alpha_{\text{screened}} = \alpha \cdot \exp(-\sigma(\ell) \cdot A_{\text{string}})$$
+
+$$
+\alpha_{\text{screened}} = \alpha \cdot \exp(-\sigma(\ell) \cdot A_{\text{string}})
+$$
 
 where:
 - $\sigma(\ell) = \sigma_0 \cdot e^{-\ell/L}$ is the level-dependent string tension
@@ -15874,7 +15978,10 @@ class GeodesicCrossAttention(nn.Module):
 5. **Head 5 (B-step):** Second half-kick from force bank
 
 **OU coefficients:**
-$$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
+
+$$
+c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}
+$$
 
 **Boltzmann preservation:** Preserves $\rho(z, p) \propto \exp(-\Phi_{\text{eff}}/T_c - \|p\|_G^2/(2T_c))$ to $O(h^2)$ (Theorem {prf:ref}`thm-baoab-attention-boltzmann`).
 
@@ -15905,7 +16012,10 @@ class SpectralLinear(nn.Module):
 - `bias` – Typically `False` for gauge invariance (breaks tangent bundle structure)
 
 **Mathematical operation:**
-$$y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\text{normalized}}) \leq 1$$
+
+$$
+y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\text{normalized}}) \leq 1
+$$
 
 **Key properties:**
 - Contraction: $\|y\| \leq \|x\|$ (no unbounded amplification)
@@ -15942,7 +16052,10 @@ def norm_gated_activation(v: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
 **Purpose:** $SO(d_b)$-equivariant activation using radial symmetry. Gates signal based on energy $\|v\|$ exceeding threshold $-b$.
 
 **Mathematical operation:**
-$$f(v_i) = v_i \cdot g(\|v_i\| + b_i)$$
+
+$$
+f(v_i) = v_i \cdot g(\|v_i\| + b_i)
+$$
 
 where:
 - $\|v_i\| = \sqrt{v_i^T v_i}$ is the Euclidean norm (rotation-invariant)
@@ -15988,7 +16101,10 @@ class IsotropicBlock(nn.Module):
 **Purpose:** Atomic gauge-covariant building block combining SpectralLinear, Reshape, and NormGate in sequence.
 
 **Architecture:**
-$$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear}(z)))$$
+
+$$
+\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear}(z)))
+$$
 
 **Key parameters:**
 - `in_dim` – Input dimension [nat]
@@ -16009,7 +16125,10 @@ $$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear
 
 **Mathematical constraint (exact mode):**
 By Schur's lemma, any linear map commuting with all $g \in SO(d_b)$ must be a scalar multiple of identity:
-$$W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}$$
+
+$$
+W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}
+$$
 
 **Diagnostic nodes:** Node 67 (GaugeInvarianceCheck), Node 62 (CausalityViolationCheck), and the DNN-local BindingConfinementCheck (DNN-B). Global Node 40 is CapacitySaturationCheck.
 
@@ -16036,7 +16155,10 @@ class GaugeInvarianceCheck(DiagnosticNode):
 **Purpose:** Diagnostic node (Node 67) that verifies $G$-equivariance by sampling random group transformations and measuring violation.
 
 **Mathematical test:**
-$$\delta_{\text{gauge}} = \|f(g \cdot z) - g \cdot f(z)\| < \epsilon_{\text{gauge}}$$
+
+$$
+\delta_{\text{gauge}} = \|f(g \cdot z) - g \cdot f(z)\| < \epsilon_{\text{gauge}}
+$$
 
 where $g$ is a randomly sampled group element (e.g., rotation matrix for $SO(d)$).
 
@@ -16088,7 +16210,10 @@ class CovariantRetina(nn.Module):
 - `kernel_size` – Convolutional kernel size [pixels]
 
 **Equivariance guarantee:**
-$$\text{Conv}(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}(I)$$
+
+$$
+\text{Conv}(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}(I)
+$$
 
 where $R_\theta$ is a rotation by angle $\theta$ and $D^{(\ell)}$ is the representation matrix.
 
@@ -16164,7 +16289,10 @@ class SoftEquivariantLayer(nn.Module):
 **Purpose:** Core latent dynamics layer combining equivariant and mixing pathways with L1 regularization for emergent structure discovery.
 
 **Architecture:**
-$$z_{\text{out}} = z + f_{\text{equiv}}(z) + g \cdot f_{\text{mix}}(z)$$
+
+$$
+z_{\text{out}} = z + f_{\text{equiv}}(z) + g \cdot f_{\text{mix}}(z)
+$$
 
 where:
 - **Equivariant pathway:** $f_{\text{equiv}}(z) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$
@@ -16251,7 +16379,10 @@ def equivariance_violation(self, z=None, n_samples=16) -> torch.Tensor:
 ```
 
 **Total loss:**
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}$$
+
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}
+$$
 
 **Key theorems:**
 - Universal approximation (encoder/decoder handle arbitrary functions)
@@ -16285,7 +16416,10 @@ class FactoredTensorLayer(nn.Module):
 **Purpose:** Low-rank factorization of tensor product interaction for cross-gauge coupling.
 
 **Mathematical operation:**
-$$W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}$$
+
+$$
+W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}
+$$
 
 instead of full tensor $W \in \mathbb{R}^{(d_C d_L d_Y) \times d_{\text{out}}}$.
 
@@ -16321,7 +16455,10 @@ class NormInteractionLayer(nn.Module):
 **Purpose:** Level 1 cross-bundle interaction using only bundle norms (strictly equivariant).
 
 **Mathematical operation:**
-$$f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$$
+
+$$
+f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
+$$
 
 where $\phi: \mathbb{R}^{n_b} \to \mathbb{R}_+$ is an MLP with Softplus output.
 
@@ -16351,9 +16488,18 @@ class GramInteractionLayer(nn.Module):
 **Purpose:** Level 2 cross-bundle interaction using Gram matrix $G_{ij} = \langle v_i, v_j \rangle$ (encodes relative orientations).
 
 **Mathematical operation:**
-$$G = z \cdot z^T \quad \text{(Gram matrix)}$$
-$$\text{scales} = \phi(G_{\text{flat}}) \quad \text{(MLP)}$$
-$$z_{\text{out}} = z \cdot \text{scales}$$
+
+$$
+G = z \cdot z^T \quad \text{(Gram matrix)}
+$$
+
+$$
+\text{scales} = \phi(G_{\text{flat}}) \quad \text{(MLP)}
+$$
+
+$$
+z_{\text{out}} = z \cdot \text{scales}
+$$
 
 **Equivariance:** Equivariant under **global** $SO(d_b)$ (same rotation applied to all bundles), **not** under per-bundle rotations.
 
@@ -16387,7 +16533,10 @@ class AdaptiveL1Scheduler:
 **Purpose:** Adaptive scheduler for L1 regularization strength $\lambda_{\text{L1}}$ that targets a specific equivariance violation level.
 
 **Update rule:**
-$$\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)$$
+
+$$
+\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)
+$$
 
 where:
 - $\epsilon(t) = \mathcal{L}_{\text{equiv}}(t)$ is current equivariance violation

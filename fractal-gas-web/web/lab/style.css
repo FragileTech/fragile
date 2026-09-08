@@ -1,25 +1,14 @@
-:root {
-  color-scheme: dark;
-  --bg: #15111b;
-  --panel: #1d1825;
-  --line: #3b3048;
-  --muted: #b5a6c0;
-  --ink: #f1eaf5;
-  --brand: #9059a4;
-  --accent: #d0a9e2;
-  --cyan: #7ef5df;
-  --gold: #efc87b;
-  --rose: #ff729b;
-  --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-}
 :root[data-visual-style="steampunk"] {
   --bg: #211a15;
   --panel: #2b221b;
+  --panel-raised: #34291f;
   --line: #64503a;
+  --line-strong: #7b6144;
   --muted: #c9b79e;
   --ink: #f4e9d6;
   --brand: #a8723b;
   --accent: #e2b56b;
+  --accent-hover: #f0cc91;
   --cyan: #e2b56b;
   --gold: #e9c486;
   --rose: #e39076;
@@ -172,10 +161,10 @@ textarea {
 }
 button {
   cursor: pointer;
-  background: #192331;
+  background: var(--panel-raised);
   color: var(--ink);
-  border: 1px solid #354255;
-  border-radius: 3px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   padding: 8px 11px;
   white-space: nowrap;
   transition:
@@ -183,8 +172,8 @@ button {
     border-color 0.15s;
 }
 button:hover {
-  background: #263648;
-  border-color: #74b6bd;
+  background: #352743;
+  border-color: var(--accent);
 }
 button:disabled {
   opacity: 0.4;
@@ -195,17 +184,17 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 summary:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--cyan);
   outline-offset: 3px;
 }
 button.primary {
   background: var(--accent);
-  color: #27182f;
+  color: var(--bg);
   border-color: var(--accent);
   font-weight: 650;
 }
 button.primary:hover {
-  background: #e5c8f1;
+  background: var(--accent-hover);
 }
 a {
   color: inherit;
@@ -334,9 +323,9 @@ textarea,
 input[type="number"] {
   min-width: 0;
   width: 100%;
-  background: #0b121d;
-  border: 1px solid #354253;
-  border-radius: 3px;
+  background: var(--field);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
   color: var(--ink);
   padding: 8px 9px;
   font: 11px var(--mono);
@@ -480,7 +469,7 @@ details .field {
   margin-left: 5px;
   padding: 0;
   vertical-align: middle;
-  background: #12141a;
+  background: var(--field);
   color: var(--muted);
   border: 1px solid var(--line);
   border-radius: 50%;

@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "test:arcade-browser": "node tests/arcade-planners-browser.mjs",
+    "capture:arcade-docs": "node tools/capture-arcade-docs.mjs",
+    "test:visual-cohesion-browser": "node tests/visual-cohesion-browser.mjs",
     "test:lab-live-rewards": "node tests/control-live-rewards.test.mjs",
     "test:lab-live-rewards-browser": "node tests/control-live-rewards-browser.mjs",
     "build:lab": "node tools/build-lab.mjs",

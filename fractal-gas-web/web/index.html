@@ -7,15 +7,24 @@
   <!-- COOP/COEP via service worker for hosts that can't set headers
        (GitHub Pages); no-op when the server already sets them. -->
   <script src="coi-serviceworker.min.js"></script>
+  <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>Fractal Gas <span class="subtitle">Mario &middot; Atari &middot; Sonic &middot; Montezuma &mdash; C++ / WebAssembly</span></h1>
-    <a href="optimization/" style="color:#d0a9e2;padding:8px 14px">Optimization Lab</a>
-    <a href="lab/" style="color:#7ef5df;margin-left:auto;padding:8px 14px;border:1px solid #466274;border-radius:4px;white-space:nowrap">Continuous control lab ↗</a>
-    <a href="docs/lab/" target="_blank" rel="noopener noreferrer" style="color:#7ef5df;white-space:nowrap">Lab user guide ↗</a>
-    <div id="header-controls">
+  <header class="app-header arcade-header">
+    <a class="app-brand" href="./" aria-label="Fragile Tech arcade">
+      <img class="app-brand-logo" src="lab/branding/logo.png" alt="" width="48" height="48">
+      <span>fragile.tech<span class="app-brand-sub">Arcade</span></span>
+    </a>
+    <h1 class="app-page-title">Arcade <span class="subtitle">Mario &middot; Atari &middot; Sonic &middot; Montezuma</span></h1>
+    <nav class="app-nav" aria-label="Laboratory navigation">
+      <span class="is-active" aria-current="page">Arcade</span>
+      <a href="lab/">Control Lab</a>
+      <a href="optimization/">Optimization Lab</a>
+      <a href="docs/lab/" target="_blank" rel="noopener noreferrer">User guide ↗</a>
+    </nav>
+    <div id="status" class="status app-status">Loading&hellip;</div>
+    <div id="header-controls" class="app-context-bar">
       <section title="All four run with bundled ROMs and pthread-parallel
 emulation. Atari defaults to Ms. Pac-Man; pick another game from its list.
 Montezuma is the Atari core with room-aware logic and the pyramid map.">
@@ -99,7 +108,6 @@ the run.">
         </div>
       </section>
     </div>
-    <div id="status" class="status">Loading&hellip;</div>
   </header>
 
   <main>

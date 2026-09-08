@@ -443,7 +443,11 @@ Undo/Redo and remain a draft until **Apply and restart**. Leaving a dirty editor
 offers Apply and restart, Discard, or Cancel. **Follow agent** follows the selected
 body, or the first controlled body when none is selected. Panning disengages following so the camera
 stays where you put it. The follow button's **Whole arena** state and **Reset view**
-return to the centered view of the entire arena.
+return to the center of the collision boundary's bounding box with the largest
+view that leaves a 5% margin around the playable arena. Think of this as placing
+a snug rectangle around the actual fence, then widening it just enough to leave
+breathing room; the rectangle is recalculated for the viewport and applies to
+both overhead and flight side views.
 
 **Inspect / Edit / Drive** describes how you interact with the world; **Live /
 Replay** describes which world you are looking at. Opening a saved run gives

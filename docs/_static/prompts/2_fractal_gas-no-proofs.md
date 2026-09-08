@@ -186,9 +186,9 @@ $$
 
 where $R:\mathcal{Z}\to\mathbb{R}$ is a scalar reward signal (for example, $R=-U$ for potential minimization).
 In agent/1-form settings, the reward is directional:
-$
+$$
 r_i = \langle \mathcal{R}(z_i), v_i \rangle_G
-$
+$$
 with $\mathcal{R}: \mathcal{Z} \to T^*\mathcal{Z}$ a reward 1-form.
 :::
 
@@ -202,9 +202,9 @@ z_r(i) = \frac{r_i - \mu_r}{\sigma_r'}, \quad z_d(i) = \frac{d_i - \mu_d}{\sigma
 $$
 
 where $\mu_r, \sigma_r$ (resp. $\mu_d, \sigma_d$) are the mean and standard deviation of rewards (resp. distances) over $\mathcal{A}(\mathcal{S})$, and
-$
+$$
 \sigma_r' = \sqrt{\sigma_r^2 + \sigma_{\min}^2}, \quad \sigma_d' = \sqrt{\sigma_d^2 + \sigma_{\min}^2}
-$
+$$
 with $\sigma_{\min} > 0$ a regularizer.
 
 **Step 2: Logistic rescaling**:
@@ -503,7 +503,7 @@ This assumption provides the foundational Euclidean structure used throughout th
   - Uniform-ball: $K_\sigma(y) = 1/\lambda_m(B_m(0,\sigma))$ for $y \in B_m(0,\sigma)$ and $0$ otherwise.
 :::
 
-:::{prf:definition} N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
+::::{prf:definition} N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
 :label: def-n-particle-displacement-metric
 
 For any two swarms, $\mathcal{S}_1$ and $\mathcal{S}_2$, define the (pseudo)metric by
@@ -535,8 +535,7 @@ This formula has two parts:
 
 The $\frac{1}{N}$ factors normalize by swarm ({prf:ref}`def-swarm-and-state-space`) size, so larger swarms don't automatically have larger distances.
 :::
-
-#### 1.6.1 Metric identification (Kolmogorov quotient)
+::::
 
 :::{prf:definition} Metric quotient of $(\Sigma_N, d_{\text{Disp},\mathcal{Y}})$
 :label: def-metric-quotient
@@ -549,10 +548,6 @@ $$
 
 which is well‑defined and is a true metric.
 :::
-
-We carry out optimal‑transport and Wasserstein‑type arguments on $(\overline{\Sigma}_N,\overline d_{\text{Disp},\mathcal{Y}})$. All bounds stated for $d_{\text{Disp},\mathcal{Y}}$ descend to the quotient.
-
-#### 1.6.2 Borel image and completion of the working space
 
 :::{prf:lemma} Borel image of the projected swarm ({prf:ref}`def-swarm-and-state-space`) space
 :label: lem-borel-image-of-the-projected-swarm-space
@@ -568,14 +563,10 @@ $$
 is Borel (indeed, contained in $(\varphi(\mathcal X)\times\{0,1\})^N$ with $\varphi(\mathcal X)$ Borel).
 :::
 
-
 :::{prf:remark}
 :label: rem-closure-cemetery
 Following the Borel image lemma for the projected swarm ({prf:ref}`def-swarm-and-state-space`) space, if $\widehat{\Phi}(\Sigma_N)$ is not closed, replacing it by its closure in $(\mathcal Y\times\{0,1\})^N$ yields a closed (hence complete) subspace. All probability measures considered are supported on $\widehat{\Phi}(\Sigma_N)$, and optimal couplings for costs continuous in $D$ concentrate on the product of supports, so no generality is lost by completing.
 :::
-
-### 1.7. Formal Components of Swarm ({prf:ref}`def-swarm-and-state-space`) Displacement
-#### 1.7.1 Polishness and $W_2$ well‑posedness (on the quotient)
 
 :::{prf:lemma} Polishness of the quotient state space and $W_2$
 :label: lem-polishness-and-w2
@@ -583,15 +574,7 @@ Following the Borel image lemma for the projected swarm ({prf:ref}`def-swarm-and
 If $(\mathcal{Y}, d_{\mathcal{Y}})$ is Polish and $N<\infty$, then the Kolmogorov quotient ({prf:ref}`def-metric-quotient`) $(\overline{\Sigma}_N, \overline d_{\text{Disp},\mathcal{Y}})$ induced by the displacement pseudometric ({prf:ref}`def-n-particle-displacement-metric`) is Polish. Consequently, $W_2$ on $\mathcal{P}(\overline{\Sigma}_N)$ is well‑posed and finite on measures with finite second moment, which holds automatically under the Axiom of Bounded Algorithmic Diameter ({prf:ref}`axiom-bounded-algorithmic-diameter`).
 :::
 
-
-:::{admonition} Why Decompose Displacement?
-:class: important
-By breaking displacement into position and status components, we can analyze each type of change separately. This is crucial for understanding stability: maybe the swarm ({prf:ref}`def-swarm-and-state-space`) is stable against small position changes but sensitive to status changes (life/death events), or vice versa. This decomposition allows us to pinpoint exactly where instabilities come from.
-:::
-
-This section formally defines the two components of swarm ({prf:ref}`def-swarm-and-state-space`) displacement that will be used as inputs to the generalized continuity axioms.
-
-:::{prf:definition} Components of Swarm Displacement
+::::{prf:definition} Components of Swarm Displacement
 :label: def-displacement-components
 
 For any two swarms $\mathcal{S}_1$ and $\mathcal{S}_2$ ({prf:ref}`def-swarm-and-state-space`), their total displacement ({prf:ref}`def-n-particle-displacement-metric`) is decomposed into two fundamental components:
@@ -619,8 +602,7 @@ This formula cleverly counts status changes: since $s_i \in \{0,1\}$, we have $(
 :::
 
 The **N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`)** defined in Section 1.5 is a specific weighted average of these components: $d_{\text{Disp},\mathcal{Y}}^2 = \frac{1}{N}\Delta_{\text{pos}}^2 + \frac{\lambda_{\mathrm{status}}}{N}n_c$. The generalized continuity framework will use $\Delta_{\text{pos}}^2$ and $n_c$ as direct inputs to provide a more detailed analysis of error propagation.
-:::
-
+::::
 
 :::{prf:definition} Markov and killed kernels
 :label: def-markov-kernel
@@ -659,6 +641,7 @@ quasi-stationary distribution is a separate property.
 :label: def-wasserstein-distance
 
 For probability measures with finite second moments on a metric space $(E,d)$,
+
 $$
 W_2(\mu,\nu)^2=\inf_{\gamma\in\Pi(\mu,\nu)}\int d(x,y)^2\,\gamma(dx,dy),
 $$
@@ -673,6 +656,7 @@ $W_2$ requires an estimate proportional to the initial $W_2$ distance.
 For a smooth potential $U$, friction $\gamma>0$ and noise amplitude $\sigma>0$,
 the kinetic diffusion $dX_t=V_tdt$,
 $dV_t=-\nabla U(X_t)dt-\gamma V_tdt+\sigma dB_t$ has backward generator
+
 $$
 Lf=v\cdot\nabla_xf-(\nabla U+\gamma v)\cdot\nabla_vf
        +\tfrac12\sigma^2\Delta_vf.
@@ -680,25 +664,6 @@ $$
 Boundary conditions, state-dependent coefficients and discrete splitting
 steps require their own specified kernels.
 :::
-
-## 3. Axiomatic Foundations: A Parametric Debugging Framework
-
-:::{admonition} What Are Axiomatic Foundations?
-:class: important
-:open:
-Think of axioms as the "assumptions we're willing to make" about our system. Just as Euclidean geometry starts with axioms like "two points determine a line," our swarm algorithm needs mathematical assumptions about the environment and operators.
-
-**The Brilliant Insight**: Instead of just stating these assumptions, we turn them into measurable parameters. This lets us:
-1. **Diagnose problems**: If the algorithm fails, check which axioms are violated
-2. **Predict behavior**: The parameter values tell us exactly what to expect
-3. **Debug systematically**: Each parameter points to specific components that might need tuning
-
-It's like having a mathematical "health check" for your swarm!
-:::
-
-This section consolidates all fundamental assumptions required for the analytical framework to be sound. We reframe these assumptions as a set of user-provided **Axiomatic Parameters**. Each parameter quantifies the system's potential deviation from an ideal, well-behaved condition. The user of this framework is responsible for selecting an environment, operators, and parameters that satisfy the following axioms and for providing the corresponding axiomatic parameter values. These values are critical inputs for diagnosing and debugging the swarm's behavior, as they directly control the stability and convergence guarantees of the system.
-
-### Assumption A (In‑Step Independence)
 
 :::{prf:axiom} Conditional product structure within a step
 :label: axiom-instep-independence
@@ -711,43 +676,6 @@ X_i \;:=\;\big(U_i^{\mathrm{comp}},\,U_i^{\mathrm{pert}},\,U_i^{\mathrm{status}}
 $$
 
 be the collection of random inputs used by walker ({prf:ref}`def-walker`) $i$ during the next update (companion selection, perturbation noise, status/death draw, cloning/parent draw). **Conditional on $\mathcal S_t$, the vectors $X_1,\dots,X_N$ are independent**, and the components inside each $X_i$ are mutually independent. Companion/parent indices are sampled **with replacement** from their per‑walker categorical distributions. No shared random variable is used across different walkers in the same update.
-:::
-
-:::{admonition} Implementation note: Independent PRNG streams
-:class: note
-Use counter‑based PRNGs (e.g., Random123 Philox/Threefry) to derive independent, reproducible per‑walker ({prf:ref}`def-walker`) streams keyed by `(global_seed, t, i, stage)`. This prevents accidental sharing of randomness across walkers and enforces Assumption A in practice.
-:::
-
-:::{note}
-Why this matters: Many concentration tools (e.g., McDiarmid’s inequality) require independence of the inputs $X_1,\dots,X_N$ to a functional of the step (such as the average squared displacement). This assumption pins down the intended probabilistic structure within a single update while leaving cross‑time coupling (for synchronous comparisons) available as a proof device.
-:::
-
-### 2.1 Viability Axioms: Parameters of Survival
-
-:::{admonition} Survival First, Optimization Second
-:class: note
-The most important thing for any swarm ({prf:ref}`def-swarm-and-state-space`) algorithm is simply staying alive! These axioms ensure that the swarm doesn't gradually die off or suddenly collapse. Think of them as the "life support systems" - they must work properly before we can worry about finding optimal solutions.
-:::
-
-These axioms govern the most fundamental condition: the swarm ({prf:ref}`def-swarm-and-state-space`)'s ability to avoid collapse.
-
-#### 2.1.1 Axiom of Guaranteed Revival
-
-:::{tip}
-Imagine a hospital emergency room: as long as there's one doctor alive, they can revive any "flatlined" patient with 100% certainty. This axiom ensures that individual walker ({prf:ref}`def-walker`) deaths never accumulate into swarm extinction - there's always a resurrection mechanism available.
-:::
-
-The framework is designed to prevent gradual swarm death from the attrition of individual walker ({prf:ref}`def-walker`)s. This is enforced by a constraint that guarantees any dead walker (in an otherwise alive swarm) has a 100% chance of being revived. The user must provide a parameter that measures the robustness of this mechanism under the stochastic threshold cloning model.
-
-:::{admonition} The Revival Score Ratio: A Critical Health Metric
-:class: attention
-The parameter $\kappa_{\text{revival}} = \frac{\eta^{\alpha+\beta}}{\varepsilon_{\text{clone}} \cdot p_{\max}}$ is like a "revival strength indicator."
-
-- **Numerator** ($\eta^{\alpha+\beta}$): The "helping power" of alive walker ({prf:ref}`def-walker`)s
-- **Denominator** ($\varepsilon_{\text{clone}} \cdot p_{\max}$): The "difficulty" of revival
-
-When $\kappa_{\text{revival}} > 1$, help overpowers difficulty → guaranteed revival!
-When $\kappa_{\text{revival}} \leq 1$, the system is in danger → individual deaths can become permanent.
 :::
 
 :::{prf:axiom} Axiom of Guaranteed Revival
@@ -778,34 +706,8 @@ In particular, $S_i > p_{\max}$ surely, hence $S_i > T_{\text{clone}}$ for every
 
 This revival guarantee is applied in {doc}`02_euclidean_gas` to verify the Euclidean Gas satisfies the viability axioms.
 :::
-```{admonition} k=1 edge case
-:class: note
-This mean‑square continuity result is for the $k\ge 2$ regime. The $k=1$ discontinuity is handled by the single‑survivor revival mechanism in §16, after which analysis resumes with $k\ge 2$.
-```
 
-#### 2.1.2 Axiom of Boundary Regularity ({prf:ref}`axiom-boundary-regularity`)
-
-:::{admonition} The Catastrophic Collapse Problem
-:class: caution
-:open:
-While individual walker ({prf:ref}`def-walker`) deaths can be handled by revival, there's one terrifying scenario: **all walkers dying at once**. This happens when the entire swarm wanders into a "forbidden zone" where no positions are valid.
-
-The question is: how "sharp" are these boundaries? If they're like cliff edges (sudden death), small navigation errors can cause total extinction. If they're like gentle hills (gradual danger increase), the swarm ({prf:ref}`def-swarm-and-state-space`) can "sense" danger and back away.
-
-This axiom quantifies boundary sharpness through the death probability's sensitivity to swarm ({prf:ref}`def-swarm-and-state-space`) configuration changes.
-:::
-
-The risk of swarm collapse is primarily the single catastrophic event where all walker ({prf:ref}`def-walker`)s simultaneously become invalid. The stability of this process depends on how erratically the "death probability" for any individual walker changes as a function of the entire swarm's N-particle configuration. The user must quantify this regularity.
-
-:::{note}
-**Hölder continuity** is a mathematical way of saying "no sudden jumps." The inequality $|P(s_{\text{out},i}=0 | \mathcal{S}_1) - P(s_{\text{out},i}=0 | \mathcal{S}_2)| \le L_{\text{death}} \cdot d^{\alpha_B}$ means:
-
-- Small changes in swarm ({prf:ref}`def-swarm-and-state-space`) configuration ($d$ is small) → small changes in death probability
-- The constants $L_{\text{death}}$ and $\alpha_B$ control how "smooth" this relationship is
-- Larger $L_{\text{death}}$ = more unpredictable boundaries = higher risk
-:::
-
-:::{prf:axiom} Axiom of Boundary Regularity
+::::{prf:axiom} Axiom of Boundary Regularity
 :label: axiom-boundary-regularity
 
 *   **Core Assumption:** The marginal probability of a single walker ({prf:ref}`def-walker`) becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state ({prf:ref}`def-swarm-and-state-space`). This axiom applies to any valid noise measure ({prf:ref}`def-valid-noise-measure`), including those with state-dependent coupling between walkers.
@@ -833,16 +735,7 @@ where $d_{\text{Disp},\mathcal{Y}}$ is the N-Particle Displacement Metric ({prf:
 :::{warning}
 **Red Flag**: If you measure $L_{\text{death}}$ and find it's very large, your environment has dangerous "cliff edges" where small missteps lead to mass casualties. Consider smoothing the boundary (adding buffer zones) or increasing noise to help walker ({prf:ref}`def-walker`)s "probe" dangerous areas more gently.
 :::
-:::
-
-#### 2.1.3 Axiom of Boundary Smoothness
-
-:::{admonition} Why Boundaries Must Be Smooth
-:class: note
-Imagine the valid region is like a country, and the boundary is like its border. A "smooth" border (like a gentle curve) has zero area - it's just a line. But a "fractal" border (like a coastline with infinite detail) could have positive area, meaning walker ({prf:ref}`def-walker`)s might get "stuck" exactly on the boundary.
-
-Mathematically, we need the boundary to be a nice, smooth curve so that the probability of landing exactly on it is zero. This keeps our death probability calculations clean and continuous.
-:::
+::::
 
 :::{prf:axiom} Axiom of Boundary Smoothness
 :label: axiom-boundary-smoothness
@@ -856,30 +749,6 @@ Mathematically, we need the boundary to be a nice, smooth curve so that the prob
 *   **Failure Mode Analysis:** If the boundary is not a $C^1$ submanifold (e.g., fractal or space‑filling), it may have positive Lebesgue measure. Then the probability of a walker ({prf:ref}`def-walker`) landing exactly on the boundary can be non‑zero, the death‑probability function may fail to be continuous, and the continuity analysis of the swarm ({prf:ref}`def-swarm-and-state-space`) update operator breaks down.
 
 :::
-
-### 2.2 Environmental Axioms: Parameters of the Problem Space
-
-:::{important}
-Now we shift from "staying alive" to "being able to learn." These axioms ensure the environment provides enough structure for the swarm ({prf:ref}`def-swarm-and-state-space`) to discover patterns and improve over time. A perfectly flat environment is like trying to learn on a completely uniform landscape - there are no landmarks to guide you!
-:::
-
-These axioms quantify the properties of the environment in which the swarm ({prf:ref}`def-swarm-and-state-space`) operates.
-
-#### 2.2.1 Axiom of Environmental Richness
-
-:::{admonition} The "Interesting Environment" Requirement
-:class: tip
-:open:
-Imagine trying to learn navigation in a perfectly flat desert versus a landscape with hills and valleys. In the desert, every direction looks the same - there's no learning signal. Hills and valleys provide gradients that guide you toward better regions.
-
-This axiom ensures your reward landscape isn't "too flat" at any relevant scale. The parameters $r_{\min}$ and $\kappa_{\text{richness}}$ quantify this:
-- $r_{\min}$: "At what scale do I expect to find interesting features?"
-- $\kappa_{\text{richness}}$: "How much variation is guaranteed at that scale?"
-
-Think of it as ensuring your problem has enough "texture" to learn from!
-:::
-
-The algorithm cannot learn if the reward landscape is flat. The user must provide a parameter that guarantees the environment is sufficiently interesting to provide a learning signal.
 
 :::{prf:axiom} Axiom of Environmental Richness
 :label: axiom-environmental-richness
@@ -898,12 +767,6 @@ $$
 
     The user must then ensure that their chosen scale yields a positive floor: **$\kappa_{\text{richness}}$ > 0**.
 *   **Failure Mode Analysis:** If, for a given $r_{\min}$, the resulting **$\kappa_{\text{richness}}$ ≈ 0**, it implies the environment contains large regions of size $r_{\min}$ where the reward is essentially constant. If a swarm ({prf:ref}`def-swarm-and-state-space`)'s spatial extent is smaller than $r_{\min}$, it might perceive the landscape as flat. If the swarm enters a larger, truly flat region, the exploitation component of the fitness potential will have near-zero variance, stalling the learning process and adaptive dynamics. The choice of $r_{\min}$ is therefore a critical parameter that reflects the scale of features in the problem environment.
-:::
-
-#### 2.2.2 Axiom of Reward Regularity
-
-:::{note}
-While the richness axiom ensures the landscape isn't flat, this axiom ensures it isn't too chaotic. We need rewards to change smoothly - if rewards jump erratically from point to point, the swarm ({prf:ref}`def-swarm-and-state-space`) can't build reliable gradients to follow. The Hölder continuity condition is the mathematical way of saying "no sudden jumps in reward values."
 :::
 
 :::{prf:axiom} Axiom of Reward Regularity
@@ -927,20 +790,9 @@ $$
 Referenced by {prf:ref}`axiom-projection-compatibility`.
 :::
 
-:::{hint}
-Think of $L_{R,\mathcal{Y}}$ as a "maximum steepness" parameter. Small values mean rewards change gently; large values allow steeper reward gradients. But even with large $L_{R,\mathcal{Y}}$, the Hölder condition prevents infinite jumps - it puts a mathematical "speed limit" on how fast rewards can change.
-:::
-
-#### 2.2.3 Axiom of Bounded Algorithmic Diameter
-
 :::{prf:axiom} Projection compatibility
 :label: axiom-projection-compatibility
 There exists a function $R_{\mathcal Y}:\varphi(\mathcal X)\to\mathbb R$ such that $R = R_{\mathcal Y}\circ\varphi$ on $\mathcal X$. Equivalently, if $\varphi(x)=\varphi(x')$ then $R(x)=R(x')$.
-:::
-
-:::{admonition} Remark
-:class: note
-The axiom ensures that $R_{\mathcal Y}$ is well‑defined on the image $\varphi(\mathcal X)$. Its regularity on $(\mathcal Y,d_{\mathcal Y})$ is provided by the Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`). In special cases (e.g., $\varphi$ injective on $\mathcal X$ or admitting a Lipschitz right‑inverse on $\varphi(\mathcal X)$), one can relate $L_{R,\mathcal Y}$ to $L_R$ and $L_\varphi$; otherwise treat $L_{R,\mathcal Y}$ as an independent parameter fixed by the environment.
 :::
 
 :::{prf:axiom} Axiom of Bounded Algorithmic Diameter
@@ -951,8 +803,6 @@ The axiom ensures that $R_{\mathcal Y}$ is well‑defined on the image $\varphi(
 
 These conditions ensure Wasserstein metrics $W_p$ on probability measures over $(\mathcal{Y}, d_{\mathcal{Y}})$ are well‑posed and that all per‑walker ({prf:ref}`def-walker`) squared displacements are bounded by $D_{\mathcal{Y}}^2$.
 :::
-
-#### 2.2.4 Axiom of Range‑Respecting Mean (Aggregators)
 
 :::{prf:axiom} Range‑Respecting Mean
 :label: axiom-range-respecting-mean
@@ -966,8 +816,6 @@ $$
 This property holds for empirical means and is assumed for any user‑chosen mean‑type aggregator in this framework.
 :::
 
-### 2.3 Algorithmic & Operator Axioms: Parameters of Dynamic Behavior
-
 :::{prf:definition} Valid Noise Measure
 :label: def-valid-noise-measure
 A kernel $\mathcal P_\sigma$ (and analogously $\mathcal Q_\delta$) is valid if it is Feller and satisfies:
@@ -978,12 +826,6 @@ This consolidates the standing noise requirements referenced elsewhere in the fr
 
 Referenced by {prf:ref}`def-valid-state-space`, {prf:ref}`def-perturbation-measure`, and {prf:ref}`def-cloning-measure`.
 :::
-
-These axioms concern the user's choices for the internal mechanisms of the algorithm, quantifying their impact on stability and convergence.
-
-#### 2.3.1 Axiom of Sufficient Amplification
-
-The algorithm's dynamics are driven by transforming reward and distance measurements into fitness potential. If this transformation is turned off, the algorithm stalls.
 
 :::{prf:axiom} Axiom of Sufficient Amplification
 :label: axiom-sufficient-amplification
@@ -1000,10 +842,6 @@ $$
 *   **Failure Mode Analysis:** If **$\kappa_{\text{amplification}}$ = 0**, both $\alpha$ and $\beta$ are zero. The fitness potential $V_i$ becomes $\eta^0 = 1$ for all alive walker ({prf:ref}`def-walker`)s. The cloning score $S_i$ is always zero, meaning no cloning can ever occur. The swarm ({prf:ref}`def-swarm-and-state-space`) becomes a collection of independent, non-interacting random walkers.
 :::
 
-#### 2.3.2 Axiom of Non-Degenerate Noise ({prf:ref}`axiom-non-degenerate-noise`)
-
-The swarm ({prf:ref}`def-swarm-and-state-space`) relies on noise to explore the state space and prevent collapsing to a single point.
-
 :::{prf:axiom} Axiom of Non-Degenerate Noise
 :label: axiom-non-degenerate-noise
 
@@ -1012,12 +850,6 @@ The swarm ({prf:ref}`def-swarm-and-state-space`) relies on noise to explore the 
 *   **Condition:** The user must ensure **$\sigma > 0$** and **$\delta > 0$**.
 *   **Failure Mode Analysis:** If **$\sigma = 0$** and **$\delta = 0$**, the swarm ({prf:ref}`def-swarm-and-state-space`) cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to a few points.
 :::
-
-#### 2.3. ({prf:ref}`def-standardization-operator-n-dimensional`)3 Mean-Square Continuity of the Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)
-
-Because the **Raw Value Operator** $V$ (e.g., distance-to-companion) is  ({prf:ref}`def-standardization-operator-n-dimensional`)stochastic, the **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)** $z(S)$ is also a stochastic operator. Its output, $z$, is a random variable. Therefore, its continuity must be analyzed in a probabilistic sense. The strongest and most useful form for the subsequent stability analysis is **mean-square continuity**, which bounds the *expected* squared error between the outputs for two different input swarms.
-
-To formalize this analysis, we first define the two fundamental and independent sources of error that contribute to the total mean-square error.
 
 :::{prf:definition} Components of Mean-Square Standardization Error
 :label: def-components-mean-square-standardization-error
@@ -1028,8 +860,6 @@ The total expected squared error of the standardization operator ({prf:ref}`def-
 
 2.  **The Expected Squared Structural Error ($E^2_{S,ms}$):** The error arising from the change in the swarm ({prf:ref}`def-swarm-and-state-space`)'s structure (from $\mathcal{S}_1$ to $\mathcal{S}_2$) while using a fixed raw value vector sampled from the second swarm's distribution $V(\mathcal{S}_2)$. This component quantifies the operator's sensitivity to walker ({prf:ref}`def-walker`) deaths and revivals ({prf:ref}`def-alive-dead-sets`).
 :::
-
-The following theorem, which is a key result of the analysis in Section 11, establishes the asymptotic behavior of these error components.
 
 :::{prf:theorem} Asymptotic Behavior of the Mean-Square Standardization Error
 :label: thm-mean-square-standardization-error
@@ -1051,10 +881,6 @@ $$
     1.  **Regime 1: Normal Operation (Asymptotically Stable):** Under normal conditions where walker ({prf:ref}`def-walker`) attrition is low and the number of status changes ($n_c$) is small, the structural error term is negligible. The dominant error is the **expected value error**, which, for the benchmark case of an empirical aggregator and distance-to-companion measurement, **is constant with respect to swarm size** ($E^2_{V,ms} \in O(1)$). This is a powerful result, indicating that under stable conditions, the algorithm's average measurement process **does not become noisier as the swarm gets larger**. The primary bottleneck for stability in this regime is not swarm size but the **extreme sensitivity to the regularization parameter**, as all error sources are amplified by a factor of up to **$O(\varepsilon_{\text{std}}^{-6})$**.
     2.  **Regime 2: Catastrophic Collapse (Unstable):** During a catastrophic collapse event where a large fraction of the swarm ({prf:ref}`def-swarm-and-state-space`) dies (e.g., $n_c \propto k_1$), the **expected structural error** term **grows linearly with swarm size** ($E^2_{S,ms} \in O(k_1)$). This confirms that large-scale death events are a fundamental source of instability, and that larger swarms are more vulnerable to continuity breakdown during such events. The choice of a **structurally stable aggregator** ($p_{\text{worst-case}} \le -1/2$) is critical to prevent this expected error from growing even faster.
 :::
-
-#### 2.3.4 Axioms for Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operators
-
-For the framework's stability analysis to be sound, any chosen aggregation operator must satisfy the following axioms, and the user must provide the corresponding axiomatic parameters.
 
 :::{prf:axiom} Axiom of Bounded Relative Collapse
 :label: axiom-bounded-relative-collapse
@@ -1103,12 +929,6 @@ $$
 *   **Framework Application:** This axiom is essential for ensuring the continuity proofs for the standardization pipeline are sound for any valid aggregator. It prevents an uncontrolled amplification of error that would otherwise arise if an aggregator could invent unbounded variance.
 :::
 
-### 2.4 Geometric and Activity Axioms
-
-#### 2.4.1 Axiom of Geometric Consistency
-
-This axiom requires the user to quantify how much their chosen noise measure deviates from the "natural" diffusion of the state space, benchmarked by the heat kernel.
-
 :::{prf:axiom} Axiom of Geometric Consistency
 :label: axiom-geometric-consistency
 
@@ -1132,11 +952,7 @@ $$
 *   **Failure Mode Analysis:** **$\kappa_{\text{drift}}$ > 0** introduces a systematic bias, confounding optimization. **$\kappa_{\text{anisotropy}}$ > 1** causes inefficient or misaligned exploration.
 :::
 
-#### 2.4.2 Theorem of Forced Activity
-
-For the algorithm's adaptive and contractive forces to function, a swarm ({prf:ref}`def-swarm-and-state-space`) that is not collapsed to a single point must generate a non-zero probability of cloning. This is the engine of adaptation.
-
-:::{prf:theorem} Theorem of Forced Activity
+::::{prf:theorem} Theorem of Forced Activity
 :label: thm-forced-activity
 
 This theorem demonstrates that {prf:ref}`axiom-guaranteed-revival` ensures all walker ({prf:ref}`def-walker`)s eventually become active during the cloning process.
@@ -1174,42 +990,7 @@ $$
 :::{warning}
 **Stagnation Risk**: When $p_{\text{clone,min}} = 0$, the swarm can enter "dead zones" where everyone looks equally fit (no reward gradients visible), so no one gets cloned. The swarm becomes a collection of independent random walker ({prf:ref}`def-walker`)s, losing its collective intelligence. Always check that your swarm stays spread out enough ($> r_{\min}$) to sense environmental structure!
 :::
-:::
-
-### 2.5 Summary of Axiomatic Parameters and Key Theorems
-
-This section provides a consolidated reference for the foundational assumptions (Axioms) that the user must satisfy, and the key system-level theorems that emerge from these axioms.
-
-#### 2.5.1 **Summary of Axiomatic Foundations**
-
-| Axiom Name & Section                                                                   | Core Principle                                                                               | Core Assumption                                                                                                                  | Axiomatic Parameters                                                                             | Failure Mode Analysis                                                                                                                                                                                                                                                                                                                                                                                                                          |
-|:---------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Viability Axioms**                                                                   | **"The swarm ({prf:ref}`def-swarm-and-state-space`) must survive."**                                                                |                                                                                                                                  |                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Axiom of Guaranteed Revival ({prf:ref}`axiom-guaranteed-revival`)                        | Dead walker ({prf:ref}`def-walker`)s (in a living swarm) must be revivable under the stochastic threshold mechanism. | The cloning score of a dead walker must be guaranteed to exceed the maximum random threshold, $p_{\max}$.                        | $\kappa_{\text{revival}} = \eta^{(\alpha+\beta)} / (\varepsilon_{\text{clone}} \cdot p_{\max})$  | If $\kappa_{\text{revival}} \leq 1$, revival becomes probabilistic instead of guaranteed. This leads to swarm collapse through gradual attrition. A large $p_{\max}$ increases this risk.                                                                                                                                                                                                                                                      |
-| Axiom of Boundary Regularity ({prf:ref}`axiom-boundary-regularity`)                      | The "death boundary" of the valid domain must be smooth, not a jagged cliff.                 | The probability of a walker becoming invalid must be a smooth (Hölder continuous) function of its position.                      | $L_{\text{death}}$ (Boundary Instability Factor)<br>$\alpha_B$ (Boundary Smoothing Exponent)     | A large $L_{\text{death}}$ indicates a sharp, unpredictable boundary where small movements can cause massive, unexpected walker deaths, risking swarm collapse.                                                                                                                                                                                                                                                                                |
-| **Environmental Axioms**                                                               | **"The problem must be learnable."**                                                         |                                                                                                                                  |                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Axiom of Environmental Richness ({prf:ref}`axiom-environmental-richness`)                | The environment must have interesting features at a given resolution; it cannot be flat.     | The reward function must have a guaranteed minimum level of variance in any local region with a radius greater than $r_{\min}$.  | $r_{\min}$ (Minimum Richness Scale)<br>$\kappa_{\text{richness}}$ (Environmental Richness Floor) | If $\kappa_{\text{richness}}$ ≈ 0 for a chosen $r_{\min}$, the swarm can get stuck in regions of that scale with no reward gradient, stalling the learning process.                                                                                                                                                                                                                                                                            |
-| Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`)                          | The reward signal must be smooth, not chaotic or noisy.                                      | The reward function, when viewed in the algorithmic space, must be Hölder continuous.                                            | $L_{R,\Upsilon}$ (Reward Volatility Factor)<br>$\alpha_R$ (Reward Smoothing Exponent)            | A large $L_{R,\Upsilon}$ signifies a "bumpy" reward landscape. This makes the exploitation signal noisy and can destabilize cloning decisions.                                                                                                                                                                                                                                                                                                 |
-| **Algorithmic & Operator Axioms**                                                      | **"The algorithm's internal mechanics must be stable and active."**                          |                                                                                                                                  |                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Axiom of Sufficient Amplification ({prf:ref}`axiom-sufficient-amplification`)            | The algorithm must actually use the reward and diversity signals.                            | The dynamics weights $\alpha$ and $\beta$ cannot both be zero.                                                                   | $\kappa_{\text{amplification}} = \alpha + \beta$                                                 | If $\kappa_{\text{amplification}} = 0$, fitness is always 1 for alive walkers. No cloning can occur, and the swarm becomes a collection of non-interacting random walkers.                                                                                                                                                                                                                                                                     |
-| Axiom of Non-Degenerate Noise ({prf:ref}`axiom-non-degenerate-noise`)                    | Walkers must be able to move and explore the state space.                                    | The perturbation ({prf:ref}`def-perturbation-measure`) and cloning noise scales must not be zero.                                                                      | $\sigma$ (Perturbation Noise)<br>$\delta$ (Cloning Noise)                                        | If $\sigma=0$ and $\delta=0$, no new positions can be introduced. The swarm loses all exploratory capability and eventually collapses to a few points.                                                                                                                                                                                                                                                                                         |
-| Axiom of Variance Regularization (Sec 1.4)                                             | The standardization operator's sensitivity must be bounded.                                  | The raw value variance is prevented from being pathologically close to zero by a smooth floor mechanism.                         | $\kappa_{\text{var,min}}$ (Variance Floor Threshold)                                             | This axiom is a prerequisite for the deterministic Lipschitz continuity of the standardization operator. If not enforced (e.g., by setting $\kappa_{\text{var}},min=0$), the operator is only mean-square continuous, and stronger convergence theorems (like FK) do not apply.                                                                                                                                                                |
-| **Geometric Axioms**                                                                   | **"Exploration must be well-behaved."**                                                      |                                                                                                                                  |                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Axiom of Geometric Consistency ({prf:ref}`axiom-geometric-consistency`)                  | Exploration noise should be unbiased and explore space evenly (isotropic).                   | The algorithmic noise measure should not introduce systematic bias or skewed diffusion unless intended.                          | $\kappa_{\text{drift}}$ (Anomalous Drift)<br>$\kappa_{\text{anisotropy}}$ (Diffusion Anisotropy) | $\kappa_{\text{drift}} > 0$ introduces a systematic bias, confounding optimization. $\kappa_{\text{anisotropy}} > 1$ causes inefficient or misaligned exploration.                                                                                                                                                                                                                                                                             |
-| **Aggregator Axioms**                                                                  | **"The statistical engine must be robust and well-behaved."**                                |                                                                                                                                  |                                                                                                  |                                                                                                                                                                                                                                                                                                                                                                                                                                                |
-| Bounded Relative Collapse ({prf:ref}`axiom-bounded-relative-collapse`)                   | The framework's scaling analysis is only valid for non-catastrophic events.                  | Analysis of structural error scaling is only certified for transitions where the swarm does not shrink below a certain fraction. | $c_{\min}$ (Relative Collapse Tolerance)                                                         | **This axiom represents a critical limitation of the framework.** If the condition is violated (i.e., during a catastrophic collapse), the system is in a regime where the framework's guarantees on aggregator scaling **do not apply**. The analysis is therefore valid for ensuring the system remains in a stable regime, but it is **not certified to describe the dynamics of the very collapse events it is meant to help understand.** |
-| Bounded Deviation from Aggregated Variance ({prf:ref}`axiom-bounded-deviation-variance`) | The aggregator's output variance must honestly reflect the input data's spread.              | The sum of squared deviations from the mean must be controllably related to the computed variance.                               | $\kappa_{\text{var}}$ (Variance Deviation Factor)                                                | If $\kappa_{\text{var}} >> 1$, the aggregator produces statistical moments that are pathologically decoupled from the input data, leading to unreliable standardization and potential instability in the fitness potential calculation.                                                                                                                                                                                                        |
-
-#### 2.5.2 **Summary of Key System-Level Theorems**
-
-These theorems are not axioms but are critical, provable consequences of the axiomatic framework that govern the algorithm's stability and adaptive behavior.
-
-| Theorem Name & Section                                                                     | Core Principle                                                                                                     | Mathematical Result (General Form)                                                                                                                                                                                                                                                 | Key Inputs (General Case)                                                                                                                       | Implications & Failure Modes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
-|:-------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Theorem of Swarm Update Continuity (§18) | The one-step evolution of the swarm is a continuous map, but its non-linearity prevents simple stability analysis. | For $k_1\ge 2$, the expected squared displacement after one timestep is bounded by the sum of a Lipschitz term and a Hölder term of the initial displacement: <br> $\mathbb{E}[d_{\text{out}}^2] \le C_L d_{\text{in}}^2 + C_H (d_{\text{in}}^2)^{\alpha_H^{\mathrm{global}}} + K$ | All axiomatic parameters, especially the **Boundary Smoothing Exponent** ($\alpha_B$).                                                          | **The system is NOT a simple contraction mapping.** The final continuity bound is of the form $\mathbb{E}[d_{\text{out}}^2] \le C_L d_{\text{in}}^2 + C_H (d_{\text{in}}^2)^{\alpha_H^{\mathrm{global}}} + K$. <br> 1. **Hölder Dominance:** For small displacements, the Hölder term $(d_{\text{in}}^2)^{\alpha_H^{\mathrm{global}}}$ dominates. The system's dynamics are fundamentally non-linear, and stability cannot be determined by simply checking if a single coefficient is less than 1. <br> 2. **Loss of Simple Stability Condition:** The concept of a single "amplification factor" is invalid. Proving long-term stability requires analyzing the fixed points of this non-linear map, a much more complex task. The parameter $\alpha_B$ is revealed to be as critical as any other for determining system stability. |
-| Theorem of Forced Activity ({prf:ref}`thm-forced-activity`)                                      | A healthy, diverse swarm must have a non-zero chance of adapting via cloning.                                      | The minimum average cloning probability $p_{\text{clone,min}}$ is strictly positive under the right conditions.                                                                                                                                                                    | Axiomatic parameters from Richness ($\kappa_{\text{richness}}$, $r_{\min}$), Amplification ($\alpha$, $\beta$), and Noise ($\sigma$, $\delta$). | If $p_{\text{clone,min}} = 0$, the system can enter states where adaptation stops. The contractive force of cloning vanishes, stalling the algorithm and preventing convergence.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-
-#### 2.4.3 Axiom of Position‑Only Status Margin
+::::
 
 :::{prf:axiom} Axiom of Position‑Only Status Margin
 :label: axiom-margin-stability
@@ -1240,17 +1021,15 @@ d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^2 = \tfrac{1}{N}\,\Delt
 $$
 
 which would otherwise allow a tautological “margin” by tuning $\lambda_{\mathrm{status}}$.
+
+$$
 n_c\;\le\; \frac{N}{\lambda_{\mathrm{status}}}\, d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^2,\qquad
 n_c^2\;\le\; \left(\frac{N}{\lambda_{\mathrm{status}}}\right)^2 d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^4.
 
 $$
 The margin-based axiom strengthens this near zero by ensuring $n_c=0$ whenever the displacement is small enough, which is crucial to guarantee deterministic continuity of downstream operators.
 :::
-| Theorem of Deterministic Potential Continuity ({prf:ref}`thm-deterministic-potential-continuity`) | The fitness potential operator can be made globally Lipschitz continuous.                                          | The deterministic squared error $                                                                                                                                                                                                                |                                                                                                                                                 | V_1 - V_2 \|^2$ is bounded by a Lipschitz-Hölder function of the input displacement and raw value difference.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | The **Axiom of Variance Regularization** ($\kappa_{\text{var}},min$) and all other axiomatic parameters.                                                              | This is the **strongest continuity result**, available when using the patched standardization operator. It proves the potential is a well-behaved, deterministic function suitable for worst-case analysis. This property is the key prerequisite for validating stronger convergence results like those from Feynman-Kac theory. If the axiom is not enforced, this theorem does not hold. |
-## 4. The Environment: State and Reward Measurement ({prf:ref}`def-reward-measurement`)
-The environment provides the static context for the swarm ({prf:ref}`def-swarm-and-state-space`)'s evolution. Its core properties—the state space and the reward function—are defined axiomatically in Section 2.2. The algorithm interacts with the environment through a formal measurement process.
-### 4.1 Reward Measurement ({prf:ref}`def-reward-measurement`)
-A walker ({prf:ref}`def-walker`) determines the value of its location by evaluating the global Reward Function.
+
 :::{prf:definition} Reward Measurement
 :label: def-reward-measurement
 The reward value $r_i$ for walker ({prf:ref}`def-walker`) $i$ at position $x_i$ is the result of integrating the global Reward Function $R$ against the walker's **positional measure**, which is the Dirac delta measure $\delta_{x_i}$ on $\mathcal{X}$.
@@ -1261,25 +1040,67 @@ r_i := \mathbb{E}_{\delta_{x_i}}[R] = \int_{\mathcal{X}} R(x) \, d\delta_{x_i}(x
 $$
 This formalizes the act of "evaluating the reward" as a measurement process.
 :::
-## 5. Algorithmic Noise Measures
-The algorithm's random movements are sourced from probability measures that must satisfy the core properties defined in the **Valid Noise Measure ({prf:ref}`def-valid-noise-measure`) Axiom (Def. 2.3)**. The user is responsible for providing concrete instantiations of these measures.
-### 5.1 Algorithmic Instantiations
-The algorithm uses two distinct noise measures, both of which are required to be instantiations of a Valid Noise Measure ({prf:ref}`def-valid-noise-measure`).
+
 :::{prf:definition} Perturbation Measure
 :label: def-perturbation-measure
 For a given noise scale $\sigma > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Perturbation Measure ({prf:ref}`def-perturbation-measure`)**, $\mathcal{P}_\sigma(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the random walks during the perturbation step of the algorithm.
 :::
-:::{prf:definition} Cloning Measure
+
+::::{prf:definition} Cloning Measure
 :label: def-cloning-measure
 For a given cloning noise scale $\delta > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Cloning Measure ({prf:ref}`def-cloning-measure`)**, $\mathcal{Q}_\delta(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the displacement for newly created walker ({prf:ref}`def-walker`)s ({prf:ref}`def-alive-dead-sets`) during the cloning step.
-:::
-### 5.2 Guidance on Validating Noise Measures (Illustrative Examples)
-The axiomatic framework requires that any chosen noise measure satisfies two key properties: uniform displacement ({prf:ref}`axiom-non-degenerate-noise`) and boundary regularity ({prf:ref}`axiom-boundary-regularity`). The user of this framework is responsible for selecting a specific measure and providing a formal proof that it satisfies these axioms. The following lemmas are provided not as part of the core framework, but as illustrative templates for how such a validation proof would be constructed for two canonical examples.
-#### 5.2.1 Lemma: Validation of the Heat Kernel
-:::{prf:lemma} Validation of the Heat Kernel
+::::
+
+::::{prf:lemma} Validation of the Heat Kernel
 :label: lem-validation-of-the-heat-kernel
 If the state space $(\mathcal{X}, d_{\mathcal{X}}, \mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure ({prf:ref}`def-valid-noise-measure`) as $\mathcal{P}_\sigma(x, \cdot) := p_{\sigma^2}(x, \cdot)$ satisfies the required axioms, provided the boundary valid set $\mathcal{X}_{\mathrm{valid}}$ is sufficiently regular.
+::::
+
+:::{prf:lemma} Validation of the Uniform Ball Measure
+:label: lem-validation-of-the-uniform-ball-measure
+This lemma validates that the uniform ball measure from {prf:ref}`def-reference-measures` satisfies {prf:ref}`axiom-bounded-second-moment-perturbation`.
+
+Let the noise measure ({prf:ref}`def-valid-noise-measure`) $\mathcal{P}_\sigma(x, \cdot)$ be defined as the uniform probability measure over a ball of radius $\sigma$ centered at $x$ in the state space $\mathcal{X}$. This measure satisfies the boundary, provided the boundary of the valid set is sufficiently regular. In particular, the death‑probability map is continuous under mild assumptions; to claim a global Lipschitz modulus with respect to $d_{\text{Disp},\mathcal{Y}}$, assume $\mathcal{X}_{\mathrm{valid}}$ has Lipschitz boundary or finite perimeter so that boundary layer estimates apply. In that case one obtains an explicit bound of the form
+
+$$
+L_{\text{death}}\;\le\; \frac{C_{\text{perim}}}{\sigma},
+
+$$
+where $C_{\text{perim}}$ depends on the perimeter (surface measure) of $\partial\mathcal{X}_{\mathrm{valid}}$ in the algorithmic metric.
 :::
+
+:::::{prf:lemma} Uniform-ball death probability Lipschitz continuity for finite perimeter
+:label: lem-boundary-uniform-ball
+This lemma provides the quantitative Lipschitz bound required by {prf:ref}`axiom-boundary-regularity` for the uniform ball perturbation measure. Let $E=\mathcal{X}_{\mathrm{invalid}}\subset\mathcal X$ have finite perimeter (BV boundary) and let $\mathcal P_\sigma(x,\cdot)$ be the uniform law on $B(x,\sigma)$. Define
+
+$$
+
+P_\sigma(x)\;:=\;\mathcal P_\sigma(x, E)\;=\;\frac{1}{\mathrm{Vol}(B_\sigma)}\int \mathbb 1_E(y)\,\mathbb 1_{B_\sigma}(y-x)\,\mathrm dy.
+
+$$
+Then there exists a constant $C_d>0$ depending only on the dimension such that for all $x,y\in\mathcal X$,
+
+$$
+
+|P_\sigma(x)-P_\sigma(y)|\;\le\; C_d\,\frac{\mathrm{Per}(E)}{\sigma}\, d_{\mathcal X}(x,y).
+
+$$
+If $\varphi$ is $L_\varphi$‑Lipschitz and distances are measured in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), the bound becomes $L_{\text{death}}\le C_d (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$.
+:::::
+
+::::{prf:lemma} Heat‑kernel death probability is Lipschitz
+:label: lem-boundary-heat-kernel
+This lemma provides the quantitative Lipschitz bound required by {prf:ref}`axiom-boundary-regularity` for the heat kernel perturbation measure ({prf:ref}`def-perturbation-measure`).
+
+Let $E=\mathcal{X}_{\mathrm{invalid}}\subset\mathcal X$ have finite perimeter and let $p_{\sigma^2}$ be the heat kernel at scale $\sigma$. Define $P_\sigma(x)=\int \chi_E(y)\,p_{\sigma^2}(x,\mathrm dy)$. Then
+
+$$
+
+|P_\sigma(x)-P_\sigma(y)|\;\le\; C_d'\,\frac{\mathrm{Per}(E)}{\sigma}\, d_{\mathcal X}(x,y),
+
+$$
+with a constant $C_d'$ depending on dimension. Consequently $L_{\text{death}}\lesssim (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$ in the algorithmic metric.
+::::
 
 :::{prf:definition} Algorithmic Space
 :label: def-algorithmic-space-generic
@@ -1311,7 +1132,7 @@ $$
 This is the practical implementation of the Wasserstein distance between the walker ({prf:ref}`def-walker`)s' projected Dirac measures and serves as the ground distance for all subsequent calculations.
 :::
 
-:::{prf:definition} Swarm Aggregation Operator
+::::{prf:definition} Swarm Aggregation Operator
 :label: def-swarm-aggregation-operator-axiomatic
 A **Swarm Aggregation Operator ({prf:ref}`def-swarm-aggregation-operator-axiomatic`)**, denoted $M$, is a function that maps a swarm state $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) and a raw value vector $\mathbf{v}$ (defined on the alive set $\mathcal{A}(\mathcal{S})$ from {prf:ref}`def-alive-dead-sets`) to a probability measure $\mu_{\mathbf{v}}$ on $\mathbb{R}$.
 **Signature:** $M: \Sigma_N \times \mathbb{R}^{|\mathcal{A}(\mathcal{S})|} \to \mathcal{P}(\mathbb{R})$
@@ -1342,7 +1163,7 @@ $$
 :::{hint}
 Why quadratic dependence on status changes? When a walker ({prf:ref}`def-walker`) dies or revives, it's like suddenly adding or removing a data point from your dataset. The resulting error in statistics (like the mean) jumps discontinuously. The quadratic form $n_c$ counts these discontinuous jumps, making it the natural measure for how much the aggregated statistics can change.
 :::
-:::
+::::
 
 :::{prf:lemma} Empirical moments are Lipschitz in L2
 :label: lem-empirical-moments-lipschitz
@@ -1365,7 +1186,7 @@ $$
 In particular, for the empirical aggregator we may take $L_{\mu,M}=1/\sqrt{k}$ and $L_{m_2,M}=2V_{\max}/\sqrt{k}$.
 :::
 
-:::{prf:lemma} Axiomatic Properties of the Empirical Measure Aggregator
+::::{prf:lemma} Axiomatic Properties of the Empirical Measure Aggregator
 :label: lem-empirical-aggregator-properties
 Let the aggregation operator $M$ be defined such that for any swarm state $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) with alive set $\mathcal{A}(\mathcal{S})$ ({prf:ref}`def-alive-dead-sets`) of size $k = |\mathcal{A}(\mathcal{S})| \ge 1$, and any raw value vector $\mathbf{v}$, it produces the discrete empirical measure:
 
@@ -1400,7 +1221,7 @@ This operator is a valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregat
     *   Variance Deviation Factor: $\kappa_{\text{var}} = 1$
     *   Range-to-Variance Factor: $\kappa_{\text{range}} = 1$
     *   Structural Growth Exponents: $p_{\mu,S} = -1$, $p_{m_2,S} = -1$, $p_{\text{worst-case}} = -1$
-:::
+::::
 
 :::{prf:definition} Smoothed Gaussian Measure
 :label: def-smoothed-gaussian-measure
@@ -1657,7 +1478,7 @@ Here $L_P=\|P'\|_\infty$ is the uniform derivative bound from {prf:ref}`lem-cubi
 
 :::{prf:lemma} Derivative bound for \sigma'_{\text{reg}}
 :label: lem-sigma-patch-derivative-bound
-Let $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ be the regularized standard deviation, where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}}Lipschitz ext{std}}^2}$. Its global derivative bound is:
+Let $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ be the regularized standard deviation, where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2}$. Its global derivative bound is:
 
 $$
 
@@ -1897,7 +1718,13 @@ $$
 :::{prf:theorem} Bound on the Expected Raw Distance Vector Change
 :label: thm-expected-raw-distance-bound
 Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, with $|\mathcal{A}(\mathcal{S}_1)| = k_1 \ge 2$ ({prf:ref}`def-algorithmic-space-generic`) ({prf:ref}`def-alive-dead-sets`) ({prf:ref}`def-swarm-and-state-space`). Let $\mathbb{E}[\mathbf{d}(\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.
-The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement component ({prf:ref}`def-displacement-components`)mathbf{d}(\mathcal{S}_1)] - \mathbb{E}[\mathbf{d}(\mathcal{S}_2)] \|_2^2 \le C_{\text{pos},d} \cdot \Delta_{\text{pos}}^2(\mathcal{S}_1, \mathcal{S}_2) + C_{\text{status},d}^{(1)} \cdot n_c(\mathcal{S}_1, \mathcal{S}_2) + C_{\text{status},d}^{(2)}(k_1) \cdot n_c^2(\mathcal{S}_1, \mathcal{S}_2)
+The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components ({prf:ref}`def-displacement-components`):
+
+$$
+\left\|\mathbb{E}[\mathbf{d}(\mathcal{S}_1)]-\mathbb{E}[\mathbf{d}(\mathcal{S}_2)]\right\|_2^2
+\le C_{\text{pos},d}\Delta_{\text{pos}}^2(\mathcal{S}_1, \mathcal{S}_2)
++ C_{\text{status},d}^{(1)}n_c(\mathcal{S}_1, \mathcal{S}_2)
++ C_{\text{status},d}^{(2)}(k_1)n_c^2(\mathcal{S}_1, \mathcal{S}_2)
 
 $$
 where the **Expected Distance Error Coefficients** are defined as:
@@ -2059,7 +1886,7 @@ This value continuity lemma is applied in {doc}`02_euclidean_gas` for bounding s
 
 :::{prf:lemma} Structural Continuity of Statistical Properties
 :label: lem-stats-structural-continuity
-L raw value a fixed raw value vector. Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. The mean $\mu(\mathcal{S}, \mathbf{v})$ and regularized standard deviation $\sigma'(\mathcal{S}, \mathbf{v})$ are continuous with respect to changes in the swarm structure.
+For a fixed raw value vector, let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. The mean $\mu(\mathcal{S}, \mathbf{v})$ and regularized standard deviation $\sigma'(\mathcal{S}, \mathbf{v})$ are continuous with respect to changes in the swarm structure.
 
 $$
 |\mu(\mathcal{S}_1, \mathbf{v}) - \mu(\mathcal{S}_2, \mathbf{v})| \le L_{\mu,S}(\mathcal{S}_1, \mathcal{S}_2) \cdot \|\mathbf{s}_1 - \mathbf{s}_2\|_2^2
@@ -2085,7 +1912,7 @@ This structural continuity lemma is applied in {doc}`02_euclidean_gas` for analy
 
 :::{prf:theorem} General Bound on the Norm of the Standardized Vector
 :label: thm-z-score-norm-bound
-Let $\mathbf{v} = (v_i raw valueA}}$ be a $k$-dimensional vector of raw values from an alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size $k=|\mathcal{A}| \ge 1$. The raw value nded such that $|v_i| \le V_{\max}$. Let the statistical properties $(\mu_{\mathcal{A}}, \sigma'_{\mathcal{A}})$ be calculated using any valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\mu_{\mathcal{A}}| \le V_{\max}$.
+Let $\mathbf{v} = (v_i)_{i\in\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size $k=|\mathcal{A}| \ge 1$. Assume the raw values satisfy $|v_i| \le V_{\max}$. Let the statistical properties $(\mu_{\mathcal{A}}, \sigma'_{\mathcal{A}})$ be calculated using any valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\mu_{\mathcal{A}}| \le V_{\max}$.
 Let $\mathbf{z}$ be the corresponding $k$-dimensional standardized vector, where each component is $z_i = (v_i - \mu_{\mathcal{A}}) / \sigma'_{\mathcal{A}}$ and the regularized standard deviation is $\sigma'_{\mathcal{A}} = \sigma'_{\text{reg}}(\operatorname{Var}[\mu_{\mathbf{v}}])$ from {prf:ref}`def-statistical-properties-measurement`. Denote the minimal value of this map by $\sigma'_{\min\,\text{bound}} := \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}$.
 The squared Euclidean norm of the standardized vector $\mathbf{z}$ is strictly bounded by a constant that depends on the number of alive walker ({prf:ref}`def-walker`)s and the global parameters:
 
@@ -2119,7 +1946,7 @@ $$
 :::{prf:theorem} Decomposition of Mean-Square Standardization Error
 :label: thm-standardization-operator-unified-mean-square-continuity
 
-Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let the standardiz raw valuerf:ref}`def-standardization-operator-n-dimensional`) $z$ use a raw value operator $V$ and a swarm aggregation operator $M$. Let $z_1 = z(S_1, V, M)$ and $z_2 = z(S_2, V, M)$ be the corresponding standardized vectors resulting from the full stochastic process.
+Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let the standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) $z$ use a raw value operator $V$ and a swarm aggregation operator $M$. Let $z_1 = z(S_1, V, M)$ and $z_2 = z(S_2, V, M)$ be the corresponding standardized vectors resulting from the full stochastic process.
 The expected squared Euclidean distance between the output vectors $z_1$ and $z_2$ is bounded by the sum of two fundamental error components:
 
 $$
@@ -2227,7 +2054,7 @@ $$
 where $\sigma'_{\min,\text{bound}} := \sqrt{\kappa_{\text{var,min}}+\varepsilon_{\text{std}}^2}$ is the uniform lower bound from the regularized standard deviation.
 :::
 
-:::{prf:lemma} Boundi raw valueError Component
+:::{prf:lemma} Bounding the Mean-Shift Error Component
 :label: lem-sub-mean-shift-bound
 
 Let $\mathcal{S}$ be a swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error component, $\Delta_{\text{mean}} = ((\mu_2 - \mu_1) / \sigma'_1) \cdot \mathbf{1}$, is bounded as follows:
@@ -2243,7 +2070,7 @@ where $L_{\mu,M}(S)$ is the axiomatic **Value Lipschitz Function** for the aggre
 :::{prf:lemma} Bounding the Statistical Fluctuation Error Component
 :label: lem-sub-statistical-fluctuation-bound
 
-Let $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) be a fixed raw valuealive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value ({prf:ref}`def-raw-value-operator`) vectors with components bounded by $V_{\max}$. The squared Euclidean norm of the statistical fluctuation error component, $\Delta_{\text{fluc}} = \mathbf{z}_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
+Let $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) be a fixed swarm state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value ({prf:ref}`def-raw-value-operator`) vectors with components bounded by $V_{\max}$. The squared Euclidean norm of the statistical fluctuation error component, $\Delta_{\text{fluc}} = \mathbf{z}_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
 
 $$
 \|\Delta_{\text{fluc}}\|_2^2 \le k \left( \frac{2V_{\max}}{\sigma'_{\min,\text{bound}}} \right)^2 \left( \frac{L_{\sigma',M}(\mathcal{S})}{\sigma'_{\min,\text{bound}}} \right)^2 \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2^2
@@ -2279,7 +2106,7 @@ C_{V,\sigma}(\mathcal{S}) := k \left( \frac{2V_{\max}}{\sigma'_{\min,\text{bound
 
 $$
 
-4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.
+4.  **The Total Value Error Coefficient ($C_{V,\text{total}}(S)$):** The composite coefficient that bounds the total squared error.
 
 $$
 C_{V,\text{total}}(\mathcal{S}) := 3 \cdot \left( C_{V,\text{direct}} + C_{V,\mu}(\mathcal{S}) + C_{V,\sigma}(\mathcal{S}) \right)
@@ -2390,7 +2217,7 @@ $$
 
 :::{prf:theorem} Decomposition of the Total Standardization Error
 :label: thm-deterministic-error-decomposition
-Let $z(S, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) ({prf:r raw valueation-operator-n-dimensional`). Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.
+Let $z(S, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`). Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.
 The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:
 
 $$
@@ -2415,9 +2242,9 @@ $$
 :::
 
 :::{prf:lemma} Algebraic Decomposition of the Value Error
-:lab raw valueitz-value-error-decomposition
+:label: lem-algebraic-value-error-decomposition
 Let **S** be a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) **A** of size **k**. Let $v_1$ and $v_2$ be two raw value vectors for the alive set. Let $(\mu_1, \sigma'_1)$ and $(\mu_2, \sigma'_2)$ be the corresponding statistical properties, and let $z_1$ and $z_2$ be the corresponding standardized vectors.
-The total value error vector, $\Deltaz = z_1 - z_2$, can be expressed as the sum of three components:
+The total value error vector, $\Delta\mathbf{z} = z_1 - z_2$, can be expressed as the sum of three components:
 
 $$
 
@@ -2461,7 +2288,7 @@ $$
 Let **S** be a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state. Let $v_1$ and $v_2$ be lipschitz ({prf:ref}`axiom-reward-regularity`)ors. The squared value error, $E_V^2(S; v_1, v_2) = \|z(S, v_1, M) - z(S, v_2, M)\|_2^2$, is deterministically bounded as follows:
 
 $$
-E_{V}^2(\mathcal{S}; \mathbf{v}_1, \mathbf{v}_2) \le C_{V,\te raw valuel{S}) \cdot \|\mathblipschitz ({prf:ref}`axiom-reward-regularity`)}_2\|_2^2
+E_{V}^2(\mathcal{S}; \mathbf{v}_1, \mathbf{v}_2) \le C_{V,\text{total}}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2^2
 
 $$
 
@@ -2499,7 +2326,7 @@ $$
 
 $$
 
-4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.
+4.  **The Total Value Error Coefficient ($C_{V,\text{total}}(S)$):** The composite coefficient that bounds the total squared error.
 
 $$
     C_{V,\text{total}}(\mathcal{S}) := 3 \cdot \left( C_{V,\text{direct}} + C_{V,\mu}(\mathcal{S}) + C_{V,\sigma}(\mathcal{S}) \right)
@@ -2550,7 +2377,7 @@ where $L_{\mu,S}$ and $L_{\sigma',S}$ are the structural continuity functions fo
 
 :::{prf:theorem} Global Continuity of the Patched Standardization Operator
 :label: thm-global-continuity-patched-standardization
-Let $z(\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) using th raw valueandard Deviation Function** ({prf:ref}`def-statistical-properties-measurement`). Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors.
+Let $z(\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) using the **Regularized Standard Deviation Function** ({prf:ref}`def-statistical-properties-measurement`). Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors.
 The squared Euclidean error between the output standardized vectors, $\|z(\mathcal{S}_1, \mathbf{v}_1, M) - z(\mathcal{S}_2, \mathbf{v}_2, M)\|_2^2$, is deterministically bounded by a function of the swarm ({prf:ref}`def-swarm-and-state-space`) displacement and the raw value difference:
 
 $$
@@ -2858,7 +2685,7 @@ S(v_c, v_i) := \frac{v_c - v_i}{v_i + \varepsilon}
 
 $$
 where $\varepsilon > 0$ is the cloning denominator regularizer.
-::::
+:::
 
 :::{prf:definition} Stochastic Threshold Cloning
 :label: def-stochastic-threshold-cloning
@@ -3060,7 +2887,7 @@ The state-dependent functions in the continuity bound for the Cloning Transition
 :::{prf:lemma} Bounding the Sum of Total Cloning Probabilities
 :label: lem-sub-bound-sum-total-cloning-probs
 
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \matExpected Cloning ({prf:ref}`def-expected-cloning-action`)ared displacement.
+Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2)^2$ be the squared input displacement.
 
 The sum of the **Total Expected Cloning Probabilities**, $\sum_{i=1}^N (\overline{P}_{\text{clone}}(\mathcal{S}_1)_i + \overline{P}_{\text{clone}}(\mathcal{S}_2)_i)$, is bounded by a sum of a linear term, a Hölder term, and a constant offset of the initial displacement:
 
@@ -3556,6 +3383,255 @@ $$
 
 :::
 
+::::{prf:lemma} Properties of smooth radial squashing maps
+:label: lem-squashing-properties-generic
+
+For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,z/(C+\|z\|)$. The map $\psi_C$ satisfies:
+
+1. $\psi_C$ is $1$-Lipschitz on $\mathbb R^d$.
+2. $\psi_C\in C^{\infty}(\mathbb R^d\setminus\{0\})$.
+3. $\psi_C(\mathbb R^d)\subset B(0,C)$.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Lipschitz continuity of the projection $\varphi$
+:label: lem-projection-lipschitz
+
+For $(x,v),(x',v')\in\mathbb R^d\times\mathbb R^d$ the projection $\varphi(x,v)=(\psi_x(x),\psi_v(v))$ satisfies
+
+$$
+d_{\mathcal Y}^{\mathrm{Sasaki}}\bigl(\varphi(x,v),\varphi(x',v')\bigr)\le\sqrt{\|x-x'\|^2+\lambda_v\|v-v'\|^2}.
+
+$$
+
+That is, $\varphi$ is $1$-Lipschitz when both domain and codomain carry the Sasaki metric with the same weight $\lambda_v$.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Lipschitz property of the kinetic flow
+:label: lem-sasaki-kinetic-lipschitz
+
+For $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and any $\xi_v,\xi_x\in\mathbb R^d$ define
+
+$$
+\Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\big(v+\tfrac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))+\sqrt{\sigma_v^2\tau}\,\xi_v\big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
+
+$$
+Then
+
+$$
+\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')),\qquad L_{\mathrm{flow}}:=1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}.
+
+$$
+
+Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Hölder continuity of the death probability
+:label: lem-euclidean-boundary-holder
+
+Let $p_{\mathrm{dead}}(x,v) := \mathbb{P}(x^+ \notin \mathcal{X}_{\mathrm{valid}})$ denote the probability that a walker at $(x,v)$ exits the valid domain after one kinetic step. Then for any compact $C \subset \mathcal{X}_{\mathrm{valid}}$ containing $(x,v)$ and $(x',v')$, there exists a constant $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) < \infty$ such that
+
+$$
+|p_{\mathrm{dead}}(x,v) - p_{\mathrm{dead}}(x',v')| \le L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) \cdot d_{\mathcal{Y}}^{\mathrm{Sasaki}}((x,v),(x',v')).
+$$
+
+This establishes Hölder continuity with exponent $\alpha_B^{\mathrm{Sasaki}} = 1$.
+
+Referenced by {prf:ref}`thm-euclidean-feller`.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Reward regularity in the Sasaki metric
+:label: lem-euclidean-reward-regularity
+
+The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`).
+
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Environmental richness with a kinetic regularizer
+:label: lem-euclidean-richness
+
+The reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ with $\lambda_{\mathrm{vel}}>0$ satisfies the Axiom of Environmental Richness ({prf:ref}`axiom-environmental-richness`).
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Perturbation second moment in the Sasaki metric
+:label: lem-euclidean-perturb-moment
+
+Let $(x^+, v^+)$ denote the walker state after one BAOAB kinetic step from $(x,v)$. The expected squared Sasaki displacement satisfies the quadratic growth bound
+
+$$
+\mathbb{E}\big[d_{\mathcal{Y}}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big] \le C_x^{(\mathrm{pert})}\|x\|^2 + C_v^{(\mathrm{pert})}\|v\|^2 + C_0^{(\mathrm{pert})}
+$$
+
+where $C_x^{(\mathrm{pert})}$, $C_v^{(\mathrm{pert})}$, and $C_0^{(\mathrm{pert})}$ are explicit constants depending on the physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\mathrm{fric}}, L_F, L_u, \lambda_v, V_{\mathrm{alg}})$. Moreover, the kinetic kernel is Feller: it maps bounded continuous functions to bounded continuous functions.
+
+Referenced by {prf:ref}`thm-euclidean-feller`.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Geometric consistency under the capped kinetic kernel
+:label: lem-euclidean-geometric-consistency
+
+Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Single-walker positional error bound in the Sasaki metric
+:label: lem-sasaki-single-walker-positional-error
+
+Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. For a given walker $i$ that is alive in swarm $\mathcal S_1$ ($s_{1,i}=1$), let $\mathbb C_i(\mathcal S_1)$ be its companion selection measure.
+
+The absolute error in its expected distance due to the positional displacement of the walkers between the two states, evaluated over the fixed companion set from $\mathcal S_1$, is bounded by the sum of its own displacement and the average displacement of its potential companions.
+
+Referenced by {prf:ref}`lem-sasaki-total-squared-error-stable` and {prf:ref}`thm-euclidean-feller`.
+
+$$
+\left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{1,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}), \varphi(w_{2,i})) + \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}), \varphi(w_{2,c})) \right]
+
+$$
+
+```{dropdown} Proof
+```
+
+::::
+
+::::{prf:lemma} Single-walker structural error bound in the Sasaki metric
+:label: lem-sasaki-single-walker-structural-error
+
+Let $i\in\mathcal A_{\mathrm{stable}}$ and keep the second swarm's capped positions fixed. Let the initial swarm have at least two alive walkers, $k_1=|\mathcal A(\mathcal S_1)| \ge 2$. The absolute error in the expected distance for walker $i$ due to the change in the companion selection measure is bounded by:
+
+Referenced by {prf:ref}`thm-sasaki-distance-ms`.
+
+$$
+\left| \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_1)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] - \mathbb{E}_{c \sim \mathbb{C}_i(\mathcal{S}_2)} \left[ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}), \varphi(w_{2,c})) \right] \right| \le \frac{2 D_{\mathcal Y}}{k_1-1} \cdot n_c(\mathcal S_1, \mathcal S_2)
+
+$$
+
+where $D_{\mathcal Y}$ is the diameter of the algorithmic space.
+
+```{dropdown} Proof
+```
+
+
+
+::::
+
+::::{prf:lemma} Mean-square error on stable walkers (Sasaki)
+:label: lem-sasaki-total-squared-error-stable
+
+Let $\mathcal S_1,\mathcal S_2$ be swarms with alive sets $\mathcal A_r$ and let $\mathbf d^{(r)}$ denote the expected raw distance vector produced by the measurement operator on $\mathcal S_r$. Write $\mathcal A_{\mathrm{stable}}:=\mathcal A_1\cap\mathcal A_2$ and $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$. Then
+
+$$
+\sum_{i\in\mathcal A_{\mathrm{stable}}}\big|d^{(1)}_i-d^{(2)}_i\big|^2\le C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
+
+$$
+
+where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}}):=2\Big(1+\frac{k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\Big)$.
+
+Referenced by {prf:ref}`thm-sasaki-distance-ms`.
+
+```{dropdown} Proof
+```
+
+::::
+
+::::{prf:theorem} Mean-square continuity of the distance measurement (Sasaki)
+:label: thm-sasaki-distance-ms
+
+Let $\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\mathcal S_r$. With $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$, and alive-difference count $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$, define
+
+$$
+F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+4k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+D_{\mathcal Y}^2 n_c.
+
+$$
+
+Referenced by {prf:ref}`thm-euclidean-feller`.
+
+Then
+
+$$
+\big\|\mathbf d^{(1)}-\mathbf d^{(2)}\big\|_2^2\le F_{d,ms}^{\mathrm{Sasaki}}\big(\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),n_c(\mathcal S_1,\mathcal S_2)\big).
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Value continuity of the empirical moments
+:label: lem-sasaki-aggregator-value
+
+Fix a swarm $\mathcal S$ with alive index set $\mathcal A(\mathcal S)$ of size $k\ge 1$. Let $\mathbf v_1,\mathbf v_2\in\mathbb R^k$ be two scalar value vectors whose components satisfy $|v_{j,i}|\le V_{\max}$. Then the empirical mean and second moment obey
+
+Referenced by {prf:ref}`lem-sasaki-aggregator-lipschitz` and {prf:ref}`lem-sasaki-mean-shift-bound-sq`.
+
+$$
+|\mu(\mathcal S,\mathbf v_1)-\mu(\mathcal S,\mathbf v_2)|\le \frac{1}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2,\qquad|m_2(\mathcal S,\mathbf v_1)-m_2(\mathcal S,\mathbf v_2)|\le \frac{2V_{\max}}{\sqrt{k}}\,\|\mathbf v_1-\mathbf v_2\|_2.
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Structural continuity of the empirical moments
+:label: lem-sasaki-aggregator-structural
+
+Let $\mathcal S_r=((x_{r,i},v_{r,i},s_{r,i}))_{i=1}^N$ with alive counts $k_r\ge 1$ and let $\mathbf v$ be a scalar vector on the union of alive indices satisfying $|v_i|\le V_{\max}$. Set $k_{\min}:=\max\{1,\min(k_1,k_2)\}$ and $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$. Then
+
+Referenced by {prf:ref}`lem-sasaki-aggregator-lipschitz` and {prf:ref}`lem-sasaki-indirect-structural-error-sq`.
+
+$$
+|\mu(\mathcal S_1,\mathbf v)-\mu(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}}{k_{\min}}\,n_c,\qquad|m_2(\mathcal S_1,\mathbf v)-m_2(\mathcal S_2,\mathbf v)|\le \frac{3V_{\max}^2}{k_{\min}}\,n_c.
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Lipschitz data for the Sasaki empirical aggregators
+:label: lem-sasaki-aggregator-lipschitz
+
+For reward vectors take $V_{\max}=V_{\mathrm{max}}^{(R)}$; for distance vectors take $V_{\max}=V_{\mathrm{max}}^{(d)}$. The empirical mean and second moment satisfy the aggregator axioms with
+
+Referenced by {prf:ref}`lem-sasaki-mean-shift-bound-sq` and {prf:ref}`thm-euclidean-feller`.
+
+$$
+L_{\mu,M}^{\mathrm{Sasaki}}(k)=\frac{1}{\sqrt{k}},\qquad L_{m_2,M}^{\mathrm{Sasaki}}(k)=\frac{2V_{\max}}{\sqrt{k}},
+
+$$
+
+$$
+L_{\mu,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}}{k_{\min}},\qquad L_{m_2,S}^{\mathrm{Sasaki}}(k_{\min})=\frac{3V_{\max}^2}{k_{\min}},
+
+$$
+and growth exponents $p_{\mu,S}=p_{m_2,S}=p_{\mathrm{worst\text{-}case}}=-1$. Consequently $\kappa_{\mathrm{var}}^{\mathrm{Sasaki}}=\kappa_{\mathrm{range}}^{\mathrm{Sasaki}}=1$ as in the canonical framework.
+
+```{dropdown} Proof
+```
+::::
+
 :::{prf:definition} Standardization constants (Sasaki geometry)
 :label: def-sasaki-standardization-constants
 
@@ -3615,6 +3691,104 @@ $$
 where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coefficient**, a deterministic constant defined in {prf:ref}`def-sasaki-standardization-constants-sq`. The proof is provided in the subsequent sections by decomposing the total error into its constituent parts.
 :::
 
+::::{prf:lemma} Decomposition of the Value Error
+:label: lem-sasaki-value-error-decomposition
+
+Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. Let $(\mu_1, \sigma'_1)$ and $(\mu_2, \sigma'_2)$ be the corresponding statistical properties, and let $\mathbf z_1$ and $\mathbf z_2$ be the corresponding standardized vectors.
+
+
+The total value error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, can be expressed as the sum of three components:
+
+$$
+\Delta\mathbf{z} = \Delta_{\text{direct}} + \Delta_{\text{mean}} + \Delta_{\text{denom}}
+
+$$
+
+where:
+1.  **The Direct Shift ($\Delta_{\text{direct}}$):** The error from the change in the raw value vector itself, scaled by the initial standard deviation.
+
+    $$
+    \Delta_{\text{direct}} := \frac{\mathbf r_1 - \mathbf r_2}{\sigma'_1}
+
+    $$
+
+2.  **The Mean Shift ($\Delta_{\text{mean}}$):** The error from the change in the aggregator's computed mean, applied uniformly to all walkers.
+
+    $$
+    \Delta_{\text{mean}} := \frac{\mu_2 - \mu_1}{\sigma'_1} \cdot \mathbf{1}
+
+    $$
+    where $\mathbf{1}$ is a k-dimensional vector of ones.
+
+3.  **The Denominator Shift ($\Delta_{\text{denom}}$):** The error from the change in the regularized standard deviation, which rescales the second standardized vector.
+
+    $$
+    \Delta_{\text{denom}} := \mathbf z_2 \cdot \frac{\sigma'_2 - \sigma'_1}{\sigma'_1}
+
+    $$
+
+Furthermore, the total squared error is bounded by three times the sum of the squared norms of these components:
+
+$$
+\|\Delta\mathbf{z}\|_2^2 \le 3\left( \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{mean}}\|_2^2 + \|\Delta_{\text{denom}}\|_2^2 \right)
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Bound on the Squared Direct Shift Component
+:label: lem-sasaki-direct-shift-bound-sq
+
+Let $\mathcal S$ be a fixed swarm state. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors for the alive set. The squared Euclidean norm of the direct shift error component, $\Delta_{\text{direct}} = (\mathbf r_1 - \mathbf r_2) / \sigma'_1$, is bounded as follows:
+
+
+$$
+\|\Delta_{\text{direct}}\|_2^2 \le \frac{1}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
+$$
+
+where $\sigma_{\min,\mathrm{patch}} := \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ is the uniform lower bound from the regularized standard deviation.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Bound on the Squared Mean Shift Component
+:label: lem-sasaki-mean-shift-bound-sq
+
+Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error component, $\Delta_{\text{mean}} = ((\mu_2 - \mu_1) / \sigma'_1) \cdot \mathbf{1}$, is bounded as follows:
+
+
+$$
+\|\Delta_{\text{mean}}\|_2^2 \le \frac{k \cdot (L_{\mu,M}^{\mathrm{Sasaki}}(k))^2}{\sigma_{\min,\mathrm{patch}}^2} \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
+$$
+
+where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ is the axiomatic **Value Lipschitz Function** for the aggregator's mean from {prf:ref}`lem-sasaki-aggregator-lipschitz`.
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Bounding the Squared Denominator Shift Component
+:label: lem-sasaki-denom-shift-bound-sq
+
+Let $\mathcal S$ be a fixed swarm state with alive set $\mathcal A$ of size $k \ge 1$. Let $\mathbf r_1$ and $\mathbf r_2$ be two raw value vectors with components bounded by $V_{\max}^{(R)}$. The squared Euclidean norm of the denominator shift error component, $\Delta_{\text{denom}} = \mathbf z_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
+
+
+$$
+\|\Delta_{\text{denom}}\|_2^2 \le k \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \left( \frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot \|\mathbf r_1 - \mathbf r_2\|_2^2
+
+$$
+
+where $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ is the derived Lipschitz constant for the regularized standard deviation.
+
+```{dropdown} Proof
+```
+::::
+
 :::{prf:definition} Value Error Coefficients (Squared Form)
 :label: def-sasaki-standardization-constants-sq
 
@@ -3670,6 +3844,69 @@ $$
 where $C_{S,\mathrm{direct}}^{\mathrm{sq}}$ and $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ are the **Squared Structural Error Coefficients** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`. The proof is provided in the subsequent sections.
 :::
 
+::::{prf:lemma} Decomposition of the Structural Error
+:label: lem-sasaki-structural-error-decomposition
+
+Let $\mathbf r_2$ be a fixed raw value vector. Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. Let $\mathbf z_1 = z(\mathcal S_1, \mathbf r_2)$ and $\mathbf z_2 = z(\mathcal S_2, \mathbf r_2)$ be the corresponding N-dimensional standardized vectors, computed using the fixed raw values from the second swarm but the structure of each respective swarm.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
+
+The total structural error vector, $\Delta\mathbf{z} = \mathbf z_1 - \mathbf z_2$, can be expressed as the sum of two **orthogonal** components:
+
+$$
+\Delta\mathbf{z} = \Delta_{\text{direct}} + \Delta_{\text{indirect}}
+
+$$
+
+where:
+1.  **The Direct Error ($\Delta_{\text{direct}}$):** The error vector whose non-zero components correspond to walkers whose status changes between $\mathcal S_1$ and $\mathcal S_2$.
+2.  **The Indirect Error ($\Delta_{\text{indirect}}$):** The error vector whose non-zero components correspond to walkers that are alive in both swarms.
+
+Because these two vectors have disjoint support, the squared L2-norm of the total error is the sum of the squared L2-norms of the components:
+
+$$
+\|\Delta\mathbf{z}\|_2^2 = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Bound on the Squared Direct Structural Error
+:label: lem-sasaki-direct-structural-error-sq
+
+Let $\mathbf r_2$ be a fixed raw value vector with components bounded by $V_{\max}^{(R)}$. The squared Euclidean norm of the direct structural error component, $\|\Delta_{\text{direct}}\|_2^2$, is bounded by a term linear in the number of status changes, $n_c(\mathcal S_1, \mathcal S_2)$.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
+
+$$
+\|\Delta_{\text{direct}}\|_2^2 \le \left( \frac{2V_{\max}^{(R)}}{\sigma_{\min,\mathrm{patch}}} \right)^2 \cdot n_c(\mathcal S_1, \mathcal S_2)
+
+$$
+
+```{dropdown} Proof
+```
+::::
+
+::::{prf:lemma} Bound on the Squared Indirect Structural Error
+:label: lem-sasaki-indirect-structural-error-sq
+
+Let $\mathbf r_2$ be a fixed raw value vector. Let $\mathcal S_1$ and $\mathcal S_2$ be two swarm states. The squared Euclidean norm of the indirect structural error component, $\|\Delta_{\text{indirect}}\|_2^2$, is bounded by a term quadratic in the number of status changes, $n_c(\mathcal S_1, \mathcal S_2)$.
+
+Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq`.
+
+$$
+\|\Delta_{\text{indirect}}\|_2^2 \le C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1, \mathcal S_2) \cdot n_c(\mathcal S_1, \mathcal S_2)^2
+
+$$
+
+where $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ is the **Squared Indirect Structural Error Coefficient** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`.
+
+```{dropdown} Proof
+```
+::::
+
 :::{prf:definition} Structural Error Coefficients (Squared Form)
 :label: def-sasaki-structural-coeffs-sq
 
@@ -3704,6 +3941,13 @@ $$
 
 **Validation:** This axiom is satisfied by ensuring the potential function $R_{\mathrm{pos}}$ does not contain large, perfectly flat plateaus within the compact valid domain $X_{\mathrm{valid}}$. Continuity of $\nabla R_{\mathrm{pos}}$ on the compact set allows the constants to be chosen with $L_{\mathrm{grad}}$ no larger than the richness scale $r_{\mathrm{rich}}/4$ from Section 4.2. This regularity condition is assumed to hold for the Euclidean Gas instantiation.
 :::
+
+::::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
+:label: thm-euclidean-feller
+
+```{dropdown} Proof
+```
+::::
 
 ## convergence_program/04_single_particle.md
 
@@ -4891,7 +5135,7 @@ Let $\mathcal{X}_{\text{valid}}$ satisfy the conditions of {prf:ref}`axiom-domai
 Referenced by {prf:ref}`def-boundary-potential-cloning` and {prf:ref}`def-full-synergistic-lyapunov-function`.
 :::
 
-:::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
+::::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
 :label: def-barycentres-and-centered-vectors
 
 For each swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ (see {prf:ref}`def-single-swarm-space`) in a coupled state $(S_1, S_2)$, let $\mathcal{A}(S_k)$ denote the set of alive walker ({prf:ref}`def-walker`) indices and let $k_{\text{alive}} := |\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:
@@ -4949,7 +5193,7 @@ Dead walkers retain their last known position $(x_i, v_i)$ but have status $s_i 
 
 Referenced by {prf:ref}`def-full-synergistic-lyapunov-function` and {prf:ref}`def-structural-error-component`.
 :::
-:::
+::::
 
 :::{prf:definition} The Location Error Component ($V_{\text{loc}}$)
 :label: def-location-error-component
@@ -5017,7 +5261,7 @@ $$
 Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
 :::
 
-:::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function
+::::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function
 :label: def-full-synergistic-lyapunov-function
 
 For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_1, S_2)$ with corresponding empirical measures $(\mu_1, \mu_2)$, the **total synergistic Lyapunov function** is defined as:
@@ -5037,10 +5281,10 @@ $$
 with:
 
 $$
-\begin{align*}
+\begin{aligned}
 V_{Var,x}(S_1, S_2) &:= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2 \\
 V_{Var,v}(S_1, S_2) &:= \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{v,1,i}\|^2 + \frac{1}{N} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{v,2,i}\|^2
-\end{align*}
+\end{aligned}
 
 $$
 
@@ -5131,7 +5375,7 @@ The separation between algorithmic calculations (using $k_{\text{alive}}$) and a
 
 Referenced by {prf:ref}`def-boundary-potential-cloning`.
 :::
-:::
+::::
 
 :::{prf:definition} Variance Notation Conversion Formulas
 :label: def-variance-conversions
@@ -5259,6 +5503,21 @@ This structure is the **discrete stochastic analogue** of the classical hypocoer
 
 The mathematical structure is fundamentally the same: **complementary dissipation mechanisms acting on orthogonal error components**, requiring a weighted-sum Lyapunov function to capture the synergy.
 :::
+
+::::{prf:lemma} Coercivity of the Hypocoercive Lyapunov Components
+:label: lem-V-coercive
+
+The location component $V_{\text{loc}}$ and the structural component $V_{\text{struct}}$ are positive-definite quadratic forms, and are therefore coercive, if the hypocoercive parameters satisfy:
+
+$$
+b^2 < 4\lambda_v
+
+$$
+
+This condition ensures that there exist constants $\lambda_1, \lambda_2 > 0$ such that:
+*   $V_{\text{loc}} \ge \lambda_1 (\|\Delta\mu_x\|^2 + \|\Delta\mu_v\|^2)$
+  *   $V_{\text{struct}} \ge \lambda_2 \frac{1}{N}\sum_i (\|\Delta\delta_{x,i}\|^2 + \|\Delta\delta_{v,i}\|^2)$
+::::
 
 :::{prf:axiom} **(Axiom EG-1): Lipschitz Regularity of Environmental Fields**
 :label: axiom-lipschitz-fields
@@ -5754,7 +6013,7 @@ V_{COM, c} := \frac{1}{M+1} \left( v_c + \sum_{j \in I_c} v_j \right)
 $$
 
     *   **b. Update Relative Velocities:** For each walker ({prf:ref}`def-walker`) `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
-        Let $\alpha_restitution \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
+        Let $\alpha_{\mathrm{restitution}} \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
 
 
 $$
@@ -5772,17 +6031,17 @@ $$
 
 3.  **Uninvolved Walkers:** Any walker ({prf:ref}`def-walker`) `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
 
-**Analysis of the Restitution Parameter $\alpha_restitution$:**
+**Analysis of the Restitution Parameter $\alpha_{\mathrm{restitution}}$:**
 
-This model introduces $\alpha_restitution$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.
+This model introduces $\alpha_{\mathrm{restitution}}$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.
 
-*   If **$\alpha_restitution = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\text{Var},v}$ as walkers' velocities are reset based on their companions.
+*   If **$\alpha_{\mathrm{restitution}} = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\text{Var},v}$ as walkers' velocities are reset based on their companions.
 
-*   If **$\alpha_restitution = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.
+*   If **$\alpha_{\mathrm{restitution}} = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.
 
-*   If **$\alpha_restitution \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
+*   If **$\alpha_{\mathrm{restitution}} \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_{\mathrm{restitution}}^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
 
-The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in {doc}`05_kinetic_contraction`.
+The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_{\mathrm{restitution}}$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in {doc}`05_kinetic_contraction`.
 :::
 
 :::{prf:proposition} Bounded Velocity Variance Expansion from Cloning
@@ -5921,7 +6180,7 @@ where $D_h^2 := D_x^2 + \lambda_v D_v^2$ is the squared **hypocoercive diameter*
 :::{prf:lemma} N-Uniform Lower Bound on the Outlier-Cluster Fraction
 :label: lem-outlier-cluster-fraction-lower-bound
 
-Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_diam(\varepsilon) = c_d · \varepsilon$ where $c_d > 0$ is a fixed constant.
+Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_{\mathrm{diam}}(\varepsilon) = c_d \cdot \varepsilon$ where $c_d > 0$ is a fixed constant.
 
 For any choice of $c_d$ and variance threshold $R^2_{\text{var}}$ satisfying $c_d · \epsilon < 2\sqrt{R^2_{\text{var}}}$, there exists a positive constant $f_H(\epsilon) > 0$, independent of `N` and `k`, such that:
 
@@ -5998,14 +6257,14 @@ gap for every matching configuration.
 
 Let the rescaled diversity values be defined as $d'_i = g_A(\gamma · z_{d,i}) + \eta$, where $\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`)** (see {prf:ref}`def-logistic-rescale` for the canonical choice).
 
-For any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
+For any system in a high-error state (`Var(x) > R^{2}_{\mathrm{var}}`) that generates a non-zero raw distance signal ($\kappa_{\mathrm{meas}}(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
 
 $$
 \kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')
 
 $$
 
-where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_var(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
+where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_{\mathrm{var}}(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
 :::
 
 :::{prf:lemma} From Bounded Variance to a Guaranteed Gap
@@ -6049,14 +6308,14 @@ where $Z_{\text{supp}} := \left[ -2V_{\max}/\sigma'_{\min,\text{patch}}, 2V_{\ma
 :::{prf:lemma} From Raw Measurement Gap to Rescaled Value Gap
 :label: lem-raw-gap-to-rescaled-gap
 
-Let the system parameters be fixed. There exists a function $\kappa_rescaled(\kappa_raw)$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:
+Let the system parameters be fixed. There exists a function $\kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}})$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_{\mathrm{raw}} > 0$, then the corresponding rescaled values are guaranteed to have a gap:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) > 0
 
 $$
 
-The function $\kappa_rescaled$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
+The function $\kappa_{\mathrm{rescaled}}$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
 
 $$
 \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) := \frac{g'_{\min}}{\sigma'_{\max}} \cdot \kappa_{\mathrm{raw}}
@@ -7950,9 +8209,9 @@ dv_t = \left[F(x_t) - \gamma(v_t - u(x_t)) + \underbrace{\frac{1}{2}\sum_{j=1}^d
 $$
 
 where $\Sigma_j$ is the $j$-th column of $\Sigma$. We denote the effective Itô drift by
-$
+$$
 b_v(x,v) := F(x) - \gamma(v - u(x)) + \frac{1}{2}\sum_{j=1}^d \Sigma_j(x,v) \cdot \nabla_v \Sigma_j(x,v).
-$
+$$
 
 **For isotropic diffusion** ($\Sigma = \sigma_v I_d$), the correction term vanishes since $\nabla_v(\sigma_v I_d) = 0$. Thus **Stratonovich = Itô** in this case. Throughout the TV analysis we take $u \equiv 0$ to avoid unnecessary drift terms; extensions to nonzero $u$ are straightforward.
 :::
@@ -8253,9 +8512,9 @@ $$
 :::{prf:remark} Implementation Alignment
 :label: rem-kinetic-004
 In the Euclidean Gas implementation, the BAOAB map is applied to the total force
-$
+$$
 F_{\text{tot}}(x, v) = -\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x, v) + \nu F_{\text{viscous}}(x, v),
-$
+$$
 with optional anisotropic diffusion and a **mandatory** velocity squashing map after the final B-step. The resulting one-step transition kernel is the pushforward of the Gaussian noise through this full BAOAB map, so it is not generally Gaussian when the force field is nonlinear.
 :::
 
@@ -20542,8 +20801,7 @@ cost when required. Let $M_k$ include metric evaluations, index maintenance,
 and additional global repairs. For the stated reconstruction procedure,
 
 $$
- T_k=O\!\left(N+M_k+\sum_i R_i+\sum_{i\ {
-m located}}L_i\right).
+ T_k=O\!\left(N+M_k+\sum_i R_i+\sum_{i:\,\mathrm{located}}L_i\right).
 \tag{SC.20}
 $$
 
@@ -27879,6 +28137,7 @@ Z_{\mathrm{alg}}=\int e^{-S_{\mathrm{alg}}}\,d\lambda
 \mathcal Z(J)=\int\exp\!\left(i\sum_{a=1}^mJ_aO_a(y)\right)
                            e^{-S_{\mathrm{alg}}(y)}\lambda(dy)
 =\mathbb E_P\exp\!\left(i\sum_{a=1}^mJ_aO_a(Y)\right).
+\end{gathered}
 \tag{YM.17}
 $$
 

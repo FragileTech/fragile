@@ -16,6 +16,7 @@ import { AnimationClock } from "./animation-clock.js";
 import { labActionGuides } from "./action-guides.js";
 import { ActionEffects } from "./visuals/action-effects.js";
 import { CargoReadout } from "./visuals/cargo-readout.js";
+import { arenaBounds, arenaHalfSpan } from "./camera-fit.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -118,6 +119,7 @@ export class LabRenderer {
     this.zoom = 1;
     this.top = false;
     this.flightMode = false;
+    this.arena = arenaBounds({ size: [64, 44] });
     this.viewCenter = [32, 22];
     this.ray = new T.Raycaster();
     this.plane = new T.Plane(new T.Vector3(0, 0, 1), 0);
@@ -217,13 +219,7 @@ export class LabRenderer {
     const { width, height } = this.canvas.parentElement.getBoundingClientRect();
     if (!height) return;
     this.renderer.setSize(width, height, false);
-    const span =
-      (Math.max(
-        this.size?.[1] || 44,
-        (this.size?.[0] || 64) / (width / height),
-      ) *
-        0.66) /
-      this.zoom;
+    const span = arenaHalfSpan(this.arena, width / height) / this.zoom;
     this.camera.left = (-span * width) / height;
     this.camera.right = (span * width) / height;
     this.camera.top = span;
@@ -334,7 +330,8 @@ export class LabRenderer {
     this.flightMode = flightMode(scene);
     this.top = false;
     this.size = scene.size || [64, 44];
-    this.viewCenter = this.size.map((v) => v / 2);
+    this.arena = arenaBounds(scene);
+    this.viewCenter = [...this.arena.center];
     this.zoom = 1;
     this.followBody = null;
     const presentation = this.makeStatic(scene, this.style);
@@ -894,7 +891,7 @@ export class LabRenderer {
     this.followBody = body;
     this.viewCenter =
       body == null
-        ? this.size.map((v) => v / 2)
+        ? [...this.arena.center]
         : [this.models[body].position.x, this.models[body].position.y];
     this.zoom = body == null ? 1 : 7;
     this.resize();

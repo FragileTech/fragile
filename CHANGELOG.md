@@ -1,5 +1,11 @@
 # Changelog
 
+- Unify Arcade, Control Lab, and Optimization Lab navigation as compact controls
+  with shared spacing, hover, focus, and current-page states.
+
+- Tighten the Control Lab's default whole-arena camera to the collision boundary,
+  with a centered 5% margin that adapts to the viewport and flight projection.
+
 - Make solo and collaborative flight mining playable with upright 24 N rockets, recoverable wall contacts, catch/target-focused rewards, and a 32-action, 6-frame, 4-elite planner preset. Preserve explicit controller tuning when switching scenes.
 
 - Consolidate native Wave, Graph, FMC, Jump Wave, and Euclidean Gas in the application-independent `fractal-gas-web/src/fractal/` library. Arcade, Control Lab, and optimization retain their batch storage and action policies; Lab Jump Wave decisions now run in C++. Reuse numerical scratch and preserve direct packed donor-to-output physics stepping. Standard comparison algorithms and Python/Torch research implementations remain separate.

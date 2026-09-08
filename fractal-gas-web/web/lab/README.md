@@ -46,6 +46,11 @@ paused child with a fresh planner. Planner checkpoints remain the mechanism for
 exact search continuation. Comparisons expose structured A/B settings, duplication,
 a difference summary, and playback synchronized by simulation time.
 
+The initial and reset camera view fits the playable collision boundary with a 5%
+margin and centers that boundary. The fit is recomputed for the current viewport,
+so the whole arena remains visible in overhead and flight side views. Scroll zoom
+and agent focus still use their independent manual magnifications.
+
 Run the workspace acceptance checks against a local server with:
 
 ```sh

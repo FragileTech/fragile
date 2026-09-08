@@ -22,7 +22,8 @@ Start by making one decision and watching what moves. Then learn which settings
 change the search, save an interesting trajectory, and compare alternatives from
 the same starting world. This is the independent Lab guide, so its navigation stays
 focused on operating and extending the laboratory. The following pages are listed
-beneath **Continuous-control laboratory** in the Lab guide navigation:
+beneath **Continuous-control laboratory** in the Lab guide navigation, followed by
+the standalone Optimization Lab and Arcade Lab guides:
 
 - {doc}`control_lab_getting_started`: build and open the lab, understand worlds and
   walkers, run the six presets, drive the kart, and choose up to 64 threads.
@@ -42,6 +43,9 @@ beneath **Continuous-control laboratory** in the Lab guide navigation:
   budgets, fork a selected world, and read the resulting measurements.
 - {doc}`control_lab_architecture`: follow the engine and controller interfaces,
   packed-state lifecycle, and extension contracts when implementing new features.
+- {doc}`arcade_laboratory`: run the browser arcade swarm across NES, Atari, Genesis,
+  and Montezuma environments; its child pages cover setup, environment behavior,
+  and every visible control.
 
 For a first session, read Getting started, then choose a task tutorial and follow its
 first-run instructions. Keep Controls nearby to understand the settings you change,

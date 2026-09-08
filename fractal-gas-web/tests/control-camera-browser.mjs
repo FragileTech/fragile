@@ -19,7 +19,9 @@ try {
       body: `${(await response.text()).replace("installStyleControls();", "cancelAnimationFrame(renderer.frame); installStyleControls();")}\nwindow.cameraTest = { renderer, editor };`,
     });
   });
-  await page.addInitScript(() => localStorage.setItem("lab.workspace.onboarded", "true"));
+  await page.addInitScript(() =>
+    localStorage.setItem("lab.workspace.onboarded", "true"),
+  );
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8088/lab/");
   await page
     .waitForFunction(() => window.cameraTest?.renderer.state, null, {
@@ -46,6 +48,39 @@ try {
         dragging: !!r.panGesture,
       };
     });
+  const assertArenaVisible = async () => {
+    const frame = await page.evaluate(async () => {
+      const { Vector3 } = await import("./vendor/three.module.js");
+      const r = cameraTest.renderer;
+      r.resize();
+      r.camera.updateMatrixWorld(true);
+      const side = r.flightMode && !r.top;
+      const points = [
+        [r.arena.minX, r.arena.minY],
+        [r.arena.minX, r.arena.maxY],
+        [r.arena.maxX, r.arena.minY],
+        [r.arena.maxX, r.arena.maxY],
+      ];
+      const projected = points.map(([x, y]) =>
+        new Vector3(x, side ? 0 : y, side ? y : 0).project(r.camera),
+      );
+      return {
+        zoom: r.zoom,
+        center: [...r.viewCenter],
+        arenaCenter: [...r.arena.center],
+        maxAbs: Math.max(
+          ...projected.flatMap(({ x, y }) => [Math.abs(x), Math.abs(y)]),
+        ),
+      };
+    });
+    assert.equal(frame.zoom, 1);
+    assert.deepEqual(frame.center, frame.arenaCenter);
+    assert(
+      frame.maxAbs <= 1 / 1.05 + 1e-6,
+      `Arena boundary is outside the default frame: ${frame.maxAbs}`,
+    );
+  };
+  await assertArenaVisible();
   const box = await page.locator("#world").boundingBox();
   const x = box.x + box.width / 2,
     y = Math.min(box.y + box.height / 2, page.viewportSize().height - 80);
@@ -117,8 +152,9 @@ try {
   assert.equal((await state()).zoom, 1);
   assert.deepEqual(
     (await state()).center,
-    await page.evaluate(() => cameraTest.renderer.size.map((v) => v / 2)),
+    await page.evaluate(() => cameraTest.renderer.arena.center),
   );
+  await assertArenaVisible();
   for (const button of ["middle", "right", "alt"]) {
     const before = await state();
     await page.mouse.move(x, y);
@@ -204,6 +240,7 @@ try {
   await page.waitForFunction(
     () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
   );
+  await assertArenaVisible();
   const flightView = await page.evaluate(() => {
     const r = cameraTest.renderer;
     r.resize();
@@ -216,14 +253,14 @@ try {
       frameRotation: r.coordinateFrame.rotation.x,
       camera: [r.camera.position.x, r.camera.position.y, r.camera.position.z],
       center,
+      arenaCenter: [...r.arena.center],
       label: document.querySelector("#view").textContent.trim(),
     };
   });
   assert.equal(flightView.top, false);
   assert(Math.abs(flightView.frameRotation - Math.PI / 2) < 1e-8);
   assert(flightView.camera[1] < -80);
-  assert(Math.abs(flightView.center[0] - 32) < 0.02);
-  assert(Math.abs(flightView.center[1] - 22) < 0.02);
+  assert.deepEqual(flightView.center, flightView.arenaCenter);
   assert.equal(flightView.label, "Side / overhead");
   const flightControl = await page.evaluate(() => ({
     checked: document.querySelector("#flight-mode").checked,
@@ -233,20 +270,21 @@ try {
   assert.equal(flightControl.checked, true);
   assert.equal(flightControl.indeterminate, true);
   assert.equal(flightControl.state, "AUTO");
-  await page.locator("#world-physics").evaluate(e => e.open = true);
+  await page.locator("#world-physics").evaluate((e) => (e.open = true));
   await page.locator("#flight-mode").click();
   await page.locator("#apply-configuration").click();
   await page.waitForFunction(
     () => cameraTest.renderer.state && !cameraTest.renderer.flightMode,
   );
   assert.equal(await page.locator("#flight-mode-state").textContent(), "OFF");
-  await page.locator("#world-physics").evaluate(e => e.open = true);
+  await page.locator("#world-physics").evaluate((e) => (e.open = true));
   await page.locator("#flight-mode").click();
   await page.locator("#apply-configuration").click();
   await page.waitForFunction(
     () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
   );
   await page.locator("#view").click();
+  await assertArenaVisible();
   const overheadView = await page.evaluate(() => {
     const r = cameraTest.renderer;
     return {
