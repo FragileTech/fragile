@@ -142,6 +142,24 @@ for (const name of ["harvest", "mining"]) {
   });
 }
 
+test("stock mining docks sit in the upper-left quadrant", async () => {
+  for (const name of ["harvest", "mining"]) {
+    const scene = JSON.parse(
+      await readFile(
+        new URL(`../web/lab/scenarios/${name}.json`, import.meta.url),
+      ),
+    );
+    const [x, y] = scene.bases[0].position;
+    assert(x < scene.size[0] / 2);
+    assert(y > scene.size[1] / 2);
+    assert(inside(scene.bases[0].position, scene.boundary));
+    assert(
+      clearance(scene.bases[0].position, scene.boundary) >=
+        scene.bases[0].radius,
+    );
+  }
+});
+
 test("hook stiffness survives edits and changes spring extension", () => {
   const source = {
     task: "harvest",
