@@ -1,6 +1,8 @@
 #include <algorithm>
 
+#include "arcade_planner.hpp"
 #include "optimization/engine.hpp"
+#include "optimization/environment.hpp"
 #include "test_framework.hpp"
 using namespace fg::optimization;
 static Json config(const std::string& text) { return JsonReader(text).read(); }
@@ -39,9 +41,9 @@ TEST_CASE(optimization_gradients) {
   }
 }
 TEST_CASE(optimization_deterministic_sessions) {
-  for (auto name : {"wave", "graph", "euclidean"}) {
+  for (auto name : {"wave", "graph", "euclidean", "fmc", "wave_jump"}) {
     auto c = config(
-        R"({"benchmark":"quadratic","walkers":16,"max_walkers":64,"periodic":true})");
+        R"({"benchmark":"quadratic","walkers":16,"max_walkers":64,"periodic":true,"horizon":2})");
     c.object["algorithm"].kind = Json::String;
     c.object["algorithm"].string = name;
     Session a(c), b(c);
@@ -205,24 +207,37 @@ TEST_CASE(optimization_python_operator_fixtures) {
 }
 
 TEST_CASE(optimization_cumulative_scores_follow_objectives) {
-  for (auto algorithm : {"wave", "graph"})
-    for (auto benchmark : {"quadratic", "stochastic_gaussian"}) {
-      auto c = config(
-          R"({"dimensions":3,"walkers":24,"max_walkers":200,"dt_min":1,"dt_max":4,"periodic":true,"elites":2})");
-      c.object["algorithm"].kind = Json::String;
-      c.object["algorithm"].string = algorithm;
-      c.object["benchmark"].kind = Json::String;
-      c.object["benchmark"].string = benchmark;
-      Session session(c);
-      for (int t = 0; t < 40; ++t) {
-        auto& p = session.algorithm->population();
-        for (int i = 0; i < p.n; ++i)
-          if (p.alive[i])
-            CHECK_CLOSE(session.algorithm->objective_score(i), -p.objective[i],
-                        2e-5);
-        session.step();
+  for (auto algorithm : {"wave", "graph", "fmc", "wave_jump", "euclidean"})
+    for (auto direction : {"minimize", "maximize"})
+      for (auto benchmark : {"quadratic", "stochastic_gaussian"}) {
+        auto c = config(
+            R"({"dimensions":3,"walkers":24,"max_walkers":200,"dt_min":1,"dt_max":4,"periodic":true,"elites":2,"horizon":2})");
+        c.object["algorithm"].kind = Json::String;
+        c.object["algorithm"].string = algorithm;
+        c.object["benchmark"].kind = Json::String;
+        c.object["benchmark"].string = benchmark;
+        c.object["objective"].kind = Json::String;
+        c.object["objective"].string = direction;
+        Session session(c);
+        for (int t = 0; t < 40; ++t) {
+          auto& p = session.algorithm->population();
+          for (int i = 0; i < p.n; ++i)
+            if (p.alive[i])
+              CHECK_CLOSE(session.algorithm->objective_score(i),
+                          session.settings.score(p.objective[i]), 2e-5);
+          double current = session.settings.worst();
+          for (int i = 0; i < p.n; ++i)
+            if (p.alive[i] && session.settings.better(p.objective[i], current))
+              current = p.objective[i];
+          CHECK(session.snapshot[8] == current);
+          CHECK(session.settings.score(session.best) >=
+                session.settings.score(current));
+          const double previous = session.best;
+          session.step();
+          CHECK(session.settings.score(session.best) >=
+                session.settings.score(previous));
+        }
       }
-    }
 }
 TEST_CASE(optimization_registry_exposes_extensions) {
   register_algorithm(
@@ -241,4 +256,158 @@ TEST_CASE(optimization_registry_exposes_extensions) {
       CHECK(a["parameters"].array[0]["id"].str() == "learning_rate");
     }
   CHECK(found);
+}
+
+TEST_CASE(optimization_planners_reuse_arcade_execution) {
+  for (auto name : {"fmc", "wave_jump"}) {
+    auto cfg = config(
+        R"({"benchmark":"stochastic_gaussian","walkers":12,"horizon":2,"dt_max":3,"periodic":true,"consensus_prefix":false,"objective":"maximize"})");
+    cfg.object["algorithm"].kind = Json::String;
+    cfg.object["algorithm"].string = name;
+    Session session(cfg);
+    Benchmark bench(cfg);
+    Settings settings(bench.config);
+    BenchmarkEnvironment env(bench, settings);
+    fg::FractalGasParams params;
+    params.N = settings.walkers;
+    params.seed = settings.seed;
+    params.dt_max = settings.dt_max;
+    params.use_cumulative_reward = true;
+    params.count_visits = false;
+    params.recording = fg::RecordingMode::Pruned;
+    params.record_observations = false;
+    fg::FractalGas gas(env, params,
+                       std::make_unique<OptimizationRng>(settings.seed));
+    fg::ArcadePlannerSettings options;
+    options.algorithm = settings.algorithm == "fmc" ? 2 : 3;
+    options.horizon = settings.horizon;
+    options.consensus_prefix = false;
+    fg::ArcadePlanner planner(env, gas, options);
+    planner.reset();
+    int executed = 0;
+    for (int t = 0; t < 30; ++t) {
+      const auto& p = session.algorithm->population();
+      CHECK(p.n == settings.walkers + 1);
+      std::vector<float> x(bench.d);
+      CHECK(p.objective.back() == env.decode(planner.state(), x.data()));
+      CHECK(std::equal(x.begin(), x.end(), p.x.end() - bench.d));
+      for (int i = 0; i < settings.walkers; ++i) {
+        CHECK(p.objective[i] == env.decode(gas.walker_state(i), x.data()));
+        CHECK(
+            std::equal(x.begin(), x.end(), p.x.begin() + size_t(i) * bench.d));
+      }
+      session.step();
+      const auto info = planner.advance();
+      CHECK(session.snapshot[7] ==
+            (planner.search_advanced() ? info.num_cloned : 0));
+      executed += !planner.search_advanced();
+    }
+    CHECK(executed > 0);
+  }
+}
+
+TEST_CASE(optimization_perturbations_replay_actions) {
+  for (auto strategy : {"gaussian", "uniform"}) {
+    auto cfg = config(
+        R"({"algorithm":"fmc","benchmark":"stochastic_gaussian","dimensions":3,"periodic":true,"perturbation_std":0.3})");
+    cfg.object["perturbation"].kind = Json::String;
+    cfg.object["perturbation"].string = strategy;
+    Benchmark b(cfg);
+    Settings s(b.config);
+    BenchmarkEnvironment env(b, s);
+    std::vector<char> root;
+    std::vector<float> obs;
+    env.reset(root, obs);
+    const std::vector<int32_t> actions{0, 16777215}, frames{1, 4};
+    std::vector<std::vector<char>> states(2);
+    std::vector<float> x(6), rewards(2);
+    std::vector<uint8_t> dones(2), truncated(2);
+    env.step_batch({root, root}, actions, frames, states, x, rewards, dones,
+                   truncated);
+    const auto expected = states;
+    const auto expected_rewards = rewards;
+    // An unrelated evaluation and step must not alter recorded action
+    // semantics.
+    b.evaluate(obs.data());
+    env.step_batch(states, {42, 53}, {3, 2}, states, x, rewards, dones,
+                   truncated);
+    env.step_batch({root, root}, actions, frames, states, x, rewards, dones,
+                   truncated);
+    CHECK(states == expected);
+    CHECK(rewards == expected_rewards);
+    CHECK(dones == std::vector<uint8_t>({0, 0}));
+    auto doubled = s.json;
+    doubled.object["perturbation_std"] = number(.6);
+    auto a = make_perturbation(b, s.json), c = make_perturbation(b, doubled);
+    OptimizationRng ar(7), cr(7);
+    std::vector<float> dx(3), twice(3);
+    a->sample(obs.data(), dx.data(), 3, ar);
+    c->sample(obs.data(), twice.data(), 3, cr);
+    for (int k = 0; k < 3; ++k) CHECK_CLOSE(twice[k], 2 * dx[k], 1e-7);
+  }
+}
+
+class FixedPerturbation final : public Perturbation {
+ public:
+  void sample(const float*, float* delta, int d, fg::Rng&) const override {
+    std::fill(delta, delta + d, .01f);
+  }
+};
+TEST_CASE(optimization_perturbation_extension_and_force_direction) {
+  register_perturbation(
+      "fixed", "Fixed test step",
+      [](const Benchmark&, const Json&) {
+        return std::make_unique<FixedPerturbation>();
+      },
+      config("[]"));
+  const auto catalog = JsonReader(discovery_json()).read();
+  CHECK(catalog["perturbations"].array.size() == 3);
+  auto cfg = config(
+      R"({"algorithm":"fmc","benchmark":"quadratic","dimensions":2,"perturbation":"fixed"})");
+  Benchmark b(cfg);
+  Settings s(b.config);
+  BenchmarkEnvironment env(b, s);
+  std::vector<char> state;
+  std::vector<float> start;
+  env.reset(state, start);
+  std::vector<std::vector<char>> next(1);
+  std::vector<float> x(2), reward(1);
+  std::vector<uint8_t> dones(1), trunc(1);
+  env.step_batch({state}, {7}, {2}, next, x, reward, dones, trunc);
+  for (int k = 0; k < 2; ++k) CHECK_CLOSE(x[k], start[k] + .02, 1e-6);
+
+  auto zero =
+      config(R"({"perturbation_std":0,"cloning":false,"delta_t":0.01})");
+  auto noise = make_perturbation(b, zero);
+  Population down, up;
+  down.resize(2, 2);
+  down.x.assign(4, 1);
+  up = down;
+  Settings minimize(zero), maximize(zero);
+  maximize.objective = "maximize";
+  OptimizationRng rng(7);
+  baoab(down, minimize, b, rng, noise.get());
+  baoab(up, maximize, b, rng, noise.get());
+  CHECK(down.x[0] < 1);
+  CHECK(up.x[0] > 1);
+  minimize.potential_force = false;
+  down.x.assign(4, 1);
+  down.v.assign(4, 0);
+  baoab(down, minimize, b, rng, noise.get());
+  CHECK(down.x == std::vector<float>({1, 1, 1, 1}));
+
+  bool caught = false;
+  try {
+    Session invalid(config(R"({"objective":"sideways"})"));
+  } catch (const std::invalid_argument&) {
+    caught = true;
+  }
+  CHECK(caught);
+  caught = false;
+  try {
+    Session invalid(config(R"({"perturbation":"unknown"})"));
+  } catch (const std::invalid_argument&) {
+    caught = true;
+  }
+  CHECK(caught);
 }

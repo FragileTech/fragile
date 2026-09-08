@@ -77,7 +77,8 @@ function checkInput(key, label, value) {
   return wrap;
 }
 const defaults = {
-  proposal: 0.025,
+  horizon: 32,
+  max_horizon: 0,
   max_walkers: 10000,
   dt_min: 1,
   dt_max: 1,
@@ -102,46 +103,67 @@ const defaults = {
   sigma_x: 1e-6,
   restitution: 0.5,
 };
+function parameterFields(panel, parameters, values = {}) {
+  for (const parameter of parameters) {
+    const value = values[parameter.id] ?? parameter.default;
+    const control =
+      parameter.type === "boolean"
+        ? checkInput(parameter.id, parameter.label, value)
+        : parameter.type === "enum"
+          ? selectInput(parameter.id, parameter.label, value, parameter.options)
+          : numeric(
+              parameter.id,
+              parameter.label,
+              value,
+              parameter.min,
+              parameter.max,
+            );
+    if (parameter.type === "integer") control.querySelector("input").step = "1";
+    panel.append(control);
+  }
+}
+function perturbationFields(values = {}) {
+  const panel = $("perturbation-parameters");
+  panel.replaceChildren();
+  const descriptor = catalog.perturbations.find(
+    (p) => p.id === $("perturbation").value,
+  );
+  parameterFields(panel, descriptor?.parameters || [], values);
+}
+function perturbationNote() {
+  $("perturbation-note").textContent =
+    $("algorithm").value === "euclidean"
+      ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
+      : "Standard deviation is measured in coordinate units for each proposal step.";
+}
+function objectiveNote() {
+  $("objective-note").textContent =
+    $("objective").value === "maximize"
+      ? "Maximize the function value. Best values increase."
+      : "Minimize the function by maximizing its negative value.";
+}
 function algorithmFields(values = {}) {
+  perturbationNote();
   const panel = $("algorithm-parameters");
   panel.replaceChildren();
   const algorithm = $("algorithm").value,
     gas = algorithm === "euclidean";
   const descriptor = catalog.algorithms.find((a) => a.id === algorithm);
   if (Array.isArray(descriptor?.parameters)) {
-    for (const parameter of descriptor.parameters) {
-      const value = values[parameter.id] ?? parameter.default;
-      const control =
-        parameter.type === "boolean"
-          ? checkInput(parameter.id, parameter.label, value)
-          : parameter.type === "enum"
-            ? selectInput(
-                parameter.id,
-                parameter.label,
-                value,
-                parameter.options,
-              )
-            : numeric(
-                parameter.id,
-                parameter.label,
-                value,
-                parameter.min,
-                parameter.max,
-              );
-      if (parameter.type === "integer")
-        control.querySelector("input").step = "1";
-      panel.append(control);
-    }
+    parameterFields(panel, descriptor.parameters, values);
     return;
   }
-  if (!["euclidean", "wave", "graph"].includes(algorithm)) return;
+  if (!["euclidean", "wave", "graph", "fmc", "wave_jump"].includes(algorithm))
+    return;
   const primary = gas
     ? [
         ["delta_t", "Time step", 1e-9, 1],
         ["gamma", "Friction", 1e-9, 1e6],
         ["beta", "Inverse temperature", 1e-9, 1e12],
       ]
-    : [["proposal", "Proposal size (domain fraction)", 0, 1]];
+    : ["fmc", "wave_jump"].includes(algorithm)
+      ? [["horizon", "Search horizon", 1, 4096]]
+      : [];
   for (const [key, label, min, max] of primary)
     panel.append(numeric(key, label, values[key] ?? defaults[key], min, max));
   const details = document.createElement("details");
@@ -183,6 +205,24 @@ function algorithmFields(values = {}) {
       ];
   for (const [key, label, min, max] of fields)
     content.append(numeric(key, label, values[key] ?? defaults[key], min, max));
+  if (algorithm === "wave_jump") {
+    content.append(
+      numeric(
+        "max_horizon",
+        "Maximum horizon (0 = automatic)",
+        values.max_horizon ?? 0,
+        0,
+        4096,
+      ),
+    );
+    content.append(
+      checkInput(
+        "consensus_prefix",
+        "Execute shared ancestry prefix",
+        values.consensus_prefix ?? true,
+      ),
+    );
+  }
   if (gas) {
     const choices = [
       ["cloning", "Cloning (softmax + revival)"],
@@ -261,8 +301,11 @@ function readConfig() {
 function populateForm(values) {
   $("benchmark").value = values.benchmark;
   $("algorithm").value = values.algorithm;
+  $("objective").value = values.objective ?? "minimize";
+  $("perturbation").value = values.perturbation ?? "gaussian";
   benchmarkFields(values);
   algorithmFields(values);
+  perturbationFields(values);
   for (const [key, value] of Object.entries(values)) {
     const input = form.elements.namedItem(key);
     if (!input) continue;
@@ -282,6 +325,7 @@ function viewSettings() {
     trails: $("trails").checked,
     showSlice: $("show-slice").checked,
     slice,
+    planning: ["fmc", "wave_jump"].includes(config?.algorithm),
   };
 }
 function configureAxes() {
@@ -469,6 +513,14 @@ function inspect(frame) {
   div.replaceChildren();
   const dl = document.createElement("dl");
   for (const [key, value] of [
+    [
+      "Role",
+      viewSettings().planning
+        ? selected === info.n - 1
+          ? "Committed position"
+          : "Search walker"
+        : "Walker",
+    ],
     ["Objective", number(w.value)],
     ["Pre-step fitness", number(w.fitness)],
     ["Status", w.alive ? "Alive" : "Invalid"],
@@ -520,6 +572,7 @@ function renderFrame() {
     recording.frames.slice(0, index + 1),
     selected,
   );
+  $("planner-note").hidden = !settings.planning;
   $("iteration").textContent = info.iteration;
   $("best").textContent = number(info.best);
   $("mean").textContent = number(info.mean);
@@ -580,6 +633,7 @@ async function createSession(next, loaded = null) {
     simulationMs = 0;
     renderer.setConfig(config);
     populateForm(config);
+    objectiveNote();
     configureAxes();
     renderFrame();
     refreshSurface();
@@ -640,6 +694,8 @@ form.addEventListener("submit", (e) => {
 });
 $("benchmark").addEventListener("change", () => benchmarkFields());
 $("algorithm").addEventListener("change", () => algorithmFields());
+$("perturbation").addEventListener("change", () => perturbationFields());
+$("objective").addEventListener("change", objectiveNote);
 $("run").onclick = () => {
   stopReplay();
   running = true;
@@ -768,6 +824,10 @@ try {
     $("benchmark").add(new Option(entry.name, entry.id));
   for (const entry of catalog.algorithms)
     $("algorithm").add(new Option(entry.name, entry.id));
+  for (const entry of catalog.perturbations)
+    $("perturbation").add(new Option(entry.name, entry.id));
+  $("perturbation").value = "gaussian";
+  perturbationFields();
   $("benchmark").value = "rastrigin";
   $("algorithm").value = "euclidean";
   benchmarkFields();

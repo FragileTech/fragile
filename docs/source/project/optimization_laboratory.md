@@ -33,7 +33,9 @@ make optimization-lab
 Open [http://127.0.0.1:8081/optimization/](http://127.0.0.1:8081/optimization/).
 Use HTTP rather than opening `index.html` as a local file. The initial session is
 paused: **Euclidean Gas**, **256 walkers**, **3D Rastrigin**, **seed 7**, and the
-**spatial view**. One simulation worker owns the engine.
+**spatial view**. **Objective** defaults to **Minimize**, and **Perturbation** to
+**Gaussian (mean 0)** with **Standard deviation = 1**. One simulation worker owns
+the engine.
 
 1. Wait for **C++ / WebAssembly**, then press **Step**. Inspect the objective values
    and the change in the cloud before advancing again.
@@ -58,35 +60,77 @@ from the same seed.
 ## Choose how the swarm explores
 
 :::{div} feynman-prose
-All three algorithms minimize the selected objective. Their internal fitness can
-also depend on diversity, so a walker's fitness and its objective value answer
-different questions. Read the objective when comparing candidate solutions; use
-fitness and companion overlays to understand selection. **Fitness (pre-step)**
-and **Pre-step fitness** label the selection-stage value retained in a snapshot.
-It is not a fitness recomputation at the displayed post-step coordinates.
+Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, or **Euclidean Gas** under
+**Algorithm**. All five support **Objective → Minimize** and **Maximize**. The
+selection score is the negative of the function value for minimization and the
+function value itself for maximization. Surfaces, colors, and the inspector keep
+the raw objective convention: maximizing does not flip the landscape upside down.
+**Best** decreases during minimization and increases during maximization.
 
-**Wave** and **Graph** use the existing C++ swarm implementations with Gaussian
-position proposals in a continuous benchmark environment. A move earns the
-decrease in objective. Cumulative reward is anchored to a common baseline, so
-different path lengths do not give a walker credit merely for taking more steps.
-Cloning carries the corresponding state and reward history together. Graph can
-also expose retained ancestry; its population need not have the same structure as
-a fixed cloud of independent trajectories.
+Internal fitness can also depend on diversity, so a walker's fitness and its
+objective value answer different questions. Read the objective when comparing
+solutions; use fitness and companion overlays to understand selection. **Fitness
+(pre-step)** and **Pre-step fitness** label the selection-stage value retained in
+a snapshot. It is not recomputed at the displayed post-step coordinates.
+
+**Wave** and **Graph** use the existing C++ `FractalGas` and `FractalTree`
+implementations in a continuous benchmark environment. A move earns the change
+in selection score: objective decrease when minimizing, increase when maximizing.
+Cumulative reward is anchored to a common baseline, so different path lengths do
+not give a walker credit merely for taking more steps. Cloning carries the
+corresponding state and reward history together. Graph also retains ancestry;
+its population can grow beyond its starting set of walkers.
+
+**FMC** and **Wave Jump** reuse the existing `ArcadePlanner` over a Wave search.
+They keep one committed position and explore possible continuations from it.
+**Step** advances one search iteration or executes one chosen action; it does not
+complete an entire planning cycle. During search, the cloud can move while the
+committed position stays fixed. The next search starts from the position reached
+by the preceding execution.
+
+Both planners default to **Search horizon = 32**. FMC chooses the most represented
+first action in the surviving search ancestry and executes it before searching
+again. Wave Jump defaults to **Execute shared ancestry prefix**: it executes the
+common initial path when surviving walkers share one. Without a shared prefix,
+it can extend the search to **Maximum horizon (0 = automatic)**; automatic means
+twice the search horizon, capped at 4096. At that limit it falls back to one action
+from the best branch. Disabling the shared-prefix option executes the selected
+best branch's complete path. Each action along a chosen path still requires its
+own execution step.
 
 **Euclidean Gas** maintains positions and velocities. It selects companions,
 computes fitness, applies cloning at the configured interval, and advances motion
 with the core BAOAB integrator. Cloning includes position jitter and velocity
-restitution; the kinetic step has isotropic noise and an optional potential force.
-The time step, friction, noise, cloning settings, and companion strategies belong
-to the **Algorithm parameters** configuration. This implementation does not
-include adaptive fitness forces, anisotropic diffusion, or viscous and curl
-extensions.
+restitution; the kinetic step has independent noise in each coordinate and an
+optional potential force. The force follows the selected objective direction.
+Time step, friction, inverse temperature, cloning settings, and companion
+strategies belong to the algorithm configuration. Adaptive fitness forces,
+anisotropic diffusion, and viscous and curl extensions remain outside this app.
+
+**Perturbation** selects the noise distribution. **Gaussian (mean 0)** and
+**Uniform (mean 0)** both interpret **Standard deviation** as the per-coordinate
+standard deviation, rather than the uniform distribution's half-width. For Wave,
+Graph, FMC, and Wave Jump, this is a position displacement in coordinate units per
+proposal step. Changing the domain bounds therefore does not silently rescale a
+new run's perturbations. The old domain-fraction `proposal` setting is translated
+only when loading legacy configurations without an explicit `perturbation_std`.
+
+For Euclidean Gas, the perturbation is the random velocity input to BAOAB's
+O stage, scaled by the existing thermal-noise coefficient. Gaussian noise with
+standard deviation 1 retains the configured temperature convention. Increasing
+the standard deviation increases the kick variance. Uniform noise with the same
+standard deviation matches that variance but does not reproduce the Gaussian
+Ornstein–Uhlenbeck transition law. The perturbation setting does not replace the
+separate **Clone position jitter** control.
 
 The bounded-domain mode marks out-of-bounds walkers as dead. Periodic boundaries
 instead wrap coordinates across the box when enabled. Wrapping changes the
 boundary rule; it does not make an arbitrary benchmark smooth across that seam.
-If every walker becomes invalid, the session stops with an error. Reduce the
-proposal or kinetic step size, review the bounds, and apply a reset to recover.
+Wave, Graph, and Euclidean Gas stop when every walker becomes invalid. FMC and
+Wave Jump can use the shared planner's all-dead search fallback while their
+committed position remains valid; an invalid committed position ends the run.
+Reduce the perturbation standard deviation or kinetic step size, review the
+bounds, and apply a reset to recover.
 :::
 
 (sec-optimization-benchmarks)=
@@ -95,6 +139,8 @@ proposal or kinetic step size, review the bounds, and apply a reset to recover.
 :::{div} feynman-prose
 The catalog supplies each function's dimension restrictions, default bounds,
 parameters, gradient availability, and any known minimum or reference value.
+The table below describes minimization experiments. A catalog reference minimum
+remains a minimum when you choose **Maximize**; it is not a maximization target.
 Changing the number of displayed axes never reduces the dimension passed to the
 objective. A ten-dimensional walker still has ten coordinates even when you see
 only three of them.
@@ -146,14 +192,25 @@ and **Vertical** coordinates. **Color** offers **Objective**, **Fitness
 (pre-step)**, and **Uniform**. A two-dimensional benchmark occupies a plane.
 Drag to orbit, right-drag to pan, scroll to zoom, and use **Reset camera** to
 recover the initial view. Gold identifies the current best walker; white marks
-your selection.
+your selection. For FMC and Wave Jump, a larger marker identifies the committed
+position. It is teal unless the best or selection highlight overrides that color.
+The other markers are search candidates. The snapshot appends the committed
+position after the search rows, so a planner configured with 256 walkers displays
+257 rows. **Role** in the inspector distinguishes **Search walker** from
+**Committed position**.
+
+The best and mean statistics include valid search candidates and the committed
+row. A better candidate found during planning is not necessarily a position the
+planner has executed. Inspect the committed row's **Objective** to track the
+executed route; its pre-step fitness is not a search-selection diagnostic.
 
 Open **Display and slices** for **Point size**, **Opacity**, and **Links**.
 The link choices are **Distance companions**, **Clone companions**, and
 **Ancestry**; relationships appear when the algorithm supplies them. **Trails
 (up to 96 walkers)** shows recent recorded motion, or the selected walker's trail
-when one is selected. Trails break at cloning events. **Show objective slice**
-adds a sampled plane to the spatial view without changing the run.
+when one is selected. Trails break at cloning events and when planners begin a
+new search from their committed position. **Show objective slice** adds a sampled
+plane to the spatial view without changing the run.
 
 Choose **View → Landscape** to use the **Horizontal** and **Depth** coordinates
 for the domain and an `asinh`-scaled objective for height. This monotone transform
@@ -196,11 +253,16 @@ not restore an earlier random-generator or algorithm state.
 
 **Load recording** validates the file format and array shapes before replacing
 the displayed session. Loaded recordings provide exact visual replay of their
-frames. The **Reset** button becomes **Rerun settings**: use it to start a fresh
-run with the saved settings, including realized mixture parameters. **Run** and
-**Step** remain disabled for the imported history itself. A `.fgopt` file is a
-frame recording, not a resumable engine checkpoint; a fresh rerun starts at its
-initial state. Python `.pt` recordings are not imported by this application.
+frames. The current engine identifies itself as `fgopt-2`; earlier `fgopt-1`
+files retain exact replay of their saved frames. Exporting an imported recording
+preserves its original engine identifier.
+
+The **Reset** button becomes **Rerun settings**: use it to start a fresh run with
+the saved settings, including realized mixture parameters. This rerun uses the
+current engine, so an older engine's trajectory need not be regenerated.
+**Run** and **Step** remain disabled for the imported history itself. A `.fgopt`
+file is a frame recording, not a resumable engine checkpoint; a fresh rerun starts
+at its initial state. Python `.pt` recordings are not imported by this application.
 
 The recording budget is **64 MiB**. The Lab pauses before the next frame would
 exceed it and retains the existing recording for export. Larger populations and
@@ -220,6 +282,12 @@ snapshot, sample objectives, and destroy it. The main thread receives transferre
 snapshot buffers and draws them with Three.js. It does not implement a second
 version of the objective or advance the algorithm during rendering.
 
+`fg_swarm_core` supplies the shared `FractalGas`, `FractalTree`, and
+`ArcadePlanner` implementations. Optimization's Wave, Graph, FMC, and Wave Jump
+adapters configure those classes; they do not reimplement the swarm or planning
+algorithms. The config IDs are `wave`, `graph`, `fmc`, and `wave_jump`; the general
+Euclidean Gas implementation uses `euclidean`.
+
 Start in `fractal-gas-web/src/optimization/`: the benchmark implementation supplies
 the catalog, values, gradients, initialization, and boundary behavior; the engine
 interface supplies settings, populations, and algorithm factories. A new benchmark
@@ -237,16 +305,39 @@ Supported types are `number`, `integer`, `boolean`, and `enum`; enum options are
 factory reads custom settings from `Settings::json` and validates the values
 needed by its algorithm.
 
+For a new proposal distribution, implement
+`Perturbation::sample(position, delta, dimensions, rng)` and register its factory
+with `register_perturbation(id, name, factory, parameters)`. Write one displacement
+vector into `delta` using the supplied random generator. The factory receives the
+benchmark and configuration, allowing parameters or state-dependent proposals.
+Its parameter descriptors use the same schema as algorithm controls and populate
+the **Perturbation** UI automatically. The benchmark environment adds the sampled
+vector to position; Euclidean Gas passes it through the BAOAB thermal coefficient
+as velocity noise. Account for that difference when designing a distribution.
+
 Return the shared population and metric fields, and expose optional velocity,
 companion, or ancestry data only when they have defined meaning. The renderer and
 recording format can then consume the result without requiring an
-algorithm-specific copy of the application.
+algorithm-specific copy of the application. Keep stored objective values raw;
+use `Settings::score` and `Settings::better` when the algorithm needs the selected
+optimization direction.
 
 The C API is declared in `c_api.h`. Returned strings and snapshot pointers are
 borrowed; copy data needed beyond the next mutation of that session. The snapshot
 contains a header followed by full-dimensional rows and diagnostics. Treat its
 version and documented layout as an interface contract when changing producers,
-the worker decoder, or recording validation.
+the worker decoder, or recording validation. Planner snapshots append their
+committed-position row after the search walkers; consumers must preserve that
+role when interpreting counts, diagnostics, and replay.
+
+The benchmark environment uses 24-bit action IDs as perturbation seeds, exactly
+representable in the shared planner's float action recorder. Given the same
+engine, configuration, starting state, action ID, and proposal-step count, the
+environment repeats the same perturbations and stochastic objective sample.
+Thus executing a recorded search edge does not draw a different future. Planner
+rewards are changes from their search root's score; the adapter adds that root
+baseline back when exposing an absolute candidate score. This preserves the
+objective ranking across searches without changing the planner's reward logic.
 
 Optimization uses MT19937-64 with explicit portable bit mappings for uniform real
 and integer draws, shared by the native and WebAssembly builds. This makes their
@@ -278,13 +369,22 @@ make optimization-test
 ```
 
 :::{div} feynman-prose
-Relevant checks include benchmark values and gradients, cloning and kinetic
-operators, Wave/Graph reward ranking, deterministic resets, recording round trips,
-and native/WebAssembly agreement. Browser verification should exercise both views,
-dimension changes, Lennard–Jones inspection, loading a recording, and reset while
-a worker request is outstanding. The **Step** and **Draw** timings report
+Relevant checks include benchmark values and gradients, both objective
+directions, perturbation moments and replay, cloning and kinetic operators,
+cumulative-score ranking, committed planner motion, deterministic resets,
+recording round trips, and native/WebAssembly agreement. Browser verification
+should exercise all five algorithms, both views, dimension changes,
+Lennard–Jones inspection, loading either recording engine version, and reset
+while a worker request is outstanding. The **Step** and **Draw** timings report
 simulation and rendering duration separately; either can explain a slow-looking
 experiment.
+
+The browser CI runs Chromium and Firefox on `ubuntu-latest`. For Ubuntu 24.04,
+reproduce its Xvfb and software Mesa setup, using `LIBGL_ALWAYS_SOFTWARE=1` and
+`OPTIMIZATION_FIREFOX_HEADLESS=0`; this supplies the WebGL context needed by the
+renderer. Startup checks report browser and WebGL errors immediately instead of
+waiting for an unexplained readiness timeout. Reproduce that display setup when
+investigating a Linux CI startup failure.
 
 Geometry and fluid benchmarks, additional optimizers, experiment comparisons,
 adaptive or viscous physics, and resumable checkpoints are outside this release.

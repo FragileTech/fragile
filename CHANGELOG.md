@@ -2,6 +2,11 @@
 
 ## Optimization Lab
 
+- Reuse the shared FMC and Wave Jump planners in Optimization Lab alongside Wave, Graph, and Euclidean Gas; expose planning horizons and the committed position.
+- Add extensible perturbation strategies with zero-mean Gaussian noise and configurable standard deviation, plus a uniform strategy; share the controls and recording settings across algorithms.
+- Default to minimization and add maximization, with consistent fitness, potential forces, and best-objective metrics. Preserve visual replay of earlier recordings.
+
+- Run Firefox browser checks under Xvfb with software WebGL and report startup errors immediately instead of timing out.
 - Add a standalone C++/WebAssembly Optimization Lab with Wave, Graph, and core Euclidean Gas, 13 benchmark objectives, full-dimensional 3D views, molecular inspection, and portable replay.
 - Share emulator-independent numerical/swarm targets with Control Lab and the arcade engine; add native, WASM, Python parity, and browser checks.
 - Correct adjacent-coordinate Rosenbrock evaluation and the general Python kinetic operator's plain BAOAB half-kick branch. The Boris branch retains its existing behavior.
@@ -11,6 +16,8 @@ Unreleased
 ----------
 
 * Restore Python test collection after learning and QFT API changes, repair encoder unpacking, coupling gathers and diagonal diffusion shapes, avoid uninitialized experiment logging, correct finite-difference validity and periodic Voronoi facet indexing, and add a locked CPU Python CI job with headless dashboard tests.
+
+* Wait for the simulation worker's pause acknowledgement before checking that the Lab clock stays stopped in CI.
 
 * Add FMC and Jump Wave to the NES, Atari and Genesis arcade, with committed gameplay, configurable search horizons, shared-path or full-path execution, and deterministic planner/replay tests.
 

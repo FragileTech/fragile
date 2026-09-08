@@ -2,7 +2,8 @@ import { encode, decode, checksum } from "../lab/binary.js";
 import { ENGINE_VERSION, frameInfo } from "./native.js";
 export const RECORDING_LIMIT = 64 * 1024 * 1024;
 export class Recording {
-  constructor(config) {
+  constructor(config, engine = ENGINE_VERSION) {
+    this.engine = engine;
     this.config = structuredClone(config);
     this.frames = [];
     this.bytes = new TextEncoder().encode(
@@ -23,7 +24,7 @@ export class Recording {
     return JSON.stringify({
       format: "fgopt",
       version: 1,
-      engine: ENGINE_VERSION,
+      engine: this.engine,
       config: this.config,
       frames: this.frames.map((frame) => ({
         data: encode(frame),
@@ -90,14 +91,14 @@ export function importRecording(text) {
   if (
     value.format !== "fgopt" ||
     value.version !== 1 ||
-    value.engine !== ENGINE_VERSION ||
+    !["fgopt-1", ENGINE_VERSION].includes(value.engine) ||
     !value.config ||
     typeof value.config !== "object" ||
     !Array.isArray(value.frames) ||
     !value.frames.length
   )
     throw new Error("Unsupported optimization recording");
-  const recording = new Recording(value.config);
+  const recording = new Recording(value.config, value.engine);
   let previous = -1;
   for (const entry of value.frames) {
     if (

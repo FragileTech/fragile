@@ -184,6 +184,10 @@ try {
     () => parseInt(document.getElementById("tick").textContent.slice(5)) >= 30,
   );
   await page.locator("#run").click();
+  // The click posts a message; the worker's final frame acknowledges the pause.
+  await page.waitForFunction(
+    () => document.getElementById("run-state").textContent === "PAUSED",
+  );
   const paused = await page.locator("#tick").innerText();
   await page.waitForTimeout(250);
   assert.equal(await page.locator("#tick").innerText(), paused);

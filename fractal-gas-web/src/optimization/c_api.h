@@ -7,7 +7,10 @@ extern "C" {
 // A snapshot is float64: 12 header words, then n rows of [x[d],v[d],U,
 // fitness,alive,distance_companion,clone_companion,parent,cloned,leaf].
 // Headers: version,n,d,has_velocity,iteration,evaluations,alive,cloned,
-// current_min,best_so_far,mean,best_index. Non-finite U denotes invalidity.
+// current_best,best_so_far,mean,best_index. Non-finite U denotes invalidity.
+// Best metrics follow config.objective; U remains the raw function value.
+// FMC/Wave Jump append the committed position after config.walkers search rows.
+// On a new search, search-row parent indices refer to that committed row.
 const char* fgo_catalog(void);
 const char* fgo_error(void);
 uint32_t fgo_create(const char* config);

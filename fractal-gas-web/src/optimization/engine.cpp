@@ -5,76 +5,13 @@
 #include <map>
 #include <numeric>
 
+#include "arcade_planner.hpp"
 #include "fractal_gas.hpp"
 #include "fractal_tree.hpp"
+#include "optimization/environment.hpp"
 
 namespace fg::optimization {
 std::unique_ptr<Algorithm> make_euclidean(Benchmark&, const Settings&);
-// Opaque BatchEnv state: initialized byte, cached objective, then d
-// coordinates. The uninitialized root has score zero. Its first transition
-// emits -U(x), subsequent transitions emit cached_U - new_U. Cloning copies
-// both fields.
-class ObjectiveEnv final : public BatchEnv {
- public:
-  Benchmark& b;
-  Settings s;
-  OptimizationRng rng;
-  uint64_t evals = 0;
-  ObjectiveEnv(Benchmark& bench, const Settings& settings)
-      : b(bench), s(settings), rng(s.seed) {}
-  int32_t n_actions() const override { return 1; }
-  int32_t obs_dim() const override { return b.d; }
-  int32_t frame_width() const override { return 0; }
-  int32_t frame_height() const override { return 0; }
-  void render_frame(const std::vector<char>&,
-                    std::vector<uint8_t>& rgba) override {
-    rgba.clear();
-  }
-  size_t bytes() const { return 1 + sizeof(double) + sizeof(float) * b.d; }
-  void reset(std::vector<char>& state, std::vector<float>& obs) override {
-    state.assign(bytes(), 0);
-    obs.assign(b.d, 0);
-    rng = OptimizationRng(s.seed);
-    evals = 0;
-  }
-  double decode(const std::vector<char>& state, float* x) const {
-    if (state.size() != bytes()) return INFINITY;
-    double u;
-    std::memcpy(&u, state.data() + 1, sizeof(u));
-    std::memcpy(x, state.data() + 1 + sizeof(u), sizeof(float) * b.d);
-    return state[0] ? u : INFINITY;
-  }
-  void step_batch(const std::vector<std::vector<char>>& states,
-                  const std::vector<int32_t>&, const std::vector<int32_t>& dt,
-                  std::vector<std::vector<char>>& next,
-                  std::vector<float>& observations, std::vector<float>& rewards,
-                  std::vector<uint8_t>& dones,
-                  std::vector<uint8_t>& truncated) override {
-    for (size_t i = 0; i < states.size(); ++i) {
-      auto* x = observations.data() + i * b.d;
-      bool initialized = states[i].size() == bytes() && states[i][0];
-      double old = initialized ? decode(states[i], x) : 0, u = old;
-      if (!initialized) b.initial(x, rng);
-      for (int t = 0; t < dt[i]; ++t) {
-        if (initialized || t > 0)
-          for (int k = 0; k < b.d; ++k)
-            x[k] += float(s.proposal * (b.high - b.low) * normal(rng));
-        if (s.periodic) b.wrap(x);
-        if (!b.valid(x)) break;
-      }
-      u = b.evaluate(x, &rng);
-      ++evals;
-      bool valid = b.valid(x) && std::isfinite(u) && std::isfinite(float(u));
-      next[i].assign(bytes(), 0);
-      next[i][0] = 1;
-      std::memcpy(next[i].data() + 1, &u, sizeof(u));
-      std::memcpy(next[i].data() + 1 + sizeof(u), x, sizeof(float) * b.d);
-      rewards[i] = valid ? float(old - u) : 0;
-      dones[i] = !valid;
-      truncated[i] = 0;
-    }
-  }
-};
 // Capture the existing Wave operator's draws without changing its decisions.
 class ObservedCloning final : public FractalCloningOperator {
  public:
@@ -95,17 +32,27 @@ class ObservedCloning final : public FractalCloningOperator {
   }
 };
 class ExistingSwarm final : public Algorithm {
-  ObjectiveEnv env;
+  BenchmarkEnvironment env;
   Settings s;
   std::unique_ptr<SwarmAlgorithm> swarm;
+  std::unique_ptr<ArcadePlanner> planner;
   Population p;
   ObservedCloning* observed = nullptr;
   void update() {
-    p.resize(swarm->n_walkers(), env.b.d);
+    const int count = swarm->n_walkers();
+    p.resize(count + (planner ? 1 : 0), env.b.d);
     p.has_velocity = false;
     auto* wave = dynamic_cast<FractalGas*>(swarm.get());
     auto* graph = dynamic_cast<FractalTree*>(swarm.get());
-    for (int i = 0; i < p.n; ++i) {
+    std::vector<uint8_t> cloned;
+    if (wave && wave->state().has_virtual_rewards && observed &&
+        observed->draws.size() == 2) {
+      const auto probabilities = observed->clone_probs_with_companions(
+          wave->state().virtual_rewards, observed->draws[1]);
+      cloned = observed->decide_with_uniforms(probabilities, observed->uniforms,
+                                              observed->alive);
+    }
+    for (int i = 0; i < count; ++i) {
       p.objective[i] =
           env.decode(swarm->walker_state(i), p.x.data() + size_t(i) * p.d);
       p.alive[i] = swarm->walker_alive(i) &&
@@ -119,12 +66,7 @@ class ExistingSwarm final : public Algorithm {
         if (observed && observed->draws.size() == 2) {
           p.companions[i] = observed->draws[0][i];
           p.clone_companions[i] = observed->draws[1][i];
-          double own = p.fitness[i],
-                 other = st.virtual_rewards[p.clone_companions[i]];
-          double probability =
-              (other - own) / std::max(double(observed->eps), own);
-          p.cloned[i] =
-              probability > observed->uniforms[i] || !observed->alive[i];
+          p.cloned[i] = cloned.empty() ? 0 : cloned[i];
           p.parent[i] = p.cloned[i] ? p.clone_companions[i] : i;
         }
       }
@@ -135,13 +77,32 @@ class ExistingSwarm final : public Algorithm {
         p.clone_companions[i] = st.clone_ix[i];
         p.cloned[i] = st.will_clone[i];
       }
+      if (planner) {
+        if (!planner->search_advanced()) {
+          // Executing the plan leaves the search cloud unchanged.
+          p.cloned[i] = 0;
+          p.parent[i] = i;
+        } else if (planner->depth() == 1) {
+          // New searches descend from the committed row, not the old cloud.
+          p.parent[i] = count;
+        }
+      }
+    }
+    if (planner) {
+      p.objective[count] =
+          env.decode(planner->state(), p.x.data() + size_t(count) * p.d);
+      p.alive[count] = !planner->done() &&
+                       env.b.valid(p.x.data() + size_t(count) * p.d) &&
+                       std::isfinite(p.objective[count]);
+      p.leaf[count] = 0;
+      if (planner->done()) std::fill(p.alive.begin(), p.alive.end(), 0);
     }
   }
 
  public:
   ExistingSwarm(Benchmark& b, const Settings& settings)
       : env(b, settings), s(settings) {
-    if (s.algorithm == "wave") {
+    if (s.algorithm == "wave" || s.planning()) {
       FractalGasParams a;
       a.N = s.walkers;
       a.seed = s.seed;
@@ -152,13 +113,25 @@ class ExistingSwarm final : public Algorithm {
       a.dt_max = s.dt_max;
       a.n_elite = s.elites;
       a.count_visits = false;
-      a.recording = RecordingMode::Off;
+      a.recording = s.planning() ? RecordingMode::Pruned : RecordingMode::Off;
+      a.record_observations = false;
       auto trace = std::make_unique<ObservedCloning>();
       observed = trace.get();
       swarm = std::make_unique<FractalGas>(
           env, a, std::make_unique<OptimizationRng>(s.seed), std::move(trace));
-      swarm->reset();
-      swarm->step();
+      if (s.planning()) {
+        ArcadePlannerSettings options;
+        options.algorithm = s.algorithm == "fmc" ? 2 : 3;
+        options.horizon = s.horizon;
+        options.max_horizon = s.max_horizon;
+        options.consensus_prefix = s.consensus_prefix;
+        planner = std::make_unique<ArcadePlanner>(
+            env, *static_cast<FractalGas*>(swarm.get()), options);
+        planner->reset();
+      } else {
+        swarm->reset();
+        swarm->step();
+      }
     } else {
       FractalTreeParams a;
       a.start_walkers = s.walkers;
@@ -178,18 +151,36 @@ class ExistingSwarm final : public Algorithm {
     update();
   }
   void step() override {
-    swarm->step();
+    if (planner)
+      planner->advance();
+    else
+      swarm->step();
     update();
   }
   const Population& population() const override { return p; }
   uint64_t evaluations() const override { return env.evals; }
   double objective_score(int i) const override {
-    return swarm->walker_cum_reward(i);
+    if (!planner) return swarm->walker_cum_reward(i);
+    if (i == swarm->n_walkers()) return s.score(p.objective.at(i));
+    const auto& bytes =
+        static_cast<FractalGas*>(swarm.get())->exploration_tree().root_snapshot;
+    std::vector<float> x(env.b.d);
+    return swarm->walker_cum_reward(i) +
+           s.score(env.decode(std::vector<char>(bytes.begin(), bytes.end()),
+                              x.data()));
   }
 };
 static std::map<std::string, Factory>& factories() {
   static std::map<std::string, Factory> f{
       {"euclidean", make_euclidean},
+      {"fmc",
+       [](Benchmark& b, const Settings& s) {
+         return std::make_unique<ExistingSwarm>(b, s);
+       }},
+      {"wave_jump",
+       [](Benchmark& b, const Settings& s) {
+         return std::make_unique<ExistingSwarm>(b, s);
+       }},
       {"wave",
        [](Benchmark& b, const Settings& s) {
          return std::make_unique<ExistingSwarm>(b, s);
@@ -236,6 +227,7 @@ std::string discovery_json() {
   list.kind = Json::Array;
   for (auto& entry : descriptions()) list.array.push_back(entry.second);
   result.object["algorithms"] = list;
+  result.object["perturbations"] = perturbation_catalog();
   return stringify(result);
 }
 Session::Session(const Json& config)
@@ -260,6 +252,7 @@ Session::Session(const Json& config)
     off.kind = Json::Boolean;
     settings.json.object["potential_force"] = off;
   }
+  best = settings.worst();
   config_json = stringify(settings.json);
   algorithm = it->second(benchmark, settings);
   capture();
@@ -278,19 +271,19 @@ void Session::step() {
 void Session::capture() {
   const auto& p = algorithm->population();
   int alive = 0, cloned = 0, best_index = -1;
-  double mean = 0, current = INFINITY;
+  double mean = 0, current = settings.worst();
   for (int i = 0; i < p.n; ++i) {
     cloned += p.cloned[i] != 0;
     if (p.alive[i]) {
       ++alive;
       mean += p.objective[i];
-      if (p.objective[i] < current) {
+      if (settings.better(p.objective[i], current)) {
         current = p.objective[i];
         best_index = i;
       }
     }
   }
-  best = std::min(best, current);
+  if (settings.better(current, best)) best = current;
   snapshot = {1,
               double(p.n),
               double(p.d),

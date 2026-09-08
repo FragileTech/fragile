@@ -5,7 +5,8 @@ add_library(fg_numeric_core STATIC
 target_include_directories(fg_numeric_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(fg_numeric_core PUBLIC Threads::Threads)
 add_library(fg_swarm_core STATIC
-  src/walker_state.cpp src/fractal_gas.cpp src/fractal_tree.cpp src/visit_grid.cpp)
+  src/walker_state.cpp src/fractal_gas.cpp src/fractal_tree.cpp src/visit_grid.cpp
+  src/arcade_planner.cpp)
 target_link_libraries(fg_swarm_core PUBLIC fg_numeric_core)
 foreach(target fg_numeric_core fg_swarm_core)
   set_target_properties(${target} PROPERTIES POSITION_INDEPENDENT_CODE ON)

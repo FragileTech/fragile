@@ -44,7 +44,6 @@ target_include_directories(nes_core PUBLIC ${NES_PY_DIR}/include)
 add_library(fractal_gas_core STATIC
   src/mario_reward.cpp
   src/nes_env.cpp
-  src/arcade_planner.cpp
 )
 target_include_directories(fractal_gas_core PUBLIC src)
 target_link_libraries(fractal_gas_core PUBLIC nes_core fg_swarm_core)

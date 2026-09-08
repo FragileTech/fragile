@@ -42,13 +42,18 @@ jobs:
       - run: npm --prefix fractal-gas-web run test:optimization
       - working-directory: fractal-gas-web
         run: npx playwright install --with-deps chromium firefox
+      - name: Install software WebGL for Firefox
+        run: sudo apt-get install -y --no-install-recommends xvfb xauth libgl1-mesa-dri libglx-mesa0
       - name: Test browser interactions and project-prefixed paths
         timeout-minutes: 10
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+          OPTIMIZATION_FIREFOX_HEADLESS: '0'
         run: |
           python3 fractal-gas-web/tools/serve-control.py --port 8081 > /tmp/optimization-server.log 2>&1 &
           for attempt in {1..30}; do curl -fsS http://127.0.0.1:8081/optimization/ > /dev/null && break; sleep 1; done
-          npm --prefix fractal-gas-web run test:optimization-browser
-          OPTIMIZATION_TEST_URL=http://127.0.0.1:8081/fragile/optimization/ npm --prefix fractal-gas-web run test:optimization-browser
+          xvfb-run -a npm --prefix fractal-gas-web run test:optimization-browser
+          OPTIMIZATION_TEST_URL=http://127.0.0.1:8081/fragile/optimization/ xvfb-run -a npm --prefix fractal-gas-web run test:optimization-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:

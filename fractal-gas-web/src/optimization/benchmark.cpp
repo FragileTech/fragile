@@ -91,7 +91,7 @@ double normal(Rng& rng) {
 }
 const std::string& catalog_json() {
   static const std::string s =
-      R"json({"version":"fgopt-1","algorithms":[{"id":"euclidean","name":"Euclidean Gas","velocity":true},{"id":"wave","name":"Wave","velocity":false},{"id":"graph","name":"Graph","velocity":false}],"benchmarks":[
+      R"json({"version":"fgopt-2","algorithms":[{"id":"fmc","name":"FMC","velocity":false},{"id":"wave_jump","name":"Wave Jump","velocity":false},{"id":"euclidean","name":"Euclidean Gas","velocity":true},{"id":"wave","name":"Wave","velocity":false},{"id":"graph","name":"Graph","velocity":false}],"benchmarks":[
 {"id":"sphere","name":"Sphere","bounds":[-1000,1000],"minDimension":1,"minimum":0,"gradient":"analytic"},
 {"id":"quadratic","name":"Quadratic Well","bounds":[-10,10],"minDimension":1,"minimum":0,"parameters":{"alpha":0.1},"gradient":"analytic"},
 {"id":"mexican_hat","name":"Mexican Hat","bounds":[-10,10],"minDimension":1,"parameters":{"lambda_h":0.13,"vev":246,"field_scale":246,"tilt":0},"reference":"Ring minima only when tilt is zero","gradient":"analytic"},

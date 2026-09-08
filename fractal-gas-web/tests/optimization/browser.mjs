@@ -1,6 +1,6 @@
 import { chromium, firefox } from "playwright";
 import assert from "node:assert/strict";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 const base =
   process.env.OPTIMIZATION_TEST_URL || "http://127.0.0.1:8081/optimization/";
 const output =
@@ -11,7 +11,9 @@ for (const [name, type] of [
   ["firefox", firefox],
 ]) {
   const browser = await type.launch({
-    headless: true,
+    // Firefox needs an X display for Mesa WebGL on Linux CI runners.
+    headless:
+      name !== "firefox" || process.env.OPTIMIZATION_FIREFOX_HEADLESS !== "0",
     ...(name === "chromium"
       ? { args: ["--no-sandbox", "--use-angle=swiftshader"] }
       : {
@@ -31,8 +33,24 @@ for (const [name, type] of [
   page.on("pageerror", (e) => errors.push(e.message));
   page.on("worker", (worker) => workers.push(worker));
   try {
+    await page.addInitScript(() => {
+      window.addEventListener("error", (event) => {
+        window.optimizationStartupError = event.message;
+      });
+      window.addEventListener("unhandledrejection", (event) => {
+        window.optimizationStartupError =
+          event.reason?.message || String(event.reason);
+      });
+    });
     await page.goto(base);
-    await page.waitForFunction(() => window.optimizationReady);
+    await page.waitForFunction(() => {
+      if (window.optimizationStartupError)
+        throw new Error(window.optimizationStartupError);
+      const status = document.getElementById("status");
+      if (status?.classList.contains("error"))
+        throw new Error(status.textContent);
+      return window.optimizationReady;
+    });
     assert.equal(await page.locator("#iteration").textContent(), "0");
     const apply = async () => {
       await page.locator("#apply").click();
@@ -49,17 +67,55 @@ for (const [name, type] of [
         before,
       );
     };
-    for (const algorithm of ["euclidean", "wave", "graph"]) {
-      await page.locator("#algorithm").selectOption(algorithm);
-      await page.locator('[name="walkers"]').fill("24");
-      await page.locator('[name="periodic"]').check();
-      await apply();
-      await step();
-      await step();
-      await step();
-      assert.ok(
-        Number((await page.locator("#alive").textContent()).split("/")[0]) > 0,
-      );
+    assert.equal(await page.locator("#objective").inputValue(), "minimize");
+    assert.equal(await page.locator("#perturbation").inputValue(), "gaussian");
+    for (const algorithm of [
+      "euclidean",
+      "wave",
+      "graph",
+      "fmc",
+      "wave_jump",
+    ]) {
+      for (const objective of ["minimize", "maximize"]) {
+        await page.locator("#algorithm").selectOption(algorithm);
+        await page.locator("#objective").selectOption(objective);
+        await page
+          .locator("#perturbation")
+          .selectOption(objective === "minimize" ? "gaussian" : "uniform");
+        await page.locator('[name="perturbation_std"]').fill("0.3");
+        if (["fmc", "wave_jump"].includes(algorithm))
+          await page.locator('[name="horizon"]').fill("2");
+        await page.locator('[name="walkers"]').fill("24");
+        await page.locator('[name="periodic"]').check();
+        await apply();
+        const initialBest = Number(
+          (await page.locator("#best").textContent()).replaceAll(",", ""),
+        );
+        await page.locator("#view").selectOption("landscape");
+        await step();
+        await page.locator("#view").selectOption("spatial");
+        for (let t = 0; t < 5; t++) await step();
+        const finalBest = Number(
+          (await page.locator("#best").textContent()).replaceAll(",", ""),
+        );
+        assert.ok(
+          objective === "minimize"
+            ? finalBest <= initialBest
+            : finalBest >= initialBest,
+        );
+        if (["fmc", "wave_jump"].includes(algorithm)) {
+          await page.locator("#walker-index").fill("24");
+          await page.locator("#walker-index").press("Tab");
+          assert.match(
+            await page.locator("#walker-info").textContent(),
+            /Committed position/,
+          );
+        }
+        assert.ok(
+          Number((await page.locator("#alive").textContent()).split("/")[0]) >
+            0,
+        );
+      }
     }
     await page.locator("#algorithm").selectOption("euclidean");
     await page.locator("#benchmark").selectOption("rosenbrock");
@@ -82,7 +138,10 @@ for (const [name, type] of [
     await page.locator("#save").click();
     const saved = `${output}/${name}.fgopt`;
     await (await download).saveAs(saved);
-    assert.match(await readFile(saved, "utf8"), /fgopt/);
+    const savedRun = JSON.parse(await readFile(saved, "utf8"));
+    assert.equal(savedRun.config.objective, "maximize");
+    assert.equal(savedRun.config.perturbation, "uniform");
+    assert.equal(savedRun.config.perturbation_std, 0.3);
     await page.locator("#timeline").fill("0");
     await page.locator("#timeline").dispatchEvent("input");
     assert.equal(await page.locator("#iteration").textContent(), "0");
@@ -96,6 +155,8 @@ for (const [name, type] of [
         .textContent.startsWith("Recording loaded"),
     );
     assert.equal(await page.locator("#run").isDisabled(), true);
+    assert.equal(await page.locator("#objective").inputValue(), "maximize");
+    assert.equal(await page.locator("#perturbation").inputValue(), "uniform");
     await page.locator("#replay").click();
     await page.waitForFunction(
       () => Number(document.getElementById("iteration").textContent) > 0,
@@ -172,6 +233,23 @@ for (const [name, type] of [
     console.log(
       `${name}: algorithms, landscape/spatial, 6D slices, molecules, save/load/replay, reset, and mobile passed`,
     );
+  } catch (error) {
+    const diagnostics = {
+      browser: name,
+      url: page.url(),
+      error: error.message,
+      pageErrors: errors,
+      status: await page
+        .locator("#status")
+        .textContent({ timeout: 1000 })
+        .catch(() => null),
+    };
+    console.error(diagnostics);
+    await writeFile(
+      `${output}/${name}-failure.json`,
+      JSON.stringify(diagnostics, null, 2),
+    );
+    throw error;
   } finally {
     await browser.close();
   }

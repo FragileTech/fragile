@@ -33,6 +33,10 @@ Settings::Settings(const Json& input) : json(input) {
     return t;
   };
   algorithm = s("algorithm", "euclidean");
+  objective = s("objective", "minimize");
+  if (objective != "minimize" && objective != "maximize")
+    throw std::invalid_argument("Objective must be minimize or maximize");
+  perturbation = s("perturbation", "gaussian");
   companion = s("companion", "cloning");
   clone_companion = s("clone_companion", "cloning");
   for (auto& name : {companion, clone_companion})
@@ -47,7 +51,16 @@ Settings::Settings(const Json& input) : json(input) {
   clone_every = i("clone_every", 1, 1, 100000);
   substeps = i("substeps", 1, 1, 100);
   elites = i("elites", 0, 0, walkers);
+  horizon = i("horizon", 32, 1, 4096);
+  max_horizon = i("max_horizon", 0, 0, 4096);
+  consensus_prefix = b("consensus_prefix", true);
   proposal = f("proposal", .025, 0, 1);
+  // Preserve the scale of recordings made before perturbations were explicit.
+  const double legacy_std =
+      input["proposal"].kind != Json::Null && algorithm != "euclidean"
+          ? proposal * (input["high"].num(5.12) - input["low"].num(-5.12))
+          : 1;
+  f("perturbation_std", legacy_std, 0, 1e6);
   gamma = f("gamma", 1, 1e-9, 1e6);
   beta = f("beta", 1, 1e-9, 1e12);
   delta_t = f("delta_t", .002, 1e-9, 1);
@@ -178,7 +191,7 @@ std::vector<float> fitness(const Population& p, const Settings& s,
   std::vector<float> out(p.n, 0);
   for (int i = 0; i < p.n; ++i)
     if (p.alive[i]) {
-      rewards[i] = -p.objective[i];
+      rewards[i] = s.score(p.objective[i]);
       distances[i] = std::sqrt(distance2(p, i, companions[i], s, b) +
                                s.epsilon_dist * s.epsilon_dist);
     }
@@ -257,7 +270,8 @@ void clone_population(Population& p, const Settings& s,
   for (int i = 0; i < p.n; ++i)
     if (!mask[i]) p.parent[i] = i;
 }
-void baoab(Population& p, const Settings& s, const Benchmark& b, Rng& rng) {
+void baoab(Population& p, const Settings& s, const Benchmark& b, Rng& rng,
+           const Perturbation* noise) {
   std::vector<float> grad(p.x.size(), 0);
   double c1 = std::exp(-s.gamma * s.delta_t),
          c2 = std::sqrt(-std::expm1(-2 * s.gamma * s.delta_t) / s.beta);
@@ -266,13 +280,24 @@ void baoab(Population& p, const Settings& s, const Benchmark& b, Rng& rng) {
       for (int i = 0; i < p.n; ++i)
         b.gradient(p.x.data() + size_t(i) * p.d, grad.data() + size_t(i) * p.d);
     for (size_t j = 0; j < p.x.size(); ++j)
-      p.v[j] -= float(.5 * s.delta_t * grad[j]);
+      p.v[j] += float(.5 * s.delta_t * s.score(grad[j]));
   };
   for (int t = 0; t < s.substeps; ++t) {
     kick();
     for (size_t j = 0; j < p.x.size(); ++j)
       p.x[j] += float(.5 * s.delta_t * p.v[j]);
-    for (auto& v : p.v) v = float(c1 * v + c2 * normal(rng));
+    if (noise) {
+      std::vector<float> delta(p.d);
+      for (int i = 0; i < p.n; ++i) {
+        noise->sample(p.x.data() + size_t(i) * p.d, delta.data(), p.d, rng);
+        for (int k = 0; k < p.d; ++k) {
+          auto& v = p.v[size_t(i) * p.d + k];
+          v = float(c1 * v + c2 * delta[k]);
+        }
+      }
+    } else {
+      for (auto& v : p.v) v = float(c1 * v + c2 * normal(rng));
+    }
     for (size_t j = 0; j < p.x.size(); ++j)
       p.x[j] += float(.5 * s.delta_t * p.v[j]);
     kick();
@@ -282,6 +307,7 @@ class Euclidean final : public Algorithm {
   Benchmark& b;
   Settings s;
   OptimizationRng rng;
+  std::unique_ptr<Perturbation> noise;
   Population p;
   uint64_t ticks = 0, evals = 0;
   void evaluate() {
@@ -298,7 +324,10 @@ class Euclidean final : public Algorithm {
 
  public:
   Euclidean(Benchmark& bench, const Settings& settings)
-      : b(bench), s(settings), rng(s.seed) {
+      : b(bench),
+        s(settings),
+        rng(s.seed),
+        noise(make_perturbation(b, s.json)) {
     p.resize(s.walkers, b.d);
     p.has_velocity = true;
     for (int i = 0; i < p.n; ++i) b.initial(p.x.data() + size_t(i) * p.d, rng);
@@ -306,6 +335,9 @@ class Euclidean final : public Algorithm {
   }
   const Population& population() const override { return p; }
   uint64_t evaluations() const override { return evals; }
+  double objective_score(int i) const override {
+    return s.score(p.objective.at(i));
+  }
   void step() override {
     p.companions = select_companions(p, s, b, s.companion, s.epsilon, rng);
     p.fitness = fitness(p, s, b, p.companions);
@@ -331,7 +363,7 @@ class Euclidean final : public Algorithm {
       clone_population(proposed, s, p.clone_companions, mask, rng);
       if (ticks % uint64_t(s.clone_every) == 0) p = std::move(proposed);
     }
-    if (s.kinetic) baoab(p, s, b, rng);
+    if (s.kinetic) baoab(p, s, b, rng, noise.get());
     ++ticks;
     evaluate();
   }

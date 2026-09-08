@@ -289,7 +289,10 @@ export class SwarmRenderer {
     for (let i = 0; i < info.n; i++) {
       const w = data[i];
       transform.position.copy(w.alive ? this.point(w) : new T.Vector3());
-      const radius = w.alive ? pointSize * (i === selected ? 1.65 : 1) : 0;
+      const radius = w.alive
+        ? pointSize *
+          (i === selected || (settings.planning && i === info.n - 1) ? 1.65 : 1)
+        : 0;
       transform.scale.setScalar(radius);
       transform.updateMatrix();
       this.mesh.setMatrixAt(i, transform.matrix);
@@ -298,6 +301,7 @@ export class SwarmRenderer {
         settings.color === "constant" || !Number.isFinite(metric)
           ? new T.Color(0x7ef5df)
           : color(max > min ? (metric - min) / (max - min) : 0.5);
+      if (settings.planning && i === info.n - 1) c = new T.Color(0x7ef5df);
       if (i === selected) c = new T.Color(0xffffff);
       else if (i === info.bestIndex) c = new T.Color(0xefc87b);
       this.mesh.setColorAt(i, c);
@@ -348,7 +352,13 @@ export class SwarmRenderer {
           if (i >= prev[1] || i >= next[1]) continue;
           const a = row(prev, i),
             b = row(next, i);
-          if (!a.alive || !b.alive || b.cloned) continue;
+          if (
+            !a.alive ||
+            !b.alive ||
+            b.cloned ||
+            (settings.planning && i !== info.n - 1 && b.parent === info.n - 1)
+          )
+            continue;
           points.push(...this.point(a).toArray(), ...this.point(b).toArray());
         }
       }

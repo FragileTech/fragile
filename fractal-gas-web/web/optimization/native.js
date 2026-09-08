@@ -1,4 +1,4 @@
-export const ENGINE_VERSION = "fgopt-1";
+export const ENGINE_VERSION = "fgopt-2";
 export class NativeOptimization {
   constructor(module) {
     this.m = module;
@@ -85,7 +85,7 @@ export function frameInfo(frame) {
     evaluations: frame[5],
     alive: frame[6],
     cloned: frame[7],
-    minimum: frame[8],
+    currentBest: frame[8],
     best: frame[9],
     mean: frame[10],
     bestIndex: frame[11],

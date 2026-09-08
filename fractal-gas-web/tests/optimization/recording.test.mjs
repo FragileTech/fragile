@@ -94,3 +94,15 @@ test("duplicate and nonmonotone iterations are rejected", () =>
     () => validateFrame(frame(1), { dimensions: 2 }, 1),
     /counters/,
   ));
+
+test("legacy replay retains its engine version when exported again", () => {
+  const r = new Recording(
+    { dimensions: 2, algorithm: "wave", proposal: 0.025 },
+    "fgopt-1",
+  );
+  r.append(frame());
+  const loaded = importRecording(r.export());
+  assert.deepEqual(loaded.frames, r.frames);
+  assert.equal(JSON.parse(loaded.export()).engine, "fgopt-1");
+  assert.equal(loaded.config.proposal, 0.025);
+});

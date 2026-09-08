@@ -70,6 +70,20 @@
             >Algorithm<select name="algorithm" id="algorithm"></select
           ></label>
           <label
+            >Objective<select name="objective" id="objective">
+              <option value="minimize" selected>Minimize</option>
+              <option value="maximize">Maximize</option>
+            </select></label
+          >
+          <p id="objective-note" class="hint">
+            Minimize the function by maximizing its negative value.
+          </p>
+          <label
+            >Perturbation<select name="perturbation" id="perturbation"></select
+          ></label>
+          <div id="perturbation-parameters"></div>
+          <p id="perturbation-note" class="hint"></p>
+          <label
             >Random seed<input
               name="seed"
               type="number"
@@ -237,6 +251,10 @@
         </details>
         <p class="hint">
           Gold marks the current best walker. White marks your selection.
+          <span id="planner-note" hidden
+            >Large teal marks the committed position; the other walkers explore
+            future moves.</span
+          >
         </p>
       </aside>
     </main>

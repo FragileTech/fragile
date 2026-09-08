@@ -1,6 +1,8 @@
 set(OPT_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/benchmark.cpp
+  ${OPT_ROOT}/src/optimization/perturbation.cpp
+  ${OPT_ROOT}/src/optimization/environment.cpp
   ${OPT_ROOT}/src/optimization/gas.cpp
   ${OPT_ROOT}/src/optimization/engine.cpp)
 target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core)
@@ -29,7 +31,8 @@ else()
   # Existing draw-for-draw Wave/Graph regressions without console emulators.
   add_executable(fg_swarm_tests ${OPT_ROOT}/tests/test_main.cpp
     ${OPT_ROOT}/tests/test_tensor_ops.cpp ${OPT_ROOT}/tests/test_cloning.cpp
-    ${OPT_ROOT}/tests/test_fractal_gas.cpp ${OPT_ROOT}/tests/test_fractal_tree.cpp)
+    ${OPT_ROOT}/tests/test_fractal_gas.cpp ${OPT_ROOT}/tests/test_fractal_tree.cpp
+    ${OPT_ROOT}/tests/test_arcade_planner.cpp)
   target_include_directories(fg_swarm_tests PRIVATE ${OPT_ROOT}/tests)
   target_link_libraries(fg_swarm_tests PRIVATE fg_swarm_core)
   add_test(NAME fg_swarm_tests COMMAND fg_swarm_tests)
