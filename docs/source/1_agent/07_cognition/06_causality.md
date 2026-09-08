@@ -88,8 +88,7 @@ In passive interaction, the agent's state is constrained by the environment ({re
 
 Let $U_t$ denote hidden environment state not included in $z_t$, and let the structural transition be
 $P_\partial(z_{t+1}\mid z_t,a_t,U_t)$. We define the **Interventional Operator**
-$\mathfrak{I}: \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z}) \to
-\mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z})$—equivalent to Pearl's $do(a_t)$
+$\mathfrak{I}: \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z}) \to \mathcal{P}(\mathcal{Z} \times \mathcal{A} \times \mathcal{Z})$—equivalent to Pearl's $do(a_t)$
 {cite}`pearl2009causality`—as a surgery that replaces the policy-induced action law by an exogenous action.
 
 Geometrically, $\mathfrak{I}$ replaces the policy-induced motor flux by an exogenous motor flux. The sensory
@@ -115,6 +114,7 @@ where $P_{\text{pre}}(\tilde{z})$ is the pre-intervention distribution over late
 :label: lem-the-interventional-singularity
 
 For a fixed intervention $do(a=a_0)$, the post-intervention joint has the factorization
+
 $$
 P_{\mathrm{pre}}(z)\,\delta_{a_0}(a)\,P_\partial(z'\mid z,a_0,u)P(u\mid z),
 $$
@@ -225,6 +225,7 @@ The Interventional Gap measures exactly this failure. It's the divergence betwee
 :label: thm-the-interventional-gap
 
 Let $U$ be a hidden environment variable. Define
+
 $$
 P_{\text{obs}}(z'|z,a):=\int P_\partial(z'|z,a,u)P(u|z,a)\,du,
 \qquad

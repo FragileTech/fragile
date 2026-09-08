@@ -110,6 +110,7 @@ jobs:
           path: |
             fractal-gas-web/web
             !fractal-gas-web/web/lab/**
+            !fractal-gas-web/web/optimization/**
           if-no-files-found: error
 
   # Build the lab explicitly, without emulator submodules or incidental outputs
@@ -151,13 +152,35 @@ jobs:
           path: fractal-gas-web/web/lab
           if-no-files-found: error
 
+  build-optimization:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: fractal-gas-web/package-lock.json
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 6.0.8
+      - name: Build Optimization Lab without emulator submodules
+        run: make optimization-web
+      - name: Verify WASM and recording contracts
+        run: npm --prefix fractal-gas-web run test:optimization
+      - uses: actions/upload-artifact@v4
+        with:
+          name: optimization-lab
+          path: fractal-gas-web/web/optimization
+          if-no-files-found: error
+
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: [build-docs, build-wasm, build-lab]
+    needs: [build-docs, build-wasm, build-lab, build-optimization]
     steps:
       - name: Download web artifact
         uses: actions/download-artifact@v4
@@ -177,6 +200,12 @@ jobs:
           name: control-lab
           path: site/lab
 
+      - name: Download Optimization Lab artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: optimization-lab
+          path: site/optimization
+
       - name: Verify complete Pages bundle
         run: |
           test -s site/index.html
@@ -193,6 +222,12 @@ jobs:
             test -s "site/docs/source/project/$guide.html"
           done
           test -s site/coi-serviceworker.min.js
+          test -s site/optimization/index.html
+          test -s site/optimization/engine/optimization.mjs
+          test -s site/optimization/engine/optimization.wasm
+          test -s site/optimization/vendor/three.module.js
+          test -s site/docs/lab/source/project/optimization_laboratory.html
+          test -s site/lab/binary.js
           test -s site/lab/index.html
           test -s site/lab/engine/control.mjs
           test -s site/lab/engine/control.wasm

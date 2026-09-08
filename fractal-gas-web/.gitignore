@@ -15,3 +15,8 @@ node_modules/
 build-control*/
 web/lab/engine/
 web/lab/vendor/
+
+# Optimization Lab generated targets and local vendor bundle
+/build-optimization-*/
+/web/optimization/engine/
+/web/optimization/vendor/

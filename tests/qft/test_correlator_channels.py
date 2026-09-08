@@ -66,6 +66,7 @@ class MockRunHistory:
 
         # Info arrays have T-1 entries
         self.force_viscous = torch.randn(T - 1, N, d, device=device)
+        self.cloning_scores = torch.zeros(T - 1, N, device=device)
         self.alive_mask = torch.ones(T - 1, N, dtype=torch.bool, device=device)
         self.companions_distance = torch.randint(0, N, (T - 1, N), device=device)
         self.companions_clone = torch.randint(0, N, (T - 1, N), device=device)
@@ -657,6 +658,13 @@ class TestPureFunctionAPI:
             "nucleon",
             "glueball",
         }
+        expected_channels.update({
+            "dirac_scalar",
+            "dirac_pseudoscalar",
+            "dirac_vector",
+            "dirac_axial_vector",
+            "dirac_tensor",
+        })
         assert set(operator_series.operators.keys()) == expected_channels
 
         # Verify each channel has series
@@ -934,9 +942,9 @@ class TestGeometricWeighting:
         for ch in channels:
             # Each channel should have valid output with weighted mode
             assert series_weighted.operators[ch].numel() > 0
-            assert torch.isfinite(
-                series_weighted.operators[ch]
-            ).all(), f"Channel {ch} has non-finite values"
+            assert torch.isfinite(series_weighted.operators[ch]).all(), (
+                f"Channel {ch} has non-finite values"
+            )
 
     def test_extract_geometric_weights_function(self):
         """Test extract_geometric_weights directly."""

@@ -35,13 +35,13 @@ def _build_gas(
         beta=1.0,
         delta_t=0.05,
         use_potential_force=True,
+        potential=potential_fn,
         use_anisotropic_diffusion=True,
         diagonal_diffusion=diagonal_diffusion,
         epsilon_Sigma=1e-4,
         epsilon_F=0.0,
         use_fitness_force=False,
     )
-    kinetic.potential = potential_fn
     kinetic.bounds = bounds
     kinetic.pbc = False
 
@@ -108,3 +108,17 @@ def test_constant_potential_runs_without_grad_error() -> None:
     history = gas.run(n_steps=3, record_every=1, seed=0)
     assert torch.isfinite(history.force_stable).all()
     assert torch.allclose(history.force_stable, torch.zeros_like(history.force_stable))
+
+
+@pytest.mark.parametrize("diagonal", [True, False])
+def test_precomputed_diffusion_matches_requested_shape(diagonal):
+    kinetic = KineticOperator(
+        gamma=1.0, beta=1.0, delta_t=0.1, use_potential_force=False, diagonal_diffusion=diagonal
+    )
+    positions = torch.zeros(3, 2)
+    diagonal_values = torch.tensor([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+    matrices = torch.diag_embed(diagonal_values)
+    expected = (diagonal_values if diagonal else matrices) * kinetic.c2
+    for supplied in (diagonal_values, matrices):
+        actual = kinetic._compute_diffusion_tensor(positions, diffusion_tensors=supplied)
+        torch.testing.assert_close(actual, expected)

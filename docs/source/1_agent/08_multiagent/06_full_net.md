@@ -118,9 +118,9 @@ z_0 = E(x_0), \quad z_{t+1} = D(z_t, a_t), \quad a_t = P(z_t)
 $$
 
 **Units:**
-- $[\mathcal{X}] = $ dimensionless (pixel intensities in $[0, 1]$ or normalized sensor values)
+- $[\mathcal{X}]$ is dimensionless (pixel intensities in $[0, 1]$ or normalized sensor values)
 - $[\mathcal{Z}] = \sqrt{\text{nat}}$ (latent space has information-theoretic units; $\sqrt{\text{nat}}$ arises from the Fisher-Rao metric on probability distributions, where distances have units of $\sqrt{\text{information}}$)
-- $[\mathcal{Y}] = $ task-dependent (e.g., dimensionless for discrete actions, physical units for continuous control)
+- $[\mathcal{Y}]$ is task-dependent (e.g., dimensionless for discrete actions, physical units for continuous control)
 :::
 
 :::{prf:definition} Gauge-Equivariant Architecture
@@ -587,7 +587,9 @@ The problem is that "exactly what functions you are allowed to compute" turns ou
 
 Here is the brutal fact. If you insist on strict per-bundle $SO(d_b)$ equivariance—meaning each bundle can be rotated independently and the network must behave consistently—then your network can only compute functions of a very specific form:
 
-$$f_i(\text{all bundles}) = v_i \cdot \phi_i(\|v_1\|, \|v_2\|, \ldots, \|v_{n_b}\|)$$
+$$
+f_i(\text{all bundles}) = v_i \cdot \phi_i(\|v_1\|, \|v_2\|, \ldots, \|v_{n_b}\|)
+$$
 
 Each output bundle is the corresponding input bundle, scaled by some function of all the norms. That is *it*. No mixing of components between bundles. No rotation within bundles. No direction-dependent cross-talk. The network sees only scalar magnitudes—how much energy is in each bundle—and multiplies each bundle by a learned scale factor that depends on those magnitudes.
 
@@ -2479,10 +2481,16 @@ The soft equivariant layer is **directly compatible** with the BAOAB integrator 
 Each `SoftEquivariantLayer` forward pass can be interpreted as a single BAOAB integration step:
 
 **B (Momentum update):** Equivariant pathway computes geodesic velocity
-$$v_i \to v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$$
+
+$$
+v_i \to v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
+$$
 
 **A (Position update, first half):** Mixing pathway introduces cross-bundle coupling
-$$v_i \to v_i + \sum_j W_{ij} v_j$$
+
+$$
+v_i \to v_i + \sum_j W_{ij} v_j
+$$
 
 **O (Ornstein-Uhlenbeck thermostat):** Implicit in activation nonlinearity (GELU in norm MLP)
 
@@ -2614,7 +2622,9 @@ class CovariantAttentionLayer(nn.Module):
 
 The complete training loop balances three objectives:
 
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}}(t) \cdot \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}}(t) \cdot \mathcal{L}_{\text{equiv}}$$
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}}(t) \cdot \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}}(t) \cdot \mathcal{L}_{\text{equiv}}
+$$
 
 where:
 - $\mathcal{L}_{\text{task}}$: Task-specific loss (MSE, cross-entropy, etc.)
@@ -2630,7 +2640,9 @@ The regularization coefficients $\lambda_{\text{L1}}(t)$ and $\lambda_{\text{equ
 
 The L1 regularization strength adapts based on current equivariance violation:
 
-$$\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)$$
+$$
+\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)
+$$
 
 where:
 - $\epsilon(t) = \mathcal{L}_{\text{equiv}}(t)$: Current equivariance violation

@@ -1,6 +1,6 @@
 """Integration tests for the TopoEncoder training pipeline.
 
-These tests use real MNIST data (auto-downloaded) at minimal scale.
+These tests use deterministic synthetic MNIST-shaped data at minimal scale.
 Each test runs in ~5-15s on CPU.
 """
 
@@ -35,21 +35,21 @@ def _make_config(tmp_path, **overrides) -> TopoEncoderConfig:
         "disable_vq": True,
         "enable_supervised": False,
         "enable_classifier_head": False,
-        "enable_cifar_backbone": False,
         "mlflow": False,
         "use_scheduler": False,
         "covariant_attn": False,
         "baseline_attn": False,
-        "baseline_vision_preproc": False,
-        "vision_preproc": False,
         # Disable expensive losses
-        "orbit_weight": 0.0,
-        "vicreg_inv_weight": 0.0,
         "orthogonality_weight": 0.0,
         "code_entropy_weight": 0.0,
     }
     defaults.update(overrides)
     return TopoEncoderConfig(**defaults)
+
+
+@pytest.fixture(autouse=True)
+def training_data(mock_mnist):
+    """Exercise the real training pipeline without network downloads."""
 
 
 # ==========================================

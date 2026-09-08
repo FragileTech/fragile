@@ -9,6 +9,12 @@ endif()
 enable_testing()
 option(FG_CONTROL_ONLY "Build the standalone continuous-control laboratory" OFF)
 option(FG_CONTROL_THREADS "Enable pthreads in the laboratory WebAssembly build" OFF)
+option(FG_OPTIMIZATION_ONLY "Build the standalone optimization laboratory" OFF)
+include(cmake/FgSwarm.cmake)
+if(FG_OPTIMIZATION_ONLY)
+  add_subdirectory(optimization)
+  return()
+endif()
 add_subdirectory(control)
 if(FG_CONTROL_ONLY)
   return()
@@ -36,19 +42,12 @@ target_include_directories(nes_core PUBLIC ${NES_PY_DIR}/include)
 # Fractal gas core (the C++ port of the algorithm)
 # ---------------------------------------------------------------------------
 add_library(fractal_gas_core STATIC
-  src/tensor_ops.cpp
-  src/walker_state.cpp
-  src/cloning.cpp
   src/mario_reward.cpp
   src/nes_env.cpp
-  src/thread_pool.cpp
-  src/fractal_gas.cpp
-  src/exploration_tree.cpp
-  src/fractal_tree.cpp
-  src/visit_grid.cpp
+  src/arcade_planner.cpp
 )
 target_include_directories(fractal_gas_core PUBLIC src)
-target_link_libraries(fractal_gas_core PUBLIC nes_core)
+target_link_libraries(fractal_gas_core PUBLIC nes_core fg_swarm_core)
 
 find_package(Threads REQUIRED)
 target_link_libraries(fractal_gas_core PUBLIC Threads::Threads)
@@ -202,6 +201,7 @@ else()
     tests/test_tensor_ops.cpp
     tests/test_cloning.cpp
     tests/test_fractal_gas.cpp
+    tests/test_arcade_planner.cpp
     tests/test_nes_env.cpp
     tests/test_montezuma_logic.cpp
     tests/test_visit_grid.cpp

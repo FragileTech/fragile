@@ -31,3 +31,5 @@ chapters:
   title: Experiments and diagnostics
 - file: source/project/control_lab_architecture
   title: Engine architecture and extensions
+- file: source/project/optimization_laboratory
+  title: Optimization Lab

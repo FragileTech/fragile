@@ -39,6 +39,7 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params,
       params_(params),
       visits_(params.agg_block_size, params.erase_coef) {
   count_visits_ = params_.count_visits && env_.has_visit_key();
+  owns_rng_ = !rng;
   rng_ = rng ? std::move(rng) : std::make_unique<Mt19937Rng>(params_.seed);
   if (clone_op) {
     clone_op_ = std::move(clone_op);
@@ -64,6 +65,17 @@ void FractalGas::reset() {
   std::vector<float> init_obs;
   env_.reset(init_state, init_obs);
 
+  if (owns_rng_) rng_ = std::make_unique<Mt19937Rng>(params_.seed);
+  visits_.reset();
+  total_steps_ = total_clones_ = total_frames_ = 0;
+  iteration_count_ = 0;
+  start_from(init_state, init_obs);
+}
+
+void FractalGas::start_from(const std::vector<char>& init_state,
+                          const std::vector<float>& init_obs,
+                          const WalkerInfo* info) {
+
   const int32_t n = params_.N;
   const auto d = static_cast<int32_t>(init_obs.size());
 
@@ -87,18 +99,18 @@ void FractalGas::reset() {
   state_.virtual_rewards.clear();
   state_.has_infos = false;
   state_.infos.clear();
-  visits_.reset();
+  if (info) {
+    state_.infos.assign(static_cast<size_t>(n), *info);
+    state_.has_infos = true;
+  }
   visits_.set_erase_coef(params_.erase_coef);
   visits_.set_block_size(params_.agg_block_size);
 
-  total_steps_ = 0;
-  total_clones_ = 0;
-  total_frames_ = 0;
-  iteration_count_ = 0;
   has_elite_ = false;
   elite_walkers_ = WalkerState{};
   best_frame_.clear();
-  exploration_tree_.reset(params_.recording, 1, static_cast<size_t>(d));
+  exploration_tree_.reset(params_.recording, 1,
+                          params_.record_observations ? static_cast<size_t>(d) : 0);
   if (params_.recording != RecordingMode::Off) {
     float action = 0;
     uint32_t root = exploration_tree_.append(0, 0, &action, init_obs.data(), 0, 0, 0, 0);
@@ -227,7 +239,8 @@ StepInfo FractalGas::step() {
     for (int32_t i = 0; i < n; ++i) {
       float action = static_cast<float>(new_state.actions[i]);
       new_state.lineage[i] = exploration_tree_.append(
-          state_after_clone.lineage[i], new_state.dt[i], &action,
+          state_after_clone.lineage[i],
+          env_.frames_stepped(i) >= 0 ? env_.frames_stepped(i) : new_state.dt[i], &action,
           new_state.observations.data() + static_cast<size_t>(i) * new_state.obs_dim,
           new_state.rewards[i], new_state.step_rewards[i], virtual_rewards[i],
           new_state.alive(i) ? 0 : 1);

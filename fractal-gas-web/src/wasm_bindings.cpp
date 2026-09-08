@@ -9,8 +9,8 @@
 //   2 = Sega Genesis (Genesis Plus GX statically linked into a shim module
 //       instantiated once per plain Web Worker — RetroFarmEnv dispatches
 //       walker steps to N such workers in parallel via shared memory)
-// and two algorithms (src/swarm_algorithm.hpp):
-//   0 = "Wave"  FractalGas   1 = "Graph" FractalTree
+// Four solver modes: 0 = Wave, 1 = Graph, 2 = FMC, 3 = Jump Wave.
+// FMC and Jump Wave use FractalGas search through ArcadePlanner.
 #ifdef __EMSCRIPTEN__
 
 #include <emscripten/bind.h>
@@ -23,6 +23,7 @@
 #include <string>
 
 #include "atari_env.hpp"
+#include "arcade_planner.hpp"
 #include "fractal_gas.hpp"
 #include "fractal_tree.hpp"
 #include "nes_env.hpp"
@@ -35,6 +36,7 @@ std::unique_ptr<fg::BatchEnv> g_env;
 fg::NesMarioEnv* g_nes = nullptr;  // non-owning; set when console == 0
 fg::AtariEnv* g_atari = nullptr;   // non-owning; set when console == 1
 std::unique_ptr<fg::SwarmAlgorithm> g_algo;
+std::unique_ptr<fg::ArcadePlanner> g_planner;
 int g_algorithm = 0;
 int g_max_walkers = 0;  // effective Graph cap after the memory clamp
 std::string g_last_error;
@@ -65,6 +67,9 @@ struct FgParams {
   int game = 0;      // Genesis: 0=Airstriker, 1=Sonic; Atari: 0=generic,
                      // 1=Montezuma's Revenge (dedicated RAM logic + map)
   int algorithm = 0;   // 0=Wave (FractalGas), 1=Graph (FractalTree)
+  int horizon = 32;
+  bool consensusPrefix = true;
+  int maxHorizon = 0;
   int maxWalkers = 0;  // Graph: population cap, 0 = console default
   float eraseCoef = 0.05f;  // Graph: visit-count decay
   int aggBlock = 5;         // Graph: visit-count pooling window (px), live
@@ -88,6 +93,11 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   params.dt_max = p.dtMax;
   params.n_elite = p.nElite;
   params.record_frames = true;
+  if (p.algorithm >= 2) {
+    params.record_frames = false;
+    params.recording = fg::RecordingMode::Pruned;
+    params.record_observations = false;
+  }
   params.seed = static_cast<uint64_t>(p.seed);
   params.count_visits = true;  // effective only with a visit key (Coords)
   params.visit_reward = p.visitReward;
@@ -149,6 +159,7 @@ void write_bytes(const char* path, emscripten::val data) {
 /// aux: Uint8Array of the gpgx.so side module (Genesis only; else empty).
 bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
   try {
+    g_planner.reset();
     g_algo.reset();
     g_env.reset();
     g_nes = nullptr;
@@ -188,7 +199,11 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
       }
     }
 
-    g_algorithm = p.algorithm == 1 ? 1 : 0;
+    if (p.algorithm < 0 || p.algorithm > 3)
+      throw std::invalid_argument("Unknown arcade algorithm");
+    if (p.n < 1 || p.dtMin < 1 || p.dtMax < p.dtMin)
+      throw std::invalid_argument("Walkers and action durations must be positive; dt max must be at least dt min");
+    g_algorithm = p.algorithm;
     if (g_algorithm == 1) {
       const fg::FractalTreeParams tp = to_tree_params(p);
       g_max_walkers = tp.max_walkers;
@@ -197,11 +212,19 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
       g_max_walkers = p.n;
       g_algo = std::make_unique<fg::FractalGas>(*g_env, to_gas_params(p));
     }
-    g_algo->reset();
+    if (g_algorithm >= 2) {
+      g_planner = std::make_unique<fg::ArcadePlanner>(*g_env,
+          *static_cast<fg::FractalGas*>(g_algo.get()),
+          fg::ArcadePlannerSettings{p.algorithm, p.horizon, p.consensusPrefix, p.maxHorizon});
+      g_planner->reset();
+    } else {
+      g_algo->reset();
+    }
     g_last_error.clear();
     return true;
   } catch (const std::exception& e) {
     g_last_error = e.what();
+    g_planner.reset();
     g_algo.reset();
     g_env.reset();
     g_nes = nullptr;
@@ -221,9 +244,9 @@ emscripten::val copy_array(const std::vector<T>& v) {
       .template call<emscripten::val>("slice");
 }
 
-emscripten::val fg_step() {
+emscripten::val fg_step_impl() {
   if (!g_algo) return emscripten::val::null();
-  const fg::StepInfo info = g_algo->step();
+  const fg::StepInfo info = g_planner ? g_planner->advance() : g_algo->step();
   emscripten::val out = emscripten::val::object();
   out.set("iteration", info.iteration);
   out.set("numCloned", info.num_cloned);
@@ -244,11 +267,27 @@ emscripten::val fg_step() {
   out.set("nLeaves", info.n_leaves);
   out.set("numStepped", info.num_stepped);
   out.set("algorithm", g_algorithm);
+  if (g_planner) {
+    out.set("phase", g_planner->phase());
+    out.set("searchDepth", g_planner->depth());
+    out.set("searchAdvanced", g_planner->search_advanced());
+    out.set("committedScore", g_planner->score());
+    out.set("committedReward", g_planner->reward());
+    out.set("playedFrames", static_cast<double>(g_planner->played_frames()));
+    out.set("gameDone", g_planner->done());
+    out.set("executionMode", g_planner->execution_mode());
+    if (g_planner->has_info()) {
+      const auto& committed = g_planner->info();
+      out.set("committedWorld", committed.world);
+      out.set("committedLevel", committed.stage);
+      out.set("committedLives", committed.lives);
+    }
+  }
 
   const int32_t n = g_algo->n_walkers();
   if (g_algo->has_walker_info() && n > 0) {
     // Per-walker swarm data for the map overlays, valid by WALKER index for
-    // both algorithms: position, level ids, alive flag, and the tree
+    // all modes: position, level ids, alive flag, and the tree
     // structure (parent index, leaf flag; the wave reports parent = self).
     const auto un = static_cast<size_t>(n);
     g_wx.resize(un); g_wy.resize(un); g_ww.resize(un); g_ws.resize(un);
@@ -313,6 +352,17 @@ emscripten::val fg_step() {
   return out;
 }
 
+emscripten::val fg_step() {
+  try {
+    return fg_step_impl();
+  } catch (const std::exception& e) {
+    g_last_error = e.what();
+    auto out = emscripten::val::object();
+    out.set("error", g_last_error);
+    return out;
+  }
+}
+
 /// Fog-of-war tiles: tileCount x 40x28 RGB bytes from the last Genesis step
 /// (view into wasm memory — copy on the JS side before using across steps).
 emscripten::val fg_get_walker_tiles() {
@@ -326,7 +376,7 @@ emscripten::val fg_get_walker_tiles() {
 /// on the JS side before transferring).
 emscripten::val fg_get_best_frame() {
   if (!g_algo) return emscripten::val::null();
-  g_frame = g_algo->best_frame();
+  g_frame = g_planner ? g_planner->frame() : g_algo->best_frame();
   if (g_frame.empty()) return emscripten::val::null();
   return emscripten::val(
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
@@ -375,8 +425,12 @@ int fg_n_actions() { return g_env ? g_env->n_actions() : 0; }
 
 /// Live-tunable parameters. Changing N/seed/console/obsMode/level/algorithm
 /// requires fg_init again.
-void fg_set_params(const FgParams& p) {
+void fg_set_params_impl(const FgParams& p) {
   if (!g_algo) return;
+  if (p.dtMin < 1 || p.dtMax < p.dtMin)
+    throw std::invalid_argument("dt max must be at least dt min, and both must be positive");
+  if (g_planner) g_planner->configure(
+      {g_algorithm, p.horizon, p.consensusPrefix, p.maxHorizon});
   g_algo->set_dist_coef(p.distCoef);
   g_algo->set_reward_coef(p.rewardCoef);
   g_algo->set_use_cumulative_reward(p.useCumulativeReward);
@@ -388,8 +442,19 @@ void fg_set_params(const FgParams& p) {
   g_algo->set_visit_coef(p.visitCoef);
 }
 
+bool fg_set_params(const FgParams& p) {
+  try {
+    fg_set_params_impl(p);
+    return true;
+  } catch (const std::exception& e) {
+    g_last_error = e.what();
+    return false;
+  }
+}
+
 void fg_reset() {
-  if (g_algo) g_algo->reset();
+  if (g_planner) g_planner->reset();
+  else if (g_algo) g_algo->reset();
 }
 
 /// Live-tunable reward term weights, as a JS array of numbers in the
@@ -398,6 +463,7 @@ void fg_reset() {
 /// Ignored for generic Atari games (raw score).
 void fg_set_reward_weights(emscripten::val weights) {
   if (!g_env) return;
+  if (g_planner) g_planner->invalidate();
   const int len = weights["length"].as<int>();
   auto at = [&](int i, float fallback) {
     return i < len ? weights[i].as<float>() : fallback;
@@ -448,6 +514,9 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("console", &FgParams::console)
       .field("game", &FgParams::game)
       .field("algorithm", &FgParams::algorithm)
+      .field("horizon", &FgParams::horizon)
+      .field("consensusPrefix", &FgParams::consensusPrefix)
+      .field("maxHorizon", &FgParams::maxHorizon)
       .field("maxWalkers", &FgParams::maxWalkers)
       .field("eraseCoef", &FgParams::eraseCoef)
       .field("aggBlock", &FgParams::aggBlock)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import torch
 
-from fragile.fractalai.qft.dashboard import (
+from fragile.fractalai.qft.old_dashboard import (
     _compute_anisotropic_edge_bundle,
     _compute_channels_vectorized,
     _compute_electroweak_channels,
@@ -36,6 +36,7 @@ class MockRunHistory:
         self.v_before_clone = torch.randn(T, N, d)
 
         self.fitness = torch.randn(T - 1, N)
+        self.cloning_scores = torch.zeros_like(self.fitness)
         self.rewards = torch.randn(T - 1, N)
         self.force_viscous = torch.randn(T - 1, N, d)
         self.alive_mask = torch.ones(T - 1, N, dtype=torch.bool)

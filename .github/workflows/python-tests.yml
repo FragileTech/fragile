@@ -1,0 +1,63 @@
+name: Python tests
+on:
+  push:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "conftest.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "Makefile"
+      - "docs/**/*.py"
+      - "docs/**/*.mjs"
+      - ".github/workflows/python-tests.yml"
+  pull_request:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "conftest.py"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "Makefile"
+      - "docs/**/*.py"
+      - "docs/**/*.mjs"
+      - ".github/workflows/python-tests.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: python-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      MUJOCO_GL: egl
+      PYGLET_HEADLESS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.10"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install headless rendering libraries
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgl1-mesa-dri
+      - name: Install locked Python dependencies with CPU PyTorch
+        run: |
+          uv export --locked --extra test --no-hashes --no-emit-project --output-file /tmp/constraints.txt
+          uv venv --python 3.10
+          uv pip install --torch-backend=cpu --constraint /tmp/constraints.txt -e '.[test]'
+      - name: Run Python suite
+        run: uv run --no-sync pytest -q -n 2 --dist loadfile tests --junitxml=test-results/python.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: python-test-results
+          path: test-results/python.xml

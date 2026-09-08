@@ -193,6 +193,56 @@ FG_ROM=third_party/nes-py/nes_py/tests/games/super-mario-bros-1.nes \
 To regenerate the fixtures after changing the Python reference (run from the
 repo root): `uv run python fractal-gas-web/tests/fixtures/generate_fixtures.py`.
 
+## Arcade FMC and Jump Wave
+
+The arcade algorithm selector offers **Wave** (the default), **Graph**, **FMC**,
+and **Jump Wave** for NES, Atari (including Montezuma), and Genesis. Wave and
+Graph display the leading search walker. FMC and Jump Wave display one committed
+game, while the plots and maps continue to show the planning population.
+
+FMC searches ahead and votes on the inherited first discrete action of surviving
+walkers. Action ties use the lowest action ID; the chosen duration comes from
+the highest-reward supporting walker, with ties resolved by walker index. It
+plays that action and searches again from the resulting emulator snapshot.
+
+Jump Wave defaults to **Stop at first bifurcation**: play the exact ancestral
+path shared by surviving walkers. If there is no executable shared prefix,
+continue searching up to the maximum horizon, then play one action from the
+best surviving path. Turn the checkbox off to play the full winning path.
+Both modes select one first-edge fallback when every search walker dies, and
+stop only when the committed game ends. Recoverable life loss discards any
+remaining queued trajectory and replans from the post-life-loss snapshot.
+
+**Search horizon** defaults to 32 iterations (1–4096). Jump Wave's **Maximum
+search horizon** defaults to 0, meaning twice the normal horizon, capped at
+4096. An explicit maximum must be at least the normal horizon. Population,
+fitness, elite, visit, and frame-skip controls also apply to the new solvers.
+Changing live settings discards the pending plan and replans from the committed
+game. Visit history persists across replanning. Action ancestry uses pruned,
+bounded storage without recording pixel observations.
+
+**Pause** preserves search and trajectory progress. **Reset** and algorithm
+changes discard it. Played score and played frames describe committed gameplay;
+search depth, population rewards and Env frames describe planning. The played
+score uses the emulator's display score, or cumulative reward when there is no
+separate display score. Each worker turn performs one search iteration or one
+trajectory edge, and replay uses actual emulated durations, including shortened
+terminal edges.
+
+The WASM algorithm IDs are 0=Wave, 1=Graph, 2=FMC, 3=Jump Wave. `FgParams` adds
+`horizon`, `consensusPrefix`, and `maxHorizon`; worker callers can omit these and
+receive the defaults above. Direct embind callers must supply all three fields.
+Planner step messages add `phase`, `searchDepth`, `searchAdvanced`,
+`committedScore`, `committedReward`, `playedFrames`, `gameDone`, and
+`executionMode`, plus committed world/level/lives when available. The worker
+emits `gameDone` for a completed committed game rather than stopping when the
+planning population dies.
+
+After building WASM and running `python3 serve.py 8091`, run
+`npm run test:arcade-browser` from this directory. The test uses local Mario,
+Breakout, Montezuma and Sonic ROM fixtures; set `ARCADE_TEST_URL` to use another
+server. Native planner tests are included in `fg_tests`.
+
 ## Build (WebAssembly)
 
 Requires the [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html):

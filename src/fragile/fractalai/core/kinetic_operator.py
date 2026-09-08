@@ -918,6 +918,12 @@ class KineticOperator(PanelModel):
             if self.use_viscous_coupling
             else torch.zeros_like(v)
         )
+        # A BAOAB B stage is one half-duration force kick. The Boris path
+        # below has two kicks around a rotation; entering it for plain BAOAB
+        # would double the potential impulse at each end of the step.
+        if self.integrator == "baoab":
+            return v + (self.dt / 2) * (force + viscous)
+
         v_minus = v + (self.dt / 2) * (force + viscous)
 
         if self.curl_field is not None and self.beta_curl > 0:
@@ -984,6 +990,13 @@ class KineticOperator(PanelModel):
 
         if diffusion_tensors is not None:
             sigma = diffusion_tensors.to(device=x.device, dtype=x.dtype)
+            if sigma.shape not in {(N, d), (N, d, d)}:
+                msg = "diffusion_tensors must have shape [N, d] or [N, d, d]"
+                raise ValueError(msg)
+            if self.diagonal_diffusion and sigma.ndim == 3:
+                sigma = torch.diagonal(sigma, dim1=-2, dim2=-1)
+            elif not self.diagonal_diffusion and sigma.ndim == 2:
+                sigma = torch.diag_embed(sigma)
             sigma = torch.nan_to_num(sigma, nan=1.0, posinf=1.0, neginf=1.0)
             return sigma * float(self.c2)
 

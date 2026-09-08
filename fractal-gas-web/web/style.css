@@ -166,6 +166,9 @@ label.checkbox input { margin: 0; }
   font-size: 12.5px;
   cursor: pointer;
 }
+#algo-select { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#param-consensus-row input { margin-left: 6px; }
+
 .toggle-group button.active {
   background: #2d5fbd;
   color: #fff;

@@ -61,7 +61,7 @@ try {
   await page.locator("#walkers").press("Tab");
   await page.locator("#horizon").fill("2");
   await page.locator("#horizon").press("Tab");
-  assert.equal(await page.evaluate(() => workspaceTest.settings().horizon), 32);
+  assert.equal(await page.evaluate(() => workspaceTest.settings().horizon), 64);
   assert.match(await tick(), /000000/);
   const oldId = await page.evaluate(() => workspaceTest.replay.recording.id);
   await page.locator("#apply-configuration").click();
@@ -86,11 +86,11 @@ try {
     workspaceTest.loadScene({
       name: "Continuous driving fixture",
       task: "navigation",
-      size: [1000, 1000],
+      size: [20, 20],
       bodies: [
         {
           controlled: true,
-          position: [500, 500],
+          position: [10, 10],
           velocity: [0.1, 0],
           drag: 0,
           actuator: { kind: "kart" },

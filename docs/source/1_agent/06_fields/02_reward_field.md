@@ -310,7 +310,10 @@ Now let's focus on the special case that standard RL assumes: the reward field i
 In this regime, the reward-side scalar $\Phi=V_{\mathrm{rew}}$ satisfies a Screened Poisson (or Helmholtz) equation in the particular conservative diffusion sector stated below. This is the continuum limit of a Bellman generator under those hypotheses, and the geometry determines how the field propagates. If you instead write the equation for the cost-to-go $V_{\mathrm{cost}}=-\Phi$, the source and score signs must be changed together.
 
 The equation looks like this in the reward convention:
-$$-\Delta_G \Phi + \kappa^2 \Phi = \rho_r$$
+
+$$
+-\Delta_G \Phi + \kappa^2 \Phi = \rho_r
+$$
 
 Let me parse that for you:
 - $\Delta_G$ is the Laplace-Beltrami operator---the generalization of the Laplacian to curved manifolds. It measures how $\Phi$ differs from its local average.
@@ -344,6 +347,7 @@ In this theorem $V$ denotes the reward-side score $V_{\mathrm{rew}}=\Phi$;
 the control-loop cost critic is $V_{\mathrm{cost}}=-\Phi$ and has source
 $\rho_c=-\rho_r$.
 The smooth Bellman equation has continuous-time form
+
 $$
 \partial_tV+\mathcal LV-\lambda V+r=0.
 $$
@@ -351,6 +355,7 @@ In its stationary zero-drift sector,
 $(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
 $\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
 instead defines the wave operator
+
 $$
 \Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
 \qquad(\Box_g+\kappa^2)V=\rho_r.
@@ -365,6 +370,7 @@ $V=rh+e^{-\lambda h}\mathbb E[V(Z_h,t+h)]$, cancel $V$, and divide by $h$.
 The $\partial_t^2V$ Taylor term has coefficient $h/2$ after division and
 vanishes. Finite signal speed does not change that coefficient.
 For the wave model vary
+
 $$
 S[V]=\int\left[-\tfrac12g^{\mu\nu}\partial_\mu V\partial_\nu V
 -\tfrac12\kappa^2V^2+\rho_rV\right]\sqrt{|g|}\,dx.
@@ -607,7 +613,10 @@ cost-to-go. The free-energy score is $F:=V_{\mathrm{cost}}$; it balances energet
 entropic disorder.
 
 For the agent, the analog is:
-$$F(z):=V_{\mathrm{cost}}(z)=E(z) - T_c S(z), \qquad \Phi(z)=-F(z).$$
+
+$$
+F(z):=V_{\mathrm{cost}}(z)=E(z) - T_c S(z), \qquad \Phi(z)=-F(z).
+$$
 
 Here $E(z)$ is the task cost (low is good), $S(z)$ is the exploration entropy (high means lots of options), and $T_c$ is the cognitive temperature (how much the agent values exploration). The sign convention matters: low $F$ means low free energy, while high $\Phi=V_{\mathrm{rew}}$ means high reward.
 

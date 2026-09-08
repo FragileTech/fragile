@@ -116,7 +116,7 @@ class TestRoboticGasConfigPanel:
         assert panel.render_height == 480
         assert panel.N == 100
         assert panel.dist_coef == 1.0
-        assert panel.reward_coef == 1.0
+        assert panel.reward_coef == 2.0
         assert panel.n_elite == 5
         assert panel.dt_range_min == 1
         assert panel.dt_range_max == 1
@@ -168,7 +168,7 @@ class TestRoboticGasConfigPanel:
 
     def test_action_mode_options(self):
         panel = RoboticGasConfigPanel()
-        assert panel.param.action_mode.objects == ["Uniform", "Gaussian"]
+        assert panel.param.action_mode.objects == ["Uniform", "Gaussian", "Inertial"]
 
     def test_gaussian_params_visibility(self):
         panel = RoboticGasConfigPanel()

@@ -649,7 +649,7 @@ def log_sparsity_diagnostics(
             import wandb
         except ModuleNotFoundError:
             wandb = None
-        if wandb is not None:
+        if wandb is not None and wandb.run is not None:
 
             def logger(data):
                 return wandb.log(data, step=step)

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Optimization Lab · Fragile</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="../">Fragile</a>
+      <h1>Optimization Lab</h1>
+      <nav>
+        <a href="../lab/">Control Lab</a
+        ><a href="../docs/lab/source/project/optimization_laboratory.html"
+          >Guide</a
+        >
+      </nav>
+      <span id="engine-status">Loading engine…</span>
+    </header>
+    <main>
+      <aside class="configuration" aria-label="Simulation configuration">
+        <form id="configuration">
+          <h2>Explore a function</h2>
+          <label
+            >Benchmark<select id="benchmark" name="benchmark"></select
+          ></label>
+          <p id="benchmark-note" class="hint"></p>
+          <div class="pair">
+            <label
+              >Dimensions<input
+                name="dimensions"
+                id="dimensions"
+                type="number"
+                min="1"
+                max="4096"
+                value="3"
+                required /></label
+            ><label
+              >Walkers<input
+                name="walkers"
+                type="number"
+                min="2"
+                max="100000"
+                value="256"
+                required
+            /></label>
+          </div>
+          <div class="pair">
+            <label
+              >Lower bound<input
+                name="low"
+                id="low"
+                type="number"
+                step="any"
+                value="-5.12"
+                required /></label
+            ><label
+              >Upper bound<input
+                name="high"
+                id="high"
+                type="number"
+                step="any"
+                value="5.12"
+                required
+            /></label>
+          </div>
+          <div id="benchmark-parameters"></div>
+          <label
+            >Algorithm<select name="algorithm" id="algorithm"></select
+          ></label>
+          <label
+            >Random seed<input
+              name="seed"
+              type="number"
+              value="7"
+              min="0"
+              max="2147483647"
+              required
+          /></label>
+          <label class="check"
+            ><input name="periodic" type="checkbox" />Periodic boundaries</label
+          >
+          <div id="algorithm-parameters"></div>
+          <button id="apply" class="primary" type="submit">
+            Apply and reset
+          </button>
+          <p class="hint">
+            Settings take effect on reset. View controls preserve the run.
+          </p>
+        </form>
+      </aside>
+      <section class="workspace" aria-label="Swarm workspace">
+        <div class="toolbar">
+          <button id="run" class="primary" disabled>Run</button
+          ><button id="pause" disabled>Pause</button
+          ><button id="step" disabled>Step</button
+          ><button id="reset" disabled>Reset</button><span class="spacer"></span
+          ><button id="save" disabled>Save recording</button
+          ><button id="load" disabled>Load recording</button
+          ><input type="file" id="file" accept=".fgopt" hidden />
+        </div>
+        <div class="view-controls">
+          <label
+            >View<select id="view">
+              <option value="spatial">Spatial</option>
+              <option value="landscape">Landscape</option>
+            </select></label
+          ><label>Horizontal<select id="axis-x"></select></label
+          ><label>Depth<select id="axis-y"></select></label
+          ><label id="axis-z-label">Vertical<select id="axis-z"></select></label
+          ><label
+            >Color<select id="color">
+              <option value="objective">Objective</option>
+              <option value="fitness">Fitness (pre-step)</option>
+              <option value="constant">Uniform</option>
+            </select></label
+          ><button id="camera">Reset camera</button>
+        </div>
+        <div class="viewport">
+          <canvas
+            id="world"
+            aria-label="Interactive 3D swarm. Drag to orbit, scroll to zoom, click a walker to inspect."
+          ></canvas>
+          <div class="scene-caption">
+            <strong id="scene-title">Rastrigin</strong
+            ><span id="axis-caption"></span>
+          </div>
+          <div id="legend"><span>Low</span><i></i><span>High</span></div>
+          <div class="scene-hint">
+            Drag to orbit · Scroll to zoom · Click to inspect
+          </div>
+        </div>
+        <details class="display-options">
+          <summary>Display and slices</summary>
+          <div class="display-grid">
+            <label
+              >Point size<input
+                id="point-size"
+                type="range"
+                min="1"
+                max="15"
+                value="4" /></label
+            ><label
+              >Opacity<input
+                id="opacity"
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value="0.9" /></label
+            ><label
+              >Height scale<input
+                id="height"
+                type="range"
+                min="0.2"
+                max="8"
+                step="0.1"
+                value="3" /></label
+            ><label
+              >Links<select id="edges">
+                <option value="none">None</option>
+                <option value="companions">Distance companions</option>
+                <option value="cloning">Clone companions</option>
+                <option value="ancestry">Ancestry</option>
+              </select></label
+            ><label class="check"
+              ><input id="trails" type="checkbox" />Trails (up to 96
+              walkers)</label
+            ><label class="check"
+              ><input id="show-slice" type="checkbox" />Show objective
+              slice</label
+            ><label
+              >Surface resolution<select id="resolution">
+                <option>64</option>
+                <option selected>128</option>
+                <option>192</option>
+              </select></label
+            >
+          </div>
+          <div id="slice-controls"></div>
+          <p id="slice-note" class="hint"></p>
+        </details>
+        <div class="metrics" aria-live="off">
+          <span>Iteration <strong id="iteration">0</strong></span
+          ><span>Best <strong id="best">—</strong></span
+          ><span>Mean <strong id="mean">—</strong></span
+          ><span>Alive <strong id="alive">—</strong></span
+          ><span>Evaluations <strong id="evaluations">0</strong></span
+          ><span id="timings"></span>
+        </div>
+        <div class="history">
+          <canvas
+            id="convergence"
+            aria-label="Best and mean objective versus iteration"
+          ></canvas>
+          <div class="timeline">
+            <button id="replay" disabled>Play replay</button
+            ><input
+              id="timeline"
+              type="range"
+              min="0"
+              max="0"
+              value="0"
+              aria-label="Recorded frame"
+            /><output id="frame-label">Frame 0</output
+            ><button id="latest" disabled>Latest</button
+            ><label
+              >Replay speed<select id="replay-speed">
+                <option value="5">5 fps</option>
+                <option value="15" selected>15 fps</option>
+                <option value="30">30 fps</option>
+              </select></label
+            >
+          </div>
+        </div>
+        <p id="status" role="status">Loading the C++ engine…</p>
+      </section>
+      <aside class="inspector">
+        <details id="inspector-details" open>
+          <summary>Walker inspector</summary>
+          <label
+            >Walker index<input
+              type="number"
+              id="walker-index"
+              min="0"
+              value="0"
+          /></label>
+          <div id="walker-info">Select a walker in the view.</div>
+          <section id="molecule" hidden>
+            <h3>Atom configuration</h3>
+            <canvas
+              id="molecule-canvas"
+              aria-label="Selected walker’s molecular configuration"
+            ></canvas>
+          </section>
+        </details>
+        <p class="hint">
+          Gold marks the current best walker. White marks your selection.
+        </p>
+      </aside>
+    </main>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

@@ -239,7 +239,9 @@ def validate_on_synthetic_function(
     """Test estimation methods on functions with known analytical derivatives.
 
     Generates a grid of walkers, computes analytical and estimated gradients/Hessians,
-    and measures errors.
+    and measures errors. The first-order gradient has truncation error on coarse
+    or asymmetric neighborhoods; the central Hessian estimates diagonal terms only.
+    Missing axial stencils are excluded, and no valid Hessians gives infinite error.
 
     Test functions:
     - "quadratic": V(x) = x^T A x → ∇V = 2Ax, H = 2A
@@ -334,18 +336,25 @@ def validate_on_synthetic_function(
 
     gradient_max_error = ((grad_estimated[valid_mask] - grad_true[valid_mask]).abs().max()).item()
 
+    hessian_mask = hess_result["valid_mask"] & torch.isfinite(hess_true).all(dim=(1, 2))
     hessian_frobenius_error = (
-        torch.norm(hess_estimated[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        torch
+        .norm(hess_estimated[hessian_mask] - hess_true[hessian_mask], p="fro", dim=(1, 2))
         .mean()
         .item()
     )
 
     hessian_eigenvalue_error = (
-        (eig_estimated[valid_mask] - eig_true[valid_mask]).abs().mean()
+        (eig_estimated[hessian_mask] - eig_true[hessian_mask]).abs().mean()
     ).item()
 
+    if not hessian_mask.any():
+        hessian_frobenius_error = float("inf")
+        hessian_eigenvalue_error = float("inf")
+
     geometric_hessian_error = (
-        torch.norm(hess_geometric[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
+        torch
+        .norm(hess_geometric[valid_mask] - hess_true[valid_mask], p="fro", dim=(1, 2))
         .mean()
         .item()
     )

@@ -112,8 +112,8 @@ where each $G^{(i)}$ is the capacity-constrained metric from Theorem {prf:ref}`t
 :label: def-agent-specific-boundary-interface
 
 Each agent $i$ possesses its own symplectic boundary $(\partial\mathcal{Z}^{(i)}, \omega^{(i)})$ with:
-- **Dirichlet component** (sensors): $\phi^{(i)}(x) = $ observation stream
-- **Neumann component** (motors): $j^{(i)}_{\text{motor}}(x) = $ action flux
+- **Dirichlet component** (sensors): $\phi^{(i)}(x)$ is the observation stream
+- **Neumann component** (motors): $j^{(i)}_{\text{motor}}(x)$ is the action flux
 - **Reward component** (source): boundary reward flux $J_r^{(i)}$ (1-form); conservative case reduces to scalar charge
   density $\sigma_r^{(i)}$ (Definition {prf:ref}`def-the-reward-flux`)
 
@@ -130,11 +130,11 @@ applied per-agent.
 Let $d_{\mathcal{E}}^{ij}$ denote the **environment distance** between agents $i$ and $j$—the geodesic length in the environment manifold $\mathcal{E}$ that information must traverse. This may differ from the latent distance $d_G(z^{(i)}, z^{(j)})$.
 
 *Examples:*
-- **Physical agents:** $d_{\mathcal{E}}^{ij} = $ spatial separation in meters
-- **Networked agents:** $d_{\mathcal{E}}^{ij} = $ network hop distance or latency
+- **Physical agents:** $d_{\mathcal{E}}^{ij}$ is the spatial separation in meters
+- **Networked agents:** $d_{\mathcal{E}}^{ij}$ is the network hop distance or latency
 - **Co-located agents:** $d_{\mathcal{E}}^{ij} = 0$ (shared boundary)
 
-*Units:* $[d_{\mathcal{E}}^{ij}] = $ meters or equivalent environment-specific units.
+*Units:* $[d_{\mathcal{E}}^{ij}]$ is measured in meters or equivalent environment-specific units.
 
 :::
 (sec-the-failure-of-simultaneity)=
@@ -303,6 +303,7 @@ whether a smaller state is Markov.
 modeled history through $t$. Let $K_{t,u}(h,\cdot)$ be the regular conditional
 law of the extended history through $u$ given $\mathsf H_t=h$.
 For a bounded history functional $F$,
+
 $$
 \mathbb E[F(\mathsf H_u)\mid\sigma(\mathsf H_s:s\le t)]
 =\mathbb E[F(\mathsf H_u)\mid\mathsf H_t]
@@ -495,6 +496,7 @@ For the diffusion and discount already used in
 {prf:ref}`thm-the-hjb-helmholtz-correspondence`, write
 $\mathcal L=b\cdot\nabla+T_c\Delta_G$ and $\gamma_h=e^{-\lambda h}$.
 The smooth Bellman equation has continuous-time form
+
 $$
 \partial_tV+\mathcal LV-\lambda V+r=0.
 $$
@@ -502,6 +504,7 @@ In its stationary zero-drift sector,
 $(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
 $\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
 instead defines the wave operator
+
 $$
 \Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
 \qquad(\Box_g+\kappa^2)V=\rho_r.
@@ -516,6 +519,7 @@ $V=rh+e^{-\lambda h}\mathbb E[V(Z_h,t+h)]$, cancel $V$, and divide by $h$.
 The $\partial_t^2V$ Taylor term has coefficient $h/2$ after division and
 vanishes. Finite signal speed does not change that coefficient.
 For the wave model vary
+
 $$
 S[V]=\int\left[-\tfrac12g^{\mu\nu}\partial_\mu V\partial_\nu V
 -\tfrac12\kappa^2V^2+\rho_rV\right]\sqrt{|g|}\,dx.
@@ -618,6 +622,7 @@ In an adversarial (zero-sum) game, Agent $j$ acts to minimize the value $V^{(i)}
 Use the smooth local best-response branch and Strategic Jacobian already
 specified in {prf:ref}`def-strategic-jacobian`. With the intrinsic connection
 on agent $j$'s manifold define the covariant tensor
+
 $$
 H^{(i)}_{jj,mn}=\nabla^{(j)}_m\nabla^{(j)}_nV^{(i)},\qquad
 \mathcal G^{(i)}_{ij,ab}=\mathcal J_{ji}^{m}{}_{a}
@@ -632,6 +637,7 @@ The curvature equation {prf:ref}`thm-capacity-constrained-metric-law` remains
 a separate differential identity; this algebraic prescription is not its solution.
 
 For a $C^2$ response $y=b(x)$, direct differentiation gives
+
 $$
 \partial_{ab}V(x,b(x))=V_{ab}+V_{am}b^m_b+V_{bm}b^m_a
 +V_{mn}b^m_ab^n_b+V_m\partial_{ab}b^m.
@@ -640,6 +646,7 @@ Thus the pulled-back $H_{jj}$ is one contribution, not the full Hessian of
 the composed value. The final term vanishes at a stationary point in $y$.
 For the positive metric $\widetilde G=G+h$, subtraction of the two
 metric-compatible torsion-free connections gives the exact identity
+
 $$
 \widetilde\Gamma^a_{bc}-\Gamma^a_{bc}
 =\tfrac12\widetilde G^{ad}
@@ -653,8 +660,7 @@ $\widetilde G^{-1}-G^{-1}=-G^{-1}h\widetilde G^{-1}$.
 :label: thm-adversarial-mass-inflation
 
 For the strategic metric prescription, the exact difference is
-$\xi^\top(\widetilde G-G)\xi=\sum_j\beta_{ij}
-(\mathcal J_{ji}\xi)^\top H^{(i)}_{jj}(\mathcal J_{ji}\xi)$.
+$\xi^\top(\widetilde G-G)\xi=\sum_j\beta_{ij} (\mathcal J_{ji}\xi)^\top H^{(i)}_{jj}(\mathcal J_{ji}\xi)$.
 Every positive-semidefinite summand with nonnegative coefficient increases
 the quadratic form; hence a sum of such contributions gives
 $\widetilde G\succeq G$. A negative cooperative contribution must be included
@@ -683,6 +689,7 @@ kernel of {prf:ref}`def-retarded-interaction-potential`.
 :label: prop-retarded-metric-propagation
 
 For differentiable coefficients, the product rule gives
+
 $$
 \dot h=\sum_j\left[\dot\beta_jJ_j^*H_jJ_j+
 \beta_j\dot J_j^*H_jJ_j+\beta_jJ_j^*\dot H_jJ_j+
@@ -908,6 +915,7 @@ The calculation of the Game Tensor $\mathcal{G}_{ij}$ ({prf:ref}`def-the-game-te
 
 For a test agent and a defined pulled-back Hessian kernel $K_{ab}(z,\zeta)$,
 the normalized interaction has
+
 $$
 h_{N,ab}(z)=\frac\alpha N\sum_{j\ne i}K_{ab}(z,z_j)
 =\alpha\int K_{ab}(z,\zeta)d\mu_N(\zeta)
@@ -917,6 +925,7 @@ This is an exact finite identity, obtained by adding and subtracting the
 diagonal term. Weak convergence evaluates bounded continuous kernels; it
 does not by itself evaluate a singular Green-function Hessian.
 For an explicitly resolved kernel $K_\ell$ the exact comparison is
+
 $$
 |h_{N,\ell}(z)-\alpha\int K_\ell(z,\zeta)d\mu(\zeta)|
 \le |\alpha|\left|\int K_\ell(z,\zeta)d(\mu_N-\mu)(\zeta)\right|
@@ -944,10 +953,8 @@ In non-stationary environments, the Nash equilibrium $z^*(t)$ shifts. We derive 
 :label: thm-metabolic-tracking-bound
 
 The established transport cost gives, along an exactly tracked differentiable
-target, $\dot{\mathcal M}=\tfrac12\sigma_{\mathrm{met}}
-\|\dot z^*\|_{\widetilde G}^2$. Hence the budget implies
-$\|\dot z^*\|_{\widetilde G}\le
-\sqrt{2\dot{\mathcal M}_{\max}/\sigma_{\mathrm{met}}}$.
+target, $\dot{\mathcal M}=\tfrac12\sigma_{\mathrm{met}} \|\dot z^*\|_{\widetilde G}^2$. Hence the budget implies
+$\|\dot z^*\|_{\widetilde G}\le \sqrt{2\dot{\mathcal M}_{\max}/\sigma_{\mathrm{met}}}$.
 This follows by substituting $v=\dot z^*$ into the cost and solving the
 inequality. It is a necessary budget test, not a sufficiency proof for
 tracking with delayed observations, noise, or restricted controls. $\square$
@@ -1222,10 +1229,12 @@ $$
 :label: thm-gauge-covariant-klein-gordon
 
 For $D_\mu=\partial_\mu-igA_\mu$, define
+
 $$
 \Box_A\psi=-|g|^{-1/2}D_\mu(\sqrt{|g|}g^{\mu\nu}D_\nu\psi).
 $$
 For $g=\operatorname{diag}(-c^2,\widetilde G(t,z))$ with constant $c$,
+
 $$
 \Box_A\psi=c^{-2}\left[D_t^2\psi+
 \partial_t\log\sqrt{|\widetilde G|}\,D_t\psi\right]
@@ -1315,8 +1324,7 @@ the base geometry are invariant. For a charged vector derivative $u_a$, the
 bilinear form $\operatorname{Re}\langle u_a,u_b\rangle$ is invariant:
 $\langle Uu_a,Uu_b\rangle=\langle u_a,u_b\rangle$ by unitarity.
 For endomorphism derivatives $M_a$, cyclicity gives
-$\operatorname{Tr}[(UM_aU^{-1})(UM_bU^{-1})]
-=\operatorname{Tr}(M_aM_b)$. These are the appropriate scalar contractions
+$\operatorname{Tr}[(UM_aU^{-1})(UM_bU^{-1})] =\operatorname{Tr}(M_aM_b)$. These are the appropriate scalar contractions
 for their respective representations. Adding them to a metric still uses
 the explicit positive-definiteness test of the metric prescription;
 invariance and positivity are separate algebraic properties. $\square$
@@ -1425,6 +1433,7 @@ On a test section $u$, expansion gives
 $[D_\rho,F_{\mu\nu}]u=(\mathcal D_\rho F_{\mu\nu})u$.
 Insert $[D_\mu,D_\nu]=-igF_{\mu\nu}$ into
 $[D_\rho,[D_\mu,D_\nu]]+\mathrm{cyclic}=0$. Dividing by $-ig$ gives
+
 $$
 \mathcal D_\rho F_{\mu\nu}+\mathcal D_\mu F_{\nu\rho}
 +\mathcal D_\nu F_{\rho\mu}=0.
@@ -1521,6 +1530,7 @@ by $\operatorname{Tr}(T_aT_b)=\delta_{ab}$ in the gauge action. Matter
 representation matrices retain the same Lie-algebra basis. For
 $S_{\mathrm{YM}}=-\tfrac14\int\operatorname{Tr}F_{\mu\nu}F^{\mu\nu}d\mu_g$,
 stationarity of the total action gives
+
 $$
 \mathcal D_\mu F^{\mu\nu}=J^\nu,\qquad
 J^{\nu,a}=-\frac{\delta\mathcal L_m}{\delta A_\nu^a},\qquad
@@ -1534,13 +1544,11 @@ $J^{\nu,a}=-2g\operatorname{Im}(\psi^\dagger T^aD^\nu\psi)$.
 *Proof.* For a compactly supported variation $a_\mu$,
 $\delta F_{\mu\nu}=\mathcal D_\mu a_\nu-\mathcal D_\nu a_\mu$.
 Antisymmetry gives
-$\delta S_{\mathrm{YM}}=-\int\operatorname{Tr}F^{\mu\nu}\mathcal D_\mu a_\nu
-=\int\operatorname{Tr}(\mathcal D_\mu F^{\mu\nu})a_\nu$.
+$\delta S_{\mathrm{YM}}=-\int\operatorname{Tr}F^{\mu\nu}\mathcal D_\mu a_\nu =\int\operatorname{Tr}(\mathcal D_\mu F^{\mu\nu})a_\nu$.
 The volume derivative appears in this integration by parts.
 For $z=\psi^\dagger T^aD^\nu\psi$, use
 $\delta D_\mu\psi=-igT^a\psi\,\delta A_\mu^a$:
-$\delta\mathcal L_m=-ig(z-\bar z)\delta A_\nu^a
-=2g\operatorname{Im}z\,\delta A_\nu^a$.
+$\delta\mathcal L_m=-ig(z-\bar z)\delta A_\nu^a =2g\operatorname{Im}z\,\delta A_\nu^a$.
 Combining variations proves the equation and current. The mass and invariant
 potential terms have no direct $A$ variation. $\square$
 :::
@@ -1568,13 +1576,13 @@ This recovers the **Maxwell equations** of electromagnetism in covariant form.
 :label: prop-gauge-energy-momentum
 
 Metric variation of the gauge action gives
+
 $$
 T_{\mu\nu}=\operatorname{Tr}\left(F_{\mu\rho}F_\nu{}^\rho
 -\tfrac14g_{\mu\nu}F_{\rho\sigma}F^{\rho\sigma}\right).
 $$
 *Proof.* Use $\delta\sqrt{|g|}=-\tfrac12\sqrt{|g|}g_{\mu\nu}\delta g^{\mu\nu}$
-and $\delta(F_{\alpha\beta}F^{\alpha\beta})
-=2F_{\mu\rho}F_\nu{}^\rho\delta g^{\mu\nu}$ in
+and $\delta(F_{\alpha\beta}F^{\alpha\beta}) =2F_{\mu\rho}F_\nu{}^\rho\delta g^{\mu\nu}$ in
 $T_{\mu\nu}=-2|g|^{-1/2}\delta S/\delta g^{\mu\nu}$.
 In an orthonormal four-dimensional frame,
 $F^2=2(|B|^2-|E|^2)$, giving $T_{00}=(|E|^2+|B|^2)/2\ge0$.
@@ -1590,8 +1598,7 @@ stress is conserved. $\square$
 
 The gauge equation gives $\mathcal D_\nu J^\nu=0$.
 *Proof.* Antisymmetry yields
-$\mathcal D_\nu\mathcal D_\mu F^{\mu\nu}
-=\tfrac12[\mathcal D_\nu,\mathcal D_\mu]F^{\mu\nu}$.
+$\mathcal D_\nu\mathcal D_\mu F^{\mu\nu} =\tfrac12[\mathcal D_\nu,\mathcal D_\mu]F^{\mu\nu}$.
 The internal term is a contraction of $-ig[F_{\nu\mu},F^{\mu\nu}]$,
 which vanishes by symmetry of the metric contraction; the geometric Ricci
 contractions vanish against antisymmetric $F$. This proves the identity.
@@ -1613,6 +1620,7 @@ We now assemble the full Lagrangian density that governs relativistic multi-agen
 :label: def-complete-lagrangian
 
 For the scalar belief multiplets already defined, use
+
 $$
 \mathcal L=-\tfrac14\operatorname{Tr}F_{\mu\nu}F^{\mu\nu}
 -\sum_i\left[(D_\mu\psi_i)^\dagger D^\mu\psi_i+m_i^2\psi_i^\dagger\psi_i\right]
@@ -1636,6 +1644,7 @@ For the stable quartic potential already specified, $\lambda>0$ and
 $\mu^2<0$, write $\Phi_0=(v/\sqrt2)n$, $n^\dagger n=1$ and
 $v^2=-\mu^2/\lambda$. The radial mass is $m_h^2=2\lambda v^2$.
 The gauge quadratic term is $-\tfrac12A_\mu^a(M^2)_{ab}A^{\mu b}$ with
+
 $$
 (M^2)_{ab}=g^2\Phi_0^\dagger\{T_a,T_b\}\Phi_0.
 $$
@@ -1711,6 +1720,7 @@ substitution of $e^{-i\omega t}\phi_n$ gives
 $\omega_n=c\sqrt{\kappa^2+\lambda_n}$.
 For $a=\kappa^2+\lambda_0>0$ and $x=\lambda_n-\lambda_0\ge0$,
 Taylor's integral formula gives
+
 $$
 \left|\omega_n-c\sqrt a-\frac{cx}{2\sqrt a}\right|
 \le\frac{cx^2}{8a^{3/2}}.
@@ -1731,6 +1741,7 @@ The Causal Information Bound controls its defined representational information.
 It does not identify that quantity with an unnormalized integral of field
 correlations. For finite normalized subsystems, the established relative-entropy
 bound gives
+
 $$
 I(A:B)\ge\frac{|\langle XY\rangle-\langle X\rangle\langle Y\rangle|^2}
 {2\|X\|^2\|Y\|^2}.
@@ -1860,8 +1871,7 @@ from the space of mathematical or computational constructions.
 :label: def-computational-swampland
 
 For a specified represented information functional $I(R)$ and capacity
-$C(R)$, define the violating set by $\{\mathcal T:\exists R,
-I_{\mathcal T}(R)>C_{\mathcal T}(R)\}$. Membership is tested using these
+$C(R)$, define the violating set by $\{\mathcal T:\exists R, I_{\mathcal T}(R)>C_{\mathcal T}(R)\}$. Membership is tested using these
 same quantities. It is not equivalent by definition to masslessness,
 vanishing lattice spacing, or algebraic correlation decay.
 :::
@@ -1870,8 +1880,7 @@ vanishing lattice spacing, or algebraic correlation decay.
 :label: thm-cft-swampland
 
 For $0<2\Delta<d$, rescaling $x=Ru,y=Rv$ gives
-$\int_{B_R}\int_{B_R}|x-y|^{-2\Delta}dxdy
-=R^{2d-2\Delta}\int_{B_1}\int_{B_1}|u-v|^{-2\Delta}dudy$.
+$\int_{B_R}\int_{B_R}|x-y|^{-2\Delta}dxdy =R^{2d-2\Delta}\int_{B_1}\int_{B_1}|u-v|^{-2\Delta}dudy$.
 The last integral is finite by local integrability of $r^{d-1-2\Delta}$.
 This proves the scaling of a correlation integral. It supplies no lower
 bound for the represented information functional: such an identification
@@ -2291,6 +2300,7 @@ $\square$
 :label: prop-operator-ordering-invariance
 
 The kinetic quadratic form fixes the divergence realization
+
 $$
 \Delta_B\psi=|G|^{-1/2}D_i(\sqrt{|G|}G^{ij}D_j\psi)
 =G^{ij}(D_iD_j-\Gamma^k_{ij}D_k)\psi.
@@ -2435,12 +2445,12 @@ same product-rule calculation with and without the compensation.
 For the positive block metric $\widetilde G=\bigoplus_i\widetilde G_i(\mathbf z)$,
 let $w=\sqrt{\det\widetilde G}=\prod_i\sqrt{\det\widetilde G_i}$.
 The joint kinetic operator is
+
 $$
 H_{\mathrm{kin}}=-\frac{\sigma^2}{2w}\sum_i
 D_{ia}\left(w\widetilde G_i^{ab}D_{ib}\right).
 $$
-Its form is $\tfrac{\sigma^2}{2}\int\sum_i
-\widetilde G_i^{ab}\overline{D_{ia}\Psi}D_{ib}\Psi\,w\,d\mathbf z$.
+Its form is $\tfrac{\sigma^2}{2}\int\sum_i \widetilde G_i^{ab}\overline{D_{ia}\Psi}D_{ib}\Psi\,w\,d\mathbf z$.
 Integration by parts proves the operator formula on its form realization.
 The derivatives of $w$ include all block determinants, even those of other
 agents, because the metric depends on the full configuration.
@@ -2515,6 +2525,7 @@ the scalar operator actually defined. $\square$
 :label: cor-vanishing-probability-current
 
 For $\psi=\sqrt\rho e^{iV/\sigma}$ and $D=\nabla-iB/\sigma$,
+
 $$
 J=\sigma\operatorname{Im}(\bar\psi\,G^{-1}D\psi)
 =\rho G^{-1}(dV-B).
@@ -2529,6 +2540,7 @@ connection or another state retains its explicitly computed current.
 
 For the fixed scalar self-adjoint realization with ground projection $P_0$,
 the spectral theorem gives
+
 $$
 e^{-\tau(H-E_0)/\sigma}\Psi\longrightarrow P_0\Psi.
 $$
@@ -2576,6 +2588,7 @@ $$
 :label: thm-tunneling-probability
 
 For the scalar Hamiltonian of Appendix E.7 the forbidden-region action is
+
 $$
 d_E(A,B)=\inf_\gamma\int_\gamma\sqrt{2(U-E)_+}\,d\ell_{\widetilde G}.
 $$

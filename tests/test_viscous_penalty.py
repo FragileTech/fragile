@@ -81,12 +81,13 @@ def test_threshold_penalty_reduces_force():
     assert torch.norm(force_pen) < torch.norm(force_no)
 
 
-def test_no_edges_raises():
-    """Calling without neighbor_edges should raise ValueError."""
+def test_no_edges_warns_and_returns_zero():
+    """Degenerate neighborhoods use the documented zero-force fallback."""
     x, v, _, _ = _make_setup()
     kin = KineticOperator(**BASE_PARAMS, viscous_neighbor_weighting="inverse_riemannian_distance")
-    with pytest.raises(ValueError, match="neighbor_edges required"):
-        kin._compute_viscous_force(x, v)
+    with pytest.warns(RuntimeWarning, match="neighbor_edges empty"):
+        force = kin._compute_viscous_force(x, v)
+    torch.testing.assert_close(force, torch.zeros_like(v))
 
 
 def test_precomputed_without_edge_weights_raises():

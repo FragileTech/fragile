@@ -12,7 +12,7 @@ const common = {
     label: "Lookahead actions",
     min: 1,
     max: 4096,
-    default: 32,
+    default: 64,
     step: 1,
   },
   frames: {

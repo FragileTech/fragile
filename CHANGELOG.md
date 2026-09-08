@@ -1,7 +1,22 @@
 # Changelog
 
+## Optimization Lab
+
+- Add a standalone C++/WebAssembly Optimization Lab with Wave, Graph, and core Euclidean Gas, 13 benchmark objectives, full-dimensional 3D views, molecular inspection, and portable replay.
+- Share emulator-independent numerical/swarm targets with Control Lab and the arcade engine; add native, WASM, Python parity, and browser checks.
+- Correct adjacent-coordinate Rosenbrock evaluation and the general Python kinetic operator's plain BAOAB half-kick branch. The Boris branch retains its existing behavior.
+
+
 Unreleased
 ----------
+
+* Restore Python test collection after learning and QFT API changes, repair encoder unpacking, coupling gathers and diagonal diffusion shapes, avoid uninitialized experiment logging, correct finite-difference validity and periodic Voronoi facet indexing, and add a locked CPU Python CI job with headless dashboard tests.
+
+* Add FMC and Jump Wave to the NES, Atari and Genesis arcade, with committed gameplay, configurable search horizons, shared-path or full-path execution, and deterministic planner/replay tests.
+
+* Repair Lab CI renderer fixtures and browser regressions for paused startup, staged settings, recording branches and Drive mode; discover all Lab contract tests and run workspace regressions on build/config changes.
+
+* Default new Lab runs to Wave Jump with 128 walkers and a horizon of 64.
 
 * Show vehicle resource loads as growing cargo piles with intake and unloading transfers, visible held/picked/delivered counts and loading status; remove permanently full harvester cargo while preserving animation-off updates and shared rendering budgets.
 

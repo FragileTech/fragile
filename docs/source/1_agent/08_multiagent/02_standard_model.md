@@ -54,10 +54,12 @@ The preceding chapter establishes the connection transformation law. Here we app
 
 Use Hermitian generators, $D_\mu=\partial_\mu-igA_\mu$, and $\Phi'=U\Phi$.
 For nonzero coupling $g$, covariance fixes
+
 $$
 A'_\mu=UA_\mu U^{-1}-\frac{i}{g}(\partial_\mu U)U^{-1}.
 $$
 *Proof.* Expand the required identity on an arbitrary section:
+
 $$
 D'_\mu(U\Phi)-UD_\mu\Phi
 =\big[(\partial_\mu U)-igA'_\mu U+igUA_\mu\big]\Phi.
@@ -66,6 +68,7 @@ Its vanishing gives the displayed transformation. For
 $D=\partial-igqB$ and $U=e^{iq\alpha}$ this reads
 $B'=B+g^{-1}d\alpha$. For $U=1+i\theta^aT_a+O(\theta^2)$,
 $[T_b,T_c]=if^{bc}{}_aT_a$ gives
+
 $$
 \delta A^a_\mu=g^{-1}\partial_\mu\theta^a-f^{bc}{}_a\theta^b A^c_\mu.
 $$
@@ -89,6 +92,7 @@ A constant shift preserves value differences. Potential-based reward shaping has
 
 For the established scalar amplitude $\psi=\sqrt\rho e^{iV/\sigma}$,
 $D_i=\partial_i-iA^{\rm ext}_i/\sigma$ gives the spatial transport current
+
 $$
 j^i=\sigma\operatorname{Im}(\bar\psi G^{ij}D_j\psi)
 =\rho G^{ij}(\partial_jV-A^{\rm ext}_j).
@@ -111,6 +115,7 @@ The polar amplitude stores density in its modulus and value in its phase. A cons
 
 The amplitude of {prf:ref}`def-belief-wave-function` admits the local
 coordinate change
+
 $$
 V'=V+\sigma q\alpha,\qquad
 \psi'=e^{iq\alpha}\psi,\qquad B'=B+g_1^{-1}d\alpha,
@@ -120,6 +125,7 @@ It preserves $|\psi|^2$ and $\operatorname{Im}(\bar\psi D\psi)$.
 *Proof.* The first identity is immediate; the second follows by applying
 {prf:ref}`rem-local-gauge-template` and canceling the unit phases.
 At fixed connection, instead,
+
 $$
 \operatorname{Im}(\bar\psi' D\psi')
 =\operatorname{Im}(\bar\psi D\psi)+q\rho\,d\alpha.
@@ -141,6 +147,7 @@ Finite propagation controls when information can arrive. It does not alter which
 Write $q=Y/2$. For the phase representation in
 {prf:ref}`ax-local-utility-invariance`, set
 $D_\mu=\partial_\mu-ig_1qB_\mu$. The first-order action density
+
 $$
 \mathcal L_{\rm kin}=\frac{i\sigma}{2}
  (\bar\psi D_t\psi-\overline{D_t\psi}\,\psi)
@@ -152,6 +159,7 @@ is gauge invariant on a fixed spatial metric.
 both contractions are invariant. To see the terms being compensated,
 put $B=0$ and transform only $\psi$. With
 $j_i=\operatorname{Im}(\bar\psi\partial_i\psi)$,
+
 $$
 \delta\mathcal L_{\rm kin}
 =-\sigma q\rho\,\partial_t\alpha
@@ -219,6 +227,7 @@ linear algebra. $\square$
 
 For a nonzero linear CP operation $\mathcal E$ on the finite belief-operator
 space of {prf:ref}`def-belief-operator`, define
+
 $$
 r(\mathcal E)=\operatorname{rank}J(\mathcal E),\qquad
 J(\mathcal E)=\sum_{ij}|i\rangle\langle j|\otimes
@@ -239,6 +248,7 @@ between the two spaces. The case $r=2$ labels the doublet comparison.
 
 The existing GKSL model ({prf:ref}`def-gksl-generator`) supplies a CPTP
 semigroup on the finite belief-operator space. An outcome operation has
+
 $$
 \mathcal E_y(\rho)=\sum_aK_{ya}\rho K_{ya}^\dagger,
 \quad\sum_aK_{ya}^\dagger K_{ya}\preceq I,
@@ -345,6 +355,7 @@ The normalized direction exists where $\phi\ne0$. At a zero of $\phi$, the unnor
 
 For the specified $SU(r)$ representation on the active internal fiber,
 $W_\mu=W_\mu^aT_a$ defines
+
 $$
 D_\mu\Psi_L=(\partial_\mu-ig_2W_\mu-ig_1Y_LB_\mu/2)\Psi_L.
 $$
@@ -354,12 +365,12 @@ $F_W=dW-ig_2W\wedge W$.
 
 *Proof.* The product rule gives the connection transformation already
 proved there. Expanding the operator commutator on a test section gives
+
 $$
 [D_\mu,D_\nu]_{SU(r)}
 =-ig_2\{\partial_\mu W_\nu-\partial_\nu W_\mu-ig_2[W_\mu,W_\nu]\},
 $$
-so $F^a_{W,\mu\nu}=\partial_\mu W_\nu^a-\partial_\nu W_\mu^a
-+g_2f^{bc}{}_aW_\mu^bW_\nu^c$.
+so $F^a_{W,\mu\nu}=\partial_\mu W_\nu^a-\partial_\nu W_\mu^a +g_2f^{bc}{}_aW_\mu^bW_\nu^c$.
 For $r=2$, $T_a=\tau_a/2$ gives three independent connection components.
 This is a matrix connection, with parallel transport in $SU(2)$.
 
@@ -368,8 +379,7 @@ $\mathcal E(\rho)=\operatorname{Tr}(\rho)I_2/2$ has
 $J(\mathcal E)=I_4/2$, hence minimal rank four. Two sensor/motor roles
 therefore do not determine rank two. Also a unitary acting only on the
 environment has
-$\operatorname{Tr}_E[(I\otimes u)(\rho\otimes|0\rangle\langle0|)
-(I\otimes u^\dagger)]=\rho$; it cannot implement a nontrivial channel.
+$\operatorname{Tr}_E[(I\otimes u)(\rho\otimes|0\rangle\langle0|) (I\otimes u^\dagger)]=\rho$; it cannot implement a nontrivial channel.
 These distinctions preserve the exact CP construction while preventing
 its environment basis freedom from being identified with a physical
 weak interaction without an intertwining map. $\square$
@@ -460,6 +470,7 @@ A particular decoder can preserve a smaller group. The feature representation mu
 
 With $t_a=\lambda_a/2$, $\operatorname{tr}(t_at_b)=\delta_{ab}/2$,
 $D_\mu=\partial_\mu-ig_sG_\mu^at_a$ has curvature
+
 $$
 F^a_{G,\mu\nu}=\partial_\mu G_\nu^a-\partial_\nu G_\mu^a
 +g_sf^{bc}{}_aG_\mu^bG_\nu^c.
@@ -470,6 +481,7 @@ quadratic commutator produces non-Abelian interaction terms in the
 specified Yang--Mills action.
 For the attention weight $w(A)=e^{-\sigma A}$ used in
 {prf:ref}`thm-texture-confinement-area-law`, the exact threshold is
+
 $$
 w(A)\le\varepsilon
 \quad\Longleftrightarrow\quad
@@ -502,6 +514,7 @@ Dynamical binding additionally concerns the state and its evolution. A restricti
 :label: cor-standard-model-symmetry
 
 The specified mode and feature actions define a representation of
+
 $$
 G_0=SU(N_f)\times SU(r)\times U(1)
 $$
@@ -550,6 +563,7 @@ The latent metric is the object constructed by {prf:ref}`thm-capacity-constraine
 
 On the four-dimensional spin background of {prf:ref}`def-loc-spin-g`, the
 comparison fields are sections of
+
 $$
 (S_L\otimes E_L)\oplus(S_R\otimes E_R),\quad
 E_L=\mathbb C^r\otimes\mathbb C^{N_f},\quad E_R=\mathbb C^{N_f}.
@@ -566,6 +580,7 @@ in an orthonormal frame $(\gamma^{\hat0})^2=I$ and
 $\bar\Psi=\Psi^\dagger\gamma^{\hat0}$.
 The positive one-particle density is the contraction of the conserved
 current with the future Cauchy normal:
+
 $$
 \|\Psi\|_\Sigma^2=-\int_\Sigma n_\mu j^\mu\,d\Sigma,
 \qquad j^\mu=\bar\Psi\gamma^\mu\Psi.
@@ -594,6 +609,7 @@ spin and internal connection, using the Clifford convention in
 {prf:ref}`def-cognitive-spinor`. Its covariant connection wave operator is
 $\Box_D=g^{\mu\nu}(D_\mu D_\nu-\Gamma^\lambda_{\mu\nu}D_\lambda)$.
 For a constant scalar mass on the same bundle,
+
 $$
 (P-m)(P+m)=\Box_D-m^2
 -\frac14[\gamma^\mu,\gamma^\nu][D_\mu,D_\nu].
@@ -601,6 +617,7 @@ $$
 *Proof.* Evaluate in a normal frame at a point. Compatibility differentiates
 no gamma matrix there. Split $\gamma^\mu\gamma^\nu$ into its symmetric
 and antisymmetric parts to obtain
+
 $$
 P^2=-\tfrac12\{\gamma^\mu,\gamma^\nu\}D_\mu D_\nu
 -\tfrac14[\gamma^\mu,\gamma^\nu][D_\mu,D_\nu].
@@ -681,9 +698,10 @@ D_\mu \phi &= \left(\partial_\mu - i g_1 \frac{Y_\phi}{2} B_\mu - i g_2 T^a W^a_
 $$
 
 Gauge invariance of the Yukawa term $\bar{\Psi}_L \phi \Psi_R$ requires
-$
+
+$$
 Y_R = Y_L - Y_\phi.
-$
+$$
 
 :::
 
@@ -702,6 +720,7 @@ an odd number of weak doublets.
 
 *Proof.* The four-dimensional chiral anomaly is proportional to the symmetric generator trace ([Bilal, Lectures on Anomalies](https://arxiv.org/abs/0802.0634)). Treat right-handed fundamentals as left-handed conjugates.
 Their cubic symmetric traces have the opposite sign. Thus, per family,
+
 $$
 \operatorname{tr}_{L}T^{(a}T^bT^{c)}
 -\operatorname{tr}_{R}T^{(a}T^bT^{c)}
@@ -712,10 +731,12 @@ $\operatorname{tr}T_8^3=-1/(4\sqrt3)\ne0$.
 For $r=2$ the difference is already nonzero. Repeating the displayed
 family multiplies this trace; changing hypercharges does not alter it.
 Writing $q_L=Y_L/2$ and $q_R=Y_R/2$, other traces include
+
 $$
 \mathcal A_{SU(N_f)^2U(1)}=\tfrac12(rq_L-q_R),\quad
 \mathcal A_{SU(r)^2U(1)}=\tfrac{N_f}{2}q_L,
 $$
+
 $$
 \mathcal A_{U(1)^3}=N_f(rq_L^3-q_R^3),\qquad
 \mathcal A_{{\rm grav}^2U(1)}=N_f(rq_L-q_R).
@@ -797,6 +818,7 @@ A flat connection can still have nontrivial holonomy around a noncontractible lo
 Ontological stress is the conditional mutual information of
 {prf:ref}`def-ontological-stress`. If $C=(K_t,z_{n,t},K_t^{\rm act})$,
 its exact expression is
+
 $$
 \Xi=\int D_{\rm KL}\big(P_{X,Y\mid C=c}\Vert
 P_{X\mid C=c}\otimes P_{Y\mid C=c}\big)\,P_C(dc),
@@ -824,6 +846,7 @@ and probabilistic data. $\square$
 :label: cor-gauge-invariant-action
 
 For the product representation, the action
+
 $$
 S_g=-\frac14\int\big(B_{\mu\nu}B^{\mu\nu}
 +W^a_{\mu\nu}W^{a\mu\nu}+G^a_{\mu\nu}G^{a\mu\nu}\big)d\mu_g
@@ -917,6 +940,7 @@ Write $a=\Xi-\Xi_{\rm crit}$ and use the drift
 $b(r)=ar-\alpha r^3$ of
 {prf:ref}`thm-supercritical-pitchfork-bifurcation-for-charts`.
 At fixed $a,\alpha$ its radial potential, up to an additive constant, is
+
 $$
 \mathcal V(r)=-\frac a2r^2+\frac\alpha4r^4
 =-\mu^2r^2+\lambda r^4,
@@ -956,6 +980,7 @@ For a complex $r$-component field, the equal-radius set is $S^{2r-1}$; for a dou
 
 For the established $\alpha>0$, hence $\lambda>0$, the minimum is at
 $\phi=0$ for $\mu^2\le0$. For $\mu^2>0$, put
+
 $$
 v^2=\frac{\mu^2}{2\lambda}=\frac{\Xi-\Xi_{\rm crit}}{\alpha}.
 $$
@@ -993,6 +1018,7 @@ Use $\mathcal L_\phi=-(D_\mu\phi)^\dagger D^\mu\phi-\mathcal V(\phi)$
 with signature $(-+++)$ and $\phi_0=vn_0$, $n_0^\dagger n_0=1$.
 For the combined Hermitian generators
 $Q_A=(g_2T_a,g_1Y_\phi I/2)$, the real vector mass matrix is
+
 $$
 (M^2)_{AB}=v^2n_0^\dagger\{Q_A,Q_B\}n_0,
 \qquad\mathcal L_{\rm mass}=-\tfrac12(M^2)_{AB}A_\mu^A A^{B\mu}.
@@ -1002,6 +1028,7 @@ Symmetrizing the product $A^AA^B$ gives the formula. For real $u$,
 $u^TM^2u=2v^2\|(\sum_Au_AQ_A)n_0\|^2\ge0$; its kernel is precisely
 the Lie-algebra stabilizer of $\phi_0$.
 For $r=2$, $n_0=(0,1)^T$, and $T_a=\tau_a/2$,
+
 $$
 M^2=\frac{v^2}{2}
 \begin{pmatrix}
@@ -1011,6 +1038,7 @@ g_2^2&0&0&0\\0&g_2^2&0&0\\
 \end{pmatrix}
 $$
 in the order $(W^1,W^2,W^3,B)$. Therefore
+
 $$
 M_W=|g_2|v/\sqrt2,\quad
 M_Z=v\sqrt{g_2^2+g_1^2Y_\phi^2}/\sqrt2,
@@ -1069,6 +1097,7 @@ The following contractions couple the displayed scalar, spinor, and connection f
 :label: def-decision-coupling
 
 For the specified chiral comparison fields and scalar, define
+
 $$
 \mathcal L_Y=-\sum_{ij}\left[
 Y_{ij}\bar\Psi_{L,i}^{\,a}\phi_a\Psi_{R,j}
@@ -1175,11 +1204,13 @@ Use the fixed-metric polar construction of {prf:ref}`thm-madelung-transform`.
 On a positive-density chart put $a=\sqrt\rho$, $\psi=ae^{iV/\sigma}$,
 $p=dV-B$, $v=G^{-1}p$, $D_i=\partial_i-iB_i/\sigma$, and
 $Q=-\sigma^2\Delta_Ga/(2a)$. The Hamilton--Jacobi and mass equations
+
 $$
 \partial_sV+\tfrac12|p|_G^2+\Phi=0,\qquad
 \partial_s\rho+\operatorname{div}_G(\rho v)=r\rho
 $$
 are equivalent on this chart to
+
 $$
 i\sigma\partial_s\psi=
 \left[-\frac{\sigma^2}{2}\Delta_B+\Phi-Q+\frac{i\sigma r}{2}\right]\psi.
@@ -1187,6 +1218,7 @@ $$
 Here $r$ is the reaction rate, not the internal mode dimension.
 
 *Proof.* Direct differentiation yields
+
 $$
 \frac{\Delta_B\psi}{\psi}
 =\frac{\Delta_Ga}{a}-\frac{|p|_G^2}{\sigma^2}
@@ -1239,6 +1271,7 @@ $$
 :label: def-cognitive-lagrangian
 
 The specified matrix and chiral fields define the classical density
+
 $$
 \begin{aligned}
 \mathcal L_{\rm cmp}={}&-\tfrac14B_{\mu\nu}B^{\mu\nu}
@@ -1356,8 +1389,7 @@ Osterwalder-Schrader axioms {cite}`osterwalder1973axioms,osterwalder1975axioms` 
 2. **OS1 Euclidean Covariance:** $S_n$ is invariant under the Euclidean group $E(4)$.
 3. **OS2 Reflection Positivity:** For any polynomial $F$ of smeared fields with support in positive
    Euclidean time, $\langle \Theta F \cdot F \rangle_E \ge 0$, where $\Theta$ is time reflection.
-4. **OS3 Cluster Property:** $S_{m+n}(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to
-   S_m(x_1,\ldots,x_m)\,S_n(x_{m+1},\ldots,x_{m+n})$ as $|a|\to\infty$.
+4. **OS3 Cluster Property:** $S_{m+n}(x_1,\ldots,x_m,x_{m+1}+a,\ldots,x_{m+n}+a) \to S_m(x_1,\ldots,x_m)\,S_n(x_{m+1},\ldots,x_{m+n})$ as $|a|\to\infty$.
 5. **OS4 Symmetry:** $S_n$ is symmetric under permutations (graded symmetry for fermions).
 
 The full reconstruction theorem also includes growth control on the correlation family; the index OS0 here includes that requirement when the theorem is invoked. Vacuum uniqueness is the vacuum-sector property associated with clustering.
@@ -1378,8 +1410,7 @@ $(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})$
 3. $P_G$ is a principal $G$-bundle over $\mathcal{M}$ (fixed topology).
 4. $A^{\text{ext}}$ is a fixed background 1-form (the external drive).
 
-Morphisms $\chi:(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}})
-\to (\mathcal{M}', g', \mathfrak{o}', \mathfrak{t}', \mathcal{S}', P_G', A^{\text{ext}\prime})$
+Morphisms $\chi:(\mathcal{M}, g, \mathfrak{o}, \mathfrak{t}, \mathcal{S}, P_G, A^{\text{ext}}) \to (\mathcal{M}', g', \mathfrak{o}', \mathfrak{t}', \mathcal{S}', P_G', A^{\text{ext}\prime})$
 are smooth isometric embeddings with causally convex image that preserve $\mathfrak{o}$ and
 $\mathfrak{t}$, admit a lift to the spin bundles, and are covered by a bundle morphism
 $\tilde{\chi}:P_G \to P_G'$ with $\chi^*A^{\text{ext}\prime} = A^{\text{ext}}$.
@@ -1478,10 +1509,11 @@ The following definitions organize locality, invariant observables, resolution, 
 For each oriented Riemannian manifold $(\mathcal{M}, g)$ (boundary allowed), there is a net of
 local observable *-algebras $\mathcal{A}_{\mathcal{M}}(\mathcal{O})$ for open regions
 $\mathcal{O} \subset \mathcal{M}$ with isotony:
-$
+
+$$
 \mathcal{O}_1 \subset \mathcal{O}_2 \Rightarrow
 \mathcal{A}_{\mathcal{M}}(\mathcal{O}_1) \subset \mathcal{A}_{\mathcal{M}}(\mathcal{O}_2).
-$
+$$
 Algebras of causally disjoint regions commute (graded for fermions) with causal separation defined
 by Definition {prf:ref}`def-causal-interval`.
 :::
@@ -1491,10 +1523,11 @@ by Definition {prf:ref}`def-causal-interval`.
 
 There is a compact gauge group $G$ acting locally on fields. The physical observable algebra is
 the gauge-invariant subalgebra:
-$
+
+$$
 \mathcal{A}^{\mathrm{phys}}_{\mathcal{M}}(\mathcal{O}) =
 \mathcal{A}_{\mathcal{M}}(\mathcal{O})^{G}.
-$
+$$
 Only gauge-invariant elements represent physical observables.
 :::
 
@@ -1609,6 +1642,7 @@ Put $h=(1-\chi)G_{\rm ret}f+\chi G_{\rm adv}f$.
 Causal support and global hyperbolicity make $h$ compactly supported
 (the time transition is chosen between two Cauchy surfaces inside $O$).
 Using $PG_{\rm ret}f=PG_{\rm adv}f=f$ gives
+
 $$
 f-Ph=[P,\chi](G_{\rm ret}-G_{\rm adv})f.
 $$
@@ -1738,6 +1772,7 @@ Let $P_t=e^{tL}$ be its transition semigroup with stationary law $\pi$ and
 detailed balance $\pi_xP_t(x,y)=\pi_yP_t(y,x)$. For the stationary two-sided
 path law and a bounded cylinder functional $F$ of positive times, define
 $\Theta F$ by complex conjugation and time reflection. Then
+
 $$
 \mathbb E[\Theta F\,F]
 =\sum_x\pi_x\left|\mathbb E[F\mid X_0=x]\right|^2\ge0.
@@ -1766,6 +1801,7 @@ $p_J(x,y)=e^{-Jxy}/(4\cosh J)$ with $J>0$ and reflection exchanging
 $x$ and $y$. This is a strictly positive, reflection-invariant law on
 four states, of entropy at most $\log4$. For the positive-side function
 $F(y)=y$,
+
 $$
 \mathbb E[\Theta F\,F]
 =\frac{2e^{-J}-2e^J}{2e^{-J}+2e^J}=-\tanh J<0.
@@ -1784,6 +1820,7 @@ positivity of the Grassmann functional. $\square$
 :label: rem-os2-gauge-fixing-wilson
 
 For a matrix connection define
+
 $$
 W_R(C)=\operatorname{tr}_R\mathcal P\exp
 \left(i g\oint_C A_\mu\,dx^\mu\right).

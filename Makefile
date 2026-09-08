@@ -1,5 +1,6 @@
 .PHONY: style check test docs docs-theory docs-lab docs-serve serve tldr tldr-html tldr-debug tldr-fallback check-tldr-deps prompt claude mlflow videogames web robots physics physics-code latex control-native control-setup control-web control-web-build control-lab control-test
 
+
 CONTROL_PORT ?= 8080
 CONTROL_BUILD_JOBS ?= 4
 # Let callers select CMake and resolve its executable through the shell.
@@ -30,6 +31,30 @@ control-test: control-native
 	ctest --test-dir fractal-gas-web/build-control-native --output-on-failure
 	uv run pytest tests/fractalai/test_control_engine.py
 
+OPTIMIZATION_PORT ?= 8081
+optimization-native:
+	"$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-optimization-native -DFG_OPTIMIZATION_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-optimization-native --parallel $(CONTROL_BUILD_JOBS)
+
+optimization-web:
+	bash fractal-gas-web/tools/with-emsdk.sh $(MAKE) optimization-web-build
+
+optimization-web-build:
+	emcmake "$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-optimization-wasm -DFG_OPTIMIZATION_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-optimization-wasm --parallel $(CONTROL_BUILD_JOBS)
+	npm --prefix fractal-gas-web ci --ignore-scripts
+	npm --prefix fractal-gas-web run build:optimization
+
+optimization-lab:
+	uv run --no-project python fractal-gas-web/tools/serve-control.py --port $(OPTIMIZATION_PORT)
+
+optimization-test: optimization-native optimization-web
+	ctest --test-dir fractal-gas-web/build-optimization-native --output-on-failure
+	uv run pytest tests/test_benchmarks.py tests/fractalai/test_optimization_engine.py
+	npm --prefix fractal-gas-web run test:optimization
+
+.PHONY: optimization-native optimization-web optimization-web-build optimization-lab optimization-test
+
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
 	uv run ruff format .
@@ -39,7 +64,7 @@ check:
 	uv run ruff format --diff .
 
 test:
-	PYGLET_HEADLESS=1 uv run pytest tests/
+	OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYGLET_HEADLESS=1 uv run pytest tests/
 
 tldr:
 	@echo "Generating PDF with rendered Mermaid diagrams..."

@@ -1,0 +1,58 @@
+name: Optimization Lab
+on:
+  push:
+    branches: [main]
+    paths: ['fractal-gas-web/**', 'src/fragile/fractalai/core/**', 'tests/fractalai/test_optimization_engine.py', 'tests/test_benchmarks.py', 'Makefile', '.github/workflows/optimization-engine.yml']
+  pull_request:
+    paths: ['fractal-gas-web/**', 'src/fragile/fractalai/core/**', 'tests/fractalai/test_optimization_engine.py', 'tests/test_benchmarks.py', 'Makefile', '.github/workflows/optimization-engine.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: '3.11'
+      - run: make optimization-native
+      - run: ctest --test-dir fractal-gas-web/build-optimization-native --output-on-failure
+      - name: Verify Python objective and BAOAB parity
+        env:
+          PYTHONPATH: src
+        run: >-
+          uv run --isolated --no-project --with pytest --with numpy --with torch
+          --with panel --with holoviews --with numba --with einops --with scipy
+          --with pydantic --with networkx --with gymnasium --with hydra-core
+          pytest -q tests/test_benchmarks.py tests/fractalai/test_optimization_engine.py
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: fractal-gas-web/package-lock.json
+      - uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: 6.0.8
+      - run: make optimization-native optimization-web
+      - run: npm --prefix fractal-gas-web run test:optimization
+      - working-directory: fractal-gas-web
+        run: npx playwright install --with-deps chromium firefox
+      - name: Test browser interactions and project-prefixed paths
+        timeout-minutes: 10
+        run: |
+          python3 fractal-gas-web/tools/serve-control.py --port 8081 > /tmp/optimization-server.log 2>&1 &
+          for attempt in {1..30}; do curl -fsS http://127.0.0.1:8081/optimization/ > /dev/null && break; sleep 1; done
+          npm --prefix fractal-gas-web run test:optimization-browser
+          OPTIMIZATION_TEST_URL=http://127.0.0.1:8081/fragile/optimization/ npm --prefix fractal-gas-web run test:optimization-browser
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: optimization-browser-artifacts
+          path: |
+            /tmp/fractal-optimization-browser
+            /tmp/optimization-server.log

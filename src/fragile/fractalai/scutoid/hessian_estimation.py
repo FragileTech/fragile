@@ -284,7 +284,11 @@ def estimate_hessian_diagonal_fd(
 
         symmetry = 1.0 - (h_pos - h_neg).abs() / (h_pos + h_neg + 1e-10)
 
-        hessian_est = (pos_vals + neg_vals - 2.0 * center_vals) / (h_avg**2 + 1e-10)
+        hessian_est = (
+            2.0
+            * ((pos_vals - center_vals) / h_pos + (neg_vals - center_vals) / h_neg)
+            / (h_pos + h_neg)
+        )
 
         hessian_diagonal = torch.where(valid_axis, hessian_est, hessian_diagonal)
         if step_size is None:
@@ -298,7 +302,7 @@ def estimate_hessian_diagonal_fd(
         axis_quality = torch.where(valid_axis, symmetry, axis_quality)
 
     n_valid_axes = torch.isfinite(hessian_diagonal).sum(dim=1)
-    valid_mask = n_valid_axes >= (d // 2)
+    valid_mask = n_valid_axes == d
 
     if alive is not None:
         valid_mask &= alive
@@ -343,14 +347,15 @@ def estimate_hessian_full_fd(
         edge_index: [2, E] neighbor connectivity (COO). Optional if CSR provided.
         alive: [N] optional validity mask
         step_size: Optional manual step size (used for reporting)
-        method: "central" or "gradient_fd"
+        method: "central" estimates axial diagonal terms; "gradient_fd" also
+            estimates mixed derivatives from the supplied gradients.
         symmetrize: If True, enforce symmetry by averaging H and H^T
         csr_ptr: Optional [N+1] CSR row pointers
         csr_indices: Optional [E] CSR column indices
         csr_types: Optional [E] edge types (0=walker, 1=boundary)
         max_angle_deg: Angular threshold for axial alignment
     """
-    N, _d = positions.shape
+    N, d = positions.shape
     device = positions.device
 
     if method == "gradient_fd" and gradient_vectors is None:
@@ -387,22 +392,20 @@ def estimate_hessian_full_fd(
     if symmetrize:
         hessian_tensors = 0.5 * (hessian_tensors + hessian_tensors.transpose(1, 2))
 
-    eigenvalues = torch.linalg.eigvalsh(hessian_tensors)
+    valid_mask = torch.isfinite(hessian_tensors).all(dim=(1, 2)) & (num_neighbors >= 2)
+    if alive is not None:
+        valid_mask &= alive
+    eigenvalues = torch.full((N, d), float("nan"), device=device, dtype=positions.dtype)
+    eigenvalues[valid_mask] = torch.linalg.eigvalsh(hessian_tensors[valid_mask])
 
-    lambda_max = eigenvalues[:, -1].abs()
-    lambda_min = eigenvalues[:, 0].abs()
+    lambda_max = eigenvalues.abs().amax(dim=1)
+    lambda_min = eigenvalues.abs().amin(dim=1)
     condition_numbers = lambda_max / (lambda_min + 1e-10)
 
     psd_mask = (eigenvalues >= -1e-6).all(dim=1)
-    psd_fraction = psd_mask.float().mean().item()
+    psd_fraction = psd_mask[valid_mask].float().mean().item() if valid_mask.any() else 0.0
 
     eigenvalues = torch.flip(eigenvalues, dims=[1])
-
-    valid_mask = torch.ones(N, dtype=torch.bool, device=device)
-    if alive is not None:
-        valid_mask &= alive
-
-    valid_mask &= num_neighbors >= 2
 
     return {
         "hessian_tensors": hessian_tensors,
@@ -438,6 +441,7 @@ def _estimate_hessian_central_differences(
     )
 
     H = torch.zeros(N, d, d, device=device, dtype=positions.dtype)
+    H[:, torch.arange(d), torch.arange(d)] = float("nan")
 
     has_pos = pos_idx >= 0
     has_neg = neg_idx >= 0
@@ -450,11 +454,14 @@ def _estimate_hessian_central_differences(
 
         h_pos = pos_delta.abs()
         h_neg = neg_delta.abs()
-        h_avg = 0.5 * (h_pos + h_neg)
 
-        diag_est = (pos_vals + neg_vals - 2.0 * center_vals) / (h_avg**2 + 1e-10)
+        diag_est = (
+            2.0
+            * ((pos_vals - center_vals) / h_pos + (neg_vals - center_vals) / h_neg)
+            / (h_pos + h_neg)
+        )
 
-        diag_values = torch.where(valid_axis, diag_est, torch.zeros_like(diag_est))
+        diag_values = torch.where(valid_axis, diag_est, torch.full_like(diag_est, float("nan")))
         H[:, torch.arange(d), torch.arange(d)] = diag_values
 
     if alive is not None:

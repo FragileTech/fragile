@@ -566,6 +566,7 @@ The Boris-BAOAB integrator splits the Lorentz-Langevin dynamics into five subste
      $p^- \leftarrow p - \frac{h}{2}(d\Phi-\gamma G u_\pi)$.
    - If $\mathcal{F}\neq0$, apply the Cayley update for the velocity-dependent term. With
      $A=\beta_{\text{curl}}\mathcal{F}G^{-1}$,
+
      $$
      p^+ \leftarrow \left(I-\frac{h}{2}A\right)^{-1}
        \left(I+\frac{h}{2}A\right)p^-.
@@ -847,8 +848,6 @@ def geodesic_baoab_step(
 
     return GeodesicState(z=z, p=p, K=K, m=m, s=state.s + h)
 ```
-
-:::
 :::{prf:proposition} BAOAB Preserves Boltzmann
 :label: prop-baoab-preserves-boltzmann
 

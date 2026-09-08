@@ -14,7 +14,10 @@ Given:
 - $w_0 \in \Delta^{K-1}$ — initial chart routing weights (soft assignment over $K$ atlas charts)
 
 It produces a rollout:
-$$z_0 \xrightarrow{a_0} z_1 \xrightarrow{a_1} z_2 \xrightarrow{a_2} \cdots \xrightarrow{a_{H-1}} z_H$$
+
+$$
+z_0 \xrightarrow{a_0} z_1 \xrightarrow{a_1} z_2 \xrightarrow{a_2} \cdots \xrightarrow{a_{H-1}} z_H
+$$
 
 along with chart predictions, momentum trajectories, and diagnostic quantities (jump rates, effective potential).
 
@@ -26,7 +29,9 @@ along with chart predictions, momentum trajectories, and diagnostic quantities (
 
 The Poincaré ball $\mathbb{B}^D$ has the conformal metric:
 
-$$g_{ij}(z) = \lambda(z)^2 \, \delta_{ij}, \qquad \lambda(z) = \frac{2}{1 - \|z\|^2}$$
+$$
+g_{ij}(z) = \lambda(z)^2 \, \delta_{ij}, \qquad \lambda(z) = \frac{2}{1 - \|z\|^2}
+$$
 
 Key consequences:
 
@@ -49,7 +54,9 @@ This distinction is critical:
 
 Hamilton's equations connect them:
 
-$$\dot{z}^i = G^{ij} p_j, \qquad \dot{p}_i = -\frac{\partial \Phi}{\partial z^i} + u_i^{\pi}$$
+$$
+\dot{z}^i = G^{ij} p_j, \qquad \dot{p}_i = -\frac{\partial \Phi}{\partial z^i} + u_i^{\pi}
+$$
 
 The momentum kick ($\dot{p}$) must be a covector. This means forces that modify $p$ are **Euclidean gradients** $\partial \Phi / \partial z$, not Riemannian gradients $G^{-1} \partial \Phi / \partial z$.
 
@@ -96,7 +103,9 @@ Produces the **conservative force** (cotangent vector) that drives the Hamiltoni
 
 **Force decomposition:**
 
-$$F = \alpha \frac{\partial U}{\partial z} + (1 - \alpha)\, f_\text{critic}(z, K) + \gamma_\text{risk}\, f_\text{risk}(z, K)$$
+$$
+F = \alpha \frac{\partial U}{\partial z} + (1 - \alpha)\, f_\text{critic}(z, K) + \gamma_\text{risk}\, f_\text{risk}(z, K)
+$$
 
 - $U(z) = -2\,\text{artanh}(\|z\|)$ — **analytic** hyperbolic drive with exact gradient $\frac{\partial U}{\partial z} = \frac{-2z}{\|z\|(1 - \|z\|^2)}$ (no learnable parameters, no autograd)
 - $f_\text{critic}$ — learned critic force via CovariantAttention over chart tokens
@@ -104,7 +113,9 @@ $$F = \alpha \frac{\partial U}{\partial z} + (1 - \alpha)\, f_\text{critic}(z, K
 
 **Scalar potential** (for diagnostics / energy conservation loss):
 
-$$\Phi_\text{eff} = \alpha\, U(z) + (1 - \alpha)\, V_\text{critic} + \gamma_\text{risk}\, \Psi_\text{risk}$$
+$$
+\Phi_\text{eff} = \alpha\, U(z) + (1 - \alpha)\, V_\text{critic} + \gamma_\text{risk}\, \Psi_\text{risk}
+$$
 
 The critic and risk heads share attention features: each CovariantAttention computes features once, then two projection heads read off the force vector *and* the scalar simultaneously.
 
@@ -122,7 +133,9 @@ Produces the **control force** $u^\pi(z, a, K) \in T^*_z \mathbb{B}^D$ (cotangen
 
 Produces an **antisymmetric field strength tensor** $\mathcal{F}_{ij}$ for the Boris rotation:
 
-$$\mathcal{F} + \mathcal{F}^T = 0$$
+$$
+\mathcal{F} + \mathcal{F}^T = 0
+$$
 
 - Cross-attends from $z$ to action tokens
 - Outputs the $D(D-1)/2$ upper-triangular entries, then fills the antisymmetric matrix
@@ -132,7 +145,9 @@ $$\mathcal{F} + \mathcal{F}^T = 0$$
 
 Predicts chart transition logits $\ell \in \mathbb{R}^K$:
 
-$$\ell_k = -\frac{d_\text{hyp}(z, c_k)}{\tau(z)} + z^T Q_{\Gamma}^{(k)} z + \text{action\_correction}$$
+$$
+\ell_k = -\frac{d_\text{hyp}(z, c_k)}{\tau(z)} + z^T Q_{\Gamma}^{(k)} z + \text{action\_correction}
+$$
 
 Three terms:
 1. **Geodesic proximity**: negative hyperbolic distance to chart center $c_k$, temperature-scaled
@@ -153,7 +168,9 @@ Predicts a **non-negative scalar** $\lambda(z, K) \geq 0$ (Poisson jump rate):
 
 Initializes the momentum $p_0$ from the starting position:
 
-$$p_0 = \lambda(z_0)^2 \cdot W z_0$$
+$$
+p_0 = \lambda(z_0)^2 \cdot W z_0
+$$
 
 The $\lambda^2$ factor ensures the initial momentum is a proper cotangent vector — metric-scaled so that $\|p\|$ has the right units relative to the local geometry.
 
@@ -289,7 +306,9 @@ The **energy conservation loss** monitors Hamiltonian drift $H = \Phi_\text{eff}
 
 **Loss:**
 
-$$\mathcal{L}_\text{total} = \underbrace{0.1}_{\text{encoder scale}} \cdot \mathcal{L}_\text{encoder} + \underbrace{1.0}_{\text{dynamics scale}} \cdot \mathcal{L}_\text{dynamics}$$
+$$
+\mathcal{L}_\text{total} = \underbrace{0.1}_{\text{encoder scale}} \cdot \mathcal{L}_\text{encoder} + \underbrace{1.0}_{\text{dynamics scale}} \cdot \mathcal{L}_\text{dynamics}
+$$
 
 - Encoder losses are the same 13 terms from Phase 1 (computed on frame 0)
 - Dynamics losses are the same 5 terms from Phase 2

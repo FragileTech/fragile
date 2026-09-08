@@ -209,6 +209,7 @@ At this limit, the DPI constraint $I_{\text{bulk}} \le C_\partial$ is satisfied 
 
 The following Schwarzschild-style expression is a formal radial ansatz for exploring a
 capacity-saturation regime:
+
 $$
 A(r) = \left( 1 - \frac{2\mu(r)}{(n-2)r^{n-2}}
 - \frac{\Lambda_{\mathrm{eff}}r^2}{n(n-1)} \right)^{-1}.
@@ -253,6 +254,7 @@ We now state the operational capacity convention used by the diagnostic.
 
 Under an explicit capacity permit that identifies stable representational information with
 boundary area at resolution $\ell_L$, define the operational capacity
+
 $$
 I_{\max}:=\nu_D\,\frac{\operatorname{Area}(\partial\mathcal Z)}{\ell_L^{D-1}}.
 $$
@@ -279,7 +281,9 @@ Now we come to the most striking conditional consequence: a selected radial upda
 
 The black-hole picture gives useful intuition about a horizon, but it is only an analogy. Under the formal proposition's radial ansatz, bounded radial force, selected horizon, and overdamped drift, one obtains
 
-$$v^r=-G^{rr}\partial_r\Phi_{\mathrm{eff}}\longrightarrow0.$$
+$$
+v^r=-G^{rr}\partial_r\Phi_{\mathrm{eff}}\longrightarrow0.
+$$
 
 That is a statement about the radial component at that horizon. It does not imply $\|v\|_G\to0$ when angular components remain, does not freeze the interior, and does not follow from $I_{\text{bulk}}\to I_{\max}$ until a coupling between those quantities has been proved or assumed.
 
@@ -294,6 +298,7 @@ We record the conditional consequence of the ansatz: a radial update can slow at
 Assume the conditional capacity formula above, the formal spherical ansatz, bounded radial force,
 and $G^{rr}\to0$ at the selected horizon. Then the radial component of an overdamped drift
 satisfies
+
 $$
 v^r=-G^{rr}\partial_r\Phi_{\mathrm{eff}}\longrightarrow0.
 $$

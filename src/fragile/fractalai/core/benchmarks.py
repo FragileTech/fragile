@@ -44,8 +44,8 @@ def styblinski_tang(x) -> torch.Tensor:
 
 
 def rosenbrock(x) -> torch.Tensor:
-    return 100 * torch.sum((x[:, :-2] ** 2 - x[:, 1:-1]) ** 2, 1) + torch.sum(
-        (x[:, :-2] - 1) ** 2,
+    return 100 * torch.sum((x[:, :-1] ** 2 - x[:, 1:]) ** 2, 1) + torch.sum(
+        (x[:, :-1] - 1) ** 2,
         1,
     )
 

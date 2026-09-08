@@ -193,9 +193,8 @@ class TestDashboard:
         from fragile.fractalai.videogames.dashboard import AtariGasConfigPanel
 
         config = AtariGasConfigPanel()
-        assert config.N == 30
+        assert config.N == 200
         assert config.max_iterations == 100
-        assert not config.use_cumulative_reward
 
 
 if __name__ == "__main__":

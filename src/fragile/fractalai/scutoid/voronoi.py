@@ -477,6 +477,9 @@ def compute_vectorized_voronoi(
             edge_types,
         ) = create_extended_edge_index(edge_index, boundary_data, n_alive)
 
+        edge_distances_ext[:n_edges] = edge_distances
+        facet_areas_ext[:n_edges] = facet_areas
+
         # Build CSR format with extended edges
         n_total = n_alive + len(boundary_data.positions)  # N + W
         csr_data = build_csr_from_coo(
@@ -720,7 +723,11 @@ def _compute_all_facet_areas(
     n_ridges = len(ridge_points)
     areas_half = np.zeros(n_ridges, dtype=np.float64)
 
-    for k, ridge_vertices in enumerate(vor.ridge_vertices):
+    ridge_lookup = {
+        tuple(pair): vertices for pair, vertices in zip(vor.ridge_points, vor.ridge_vertices)
+    }
+    for k, pair in enumerate(ridge_points):
+        ridge_vertices = ridge_lookup[tuple(pair)]
         # Skip infinite ridges
         if -1 in ridge_vertices or len(ridge_vertices) < d:
             areas_half[k] = 1.0  # Default fallback

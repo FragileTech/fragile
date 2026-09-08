@@ -531,16 +531,31 @@ def test_compute_emergent_electroweak_scales_from_companions():
 
 def test_compute_electroweak_coupling_constants_uses_emergent_scales():
     history = _EmergentScaleHistoryStub()
+    distances = torch.cdist(history.x_before_clone[1], history.x_before_clone[1])
     couplings = compute_electroweak_coupling_constants(
         history,
         h_eff=1.0,
         frame_indices=[1],
         lambda_alg=0.0,
+        pairwise_distance_by_frame={1: distances},
     )
     assert np.isclose(float(couplings["g1_est"]), 0.2, rtol=0.0, atol=1e-10)
     assert np.isclose(float(couplings["g2_est"]), np.sqrt(2.0 / 15.0), rtol=0.0, atol=1e-10)
-    assert np.isclose(float(couplings["sin2_theta_w_emergent"]), 3.0 / 13.0, rtol=0.0, atol=1e-10)
-    assert np.isclose(float(couplings["tan_theta_w_emergent"]), np.sqrt(0.3), rtol=0.0, atol=1e-10)
+    # SU(2) uses the RMS relative fitness gap; U(1) uses all-pairs geodesic RMS.
+    gap_sq = (5.0**2 + 0.8**2 + (4.0 / 9.0) ** 2) / 3.0
+    distance_sq = 20.0
+    assert np.isclose(
+        float(couplings["sin2_theta_w_emergent"]),
+        gap_sq / (gap_sq + distance_sq),
+        rtol=0.0,
+        atol=1e-10,
+    )
+    assert np.isclose(
+        float(couplings["tan_theta_w_emergent"]),
+        np.sqrt(gap_sq / distance_sq),
+        rtol=0.0,
+        atol=1e-10,
+    )
 
 
 def test_snapshot_operator_routing_uses_family_companion_topologies():

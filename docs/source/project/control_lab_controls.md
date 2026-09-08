@@ -204,9 +204,9 @@ APIs can have different limits.
 :::{div} feynman-added
 | UI label | Settings key | Default; UI range | Meaning and applicability |
 |---|---|---|---|
-| **Controller** | `algorithm` | `fmc` | `fmc`, `wave-jump`, `random`, `cem`, `icem`, or `mppi`. |
+| **Controller** | `algorithm` | `wave-jump` | `fmc`, `wave-jump`, `random`, `cem`, `icem`, or `mppi`. |
 | **Walkers** | `walkers` | 128; integers 1–8192 | FMC/Wave Jump population or shooting batch capacity. Random control does not use a rollout population. |
-| **Horizon** | `horizon` | 32; integers 1–4096 | FMC/Wave Jump normal search depth; Wave Jump can extend it when shared-path execution is enabled. Action depth per shooting round. Ignored by random action selection. |
+| **Horizon** | `horizon` | 64; integers 1–4096 | FMC/Wave Jump normal search depth; Wave Jump can extend it when shared-path execution is enabled. Action depth per shooting round. Ignored by random action selection. |
 | **Stop at first bifurcation** | `consensus_prefix` | Checked (`true`) | Wave Jump only: execute the recorded ancestral path shared by every alive final walker, stopping before their branches diverge. |
 | **Maximum search horizon** | `max_horizon` | 0 (automatic); integers 0–4096 | Wave Jump shared-path mode only. Zero means twice Horizon, capped at 4096. An explicit nonzero value must be at least Horizon. |
 | **Action frames** | `frames` | 12; integers 1–60 | Physics frames per candidate action. Wave Jump executes each selected edge for its actual recorded duration; other controllers execute one action for this count. |

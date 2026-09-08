@@ -269,6 +269,7 @@ new ExperimentPanel({
   download,
   error,
 });
+$("algorithm").value = "wave-jump";
 const controllerSettings = new ControllerSettings(
   $("algorithm-settings"),
   $("algorithm"),
@@ -422,7 +423,7 @@ function renderRockLift() {
 function draftSettings() {
   return {
     ...controllerSettings.values(),
-    algorithm: $("algorithm").value || "fmc",
+    algorithm: $("algorithm").value || "wave-jump",
     walkers: +$("walkers").value,
     horizon: +$("horizon").value,
     frames: +$("frames").value,

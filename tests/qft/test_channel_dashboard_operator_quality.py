@@ -6,11 +6,11 @@ from types import SimpleNamespace
 
 import torch
 
-from fragile.fractalai.qft.dashboard.channel_dashboard import (
-    _analyze_operator_quality_vectorized,
-    _apply_gevp_entry_filters,
-    _build_eigenspectrum_plot,
-    _collect_family_operator_entries,
+from fragile.fractalai.qft.dashboard.gevp_dashboard import (
+    analyze_operator_quality_vectorized,
+    apply_gevp_entry_filters,
+    build_eigenspectrum_plot,
+    collect_family_operator_entries,
 )
 
 
@@ -59,8 +59,8 @@ def test_collect_family_operator_entries_includes_multiscale_and_original() -> N
         "scalar": _result([1.0, 0.9, 0.85, 0.8, 0.76], mass=0.21, mass_error=0.03),
     }
 
-    entries = _collect_family_operator_entries(
-        output, "nucleon", original_results=original_results
+    entries = collect_family_operator_entries(
+        output.per_scale_results, "nucleon", original_results=original_results
     )
 
     assert len(entries) == 4
@@ -106,7 +106,7 @@ def test_analyze_operator_quality_vectorized_builds_rows_and_spectrum() -> None:
         },
     ]
 
-    analysis = _analyze_operator_quality_vectorized(
+    analysis = analyze_operator_quality_vectorized(
         entries,
         t0=1,
         eig_rel_cutoff=1e-2,
@@ -122,7 +122,7 @@ def test_analyze_operator_quality_vectorized_builds_rows_and_spectrum() -> None:
     rows_by_name = {row["operator"]: row for row in analysis["rows"]}
     assert rows_by_name["nucleon_noise@full"]["suggestion"] == "low_signal_candidate"
 
-    plot = _build_eigenspectrum_plot(analysis, family_label="nucleon")
+    plot = build_eigenspectrum_plot(analysis, family_label="nucleon")
     assert plot is not None
 
 
@@ -187,7 +187,7 @@ def test_apply_gevp_entry_filters_matches_gevp_quality_criteria() -> None:
         },
     ]
 
-    kept, excluded = _apply_gevp_entry_filters(
+    kept, excluded = apply_gevp_entry_filters(
         entries,
         min_r2=0.8,
         min_windows=3,

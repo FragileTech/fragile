@@ -75,6 +75,7 @@ if __name__ == "__main__":
             docs_home=args.docs,
         ),
     )
+    print(f"Optimization laboratory: http://{args.bind}:{args.port}/optimization/", flush=True)
     print(f"Control laboratory: http://{args.bind}:{args.port}/lab/", flush=True)
     if (docs_directory / "index.html").is_file():
         print(f"Documentation: http://{args.bind}:{args.port}/docs/", flush=True)

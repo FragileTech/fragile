@@ -1151,6 +1151,7 @@ Where:
 **Computational Meaning:** The macro-dynamics should be a homomorphism of the micro-dynamics. Let
 $P^\star(\cdot\mid k,a)$ denote the actual conditional law of $K_{t+1}$ given
 $K_t=k$ and $K^{\mathrm{act}}_t=a$. The KL chain rule gives
+
 $$
 \delta_{\mathrm{CE}}=I(K_{t+1};Z_t\mid K_t,K^{\mathrm{act}}_t)
  +\mathbb E\!\left[D_{\mathrm{KL}}\big(P^\star(\cdot\mid K_t,K^{\mathrm{act}}_t)\,\Vert\,\bar P(\cdot\mid K_t,K^{\mathrm{act}}_t)\big)\right]
@@ -1295,8 +1296,7 @@ Now we come to something quite deep: the relationship between geometry (how sens
 
 The intuition is this: in regions where the value function is sharply curved, your policy should be more certain (lower variance). Why? Because mistakes are expensive there. Conversely, in flat regions, you can afford to explore more (higher variance) because the consequences are less severe.
 
-The formal calibration in this chapter is for one-step perturbations: $\Sigma_{\mathrm{step}}(z) \propto
-T_c\,G^{-1}(z)$ under the stated diffusion and action-space assumptions. It is a modelling ansatz, not a universal
+The formal calibration in this chapter is for one-step perturbations: $\Sigma_{\mathrm{step}}(z) \propto T_c\,G^{-1}(z)$ under the stated diffusion and action-space assumptions. It is a modelling ansatz, not a universal
 policy-covariance law. The local conditioning scale is $\vartheta(z)$; its reciprocal gives $\beta_{\mathrm{cpl}}$
 after the declared reference-scale convention has been fixed.
 :::

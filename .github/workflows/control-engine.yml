@@ -1,11 +1,33 @@
 name: Continuous control engine
 on:
   push:
-    paths: ['fractal-gas-web/**', 'src/fragile/fractalai/control/**', 'tests/fractalai/test_control_engine.py', '.github/workflows/control-engine.yml']
+    paths:
+      [
+        "fractal-gas-web/**",
+        "src/fragile/fractalai/control/**",
+        "tests/fractalai/test_control_engine.py",
+        "Makefile",
+        "pyproject.toml",
+        "conftest.py",
+        ".github/workflows/control-engine.yml",
+      ]
+  workflow_dispatch:
   pull_request:
-    paths: ['fractal-gas-web/**', 'src/fragile/fractalai/control/**', 'tests/fractalai/test_control_engine.py', '.github/workflows/control-engine.yml']
+    paths:
+      [
+        "fractal-gas-web/**",
+        "src/fragile/fractalai/control/**",
+        "tests/fractalai/test_control_engine.py",
+        "Makefile",
+        "pyproject.toml",
+        "conftest.py",
+        ".github/workflows/control-engine.yml",
+      ]
 permissions:
   contents: read
+concurrency:
+  group: control-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   native:
     runs-on: ubuntu-latest
@@ -13,7 +35,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - name: Compile and test custom physics
         run: |
           cmake -S fractal-gas-web -B fractal-gas-web/build-control-native -DFG_CONTROL_ONLY=ON -DCMAKE_BUILD_TYPE=Release
@@ -39,7 +61,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: "22"
           cache: npm
           cache-dependency-path: fractal-gas-web/package-lock.json
       - uses: mymindstorm/setup-emsdk@v14
@@ -59,11 +81,14 @@ jobs:
         timeout-minutes: 15
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-browser.mjs
       - name: Test Wave Jump trajectories and checkpoints
-        timeout-minutes: 5
+        timeout-minutes: 10
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-wave-jump-browser.mjs
       - name: Test mining hook controls
         timeout-minutes: 5
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-hooks-browser.mjs
+      - name: Test workspace settings and continuous driving
+        timeout-minutes: 10
+        run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-workspace-browser.mjs
       - name: Test laboratory replay
         timeout-minutes: 15
         run: bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-replay-browser.mjs

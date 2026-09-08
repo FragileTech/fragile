@@ -286,8 +286,7 @@ where $\ell_{\mathrm{step}}$ is a declared coordinate step and $\bar G_n$ is
 the metric averaged over the sampled chart interiors. This is a calibration
 heuristic, not an intrinsic injectivity-radius identity.
 
-*Cross-reference:* The screening length $\ell_{\text{screen}} =
-1/\kappa_{\mathrm{scr}}$ from {ref}`Section 24.2
+*Cross-reference:* The screening length $\ell_{\text{screen}} = 1/\kappa_{\mathrm{scr}}$ from {ref}`Section 24.2
 <sec-the-bulk-potential-screened-poisson-equation>` is a spatial
 discount-induced/value-field scale. It is distinct from the WFR reaction
 length $\lambda$ (and from the temporal discount rate used to define

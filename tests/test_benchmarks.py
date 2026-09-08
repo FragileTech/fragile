@@ -78,7 +78,7 @@ def test_styblinski_tang(test_inputs):
 def test_rosenbrock(test_inputs):
     x = test_inputs["rosenbrock"]
     output = rosenbrock(x)
-    expected_values = torch.tensor([0.0, 0.0, 0.0])
+    expected_values = torch.tensor([0.0, 0.04, 1.0])
     assert torch.allclose(
         output, expected_values, atol=1e-3
     ), "Rosenbrock function output mismatch"

@@ -735,6 +735,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                 z_n_all_charts,
                 _c_bar,
                 v_local,
+                _z_q_blended,
             ) = model_atlas.encoder(batch_X)
 
             # Decoder forward (dreaming mode - infers routing from z_geo)
@@ -1075,6 +1076,7 @@ def train_benchmark(config: TopoEncoderConfig) -> dict:
                         _,
                         _c_bar_batch,
                         _v_local_batch,
+                        _z_q_blended_batch,
                     ) = model_atlas.encoder(batch_X)
                     usage_sum += enc_w_batch.sum(dim=0).cpu()
                     chart_assignments.append(K_chart_batch.cpu())

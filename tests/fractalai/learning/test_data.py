@@ -7,40 +7,12 @@ import pytest
 import torch
 
 from fragile.learning.data import (
-    augment_inputs,
     create_data_snapshot,
     create_dataloaders,
     DataBundle,
-    infer_vision_shape,
     load_dataset,
     restore_dataset,
 )
-
-
-# ==========================================
-# infer_vision_shape
-# ==========================================
-
-
-class TestInferVisionShape:
-    def test_mnist_auto(self):
-        assert infer_vision_shape("MNIST", 0, 0, 0) == (1, 28, 28)
-
-    def test_mnist_lowercase(self):
-        assert infer_vision_shape("mnist", 0, 0, 0) == (1, 28, 28)
-
-    def test_cifar10_auto(self):
-        assert infer_vision_shape("CIFAR-10", 0, 0, 0) == (3, 32, 32)
-
-    def test_cifar10_lowercase(self):
-        assert infer_vision_shape("cifar10", 0, 0, 0) == (3, 32, 32)
-
-    def test_explicit_dims_passthrough(self):
-        assert infer_vision_shape("anything", 2, 64, 64) == (2, 64, 64)
-
-    def test_unknown_dataset_zero_dims_raises(self):
-        with pytest.raises(ValueError, match="vision_preproc requires valid"):
-            infer_vision_shape("imagenet", 0, 0, 0)
 
 
 # ==========================================
@@ -60,10 +32,10 @@ class TestLoadDataset:
         assert bundle.input_dim == 784
         assert bundle.dataset_name == "MNIST"
 
-    def test_cifar10_shapes(self, mock_cifar10):
-        bundle = load_dataset("cifar10", n_samples=100, test_split=0.2)
-        assert bundle.X_train.shape[1] == 3072
-        assert bundle.dataset_name == "CIFAR-10"
+    def test_fashion_mnist_shapes(self, mock_fashion_mnist):
+        bundle = load_dataset("fashion_mnist", n_samples=100, test_split=0.2)
+        assert bundle.X_train.shape[1] == 784
+        assert bundle.dataset_name == "Fashion-MNIST"
         assert len(bundle.dataset_ids) == 10
 
     def test_labels_dtype_int64(self, mock_mnist):
@@ -92,30 +64,6 @@ class TestLoadDataset:
     def test_unsupported_dataset_raises(self):
         with pytest.raises(ValueError, match="Unsupported dataset"):
             load_dataset("imagenet", n_samples=10, test_split=0.2)
-
-    def test_vision_preproc_infers_shape(self, mock_mnist):
-        bundle = load_dataset("mnist", n_samples=100, test_split=0.2, vision_preproc=True)
-        assert bundle.vision_in_channels == 1
-        assert bundle.vision_height == 28
-        assert bundle.vision_width == 28
-
-    def test_vision_mismatch_raises(self, mock_mnist):
-        with pytest.raises(ValueError, match="vision_preproc shape does not match"):
-            load_dataset(
-                "mnist",
-                n_samples=100,
-                test_split=0.2,
-                vision_preproc=True,
-                vision_in_channels=3,
-                vision_height=32,
-                vision_width=32,
-            )
-
-    def test_no_vision_keeps_zeros(self, mock_mnist):
-        bundle = load_dataset("mnist", n_samples=100, test_split=0.2, vision_preproc=False)
-        assert bundle.vision_in_channels == 0
-        assert bundle.vision_height == 0
-        assert bundle.vision_width == 0
 
 
 # ==========================================
@@ -249,31 +197,3 @@ class TestCreateDataloaders:
         assert batch[0].shape[0] > 0
         test_batch = next(iter(test_dl))
         assert test_batch[0].shape[0] > 0
-
-
-# ==========================================
-# augment_inputs
-# ==========================================
-
-
-class TestAugmentInputs:
-    def test_output_shape(self):
-        x = torch.randn(8, 784)
-        aug = augment_inputs(x, "mnist")
-        assert aug.shape == (8, 784)
-
-    def test_noise_changes_values(self):
-        torch.manual_seed(0)
-        x = torch.randn(8, 784)
-        aug = augment_inputs(x, "mnist", noise_std=0.1)
-        assert not torch.equal(aug, x)
-
-    def test_zero_noise_identity(self):
-        x = torch.randn(8, 784)
-        aug = augment_inputs(x, "mnist", noise_std=0.0)
-        assert torch.equal(aug, x)
-
-    def test_unsupported_dataset_raises(self):
-        x = torch.randn(8, 784)
-        with pytest.raises(ValueError, match="Unsupported dataset"):
-            augment_inputs(x, "imagenet")

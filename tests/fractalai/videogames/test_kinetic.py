@@ -21,7 +21,7 @@ class MockEnv:
         """Sample a random action (plangym standard)."""
         return np.random.randint(0, self.action_space_size)
 
-    def step_batch(self, states, actions, dt):
+    def step_batch(self, states, actions, dt, return_state=True):
         """Mock batch stepping."""
         N = len(states)
 
@@ -61,7 +61,7 @@ def test_sample_actions(kinetic_op):
 
     # Check output
     assert actions.shape == (N,)
-    assert actions.dtype in {np.int64, np.int32, np.int_}
+    assert np.issubdtype(actions.dtype, np.integer)
     assert (actions >= 0).all()
     assert (actions < 18).all()  # Mock env has 18 actions
 
@@ -88,7 +88,7 @@ def test_sample_dt(kinetic_op):
 
     # Check output
     assert dt.shape == (N,)
-    assert dt.dtype in {np.int64, np.int32, np.int_}
+    assert np.issubdtype(dt.dtype, np.integer)
     assert (dt >= 1).all()  # Min dt
     assert (dt <= 4).all()  # Max dt
 
@@ -159,7 +159,7 @@ def test_apply_with_5_tuple_return(mock_env):
 
     # Create env that returns 5-tuple
     class MockEnv5Tuple(MockEnv):
-        def step_batch(self, states, actions, dt):
+        def step_batch(self, states, actions, dt, return_state=True):
             N = len(states)
             new_states = np.array([self._mock_state() for _ in range(N)], dtype=object)
             observations = np.random.rand(N, *self.obs_shape).astype(np.float32)

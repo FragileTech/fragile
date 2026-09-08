@@ -85,9 +85,15 @@ where $dg$ is the normalized Haar measure on $G$ (unique bi-invariant measure wi
 1. **Inner product structure:** $\langle \cdot, \cdot \rangle_G$ satisfies linearity, symmetry, and positive definiteness. For $z \neq 0$, we have $\langle \rho_0(g) z, \rho_0(g) z \rangle_0 > 0$ for all $g$ (since $\rho_0(g)$ is invertible). By compactness of $G$ and continuity, the integral $\langle z, z \rangle_G > 0$.
 
 2. **$G$-invariance:** For any $h \in G$:
-   $$\langle \rho_0(h) z, \rho_0(h) z' \rangle_G = \int_G \langle \rho_0(g) \rho_0(h) z, \rho_0(g) \rho_0(h) z' \rangle_0 \, dg$$
+
+   $$
+   \langle \rho_0(h) z, \rho_0(h) z' \rangle_G = \int_G \langle \rho_0(g) \rho_0(h) z, \rho_0(g) \rho_0(h) z' \rangle_0 \, dg
+   $$
    Substituting $g' = gh$ and using left-invariance of Haar measure ($dg' = dg$):
-   $$= \int_G \langle \rho_0(g') z, \rho_0(g') z' \rangle_0 \, dg' = \langle z, z' \rangle_G$$
+
+   $$
+   = \int_G \langle \rho_0(g') z, \rho_0(g') z' \rangle_0 \, dg' = \langle z, z' \rangle_G
+   $$
    Therefore $\rho_0(h)$ is orthogonal (actually unitary) with respect to $\langle \cdot, \cdot \rangle_G$ for all $h \in G$.
 
 We typically choose $\rho$ such that $\rho(g) \in O(d_z)$ for all $g$, ensuring:
@@ -125,7 +131,7 @@ $$
 \end{array}
 $$
 
-**Units:** If $[z] = [z']$ (both in units of $\sqrt{\text{nat}}$), then $[f(z)] = [z']$ and $[\rho(g)] = [\rho'(g)] = $ dimensionless.
+**Units:** If $[z] = [z']$ (both in units of $\sqrt{\text{nat}}$), then $[f(z)] = [z']$ and $[\rho(g)] = [\rho'(g)]$ (dimensionless).
 :::
 
 :::{prf:definition} Fragile Gauge Group
@@ -183,17 +189,29 @@ $$
    1. **Identity preservation:** $I_N + i \cdot 0 \mapsto \mathrm{diag}(I_N, I_N) = I_{2N}$ ✓
 
    2. **Multiplicativity:** For $U_1, U_2 \in SU(N)$ with $U_k = A_k + iB_k$, the product $U_1 U_2 = (A_1 A_2 - B_1 B_2) + i(A_1 B_2 + B_1 A_2)$ satisfies:
-      $$\rho_{\mathbb{R}}(U_1 U_2) = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -(A_1 B_2 + B_1 A_2) \\ A_1 B_2 + B_1 A_2 & A_1 A_2 - B_1 B_2 \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U_1 U_2) = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -(A_1 B_2 + B_1 A_2) \\ A_1 B_2 + B_1 A_2 & A_1 A_2 - B_1 B_2 \end{pmatrix}
+      $$
       Direct computation of block matrix multiplication gives:
-      $$\rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2) = \begin{pmatrix} A_1 & -B_1 \\ B_1 & A_1 \end{pmatrix} \begin{pmatrix} A_2 & -B_2 \\ B_2 & A_2 \end{pmatrix} = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -A_1 B_2 - B_1 A_2 \\ B_1 A_2 + A_1 B_2 & -B_1 B_2 + A_1 A_2 \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2) = \begin{pmatrix} A_1 & -B_1 \\ B_1 & A_1 \end{pmatrix} \begin{pmatrix} A_2 & -B_2 \\ B_2 & A_2 \end{pmatrix} = \begin{pmatrix} A_1 A_2 - B_1 B_2 & -A_1 B_2 - B_1 A_2 \\ B_1 A_2 + A_1 B_2 & -B_1 B_2 + A_1 A_2 \end{pmatrix}
+      $$
       Therefore $\rho_{\mathbb{R}}(U_1 U_2) = \rho_{\mathbb{R}}(U_1) \rho_{\mathbb{R}}(U_2)$, confirming the homomorphism property.
 
    3. **Orthogonality:** The unitarity condition $U^* U = I$ for $U = A + iB$ decomposes into $A^T A + B^T B = I_N$ (real part) and $A^T B = B^T A$ (imaginary part, implying $A^T B$ is symmetric). Computing:
-      $$\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = \begin{pmatrix} A^T & B^T \\ -B^T & A^T \end{pmatrix} \begin{pmatrix} A & -B \\ B & A \end{pmatrix} = \begin{pmatrix} A^T A + B^T B & -A^T B + B^T A \\ -B^T A + A^T B & B^T B + A^T A \end{pmatrix}$$
+
+      $$
+      \rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = \begin{pmatrix} A^T & B^T \\ -B^T & A^T \end{pmatrix} \begin{pmatrix} A & -B \\ B & A \end{pmatrix} = \begin{pmatrix} A^T A + B^T B & -A^T B + B^T A \\ -B^T A + A^T B & B^T B + A^T A \end{pmatrix}
+      $$
       Using $A^T B = B^T A$ and $A^T A + B^T B = I_N$ yields $\rho_{\mathbb{R}}(U)^T \rho_{\mathbb{R}}(U) = I_{2N}$, so $\rho_{\mathbb{R}}(U) \in O(2N)$.
 
    4. **Determinant:** Using the block determinant identity:
-      $$\det(\rho_{\mathbb{R}}(U)) = \det(A + iB)\det(A - iB) = \det(U)\det(\bar{U}) = |\det(U)|^2 = 1$$
+
+      $$
+      \det(\rho_{\mathbb{R}}(U)) = \det(A + iB)\det(A - iB) = \det(U)\det(\bar{U}) = |\det(U)|^2 = 1
+      $$
       confirming $\rho_{\mathbb{R}}: SU(N) \to SO(2N)$.
 
    **Implementation note:** The faithful $SO(2n_b)$ realification doubles the bundle-index dimension. In practice, the full $SU(n_b)$ symmetry is **broken to a discrete subgroup** (permutations and sign flips of bundles), which naturally embeds in $SO(n_b)$ as signed permutation matrices. This is enforced implicitly through the isotropic architecture design, not by explicitly constructing gauge transformations.
@@ -1021,12 +1039,12 @@ Let $g = (g_1, \ldots, g_{n_b}) \in G$ and $z = (z^{(1)}, \ldots, z^{(n_b)})$.
 Compute left-hand side:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{IsotropicBlock}(\rho(g) \cdot z) &= \text{NormGate}(W \cdot \rho(g) \cdot z) \\
 &= \text{NormGate}(\rho(g) \cdot W \cdot z) \quad \text{(Step 2: $W$ is equivariant)} \\
 &= \rho(g) \cdot \text{NormGate}(W \cdot z) \quad \text{(Step 4: NormGate is equivariant)} \\
 &= \rho(g) \cdot \text{IsotropicBlock}(z)
-\end{align}
+\end{aligned}
 $$
 
 **Explicit verification for bundle $i$:**
@@ -1542,7 +1560,10 @@ where the right-hand side is left-multiplication on $SE(2)$: $(L_{g_0} f)(g) = f
 - **LHS:** $(L(L_{g_0} I))(x, \theta) = \sum_i (\psi_i^{(\theta)} * (L_{g_0} I))(x) \cdot e_i$
 - Change variables in convolution: $(\psi_i^{(\theta)} * (L_{g_0} I))(x) = \int \psi_i(R_\theta^{-1}(x - y)) I(R_{\theta_0}^{-1}(y - x_0)) dy$
 - Substitute $u = R_{\theta_0}^{-1}(y - x_0)$, so $y = R_{\theta_0} u + x_0$:
-  $$= \int \psi_i(R_\theta^{-1}(x - x_0 - R_{\theta_0} u)) I(u) du = \int \psi_i(R_{\theta - \theta_0}^{-1}(R_{\theta_0}^{-1}(x - x_0) - u)) I(u) du$$
+
+  $$
+  = \int \psi_i(R_\theta^{-1}(x - x_0 - R_{\theta_0} u)) I(u) du = \int \psi_i(R_{\theta - \theta_0}^{-1}(R_{\theta_0}^{-1}(x - x_0) - u)) I(u) du
+  $$
 - **RHS:** $(L_{g_0}(L I))(g) = (L I)(g_0^{-1} g)$ where $g_0^{-1} = (-R_{\theta_0}^{-1} x_0, R_{\theta_0}^{-1})$
 - $g_0^{-1} g = (R_{\theta_0}^{-1}(x - x_0), R_{\theta - \theta_0})$ (using SE(2) multiplication)
 - $(L I)(R_{\theta_0}^{-1}(x - x_0), \theta - \theta_0) = \sum_i (\psi_i^{(\theta - \theta_0)} * I)(R_{\theta_0}^{-1}(x - x_0)) \cdot e_i$
@@ -2483,7 +2504,10 @@ In typical settings with $L_g > 0$ and $R_{\max} \gtrsim 1$, the radial term $R_
 - For practical operating range $x \in [-3, 3]$: $\max_{x \in [-3,3]} g'(x) \approx 1.129$ (same critical point)
 
 **Derivation of critical point:**
-$$g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \phi(x)(2 - x^2)$$
+
+$$
+g''(x) = \frac{d}{dx}[\Phi(x) + x\phi(x)] = \phi(x) + \phi(x) - x^2\phi(x) = \phi(x)(2 - x^2)
+$$
 Setting $g''(x) = 0$ yields $x^2 = 2$, so $x^* = \sqrt{2}$ (taking positive root). At this point: $g'(\sqrt{2}) = \Phi(\sqrt{2}) + \sqrt{2}\phi(\sqrt{2}) \approx 0.9214 + 0.2075 \approx 1.129$.
 
 Thus $L_g \approx 1.129$ and

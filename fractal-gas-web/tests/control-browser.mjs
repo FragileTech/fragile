@@ -1,3 +1,10 @@
+import { captureScreenshot } from "./helpers/screenshots.mjs";
+import {
+  prepareWorkspace,
+  applyDraft,
+  openFiles,
+  closeFiles,
+} from "./helpers/workspace-ui.mjs";
 // Run against tools/serve-control.py after building both WebAssembly targets.
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
@@ -8,7 +15,7 @@ const output =
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", "--use-angle=swiftshader"],
 });
 const page = await browser.newPage({ viewport: { width: 1536, height: 1000 } }),
   errors = [];
@@ -18,7 +25,11 @@ page.on("console", (message) => {
   if (message.type() === "error") errors.push(message.text());
 });
 async function ready() {
-  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await page.waitForFunction(
+    () =>
+      !document.querySelector("main").inert &&
+      document.getElementById("backend").textContent.includes("WEBASSEMBLY"),
+  );
 }
 async function idle() {
   await page.waitForFunction(
@@ -37,14 +48,23 @@ async function graphicsReady() {
   });
 }
 try {
+  await prepareWorkspace(page);
   await page.goto(base);
   await ready();
-  // Keep the replay fixture at six frames after checking the new default.
+  // New workspaces start paused; apply the six-frame replay fixture explicitly.
   await page.waitForFunction(
-    () => document.getElementById("tick").textContent === "TICK 000012",
+    () => document.getElementById("tick").textContent === "TICK 000000",
   );
+  await page.locator("#tab-controller").click();
+  await page.locator("#algorithm").selectOption("fmc");
+  await page.evaluate(() => {
+    document.getElementById("threads").value = "2";
+  });
+  await page.locator("#walkers").fill("12");
+  await page.locator("#horizon").fill("5");
   await page.locator("#frames").fill("6");
   await page.locator("#frames").press("Tab");
+  await applyDraft(page);
   await ready();
   await page.locator("#step").click();
   await page.waitForFunction(
@@ -57,73 +77,107 @@ try {
   );
   assert.equal(await page.locator("#tick").innerText(), "TICK 000006");
   await graphicsReady();
-  await page.screenshot({ path: `${output}/harvest.png`, fullPage: true });
+  await captureScreenshot(page, {
+    animations: "disabled",
+    path: `${output}/harvest.png`,
+    fullPage: false,
+  });
   await page.locator("#step").click();
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000012",
   );
   const downloadState = page.waitForEvent("download");
+  await openFiles(page);
   await page.locator("#save-state").click();
   const stateFile = `${output}/state.fgcs`;
   await (await downloadState).saveAs(stateFile);
+  await closeFiles(page);
   await page.locator("#step").click();
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000018",
   );
   const chooser = page.waitForEvent("filechooser");
+  await openFiles(page);
   await page.locator("#load-state").click();
   await (await chooser).setFiles(stateFile);
+  await closeFiles(page);
   await page.waitForFunction(
     () => document.getElementById("tick").textContent === "TICK 000012",
   );
+  // Restoring a snapshot starts a new recording; record a decision to branch.
+  await page.locator("#step").click();
+  await page.waitForFunction(
+    () => document.getElementById("tick").textContent === "TICK 000018",
+  );
   const downloadRun = page.waitForEvent("download");
+  await openFiles(page);
   await page.locator("#export-run").click();
-  const runFile = `${output}/run.fgclab`;
-  await (await downloadRun).saveAs(runFile);
+  const archive = await downloadRun;
+  const runFile = `${output}/${archive.suggestedFilename()}`;
+  await archive.saveAs(runFile);
+  await closeFiles(page);
+  await page.locator("#timeline-decisions").click();
   await page.locator("#replay").click();
   await page.waitForFunction(
-    () => document.getElementById("run-state").textContent === "REPLAY",
+    () =>
+      !document.querySelector("main").inert &&
+      document.getElementById("run-state").textContent === "PAUSED",
   );
   await page.locator("#view").click();
   await page.locator("#clean").click();
-  await page.locator("#edit").click();
+  await page.locator("#mode-edit").click();
   await page.locator("#edit-json").click();
   const scene = JSON.parse(await page.locator("#scene-json").inputValue());
+  const originalSceneName = scene.name;
   scene.name = "Edited test range";
   await page.locator("#scene-json").fill(JSON.stringify(scene));
   await page.locator("#apply-json").click();
+  assert.equal(await page.locator("#pending-settings").isVisible(), true);
+  await page.locator("#undo").click();
+  assert.equal(await page.locator("#pending-settings").isVisible(), false);
+  await page.locator("#edit-json").click();
+  assert.equal(
+    JSON.parse(await page.locator("#scene-json").inputValue()).name,
+    originalSceneName,
+  );
+  await page.locator("#scene-json").fill(JSON.stringify(scene));
+  await page.locator("#apply-json").click();
+  await applyDraft(page);
   await ready();
   assert.equal(
     await page.locator("#scene-title").innerText(),
     "EDITED TEST RANGE",
   );
-  await page.locator("#undo").click();
-  await ready();
-  assert.equal(
-    await page.locator("#scene-title").innerText(),
-    "ASTEROID HARVESTING",
-  );
-  await page.locator("#close-editor").click();
+  await page.locator("#tab-setup").click();
   for (const scenario of ["ants", "tandem", "mining", "rocket"]) {
     await page.locator("#scenario").selectOption(scenario);
+    await applyDraft(page);
     await ready();
     await page.locator("#step").click();
     await idle();
     assert.equal(await page.locator("#tick").innerText(), "TICK 000006");
+    console.log(`Checked ${scenario}: staged scene and controller step.`);
     await graphicsReady();
-    await page.screenshot({
+    await captureScreenshot(page, {
+      animations: "disabled",
       path: `${output}/${scenario}.png`,
-      fullPage: true,
+      fullPage: false,
     });
   }
   const runChooser = page.waitForEvent("filechooser");
+  await openFiles(page);
   await page.locator("#import-run").click();
   await (await runChooser).setFiles(runFile);
-  await ready();
-  await page.waitForFunction(() =>
-    document.getElementById("record-count").textContent.includes("Decision"),
+  await closeFiles(page);
+  await page.waitForFunction(
+    () => document.getElementById("playback-status").textContent === "Replay",
   );
+  await page.locator("#timeline-motion").click();
+  await page.locator("#motion-resume").click();
+  await ready();
+  await page.locator("#tab-controller").click();
   await page.locator("#clock").selectOption("realtime");
+  await applyDraft(page);
   await ready();
   await page.locator("#run").click();
   await page.waitForFunction(
@@ -135,7 +189,11 @@ try {
   assert.equal(await page.locator("#tick").innerText(), paused);
   await page.setViewportSize({ width: 768, height: 1024 });
   await graphicsReady();
-  await page.screenshot({ path: `${output}/tablet.png`, fullPage: true });
+  await captureScreenshot(page, {
+    animations: "disabled",
+    path: `${output}/tablet.png`,
+    fullPage: false,
+  });
   assert.equal(
     await page.evaluate(
       () => document.documentElement.scrollWidth > window.innerWidth,
@@ -144,26 +202,34 @@ try {
   );
   assert.deepEqual(errors, []);
   await page.setViewportSize({ width: 1536, height: 1000 });
-  await page.locator(".controls summary").filter({ hasText: "Planner settings" }).click();
+  await page.locator("#tab-controller").click();
+  await page.locator("details:has(#algorithm-settings) > summary").click();
   assert.equal(await page.locator("#threads").getAttribute("max"), "64");
-  await page.locator("#threads").fill("64");
+  // Exercise the threaded backend with a pool suitable for shared CI runners.
+  // The contract suite separately checks all accepted counts through 64.
+  await page.locator("#clock").selectOption("reproducible");
+  await page.locator("#threads").fill("2");
   await page.locator("#threads").press("Tab");
+  await applyDraft(page);
   await page.waitForFunction(() =>
-    document.getElementById("backend").textContent.startsWith("64 THREADS"),
+    document.getElementById("backend").textContent.startsWith("2 THREADS"),
   );
   await page.locator("#step").click();
   await idle();
   assert.equal(await page.locator("#tick").innerText(), "TICK 000006");
   for (const algorithm of ["icem", "mppi"]) {
     await page.locator("#algorithm").selectOption(algorithm);
+    await applyDraft(page);
     await ready();
-    assert.match(await page.locator("#backend").innerText(), /^64 THREADS/);
+    assert.match(await page.locator("#backend").innerText(), /^2 THREADS/);
     await page.locator("#step").click();
     await idle();
     assert.equal(await page.locator("#tick").innerText(), "TICK 000006");
   }
+  await page.close();
   const fallback = await browser.newContext({ serviceWorkers: "block" });
-  await fallback.route("**/*", async (route) => {
+  // Only the document headers determine isolation; assets use normal loading.
+  await fallback.route(base, async (route) => {
     const response = await route.fetch(),
       headers = { ...response.headers() };
     delete headers["cross-origin-opener-policy"];
@@ -171,10 +237,14 @@ try {
     await route.fulfill({ response, headers });
   });
   const serialPage = await fallback.newPage();
-  await serialPage.goto(base);
+  await prepareWorkspace(serialPage);
+  await serialPage.goto(base, { waitUntil: "domcontentloaded" });
   await serialPage.waitForFunction(
-    () => document.getElementById("tick").textContent === "TICK 000006",
+    () => !document.getElementById("run").disabled,
+    null,
+    { timeout: 60000 },
   );
+  assert.equal(await serialPage.locator("#tick").innerText(), "TICK 000000");
   assert.equal(
     await serialPage.locator("#backend").innerText(),
     "1 THREAD / WEBASSEMBLY",

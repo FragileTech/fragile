@@ -63,6 +63,7 @@ try {
     () => document.getElementById("tick").textContent === "TICK 000000",
   );
   await page.locator("#tab-controller").click();
+  await page.locator("#algorithm").selectOption("fmc");
   // Keep this semantic regression deterministic on shared CPU hosts.
   await page.locator("#threads").evaluate((e) => (e.value = "1"));
   await page.locator("#frames").fill("6");

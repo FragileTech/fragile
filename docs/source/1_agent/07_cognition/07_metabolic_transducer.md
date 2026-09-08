@@ -481,14 +481,23 @@ where $T_c$ is the cognitive temperature ({prf:ref}`def-cognitive-temperature`) 
 
 *Proof sketch.*
 1. **Fisher Information definition:** For belief density $\rho(z)$ on $(\mathcal{Z}, G)$:
-   $$I_F = \mathbb{E}_\rho\left[ \|\nabla \ln \rho\|_G^2 \right] = \int_\mathcal{Z} \rho(z) \|\nabla \ln \rho(z)\|_{G^{-1}}^2 \, d\mu_G(z)$$
+
+   $$
+   I_F = \mathbb{E}_\rho\left[ \|\nabla \ln \rho\|_G^2 \right] = \int_\mathcal{Z} \rho(z) \|\nabla \ln \rho(z)\|_{G^{-1}}^2 \, d\mu_G(z)
+   $$
 
 2. **de Bruijn identity** {cite}`stam1959some,cover2006elements`: Under diffusion $d\rho/dt = T_c \Delta_G \rho$, entropy evolves as:
-   $$\frac{dH[\rho]}{dt} = \frac{1}{2} I_F[\rho]$$
+
+   $$
+   \frac{dH[\rho]}{dt} = \frac{1}{2} I_F[\rho]
+   $$
    Entropy increases at rate proportional to Fisher Information.
 
 3. **Landauer cost:** Under the calibration hypotheses of Theorem {prf:ref}`thm-generalized-landauer-bound`, maintaining entropy against diffusion requires:
-   $$\dot{E}_{\text{maintain}} \geq T_c \left| \frac{dH}{dt} \right| = \frac{1}{2} T_c \cdot I_F$$
+
+   $$
+   \dot{E}_{\text{maintain}} \geq T_c \left| \frac{dH}{dt} \right| = \frac{1}{2} T_c \cdot I_F
+   $$
 
 4. **Interpretation:** Sharp probability distributions (high $I_F$) cost more to maintain. $\square$
 
@@ -532,13 +541,22 @@ This gives exponential saturation: $f(x) \approx x$ for $x \ll 1$ (linear regime
 1. **Fisher metric interpretation:** The metric $G$ encodes distinguishability—the statistical distance between nearby states. Formally, $G_{ij} = \mathbb{E}[\partial_i \ln p \cdot \partial_j \ln p]$ where $p$ is the encoding distribution.
 
 2. **Signal-to-noise scaling:** Neural signals have SNR proportional to available energy:
-   $$\text{SNR} \propto \sqrt{\frac{E_{\text{available}}}{E_{\text{noise}}}} = \sqrt{\frac{B}{B_{\text{crit}}}}$$
+
+   $$
+   \text{SNR} \propto \sqrt{\frac{E_{\text{available}}}{E_{\text{noise}}}} = \sqrt{\frac{B}{B_{\text{crit}}}}
+   $$
 
 3. **Fisher Information scaling:** Since Fisher Information scales as SNR²:
-   $$I_F^{\text{eff}} \propto \text{SNR}^2 \propto \frac{B}{B_{\text{crit}}}$$
+
+   $$
+   I_F^{\text{eff}} \propto \text{SNR}^2 \propto \frac{B}{B_{\text{crit}}}
+   $$
 
 4. **Metric scaling:** The metric tensor scales with Fisher Information:
-   $$G^{\text{eff}} \propto I_F^{\text{eff}} \propto \frac{B}{B_{\text{crit}}} \quad \text{for } B \ll B_{\text{crit}}$$
+
+   $$
+   G^{\text{eff}} \propto I_F^{\text{eff}} \propto \frac{B}{B_{\text{crit}}} \quad \text{for } B \ll B_{\text{crit}}
+   $$
 
 5. **Saturation:** For $B \gg B_{\text{crit}}$, the metric saturates at $G$ (maximum resolution). The exponential form $f(x) = 1 - e^{-x}$ interpolates smoothly between these regimes. $\square$
 
@@ -589,13 +607,19 @@ This is not just an analogy—it is the literal geometric description of what ha
 As $B(t) \to 0$, the following degenerations occur:
 
 1. **Resolution Loss:** Geodesic distances collapse:
-   $$d_G^{\text{eff}}(z, z') = \sqrt{f(B/B_{\text{crit}})} \cdot d_G(z, z') \to 0$$
+
+   $$
+   d_G^{\text{eff}}(z, z') = \sqrt{f(B/B_{\text{crit}})} \cdot d_G(z, z') \to 0
+   $$
    Distinct concepts become indistinguishable.
 
 2. **Inertia Loss:** The mass term in the geodesic SDE (Definition {prf:ref}`def-bulk-drift-continuous-flow`) vanishes. The agent loses momentum and becomes dominated by thermal noise.
 
 3. **Causal Dissolution:** The Causal Information Bound ({ref}`sec-causal-information-bound`, Theorem {prf:ref}`thm-causal-information-bound`) collapses:
-   $$I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0$$
+
+   $$
+   I_{\max}^{\text{eff}} = \frac{\text{Area}(\partial\mathcal{Z})}{4\ell_L^2} \cdot f(B/B_{\text{crit}}) \to 0
+   $$
    The agent's representational capacity vanishes.
 
 4. **Control Loss:** The policy gradient $\nabla_z \Phi_{\text{eff}}$ scales with metric, so control authority degrades.
@@ -644,7 +668,10 @@ The connection between starvation and hallucination is not a bug—it is a therm
 :name: pi-johnson-nyquist
 
 **In Physics:** Johnson-Nyquist noise {cite}`johnson1928thermal,nyquist1928thermal` in resistors has spectral density:
-$$S_V(f) = 4 k_B T R$$
+
+$$
+S_V(f) = 4 k_B T R
+$$
 where $R$ is resistance and $T$ is temperature. The SNR of any electrical signal is limited by this thermal noise floor.
 
 **In Implementation:** Neural representations are subject to analogous noise. When the "power supply" (battery $B$) is low:

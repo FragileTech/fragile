@@ -750,7 +750,7 @@ def compute_coupling_diagnostics(
 
     # Pair indices are used directly under the "all walkers in bounds" assumption.
     color_j = torch.gather(
-        color,
+        color.unsqueeze(2).expand(-1, -1, pair_indices.shape[-1], -1),
         1,
         pair_indices.unsqueeze(-1).expand(-1, -1, -1, color.shape[-1]),
     )
@@ -766,7 +766,9 @@ def compute_coupling_diagnostics(
 
     weighting = str(cfg.pair_weighting).strip().lower()
     if weighting == "score_abs":
-        score_j = torch.gather(scores, 1, pair_indices)
+        score_j = torch.gather(
+            scores.unsqueeze(-1).expand(-1, -1, pair_indices.shape[-1]), 1, pair_indices
+        )
         score_i = scores.unsqueeze(-1).expand_as(score_j)
         finite_scores = torch.isfinite(score_i) & torch.isfinite(score_j)
         valid = valid & finite_scores

@@ -1,3 +1,5 @@
+import { captureScreenshot } from "./helpers/screenshots.mjs";
+import { prepareWorkspace, applyDraft } from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -39,22 +41,10 @@ async function graphicsReady() {
 }
 async function capture(name) {
   await graphicsReady();
-  // Avoid full-page captures: their temporary viewport resize can stall WebGL
-  // software rendering. Layout and overflow are checked separately below.
-  for (let attempt = 0; ; attempt++) {
-    try {
-      await page.screenshot({
-        path: `${output}/${name}.png`,
-        fullPage: false,
-        timeout: 60000,
-      });
-      return;
-    } catch (error) {
-      if (error.name !== "TimeoutError" || attempt) throw error;
-    }
-  }
+  await captureScreenshot(page, { path: `${output}/${name}.png` });
 }
 try {
+  await prepareWorkspace(page);
   await page.goto(base);
   await ready();
   assert.match(await page.title(), /Fragile Tech/);
@@ -70,6 +60,7 @@ try {
   assert.equal(await page.locator("#circuit-preview").isVisible(), false);
   await page.evaluate(() => {
     for (const [id, value] of Object.entries({
+      threads: 1,
       walkers: 24,
       horizon: 8,
       frames: 4,
@@ -77,6 +68,7 @@ try {
       document.getElementById(id).value = value;
   });
   await page.locator("#scenario").selectOption("racing");
+  await applyDraft(page);
   await ready();
   await page.waitForFunction(() =>
     document
@@ -95,14 +87,17 @@ try {
   await graphicsReady();
   await capture("circuit-overview");
   for (const algorithm of ["fmc", "icem", "mppi"]) {
+    await page.locator("#tab-controller").click();
     await page.locator("#algorithm").selectOption(algorithm);
+    await applyDraft(page);
     await ready();
     await page.locator("#step").click();
     await page.waitForFunction(
       () => document.getElementById("tick").textContent === "TICK 000004",
     );
   }
-  await page.locator("#manual").check();
+  await page.locator("#mode-drive").click();
+  await page.locator("#run").click();
   const box = await page.locator("#world").boundingBox();
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
   await page.keyboard.down("w");
@@ -110,7 +105,7 @@ try {
     () => Number(document.getElementById("tick").textContent.slice(5)) >= 100,
   );
   await page.keyboard.up("w");
-  await page.locator("#manual").uncheck();
+  await page.locator("#mode-inspect").click();
   await page.locator("#view").click();
   await page.locator("#focus").click();
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -127,7 +122,7 @@ try {
   );
   assert.equal(await page.locator("#score").textContent(), "0");
   await page.setViewportSize({ width: 768, height: 1024 });
-  assert(await page.locator("#manual").isVisible());
+  assert(await page.locator("#mode-drive").isVisible());
   await capture("tablet");
   assert.equal(
     await page.evaluate(
@@ -142,6 +137,8 @@ try {
     { width: 768, height: 1024 },
   ]) {
     await page.setViewportSize(viewport);
+    if (!(await page.locator("#tab-setup").isVisible()))
+      await page.locator("#toggle-settings").click();
     let lastOutline;
     for (const id of [
       "racing-roots",
@@ -151,7 +148,11 @@ try {
       "racing-obstacle-field",
       "racing",
     ]) {
+      if (!(await page.locator("#tab-setup").isVisible()))
+        await page.locator("#toggle-settings").click();
+      await page.locator("#tab-setup").click();
       await page.locator("#track").selectOption(id);
+      await applyDraft(page);
       await ready();
       assert.equal(await page.locator("#scenario").inputValue(), "racing");
       assert.equal(await page.locator("#track-control").isVisible(), true);
@@ -188,7 +189,8 @@ try {
       } else assert.equal(await preview.locator("a").count(), 0);
       // Driving is independent of viewport size; exercise it once per circuit.
       if (viewport.width === 1536) {
-        await page.locator("#manual").check();
+        await page.locator("#mode-drive").click();
+        await page.locator("#run").click();
         await page.locator("#world").click();
         await page.keyboard.down("w");
         await page.waitForFunction(
@@ -196,7 +198,7 @@ try {
             Number(document.getElementById("tick").textContent.slice(5)) >= 12,
         );
         await page.keyboard.up("w");
-        await page.locator("#manual").uncheck();
+        await page.locator("#mode-inspect").click();
       }
       assert.equal(
         await page.evaluate(
@@ -213,6 +215,7 @@ try {
     }
   }
   await page.locator("#scenario").selectOption("harvest");
+  await applyDraft(page);
   await ready();
   assert.equal(await page.locator("#circuit-preview").isVisible(), false);
   assert.equal(await page.locator("#track-control").isVisible(), false);

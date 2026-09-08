@@ -83,10 +83,11 @@ $$
 
 $$
 where $\epsilon_{\text{purity}} \in (0, 0.5)$ is the purity threshold. Define the transition-chart set
-\[
+
+$$
 \mathcal{T}:=\mathcal{K}\setminus\bigcup_{y\in\mathcal{Y}}\mathcal{A}_y
  = \left\{k:\max_y P(Y=y\mid K=k)\le 1-\epsilon_{\text{purity}}\right\}.
-\]
+$$
 
 *Interpretation:* $\mathcal{A}_y$ is the **sub-atlas** of charts predominantly associated with class $y$. A chart $k$ belongs to $\mathcal{A}_y$ if, given that a sample routes to chart $k$, the probability of class $y$ exceeds $1 - \epsilon_{\text{purity}}$.
 

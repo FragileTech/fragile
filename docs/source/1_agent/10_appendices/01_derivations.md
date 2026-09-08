@@ -29,8 +29,7 @@ $$
 \omega_{\partial} := \frac{1}{\eta_\ell}\, dA_G,
 
 $$
-so that $C_{\partial}(\partial_{\varepsilon}\mathcal Z)=
-\oint_{\partial_{\varepsilon}\mathcal Z}\omega_{\partial}$ (Definition
+so that $C_{\partial}(\partial_{\varepsilon}\mathcal Z)= \oint_{\partial_{\varepsilon}\mathcal Z}\omega_{\partial}$ (Definition
 {prf:ref}`def-boundary-capacity-area-law-at-finite-resolution`). If no
 geometric cutoff is part of the model, replace this area expression by the
 interface-channel capacity.

@@ -614,8 +614,8 @@ class TestKineticOperatorIntegration:
 
         state = MockState(positions, velocities)
 
-        # Should raise ValueError when voronoi_data=None
-        with pytest.raises(ValueError, match="voronoi_data required"):
+        # Missing recorded geometry must warn before using the isotropic fallback.
+        with pytest.warns(RuntimeWarning, match="Falling back to isotropic diffusion"):
             kinetic_op.apply(state, voronoi_data=None)
 
 

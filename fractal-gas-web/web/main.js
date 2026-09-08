@@ -709,8 +709,8 @@ let obsMode = OBS_DEFAULTS[0]; // 0=RAM, 1=RGB, 2=Gray, 3=Coords
 // 3=Montezuma's Revenge (C++ sees Atari console 1 with game 1).
 let consoleId = 0;
 const genesisGame = 1; // Genesis game: Sonic
-// Swarm algorithm: 0 = Wave (FractalGas, fixed swarm), 1 = Graph
-// (FractalTree, growing tree of states). Structural: restarts the run.
+// Algorithms: 0 = Wave, 1 = Graph, 2 = FMC, 3 = Jump Wave
+// Changing the solver restarts the run.
 let algorithm = 0;
 // Visit-count term of the virtual reward (Coords on a game with a map):
 // on by default for the Graph (the Montezuma demo's reward), off for the
@@ -899,6 +899,9 @@ function readParams() {
     console: consoleId === 3 ? 1 : consoleId,
     game: consoleId === 3 ? MONTEZUMA_GAME : (consoleId === 2 ? genesisGame : 0),
     algorithm,
+    horizon: Number($("param-horizon").value),
+    consensusPrefix: $("param-consensus").checked,
+    maxHorizon: Number($("param-max-horizon").value),
     maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
     eraseCoef: parseFloat($("param-erase-coef").value),
     aggBlock: parseInt($("param-agg-block").value, 10) || 5,
@@ -911,6 +914,14 @@ function updateButtons() {
   $("btn-start").disabled = !initialized || running;
   $("btn-pause").disabled = !initialized || !running;
   $("btn-reset").disabled = !initialized;
+}
+
+function resetReadouts() {
+  for (const id of ["stat-world", "stat-tree", "stat-iteration", "stat-max-reward",
+        "stat-mean-reward", "stat-alive", "stat-ips", "stat-frames",
+        "stat-phase", "stat-depth", "stat-played-score", "stat-played-frames"]) {
+    $(id).textContent = "\u2013";
+  }
 }
 
 function clearPlots() {
@@ -927,10 +938,7 @@ function ensureWorker() {
       case "ready":
         initialized = true;
         running = false;
-        for (const id of ["stat-world", "stat-tree", "stat-iteration", "stat-max-reward",
-                          "stat-mean-reward", "stat-alive", "stat-ips", "stat-frames"]) {
-          $(id).textContent = "\u2013";
-        }
+        resetReadouts();
         if (msg.algorithm === 1 && msg.maxWalkers) {
           const asked = parseInt($("param-max-walkers").value, 10) || 0;
           $("max-walkers-hint").textContent = msg.maxWalkers < asked
@@ -952,6 +960,7 @@ function ensureWorker() {
         break;
       case "resetDone":
         running = false;
+        resetReadouts();
         clearPlots();
         clearPyramid();
         lastSwarm = null;
@@ -969,6 +978,13 @@ function ensureWorker() {
         lastVisits = msg.visits;
         drawMap();
         break;
+      case "gameDone":
+        running = false;
+        updateButtons();
+        $("run-ended-detail").textContent = "Game ended. Press Reset to start over.";
+        $("run-ended").hidden = false;
+        setStatus("Game ended", "ok");
+        break;
       case "allDead": {
         running = false;
         updateButtons();
@@ -983,7 +999,7 @@ function ensureWorker() {
       }
       case "error":
         running = false;
-        initialized = false;
+        initialized = !!msg.recoverable;
         setStatus("Error: " + msg.message, "error");
         updateButtons();
         break;
@@ -1040,27 +1056,31 @@ function onStep(msg) {
 
   // Live population: the Graph grows, so never trust the input box.
   const n = s.walkerCount || parseInt($("param-n").value, 10) || 48;
-  plots.reward.append([s.maxReward, s.meanReward]);
-  plots.vr.append([s.maxVirtualReward, s.meanVirtualReward]);
-  plots.clones.append([(100 * s.numCloned) / n]);
-  plots.alive.append([s.aliveCount]);
-  plots.dt.append([s.meanDt]);
-  if (s.algorithm === 1) {
-    plots.tree.append([s.walkerCount, s.nLeaves, s.numStepped]);
-    $("stat-tree").textContent = `${s.walkerCount} / ${s.nLeaves} / ${s.numStepped}`;
+  if (s.searchAdvanced !== false) {
+    plots.reward.append([s.maxReward, s.meanReward]);
+    plots.vr.append([s.maxVirtualReward, s.meanVirtualReward]);
+    plots.clones.append([(100 * s.numCloned) / n]);
+    plots.alive.append([s.aliveCount]);
+    plots.dt.append([s.meanDt]);
+    if (s.algorithm === 1) {
+      plots.tree.append([s.walkerCount, s.nLeaves, s.numStepped]);
+      $("stat-tree").textContent = `${s.walkerCount} / ${s.nLeaves} / ${s.numStepped}`;
+    }
   }
 
   $("stat-iteration").textContent = s.iteration;
-  if (s.world !== undefined) {
+  const world = s.algorithm >= 2 ? s.committedWorld : s.world;
+  const level = s.algorithm >= 2 ? s.committedLevel : s.level;
+  if (world !== undefined) {
     if (consoleId === 2) {
       const zoneNames = ["GHZ", "LZ", "MZ", "SLZ", "SYZ", "SBZ"];
       $("stat-world").textContent =
-        `${zoneNames[s.world] ?? s.world} ${s.level + 1}`;
+        `${zoneNames[world] ?? world} ${level + 1}`;
     } else if (consoleId === 3) {
       $("stat-world").textContent =
-        `Room ${s.world} \u00b7 L${s.level + 1} \u00b7 ${s.lives} lives`;
+        `Room ${world} \u00b7 L${level + 1} \u00b7 ${s.algorithm >= 2 ? s.committedLives : s.lives} lives`;
     } else {
-      $("stat-world").textContent = `${s.world}-${s.level}`;
+      $("stat-world").textContent = `${world}-${level}`;
     }
   }
   $("stat-max-reward").textContent = s.maxReward.toFixed(1);
@@ -1069,6 +1089,14 @@ function onStep(msg) {
   // Exact count from the algorithm (frames the envs really emulated).
   $("stat-frames").textContent = (s.totalFrames ?? Math.round(s.totalSteps * s.meanDt)).toLocaleString();
 
+  if (s.algorithm >= 2) {
+    $("stat-phase").textContent = s.phase + (s.executionMode ? ` · ${s.executionMode}` : "");
+    $("stat-depth").textContent = s.searchDepth;
+    $("stat-played-score").textContent = s.committedScore.toFixed(1);
+    $("stat-played-frames").textContent = s.playedFrames.toLocaleString();
+    if (running) setStatus(s.phase === "planning" ? "Planning" : "Playing", "ok");
+  }
+  if (s.searchAdvanced === false) return;
   const now = performance.now();
   ipsWindow.push(now);
   while (ipsWindow.length > 0 && now - ipsWindow[0] > 3000) ipsWindow.shift();
@@ -1208,8 +1236,9 @@ for (const id of ["param-dist-coef", "param-reward-coef", "param-visit-coef"]) {
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
-for (const id of ["param-dt-min", "param-dt-max", "param-elite"]) {
+for (const id of ["param-dt-min", "param-dt-max", "param-elite", "param-horizon", "param-consensus", "param-max-horizon"]) {
   $(id).addEventListener("change", () => {
+    applyAlgoUi();
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
@@ -1237,19 +1266,31 @@ $("param-agg-block").addEventListener("change", () => {
   if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
 });
 
-// Algorithm toggle (Wave / Graph): structural change -> restart the run.
+// Algorithm selection is a structural change and restarts the run.
 // The Graph reinterprets N as its start walkers / minimum leaves, has no
 // elite buffer, and adds a population cap and (in Coords mode on a game
 // with a map) the visit-count erase coefficient.
 function applyAlgoUi() {
   const graph = algorithm === 1;
+  const planner = algorithm >= 2;
+  $("planner-settings").hidden = !planner;
+  $("param-consensus-row").hidden = algorithm !== 3;
+  $("param-max-horizon-row").hidden = algorithm !== 3 || !$("param-consensus").checked;
+  $("screen-title").textContent = planner ? "Played game" : "Best walker";
+  $("algo-hint").textContent = [
+    "Wave: a fixed swarm, every walker steps.",
+    "Graph: a growing tree of states, only cloning leaves step.",
+    "FMC: search ahead, vote on one next action, play it and replan.",
+    "Jump Wave: play the shared path before replanning, or choose the full winning path below.",
+  ][algorithm];
+  for (const el of document.querySelectorAll(".planner-stat")) el.hidden = !planner;
   for (const b of $("algo-select").querySelectorAll("button")) {
     b.classList.toggle("active", parseInt(b.dataset.algo, 10) === algorithm);
   }
   $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Walkers (N)";
   $("param-elite-row").hidden = graph;
   $("param-max-walkers-row").hidden = !graph;
-  // Visit counting is available to both algorithms in Coords mode on a
+  // Visit counting is available to every solver in Coords mode on a
   // game with a map; the Graph uses the term by default, the Wave not.
   const visits = obsMode === 3 && consoleId !== 1;
   $("param-erase-row").hidden = !visits;

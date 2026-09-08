@@ -150,7 +150,7 @@ class TestAtariGasConfigPanel:
         assert panel.algorithm_mode == "Single Loop"
         assert panel.game_name == "ALE/MsPacman-v5"
         assert panel.obs_type == "ram"
-        assert panel.N == 100
+        assert panel.N == 200
         assert panel.dist_coef == 1.0
         assert panel.reward_coef == 1.0
         assert panel.n_elite == 5
@@ -183,7 +183,8 @@ class TestAtariGasConfigPanel:
             "ALE/MsPacman-v5",
             "ALE/SpaceInvaders-v5",
         ]
-        assert panel.param.game_name.objects == expected_games
+        assert set(expected_games).issubset(panel.param.game_name.objects)
+        assert len(panel.param.game_name.objects) == len(set(panel.param.game_name.objects))
 
     def test_obs_type_options(self):
         panel = AtariGasConfigPanel()

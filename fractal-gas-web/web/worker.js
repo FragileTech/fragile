@@ -11,6 +11,21 @@ let currentGame = 0;
 // survives restarts).
 let visitOverlay = false;
 
+function plannerDefaults(params) {
+  const p = { horizon: 32, consensusPrefix: true, maxHorizon: 0, ...params };
+  if (p.algorithm >= 2) {
+    if (!Number.isInteger(p.horizon) || p.horizon < 1 || p.horizon > 4096)
+      throw new Error("Search horizon must be an integer between 1 and 4096");
+    if (typeof p.consensusPrefix !== "boolean")
+      throw new Error("Stop at first bifurcation must be a boolean");
+    if (p.algorithm === 3 && p.consensusPrefix &&
+        (!Number.isInteger(p.maxHorizon) || p.maxHorizon < 0 || p.maxHorizon > 4096 ||
+         (p.maxHorizon !== 0 && p.maxHorizon < p.horizon)))
+      throw new Error("Maximum search horizon must be 0 or an integer between the normal horizon and 4096");
+  }
+  return p;
+}
+
 function visitBlocks() {
   if (!visitOverlay || !fg || !fg.countingVisits()) return null;
   return fg.getVisitBlocks();
@@ -171,10 +186,20 @@ function captureRooms(stats) {
 }
 
 function stepOnce() {
+  try { advanceOnce(); }
+  catch (err) {
+    stepScheduled = false;
+    running = false;
+    post("error", { message: String(err), recoverable: true });
+  }
+}
+
+function advanceOnce() {
   stepScheduled = false;
   if (!running || !fg) return;
 
   const stats = fg.step();
+  if (stats?.error) throw new Error(stats.error);
   const frameView = fg.getBestFrame();
   let frame = null;
   if (frameView) {
@@ -209,7 +234,12 @@ function stepOnce() {
 
   // stop_when_all_dead: with every walker dead the swarm can only clone
   // among dead states - stop the run and tell the UI.
-  if (stats && stats.aliveCount === 0) {
+  if (stats?.gameDone) {
+    running = false;
+    post("gameDone", { playedFrames: stats.playedFrames });
+    return;
+  }
+  if (stats && stats.algorithm < 2 && stats.aliveCount === 0) {
     running = false;
     post("allDead", { iteration: stats.iteration });
     return;
@@ -230,9 +260,9 @@ self.onmessage = async (event) => {
         await loadModule();
         // embind requires every FgParams field; default the algorithm
         // fields so callers that predate them (autotest pages) still work.
-        const params = { algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
+        const params = plannerDefaults({ algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
                          visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
-                         ...msg.params };
+                         ...msg.params });
         currentConsole = params.console;
         currentGame = params.game;
         roomCaptures = new Map();
@@ -299,10 +329,11 @@ self.onmessage = async (event) => {
         // embind requires every FgParams field; the farm fields are only
         // meaningful at init, so zeros suffice here.
         if (fg) {
-          fg.setParams({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
-                         algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
+          const ok = fg.setParams(plannerDefaults({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
+                         algorithm: fg.algorithm(), maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
                          visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
-                         ...msg.params });
+                         ...msg.params }));
+          if (ok === false) throw new Error(fg.lastError());
         }
         break;
       default:
@@ -310,6 +341,6 @@ self.onmessage = async (event) => {
     }
   } catch (err) {
     running = false;
-    post("error", { message: String(err) });
+    post("error", { message: String(err), recoverable: msg.type === "setParams" });
   }
 };

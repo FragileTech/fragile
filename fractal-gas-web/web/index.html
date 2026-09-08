@@ -12,6 +12,7 @@
 <body>
   <header>
     <h1>Fractal Gas <span class="subtitle">Mario &middot; Atari &middot; Sonic &middot; Montezuma &mdash; C++ / WebAssembly</span></h1>
+    <a href="optimization/" style="color:#d0a9e2;padding:8px 14px">Optimization Lab</a>
     <a href="lab/" style="color:#7ef5df;margin-left:auto;padding:8px 14px;border:1px solid #466274;border-radius:4px;white-space:nowrap">Continuous control lab ↗</a>
     <a href="docs/lab/" target="_blank" rel="noopener noreferrer" style="color:#7ef5df;white-space:nowrap">Lab user guide ↗</a>
     <div id="header-controls">
@@ -106,13 +107,29 @@ the run.">
       <button id="sidebar-toggle" class="panel-toggle" type="button"
               title="Collapse controls">&laquo;</button>
       <section>
-        <h2 data-help="Which swarm algorithm runs. Wave (default): a fixed swarm of N walkers; every iteration every walker steps, and walkers with a low virtual reward clone onto walkers with a high one (the fractal gas). Graph: the tree variant used by the old Montezuma demo: every visited state stays as a node of a graph, only the leaves that decide to clone copy a companion's state (recording it as their parent) and step from there; the graph grows so that at least the chosen number of leaves exist, up to Max walkers, and in Coords mode a visit-count reward pushes the leaves towards rarely visited places. Changing it restarts the run.">Algorithm</h2>
+        <h2 data-help="Choose Wave, Graph, FMC or Jump Wave. FMC searches ahead and votes on the next action of one played game. Jump Wave executes shared ancestry before replanning, or the full winning path when Stop at first bifurcation is off. Wave (default): a fixed swarm of N walkers; every iteration every walker steps, and walkers with a low virtual reward clone onto walkers with a high one (the fractal gas). Graph: the tree variant used by the old Montezuma demo: every visited state stays as a node of a graph, only the leaves that decide to clone copy a companion's state (recording it as their parent) and step from there; the graph grows so that at least the chosen number of leaves exist, up to Max walkers, and in Coords mode a visit-count reward pushes the leaves towards rarely visited places. Changing it restarts the run.">Algorithm</h2>
         <div class="toggle-group" id="algo-select">
           <button type="button" data-algo="0" class="active">Wave</button>
           <button type="button" data-algo="1">Graph</button>
+          <button type="button" data-algo="2">FMC</button>
+          <button type="button" data-algo="3">Jump Wave</button>
         </div>
         <p class="hint" id="algo-hint">Wave: a fixed swarm, every walker
         steps. Graph: a growing tree of states, only cloning leaves step.</p>
+      </section>
+
+      <section id="planner-settings" hidden>
+        <h2>Planning</h2>
+        <label data-help="Search iterations per decision. Changes discard the pending plan and search again from the current played game.">Search horizon
+          <input type="number" id="param-horizon" value="32" min="1" max="4096" step="1">
+        </label>
+        <label id="param-consensus-row" data-help="Execute the exact path shared by surviving walkers. Extend the search if they disagree immediately, then fall back to one best-path action at the maximum horizon. Turn off to execute the full winning path.">Stop at first bifurcation
+          <input type="checkbox" id="param-consensus" checked>
+        </label>
+        <label id="param-max-horizon-row" data-help="0 uses twice the normal horizon, capped at 4096. An explicit maximum must be at least the normal horizon.">Maximum search horizon
+          <input type="number" id="param-max-horizon" value="0" min="0" max="4096" step="1">
+        </label>
+        <p class="hint">Search ahead, play the selected actions, then replan from the played game.</p>
       </section>
 
       <section>
@@ -142,14 +159,14 @@ Changing it restarts the run.">Observation</h2>
         <label data-help="Random seed for action choices, frame skips and clone decisions. The same seed and settings replay the same run. Restarts the run.">Seed
           <input type="number" id="param-seed" value="7" min="0" step="1">
         </label>
-        <label id="param-elite-row" data-help="Wave only: how many best-ever walkers (by cumulative reward) are kept in a buffer and re-injected into the swarm every iteration, so the best progress found so far is never lost. 0 disables it. Applies live. (The Graph keeps its best walker frozen instead.)">Elite walkers
+        <label id="param-elite-row" data-help="Wave, FMC and Jump Wave: how many best-ever walkers (by cumulative reward) are kept in a buffer and re-injected into the swarm every iteration, so the best progress found so far is never lost. 0 disables it. Applies live. (The Graph keeps its best walker frozen instead.)">Elite walkers
           <input type="number" id="param-elite" value="2" min="0" max="16" step="1">
         </label>
         <label id="param-erase-row" hidden data-help="Coords observation on Mario, Sonic or Montezuma: how much every visit-count cell decays per iteration. The visit-reward term that favours walkers standing in rarely visited 5x5-pixel cells of the map (counted per level / room); a higher erase coefficient forgets old visits faster. 0 never forgets. Applies live.">Erase coef <span id="erase-coef-value">0.05</span>
           <input type="range" id="param-erase-coef" value="0.05" min="0" max="1" step="0.01">
         </label>
         <div id="param-visit-reward-row" hidden>
-          <h2 data-help="Coords observation on Mario, Sonic or Montezuma: ablation switch for the visit-count term of the virtual reward, available to both algorithms (Graph: on by default, the original Montezuma demo's reward; Wave: off by default, the plain fractal gas). On: walkers standing in rarely visited cells get a higher virtual reward. Off: the term is 1, so cloning is driven by distance and cumulative reward alone. Visits keep being counted either way, so the heatmap stays available and switching back on keeps the history. Applies live.">Visit reward</h2>
+          <h2 data-help="Coords observation on Mario, Sonic or Montezuma: ablation switch for the visit-count term of the virtual reward, available to all solvers (Graph: on by default; Wave, FMC and Jump Wave: off by default). On: walkers standing in rarely visited cells get a higher virtual reward. Off: the term is 1, so cloning is driven by distance and cumulative reward alone. Visits keep being counted either way, so the heatmap stays available and switching back on keeps the history. Applies live.">Visit reward</h2>
           <div class="toggle-group" id="visit-reward-select">
             <button type="button" data-on="1">On</button>
             <button type="button" data-on="0" class="active">Off</button>
@@ -200,7 +217,7 @@ Changes apply to rewards earned from now on: reward already banked by the walker
 
     <section id="content">
       <div id="screen-panel">
-        <h2 data-help="Live screen of the walker with the highest cumulative reward. The view switches whenever a different walker takes the lead, so it may jump around.">Best walker</h2>
+        <h2 id="screen-title" data-help="FMC and Jump Wave show the committed game. Wave and Graph show the live screen of the leading walker. The view switches whenever a different walker takes the lead, so it may jump around.">Best walker</h2>
         <div id="screen-wrap">
           <canvas id="screen" width="256" height="240"></canvas>
           <div id="run-ended" hidden>
@@ -217,6 +234,10 @@ Changes apply to rewards earned from now on: reward already banked by the walker
         </div>
         <h2 data-help="Live readouts for the current iteration.">Stats</h2>
         <div class="stat-grid">
+          <div class="planner-stat" hidden>Planner</div><div class="planner-stat" id="stat-phase" hidden>&ndash;</div>
+          <div class="planner-stat" hidden>Search depth</div><div class="planner-stat" id="stat-depth" hidden>&ndash;</div>
+          <div class="planner-stat" hidden data-help="Committed emulator display score; games without a separate display score report accumulated reward.">Played score</div><div class="planner-stat" id="stat-played-score" hidden>&ndash;</div>
+          <div class="planner-stat" hidden>Played frames</div><div class="planner-stat" id="stat-played-frames" hidden>&ndash;</div>
           <div data-help="Algorithm iterations completed. One iteration = every walker acts for dt frames, then the cloning step.">Iteration</div><div id="stat-iteration">&ndash;</div>
           <div data-help="Level the best walker is currently in (Montezuma: its room, temple level and lives).">World</div><div id="stat-world">&ndash;</div>
           <div data-help="Highest cumulative reward in the swarm (the best walker's score so far).">Max reward</div><div id="stat-max-reward">&ndash;</div>

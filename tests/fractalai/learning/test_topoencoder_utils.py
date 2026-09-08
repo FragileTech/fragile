@@ -83,7 +83,7 @@ class TestComputePerplexity:
     def test_empty_tensor(self):
         assignments = torch.tensor([], dtype=torch.long)
         perp = _compute_perplexity_from_assignments(assignments, num_charts=10)
-        assert perp == 0.0
+        assert perp == pytest.approx(0.0)
 
     def test_two_chart_equal(self):
         assignments = torch.tensor([0] * 50 + [1] * 50)
@@ -125,7 +125,6 @@ class TestBenchmarksCompatible:
             "input_dim": config.input_dim,
             "latent_dim": config.latent_dim,
             "num_codes_standard": config.num_codes_standard,
-            "baseline_vision_preproc": config.baseline_vision_preproc,
             "baseline_attn": config.baseline_attn,
             "baseline_attn_tokens": config.baseline_attn_tokens,
             "baseline_attn_dim": config.baseline_attn_dim,

@@ -31,6 +31,7 @@
         <span class="nav-active">Control laboratory</span
         ><a href="../">Arcade</a>
         <a href="./asset-gallery.html">Models</a>
+        <a href="../optimization/">Optimization Lab</a>
         <a href="../docs/lab/" target="_blank" rel="noopener noreferrer"
           >User guide ↗</a
         >
@@ -161,7 +162,7 @@
         </p>
         <div class="control-heading" data-help="The controller chooses actions by evaluating possible future state batches. The selected algorithm can be changed before restarting the experiment."
           >
-          CONTROLLER <span id="controller-label">FMC</span>
+          CONTROLLER <span id="controller-label">WAVE JUMP</span>
         </div>
         <label class="field" data-help="Planning algorithm used to choose actions. Wave Jump executes the best final trajectory, or the shared surviving prefix when Stop at first bifurcation is enabled, before searching again; Step runs one complete trajectory and physics pauses during search. Each controller implements the same batched state and action interface.">Controller<select id="algorithm"></select></label>
         <p id="trajectory-progress" hidden aria-live="polite"></p>
@@ -187,7 +188,7 @@
               type="number"
               min="1"
               max="4096"
-              value="32" /></label
+              value="64" /></label
           ><label class="field" data-help="Physics frames for each committed action. At 60 Hz, six frames advance roughly 0.1 seconds. Larger values make actions coarser and cheaper to plan."
             >Action frames<input
               id="frames"

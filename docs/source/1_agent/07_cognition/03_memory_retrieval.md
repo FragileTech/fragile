@@ -502,10 +502,6 @@ The heuristic bounds make operational sense. You probably want $\Omega_{\text{me
 
 **Cross-references:** {ref}`sec-diagnostics-stability-checks` (Sieve Diagnostic Nodes), {ref}`sec-theory-of-meta-stability-the-universal-governor-as-homeostatic-controller` (Governor regulation), Node 42 (GovernorStabilityCheck).
 
-:::
-
-
-
 (sec-summary-memory-as-non-local-interface)=
 ## Summary: Memory as Non-Local Interface
 

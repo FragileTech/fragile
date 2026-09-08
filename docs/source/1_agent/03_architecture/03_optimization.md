@@ -130,7 +130,7 @@ $$
 \le \mathcal{V}(\theta_t) - \eta_t m_{\min}\|g_t\|^2 + \frac{L}{2}\eta_t^2 m_{\max}^2\|g_t\|^2.
 $$
 The right-hand side is strictly smaller than $\mathcal{V}(\theta_t)$ whenever
-$\eta_t < 2 m_{\min} / (L m_{\max}^2)$ and yields nonincrease at equality. \qedhere
+$\eta_t < 2 m_{\min} / (L m_{\max}^2)$ and yields nonincrease at equality. $\square$
 :::
 
 :::{prf:definition} Relative Trust Region (Mach Limit)
@@ -164,7 +164,7 @@ $$
 $$
 The right-hand side minus $\mathcal{V}(\theta_t)$ equals
 $s\,(-g_t^\top d_t+\tfrac{L}{2}s\|d_t\|^2)$. The bracket is nondecreasing in $s$ and is nonpositive at
-$s=1$ by Theorem {prf:ref}`thm-preconditioned-descent`, hence nonpositive for all $s\in[0,1]$. \qedhere
+$s=1$ by Theorem {prf:ref}`thm-preconditioned-descent`, hence nonpositive for all $s\in[0,1]$. $\square$
 :::
 
 *Interpretation.* The Mach limit is a trust-region enforcement consistent with the Zeno/step-size constraint
@@ -194,7 +194,7 @@ $\eta_T\le 2C\sqrt{\gamma}$, then
 :::{prf:proof}
 Since $\eta_T \in (0,1)$ and $V_H \ge 0$, the multiplier lies in $(0,1]$, proving positivity and monotone
 nonincrease. The update gives the first bound, and the condition $\eta_T\le2C\sqrt\gamma$ together with
-$1+\gamma V_H\ge2\sqrt{\gamma V_H}$ gives the second. \qedhere
+$1+\gamma V_H\ge2\sqrt{\gamma V_H}$ gives the second. $\square$
 :::
 
 *Implementation note.* When we identify $\eta_t = \eta_0 \tau_t$ with $\tau_t \propto T_t$, this gives an
@@ -234,7 +234,7 @@ decreases $\mathcal{V}$.
 The update with $\eta_t^{+}$ is a scaled version of the step with $\eta_t$, with scaling factor in $(0,1]$.
 By the same smoothness inequality used in the proof of Theorem {prf:ref}`thm-preconditioned-descent`, any reduction
 in step size preserves nonincreasing $\mathcal{V}$ as long as the original step was in the descent regime.
-Equivalently, this is a special case of the scaling argument in Lemma {prf:ref}`lem-trust-region-scaling`. \qedhere
+Equivalently, this is a special case of the scaling argument in Lemma {prf:ref}`lem-trust-region-scaling`. $\square$
 :::
 
 *Interpretation.* When the alignment trigger fires, reducing $\eta_t$ preserves the descent bound of the
@@ -273,7 +273,7 @@ clause in A2 makes $M_t$ independent of the current noise, so
 $\mathbb{E}[g_t^\top M_t\xi_t\mid\theta_t]=0$.
 Use $\mathbb{E}[\hat g_t] = g_t$ and
 $\mathbb{E}[\|\hat g_t\|^2] = \|g_t\|^2 + \mathbb{E}[\|\xi_t\|^2] \le \|g_t\|^2 + \sigma^2$.
-Then apply the eigenvalue bounds from A2 and solve for $\eta_t$ to make the coefficient negative. \qedhere
+Then apply the eigenvalue bounds from A2 and solve for $\eta_t$ to make the coefficient negative. $\square$
 :::
 
 *Interpretation.* When SNR is low, the gate shrinks $\eta_t$ to protect expected descent. This is a rigorous
@@ -310,7 +310,7 @@ We have $\nabla E(x) = L x$ for the path graph. The update is
 $x^{+} = x - (k/2) L x$, i.e. gradient descent with step size $k/2$.
 Because $L$ is symmetric positive semidefinite with eigenvalues bounded by $\lambda_{\max} \le 4$ for a path graph,
 step size $k/2 \le 1/2$ ensures $(1 - (k/2)\lambda)^2 \le 1$ for all eigenvalues. Therefore
-$E(x^{+}) = \tfrac{1}{2} x^\top (I - (k/2)L)^\top L (I - (k/2)L)x \le E(x)$. \qedhere
+$E(x^{+}) = \tfrac{1}{2} x^\top (I - (k/2)L)^\top L (I - (k/2)L)x \le E(x)$. $\square$
 :::
 
 *Interpretation.* Conduction is a provably contractive smoothing of log learning rates. It enforces coherence without

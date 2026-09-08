@@ -403,3 +403,7 @@ all = ["style", "check"]
 [[tool.hatch.envs.py-test.matrix]]
 template = ["test"]
 python = ["39", "310", "311", "312"]
+
+[tool.uv]
+# vegas 6.4.1 uses Cython constructs rejected by Cython 3.2.
+build-constraint-dependencies = ["cython<3.2"]

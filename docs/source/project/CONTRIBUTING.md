@@ -46,10 +46,13 @@ To set up `fragile` for local development:
 
    Now you can make your changes locally.
 
-4. When you're done making changes run all the checks and docs builder with one command:
+4. Run the Python checks and documentation build:
 
     ```bash
-    uv run hatch run lint:all && uv run hatch run docs:build && uv run hatch run test:test
+    uv run ruff check .
+    uv run ruff format --check .
+    make test
+    make docs
     ```
 
 5. Commit your changes and push your branch to GitHub:
@@ -62,13 +65,36 @@ To set up `fragile` for local development:
 
 6. Submit a pull request through the GitHub website.
 
+## Reproducing Python CI
+
+CI uses Python 3.10 and the versions in `uv.lock`, with CPU PyTorch. In a fresh
+checkout, install and run that environment with:
+
+```bash
+uv export --locked --extra test --no-hashes --no-emit-project --output-file /tmp/fragile-constraints.txt
+uv venv --python 3.10
+uv pip install --torch-backend=cpu --constraint /tmp/fragile-constraints.txt -e '.[test]'
+OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 uv run --no-sync pytest -q -n 2 --dist loadfile tests
+```
+
+Linux rendering tests require EGL and Mesa (`libegl1` and `libgl1-mesa-dri` on
+Ubuntu). The test configuration defaults MuJoCo to headless EGL. Dashboard tests
+start temporary local HTTP servers. Training integration tests use synthetic data.
+
+For Lab changes, run `make control-test`, `make control-web`, and
+`npm --prefix fractal-gas-web run test:lab`. Browser suites run through
+`bash fractal-gas-web/tools/test-control-browser.sh node fractal-gas-web/tests/control-browser.mjs`;
+the control workflow lists the additional browser suites. Set
+`CONTROL_CAPTURE_SCREENSHOTS=1` to request diagnostic captures in the main,
+racing, and mining suites. CI checks their layout and interactions directly.
+
 ## Pull Request Guidelines
 
 If you need some code review or feedback while you're developing the code just make the pull request.
 
 For merging, you should:
 
-1. Include passing tests (run `uv run hatch run test:test`).
+1. Include passing tests (run `make test`).
 2. Update documentation when there's new API, functionality etc.
 3. Add a note to `CHANGELOG.md` about the changes.
 4. Add yourself to `AUTHORS.md`.

@@ -54,7 +54,9 @@ def test_hessian_diagonal_quadratic(quadratic_2d_setup):
     H_true_diag = torch.tensor([[2.0, 4.0]]).expand(100, 2)
 
     valid_mask = result["valid_mask"]
-    assert valid_mask.sum() >= 80, "Most walkers should have valid Hessian"
+    assert valid_mask.sum() == 64, (
+        "Only the 8x8 interior has neighbors on both sides of every axis"
+    )
 
     # Compute error
     error = (H_diag[valid_mask] - H_true_diag[valid_mask]).abs()
@@ -176,6 +178,8 @@ def test_hessian_full_quadratic_gradient_fd(quadratic_2d_setup):
         quadratic_2d_setup["edge_index"],
     )
 
+    grad_result["gradient"] = quadratic_2d_setup["positions"] * torch.tensor([2.0, 4.0])
+
     # Hessian from gradient FD
     result = estimate_hessian_full_fd(
         quadratic_2d_setup["positions"],
@@ -265,7 +269,7 @@ def test_hessian_symmetry(quadratic_2d_setup):
     symmetry_error = torch.norm(H - H.transpose(1, 2), p="fro", dim=(1, 2))
 
     # After symmetrization, error should be near zero
-    assert symmetry_error.max() < 1e-6, "Hessian should be symmetric"
+    assert symmetry_error[result["valid_mask"]].max() < 1e-6, "Hessian should be symmetric"
 
 
 def test_hessian_eigenvalues_sorted(quadratic_2d_setup):
@@ -290,9 +294,9 @@ def test_hessian_eigenvalues_sorted(quadratic_2d_setup):
     # Check descending order
     for i in range(eigenvalues.shape[0]):
         if torch.isfinite(eigenvalues[i]).all():
-            assert (
-                eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6
-            ).all(), "Eigenvalues should be sorted descending"
+            assert (eigenvalues[i, :-1] >= eigenvalues[i, 1:] - 1e-6).all(), (
+                "Eigenvalues should be sorted descending"
+            )
 
 
 def test_hessian_rosenbrock():
@@ -390,9 +394,9 @@ def test_hessian_condition_numbers(quadratic_2d_setup):
         mean_condition = condition_numbers[valid_mask].mean()
 
         # Allow some error
-        assert (
-            abs(mean_condition - true_condition) / true_condition < 0.5
-        ), f"Condition number error: {mean_condition} vs {true_condition}"
+        assert abs(mean_condition - true_condition) / true_condition < 0.5, (
+            f"Condition number error: {mean_condition} vs {true_condition}"
+        )
 
 
 def test_hessian_with_step_size():
@@ -430,16 +434,8 @@ def test_hessian_handles_isolated_walkers():
 
     fitness = positions[:, 0] ** 2 + positions[:, 1] ** 2
 
-    result = estimate_hessian_diagonal_fd(positions, fitness, edge_index)
-
-    # Should handle gracefully
-    H_diag = result["hessian_diagonal"]
-
-    # Isolated walkers should have NaN
-    isolated_walkers = torch.tensor([i for i in range(N) if i not in {0, 1, 2, 3}])
-
-    if len(isolated_walkers) > 0:
-        assert torch.isnan(H_diag[isolated_walkers]).any(), "Isolated walkers should have NaN"
+    with pytest.raises(ValueError, match="No valid walkers"):
+        estimate_hessian_diagonal_fd(positions, fitness, edge_index)
 
 
 def test_axis_quality_scores(quadratic_2d_setup):
@@ -476,3 +472,47 @@ def _build_knn_graph(positions: torch.Tensor, k: int) -> torch.Tensor:
     dst = indices.flatten()
 
     return torch.stack([src, dst], dim=0)
+
+
+def test_nonuniform_axial_stencil():
+    """Unequal positive/negative spacing must cancel the linear term."""
+    positions = torch.tensor(
+        [[0.0, 0.0], [0.2, 0.0], [-0.5, 0.0], [0.0, 0.3], [0.0, -0.7]], dtype=torch.float64
+    )
+    fitness = (
+        positions[:, 0] ** 2 + 2 * positions[:, 1] ** 2 + 3 * positions[:, 0] - positions[:, 1]
+    )
+    edges = torch.tensor([[0, 0, 0, 0], [1, 2, 3, 4]])
+    result = estimate_hessian_diagonal_fd(positions, fitness, edges)
+    assert result["valid_mask"].tolist() == [True, False, False, False, False]
+    torch.testing.assert_close(
+        result["hessian_diagonal"][0], torch.tensor([2.0, 4.0], dtype=positions.dtype)
+    )
+
+
+def test_full_hessian_marks_missing_stencils_invalid(quadratic_2d_setup):
+    """Boundary walkers cannot silently contribute zero curvature to diagnostics."""
+    result = estimate_hessian_full_fd(
+        quadratic_2d_setup["positions"],
+        quadratic_2d_setup["fitness"],
+        None,
+        quadratic_2d_setup["edge_index"],
+    )
+    assert result["valid_mask"].sum() == 64
+    assert torch.isnan(result["hessian_eigenvalues"][~result["valid_mask"]]).all()
+    torch.testing.assert_close(
+        result["condition_numbers"][result["valid_mask"]],
+        torch.full((64,), 2.0),
+        atol=1e-4,
+        rtol=1e-4,
+    )
+
+
+def test_full_hessian_without_axial_neighbors_is_invalid():
+    """No usable stencil is unknown curvature, rather than a zero Hessian."""
+    positions = torch.tensor([[0.0, 0.0], [1.0, 1.0], [-1.0, -1.0]])
+    edges = torch.tensor([[0, 0], [1, 2]])
+    result = estimate_hessian_full_fd(positions, positions.square().sum(dim=1), None, edges)
+    assert not result["valid_mask"].any()
+    assert torch.isnan(result["hessian_eigenvalues"]).all()
+    assert result["psd_fraction"] == 0

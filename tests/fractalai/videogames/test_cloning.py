@@ -29,7 +29,7 @@ def test_calculate_fitness_basic(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Calculate fitness
-    virtual_rewards, companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, companions = clone_op.calculate_fitness(observations, rewards, rewards, alive)
 
     # Check outputs
     assert virtual_rewards.shape == (N,)
@@ -54,7 +54,7 @@ def test_calculate_fitness_uniform_companions(clone_op, device):
     # Run multiple times and collect companions
     all_companions = []
     for _ in range(100):
-        _, companions = clone_op.calculate_fitness(observations, rewards, alive)
+        _, companions = clone_op.calculate_fitness(observations, rewards, rewards, alive)
         all_companions.append(companions)
 
     all_companions = torch.stack(all_companions)
@@ -83,7 +83,9 @@ def test_calculate_fitness_distance_computation(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Calculate fitness
-    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(
+        observations, rewards, rewards, alive
+    )
 
     # Virtual rewards should be computed (exact values depend on normalization)
     assert virtual_rewards.shape == (N,)
@@ -129,8 +131,8 @@ def test_decide_cloning_dead_always_clone(clone_op, device):
     _companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)
 
     # Dead walkers must clone
-    assert will_clone[3] is True
-    assert will_clone[7] is True
+    assert will_clone[3].item() is True
+    assert will_clone[7].item() is True
 
 
 def test_clone_walker_data(device):
@@ -168,7 +170,9 @@ def test_fitness_with_ram_observations(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Calculate fitness
-    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(
+        observations, rewards, rewards, alive
+    )
 
     # Check outputs are valid
     assert virtual_rewards.shape == (N,)
@@ -187,7 +191,7 @@ def test_apply_combined_operation(clone_op, device):
     alive = torch.ones(N, dtype=torch.bool, device=device)
 
     # Apply combined operation
-    virtual_rewards, companions, will_clone = clone_op.apply(observations, rewards, alive)
+    virtual_rewards, companions, will_clone = clone_op.apply(observations, rewards, rewards, alive)
 
     # Check outputs
     assert virtual_rewards.shape == (N,)
@@ -211,7 +215,9 @@ def test_cloning_with_all_dead(clone_op, device):
     alive = torch.zeros(N, dtype=torch.bool, device=device)  # All dead
 
     # Calculate fitness (should still work)
-    virtual_rewards, _companions = clone_op.calculate_fitness(observations, rewards, alive)
+    virtual_rewards, _companions = clone_op.calculate_fitness(
+        observations, rewards, rewards, alive
+    )
 
     # Decide cloning
     _companions, will_clone = clone_op.decide_cloning(virtual_rewards, alive)

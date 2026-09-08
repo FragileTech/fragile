@@ -276,8 +276,7 @@ $$
 
 is a fibrewise diffeomorphism. For
 $L=\tfrac12\|\dot q\|_{G_{\mathcal Q}}^2-V(q)$, the induced momentum is
-$p=G_{\mathcal Q}(q)\dot q$. On a lifted visual chart $(U_\alpha,
-T\phi_\alpha)$, an induced action chart can therefore use
+$p=G_{\mathcal Q}(q)\dot q$. On a lifted visual chart $(U_\alpha, T\phi_\alpha)$, an induced action chart can therefore use
 
 $$
 \psi_\beta\circ\mathcal L_L\circ(T\phi_\alpha)^{-1}(q,\dot q)

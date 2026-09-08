@@ -119,6 +119,7 @@ def test_theory_and_lab_have_independent_publication_trees():
         "source/project/control_lab_replay",
         "source/project/control_lab_experiments",
         "source/project/control_lab_architecture",
+        "source/project/optimization_laboratory",
     ]
     chapters = {chapter["file"]: chapter for chapter in lab_toc["chapters"]}
     task_pages = chapters["source/project/control_lab_tasks"]["sections"]

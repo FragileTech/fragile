@@ -416,6 +416,7 @@ Distances may vanish within an allowed connected region.
 
 For an eigenfunction $(H_\sigma-E)u=0$ in the scalar realization and a
 bounded smooth real weight $f$, put $v=e^{f/\sigma}u$. Then
+
 $$
 \frac{\sigma^2}{2}\int|\nabla v|^2
 +\int\left(U-E-\frac12|\nabla f|^2\right)|v|^2=0.
@@ -426,6 +427,7 @@ give the local form, with their explicit derivative terms retained.
 
 *Proof.* Test the weak eigenvalue equation against $e^{2f/\sigma}u$ and
 take real parts. The gradient product is
+
 $$
 \operatorname{Re}\langle\nabla u,\nabla(e^{2f/\sigma}u)\rangle
 =|\nabla(e^{f/\sigma}u)|^2
@@ -438,6 +440,7 @@ Weak approximation preserves the resulting energy inequality. On the
 forbidden region the remaining potential coefficient is at least
 $(2\epsilon-\epsilon^2)(U-E)$; the allowed-region negative term controls
 the weighted integral. For a region where $U-E\ge\delta>0$ and $f\ge a$,
+
 $$
 \int_{\mathrm{region}}|u|^2
 \le\frac{e^{-2a/\sigma}}{(2\epsilon-\epsilon^2)\delta}
@@ -452,8 +455,7 @@ prefactor is used. $\square$
 :label: cor-e7-adversarial-suppression
 
 For $g_1\succeq g_0$ and the same $U,E$, every path obeys
-$\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_1}
-\ge\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_0}$.
+$\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_1} \ge\int\sqrt{2(U-E)_+}|\dot\gamma|_{g_0}$.
 Taking infima gives $d_E^{g_1}\ge d_E^{g_0}$. This compares barrier
 actions at the same energy. Changing a Hamiltonian generally changes its
 ground energy as well, so one cannot substitute two different ground
@@ -466,11 +468,13 @@ transition probabilities from two upper bounds. $\square$
 
 Let $X_s$ have generator $\Delta_{\widetilde G}/2$, killed at a Dirichlet
 boundary or reflected for the Neumann realization. Then
+
 $$
 (e^{-tH_\sigma/\sigma^2}\phi)(x)
 =\mathbb E_x\left[e^{-\sigma^{-2}\int_0^tU(X_s)ds}\phi(X_t)\right],
 $$
 with the survival indicator in the killed case. To obtain the ground vector,
+
 $$
 e^{tE_0/\sigma^2}e^{-tH_\sigma/\sigma^2}\phi
 \longrightarrow\langle u_0,\phi\rangle u_0
@@ -493,8 +497,7 @@ For any absolutely continuous path in the forbidden region, set
 $a=|\dot\gamma|_{\widetilde G}$, $b=\sqrt{2(U-E)}$. Then
 $a^2/2+U-E-ab=(a-b)^2/2\ge0$.
 Integration gives
-$\int(|\dot\gamma|^2/2+U-E)dt
-\ge\int\sqrt{2(U-E)}|\dot\gamma|dt$.
+$\int(|\dot\gamma|^2/2+U-E)dt \ge\int\sqrt{2(U-E)}|\dot\gamma|dt$.
 Equality is attained on a parametrization with $a=b$ wherever that
 parametrization is defined. This relates an action to barrier length.
 An asymptotic probability additionally belongs to a specified stochastic
@@ -761,6 +764,7 @@ For the diffusion and discount already used in
 {prf:ref}`thm-the-hjb-helmholtz-correspondence`, write
 $\mathcal L=b\cdot\nabla+T_c\Delta_G$ and $\gamma_h=e^{-\lambda h}$.
 The smooth Bellman equation has continuous-time form
+
 $$
 \partial_tV+\mathcal LV-\lambda V+r=0.
 $$
@@ -768,6 +772,7 @@ In its stationary zero-drift sector,
 $(-\Delta_G+\lambda/T_c)V=r/T_c$; denote this screening coefficient by
 $\kappa_B^2=\lambda/T_c$. The scalar field action used in this chapter
 instead defines the wave operator
+
 $$
 \Box_g=-|g|^{-1/2}\partial_\mu(|g|^{1/2}g^{\mu\nu}\partial_\nu),
 \qquad(\Box_g+\kappa^2)V=\rho_r.
@@ -782,6 +787,7 @@ $V=rh+e^{-\lambda h}\mathbb E[V(Z_h,t+h)]$, cancel $V$, and divide by $h$.
 The $\partial_t^2V$ Taylor term has coefficient $h/2$ after division and
 vanishes. Finite signal speed does not change that coefficient.
 For the wave model vary
+
 $$
 S[V]=\int\left[-\tfrac12g^{\mu\nu}\partial_\mu V\partial_\nu V
 -\tfrac12\kappa^2V^2+\rho_rV\right]\sqrt{|g|}\,dx.
@@ -856,6 +862,7 @@ whether a smaller state is Markov.
 modeled history through $t$. Let $K_{t,u}(h,\cdot)$ be the regular conditional
 law of the extended history through $u$ given $\mathsf H_t=h$.
 For a bounded history functional $F$,
+
 $$
 \mathbb E[F(\mathsf H_u)\mid\sigma(\mathsf H_s:s\le t)]
 =\mathbb E[F(\mathsf H_u)\mid\mathsf H_t]
@@ -894,6 +901,7 @@ Nash conditions are the payoff inequalities in
 Use the smooth local best-response branch and Strategic Jacobian already
 specified in {prf:ref}`def-strategic-jacobian`. With the intrinsic connection
 on agent $j$'s manifold define the covariant tensor
+
 $$
 H^{(i)}_{jj,mn}=\nabla^{(j)}_m\nabla^{(j)}_nV^{(i)},\qquad
 \mathcal G^{(i)}_{ij,ab}=\mathcal J_{ji}^{m}{}_{a}
@@ -908,6 +916,7 @@ The curvature equation {prf:ref}`thm-capacity-constrained-metric-law` remains
 a separate differential identity; this algebraic prescription is not its solution.
 
 For a $C^2$ response $y=b(x)$, direct differentiation gives
+
 $$
 \partial_{ab}V(x,b(x))=V_{ab}+V_{am}b^m_b+V_{bm}b^m_a
 +V_{mn}b^m_ab^n_b+V_m\partial_{ab}b^m.
@@ -916,6 +925,7 @@ Thus the pulled-back $H_{jj}$ is one contribution, not the full Hessian of
 the composed value. The final term vanishes at a stationary point in $y$.
 For the positive metric $\widetilde G=G+h$, subtraction of the two
 metric-compatible torsion-free connections gives the exact identity
+
 $$
 \widetilde\Gamma^a_{bc}-\Gamma^a_{bc}
 =\tfrac12\widetilde G^{ad}
@@ -950,6 +960,7 @@ On a test section $u$, expansion gives
 $[D_\rho,F_{\mu\nu}]u=(\mathcal D_\rho F_{\mu\nu})u$.
 Insert $[D_\mu,D_\nu]=-igF_{\mu\nu}$ into
 $[D_\rho,[D_\mu,D_\nu]]+\mathrm{cyclic}=0$. Dividing by $-ig$ gives
+
 $$
 \mathcal D_\rho F_{\mu\nu}+\mathcal D_\mu F_{\nu\rho}
 +\mathcal D_\nu F_{\rho\mu}=0.
@@ -969,6 +980,7 @@ For the stable quartic potential already specified, $\lambda>0$ and
 $\mu^2<0$, write $\Phi_0=(v/\sqrt2)n$, $n^\dagger n=1$ and
 $v^2=-\mu^2/\lambda$. The radial mass is $m_h^2=2\lambda v^2$.
 The gauge quadratic term is $-\tfrac12A_\mu^a(M^2)_{ab}A^{\mu b}$ with
+
 $$
 (M^2)_{ab}=g^2\Phi_0^\dagger\{T_a,T_b\}\Phi_0.
 $$

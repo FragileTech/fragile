@@ -26,6 +26,8 @@ test("renderer off path skips all cosmetic callbacks; hidden frames skip renderi
   const oldDocument = globalThis.document;
   const oldRaf = globalThis.requestAnimationFrame;
   let cosmetic = 0,
+    cargoUpdates = 0,
+    readoutUpdates = 0,
     renders = 0;
   globalThis.document = { hidden: false };
   globalThis.requestAnimationFrame = () => 1;
@@ -42,8 +44,10 @@ test("renderer off path skips all cosmetic callbacks; hidden frames skip renderi
       bodyLayer: { updateLod: noop, animate: () => cosmetic++ },
       worldDynamics: {
         pickupBatch: { updateLod: noop },
+        cargo: { animate: () => cargoUpdates++ },
         animate: () => cosmetic++,
       },
+      refreshCargoReadout: () => readoutUpdates++,
       renderer: {
         getContext: () => ({ isContextLost: () => false }),
         render: () => renders++,
@@ -53,6 +57,8 @@ test("renderer off path skips all cosmetic callbacks; hidden frames skip renderi
     LabRenderer.prototype.animate.call(renderer, 100);
     assert.equal(cosmetic, 0);
     assert.equal(renders, 1);
+    assert.equal(cargoUpdates, 1);
+    assert.equal(readoutUpdates, 1);
     assert.equal(renderer.performance.animationCpuMs, 0);
     renderer.animationsEnabled = true;
     LabRenderer.prototype.animate.call(renderer, 120);
@@ -61,6 +67,8 @@ test("renderer off path skips all cosmetic callbacks; hidden frames skip renderi
     LabRenderer.prototype.animate.call(renderer, 50000);
     assert.equal(cosmetic, 2);
     assert.equal(renders, 2);
+    assert.equal(cargoUpdates, 2, "Hidden frames skip cargo updates");
+    assert.equal(readoutUpdates, 2, "Hidden frames skip readout updates");
   } finally {
     if (oldDocument === undefined) delete globalThis.document;
     else globalThis.document = oldDocument;

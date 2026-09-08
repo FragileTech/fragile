@@ -41,6 +41,8 @@ struct FractalGasParams {
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
   RecordingMode recording = RecordingMode::Off;
+  // Arcade planning needs actions and ancestry, not copies of pixel observations.
+  bool record_observations = true;
 };
 
 class FractalGas final : public SwarmAlgorithm {
@@ -100,6 +102,9 @@ class FractalGas final : public SwarmAlgorithm {
   /// FractalGas.reset(): env reset, replicate the initial state N times,
   /// zero all walker arrays, clear metrics and the elite buffer.
   void reset() override;
+  /// Broadcast a committed snapshot without resetting visits, counters or RNG.
+  void start_from(const std::vector<char>& state, const std::vector<float>& obs,
+                  const WalkerInfo* info = nullptr);
 
   /// One iteration of the algorithm, preserving the Python phase order.
   StepInfo step() override;
@@ -146,6 +151,7 @@ class FractalGas final : public SwarmAlgorithm {
   std::unique_ptr<Rng> rng_;
   std::unique_ptr<FractalCloningOperator> clone_op_;
   std::unique_ptr<RandomActionOperator> kinetic_op_;
+  bool owns_rng_ = false;
 
   WalkerState state_;
   WalkerState elite_walkers_;

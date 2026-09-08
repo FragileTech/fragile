@@ -14,7 +14,7 @@ import numpy as np
 import pytest
 
 
-os.environ.setdefault("MUJOCO_GL", "osmesa")
+os.environ.setdefault("MUJOCO_GL", "egl")
 
 import plangym
 
@@ -22,6 +22,14 @@ import plangym
 # MuJoCo GL rendering may produce tiny per-pixel differences after
 # state restoration.  Allow up to this per-channel difference.
 _MAX_PIXEL_TOLERANCE = 2
+
+
+def _make_env(name):
+    # Reward colors mutate the model and are not included in physics state.
+    env = plangym.make(name=name, visualize_reward=False)
+    env.gym_env.task.random.seed(0)
+    env.action_space.seed(0)
+    return env
 
 
 def _pixel_diff_stats(a: np.ndarray, b: np.ndarray) -> dict:
@@ -39,6 +47,9 @@ def _pixel_diff_stats(a: np.ndarray, b: np.ndarray) -> dict:
 def _render_frame(env) -> np.ndarray:
     """Render a frame from the environment's current physics state."""
     if hasattr(env, "physics"):
+        # A step can leave derived poses behind qpos; render the saved state
+        # after the same forward update performed by set_state().
+        env.physics.forward()
         return env.physics.render(height=480, width=480, camera_id=0)
     return env.get_image()
 
@@ -48,7 +59,7 @@ class TestRGBRecovery:
 
     @pytest.fixture()
     def env(self):
-        env = plangym.make(name="walker-walk")
+        env = _make_env(name="walker-walk")
         yield env
         env.close()
 
@@ -135,9 +146,9 @@ class TestRGBRecovery:
             env.set_state(saved_state)
             recovered = _render_frame(env)
             stats = _pixel_diff_stats(original_frame, recovered)
-            assert (
-                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
-            ), f"Out-of-order recovery at index {i} mismatch: {stats}"
+            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
+                f"Out-of-order recovery at index {i} mismatch: {stats}"
+            )
 
     def test_recovery_after_different_state_interleaved(self, env):
         """Recovery is near-exact even after the env was used with a different state."""
@@ -195,7 +206,7 @@ class TestRGBRecovery:
         """Recovery is near-exact across different dm_control tasks."""
         tasks = ["cartpole-balance", "reacher-easy", "cheetah-run", "hopper-stand"]
         for task in tasks:
-            env = plangym.make(name=task)
+            env = _make_env(name=task)
 
             state, _obs, _info = env.reset(return_state=True)
             for _ in range(5):
@@ -271,7 +282,7 @@ class TestOnDemandRendering:
 
     def test_render_on_demand_same_env(self):
         """Step and capture ground truth, then restore + render matches."""
-        env = plangym.make(name="walker-walk")
+        env = _make_env(name="walker-walk")
 
         state, _obs, _info = env.reset(return_state=True)
         np.random.seed(123)
@@ -289,9 +300,9 @@ class TestOnDemandRendering:
             recovered = _render_frame(env)
 
             stats = _pixel_diff_stats(gt_frame, recovered)
-            assert (
-                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
-            ), f"On-demand render at step {i} mismatch: {stats}"
+            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
+                f"On-demand render at step {i} mismatch: {stats}"
+            )
 
         env.close()
 
@@ -301,7 +312,7 @@ class TestOnDemandRendering:
         Confirms that stepping N walkers, then restoring just the best
         walker's state and rendering, produces a valid frame.
         """
-        env = plangym.make(name="walker-walk")
+        env = _make_env(name="walker-walk")
 
         state, _obs, _info = env.reset(return_state=True)
         N = 20
@@ -337,7 +348,7 @@ class TestOnDemandRendering:
             "hopper-stand",
         ]
         for task in tasks:
-            env = plangym.make(name=task)
+            env = _make_env(name=task)
 
             state, _obs, _info = env.reset(return_state=True)
             np.random.seed(42)
@@ -353,6 +364,6 @@ class TestOnDemandRendering:
             stats = _pixel_diff_stats(gt_frame, recovered)
             env.close()
 
-            assert (
-                stats["max_diff"] <= _MAX_PIXEL_TOLERANCE
-            ), f"Task {task} on-demand render mismatch: {stats}"
+            assert stats["max_diff"] <= _MAX_PIXEL_TOLERANCE, (
+                f"Task {task} on-demand render mismatch: {stats}"
+            )

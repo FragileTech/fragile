@@ -8,14 +8,10 @@ add_library(fg_control_core STATIC
   ${CONTROL_ROOT}/src/control/state.cpp
   ${CONTROL_ROOT}/src/control/physics.cpp
   ${CONTROL_ROOT}/src/control/wave.cpp
-  ${CONTROL_ROOT}/src/exploration_tree.cpp
-  ${CONTROL_ROOT}/src/thread_pool.cpp
-  ${CONTROL_ROOT}/src/tensor_ops.cpp
-  ${CONTROL_ROOT}/src/cloning.cpp
 )
 set_target_properties(fg_control_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_include_directories(fg_control_core PUBLIC ${CONTROL_ROOT}/src)
-target_link_libraries(fg_control_core PUBLIC Threads::Threads)
+target_link_libraries(fg_control_core PUBLIC Threads::Threads fg_numeric_core)
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   target_compile_options(fg_control_core PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off)
 endif()

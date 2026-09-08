@@ -1,3 +1,4 @@
+import { prepareWorkspace, applyDraft } from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 const browser = await chromium.launch({
@@ -6,8 +7,11 @@ const browser = await chromium.launch({
 });
 try {
   const page = await browser.newPage();
+  await prepareWorkspace(page);
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8080/lab/");
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await page.locator("#tab-controller").click();
   await page.evaluate(() => {
     document.getElementById("walkers").value = "12";
     document.getElementById("horizon").value = "5";
@@ -16,15 +20,14 @@ try {
     document.getElementById("threads").value = "1";
   });
   await page.locator("#algorithm").selectOption("wave-jump");
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
-  await page
-    .locator("details")
-    .filter({ has: page.locator("#algorithm-settings") })
-    .locator("summary")
-    .click();
+
+  await page.locator("details:has(#algorithm-settings) > summary").click();
   const toggle = page.locator("#planner-consensus_prefix");
   assert.equal(await toggle.isChecked(), true);
   await toggle.uncheck();
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
   await page.locator("#step").click();
   await page.waitForFunction(
@@ -38,11 +41,13 @@ try {
   );
   assert.equal(await toggle.isChecked(), false);
   await toggle.check();
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
   assert.equal(await toggle.isChecked(), true);
   assert.equal(await page.locator("#planner-max_horizon").inputValue(), "0");
   await page.locator("#planner-max_horizon").fill("1");
   await page.locator("#planner-max_horizon").press("Tab");
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
   await page.locator("#step").click();
   await page.waitForFunction(() =>
@@ -52,9 +57,20 @@ try {
   );
   await page.locator("#planner-max_horizon").fill("0");
   await page.locator("#planner-max_horizon").press("Tab");
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
   await toggle.uncheck();
+  await applyDraft(page);
   await page.waitForFunction(() => !document.getElementById("run").disabled);
+  // Worker timing checks need an idle event loop, without the live WebGL renderer.
+  const workerPage = new URL("worker-tests.html", page.url()).href;
+  await page.route(workerPage, (route) =>
+    route.fulfill({
+      contentType: "text/html",
+      body: "<!doctype html><title>Worker tests</title>",
+    }),
+  );
+  await page.goto(workerPage);
   const results = await page.evaluate(async (consensus) => {
     const scene = {
       size: [1000, 1000],

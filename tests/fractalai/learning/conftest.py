@@ -25,9 +25,9 @@ def _make_fake_mnist(n_samples: int = 100) -> tuple[torch.Tensor, np.ndarray, np
     return X, labels, colors
 
 
-def _make_fake_cifar10(n_samples: int = 100) -> tuple[torch.Tensor, np.ndarray, np.ndarray]:
+def _make_fake_fashion_mnist(n_samples: int = 100) -> tuple[torch.Tensor, np.ndarray, np.ndarray]:
     rng = np.random.RandomState(43)
-    X = torch.from_numpy(rng.rand(n_samples, 3072).astype(np.float32))
+    X = torch.from_numpy(rng.rand(n_samples, 784).astype(np.float32))
     labels = rng.randint(0, 10, size=n_samples).astype(np.int64)
     colors = rng.rand(n_samples).astype(np.float32)
     return X, labels, colors
@@ -45,14 +45,16 @@ def mock_mnist():
 
 
 @pytest.fixture()
-def mock_cifar10():
-    with patch("fragile.learning.data.get_cifar10_data", side_effect=_make_fake_cifar10) as m:
+def mock_fashion_mnist():
+    with patch(
+        "fragile.learning.data.get_fashion_mnist_data", side_effect=_make_fake_fashion_mnist
+    ) as m:
         yield m
 
 
 @pytest.fixture()
-def mock_both_datasets(mock_mnist, mock_cifar10):
-    yield mock_mnist, mock_cifar10
+def mock_both_datasets(mock_mnist, mock_fashion_mnist):
+    yield mock_mnist, mock_fashion_mnist
 
 
 @pytest.fixture()
@@ -78,16 +80,11 @@ def minimal_config(tmp_path):
         disable_vq=True,
         enable_supervised=False,
         enable_classifier_head=False,
-        enable_cifar_backbone=False,
         mlflow=False,
         use_scheduler=False,
         covariant_attn=False,
         baseline_attn=False,
-        baseline_vision_preproc=False,
-        vision_preproc=False,
         # Disable expensive losses
-        orbit_weight=0.0,
-        vicreg_inv_weight=0.0,
         orthogonality_weight=0.0,
         code_entropy_weight=0.0,
     )

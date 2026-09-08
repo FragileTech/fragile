@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from fragile.fractalai.qft.dashboard import (
+from fragile.fractalai.qft.old_dashboard import (
     _build_anchor_rows,
     BARYON_REFS,
     MESON_REFS,

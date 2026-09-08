@@ -29,6 +29,7 @@ def test_primitive_attentive_atlas_encoder_shapes() -> None:
         z_n_all_charts,
         c_bar,
         _v_local,
+        z_q_blended,
     ) = encoder(x)
 
     assert K_chart.shape == (4,)
@@ -41,6 +42,7 @@ def test_primitive_attentive_atlas_encoder_shapes() -> None:
     assert indices_stack.shape == (4, 3)
     assert z_n_all_charts.shape == (4, 3, 2)
     assert c_bar.shape == (4, 2)
+    assert z_q_blended.shape == (4, 2)
 
 
 def test_primitive_topological_decoder_shapes() -> None:
@@ -150,7 +152,7 @@ def test_decoder_conformal_freq_gating() -> None:
 
 
 def test_decoder_texture_flow() -> None:
-    """Texture flow produces flow_loss and is invertible."""
+    """Checkpoint-compatible texture flow remains invertible but is not injected."""
     torch.manual_seed(5)
     decoder = PrimitiveTopologicalDecoder(
         latent_dim=2,
@@ -161,18 +163,24 @@ def test_decoder_texture_flow() -> None:
         texture_flow_layers=4,
         texture_flow_hidden=32,
     )
+    decoder.eval()
     z_geo = torch.randn(4, 2)
     z_tex = torch.randn(4, 2)
     x_hat, _, aux_losses = decoder(z_geo, z_tex)
 
     assert x_hat.shape == (4, 3)
-    assert "flow_loss" in aux_losses
-    assert aux_losses["flow_loss"].ndim == 0
+    assert aux_losses == {}
+    # Decoding uses geometry only, matching world-model inference without texture.
+    without_texture, _, _ = decoder(z_geo)
+    torch.testing.assert_close(x_hat, without_texture)
 
     # Test invertibility
     flow = decoder.texture_flow
     assert flow is not None
+    loss = flow.flow_loss(z_tex, z_geo)
+    assert loss.ndim == 0 and torch.isfinite(loss)
     u, log_det = flow.forward(z_tex, z_geo)
+    assert log_det.shape == (4,) and torch.isfinite(log_det).all()
     z_tex_recovered = flow.inverse(u, z_geo)
     assert torch.allclose(z_tex, z_tex_recovered, atol=1e-5)
 
@@ -195,14 +203,17 @@ def test_decoder_all_features_combined() -> None:
         texture_flow_layers=4,
         texture_flow_hidden=32,
     )
+    decoder.eval()
     z_geo = torch.randn(4, 2)
     z_tex = torch.randn(4, 2)
     x_hat, router_weights, aux_losses = decoder(z_geo, z_tex)
 
     assert x_hat.shape == (4, 784)
     assert router_weights.shape == (4, 5)
-    assert "flow_loss" in aux_losses
-    assert aux_losses["flow_loss"].ndim == 0
+    assert aux_losses == {}
+    # Decoding uses geometry only, matching world-model inference without texture.
+    without_texture, _, _ = decoder(z_geo)
+    torch.testing.assert_close(x_hat, without_texture)
 
 
 def test_hard_routing_produces_onehot() -> None:
@@ -217,7 +228,9 @@ def test_hard_routing_produces_onehot() -> None:
     )
     x = torch.randn(8, 3)
     x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar, aux_losses = model(
-        x, use_hard_routing=True, hard_routing_tau=0.5,
+        x,
+        use_hard_routing=True,
+        hard_routing_tau=0.5,
     )
 
     # Shapes unchanged
@@ -248,7 +261,9 @@ def test_hard_routing_gradients_flow() -> None:
     )
     x = torch.randn(8, 3)
     x_recon, vq_loss, enc_weights, dec_weights, K_chart, z_geo, z_n, c_bar, aux_losses = model(
-        x, use_hard_routing=True, hard_routing_tau=0.5,
+        x,
+        use_hard_routing=True,
+        hard_routing_tau=0.5,
     )
 
     loss = torch.nn.functional.mse_loss(x_recon, x) + vq_loss

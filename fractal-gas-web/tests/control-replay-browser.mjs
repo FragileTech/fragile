@@ -55,6 +55,7 @@ try {
     () => document.getElementById("tick").textContent === "TICK 000000",
   );
   await page.locator("#tab-controller").click();
+  await page.locator("#algorithm").selectOption("fmc");
   // Keep this semantic regression deterministic on shared CPU hosts.
   await page.locator("#threads").evaluate((e) => (e.value = "1"));
   await page.locator("#frames").fill("6");
@@ -81,7 +82,7 @@ try {
     animations: "disabled",
     timeout: 120000,
     path: `${output}/rocket-detail.png`,
-    fullPage: true,
+    fullPage: false,
   });
   await page.locator("#step").click();
   await tick(12);
@@ -212,7 +213,7 @@ try {
     animations: "disabled",
     timeout: 120000,
     path: `${output}/vehicle-lineup.png`,
-    fullPage: true,
+    fullPage: false,
   });
   await page.locator("#focus").click();
   await graphicsReady();
@@ -220,7 +221,7 @@ try {
     animations: "disabled",
     timeout: 120000,
     path: `${output}/kart-detail.png`,
-    fullPage: true,
+    fullPage: false,
   });
   await page.locator("#step").click();
   await tick(6);
@@ -251,7 +252,7 @@ try {
     animations: "disabled",
     timeout: 120000,
     path: `${output}/motion-tablet.png`,
-    fullPage: true,
+    fullPage: false,
   });
   assert.equal(
     await page.evaluate(

@@ -1,3 +1,5 @@
+import { captureScreenshot } from "./helpers/screenshots.mjs";
+import { prepareWorkspace, applyDraft } from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 const browser = await chromium.launch({
@@ -18,6 +20,7 @@ try {
       }
     };
   });
+  await prepareWorkspace(page);
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8080/lab/");
   const ready = () =>
     page.waitForFunction(() => !document.getElementById("run").disabled);
@@ -25,13 +28,18 @@ try {
   const latest = () => page.evaluate(() => hookInits.at(-1));
   const apply = async () => {
     const n = await count();
-    await page.locator("#apply-rocks").click();
+    await page.locator("#hook-stiffness").press("Tab");
+    await applyDraft(page);
     await page.waitForFunction((n) => hookInits.length > n, n);
     await ready();
   };
   await ready();
+  await page.locator("#tab-setup").click();
   await page.locator("#scenario").selectOption("mining");
+  await applyDraft(page);
   await ready();
+  await page.locator("#tab-setup").click();
+  await page.locator("#world-physics > summary").click();
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "35");
   assert.equal(await page.locator("#rock-weight-slider").inputValue(), "0");
   assert.equal(await page.locator("#rock-weight-value").textContent(), "1×");
@@ -46,12 +54,18 @@ try {
   assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 0.0024);
   assert.ok(init.scene.tethers.every((t) => t.stiffness === 3000));
   assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
+  await page.locator("#tab-setup").click();
   await page.locator("#scenario").selectOption("harvest");
+  await applyDraft(page);
   await ready();
+  await page.locator("#tab-setup").click();
   assert.equal(await page.locator("#rock-weight-slider").inputValue(), "0");
   assert.equal(await page.locator("#rock-weight-value").textContent(), "1×");
+  await page.locator("#tab-setup").click();
   await page.locator("#scenario").selectOption("mining");
+  await applyDraft(page);
   await ready();
+  await page.locator("#tab-setup").click();
   assert.equal(await page.locator("#hook-stiffness").inputValue(), "3000");
   assert.equal(await page.locator("#rock-size").inputValue(), "0.1");
   assert.equal(await page.locator("#rock-weight-slider").inputValue(), "-2");
@@ -71,14 +85,20 @@ try {
   assert.ok(init.scene.tethers.every((t) => t.stiffness === 1000000));
   const n = await count();
   await page.locator("#rock-size").fill("0.09");
-  await page.locator("#apply-rocks").click();
+  await page.locator("#rock-size").press("Tab");
+  assert.equal(
+    await page.locator("#rock-size").evaluate((input) => input.validity.valid),
+    false,
+  );
   assert.equal(await count(), n);
   await page.locator("#rock-size").fill("0.1");
   await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator("#toggle-settings").click();
   await page.locator("#hook-stiffness").scrollIntoViewIfNeeded();
-  await page.screenshot({
+  await captureScreenshot(page, {
+    animations: "disabled",
     path: "/tmp/mining-hook-controls.png",
-    fullPage: true,
+    fullPage: false,
   });
   assert.deepEqual(errors, []);
   console.log(

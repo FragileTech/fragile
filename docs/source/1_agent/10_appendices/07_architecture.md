@@ -517,7 +517,10 @@ def class_modulated_jump_rate(
 **Purpose:** Computes class-consistent jump rates that suppress transitions between charts of different dominant classes, implementing the class-modulated rate from Definition {prf:ref}`def-class-consistent-jump-rate`.
 
 **Mathematical operation:**
-$$\lambda_{kk'}^{\text{sup}} = \lambda_{kk'}^{\text{base}} \cdot \exp(-\gamma_{\text{sep}} \cdot D_{\text{class}}(k, k'))$$
+
+$$
+\lambda_{kk'}^{\text{sup}} = \lambda_{kk'}^{\text{base}} \cdot \exp(-\gamma_{\text{sep}} \cdot D_{\text{class}}(k, k'))
+$$
 
 where $D_{\text{class}}(k, k') = 1$ if charts $k$ and $k'$ have different dominant classes, else $0$.
 
@@ -632,7 +635,10 @@ class CausalMask(nn.Module):
 **Purpose:** Computes the causal mask from the light cone structure, enforcing that attention is zero outside the causal past $J^-(z, t)$.
 
 **Mathematical operation:**
-$$M_{\text{causal}}(z, t; z', t') = \mathbf{1}\left[ t' < t \text{ and } d_G(z, z') \leq c_{\text{info}}(t - t') \right]$$
+
+$$
+M_{\text{causal}}(z, t; z', t') = \mathbf{1}\left[ t' < t \text{ and } d_G(z, z') \leq c_{\text{info}}(t - t') \right]
+$$
 
 **Key insight:** This is spacetime causality, not just temporal ordering. Events must be both in the past *and* within the light cone defined by the information speed $c_{\text{info}}$.
 
@@ -667,7 +673,10 @@ class TemporalChristoffelQuery(nn.Module):
 **Purpose:** Extends the geodesic Query projection to include temporal Christoffel terms for the Lorentzian metric.
 
 **Mathematical operation:**
-$$Q_{\text{geo}}(x, z, t, v) = W_Q x + W_{Qz} z + W_{Qt} t + W_{Qv} v + W_{Q,\Gamma}(z, z) + W_{Q,t}(t, t) + W_{Q,zt}(z, t)$$
+
+$$
+Q_{\text{geo}}(x, z, t, v) = W_Q x + W_{Qz} z + W_{Qt} t + W_{Qv} v + W_{Q,\Gamma}(z, z) + W_{Q,t}(t, t) + W_{Q,zt}(z, t)
+$$
 
 **Christoffel structure:** For the Lorentzian metric $g_{\mu\nu} = \text{diag}(-c^2\lambda^2, \lambda^2 I_d)$:
 - Spatial: $\Gamma^k_{ij} = \frac{2}{1-|z|^2}(\delta^k_i z_j + \delta^k_j z_i - \delta_{ij} z^k)$
@@ -797,7 +806,10 @@ class WilsonLineApprox(nn.Module):
 - `theta_opportunity` – $U(1)_Y$ connection coefficient
 
 **Mathematical operation:**
-$$U(z, z') \approx I - i\Theta(z) \cdot (z - z')$$
+
+$$
+U(z, z') \approx I - i\Theta(z) \cdot (z - z')
+$$
 
 where $\Theta$ encodes the total gauge connection $A_\mu = g_s G_\mu + g_2 W_\mu + g_1 B_\mu$.
 
@@ -875,7 +887,10 @@ class ChristoffelQuery(nn.Module):
 **Purpose:** Implements the geodesic Query projection encoding Christoffel symbols via linear + quadratic terms.
 
 **Mathematical operation:**
-$$Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} v_{\text{feat}} + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)$$
+
+$$
+Q_{\text{geo}}(x, z, v) = W_Q x + W_{Qz} z + W_{Qv} v_{\text{feat}} + W_{Q,\Gamma}(z, z) + W_{Qzv}(z, v)
+$$
 
 **Learnable parameters:**
 - `W_Q` – Feature projection
@@ -915,7 +930,10 @@ class ChiralProjector(nn.Module):
 **Purpose:** Implements the $SU(2)_L$ chiral projector that extracts committed actions from the observation-action doublet using the value gradient direction.
 
 **Mathematical operation:**
-$$\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})$$
+
+$$
+\hat{n}(z) = \frac{P \nabla_A V}{\|P \nabla_A V\|}, \quad \Pi_{\text{chirality}} = \frac{1}{2}(I_2 + \hat{n} \cdot \vec{\tau})
+$$
 
 where $\vec{\tau} = (\tau_1, \tau_2, \tau_3)$ are Pauli matrices.
 
@@ -963,7 +981,10 @@ class AreaLawScreening(nn.Module):
 **Purpose:** Implements $SU(N_f)_C$ area law screening for texture confinement. Suppresses attention between positions at different representation levels.
 
 **Mathematical operation:**
-$$\alpha_{\text{screened}} = \alpha \cdot \exp(-\sigma(\ell) \cdot A_{\text{string}})$$
+
+$$
+\alpha_{\text{screened}} = \alpha \cdot \exp(-\sigma(\ell) \cdot A_{\text{string}})
+$$
 
 where:
 - $\sigma(\ell) = \sigma_0 \cdot e^{-\ell/L}$ is the level-dependent string tension
@@ -1067,7 +1088,10 @@ class GeodesicCrossAttention(nn.Module):
 5. **Head 5 (B-step):** Second half-kick from force bank
 
 **OU coefficients:**
-$$c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}$$
+
+$$
+c_1 = e^{-\gamma h}, \quad c_2 = \sqrt{(1-c_1^2)T_c}
+$$
 
 **Boltzmann preservation:** Preserves $\rho(z, p) \propto \exp(-\Phi_{\text{eff}}/T_c - \|p\|_G^2/(2T_c))$ to $O(h^2)$ (Theorem {prf:ref}`thm-baoab-attention-boltzmann`).
 
@@ -1106,7 +1130,10 @@ class SpectralLinear(nn.Module):
 - `bias` – Typically `False` for gauge invariance (breaks tangent bundle structure)
 
 **Mathematical operation:**
-$$y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\text{normalized}}) \leq 1$$
+
+$$
+y = W_{\text{normalized}} \cdot x \quad \text{where} \quad \sigma_{\max}(W_{\text{normalized}}) \leq 1
+$$
 
 **Key properties:**
 - Contraction: $\|y\| \leq \|x\|$ (no unbounded amplification)
@@ -1145,7 +1172,10 @@ def norm_gated_activation(v: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
 **Purpose:** $SO(d_b)$-equivariant activation using radial symmetry. Gates signal based on energy $\|v\|$ exceeding threshold $-b$.
 
 **Mathematical operation:**
-$$f(v_i) = v_i \cdot g(\|v_i\| + b_i)$$
+
+$$
+f(v_i) = v_i \cdot g(\|v_i\| + b_i)
+$$
 
 where:
 - $\|v_i\| = \sqrt{v_i^T v_i}$ is the Euclidean norm (rotation-invariant)
@@ -1193,7 +1223,10 @@ class IsotropicBlock(nn.Module):
 **Purpose:** Atomic gauge-covariant building block combining SpectralLinear, Reshape, and NormGate in sequence.
 
 **Architecture:**
-$$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear}(z)))$$
+
+$$
+\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear}(z)))
+$$
 
 **Key parameters:**
 - `in_dim` – Input dimension [nat]
@@ -1214,7 +1247,10 @@ $$\text{IsotropicBlock}(z) = \text{NormGate}(\text{Reshape}(\text{SpectralLinear
 
 **Mathematical constraint (exact mode):**
 By Schur's lemma, any linear map commuting with all $g \in SO(d_b)$ must be a scalar multiple of identity:
-$$W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}$$
+
+$$
+W_i \cdot g_i = g_i \cdot W_i \quad \forall g_i \in SO(d_b) \quad \Rightarrow \quad W_i = \lambda_i I_{d_b}
+$$
 
 **Diagnostic nodes:** Node 67 (GaugeInvarianceCheck), Node 62 (CausalityViolationCheck), and the DNN-local BindingConfinementCheck (DNN-B). Global Node 40 is CapacitySaturationCheck.
 
@@ -1243,7 +1279,10 @@ class GaugeInvarianceCheck(DiagnosticNode):
 **Purpose:** Diagnostic node (Node 67) that verifies $G$-equivariance by sampling random group transformations and measuring violation.
 
 **Mathematical test:**
-$$\delta_{\text{gauge}} = \|f(g \cdot z) - g \cdot f(z)\| < \epsilon_{\text{gauge}}$$
+
+$$
+\delta_{\text{gauge}} = \|f(g \cdot z) - g \cdot f(z)\| < \epsilon_{\text{gauge}}
+$$
 
 where $g$ is a randomly sampled group element (e.g., rotation matrix for $SO(d)$).
 
@@ -1297,7 +1336,10 @@ class CovariantRetina(nn.Module):
 - `kernel_size` – Convolutional kernel size [pixels]
 
 **Equivariance guarantee:**
-$$\text{Conv}(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}(I)$$
+
+$$
+\text{Conv}(R_\theta \cdot I) = D^{(\ell)}(\theta) \cdot \text{Conv}(I)
+$$
 
 where $R_\theta$ is a rotation by angle $\theta$ and $D^{(\ell)}$ is the representation matrix.
 
@@ -1383,7 +1425,10 @@ class SoftEquivariantLayer(nn.Module):
 **Purpose:** Core latent dynamics layer combining equivariant and mixing pathways with L1 regularization for emergent structure discovery.
 
 **Architecture:**
-$$z_{\text{out}} = z + f_{\text{equiv}}(z) + g \cdot f_{\text{mix}}(z)$$
+
+$$
+z_{\text{out}} = z + f_{\text{equiv}}(z) + g \cdot f_{\text{mix}}(z)
+$$
 
 where:
 - **Equivariant pathway:** $f_{\text{equiv}}(z) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$
@@ -1472,7 +1517,10 @@ def equivariance_violation(self, z=None, n_samples=16) -> torch.Tensor:
 ```
 
 **Total loss:**
-$$\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}$$
+
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{task}} + \lambda_{\text{L1}} \mathcal{L}_{\text{L1}} + \lambda_{\text{equiv}} \mathcal{L}_{\text{equiv}}
+$$
 
 **Key theorems:**
 - Universal approximation (encoder/decoder handle arbitrary functions)
@@ -1508,7 +1556,10 @@ class FactoredTensorLayer(nn.Module):
 **Purpose:** Low-rank factorization of tensor product interaction for cross-gauge coupling.
 
 **Mathematical operation:**
-$$W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}$$
+
+$$
+W = \sum_{k=1}^r U_C^{(k)} \otimes U_L^{(k)} \otimes U_Y^{(k)}
+$$
 
 instead of full tensor $W \in \mathbb{R}^{(d_C d_L d_Y) \times d_{\text{out}}}$.
 
@@ -1546,7 +1597,10 @@ class NormInteractionLayer(nn.Module):
 **Purpose:** Level 1 cross-bundle interaction using only bundle norms (strictly equivariant).
 
 **Mathematical operation:**
-$$f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)$$
+
+$$
+f_i(v_1, \ldots, v_{n_b}) = v_i \cdot \phi_i(\|v_1\|, \ldots, \|v_{n_b}\|)
+$$
 
 where $\phi: \mathbb{R}^{n_b} \to \mathbb{R}_+$ is an MLP with Softplus output.
 
@@ -1578,9 +1632,18 @@ class GramInteractionLayer(nn.Module):
 **Purpose:** Level 2 cross-bundle interaction using Gram matrix $G_{ij} = \langle v_i, v_j \rangle$ (encodes relative orientations).
 
 **Mathematical operation:**
-$$G = z \cdot z^T \quad \text{(Gram matrix)}$$
-$$\text{scales} = \phi(G_{\text{flat}}) \quad \text{(MLP)}$$
-$$z_{\text{out}} = z \cdot \text{scales}$$
+
+$$
+G = z \cdot z^T \quad \text{(Gram matrix)}
+$$
+
+$$
+\text{scales} = \phi(G_{\text{flat}}) \quad \text{(MLP)}
+$$
+
+$$
+z_{\text{out}} = z \cdot \text{scales}
+$$
 
 **Equivariance:** Equivariant under **global** $SO(d_b)$ (same rotation applied to all bundles), **not** under per-bundle rotations.
 
@@ -1616,7 +1679,10 @@ class AdaptiveL1Scheduler:
 **Purpose:** Adaptive scheduler for L1 regularization strength $\lambda_{\text{L1}}$ that targets a specific equivariance violation level.
 
 **Update rule:**
-$$\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)$$
+
+$$
+\lambda_{\text{L1}}(t+1) = \lambda_{\text{L1}}(t) \cdot \left(1 + \alpha \cdot (\epsilon(t) - \epsilon_{\text{target}})\right)
+$$
 
 where:
 - $\epsilon(t) = \mathcal{L}_{\text{equiv}}(t)$ is current equivariance violation
