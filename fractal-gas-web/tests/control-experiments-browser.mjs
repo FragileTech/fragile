@@ -1,3 +1,4 @@
+import { captureScreenshot } from "./helpers/screenshots.mjs";
 import {
   prepareWorkspace,
   applyDraft,
@@ -224,7 +225,7 @@ try {
   await page.waitForFunction(() =>
     document.getElementById("batch-profile").textContent.includes("GB/s"),
   );
-  await page.screenshot({ path: `${output}/experiments.png`, fullPage: true });
+  await captureScreenshot(page, { path: `${output}/experiments.png` });
   await page.locator("#close-experiments").click();
   await page.locator("#motion-timeline").fill("0");
   await page.locator("#motion-resume").click();
@@ -333,9 +334,8 @@ try {
     canvas.y + canvas.height / 2 + 20,
   );
   await page.mouse.up({ button: "right" });
-  await page.screenshot({
+  await captureScreenshot(page, {
     path: `${output}/editor-controls.png`,
-    fullPage: true,
   });
   // Exercise more than eight resident chunks, export/import, and cold reopening.
   const stored = await page.evaluate(async () => {
@@ -440,10 +440,9 @@ try {
     "Browser errors:",
     errors,
   );
-  await page.screenshot({
+  await captureScreenshot(page, {
     path: `${output}/experiments-error.png`,
-    fullPage: true,
-  });
+  }).catch(() => {});
   throw error;
 } finally {
   await browser.close();
