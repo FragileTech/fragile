@@ -1,3 +1,4 @@
+import { prepareWorkspace, applyDraft, openFiles, closeFiles } from "./helpers/workspace-ui.mjs";
 // Generic controllers, complete checkpoints, experiments, and durable replay.
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
@@ -18,7 +19,7 @@ page.on("console", (m) => {
   if (m.type() === "error") errors.push(m.text());
 });
 const ready = () =>
-  page.waitForFunction(() => !document.getElementById("run").disabled);
+  page.waitForFunction(() => !document.querySelector("main").inert && document.getElementById("backend").textContent.includes("WEBASSEMBLY"));
 const tick = (n) =>
   page.waitForFunction(
     (n) =>
@@ -27,26 +28,33 @@ const tick = (n) =>
     n,
   );
 const download = async (id, name) => {
+  if (id !== "export-experiment") await openFiles(page);
   const pending = page.waitForEvent("download");
   await page.locator("#" + id).click();
   const file = `${output}/${name}`;
   await (await pending).saveAs(file);
+  await closeFiles(page);
   return file;
 };
 const upload = async (id, file) => {
+  await openFiles(page);
   const pending = page.waitForEvent("filechooser");
   await page.locator("#" + id).click();
   await (await pending).setFiles(file);
+  await closeFiles(page);
 };
 try {
+  await prepareWorkspace(page);
   await page.goto(base);
   await ready();
   // Keep the replay fixture at six frames after checking the new default.
   await page.waitForFunction(
-    () => document.getElementById("tick").textContent === "TICK 000012",
+    () => document.getElementById("tick").textContent === "TICK 000000",
   );
+  await page.locator("#tab-controller").click();
   await page.locator("#frames").fill("6");
   await page.locator("#frames").press("Tab");
+  await applyDraft(page);
   await ready();
   await page.locator("#step").click();
   await page.waitForFunction(
@@ -65,6 +73,7 @@ try {
   });
   for (const algorithm of ["random", "cem", "icem", "mppi"]) {
     await page.locator("#algorithm").selectOption(algorithm);
+    await applyDraft(page);
     await ready();
     await tick(0);
     await page.locator("#step").click();
@@ -88,6 +97,7 @@ try {
       assert.deepEqual(await readFile(replayed), await readFile(future));
     }
   }
+  await page.locator("#technical-diagnostics").evaluate(e => e.open=true);
   await page.locator("#inspect-physics").check();
   await page.waitForFunction(() =>
     document
@@ -131,19 +141,21 @@ try {
   const waveRestored = await download("save-state", "wave-restored.fgcs");
   assert.deepEqual(await readFile(waveRestored), await readFile(waveFuture));
 
-  await page.locator("#persistent-recording").check();
+  assert.equal(await page.locator("#persistent-recording").isChecked(), true);
   await page.locator("#reset").click();
   await ready();
   await tick(0);
   await page.locator("#step").click();
   await tick(2);
+  await page.locator("#timeline-events").click();
   await page.locator("#event-note").fill("Persistent marker");
   await page.locator("#add-event").click();
+  await openFiles(page);
   await page.locator("#flush-run").click();
   await page.waitForFunction(() =>
     document
-      .getElementById("status")
-      .textContent.includes("saved on this device"),
+      .getElementById("save-status")
+      .textContent.includes("Saved on this device"),
   );
   const recorded = await download("export-run", "persistent.fgcrec");
   await upload("import-run", recorded);
@@ -159,9 +171,6 @@ try {
   for (const [id, value] of Object.entries({
     "benchmark-seeds": "7",
     "benchmark-frames": "6",
-    "benchmark-walkers": "8",
-    "benchmark-horizon": "2",
-    "benchmark-action-frames": "2",
     "benchmark-target": "6",
   }))
     await page.locator("#" + id).fill(value);
@@ -188,7 +197,7 @@ try {
   await page.waitForFunction(
     () => document.querySelectorAll("#comparison-worlds canvas").length === 2,
   );
-  await page.locator("#comparison-timeline").fill("6");
+  await page.locator("#comparison-timeline").fill(await page.locator("#comparison-timeline").getAttribute("max"));
   await page.locator("#comparison-timeline").dispatchEvent("input");
   await page.locator("#experiment-dialog details summary").click();
   await page.locator("#profile-batch").click();
@@ -197,8 +206,11 @@ try {
   );
   await page.screenshot({ path: `${output}/experiments.png`, fullPage: true });
   await page.locator("#close-experiments").click();
+  await page.locator("#motion-timeline").fill("0");
+  await page.locator("#motion-resume").click();
+  await ready();
   // Editor operations use scene-independent numeric and channel controls.
-  await page.locator("#edit").click();
+  await page.locator("#mode-edit").click();
   await page.locator("#edit-json").click();
   await page.locator("#scene-json").fill(
     JSON.stringify({
@@ -223,7 +235,9 @@ try {
     }),
   );
   await page.locator("#apply-json").click();
+  await applyDraft(page);
   await ready();
+  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
   await tick(0);
   await page.locator("#view").click();
   const selectBody = async (index, shift = false) => {
@@ -246,7 +260,9 @@ try {
   );
   await page.locator('#entity-properties input[data-path="mass"]').fill("2");
   await page.locator("#apply-properties").click();
+  await applyDraft(page);
   await ready();
+  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
   await selectBody(0);
   await selectBody(1, true);
   assert.match(
@@ -254,7 +270,9 @@ try {
     /2 selected/,
   );
   await page.locator("#duplicate-entities").click();
+  await applyDraft(page);
   await ready();
+  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
   assert.match(await page.locator("#footer-stats").textContent(), /4 BODIES/);
   await page.locator("#edit-json").click();
   const duplicated = JSON.parse(await page.locator("#scene-json").inputValue());
@@ -262,18 +280,23 @@ try {
   assert.deepEqual([duplicated.tethers[1].a, duplicated.tethers[1].b], [2, 3]);
   await page.keyboard.press("Escape");
   await page.locator("#undo").click();
+  await applyDraft(page);
   await ready();
+  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
   await selectBody(0);
   await page.locator("#template-name").fill("Custom kart");
   await page.locator("#save-template").click();
+  await applyDraft(page);
   await ready();
+  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
   assert.equal(await page.locator("#agent-type option").count(), 1);
-  await page.locator("#editor details summary").click();
-  assert.equal(await page.locator("#action-channels input").count(), 6);
-  await page.locator("#action-channels input").first().fill("1");
-  await page.locator("#apply-action").click();
-  await tick(1);
   await page.locator("#close-editor").click();
+  await page.locator("#mode-drive").click();
+  assert.equal(await page.locator("#drive-channels input").count(), 3);
+  await page.locator("#drive-channels input").first().fill("1");
+  await page.locator("#drive-step").click();
+  await tick(1);
+  await page.locator("#mode-inspect").click();
   const canvas = await page.locator("#world").boundingBox();
   await page.mouse.move(
     canvas.x + canvas.width / 2,
@@ -358,7 +381,7 @@ try {
   assert.ok(stored.compressed < stored.raw);
   await page.reload();
   await ready();
-  await tick(6);
+  await tick(0);
   const reopened = await page.evaluate(async (id) => {
     const { StoredMotionRecording } = await import(
       "/lab/storage/recording-store.js"
@@ -375,6 +398,7 @@ try {
   assert.deepEqual(reopened.first, stored.first);
   assert.equal(reopened.saved.rng, 17);
   assert.equal(reopened.events.at(-1).label, "Saved event");
+  await openFiles(page);
   await page.locator("#open-library").click();
   await page.waitForFunction(
     () => document.querySelectorAll(".stored-run").length >= 3,

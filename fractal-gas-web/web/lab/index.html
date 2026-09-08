@@ -7,6 +7,7 @@
     <title>Fragile Tech · Fractal Gas laboratory</title>
     <link rel="icon" type="image/png" href="./branding/favicon.png" />
     <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./workspace.css" />
     <script src="../coi-serviceworker.min.js"></script>
     <script type="module" src="./main.js"></script>
   </head>
@@ -76,7 +77,7 @@
         <p class="intro">
           A continuous-control laboratory<br />for Fractal Gas.
         </p>
-        <label class="field" data-help="Select the task and world geometry used by the engine. Loading a new environment resets the live world and its replay history."
+        <label class="field" data-help="Select the task and world geometry used by the engine. Selecting an environment prepares a draft. Apply and restart saves the previous run and loads the new world."
           >Environment<select
             id="scenario"
             aria-label="Environment"
@@ -93,11 +94,11 @@
               <option value="harvester">Harvesters</option>
             </select></label>
         </div>
-        <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Changing it restarts the scene and clears the current run."
+        <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Apply and restart changes the count after saving the current run."
           >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
-        <p class="scenario-description">Changing vehicles restarts the scene paused.</p>
+        <p class="scenario-description">Vehicle changes are staged. Apply and restart when ready.</p>
         <div id="flight-controls">
-          <label id="flight-control" class="check flight-toggle" data-help="Apply downward gravity and use propulsors to stay aloft. When the scene has no explicit override, the lab detects flight automatically from controlled rockets and drones. Clicking this control forces flight on or off and resets the scene paused.">
+          <label id="flight-control" class="check flight-toggle" data-help="Apply downward gravity and use propulsors to stay aloft. When the scene has no explicit override, the lab detects flight automatically from controlled rockets and drones. This stages a flight override; Apply and restart commits it.">
             <input id="flight-mode" type="checkbox" aria-describedby="flight-mode-state" disabled />
             <span>Flight mode</span>
             <output id="flight-mode-state" for="flight-mode">AUTO</output>
@@ -119,7 +120,7 @@
             <input id="hook-stiffness" type="number" min="0" max="1000000" step="any" value="35" required />
           </label>
           <button id="apply-rocks">Apply rock settings</button>
-          <p class="scenario-description">Size changes the rock hull; weight changes its mass. Delivered rocks respawn. Applying restarts the scene paused.</p>
+          <p class="scenario-description">Size changes the rock hull; weight changes its mass. Delivered rocks respawn. Apply and restart commits these settings.</p>
         </div>
         <label id="track-control" class="field" hidden
           >Select track<select id="track" aria-label="Select track"></select></label>
@@ -139,7 +140,7 @@
           <summary>Problem properties</summary>
           <div id="agent-action-settings"></div>
           <button id="apply-action-settings">Apply problem settings</button>
-          <p class="scenario-description">Adjust the action magnitude independently for every degree of freedom on each controlled agent type. 1× is the native range; 0× disables a channel and 10× allows ten times the native force or torque. Applying restarts the scene paused.</p>
+          <p class="scenario-description">Adjust the action magnitude independently for every degree of freedom on each controlled agent type. 1× is the native range; 0× disables a channel and 10× allows ten times the native force or torque. Apply and restart commits these settings.</p>
         </details>
         <details id="reward-settings" open>
           <summary>Reward terms</summary>
@@ -416,8 +417,7 @@
         </div>
         <p>
           Shift-click to select several entities. Drag to move the selection.
-          Middle/right-drag to pan. Changes rebuild the scene and reset its
-          state.
+          Middle/right-drag to pan. Changes edit a draft; Apply and restart commits them.
         </p>
         <label class="field" data-help="Choose what a click in the world creates or selects. Agent uses the selected reusable agent type; polygon tools compile geometry after Finish polygon."
           >Tool<select id="tool">
@@ -631,7 +631,7 @@
             min="0"
             max="0"
             value="0"
-            aria-label="Comparison frame"
+            aria-label="Comparison time (seconds)"
           />
         </div>
       </section>

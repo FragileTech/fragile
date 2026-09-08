@@ -24,11 +24,35 @@ is used only for rendering.
 
 ## Run the laboratory
 
-Reward **Apply settings** works mid-run: it preserves the world, camera, selection,
-and recording while preparing a new planner. Running experiments resume after a
-brief synchronization pause; paused experiments stay paused. Recording boundaries
-retain the reward weights and coefficients for replay continuation and export.
-Earlier reward values are not recalculated. Failed updates keep the previous settings.
+The Lab starts paused with a first-visit task chooser. Its persistent toolbar keeps
+Run, Step, Restart, and Save / Open beside the simulation. Setup, Controller,
+Rewards, and View panels expose common controls before advanced settings.
+
+Configuration fields edit a draft. **Apply and restart** commits scene, controller,
+and recording-policy changes together; **Discard changes** restores active values.
+Reward-only edits use **Apply to current run**, preserving the world and recording.
+Before replacing a run, the Lab pauses the worker, saves on this device, prepares
+the replacement, and commits it only after initialization succeeds. Storage errors
+offer Retry, Export, Cancel, and an explicit Continue without saving.
+
+**Inspect / Edit / Drive** selects the interaction mode. Drive starts paused;
+**Start driving** advances fixed physics steps continuously, including after keys
+are released. Pause, focus loss, a hidden tab, or a modal stop driving. Unsupported
+keyboard channels remain accessible through the Drive actuator sliders.
+
+The timeline separates **World motion** from **Planner decisions**. Opened runs are
+read-only; **Create run from this frame** preserves the parent and starts a distinct
+paused child with a fresh planner. Planner checkpoints remain the mechanism for
+exact search continuation. Comparisons expose structured A/B settings, duplication,
+a difference summary, and playback synchronized by simulation time.
+
+Run the workspace acceptance checks against a local server with:
+
+```sh
+cd fractal-gas-web
+CONTROL_TEST_URL=http://127.0.0.1:8089/lab/ npm run test:lab-workspace
+node tools/capture-workspace.mjs
+```
 
 On GitHub Pages the lab is published at `/fragile/lab/`, alongside the arcade
 at `/fragile/`, the documentation portal at `/fragile/docs/`, the lectures at

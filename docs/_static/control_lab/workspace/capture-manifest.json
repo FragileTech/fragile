@@ -1,0 +1,21 @@
+{
+  "source": "capture-workspace.mjs",
+  "viewports": [
+    [
+      1280,
+      720
+    ],
+    [
+      390,
+      844
+    ]
+  ],
+  "captures": [
+    "tasks",
+    "desktop",
+    "drive",
+    "steampunk",
+    "mobile",
+    "mobile-reduced-motion"
+  ]
+}

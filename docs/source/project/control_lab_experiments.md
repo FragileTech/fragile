@@ -19,8 +19,9 @@ two futures from one world, and measurements of physics and state movement.
 :::{div} feynman-prose
 Click **Experiments** above the viewport. Opening the dialog pauses live control.
 **Run benchmark** resets an independent world for each seed and controller variant;
-it does not start trials from the current vehicle position. The selected scene,
-including edits, is used unless **All preset scenes** is checked. Trials run
+it does not start trials from the current vehicle position. The active scene,
+including applied edits, is used unless **All preset scenes** is checked. Pending
+workspace settings do not enter the trial; apply them before opening Experiments. Trials run
 sequentially in a separate worker, with complete planning at each decision.
 The live **Clock** setting does not impose deadlines here.
 
@@ -49,16 +50,16 @@ decisions does not imply an equal amount of movement.
 :::{div} feynman-added
 | Field | Default and accepted values | Meaning |
 |---|---|---|
-| **Variant A** | Fractal Monte Carlo (`fmc`) | First controller. All registered controllers appear. |
-| **Variant B** | Cross-entropy shooting (`cem`) | Second controller; may equal A for parameter comparisons. |
+| **Variant A** | Active controller and applied settings | First configuration. All registered controllers appear. |
+| **Variant B** | Active controller and applied settings | Second configuration; starts identical to A so you can change one parameter. |
 | **Seeds** | `7,11,19`; 1–64 comma-separated unsigned 32-bit integers | Reset seed and base planning seed for each episode. Duplicate seeds are permitted, but do not add independent trials. |
 | **Episode limit · frames** | 240; integer 1–36000 | Maximum number of executed physics frames in each trial. |
-| **Population** | 32; integer 1–8192 | `walkers` for both variants before overrides. |
-| **Lookahead · actions** | 8; integer 1–4096 | `horizon` for both variants before overrides. |
-| **Action duration · frames** | 4; integer 1–4096 | `frames` per proposed action. Unlike the live field, this accepts more than 60. |
+| **Candidate worlds** | Inherits active settings; integer 1–8192 | `walkers`, set separately for A and B. |
+| **Lookahead actions** | Inherits active settings; integer 1–4096 | `horizon`, set separately for A and B. |
+| **Action duration (frames)** | Inherits active settings; integer 1–60 | `frames` per proposed action, set separately for A and B. The command-line API accepts up to 4096. |
 | **Success metric** | Cargo deliveries (`deliveries`) initially | Counter or accumulated quantity used to stop successfully. |
 | **Success target** | 1 initially | Finite positive threshold. The input displays a minimum of 0.01; episode validation accepts any finite value greater than zero. |
-| **Variant A/B parameter overrides (JSON)** | `{}` | Final settings overrides for that variant. Use a JSON object. |
+| **Advanced variant JSON** | Complete variant settings object | Another editor for the same configuration; valid changes update the ordinary fields. |
 | **All preset scenes** | Unchecked | Fetch all catalog presets and apply this specification to each. Ignores edits to the current scene. |
 :::
 
@@ -72,13 +73,23 @@ that is one cargo delivery. Always check the goal after switching tasks. This UI
 behavior differs from the `runEpisode` API: when no goal is supplied and the scene
 has no evaluation, the API uses survival for the episode's frame limit.
 
-Variant settings are assembled in this order: current live planner settings, then
-the dialog's controller/population/lookahead/action-duration fields and
-`recording: 0`, then the variant JSON overrides last. An override can therefore
-change even `algorithm`, `walkers`, or `recording`. Live algorithm-specific fields
-only exist for the currently selected live controller; absent options for another
-variant use that algorithm's defaults. Set both JSON objects explicitly when the
-comparison depends on those values.
+Each time you open the dialog, A and B start from the active workspace settings.
+Choose a controller independently for each variant. Its ordinary fields come from
+the controller registry, so population, lookahead, action duration, and the chosen
+algorithm's parameters are available without writing JSON. An absent parameter
+uses that controller's default. **Duplicate A into B** copies the complete A
+configuration; change one B field and read the difference summary before running.
+
+**Advanced variant JSON** edits the same configuration as the ordinary fields.
+It is a complete settings object, not a second layer of overrides. Field edits
+update JSON; valid JSON changes update the fields. Invalid JSON or out-of-range
+parameter values must be corrected before starting. Trial settings always use
+`recording: 0`; a JSON value cannot turn an ordinary benchmark into a motion capture.
+
+Starting a job copies its scene, root when comparing, and complete specification.
+The form is disabled while it runs, and later edits cannot change the configuration
+attached to its completed report. This matters when you tune another candidate:
+a result should continue to describe the candidate you actually tested.
 
 Wave Jump retains at least a pruned tree internally, including with `recording: 0`,
 because parent links are needed to recover the selected sequence. That internal
@@ -86,15 +97,17 @@ ancestry does not turn an ordinary benchmark into an exported motion recording.
 :::
 
 ```json
-{"search_iterations": 3, "mppi_sigma": 0.35, "mppi_temperature": 2}
+{"algorithm": "mppi", "walkers": 128, "horizon": 16, "frames": 6, "search_iterations": 3, "mppi_sigma": 0.35, "mppi_temperature": 2}
 ```
 
 :::{div} feynman-prose
-For this example choose MPPI in the corresponding variant selector. To compare two
-MPPI noise scales, select MPPI in both selectors and put a different `mppi_sigma`
-in each override. An optional `label` string names a comparison pane and is retained
-in the report; the summary table still displays the algorithm ID. See the complete
-parameter reference in {doc}`control_lab_controls`.
+The example is a variant settings object for MPPI. For a noise-scale comparison,
+choose MPPI in A, set its parameters in the ordinary fields, and click
+**Duplicate A into B**. Change B's `mppi_sigma` using its corresponding field or
+JSON. Check that the difference summary contains the intended change. An optional
+`label` string in the JSON names a comparison pane and is retained in the report;
+the summary table still displays the algorithm ID. See the complete parameter
+reference in {doc}`control_lab_controls`.
 :::
 
 (sec-lab-experiments-goals)=
@@ -137,9 +150,8 @@ or run task-specific benchmarks separately. The API and command-line specificati
 can omit `goal`; then each scene's `evaluation` is used, falling back to survival
 for `maxFrames` when a scene has no evaluation. The UI always sends a goal.
 
-**Run benchmark** displays completed/total episode progress. **Cancel** requests
-cooperative cancellation at a worker yield; it does not interrupt the middle of a
-native operation. Partial trials are not returned as a new completed report.
+**Run benchmark** displays completed/total episode progress. **Cancel** stops the experiment worker. Partial trials are not returned as a
+new completed report.
 Closing the dialog terminates its worker and disposes the comparison renderers.
 Opening another job also replaces the previous worker. A previously completed
 report can remain available for export, so confirm **Benchmark complete** before
@@ -217,16 +229,20 @@ preserves the root's environment random state rather than resetting it to that s
 **All preset scenes** does not affect a fork.
 
 After both branches finish, the panes show their executed world movement. Drag the
-**Comparison frame** slider to inspect the same frame index in both recordings.
-**Play both** advances one index at about 60 wall-clock updates per second;
-**Pause both** stops it. The shorter branch holds its last frame while the longer
-one continues. Playback is frame-synchronized and has no speed selector; scenes
-with `physics.dt` other than `1/60` will not play at their simulated real-time rate.
+**Comparison time (seconds)** slider to inspect the same elapsed simulation time in
+both recordings. Each pane selects the last recorded frame at or before that time.
+**Play both** advances simulation seconds according to elapsed playback time;
+**Pause both** stops it. The shorter branch holds its last frame and is labeled
+**Finished** while the longer branch continues. Playback uses each recording's
+physics time step, so changing `physics.dt` does not change the meaning of a second
+on the comparison timeline. There is no playback-speed selector.
 
-Pane titles show the variant label or algorithm and success, time limit, or
-“collision death.” That last label denotes a terminal flag; custom task extensions
-can terminate a world for reasons other than collision. The display shows no search
-trees, and tethers remain visible.
+Pane titles identify the variant by its optional label or algorithm and show
+**success**, **terminal state**, or **time limit**. A terminal state does not
+necessarily mean a collision; custom tasks can terminate for other reasons. Each pane also reports planning milliseconds and simulated planning-world
+frames. Compare these costs alongside success and the movement you can see: equal
+lookahead and population need not produce equal planning work. The display shows
+no search trees, and tethers remain visible.
 
 **Export experiment** now exports a comparison report with `version`, `scene`,
 `spec`, and `branches`. Each branch contains `stats` and an `archive` string holding
@@ -275,7 +291,7 @@ exclude some scratch arrays, search trees, and allocator overhead. The probe's
 numbers are separate from the most recent benchmark/comparison report; **Export
 experiment** does not add a probe result to that report.
 
-Enable **Physics inspector** below the main recording controls. At roughly 250 ms
+Enable **Physics inspector** in the main inspector's **Diagnostics** section. At roughly 250 ms
 intervals, it examines the displayed row in a separate prediction engine. Cyan
 arrows show velocity times 0.25 s; amber external force and magenta tether force use
 0.05 m/N; red arrows show nearby contact normals. Arrows are capped at 8 world units
@@ -330,7 +346,8 @@ node fractal-gas-web/tools/control-benchmark.mjs \
 :::{div} feynman-prose
 The first input may instead be a JSON array of 1–16 complete scene objects. The
 specification accepts 1–8 variants, whereas the UI exposes two. Each variant must
-provide integer `walkers`, `horizon`, and `frames` within the ranges listed above.
+provide integer `walkers` in 1–8192, `horizon` in 1–4096, and `frames` in 1–4096.
+The UI limits action duration to 60 frames; this CLI range is wider.
 There are no inherited live UI settings in the CLI. Omit `goal` to use each scene's
 evaluation or the survival fallback. The repository also supplies
 `fractal-gas-web/web/lab/benchmarks/smoke-spec.json`, supplying a ready-made controller suite.

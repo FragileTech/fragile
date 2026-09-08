@@ -1,3 +1,4 @@
+import { openFiles, closeFiles } from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { resolveBodies } from "../web/lab/agent-types.js";
@@ -15,6 +16,7 @@ try {
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.addInitScript(() => {
+    localStorage.setItem("lab.workspace.onboarded", "true");
     Object.defineProperty(navigator, "serviceWorker", { value: undefined });
     window.vehicleInits = [];
     const Base = window.Worker;
@@ -44,7 +46,12 @@ try {
   const change = async (action) => {
     const count = await page.evaluate(() => vehicleInits.length);
     await action();
+    await page.waitForFunction(() => !document.body.dataset.loadingPreset);
+    await closeFiles(page);
+    if (await page.locator("#pending-settings").isVisible()) await page.locator("#apply-configuration").click();
+    else return;
     await page.waitForFunction((n) => vehicleInits.length > n, count);
+    await page.waitForFunction(() => !document.querySelector("main").inert);
     await ready();
   };
   const select = (id, value) =>
@@ -56,6 +63,7 @@ try {
     });
   await ready();
   console.log("Vehicle browser check: initial scene ready");
+  await page.locator("#tab-controller").click();
   for (const [id, value] of [
     ["walkers", "8"],
     ["horizon", "2"],
@@ -65,6 +73,7 @@ try {
     await page.locator(`#${id}`).press("Tab");
     await ready();
   }
+  await page.locator("#tab-setup").click();
   const fleetWorld = ({ bodies, description, ...rest }) => rest;
   for (const environment of [
     "harvest",
@@ -91,7 +100,7 @@ try {
       assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
       assert.equal(
         await page.locator("#run").textContent(),
-        "▶ Run experiment",
+        "Run",
       );
       assert.deepEqual(fleetWorld(scene), fleetWorld(before));
       const bodies = resolveBodies(scene);
@@ -136,6 +145,7 @@ try {
   );
   await setCount(3);
   await select("ants-vehicle-type", "rocket");
+  await page.locator("#world-physics").evaluate(e => e.open = true);
   await change(() => page.locator("#flight-mode").uncheck());
   await select("ants-vehicle-type", "drone");
   assert.equal((await latest()).environment.flight, false);
@@ -159,7 +169,7 @@ try {
   imported.bodies[0] = { agent_type: "drone", position: [10, 10], angle: 0.4 };
   imported.environment = { flight: false };
   imported.rewards = { ...(imported.rewards || {}), movement: 2 };
-  await page.locator("#edit").click();
+  await openFiles(page);
   await change(async () => {
     const choosing = page.waitForEvent("filechooser");
     await page.locator("#import-scene").click();
@@ -180,13 +190,13 @@ try {
       .evaluate((option) => option.disabled),
     true,
   );
-  await page.locator("#close-editor").click();
+  await closeFiles(page);
   await select("ants-vehicle-type", "harvester");
   const converted = await latest();
   assert.deepEqual(converted.bodies[0].position, [10, 10]);
   assert.deepEqual(converted.rewards, imported.rewards);
   assert.equal(converted.environment.flight, false);
-  await page.locator("#edit").click();
+  await openFiles(page);
   const downloading = page.waitForEvent("download");
   await page.locator("#export-scene").click();
   const chunks = [];

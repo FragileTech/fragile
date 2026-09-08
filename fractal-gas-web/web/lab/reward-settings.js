@@ -179,10 +179,10 @@ export class RewardSettings {
     this.pending.id = "reward-settings-status";
     this.pending.setAttribute("role", "status");
     this.pending.textContent =
-      "Settings applied. Changes require Apply settings.";
+      "Active reward settings. Edit a value to prepare a change.";
     this.apply = document.createElement("button");
     this.apply.type = "button";
-    this.apply.textContent = "Apply settings";
+    this.apply.textContent = "Apply to current run";
     this.apply.onclick = () => {
       for (const { number } of this.inputs.values())
         if (!number.reportValidity()) return;
@@ -213,8 +213,8 @@ export class RewardSettings {
           Number(number.value) !== this.appliedValues[key],
       );
     this.pending.textContent = dirty
-      ? "Changes not applied. Click Apply settings to update the running experiment."
-      : "Settings applied. Changes require Apply settings.";
+      ? "Reward changes are pending. Apply to current run preserves world state."
+      : "Active reward settings. Edit a value to prepare a change.";
   }
   setValues(values) {
     for (const [key, { number, slider, term }] of this.inputs) {

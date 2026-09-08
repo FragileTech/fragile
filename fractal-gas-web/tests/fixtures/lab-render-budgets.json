@@ -4,7 +4,7 @@
     "primitives": 9,
     "materials": 7,
     "images": 5,
-    "bytes": 1349348,
+    "bytes": 874380,
     "texturePixels": 1310720
   },
   "futuristic/rocket-low": {
@@ -12,15 +12,15 @@
     "primitives": 8,
     "materials": 6,
     "images": 5,
-    "bytes": 646568,
+    "bytes": 172988,
     "texturePixels": 1064960
   },
   "futuristic/kart-high": {
-    "triangles": 15968,
+    "triangles": 15964,
     "primitives": 20,
     "materials": 8,
     "images": 5,
-    "bytes": 1823052,
+    "bytes": 1347816,
     "texturePixels": 1310720
   },
   "futuristic/kart-low": {
@@ -28,15 +28,15 @@
     "primitives": 19,
     "materials": 7,
     "images": 5,
-    "bytes": 724760,
+    "bytes": 249792,
     "texturePixels": 1064960
   },
   "futuristic/drone-high": {
-    "triangles": 11958,
+    "triangles": 11950,
     "primitives": 14,
     "materials": 5,
     "images": 5,
-    "bytes": 1548460,
+    "bytes": 1115328,
     "texturePixels": 1310720
   },
   "futuristic/drone-low": {
@@ -44,15 +44,15 @@
     "primitives": 14,
     "materials": 5,
     "images": 5,
-    "bytes": 648856,
+    "bytes": 216480,
     "texturePixels": 1064960
   },
   "futuristic/harvester-high": {
-    "triangles": 28850,
+    "triangles": 28838,
     "primitives": 21,
     "materials": 7,
     "images": 5,
-    "bytes": 2632244,
+    "bytes": 2162664,
     "texturePixels": 1310720
   },
   "futuristic/harvester-low": {
@@ -60,7 +60,7 @@
     "primitives": 20,
     "materials": 7,
     "images": 5,
-    "bytes": 826168,
+    "bytes": 351408,
     "texturePixels": 1064960
   },
   "futuristic/world-high": {
@@ -100,7 +100,7 @@
     "primitives": 10,
     "materials": 8,
     "images": 5,
-    "bytes": 1230304,
+    "bytes": 924936,
     "texturePixels": 1310720
   },
   "steampunk/rocket-low": {
@@ -108,7 +108,7 @@
     "primitives": 8,
     "materials": 6,
     "images": 5,
-    "bytes": 491384,
+    "bytes": 186872,
     "texturePixels": 1064960
   },
   "steampunk/kart-high": {
@@ -116,7 +116,7 @@
     "primitives": 16,
     "materials": 8,
     "images": 5,
-    "bytes": 1711744,
+    "bytes": 1405788,
     "texturePixels": 1310720
   },
   "steampunk/kart-low": {
@@ -124,7 +124,7 @@
     "primitives": 15,
     "materials": 7,
     "images": 5,
-    "bytes": 547416,
+    "bytes": 242040,
     "texturePixels": 1064960
   },
   "steampunk/drone-high": {
@@ -132,23 +132,23 @@
     "primitives": 15,
     "materials": 7,
     "images": 5,
-    "bytes": 1588208,
+    "bytes": 1282840,
     "texturePixels": 1310720
   },
   "steampunk/drone-low": {
-    "triangles": 2088,
+    "triangles": 2086,
     "primitives": 14,
     "materials": 6,
     "images": 5,
-    "bytes": 523460,
+    "bytes": 217916,
     "texturePixels": 1064960
   },
   "steampunk/harvester-high": {
-    "triangles": 32692,
+    "triangles": 32680,
     "primitives": 23,
     "materials": 9,
     "images": 5,
-    "bytes": 2652204,
+    "bytes": 2352080,
     "texturePixels": 1310720
   },
   "steampunk/harvester-low": {
@@ -156,7 +156,7 @@
     "primitives": 21,
     "materials": 8,
     "images": 5,
-    "bytes": 652168,
+    "bytes": 347024,
     "texturePixels": 1064960
   },
   "steampunk/world-high": {

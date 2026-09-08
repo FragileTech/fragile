@@ -229,9 +229,9 @@ dv_t = \left[F(x_t) - \gamma(v_t - u(x_t)) + \underbrace{\frac{1}{2}\sum_{j=1}^d
 $$
 
 where $\Sigma_j$ is the $j$-th column of $\Sigma$. We denote the effective Itô drift by
-$
+$$
 b_v(x,v) := F(x) - \gamma(v - u(x)) + \frac{1}{2}\sum_{j=1}^d \Sigma_j(x,v) \cdot \nabla_v \Sigma_j(x,v).
-$
+$$
 
 **For isotropic diffusion** ($\Sigma = \sigma_v I_d$), the correction term vanishes since $\nabla_v(\sigma_v I_d) = 0$. Thus **Stratonovich = Itô** in this case. Throughout the TV analysis we take $u \equiv 0$ to avoid unnecessary drift terms; extensions to nonzero $u$ are straightforward.
 :::
@@ -563,9 +563,9 @@ $$
 :::{prf:remark} Implementation Alignment
 :label: rem-kinetic-004
 In the Euclidean Gas implementation, the BAOAB map is applied to the total force
-$
+$$
 F_{\text{tot}}(x, v) = -\nabla U(x) - \epsilon_F \nabla V_{\text{fit}}(x, v) + \nu F_{\text{viscous}}(x, v),
-$
+$$
 with optional anisotropic diffusion and a **mandatory** velocity squashing map after the final B-step. The resulting one-step transition kernel is the pushforward of the Gaussian noise through this full BAOAB map, so it is not generally Gaussian when the force field is nonlinear.
 :::
 
@@ -727,9 +727,9 @@ which is the **discrete-time drift inequality** with effective contraction rate 
 #### 3.7.3. Rigorous Component-Wise Weak Error Analysis
 
 This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each **TV component** of
-$
+$$
 V_{\text{TV}} = c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_\mu \|\mu_v\|^2 + c_B W_b.
-$
+$$
 The Wasserstein component $V_W$ belongs to the deferred W2 track and is treated separately below.
 
 :::{important}
@@ -2244,17 +2244,17 @@ where $F_{\max}$ is the uniform bound on $\|F(x)\|$ over $\mathcal{X}_{\text{val
 
 :::{prf:proof}
 For a single swarm,
-$
+$$
 d\mu_v = F_{\text{avg}}\,dt - \gamma \mu_v\,dt + \frac{1}{N}\sum_{i \in \mathcal{A}(S)} \Sigma_i\, dW_i,
-$
+$$
 with $F_{\text{avg}} = \frac{1}{N}\sum_i F(x_i)$. Itô's lemma gives
-$
+$$
 d\|\mu_v\|^2 = 2\langle \mu_v, F_{\text{avg}} - \gamma \mu_v\rangle dt + \frac{1}{N^2}\sum_i \text{Tr}(\Sigma_i\Sigma_i^T)\,dt + dM_t,
-$
+$$
 for a martingale $M_t$. Using $2\langle \mu_v, F_{\text{avg}}\rangle \leq \gamma\|\mu_v\|^2 + \frac{1}{\gamma}\|F_{\text{avg}}\|^2$ and $\|F_{\text{avg}}\|\leq F_{\max}$ yields
-$
+$$
 \frac{d}{dt}\mathbb{E}\|\mu_v\|^2 \leq -\gamma \mathbb{E}\|\mu_v\|^2 + \frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}.
-$
+$$
 This implies the discrete-time bound for timestep $\tau$.
 
 **Q.E.D.**
@@ -3192,9 +3192,9 @@ $$
 
 :::{prf:proof}
 During the O-step, the velocity update is Gaussian with covariance
-$
+$$
 Q(x,v) = \frac{1 - e^{-2\gamma\tau}}{2\gamma}\Sigma(x,v)\Sigma(x,v)^T,
-$
+$$
 and uniform ellipticity implies $Q(x,v) \succeq q_{\min} I_d$ on $\mathcal{K}_{\text{core}}$. The A/B steps and the squashing map are smooth with uniformly bounded Jacobian on $\mathcal{K}_{\text{core}}$, so the pushforward of the Gaussian has a smooth density bounded below on a fixed ball inside the image of $\mathcal{K}_{\text{core}}$. Choosing $\nu_{\text{kin}}$ as normalized Lebesgue on that ball yields the stated minorization. See Meyn & Tweedie (2009, Ch. 5) and Hairer & Mattingly (2011) for the standard construction.
 
 **Q.E.D.**

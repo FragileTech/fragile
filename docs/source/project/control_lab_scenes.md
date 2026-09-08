@@ -5,8 +5,9 @@
 A scene describes the equipment on the table: bodies, their actuators, walls, targets,
 and the rules that award reward. The running world describes what that equipment is
 currently doing. This distinction explains the editor's most important behavior:
-changing a scene rebuilds the experiment from its initial conditions. Moving a kart
-in the editor changes its starting position; it does not continue its current drive.
+editing a scene prepares new initial conditions in a draft. Moving a kart changes
+its proposed starting position. **Apply and restart** builds that proposal into a
+new paused experiment; it does not continue the kart's current drive.
 
 Start with {doc}`control_lab_getting_started` for installation and a first run.
 This page is a practical editor course: first move food and tune a drone, then assemble a cargo course, then build a kart route. Use the downloads below to start each exercise independently. This page covers constructing the experiment. {doc}`control_lab_controls` covers
@@ -20,7 +21,8 @@ its motion. The original {doc}`control_laboratory` provides further technical re
 :::{div} feynman-prose
 Use **Environment** to choose one of six tasks. **Racing** offers six kart circuits
 through its separate **Select track** dropdown.
-Loading a preset starts a fresh world and clears the editor's undo history.
+Choosing a different preset stages its scene and clears the editor's undo history.
+Press **Apply and restart** to save the preceding run and load the new world paused.
 The six illustrated task walkthroughs are {doc}`control_lab_task_harvest`,
 {doc}`control_lab_task_ants`, {doc}`control_lab_task_tandem`,
 {doc}`control_lab_task_mining`, {doc}`control_lab_task_rocket`, and
@@ -43,7 +45,7 @@ include progress, collisions, and formation penalties as well as completed objec
 ### Choose vehicles for any environment
 
 :::{div} feynman-prose
-Use **Vehicle type** and **Vehicle count** beneath **Environment** in any of the six
+Use **Vehicle type** and **Vehicle count** in **Setup** in any of the six
 environments, including every racing track. Choose **Rockets**, **Drones**, **Karts**,
 or **Harvesters** for the whole group and enter a whole-number count from 1 to 128.
 Presets retain their original defaults until you change them; Ants & drops starts
@@ -55,8 +57,9 @@ how many possible futures the planner considers.
 Changing type preserves the vehicle count and starting positions, world edits,
 rocks, tethers, rewards, and environment settings, while replacing vehicle physics
 and visuals with the selected type's defaults. Count changes preserve existing
-starting positions and world edits. Either change restarts the scene paused and
-clears the run, replay, and editor history. **Reset** retains the current scene and
+starting positions and world edits. Both changes enter the draft; one
+**Apply and restart** commits them together, saves the preceding run, and starts
+paused. **Restart** retains the current scene and
 vehicle configuration. Each environment remembers your selected type within the
 tab session; Racing shares its choice across all tracks. Explicit **Flight mode**
 settings remain in force; otherwise rockets and drones automatically use flight.
@@ -76,7 +79,8 @@ also pauses their timers. Each vehicle now carries up to five drops. A full vehi
 switches to **Return / unload**, stops collecting, and must enter the refinery at
 `[12, 36]` (radius `6`) to empty its tank over two simulation seconds. Leaving the
 zone interrupts unloading; the vehicle remains in the return phase until empty.
-Select a controlled vehicle in the editor to inspect its cargo readout. The score
+Select a controlled vehicle in **Inspect** to inspect it; the editor also retains
+the selected vehicle's cargo readout. The score
 note also reports delivered units and completed loads; these differ from the
 number of pickups collected.
 :::
@@ -95,7 +99,7 @@ The difficulty labels describe the route you must drive.
 The preview beneath **Select track** shows the active scene's outline, difficulty,
 racing direction, and checkpoint count. Historical circuits also link to a reference
 video. Look at that outline before driving: a long straight followed by a tight bend
-calls for a different approach from an open oval. Selecting another circuit starts
+calls for a different approach from an open oval. Selecting another circuit stages its scene. **Apply and restart** starts
 a fresh run and updates the checkpoint count. Imported scenes and replay archives
 keep their own geometry, so the preview follows the scene you actually loaded.
 
@@ -120,11 +124,13 @@ outside this circuit collection.
 ### Drive a circuit
 
 :::{div} feynman-prose
-Select a kart circuit, enable **Keyboard control**, and click the world so that a
-number field is no longer receiving keystrokes. Hold **W** to accelerate,
+Select a kart circuit, apply the configuration, enter **Drive**, and press
+**Start driving**. Click the world so a number field no longer receives keystrokes. Hold **W** to accelerate,
 use **A/D** to steer, **S** for reverse throttle, and **Space** to brake. Use **Follow
 agent** for a close view, and **2D / 3D** to change the camera angle. Select a controller
-and press **Run experiment** when you want the planner to drive.
+in **Controller**, apply any pending changes, then return to **Inspect** and press
+**Run** when you want the planner to drive. Releasing driving keys returns to
+neutral input while physics continues; **Pause** stops the world.
 
 The gold checkpoint is the next target. A checkpoint counts when the kart's centre
 enters its circular zone; passing through a decorative arch is not a separate timing
@@ -152,25 +158,34 @@ Follow the kart to inspect its steering and motion while keeping checkpoint prog
 ## Place and move objects
 
 :::{div} feynman-prose
-Press **Edit scene** to pause control and open the editor. Closing it with **×** closes
-the panel; it does not resume the simulation. Each committed edit recompiles the scene,
-resets motion and counters, clears the selection, and starts new recording and planning histories. After **Apply properties**, **Apply entity**, placement, duplication, deletion, import, Undo, or Redo, choose **Select & move** and click the entity again before making the next property change. Export a
-run before editing if you want to keep the preceding experiment.
+Choose **Edit** to pause execution and open the scene tools. Each property change,
+placement, drag, deletion, or duplication updates a draft. The existing run remains
+intact while you arrange the new starting conditions. **Undo** and **Redo** navigate
+those draft revisions; they do not recompile physics or rewind recorded motion.
+
+Press **Apply and restart** when the draft is ready. The Lab prepares the new world
+and saves the preceding nonempty run before replacing it. The new world starts
+paused. Failed preparation or saving retains the original world and draft for
+correction or recovery. **Discard** restores the active scene. Leaving a dirty
+editor offers Apply and restart, Discard, and Cancel; closing a clean editor stays
+paused. Ordinary settings-panel changes preserve the draft.
 
 With **Select & move**, click a body, food pickup, delivery base, unloading refinery, checkpoint, or gravity
 well. **Shift-click** adds or removes an entity from the selection. Drag a selected
-entity to move the whole selection by the same displacement; release to commit. Click
+entity to move the whole selection by the same displacement; release to update the
+draft. Click
 empty space to clear the selection. The last selected entity is the one shown in the
 property editor. Selection does not itself modify the scene.
 
 The viewport supports wheel zoom and middle-button, right-button, or **Alt-drag**
 panning. Panning releases camera following. **Follow agent** follows a selected body,
 or the first controlled body when no body is selected. The same button then reads
-**Whole arena**; press it to stop following, recentre, and reset zoom. After an
-import or reset, the camera already shows the whole arena and the button reads
-**Follow agent**. Camera changes do not affect physics. Outside the editor, clicking the
-world selects nearby recorded search nodes when rollout paths are visible, rather
-than selecting bodies for editing.
+**Whole arena**; press it to stop following, recentre, and reset zoom. After applying an
+import or restarting, the camera shows the whole arena and the button reads
+**Follow agent**. Camera changes do not affect physics. In **Inspect**, clicking selects a body for
+the inspector, camera follow, action guides, and subsequent **Drive** controls.
+Choose **Planner decisions** in the timeline when you want clicks to select nearby
+recorded search nodes instead.
 :::
 
 :::{div} feynman-added
@@ -205,11 +220,13 @@ parameters are additional JSON fields, not separate placement tools.
 ### Know which control changes what
 
 :::{div} feynman-prose
-Changing a field prepares a proposal; **Apply properties** or **Apply entity** commits
-it; moving the camera only changes what you see. The two property editors do not
+Changing a field prepares a proposal; **Apply properties** or **Apply entity** writes
+it into the shared scene draft. **Apply and restart** commits that draft to physics;
+moving the camera only changes what you see. The two property editors do not
 share an unsaved draft. If you change both the text and the number boxes, the button
-you press chooses which draft is used. Commit one change, reselect the object, and
-then make the next.
+you press chooses which draft is used. Apply one property edit to the scene draft before starting the other. The selection
+remains available while its entity exists; the numeric and JSON displays refresh
+from the updated draft.
 
 Use **2D / 3D** to choose a top-down view before placing geometry. Coordinates are
 world coordinates, independent of the camera. A positive x displacement means the
@@ -221,30 +238,30 @@ then enter exact **position · 0** and **position · 1** values in the numeric e
 :alt: Lab editor showing the tool selector, agent type selector, and scene beside its controls.
 :class: feynman-added
 
-Open **Edit scene** to bring the construction tools alongside the paused world.
+Choose **Edit** to bring draft construction tools alongside the paused world.
 :::
 
 :::{div} feynman-added
 | Control | Prerequisite and effect | When it takes effect |
 |---|---|---|
-| **Edit scene** / panel **×** | Toggle or close the panel; opening pauses control. Closing does not resume. | Immediately; no scene edit. |
+| **Edit** / panel **×** | Enter or leave scene editing; opening pauses execution. Leaving a dirty draft offers Apply and restart, Discard, or Cancel. | Mode changes do not resume execution. |
 | **Tool** | Choose selection, placement, tether, or polygon mode. Cancels unfinished polygon vertices and the pending first tether endpoint. | Next world click. |
 | **Agent type** | Select a catalog type for the **Agent** tool. Does not convert an existing selection. | Next agent placement. |
-| **Finish polygon** | At least three vertices entered with a polygon tool. Replaces the boundary or appends a hole. | Commits a scene edit. |
-| **Selected entity** | Shows the last selected entity's raw JSON and zero-based collection/index label. | Text remains a draft until **Apply entity**. |
-| **Apply entity** | Requires a selection and valid entity JSON. Replaces only the last selected entity. | Commits a scene edit. |
-| Numeric boxes / **Apply properties** | Require a selection; include resolved inherited values. Applies all displayed numbers to that entity. | Commits a scene edit. |
-| **Duplicate selection** | Copies all selected entities, offset by `[2, 2]` metres; copies tethers only when both endpoints are included. | Commits a scene edit. |
-| **Delete** | Removes all selected entities and incident tethers. Keep at least one body in the scene. | Commits a scene edit. |
-| **Undo** / **Redo** | Restore scene revisions, including geometry and initial conditions. No effect when the respective history is empty. | Recompiles and resets the world. |
-| **Template name** / **Save selection as agent type** | Select a body; enter a unique 1–80 character name. Reserved names `__proto__`, `constructor`, and `prototype` are rejected. | Adds a scene-local type and resets the world. |
+| **Finish polygon** | At least three vertices entered with a polygon tool. Replaces the boundary or appends a hole. | Updates the scene draft; **Apply and restart** commits it to physics. |
+| **Advanced entity JSON → Selected entity** | Shows the last selected entity's raw JSON and zero-based collection/index label. | Text remains a draft until **Apply entity**. |
+| **Apply entity** | Requires a selection and valid entity JSON. Replaces only the last selected entity. | Updates the scene draft; **Apply and restart** commits it to physics. |
+| Numeric boxes / **Apply properties** | Require a selection; include resolved inherited values. Applies all displayed numbers to that entity. | Updates the scene draft; **Apply and restart** commits it to physics. |
+| **Duplicate selection** | Copies all selected entities, offset by `[2, 2]` metres; copies tethers only when both endpoints are included. | Updates the scene draft; **Apply and restart** commits it to physics. |
+| **Delete** | Removes all selected entities and incident tethers. Keep at least one body in the scene. | Updates the scene draft; **Apply and restart** commits it to physics. |
+| **Undo** / **Redo** | Restore scene revisions, including geometry and initial conditions. No effect when the respective history is empty. | Updates the draft without recompiling physics. |
+| **Template name** / **Save selection as agent type** | Select a body; enter a unique 1–80 character name. Reserved names `__proto__`, `constructor`, and `prototype` are rejected. | Adds a scene-local type to the draft. |
 | **Actuator channels** | Expand to inspect all compiled bodies' channels. Set sliders within their native bounds. | Slider movement alone does not advance physics. |
 | **Apply action · 1 frame** | Submit the entire slider vector. No selection is required. | Pauses the planner and advances one physics frame. |
-| **Edit complete scene JSON** | Opens a draft of the whole scene, including items without a selectable viewport handle. | Only **Compile scene** applies the draft. |
+| **Edit complete scene JSON** | Opens a draft of the whole scene, including items without a selectable viewport handle. | **Compile scene** stages the text; **Apply and restart** commits it to physics. |
 | JSON dialog **×** | Close without applying the current text. Copy unfinished work elsewhere before closing. | No scene edit. |
-| **Compile scene** | Parse the full draft and ask the native engine to compile it. | Starts a new world; inspect status for asynchronous errors. |
-| **Export JSON ↓** | Download the current definition, not an uncommitted text draft. | Saves a `.json` file. |
-| **Import JSON ↑** | Choose a complete scene `.json` file. | Undoable scene replacement and reset. |
+| **Compile scene** | Parse the complete JSON into the scene draft. | **Apply and restart** performs native compilation and replaces the world after successful preparation and saving. |
+| **Save / Open → Export JSON ↓** | Download the active scene definition; apply pending edits first to include them. | Saves a `.json` file. |
+| **Save / Open → Import JSON ↑** | Choose a complete scene `.json` file. | Stages an undoable scene replacement; **Apply and restart** loads it. |
 :::
 
 ### Exercise 1: customize a foraging arena
@@ -257,35 +274,37 @@ three food pickups. A small arena with only a few objects makes selection errors
 easy to spot. Pickups return after three simulation seconds, so collected food is
 not permanently removed.
 
-1. Press **Edit scene**, then **Import JSON ↑**, and choose the starter. Wait until
+1. Open **Save / Open → Import JSON ↑** and choose the starter. Close Save / Open,
+   press **Apply and restart**, then choose **Edit**. Wait until
    the world is ready. Choose a top-down view; importing already restores the whole-arena
    view. If you subsequently enable following, press **Whole arena** to return.
    Verify the workshop scene title and its one drone and three pickups. After a
    custom import, **Environment** may still display the previously selected preset
    name; the title and loaded contents identify your current scene. Selecting a
-   preset from that dropdown reloads its scene with the vehicle choices retained
+   preset from that dropdown stages its scene with the vehicle choices retained
    for that environment during the tab session.
 2. Set **Tool** to **Select & move**. Click the pickup at `[16, 8]`. The heading
    should say `pickups / 0`; if it says `bodies / 0`, you selected the drone.
 3. In the numeric fields set **position · 0** to `18`, **position · 1** to `10`, and
-   **radius** to `0.6`. Press **Apply properties** once. The pickup moves, the clock
-   resets, and **Selected entity** returns to **None**.
+   **radius** to `0.6`. Press **Apply properties** once. The draft pickup moves; the clock
+   stays paused at its existing tick, and the selection remains available in the draft.
 4. Click that pickup again, then press **Duplicate selection**. The copy appears at
    `[20, 12]` with the same `0.6` metre radius. Reselect it to confirm its numbers.
 5. Press **Undo** to remove the copy; press **Redo** to restore it. For a deletion
    exercise, reselect the copy, press **Delete**, then **Undo**. You should again
-   have four pickups. Each operation reloads the scene; none rewinds a flight.
+   have four pickups. Each operation changes the draft; none rewinds a flight.
 6. Select the drone. Set **mass** to `2` and **drag** to `0.4`; press **Apply
    properties**. Reselect the drone. In **Selected entity**, add or update
    `"visual": {"color": "#74d7c4"}` while keeping all other fields and valid
    commas. Press **Apply entity**. Its type supplies the drone model; the instance
    supplies the identification color. With the default authored drone asset, this
    changes the small underbody marker; its painted bodywork keeps its authored palette.
-7. Reselect the drone and inspect its mass and drag. Expand **Actuator channels**;
-   set its **force_x** channel to the positive end and press **Apply action · 1 frame**
+7. Reselect the drone and inspect its mass and drag. Press **Apply and restart**,
+   enter **Drive**, and set its **force_x** channel to the positive end and press **Apply action · 1 frame**
    several times. A single 1/60-second frame produces very little visible motion.
    Set all channels back to zero before the next test.
-8. Press **Export JSON ↓**. Import that saved file and verify four pickups, the
+8. Open **Save / Open → Export JSON ↓**. Import that saved file, apply and restart,
+   and verify four pickups, the
    saved `visual.color` value (and the small identification marker), and mass `2`. Import the finished download to compare the same
    intended initial configuration; the text need not be byte-for-byte identical
    because applying properties also writes inherited defaults onto the body.
@@ -338,23 +357,25 @@ introduces a new journey: fill it, return to a refinery, and wait for unloading.
 The refinery is a circular zone, like a gate, but its effect is different from a
 **Delivery base**, which accepts physical cargo bodies such as tethered rocks.
 
-1. Import the finished foraging scene and choose **Unloading refinery** in **Tool**.
+1. Import the finished foraging scene, apply and restart, then enter **Edit** and
+   choose **Unloading refinery** in **Tool**.
    Click near `[8, 8]`, then switch back to **Select & move**. If the drone obscures
    the refinery's centre, set the zone's exact values through complete JSON instead
    of trying to select through the drone.
 2. Open **Edit complete scene JSON**. Confirm the new `refineries` array contains
    one entry, and set it to `[{"position": [8, 8], "radius": 2.5}]`.
 3. Add `"cargo": {"capacity": 2, "unload_seconds": 2, "full_reward": 10}` as a
-   top-level field, preserving commas. Compile and wait for the world to load.
+   top-level field, preserving commas. Press **Compile scene**, then
+   **Apply and restart**, and wait for the world to load.
    Adding a refinery alone does not enable tanks; adding `cargo` without any
    refinery fails compilation.
 4. Select the drone. Its readout should show cargo `0.0 / 2` and **Collecting**.
    Drive it to two pickups. Each pickup adds one unit; reaching two switches the
    phase to **Return / unload** and awards the configured full-tank bonus.
 5. Return the drone's centre inside the refinery circle. Keep simulation advancing
-   there for two seconds to empty a full tank. In keyboard mode, merely releasing
-   every key also stops time; use zero-input action frames to continue unloading
-   while stationary. At the workshop's 1/60-second frame duration, two seconds is
+   there for two seconds to empty a full tank. In continuous **Drive**, releasing
+   every key leaves physics running under neutral input. Keep the vehicle inside
+   the refinery while it unloads, or use paused zero-input action frames. At the workshop's 1/60-second frame duration, two seconds is
    about 120 frames.
 6. Inspect delivered units increasing during unloading. A completed load counts
    only when the tank becomes empty. The drone then returns to **Collecting** and
@@ -380,10 +401,11 @@ the selection to inspect a controlled vehicle's load.
 ## Edit properties and manage revisions
 
 :::{div} feynman-prose
-Select an entity and choose one of two ways to change it. **Selected entity** contains
-that one entity's JSON; **Apply entity** replaces that object. The numeric fields below
-it show resolved values, including an agent type's defaults. **Apply properties**
-writes those displayed values back to the selected entity. With multiple entities
+Select an entity and begin with its structured numeric properties. They show
+resolved values, including an agent type's defaults; **Apply properties** writes
+the displayed values into the scene draft. Expand **Advanced entity JSON** for
+**Selected entity**, which contains that one entity's JSON; **Apply entity** replaces
+that object in the draft. With multiple entities
 selected, these two operations still affect only the last selected one.
 
 Numeric properties recurse through nested objects and arrays, including actuator
@@ -405,11 +427,12 @@ body indices. A tether to an unselected body is not copied. **Delete** removes e
 selected entity, removes tethers attached to deleted bodies, and remaps remaining
 body indices. Removing or reordering gates also changes their visitation sequence.
 
-**Undo** and **Redo** move through scene definitions, recompiling each one. The editor
+**Undo** and **Redo** move through draft scene definitions without recompiling physics. The editor
 keeps up to 40 previous scene revisions; a new edit clears the redo branch. They do
-not rewind executed motion. The main **↺** reset button resets the current edited
-scene using the current seed; it does not reload the shipped preset. Choose the
-preset in **Environment** to reload its file and clear editor history.
+not rewind executed motion. **Apply and restart** commits the resulting draft.
+With no pending edits, **Restart** resets the active scene using its active seed;
+it does not reload the shipped preset. Choose the preset in **Environment** and
+apply it to reload its file.
 :::
 
 ### Read numeric fields and units
@@ -462,7 +485,7 @@ base at `[32, 15]` with radius `3`. Begin with known positions so that the tethe
 length has a clear meaning. The course exercises a fixed tether; automatic hooking
 in the harvesting presets is a separate configuration.
 
-1. Import the starter and wait for the world to load. Importing restores the
+1. Import the starter, apply and restart, and enter **Edit** after the world loads. Importing restores the
    whole-arena camera; choose a top-down view. If you later enable following,
    press **Whole arena** to return. Keep the world at its initial state while
    constructing the course.
@@ -476,7 +499,7 @@ in the harvesting presets is a separate configuration.
    rock centre. They must be distinct bodies. A spring now connects them. Open
    **Edit complete scene JSON** and set the tether's `rest_length` to `5`,
    `stiffness` to `25`, and `damping` to `6`; confirm `a` is `0` and `b` is `1`.
-   Press **Compile scene** and wait for successful loading.
+   Press **Compile scene** to update the draft; continue constructing before restarting.
 5. Choose **Gravity well** and click near `[20, 25]`. Switch back to **Select & move**,
    select the well, and set position to `[20, 25]`, **strength** to `5`, and
    **softening** to `3`. Apply. This is a gentle attraction above the direct delivery
@@ -491,10 +514,10 @@ in the harvesting presets is a separate configuration.
    enclosing every body, zone, and the new hole. Finish the polygon. Then use
    complete JSON to set `boundary` to `[[1,1],[39,1],[39,29],[1,29]]` and compile.
    This replaces the outside wall; it does not append a second outside wall.
-9. Follow the template exercise below to save **workshop_tug**, then export the
-   scene. The finished download contains the same two bodies, one fixed tether,
+9. Follow the template exercise below to save **workshop_tug**, press
+   **Apply and restart**, then export the active scene through **Save / Open**. The finished download contains the same two bodies, one fixed tether,
    one gravity well, one hole, one base, and the saved type.
-10. To test the mechanics, expand **Actuator channels**, set the rocket's **thrust**
+10. To test the mechanics, enter **Drive**, select the rocket, and set its **thrust**
     to `1` with **torque** at `0`, and apply several frames. The spring initially
     has its rest length; as the rocket moves toward the rock, contact and spring
     forces affect the pair. Reset before trying a longer flight. Use the planner
@@ -519,8 +542,9 @@ The tether endpoints are body indices in complete JSON. Selecting the line does 
 :alt: Polygon geometry in the Lab scene editor showing an outside boundary and an interior hole.
 :class: feynman-added
 
-After **Finish polygon**, the compiled hole removes playable space. Keep its edges
-separate from the outer wall and other holes.
+After **Finish polygon**, the hole appears in the draft. **Apply and restart**
+compiles it into a physical boundary. Keep its edges separate from the outer wall
+and other holes.
 :::
 
 (sec-lab-scenes-types)=
@@ -538,8 +562,8 @@ Select a body, enter a unique **Template name**, and press **Save selection as a
 type**. The editor saves its resolved physical and visual configuration in this
 scene's catalog, omitting its starting position, linear velocity, and angle. An explicit `omega` (initial angular velocity) is retained, so remove it if the new type should start without spin. The existing
 body remains as it was. Select the new type and use **Agent** to place another copy.
-Export JSON to preserve the template; saving it does not update the shared catalog
-file or other presets.
+Apply and restart, then export JSON to preserve the template. Saving it does not
+update the shared catalog file or other presets.
 
 Overrides are shallow. Replacing `actuator` replaces that entire nested object, and
 replacing a hull or thruster array replaces the whole array. When customizing a kart,
@@ -554,14 +578,15 @@ not override those explicit instance values.
 1. In the cargo course, choose **Select & move** and click the rocket. The selection
    label must read `bodies / 0`, not a base or well.
 2. Enter `workshop_tug` in **Template name** and press **Save selection as agent
-   type**. Saving is a scene commit: the selection clears and the world resets.
+   type**. Saving updates the scene draft; the active world remains paused.
 3. Choose **workshop_tug** in **Agent type**, choose the **Agent** tool, and click
    an empty starting location. The new body has the saved actuator and appearance.
 4. Choose **Select & move**, select the new tug, and inspect its `agent_type` field.
    Change its numeric mass to `2` and apply. This writes an override on that body;
    the original rocket still has mass `1`.
 5. Reselect and delete this temporary second tug to match the finished cargo file.
-   The saved type remains in **Agent type**. Export the scene to retain it.
+   The saved type remains in **Agent type**. Apply and restart before exporting the
+   active scene to retain it.
 
 To change an existing body's type, edit its `agent_type` string in **Selected entity**
 and apply. Changing the dropdown alone only affects future placements. Explicit
@@ -585,26 +610,28 @@ Saving a template adds a portable scene-local type. Place a new body with **Agen
 ### Actions without a planner
 
 :::{div} feynman-prose
-Expand **Actuator channels** to see sliders for every compiled channel, labelled by
-body index and channel name. Their limits come from the engine. Set the joint action,
-then press **Apply action · 1 frame**. This pauses automated control and advances the
-authoritative world by one physics frame. Sliders cover all bodies, independently of
-which entity is selected, and support registered custom actuators.
+Enter **Drive** to see the selected controlled vehicle's actuator sliders and
+supported keys in the inspector. The same body selection is used by Inspect,
+camera following, and action guides. With no controlled vehicle selected, the
+controls use the first controlled body. Apply pending scene changes before testing
+the new machine: the active engine still has the old actuator definitions until
+**Apply and restart** succeeds.
 
-Keyboard input applies to the selected body, or the first controlled body if no body
-is selected. Selecting passive cargo sends no keyboard thrust to another body. **W/S**
-map to thrust, throttle, or body-local x force; **A/D** map to torque or steering;
-**Q/E** map to body-local y force; **Space** maps to brake. Values are clamped to
-channel bounds: **S** cannot reverse a forward-only vector rocket. Independent
-`thruster_0`, `thruster_1`, and similar channels currently require the sliders in the
-live lab. Unknown custom channel names also need sliders or a custom keyboard mapping.
+While paused, set the sliders and press **Apply action · 1 frame** or
+**Step physics frame**. To advance continuously, press **Start driving**. The worker
+advances fixed physics frames independently of key-repeat events; releasing the
+keys restores neutral input while the vehicle can coast or fall. **Pause** stops
+the world. Losing focus, hiding the tab, opening a modal, or leaving Drive also
+pauses execution and clears commands.
 
-While mapped keys are held, the keyboard adapter requests two physics frames at
-30 Hz and stops automated control. Releasing all keys stops these requests, so this
-mode does not automatically coast forward in time. To inspect coasting, apply a
-zero-input frame with the sliders. Keyboard input is ignored while an input, text
-area, or select element has focus. Manual actions return the display to the live
-world; to drive from a replay frame, first use **Continue here**.
+**W/S** map to thrust, throttle, or body-local x force; **A/D** map to torque or
+steering; **Q/E** map to body-local y force; **Space** maps to brake. Values are
+clamped to channel bounds: **S** cannot reverse a forward-only vector rocket.
+Independent `thruster_0`, `thruster_1`, and similar channels require the sliders.
+Unknown custom channel names also need sliders or a custom keyboard mapping.
+Pointer-operated buttons provide the supported controls on touch screens.
+Keyboard input is ignored while an input, text area, or select element has focus.
+To drive from a replay frame, first use **Create run from this frame**.
 :::
 
 :::{div} feynman-added
@@ -635,13 +662,14 @@ has a kart at `[8, 12]`, facing positive x, and two separated gates. The finishe
 route has four gates around a rectangle. Keep the gates separated: a route whose
 next gate overlaps the current gate can award progress without a useful journey.
 
-1. Import the starter and select the kart with **Select & move**. Read its inherited
+1. Import the starter, apply and restart, then enter **Edit** and select the kart
+   with **Select & move**. Read its inherited
    **actuator** numbers: wheelbase `1`, steering limit `0.6`, lateral grip `14`, yaw
    response `8`, and brake deceleration `18`. Its three channels are **throttle**,
    **steering**, and **brake**.
 2. To change the shared kart type, open **Edit complete scene JSON**. Under
    `agent_types.workshop_kart.physics.actuator`, change `steering_limit` to `0.5`,
-   leaving the other actuator fields intact. Compile and wait for the world to load.
+   leaving the other actuator fields intact. Press **Compile scene** to update the draft.
    Reselect the kart and verify the new inherited value. This matches the finished
    file. As an optional comparison, change the numeric field on the instance and
    apply: that creates an instance override instead.
@@ -667,25 +695,26 @@ next gate overlaps the current gate can award progress without a useful journey.
 :::{div} feynman-prose
 6. The fragment is not a complete JSON document. Insert it between fields with
    correct commas, or import the finished download to inspect its complete syntax.
-   The score label now describes gate count. The evaluation target gives experiment
+   After **Apply and restart**, the score label describes gate count. The evaluation target gives experiment
    batches a four-gate success criterion; it does not terminate ordinary live play.
-7. Expand **Actuator channels**. Set **Body 0 · throttle** to `1`, **steering** to
+7. Press **Apply and restart**, enter **Drive**, and select the kart. Set **throttle**
+   to `1`, **steering** to
    `0`, and **brake** to `0`; click **Apply action · 1 frame** several times. The
    kart accelerates toward the first gate. Set throttle to `0` and apply more frames
    to observe coasting and drag. Set brake to `1` to compare braking. Restore all
    sliders to `0` and reset the scene before the keyboard test.
-8. Enable **Keyboard control** and click the world away from a form field. Hold **W**
+8. In **Drive**, press **Start driving** and click the world away from a form field. Hold **W**
    for a short forward burst; use **A/D** while moving to turn; hold **Space** to
    brake. Use **S** for reverse throttle. Start with small bursts so there is room
-   to slow down before the first gate. Releasing every key pauses manual frame
-   requests; use zero-input slider frames to see continued coasting.
+   to slow down before the first gate. Releasing every key returns to neutral input
+   while coasting continues. Press **Pause** when you want physics to stop.
 9. Approach the highlighted first gate at `[24, 12]`. Its count increases when the
    kart centre enters the circular zone. The next target becomes `[24, 22]`.
    Visit all four in order; entering gate 4 at the initial position does not skip
    gates 1–3. Decorative arches are not additional collision or timing conditions.
-10. Reset, choose a controller, and press **Run experiment** to compare planned
-    driving. Stop before editing. Export the scene and import it again: the kart
-    starts at `[8, 12]` with gate count reset. Save a run archive separately if you
+10. Return to **Inspect**, choose a controller, apply any pending changes, and
+    press **Restart** and **Run** to compare planned driving. Stop before editing. Export the scene, import it again, and apply and restart:
+    the kart starts at `[8, 12]` with gate count reset. Save a run archive separately if you
     want to preserve the motion, using {doc}`control_lab_replay`.
 
 A kart needs forward or reverse motion to make a steering input into a useful turn.
@@ -700,27 +729,35 @@ sideways slip faster. Reset between comparisons and retain the same starting sce
 :alt: Expanded actuator channel sliders and the one-frame action button in the Lab editor.
 :class: feynman-added
 
-Sliders form a joint action for every listed body. Keyboard targeting uses the selected body instead.
+The Drive inspector exposes the selected vehicle's commands. The editor's advanced actuator panel retains its joint-action sliders.
 :::
 
 (sec-lab-scenes-json)=
 ## Import, export, and compile a complete scene
 
 :::{div} feynman-prose
-**Export JSON ↓** saves the current scene definition, including templates and edits.
-It does not save the current body poses or a recording. **Import JSON ↑** reads a
-complete scene file as an undoable scene edit. **Edit complete scene JSON** opens the
-whole definition; press **Compile scene** to apply it. The scene must contain at least
-one body, and the native compiler validates geometry, physical parameters, actuator
-definitions, and references. Syntax errors are reported in the JSON dialog. Native compilation happens asynchronously: the dialog can close before a geometry or physics error appears in the main status area. A failed load can leave the world unavailable. Correct the complete JSON and compile again, use **Undo** to reload the previous scene, or import a known-good download.
+Open **Save / Open** for scene import and export. **Export JSON ↓** saves the active
+scene definition, including applied templates and edits. Apply pending changes
+first if you want them in the file. Scene JSON does not save current body poses or
+recorded motion. **Import JSON ↑** reads a complete scene file into the draft;
+close Save / Open and press **Apply and restart** to load it.
+
+**Edit complete scene JSON** opens the draft definition; **Compile scene** parses
+that text back into the draft. The scene must contain at least one body. Native
+geometry, physical-parameter, actuator, and reference checks happen when you press
+**Apply and restart**. Inspect the status for asynchronous errors. Failed
+preparation retains the original paused world and proposed scene; correct the
+draft, undo the edit, discard it, or import a known-good download. A failed device
+save also retains the current run and offers Retry, Export, Cancel, and an explicit
+Continue without saving choice.
 
 A scene file and a world snapshot solve different problems. The JSON builds the
 laboratory; a `.fgcs` snapshot restores a compatible world's mutable state. Editing
 the scene changes snapshot compatibility. Use run archives when you need scene,
 settings, and recorded motion together; see {doc}`control_lab_replay`.
 
-Here is a complete small kart scene. Paste it into the complete JSON editor, compile,
-then use the sliders or keyboard to approach the gate at `[24, 12]`. The omitted
+Here is a complete small kart scene. Paste it into the complete JSON editor, press
+**Compile scene**, then **Apply and restart**. Enter **Drive** and use the controls to approach the gate at `[24, 12]`. The omitted
 boundary defaults to the rectangular `size`. This example supplies its own type,
 so it does not depend on whichever preset you had open.
 :::
@@ -781,10 +818,11 @@ actuator configuration, presentation, evaluation, and extension configuration.
 3. Edit one feature at a time. Use JSON double quotes, lowercase `true`/`false`,
    commas between entries, and no comments or trailing comma. Keep at least one
    body. Arrays of positions use exactly two coordinates.
-4. Press **Compile scene**, wait for the world to become ready, and inspect the main
-   status area. A closed dialog alone is not proof of a successful native compile.
-5. Select the affected entity, inspect its resolved numeric properties, and apply
-   a few manual action frames. If you changed a hull, enable **Collision geometry**
+4. Press **Compile scene** to stage the JSON, then **Apply and restart**. Wait for
+   the world to become ready and inspect status. Closing the JSON dialog alone
+   does not validate native physics or replace the active world.
+5. Select the affected entity, inspect its resolved numeric properties, then enter
+   **Drive** and apply a few manual action frames. If you changed a hull, enable **Collision geometry**
    to check the physical shape against the visual model.
 6. Export the tested result. To reproduce the flight as well as the scene, preserve
    a run archive; scene JSON always restores initial conditions.
@@ -811,15 +849,16 @@ The complete editor reaches world geometry, type catalogs, task rules, and metad
 :::{div} feynman-prose
 A failed edit is a useful diagnostic if you know which layer rejected it. JSON syntax
 fails before a world can be built. A valid JSON object can still describe an invalid
-physical scene. Fix the earliest reported problem, compile again, and wait for the
-world before attempting to move anything.
+physical scene. Fix the earliest reported problem, stage the corrected JSON, and
+apply and restart before testing the changed machine.
 
 For a reversible practice error, open the complete editor and delete a comma between
 two fields. Press **Compile scene**: the dialog reports the parse error. Put the
 comma back and compile. For a native validation example, export a working scene,
-then set a body's `mass` to `-1` and compile. The native range check rejects it;
-use **Undo** to reload the valid scene or import your saved file. Error messages
-may identify a numeric range rather than the exact field path, which is why one
+then set a body's `mass` to `-1`, press **Compile scene**, and **Apply and restart**.
+The native range check rejects it while the original world remains available.
+Correct the draft, use **Undo**, or discard it to restore the active configuration.
+Error messages may identify a numeric range rather than the exact field path, which is why one
 change at a time is easier to diagnose.
 :::
 
@@ -833,11 +872,11 @@ Syntax errors remain in the dialog. Also inspect the main status area for errors
 :::{div} feynman-added
 | Symptom or error | Cause and recovery |
 |---|---|
-| **Selected entity: None** after applying | Expected: the scene reloaded. Choose **Select & move**, then reselect. |
+| **Selected entity: None** after Apply and restart | The scene reloaded. Choose **Select & move**, then reselect; ordinary draft property edits retain a valid selection. |
 | Applying properties changes only one member of a group | Numeric and entity edits target the last selected member. Reselect and edit each member, or edit the complete arrays. |
 | Changes typed in JSON disappear after applying numbers | The text and numeric editors hold separate drafts. Apply one, reselect, then edit the other. |
-| Nothing happens when typing W/A/S/D | Enable keyboard control, take focus out of number/text/select controls, and ensure a controlled body is the keyboard target. |
-| A passive rock is selected and the rocket will not thrust | Select the rocket or clear selection; the keyboard does not redirect cargo selection to another body. |
+| Nothing happens when typing W/A/S/D | Enter **Drive**, press **Start driving**, take focus out of number/text/select controls, and select a controlled vehicle. |
+| A passive rock is selected and the rocket will not thrust | Select the rocket in **Inspect** or **Drive** and check the vehicle name and supported channels in the inspector. |
 | The rocket will not reverse with S | Its forward-only thrust channel clamps negative input to zero. Turn the rocket or choose another actuator. |
 | Independent thrusters ignore W/A/S/D | Use **thruster_0**, **thruster_1**, and other sliders; these channels do not have built-in keyboard mappings. |
 | One frame appears motionless | At the workshop's `dt`, this is 1/60 second. Apply more frames and zoom in; verify nonzero input and a controlled body. |
@@ -851,7 +890,7 @@ Syntax errors remain in the dialog. Also inspect the main status area for errors
 | Properties must contain finite numbers | Fill blank fields and remove invalid numeric input. Use real numbers, not unit text or expressions such as `pi/2`. |
 | Numeric range error after compilation | Restore the last changed physical value and check the reference bounds; mass and radius must be positive. |
 | Tether cannot join a body to itself / invalid endpoint | Use distinct valid zero-based body indices. After manual body reordering, update `a` and `b`. |
-| World stays unavailable after a bad compile | Undo the edit, recompile corrected complete JSON, or import a known-good starter. Reloading a preset also recovers but clears scene history. |
+| Apply and restart reports a bad compile | The original world is retained. Correct or undo the draft, discard it, or import a known-good starter, then apply again. |
 | Undo cannot recover an old run | Undo stores up to 40 scene revisions, not simulation frames. Use the replay/archive tools for motion. |
 | Visual wall or model disagrees with collision shape | Check native `boundary`, `holes`, and body `vertices` or `radius`; renderer metadata is separate. |
 :::

@@ -19,6 +19,7 @@ import bpy
 from mathutils import Vector
 import numpy as np
 from vehicle_refinement import refine_vehicle, repair_vehicle_normals
+from vehicle_surface_finish import finish_vehicle_surfaces
 
 
 ROOT = Path(__file__).resolve().parents[2] / "web/lab/assets"
@@ -1034,6 +1035,7 @@ class Builder:
             self.surface_details()
         if self.kind in {"rocket", "kart", "drone", "harvester"}:
             repair_vehicle_normals(self)
+            finish_vehicle_surfaces(self)
         bpy.context.view_layer.update()
         # All meshes and motion origins share a uniform authoring-to-lab scale.
         coords = [

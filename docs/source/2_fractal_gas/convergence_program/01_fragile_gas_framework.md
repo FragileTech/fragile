@@ -2086,7 +2086,7 @@ Here $L_P=\|P'\|_\infty$ is the uniform derivative bound from {prf:ref}`lem-cubi
 #### 8.2.2.9 Lemma: Patched standard deviation derivative bound
 :::{prf:lemma} Derivative bound for \sigma'_{\text{reg}}
 :label: lem-sigma-patch-derivative-bound
-Let $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ be the regularized standard deviation, where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}}Lipschitz ext{std}}^2}$. Its global derivative bound is:
+Let $\sigma'_{\text{reg}}(V) = \sqrt{V + \sigma'^2_{\min}}$ be the regularized standard deviation, where $\sigma'_{\min} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\text{std}}^2}$. Its global derivative bound is:
 
 $$
 
@@ -3062,7 +3062,7 @@ The proof is identical in structure to that of {prf:ref}`lem-stats-value-continu
 A key property of the standardization process is that the magnitude of the resulting standardized vector is algebraically bounded, regardless of the specific aggregation operator used, provided the operator produces a mean within the range of the input values. The following theorem establishes a universal bound for the squared L2-norm of this vector. This general result is crucial for obtaining robust continuity bounds for the full operator pipeline.
 :::{prf:theorem} General Bound on the Norm of the Standardized Vector
 :label: thm-z-score-norm-bound
-Let $\mathbf{v} = (v_i raw valueA}}$ be a $k$-dimensional vector of raw values from an alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size $k=|\mathcal{A}| \ge 1$. The raw value nded such that $|v_i| \le V_{\max}$. Let the statistical properties $(\mu_{\mathcal{A}}, \sigma'_{\mathcal{A}})$ be calculated using any valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\mu_{\mathcal{A}}| \le V_{\max}$.
+Let $\mathbf{v} = (v_i)_{i\in\mathcal{A}}$ be a $k$-dimensional vector of raw values from an alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size $k=|\mathcal{A}| \ge 1$. Assume the raw values satisfy $|v_i| \le V_{\max}$. Let the statistical properties $(\mu_{\mathcal{A}}, \sigma'_{\mathcal{A}})$ be calculated using any valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator** $M$ that guarantees the mean is bounded by the values, i.e., $|\mu_{\mathcal{A}}| \le V_{\max}$.
 Let $\mathbf{z}$ be the corresponding $k$-dimensional standardized vector, where each component is $z_i = (v_i - \mu_{\mathcal{A}}) / \sigma'_{\mathcal{A}}$ and the regularized standard deviation is $\sigma'_{\mathcal{A}} = \sigma'_{\text{reg}}(\operatorname{Var}[\mu_{\mathbf{v}}])$ from {prf:ref}`def-statistical-properties-measurement`. Denote the minimal value of this map by $\sigma'_{\min\,\text{bound}} := \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}$.
 The squared Euclidean norm of the standardized vector $\mathbf{z}$ is strictly bounded by a constant that depends on the number of alive walker ({prf:ref}`def-walker`)s and the global parameters:
 

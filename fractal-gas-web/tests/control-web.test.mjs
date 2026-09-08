@@ -57,11 +57,14 @@ test("WASM state restores exactly; branch replay and recording round trip", () =
     engine.step(engine.action(), 6);
     assert(equalBytes(future, engine.snapshot()));
     const record = new Recording();
-    record.append({ tree, decision: 1, action: engine.action() });
+    record.append({ tree, decision: 1, action: engine.action(), selectedReward: 12.5, executionMode: "controller", settings: { horizon: 6 }, rewards: { progress: 2 } });
     const restored = importRecording(
       exportRecording(scene, {}, record.entries),
     );
     assert.deepEqual(restored.recording.entries[0].tree, tree);
+    assert.equal(restored.recording.entries[0].selectedReward, 12.5);
+    assert.deepEqual(restored.recording.entries[0].rewards, { progress: 2 });
+    assert.deepEqual(restored.recording.entries[0].settings, { horizon: 6 });
     const corrupt = saved.slice();
     corrupt[corrupt.length - 1] ^= 1;
     assert.throws(() => engine.restore(corrupt), /checksum/);

@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Refine both Lab vehicle collections with stronger canopy, armor, seating and cab profiles, plus aged metal and clearer panel finishes using existing geometry and texture budgets.
+
 * Apply Lab rewards mid-run without resetting the world, camera, or recording, and retain reward-change boundaries for replay and saved runs.
 
 * Allow Rockets, Drones, Karts and Harvesters in every Lab environment and racing track, preserving world setup when switching the fleet and remembering each environment’s selection during the session.

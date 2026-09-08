@@ -1,8 +1,11 @@
+import { DriveClock } from "./drive-clock.js";
 import { loadNative, NativeEngine } from "./native.js";
 import { WorldCapture } from "./motion.js";
 import { acceptPlan, branchActions } from "./timing.js";
 import { TrajectoryCursor } from "./trajectory.js";
 import { prepareRewardEngines } from "./live-rewards.js";
+let driving = false,
+  driveClock;
 let updating = false,
   plannerThreads,
   stagedPlanner;
@@ -45,6 +48,7 @@ let waveStarted = false,
   capture;
 const sendError = (error) => {
   running = single = false;
+  if (engine) action = engine.neutralAction();
   postMessage({ type: "error", message: String(error.message || error) });
 };
 function publish(extra = {}) {
@@ -78,7 +82,7 @@ function publish(extra = {}) {
   );
 }
 function request() {
-  if (updating) return;
+  if (updating || driving) return;
   if (busy || trajectoryCursor || !ready || (!running && !single)) return;
   if (isJump() && engine.metrics()[3] > 0) {
     running = single = false;
@@ -152,6 +156,23 @@ function trajectoryTick() {
 }
 function realtimeTick() {
   if (updating) return;
+  if (driving) {
+    if (!running || !ready) return;
+    try {
+      const progress = driveClock.advance(performance.now(), () => {
+        if (engine.metrics()[3] > 0) {
+          running = false;
+          action = engine.neutralAction();
+          return false;
+        }
+        capture.step(action, 1, decisions);
+      });
+      if (progress.count || !running) publish({ driveSlow: progress.slow });
+    } catch (error) {
+      sendError(error);
+    }
+    return;
+  }
   if (isJump()) {
     try {
       trajectoryTick();
@@ -207,6 +228,16 @@ self.onmessage = async ({ data }) => {
       engine = new NativeEngine(module, scene);
       predict = new NativeEngine(module, scene);
       engine.reset(seed);
+      driveClock = new DriveClock(scene.physics?.dt || 1 / 60);
+      if (data.snapshot) engine.restore(data.snapshot);
+      if (data.replayBranch) {
+        engine.restore(data.replayBranch.tree.root);
+        for (const edge of branchActions(
+          data.replayBranch.tree,
+          data.replayBranch.node,
+        ))
+          engine.step(edge.action, edge.frames);
+      }
       if (data.continuationRows) {
         if (
           !data.continuationInfo ||
@@ -253,6 +284,10 @@ self.onmessage = async ({ data }) => {
               root: engine.snapshot(),
             });
             capture.capture(action, decisions, "Initial world", true);
+            if (data.checkpoint)
+              self.onmessage({
+                data: { ...data.checkpoint, type: "restore-checkpoint" },
+              });
             publish();
             request();
             return;
@@ -282,6 +317,10 @@ self.onmessage = async ({ data }) => {
           }
           if (result.type !== "plan") return;
           busy = false;
+          if (driving || result.revision !== revision) {
+            request();
+            return;
+          }
           if (mode === "realtime" && !single && !isJump()) {
             if (result.target >= tick && result.revision === revision)
               pending = result;
@@ -442,7 +481,45 @@ self.onmessage = async ({ data }) => {
       request();
       return;
     }
+    if (data.type === "quiesce") {
+      running = single = false;
+      if (driving) action = engine.neutralAction();
+      revision++;
+      pending = undefined;
+      publish();
+      postMessage({ type: "quiesced", requestId: data.requestId });
+      return;
+    }
+    if (data.type === "drive-mode") {
+      running = single = false;
+      if (driving === !!data.enabled) { publish(); return; }
+      driving = !!data.enabled;
+      revision++;
+      pending = undefined;
+      clearTrajectory();
+      waveStarted = false;
+      action = engine.neutralAction();
+      driveClock.reset();
+      publish();
+      return;
+    }
+    if (data.type === "drive-action") {
+      if (!driving) return;
+      if (
+        data.action?.length !== engine.channels.length ||
+        !Array.from(data.action).every(Number.isFinite)
+      )
+        throw new Error("Invalid driving action");
+      action = Float32Array.from(data.action, (v, i) =>
+        Math.max(engine.channels[i].low, Math.min(engine.channels[i].high, v)),
+      );
+      return;
+    }
     if (data.type === "run") {
+      if (driving) {
+        driveClock.reset();
+        if (!data.value) action = engine.neutralAction();
+      }
       running = data.value;
       single = false;
       nextTime = performance.now();

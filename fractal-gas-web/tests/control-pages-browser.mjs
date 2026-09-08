@@ -62,6 +62,7 @@ try {
         Object.defineProperty(navigator, "serviceWorker", { value: undefined });
       });
     }
+    await context.addInitScript(() => localStorage.setItem("lab.workspace.onboarded", "true"));
     const page = await context.newPage();
     const messages = [];
     page.on("console", (m) => messages.push(m.text()));
@@ -96,6 +97,7 @@ try {
       );
       // Exercise real planning in both backends with a small smoke-test budget.
       // Set six action frames so tick and replay assertions stay meaningful.
+      await page.locator("#tab-controller").click();
       for (const [id, value] of [
         ["walkers", "8"],
         ["horizon", "2"],
@@ -108,6 +110,7 @@ try {
         );
       }
       await page.locator("#scenario").selectOption("racing");
+      await applyDraft(page);
       await page.waitForFunction(
         () => !document.getElementById("run").disabled,
       );
@@ -122,6 +125,7 @@ try {
       );
       // FMC has no controller-specific fields; CEM exercises dynamic help.
       await page.locator("#algorithm").selectOption("cem");
+      await applyDraft(page);
       await page.waitForFunction(
         () =>
           !document.getElementById("run").disabled &&
@@ -142,9 +146,11 @@ try {
       await page.keyboard.press("Escape");
       assert.equal(await page.locator("#tooltip").getAttribute("hidden"), "");
       await page.locator("#algorithm").selectOption("fmc");
+      await applyDraft(page);
       await page.waitForFunction(
         () => !document.getElementById("run").disabled,
       );
+      await applyDraft(page);
       await page.locator("#step").click();
       await page.waitForFunction(
         () => document.getElementById("tick").textContent === "TICK 000006",
@@ -153,6 +159,7 @@ try {
         await page.locator("#score-note").textContent(),
         /Checkpoint/,
       );
+      await page.locator("#tab-setup").click();
       await checkAntsControls(page);
       assert.deepEqual(errors, []);
       console.log(
@@ -218,6 +225,7 @@ async function checkAntsControls(page) {
     );
   assert.equal(await page.locator("#ants-controls").isVisible(), true);
   await page.locator("#scenario").selectOption("ants");
+      await applyDraft(page);
   await ready(5, "harvesters");
   console.log("Ants & Drops: default fleet loaded");
   assert.equal(await page.locator("#ants-controls").isVisible(), true);
@@ -232,6 +240,7 @@ async function checkAntsControls(page) {
   assert.equal(await count.getAttribute("max"), "128");
   await count.fill("1");
   await count.press("Tab");
+  await applyDraft(page);
   await ready(1, "harvester");
   for (const invalid of ["", "0", "-1", "1.5", "129"]) {
     console.log(`Ants & Drops: reject count ${JSON.stringify(invalid)}`);
@@ -247,12 +256,15 @@ async function checkAntsControls(page) {
   await count.fill("1");
   console.log("Ants & Drops: loading one harvester");
   await count.press("Tab");
+  await applyDraft(page);
   await ready(1, "harvester");
   await page.locator("#ants-vehicle-type").selectOption("drone");
+      await applyDraft(page);
   console.log("Ants & Drops: loading one drone");
   await ready(1, "drone");
   await count.fill("3");
   await count.press("Tab");
+  await applyDraft(page);
   await ready(3, "drones");
   assert.match(
     await page.locator("#footer-stats").textContent(),
@@ -269,7 +281,7 @@ async function checkAntsControls(page) {
     () => document.getElementById("tick").textContent === "TICK 000000",
   );
   assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
-  await page.locator("#edit").click();
+  await page.locator("#save-menu").click();
   const downloading = page.waitForEvent("download");
   await page.locator("#export-scene").click();
   const stream = await (await downloading).createReadStream(),
@@ -286,18 +298,20 @@ async function checkAntsControls(page) {
   );
   assert.equal(scene.pickups.length, 24);
   assert.equal(scene.respawn_seconds, 3);
-  await page.locator("#close-editor").click();
+  await page.locator("#files-dialog .dialog-close").click();
   await page.locator("#scenario").selectOption("racing");
+      await applyDraft(page);
   await page.waitForFunction(
     () =>
       !document.getElementById("run").disabled &&
       document.getElementById("ants-vehicle-type").value === "kart",
   );
   await page.locator("#scenario").selectOption("ants");
+      await applyDraft(page);
   await ready(3, "drones");
   // Import a saved fleet with edited initial conditions; do not regenerate it.
   scene.bodies[0].position = [10, 10];
-  await page.locator("#edit").click();
+  await page.locator("#save-menu").click();
   const choosing = page.waitForEvent("filechooser");
   await page.locator("#import-scene").click();
   await (
@@ -307,7 +321,10 @@ async function checkAntsControls(page) {
     mimeType: "application/json",
     buffer: Buffer.from(JSON.stringify(scene)),
   });
+  await page.locator("#files-dialog .dialog-close").click();
+  await applyDraft(page);
   await ready(3, "drones");
+  await page.locator("#mode-edit").click();
   await page.locator("#edit-json").click();
   const restored = JSON.parse(await page.locator("#scene-json").inputValue());
   assert.deepEqual(restored, scene);
@@ -369,4 +386,12 @@ async function checkDropRendering(page) {
     moved: true,
     replayHidden: true,
   });
+}
+
+async function applyDraft(page) {
+  await page.waitForFunction(() => !document.body.dataset.loadingPreset);
+  if (await page.locator("#pending-settings").isVisible()) {
+    await page.locator("#apply-configuration").click();
+    await page.waitForFunction(() => !document.querySelector("main").inert && document.querySelector("#pending-settings").hidden);
+  }
 }

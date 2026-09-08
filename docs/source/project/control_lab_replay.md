@@ -12,7 +12,9 @@ Keep these objects separate and the recording controls become much easier to use
 Begin with {doc}`control_lab_getting_started` if you have not run the lab yet.
 {doc}`control_lab_controls` explains the diagnostics, and
 {doc}`control_lab_experiments` explains synchronized comparisons from a shared
-root. This page covers the recording controls below the main world view.
+root. This page covers the timeline dock below the world and the **Save / Open** menu.
+Choose **World motion** for executed frames, **Planner decisions** for search
+records, and **Events & notes** to find or annotate a moment.
 :::
 
 (sec-lab-replay-objects)=
@@ -21,7 +23,7 @@ root. This page covers the recording controls below the main world view.
 :::{div} feynman-added
 | Object | What it preserves | How you use it |
 |---|---|---|
-| **World recording** | Initial world and captured physical frames, applied actions, decision IDs, segment labels, and markers. | Seek or play actual movement; restore a frame with Continue here. |
+| **World recording** | Initial world and captured physical frames, applied actions, decision IDs, segment labels, and markers. | Seek or play actual movement; start a separate run with Create run from this frame. |
 | **Exploration record** | A recorded decision's search tree, its root snapshot, branch actions, and associated diagnostics. | Inspect alternatives and reconstruct one branch with Replay branch. |
 | **World snapshot** | One authoritative native world, including all future-affecting environmental state. | Save state / Load state; requires the matching scene. |
 | **Planner checkpoint** | The controller's resumable search state plus its authoritative root and saved settings. | Save planner checkpoint / Load checkpoint; then Step, or Advance Wave population for a Wave checkpoint. |
@@ -46,12 +48,13 @@ through evaluating. That is what the separate planner checkpoint is for.
 :::{div} feynman-prose
 World recording starts with the initial state and captures each executed physics
 frame during planned control, real-time control, manual keyboard input, and
-single-frame editor actions. It continues when **Tree → Off** is selected.
+single-frame manual actions. In Drive mode, neutral input still permits recorded
+physics motion: releasing a key does not stop a falling or coasting vehicle. It continues when **Tree → Off** is selected.
 The world slider counts stored samples, including the initial state and any
 explicit restoration samples; its index is not necessarily the simulation tick.
 
-1. Pause a running experiment, then drag the slider under **WORLD REPLAY**.
-   Seeking also pauses continuous control. The viewport changes to **WORLD REPLAY**
+1. Pause a running experiment, then drag the slider in **World motion**.
+   Seeking also pauses continuous control. The playback status changes to **Replay**
    and shows the selected frame's bodies, task counters, and visual animation.
 2. Press **Play world** to animate the recording. Choose **¼×**, **½×**, **1×**,
    **2×**, or **4×** from the speed selector. **Pause replay** stops playback;
@@ -61,58 +64,60 @@ explicit restoration samples; its index is not necessarily the simulation tick.
    Playback reads stored states; it does not run physics or ask the planner to
    reconstruct the movement. Rendering can skip displayed samples at higher
    playback speeds without removing them from the recording.
-4. Press **Back to live** to return to the paused authoritative world. This
-   does not resume control. Press **Run experiment** or **Step** when ready.
+4. Press **Return to live** to return to the paused authoritative world. This
+   does not resume control. Press **Run** or **Step** when ready.
 
 The lab displays the matching recorded decision tree and planning diagnostics
 when that decision is available. For device-backed recordings it can load an
 older tree from storage. A frame without a retained tree still has complete
 world motion. Do not interpret a missing search overlay as a missing world state.
 
-Pressing **Run experiment**, **Step**, or applying manual input while looking at
-replay returns to the authoritative live world. To make the selected replay frame
-the next starting point, use **Continue here** first.
+In a live session, return to its authoritative world before running or driving.
+An opened saved run is read-only: its Run and Step controls remain unavailable.
+Use **Create run from this frame** to turn a recorded frame into an editable,
+paused experiment.
 :::
 
 ### Continue from a selected frame
 
 :::{div} feynman-prose
-Pause replay on the desired frame and press **Continue here**. The worker restores
-that frame's packed world state, invalidates pending plans, and appends a segment
-named **Continued from replay**. It remains paused. Press **Step** or **Run
-experiment** to plan from this restored world.
+Pause replay on the desired frame and press **Create run from this frame**.
+The lab saves the original run, then starts a distinct paused run from that
+frame's packed world state and applicable configuration, including the reward
+settings in force at that point. Its planner starts fresh. Press **Step action**,
+**Execute trajectory**, or **Run**, as appropriate for the selected controller.
 
-The earlier recording is retained; continuation appends another segment rather
-than deleting the future you just watched. Physical ticks may jump backward at
-the cut. Playback presents the stored frames across that cut without inventing a
-flight or drive between the two endpoints. Snapshot loads, search-branch replay,
-Wave selections, and planner restoration also create labeled segments.
+The original recording retains the future you just watched. The new run records
+its parent run and source frame, so you can find that relationship in **Saved
+runs**. Creating the branch reads the selected frame without expanding the entire
+recording into memory.
 
-Continuation does not promise the same future controller decisions as the
-original run. The world is restored, while the current controller may have its
-own episode memory and the live decision counter continues. Use a planner
-checkpoint for resumable search, or a fixed-seed comparison from this root for
-an explicit comparison of future behavior.
+Restoring a physical world does not reproduce the planner's random stream,
+population, or episode memory. Use a planner checkpoint to continue a saved
+search. Use a comparison from the same selected world to measure alternative
+future behavior under explicit configurations.
 :::
 
 (sec-lab-replay-tree)=
 ## Inspect thinking traces and replay an alternative
 
 :::{div} feynman-prose
-The slider under **EXPLORATION RECORD** selects a recorded decision. Moving it
+The slider in **Planner decisions** selects a recorded decision. Moving it
 pauses control and changes the displayed search tree and diagnostics. It does
 not by itself move the physical bodies to that decision's root. Use the world
 slider when you want the corresponding executed movement.
 
-With **Rollout paths** visible and scene editing closed, click near a recorded
+With **Planner decisions** selected, **Rollout paths** visible, and Inspect mode
+active, click near a recorded
 branch position in the viewport to choose a node, or enter its ID in **Node**.
 The click picker searches within 1.5 world units of recorded controlled-body
 positions. Node IDs belong to the selected tree, so select the decision first.
 
-Press **Replay branch** to restore the tree's native root and execute the action
-sequence along the ancestry leading to that node. This changes the authoritative
-world. The worker records the branch's physical frames in a new segment named
-**Search branch / node …**, then pauses at the resulting world. Use **Play world**
+Press **Replay branch** to preserve the current run and create a separate run
+from the tree's native root and applicable configuration. The worker executes the
+action sequence along the ancestry leading to that node, records its physical
+frames in a segment named **Search branch / node …**, then pauses at the resulting
+world. The new run records its source decision and node. Use **Play world**
 to watch that alternative or **Step** to plan from its endpoint. Branch replay
 reconstructs physics; ordinary world playback only reads recorded states.
 
@@ -131,8 +136,8 @@ lack of branches does not prevent recording or replaying their executed actions.
 :::
 
 :::{div} feynman-prose
-Changing **Tree** rebuilds the current scene and clears the current session's
-history. Choose it before collecting the run. **Keep all decisions** changes
+Changing **Tree** stages a configuration edit. **Apply and restart** saves the
+current run and starts the replacement with the selected recording policy. **Keep all decisions** changes
 retention going forward; it cannot bring back decisions already discarded.
 
 By default the in-memory exploration record keeps at most 32 recent decisions
@@ -150,6 +155,14 @@ the underlying tree or alter native simulation.
 (sec-lab-replay-files)=
 ## Save and open portable files
 
+:::{div} feynman-prose
+Open **Save / Open** for the Recordings, Scene, World snapshot, and Planner
+checkpoint groups. The descriptions distinguish a portable run, scene JSON,
+one physical state, and resumable controller search. The **Run name** field names
+the active run; the save status reports **Saving…**, **Saved on this device**, or
+**Save failed**.
+:::
+
 :::{div} feynman-added
 | File | Save / open controls | Contents and boundary |
 |---|---|---|
@@ -165,13 +178,13 @@ the underlying tree or alter native simulation.
 Pause control and press **Save state** to download the authoritative world's
 `.fgcs` file. **Save state does not save the frame currently displayed by replay.**
 It asks the simulation worker for its current state. To save a replay frame,
-seek to it, press **Continue here**, wait for the restored world to appear, and
+seek to it, press **Create run from this frame**, wait for the new paused world, and
 then press **Save state**. Saving a snapshot does not itself pause a running
 simulation, so pause first when the exact capture point matters.
 
-Use **Load state** with the same compiled scene. Successful loading pauses control,
-restores the snapshot, clears pending plans, and creates a **Restored snapshot**
-segment. A snapshot contains environmental randomness and task progress but
+Use **Load state** with the same compiled scene. Successful loading preserves
+the current run and starts a paused replacement from the snapshot with a fresh
+planner and a **Restored snapshot** segment. A snapshot contains environmental randomness and task progress but
 neither static scene definitions nor planner memory. Scene changes can invalidate
 its fingerprint; restore the matching scene JSON or open a complete run archive
 when transferring an experiment between sessions.
@@ -188,15 +201,15 @@ objects. It gathers compressed chunks into the portable file without expanding
 the entire recording, but still needs memory for those compressed chunks.
 
 Press **Open run**, choose either supported run file, and wait for the scene to
-load. The importer restores the scene and recorded controller settings, opens the
-recorded motion at its first frame, and places the paused authoritative world at
-the recording's last frame. **Back to live** shows that endpoint; **Continue here**
-chooses an earlier sample instead. A version 1 tree-only archive has no executed
-world stream to play; inspect its decisions and use Replay branch as appropriate.
+load. The current run is preserved before replacement. The importer opens the
+recorded scene and motion for read-only inspection. Choose a frame and press
+**Create run from this frame** to start an editable experiment; opening the archive
+does not authorize control of its recorded endpoint. A version 1 tree-only archive
+has no executed world stream to play; inspect its retained decisions instead.
 
-Run and checkpoint settings include controller parameters and seed. The exported
-settings object does not include the live **Clock** or **Worker threads** selector,
-so check those explicitly before continuing an imported experiment. Camera pose,
+New run and checkpoint settings include controller parameters, seed, **Clock**,
+and **Worker threads**. Older files may omit the execution settings; check the
+active configuration before creating a run from an imported experiment. Camera pose,
 keyboard state, layer visibility, and playback speed are also interface state,
 not restored physical state.
 
@@ -213,17 +226,21 @@ planner checkpoints; exported world motion itself is read directly for playback.
 ## Keep long runs on the device
 
 :::{div} feynman-prose
-For a longer experiment, enable **Store long runs on this device · applies on
-reset**, then press **↺ Reset**. Toggling the checkbox does not migrate the recording
-already in progress. The new run writes to this browser's IndexedDB database;
-there is no account or remote upload.
+Device recording is enabled by default. The run writes to this browser's
+IndexedDB database; there is no account or remote upload. Changing the storage
+policy is a draft configuration change, applied with **Apply and restart**.
 
 World samples are stored in chunks of 256 frames. Full chunks queue immediately;
 incomplete chunks flush every five seconds and when the page becomes hidden.
-**Save recording** explicitly flushes the incomplete chunk and waits for writes,
-then reports **Recording saved on this device**. Use it before closing a valuable
-run. An abrupt close can lose recently unflushed frames. Without device storage,
-Save recording tells you to enable it and reset.
+**Save recording** flushes the incomplete chunk and waits for writes. Watch for
+**Saved on this device** before closing a valuable run: an abrupt close can lose
+recently unflushed frames. Saving an in-memory run transfers it to device storage
+in bounded chunks.
+
+The lab preserves the current nonempty run before replacing it through restart,
+import, saved-run opening, checkpoint restoration, or replay branching. It waits
+for final recording output and storage writes. Repeated saves update the same
+session rather than adding duplicate library entries.
 
 Storage uses gzip when browser compression is available and raw bytes otherwise,
 with CRC32 checks on decompression. Ordinary scrubbing keeps a target cache of
@@ -233,8 +250,10 @@ readout distinguishes **KiB resident** from the number of frames **stored**;
 resident memory is not the full on-disk archive size.
 
 Press **Saved runs** to flush the current recording and open the device library.
-Each entry shows the scene name, stored frame count, and update time. **Open**
-loads that recording and closes the dialog. **Delete** removes its metadata and
+Entries show run names, stored frame counts, and update times, with branches
+identified by their parent and source frame. Rename the active run in **Save /
+Open** before saving it. **Open**
+loads that recording in read-only playback and closes the dialog. **Delete** removes its metadata and
 chunks; deletion is disabled for the currently active recording. Open a different
 run or reset first if you intend to delete that one. The dialog's **×** closes it.
 
@@ -259,9 +278,12 @@ resident data. The guard is the larger of 32 MiB and twice the eight-chunk cache
 size for the current frame layout. If writes fall behind, the lab pauses with
 **Recording storage cannot keep up. Wait for writes, then continue.** Let pending
 writes finish and save before continuing. An actual storage write failure marks
-that recording as failed; later appends do not silently pretend to persist. Resolve
-the storage problem and start a fresh recording. Export previously saved data when
-possible. These payload limits do not include all JavaScript, compression,
+that recording as failed; later appends do not silently pretend to persist. If a
+replacement cannot save, the original world and draft stay available, paused.
+Choose **Retry** after resolving storage trouble, **Export** for a recovery file,
+**Cancel** to abandon replacement, or **Continue without saving** to explicitly
+accept proceeding without a completed device save. Export alone does not approve
+replacement, and the lab does not silently delete older runs to make space. These payload limits do not include all JavaScript, compression,
 export-buffer, native, or GPU memory.
 :::
 
@@ -309,7 +331,10 @@ resume workflow uses the downloaded `.fgcp` file.
 Delivery, pickup, gate, and terminal-event counters generate markers when their
 values increase during normal captured movement. Segment restorations are labeled
 separately so a restored counter is not mistaken for a newly achieved event.
-Choose **Jump to event…** to pause control/playback and seek to a marker. The menu
+A terminal event reports termination; it does not by itself establish a collision.
+Reward-change markers retain the settings boundary: playback displays recorded
+rewards and does not recompute earlier outcomes with today's reward weights.
+Open **Events & notes** and choose **Jump to event…** to pause control/playback and seek to a marker. The menu
 shows the most recent 500 events; earlier frames remain available on the slider.
 
 To annotate a moment, seek to it, type an **Event note**, and press **Add marker**.
@@ -318,16 +343,17 @@ limited to 120 characters and default to **Marker** when empty. Markers appear i
 exports; flush a device recording after adding notes to persist its metadata.
 
 For a short end-to-end check, select the racing preset, choose reproducible mode
-and six Action frames, and reset. Press Step twice. You now have the initial
-sample plus twelve captured physical frames. Seek to the first sample: the kart
-returns visually to its starting pose and the lap counter is zero. Play the short
-recording, then seek back and press Continue here. The tick returns to the selected
-world's tick, and the timeline gains a new segment without deleting the first run.
+and six Action frames, then **Apply and restart**. Press **Step action** twice.
+You now have the initial sample plus twelve captured physical frames. In **World
+motion**, seek to the first sample: the kart returns visually to its starting pose
+and the lap counter is zero. Play the short recording, then seek back and press
+**Create run from this frame**. The original run is saved, and a separate paused
+run begins at the selected world's tick.
 
-Press Save state to capture that restored starting world. Press Step, then Load
-state with that file: the restored pose and checkpoint progress return. Export
-the run and reopen it to recover both recorded motion segments. This exercise
-checks world restoration; do not use it as a claim that an uncheckpointed planner
-must choose the same subsequent actions. For measured alternative futures from
+Open **Save / Open** and save a world snapshot. Step, then load that snapshot:
+the restored pose and checkpoint progress return. Export the resulting run and
+reopen it for read-only playback. Find the original run and its child in **Saved
+runs**. This exercise checks world restoration; an uncheckpointed planner need
+not choose the same subsequent actions. For measured alternative futures from
 one selected world, continue with {doc}`control_lab_experiments`.
 :::

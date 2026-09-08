@@ -48,8 +48,7 @@ export class ReplayPanel {
           index = this.playback.cursor;
         const rows = r.getRows ? await r.getRows(index) : r.rows(index);
         if (this.recording !== r) return;
-        this.playback.live();
-        resume(rows, r.rewardConfiguration(index));
+        await resume(rows, r.rewardConfiguration(index));
       } catch (e) {
         error(e);
       }

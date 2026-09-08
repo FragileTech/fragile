@@ -24,11 +24,12 @@ try {
         get pending() { return rewardChangePending } };`,
     });
   });
+  await page.addInitScript(() => localStorage.setItem("lab.workspace.onboarded", "true"));
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8099/lab/");
   await page.waitForFunction(() => window.rewardTest?.ready, null, {
     timeout: 60000,
   });
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     for (const [id, value] of Object.entries({
       walkers: 16,
       horizon: 3,
@@ -38,7 +39,7 @@ try {
       document.getElementById(id).value = value;
     document.getElementById("persistent-recording").checked = true;
     document.getElementById("clock").value = "realtime";
-    rewardTest.loadScene({
+    await rewardTest.loadScene({
       version: 1,
       name: "Live rewards regression",
       size: [100, 100],
@@ -71,11 +72,13 @@ try {
     window.before = Array.from(new Uint8Array(rewardTest.frame.state.buffer));
     window.lengthBefore = rewardTest.replay.recording.length;
   });
+  await page.locator("#tab-rewards").click();
+  await page.locator("#reward-settings > summary").click();
   const apply = async (weight) => {
     await page.locator("#lab-reward-distance_squared").fill(String(weight));
     await page
       .locator("#reward-terms")
-      .getByRole("button", { name: "Apply settings", exact: true })
+      .getByRole("button", { name: "Apply to current run", exact: true })
       .click();
     await page.waitForFunction(
       (w) =>

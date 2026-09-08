@@ -38,8 +38,23 @@ export class StoragePanel {
     };
     const autoSave = () => {
       const record = getRecording();
-      if (record?.flush && record.length > record.durableFrames)
-        record.flush().catch(error);
+      if (
+        record?.flush &&
+        !record.readOnly &&
+        record.length > record.durableFrames
+      ) {
+        const status = document.getElementById("save-status");
+        if (status) status.textContent = "Saving…";
+        record
+          .flush()
+          .then(() => {
+            if (status) status.textContent = "Saved on this device";
+          })
+          .catch((e) => {
+            if (status) status.textContent = "Save failed";
+            error(e);
+          });
+      }
     };
     setInterval(autoSave, 5000);
     document.addEventListener("visibilitychange", () => {
@@ -48,11 +63,27 @@ export class StoragePanel {
     const refresh = async () => {
       const list = $("stored-runs");
       list.replaceChildren();
-      for (const run of await listRuns()) {
+      const runs = await listRuns();
+      const ordered = [],
+        seen = new Set();
+      const visit = (run) => {
+        if (seen.has(run.id)) return;
+        seen.add(run.id);
+        ordered.push(run);
+        runs.filter((child) => child.parent?.run === run.id).forEach(visit);
+      };
+      runs
+        .filter(
+          (run) => !run.parent || !runs.some((p) => p.id === run.parent.run),
+        )
+        .forEach(visit);
+      runs.forEach(visit);
+      for (const run of ordered) {
         const row = document.createElement("div");
         row.className = "stored-run";
+        if (run.parent) row.dataset.parent = run.parent.run || "imported";
         const title = document.createElement("span");
-        title.textContent = `${run.name} · ${run.length} frames · ${new Date(run.updated).toLocaleString()}`;
+        title.textContent = `${run.parent ? "↳ " : ""}${run.name} · ${run.length} frames · ${new Date(run.updated).toLocaleString()}`;
         const open = document.createElement("button");
         open.textContent = "Open";
         open.onclick = async () => {
@@ -82,7 +113,7 @@ export class StoragePanel {
     };
     $("open-library").onclick = async () => {
       try {
-        await getRecording()?.flush?.();
+        if (!getRecording()?.readOnly) await getRecording()?.flush?.();
         await refresh();
         $("storage-dialog").showModal();
       } catch (e) {

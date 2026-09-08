@@ -739,6 +739,24 @@ export class LabRenderer {
       this.tandemTethers.visible = this.layers.tethers;
     }
   }
+  clearDraft() {
+    if (this.draftGroup) {
+      dispose(this.draftGroup);
+      this.overlays.remove(this.draftGroup);
+      this.draftGroup = null;
+    }
+  }
+  showDraft(scene) {
+    this.clearDraft();
+    this.draftGroup = new T.Group();
+    for (const body of scene.bodies || []) {
+      if (!body.position) continue;
+      const marker = zoneModel(body.radius || 0.8, 0xd0a9e2);
+      marker.position.set(...body.position, 0.2);
+      this.draftGroup.add(marker);
+    }
+    this.overlays.add(this.draftGroup);
+  }
   select(position) {
     if (this.selection) {
       this.selection.visible = !!position;

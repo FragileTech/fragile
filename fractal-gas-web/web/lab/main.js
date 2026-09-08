@@ -1,3 +1,15 @@
+import { mountWorkspace } from "./workspace.js";
+import { WorkspaceState } from "./workspace-state.js";
+import {
+  ConfigurationTransition,
+  quiesceWorker,
+  prepareWorker,
+} from "./configuration-transition.js";
+import { RunSession } from "./run-session.js";
+const workspaceUI = mountWorkspace();
+const workspace = new WorkspaceState();
+const transitions = new ConfigurationTransition();
+let runSession, driveControl, nextParent, presetLoading;
 import { configureRocks, rockOptions } from "./rock-scene.js";
 import {
   configureVehicleCount,
@@ -9,6 +21,7 @@ import {
   RewardSettings,
   withRewards,
   coefficientValues,
+  rewardValues,
 } from "./reward-settings.js";
 import { ActionSettings, withActionMultipliers } from "./action-settings.js";
 import { treePoseDim, treeWidth } from "./actions.js";
@@ -82,25 +95,35 @@ const replay = new ReplayPanel({
     metrics[6] = bits[5];
     metrics[7] = bits[6];
     updateFrame({ ...frame, metrics, missed: 0 });
+    updateSelection();
     $("run-state").textContent = "WORLD REPLAY";
   },
   live() {
+    playbackDecision = undefined;
     if (lastLiveFrame) {
       currentState = lastLiveFrame.state;
       renderer.update(currentState, lastLiveFrame.action);
       updateFrame(lastLiveFrame);
       updateDiagnostics(lastDiagnostics);
+      updateSelection();
       $("run-state").textContent = "PAUSED";
     }
   },
-  resume(rows, configuration) {
-    if (configuration?.scene) {
-      applyRewardUpdate(configuration.scene, coefficientValues(configuration.settings), rows, configuration.root);
-    } else worker.postMessage({ type: "resume-motion", rows });
+  async resume(rows, configuration) {
+    const source = replay.recording;
+    nextParent = { run: source.id, frame: replay.playback.cursor };
+    applySettings(configuration?.settings || source.settings);
+    workspace.draft.settings = draftSettings();
+    return loadScene(configuration?.scene || source.scene, false, {
+      rows,
+      info: source.info,
+    });
   },
   async decision(number) {
     if (number === playbackDecision) return;
     playbackDecision = number;
+    renderer.clearDiagnostics();
+    updateDiagnostics();
     let index = record.entries.findIndex((e) => e.decision === number);
     if (index < 0 && replay.recording?.loadObject) {
       try {
@@ -131,20 +154,35 @@ const editor = createSceneEditor({
   getInfo: () => currentInfo,
   getChannels: () => currentChannels,
   applyAction: (action) => {
+    if (workspace.mode !== "drive") {
+      status(
+        "Use Drive mode to apply actuator commands. Apply scene edits first.",
+      );
+      return;
+    }
     stop();
     replay.playback.live();
     worker.postMessage({ type: "manual", action, frames: 1 });
   },
   isReady: () => ready,
-  loadScene,
+  loadScene: stageScene,
   stop,
   status,
   error,
   download,
   upload,
   slug,
-  onSelection: () => updateCargoReadout(),
+  onSelection: () => {
+    updateCargoReadout();
+    updateSelection();
+    driveControl?.refresh();
+  },
   onWorldClick(point) {
+    if (workspace.timeline !== "decisions") {
+      editor.selectAt(point);
+      updateSelection();
+      return;
+    }
     const tree = record.entries[selectedRecord]?.tree;
     if (!tree || !renderer.layers.tree) return;
     let best = 1.5,
@@ -172,7 +210,7 @@ const editor = createSceneEditor({
 const storage = new StoragePanel({
   getRecording: () => replay.recording,
   getScene: () => currentScene,
-  getSettings: () => ({ ...settings(), seed: +$("seed").value }),
+  getSettings: () => ({ ...settings() }),
   async loadRun(motion) {
     const last = motion.length
       ? await motion.getFrame(motion.length - 1)
@@ -188,7 +226,7 @@ const storage = new StoragePanel({
     const configuration = motion.rewardConfiguration();
     importPending.root = configuration.root;
     applySettings(configuration.settings);
-    loadScene(configuration.scene);
+    await loadScene(configuration.scene);
   },
   saveCheckpoint() {
     if (!ready) {
@@ -202,7 +240,7 @@ const storage = new StoragePanel({
   async loadCheckpoint(data) {
     checkpointPending = data;
     applySettings(data.settings);
-    loadScene(data.scene);
+    await loadScene(data.scene);
   },
   upload,
   download,
@@ -212,7 +250,12 @@ const storage = new StoragePanel({
 new ExperimentPanel({
   getScene: () => currentScene,
   getSettings: settings,
-  getRoot: () => ({ snapshot: replay.recording.root, rows: currentRows() }),
+  getRoot: () => ({
+    snapshot: replay.recording.rewardConfiguration(
+      replay.active ? replay.playback.cursor : replay.recording.length - 1,
+    ).root,
+    rows: currentRows(),
+  }),
   stop,
   download,
   error,
@@ -220,7 +263,7 @@ new ExperimentPanel({
 const controllerSettings = new ControllerSettings(
   $("algorithm-settings"),
   $("algorithm"),
-  () => loadScene(currentScene),
+  () => stageSettings(),
 );
 const actionSettings = new ActionSettings(
   $("agent-action-settings"),
@@ -228,10 +271,8 @@ const actionSettings = new ActionSettings(
   (values) => {
     if (!ready) return;
     try {
-      actionSettings.setEnabled(false);
-      const next = withActionMultipliers(currentScene, values);
-      editor.clearHistory();
-      loadScene(next);
+      const next = withActionMultipliers(workspace.draft.scene, values);
+      stageScene(next);
     } catch (e) {
       actionSettings.setEnabled(true);
       error(e);
@@ -245,12 +286,20 @@ function applyRewardUpdate(scene, coefficients, rows, root, replayBranch) {
   rewardChangePending = { scene, coefficients };
   rewardSettings.setEnabled(false);
   status("Applying reward settings at the current world state…");
-  worker.postMessage({ type: "update-rewards", scene, coefficients, rows, root, replayBranch });
+  worker.postMessage({
+    type: "update-rewards",
+    scene,
+    coefficients,
+    rows,
+    root,
+    replayBranch,
+  });
 }
 const rewardSettings = new RewardSettings($("reward-terms"), (values) => {
   if (!ready || rewardChangePending) return;
   try {
-    applyRewardUpdate(withRewards(currentScene, values), coefficientValues(values));
+    stageRewards(values);
+    applyConfiguration();
   } catch (e) {
     rewardChangePending = undefined;
     error(e);
@@ -336,13 +385,16 @@ function renderRockWeight() {
   const value = rockWeight();
   $("rock-weight-value").textContent = `${Number(value.toPrecision(3))}×`;
 }
-function settings() {
+function draftSettings() {
   return {
     ...controllerSettings.values(),
     algorithm: $("algorithm").value || "fmc",
     walkers: +$("walkers").value,
     horizon: +$("horizon").value,
     frames: +$("frames").value,
+    seed: +$("seed").value,
+    clock: $("clock").value,
+    threads: +$("threads").value,
     ...appliedCoefficients,
     noise: +$("noise").value,
     elites: +$("elites").value,
@@ -350,13 +402,26 @@ function settings() {
     recording: +$("recording").value,
   };
 }
+function settings() {
+  return workspace.active?.settings || draftSettings();
+}
 function stop() {
   running = false;
   renderer.setAnimationPlayback({ playing: false });
   if (ready) worker?.postMessage({ type: "run", value: false });
-  $("run").textContent = "▶ Run experiment";
+  $("run").textContent = workspace.mode === "drive" ? "Start driving" : "Run";
+  driveControl?.clear();
 }
-function loadScene(scene, autoStep = false, continuation = undefined) {
+function commitScene(
+  scene,
+  autoStep = false,
+  continuation = undefined,
+  prepared,
+  configuration,
+) {
+  workspace.commit(scene, configuration);
+  workspace.readOnly = !!importPending;
+  applySettings(configuration);
   ++presetRequest;
   rewardChangePending = undefined;
   $("flight-mode").disabled = true;
@@ -424,9 +489,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
   $("timeline").max = 0;
   status("Preparing scene and planning workers…");
   const id = ++revision;
-  worker = new Worker(new URL("./simulation-worker.js", import.meta.url), {
-    type: "module",
-  });
+  worker = prepared.worker;
   worker.onerror = (event) => {
     if (id === revision) error(event.message);
   };
@@ -448,13 +511,22 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     if (data.type === "rewards-updated") {
       rewardChangePending = undefined;
       currentScene = copy(data.scene);
+      workspace.commit(currentScene, {
+        ...settings(),
+        ...data.settings,
+        ...data.coefficients,
+      });
       editor.updateRewards(currentScene);
       appliedCoefficients = data.coefficients;
       rewardSettings.render(currentScene, appliedCoefficients);
       rewardSettings.setEnabled(true);
       replay.recording.addRewardChange({
-        scene: currentScene, settings: { ...data.settings, seed: +$("seed").value },
-        coefficients: data.coefficients, root: data.root, tick: data.tick, decision: data.decisions,
+        scene: currentScene,
+        settings: { ...data.settings, seed: settings().seed },
+        coefficients: data.coefficients,
+        root: data.root,
+        tick: data.tick,
+        decision: data.decisions,
       });
       lastDiagnostics = undefined;
       playbackDecision = undefined;
@@ -494,14 +566,16 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
         `${data.threads} ${data.threads === 1 ? "THREAD" : "THREADS"} / WEBASSEMBLY`;
       $("state-size").textContent = `${data.info[4] * 4} BYTES / WORLD`;
       editor.refreshChannels();
-      status();
-      if (checkpointPending) {
-        worker.postMessage({
-          ...checkpointPending,
-          type: "restore-checkpoint",
-        });
-        checkpointPending = undefined;
+      if (nextParent && !importPending) replay.recording.parent = nextParent;
+      nextParent = undefined;
+      if (replay.recording) {
+        replay.recording.readOnly = workspace.readOnly;
+        $("run-name").value = replay.recording.name || currentScene.name;
       }
+      driveControl?.refresh();
+      updateSelection();
+      status();
+      checkpointPending = undefined;
       if (importPending) {
         record = importPending.recording;
         const hasMotion = importPending.motion?.length;
@@ -510,8 +584,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
         showRecord(record.entries.length - 1);
         if (hasMotion) replay.playback.seek(0);
       } else if (autoStep) {
-        status("Growing the first search tree…");
-        worker.postMessage({ type: "step" });
+        // New worlds always start paused at tick zero.
       } else if (continuation?.running) {
         running = true;
         renderer.setAnimationPlayback({ playing: true, speed: 1 });
@@ -555,6 +628,9 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       renderer.update(data.state, data.action);
       if ($("manual").checked) renderer.pulseAnimation();
       updateFrame(data);
+      updateSelection();
+      if (data.driveSlow)
+        status("Driving is slower than real time on this device.");
       if (ready && !data.running)
         $("run-state").textContent = data.replay ? "REPLAY" : "PAUSED";
       return;
@@ -564,6 +640,7 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
       playbackDecision = undefined;
       if (!replay.active) renderer.diagnostics(data.tree, data.cloud);
       lastDiagnostics = data;
+      updateDecision(data);
       if (!replay.active) updateDiagnostics(data);
       if (data.tree.meta.length) {
         try {
@@ -577,6 +654,10 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
               riskFrames: data.riskFrames,
               metrics: data.metrics,
               elapsed: data.elapsed,
+              selectedReward: data.selectedReward,
+              executionMode: data.executionMode,
+              settings: copy(settings()),
+              rewards: copy(currentScene.rewards),
             },
             !replay.recording?.id && $("archive-all").checked,
           );
@@ -600,21 +681,63 @@ function loadScene(scene, autoStep = false, continuation = undefined) {
     if (data.type === "snapshot")
       download(data.bytes, `${slug()}.fgcs`, "application/octet-stream");
   };
-  worker.postMessage({
+  for (const event of prepared.messages) worker.onmessage(event);
+  prepared.messages.length = 0;
+  workspace.mode = "inspect";
+  $("manual").checked = false;
+  $("editor").hidden = true;
+  refreshMode();
+}
+async function loadScene(scene, autoStep = false, continuation) {
+  if (transitions.busy) return false;
+  try {
+  const configuration = {
+    ...draftSettings(),
+    ...coefficientValues(workspace.draft?.settings || draftSettings()),
+  };
+  // Imports explicitly populated the controls; their configuration takes precedence.
+  if (importPending || checkpointPending)
+    Object.assign(configuration, draftSettings());
+  const request = {
     type: "init",
     scene: copy(scene),
-    settings: settings(),
-    revision: id,
-    seed: +$("seed").value,
-    mode: $("clock").value,
-    threads: +$("threads").value,
+    settings: configuration,
+    revision: revision + 1,
+    seed: configuration.seed,
+    mode: configuration.clock,
+    threads: configuration.threads,
     recordingDecision: importPending?.lastDecision || 0,
     recordingInfo: importPending?.motion?.info,
     recordingRoot: importPending?.root || importPending?.motion?.root,
     recordingLast: importPending?.lastRows,
     continuationRows: continuation?.rows,
     continuationInfo: continuation?.info,
-  });
+    snapshot: continuation?.snapshot,
+    replayBranch: continuation?.replayBranch,
+    checkpoint: checkpointPending,
+  };
+  document.querySelector("main").inert = true;
+  document.querySelector(".workspace-toolbar").inert = true;
+    await transitions.run({
+      quiesce: async () => {
+        stop();
+        await quiesceWorker(worker, crypto.randomUUID());
+      },
+      save: () => runSession?.preserve(),
+      prepare: () => prepareWorker(request),
+      commit: (prepared) =>
+        commitScene(scene, false, continuation, prepared, configuration),
+    });
+    return true;
+  } catch (e) {
+    importPending = checkpointPending = nextParent = undefined;
+    error(e);
+    return false;
+  } finally {
+    document.querySelector("main").inert = false;
+    document.querySelector(".workspace-toolbar").inert = false;
+    refreshMode();
+  }
 }
 function updateCargoReadout(
   label = scenePresentation(currentScene).score.label,
@@ -681,7 +804,7 @@ function updateDiagnostics(data) {
   $("pruned").textContent = Math.round(m[14]).toLocaleString();
   $("clone").textContent = `${(m[10] * 100).toFixed(0)}% CLONED`;
   $("used").textContent =
-    `${Math.min(100, (data.budgetUsed ?? m[8] / +$("horizon").value) * 100).toFixed(0)}%`;
+    `${Math.min(100, (data.budgetUsed ?? m[8] / settings().horizon) * 100).toFixed(0)}%`;
   $("latency").textContent =
     `${m[8]} ITERATIONS · ${data.elapsed.toFixed(0)} MS` +
     (data.selectedReward == null
@@ -703,6 +826,7 @@ function showRecord(i) {
   if (!e) return;
   renderer.diagnostics(e.tree);
   updateDiagnostics(e);
+  updateDecision(e);
   updateRecordUI();
   $("run-state").textContent = "RECORD";
   $("record-count").textContent =
@@ -742,9 +866,9 @@ async function preset() {
     scenario = $("scenario").value,
     sceneId = scenario === "racing" ? $("track").value || "racing" : scenario;
   let applying = false;
-  stop();
-  ready = false;
-  $("run").disabled = $("step").disabled = true;
+  presetLoading = request;
+  document.body.dataset.loadingPreset = "true";
+  $("apply-configuration").disabled = true;
   try {
     const response = await fetch(`./scenarios/${sceneId}.json`);
     if (!response.ok) throw new Error("Unable to load scenario");
@@ -768,11 +892,22 @@ async function preset() {
     );
     editor.clearHistory();
     applying = true;
-    loadScene(scene, !initialized);
-    initialized = true;
+    if (!initialized) {
+      await loadScene(scene);
+      initialized = true;
+    } else {
+      stageScene(scene);
+      renderSetupDraft(scene);
+    }
   } catch (e) {
     if (!applying && request !== presetRequest) return;
     error(e);
+  } finally {
+    if (presetLoading === request) {
+      presetLoading = undefined;
+      delete document.body.dataset.loadingPreset;
+      $("apply-configuration").disabled = false;
+    }
   }
 }
 $("scenario").onchange = preset;
@@ -784,11 +919,15 @@ $("ants-vehicle-type").onchange = () => {
   if (!currentScene) return;
   const input = $("ants-vehicle-type");
   try {
-    const scene = configureVehicleType(currentScene, input.value, agentCatalog);
+    const scene = configureVehicleType(
+      workspace.draft.scene,
+      input.value,
+      agentCatalog,
+    );
     vehicleTypes.set($("scenario").value, input.value);
     vehicleCounts.set($("scenario").value, vehicleCount(scene));
-    editor.clearHistory();
-    loadScene(scene);
+
+    stageScene(scene);
   } catch (e) {
     input.value = vehicleType(currentScene) || "";
     error(e);
@@ -802,10 +941,10 @@ $("ants-vehicle-count").onchange = () => {
   }
   try {
     const count = +input.value;
-    const scene = configureVehicleCount(currentScene, count);
+    const scene = configureVehicleCount(workspace.draft.scene, count);
     vehicleCounts.set($("scenario").value, count);
-    editor.clearHistory();
-    loadScene(scene);
+
+    stageScene(scene);
   } catch (e) {
     input.value = vehicleCount(currentScene);
     error(e);
@@ -813,13 +952,13 @@ $("ants-vehicle-count").onchange = () => {
 };
 $("flight-mode").onchange = () => {
   if (!currentScene) return;
-  const scene = copy(currentScene);
+  const scene = copy(workspace.draft.scene);
   scene.environment = {
     ...(scene.environment || {}),
     flight: $("flight-mode").checked,
   };
-  editor.clearHistory();
-  loadScene(scene);
+
+  stageScene(scene);
 };
 $("hook-stiffness-slider").oninput = () => {
   const value = +$("hook-stiffness-slider").value;
@@ -848,30 +987,47 @@ $("apply-rocks").onclick = () => {
         ? { stiffness: +$("hook-stiffness").value }
         : {}),
     };
-    const scene = configureRocks(currentScene, options);
+    const scene = configureRocks(workspace.draft.scene, options);
     miningOptions.set($("scenario").value, options);
-    editor.clearHistory();
-    loadScene(scene);
+
+    stageScene(scene);
   } catch (e) {
     error(e);
   }
 };
 $("run").onclick = () => {
+  if (workspace.readOnly) {
+    status("Create a run from a recorded frame to continue.");
+    return;
+  }
+  if (workspace.mode === "edit") return;
   replay.playback.live();
   running = !running;
   renderer.setAnimationPlayback({ playing: running, speed: 1 });
-  $("run").textContent = running ? "Ⅱ Pause experiment" : "▶ Run experiment";
+  $("run").textContent = running
+    ? "Pause"
+    : workspace.mode === "drive"
+      ? "Start driving"
+      : "Run";
   worker.postMessage({ type: "run", value: running });
+  if (!running) driveControl?.clear();
   status();
 };
 $("step").onclick = () => {
+  if (workspace.readOnly || workspace.mode === "edit") return;
+  if (workspace.mode === "drive") {
+    driveControl.step();
+    return;
+  }
   replay.playback.live();
   stop();
   status("Planning one action…");
   worker.postMessage({ type: "step" });
 };
-$("reset").onclick = () => loadScene(currentScene);
+$("reset").onclick = () =>
+  workspace.dirty ? applyConfiguration() : loadScene(currentScene);
 $("wave").onclick = () => {
+  if (workspace.readOnly || workspace.mode !== "inspect") return;
   replay.playback.live();
   stop();
   worker.postMessage({ type: "wave" });
@@ -899,7 +1055,7 @@ for (const id of [
       $("elites").value = Math.min(+$("elites").value, +$("walkers").value);
     }
     if (id === "algorithm") controllerSettings.render();
-    loadScene(currentScene);
+    stageSettings();
   };
 for (const name of ["tree", "cloud", "geometry", "tethers"])
   $(`layer-${name}`).onchange = () =>
@@ -940,32 +1096,29 @@ $("timeline").oninput = () => {
   stop();
   showRecord(+$("timeline").value);
 };
-$("replay").onclick = () => {
+$("replay").onclick = async () => {
   const entry = record.entries[selectedRecord];
-  if (entry) {
-    replay.playback.live();
-    stop();
-    const configuration = replay.recording?.rewardConfigurationForRoot(entry.tree.root, entry.decision);
-    if (configuration?.scene) {
-      applyRewardUpdate(configuration.scene, coefficientValues(configuration.settings), undefined,
-        configuration.root, { tree: entry.tree, node: +$("node").value });
-      return;
-    }
-    worker.postMessage({
-      type: "replay",
-      tree: entry.tree,
-      node: +$("node").value,
-    });
-  }
+  if (!entry) return;
+  const configuration = replay.recording.rewardConfigurationForRoot(
+    entry.tree.root,
+    entry.decision,
+  );
+  nextParent = {
+    run: replay.recording.id,
+    decision: entry.decision,
+    node: +$("node").value,
+  };
+  applySettings(configuration.settings);
+  workspace.draft.settings = { ...configuration.settings, ...draftSettings() };
+  await loadScene(configuration.scene, false, {
+    replayBranch: { tree: entry.tree, node: +$("node").value },
+  });
 };
 $("save-state").onclick = () => worker.postMessage({ type: "snapshot" });
 $("load-state").onclick = () =>
   upload(".fgcs", async (file) => {
-    replay.playback.live();
-    stop();
-    worker.postMessage({
-      type: "restore",
-      bytes: new Uint8Array(await file.arrayBuffer()),
+    await loadScene(currentScene, false, {
+      snapshot: new Uint8Array(await file.arrayBuffer()),
     });
   });
 $("export-run").onclick = async () => {
@@ -982,7 +1135,7 @@ $("export-run").onclick = async () => {
       download(
         exportRecording(
           currentScene,
-          { ...settings(), seed: +$("seed").value },
+          { ...settings() },
           record.entries,
           replay.recording,
         ),
@@ -1021,17 +1174,21 @@ $("import-run").onclick = () =>
     applySettings(configuration?.settings || importPending.settings);
     loadScene(configuration?.scene || importPending.scene);
   });
-installManualControl({
-  isReady: () => ready,
-  channels: () => currentChannels,
+driveControl = installManualControl({
+  isReady: () => ready && !workspace.readOnly && workspace.mode === "drive",
+  channels: () => currentChannels || [],
   selectedBody: () =>
-    editor.selection?.key === "bodies" ? editor.selection.i : undefined,
-  apply(action) {
-    replay.playback.live();
+    editor.selection?.key === "bodies"
+      ? editor.selection.i
+      : renderer.controlled[0],
+  apply: (action) => worker?.postMessage({ type: "drive-action", action }),
+  step: (action) => {
     stop();
-    worker.postMessage({ type: "manual", action, frames: 2 });
+    worker?.postMessage({ type: "manual", action, frames: 1 });
   },
+  pause: stop,
 });
+installWorkspaceActions();
 
 // Static controls are annotated in the HTML; controller and scene-editor
 // controls call initHelp again when they replace their dynamic fields.
@@ -1076,8 +1233,342 @@ async function loadPresets() {
     );
     $("scenario").disabled = false;
     await preset();
+    await workspaceUI.tasks(entries, async (id) => {
+      $("scenario").value = id;
+      await preset();
+      await applyConfiguration();
+    });
   } catch (e) {
     error(e);
   }
 }
 loadPresets();
+
+function stageScene(scene) {
+  if (!workspace.draft) return;
+  workspace.draft.scene = copy(scene);
+  if (workspace.mode === "edit") editor.setDraftScene(scene);
+  workspace.changed();
+}
+function stageSettings() {
+  if (!workspace.draft) return;
+  workspace.draft.settings = {
+    ...draftSettings(),
+    ...coefficientValues(workspace.draft.settings),
+  };
+  workspace.changed();
+}
+function stageRewards(values) {
+  if (!workspace.draft) return;
+  workspace.draft.scene = withRewards(workspace.draft.scene, values);
+  Object.assign(workspace.draft.settings, coefficientValues(values));
+  workspace.changed();
+}
+function readRewardDraft() {
+  return Object.fromEntries(
+    [...rewardSettings.inputs].map(([key, { number }]) => [
+      key,
+      Number(number.value),
+    ]),
+  );
+}
+function renderSetupDraft(scene) {
+  $("ants-vehicle-count").value = vehicleCount(scene);
+  $("ants-vehicle-type").value = vehicleType(scene) || "";
+  updateFlightControl(scene);
+  const rocks = rockOptions(scene);
+  $("rock-controls").hidden = !rocks;
+  if (rocks) {
+    $("rock-size").value = rocks.scale;
+    $("rock-count").value = rocks.count;
+    $("rock-weight-slider").value = Math.log10(rocks.weight);
+    $("hook-stiffness").value = scene.tethers?.[0]?.stiffness ?? 25;
+    $("hook-stiffness-slider").value = Math.log10(
+      +$("hook-stiffness").value + 1,
+    );
+    renderRockWeight();
+  }
+  $("track-control").hidden = scene.environment?.kind !== "circuit";
+  $("description").textContent = scene.description || scene.name;
+  actionSettings.render(scene);
+  rewardSettings.render(scene, workspace.draft.settings);
+}
+function refreshPending() {
+  const changes = workspace.changes;
+  $("pending-settings").hidden = !changes.length;
+  $("pending-count").textContent =
+    `${changes.length} pending ${changes.length === 1 ? "change" : "changes"}`;
+  $("pending-diff").replaceChildren(
+    ...changes.map((change) => {
+      const li = document.createElement("li");
+      const format = (value) =>
+        typeof value === "object"
+          ? `${Array.isArray(value) ? value.length + " items" : "modified"}`
+          : String(value ?? "default");
+      li.textContent = `${change.path.replace(/^(scene|settings)\./, "").replaceAll("_", " ")}: ${format(change.before)} → ${format(change.after)}`;
+      return li;
+    }),
+  );
+  const rewardOnly = changes.every((c) =>
+    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|settings\.(reward_coef|distance_coef)$)/.test(
+      c.path,
+    ),
+  );
+  $("apply-configuration").textContent = rewardOnly
+    ? "Apply to current run"
+    : "Apply and restart";
+  rewardSettings.apply.textContent = rewardOnly
+    ? "Apply to current run"
+    : "Apply and restart";
+  if (changes.length) $("reset").textContent = "Apply and restart";
+  else $("reset").textContent = "Restart";
+}
+async function applyConfiguration() {
+  if (!workspace.active || transitions.busy || presetLoading) return false;
+  for (const input of document.querySelectorAll(
+    ".settings-panel input:not([type=range]),.settings-panel select",
+  )) {
+    if (!input.disabled && !input.checkValidity()) {
+      input.reportValidity();
+      status("Correct the highlighted setting before applying.", true);
+      return false;
+    }
+  }
+  stageSettings();
+  const changes = workspace.changes;
+  if (!changes.length) return true;
+  const rewardOnly = changes.every((c) =>
+    /^(scene\.rewards\.|scene\.rewards$|scene\.cargo\.full_reward$|settings\.(reward_coef|distance_coef)$)/.test(
+      c.path,
+    ),
+  );
+  if (rewardOnly && !workspace.readOnly) {
+    applyRewardUpdate(
+      workspace.draft.scene,
+      coefficientValues(workspace.draft.settings),
+    );
+    return true;
+  }
+  return loadScene(workspace.draft.scene);
+}
+function discardConfiguration() {
+  workspace.discard();
+  applySettings(workspace.active.settings);
+  renderSetupDraft(workspace.active.scene);
+  editor.setScene(workspace.active.scene);
+  renderer.clearDraft?.();
+  refreshPending();
+}
+function refreshMode() {
+  for (const mode of ["inspect", "edit", "drive"])
+    $("mode-" + mode).setAttribute(
+      "aria-pressed",
+      String(workspace.mode === mode),
+    );
+  $("drive-controls").hidden = workspace.mode !== "drive";
+  $("manual").checked = workspace.mode === "drive";
+  $("step").textContent =
+    workspace.mode === "drive"
+      ? "Step physics frame"
+      : settings().algorithm === "wave-jump"
+        ? "Execute trajectory"
+        : "Step action";
+  $("run").textContent = running
+    ? "Pause"
+    : workspace.mode === "drive"
+      ? "Start driving"
+      : "Run";
+  $("run").disabled = $("step").disabled =
+    !ready || workspace.readOnly || workspace.mode === "edit";
+  $("wave").disabled =
+    !ready || workspace.readOnly || workspace.mode !== "inspect";
+  $("run-name").disabled = workspace.readOnly;
+  $("mode-hint").textContent =
+    workspace.mode === "edit"
+      ? "Editing a draft · Apply and restart commits changes"
+      : workspace.mode === "drive"
+        ? "Release keys to coast · Pause stops physics"
+        : "Click a vehicle to inspect it · Drag to pan";
+  $("playback-status").textContent =
+    replay.active || workspace.readOnly ? "Replay" : "Live";
+}
+async function setMode(mode) {
+  if (workspace.mode === "edit" && mode !== "edit" && workspace.dirty) {
+    const decision = await new Promise((resolve) => {
+      const dialog = $("leave-editor");
+      let choice = "cancel";
+      for (const key of ["apply", "discard", "cancel"])
+        $("leave-" + key).onclick = () => {
+          choice = key;
+          dialog.close();
+        };
+      dialog.onclose = () => resolve(choice);
+      dialog.showModal();
+    });
+    if (decision === "cancel") return;
+    if (decision === "apply" && !(await applyConfiguration())) return;
+    if (decision === "discard") discardConfiguration();
+  }
+  if (workspace.readOnly && mode !== "inspect") {
+    status("Create a run from a recorded frame before editing or driving.");
+    return;
+  }
+  stop();
+  workspace.mode = mode;
+  if (mode === "inspect") document.body.classList.remove("inspector-open");
+  $("editor").hidden = mode !== "edit";
+  document.body.classList.toggle("editing", mode === "edit");
+  if (mode === "edit") editor.setDraftScene(workspace.draft.scene);
+  else renderer.clearDraft();
+  if (mode === "drive") {
+    if (
+      !renderer.controlled.includes(editor.selection?.i) ||
+      editor.selection?.key !== "bodies"
+    )
+      editor.selectBody(renderer.controlled[0]);
+    replay.playback.live();
+    document.body.classList.add("inspector-open");
+    $("world").focus();
+  }
+  worker?.postMessage({ type: "drive-mode", enabled: mode === "drive" });
+  driveControl?.refresh();
+  refreshMode();
+}
+function updateSelection() {
+  if (!currentState || !currentInfo) return;
+  const body =
+    editor.selection?.key === "bodies"
+      ? editor.selection.i
+      : renderer.controlled[0];
+  if (body == null || body >= currentInfo[1]) {
+    $("selected-body").textContent = "Select a vehicle in the world.";
+    $("selection-details").replaceChildren();
+    return;
+  }
+  const definition = currentScene.bodies[body];
+  const B = currentInfo[1],
+    action = replay.active ? renderer.action : lastLiveFrame?.action;
+  $("selected-body").textContent =
+    definition.name ||
+    `Vehicle ${body + 1}${definition.agent_type ? " · " + definition.agent_type : ""}`;
+  const selectedChannels = (currentChannels || [])
+    .map((c, i) => ({ ...c, value: action?.[i] }))
+    .filter((c) => c.body === body);
+  const values = {
+    Velocity: `${currentState[8 + 2 * B + body].toFixed(2)}, ${currentState[8 + 3 * B + body].toFixed(2)} m/s`,
+    "Angular velocity": `${currentState[8 + 5 * B + body].toFixed(2)} rad/s`,
+    "Current commands":
+      selectedChannels
+        .map(
+          (c) =>
+            `${c.name}: ${c.value == null ? "Not recorded" : c.value.toFixed(2)}`,
+        )
+        .join(" · ") || "Uncontrolled body",
+    Task: scenePresentation(currentScene).task_label,
+    Target: "Not recorded",
+  };
+  $("selection-details").replaceChildren(
+    ...Object.entries(values).flatMap(([name, value]) => {
+      const dt = document.createElement("dt"),
+        dd = document.createElement("dd");
+      dt.textContent = name;
+      dd.textContent = value;
+      return [dt, dd];
+    }),
+  );
+  if (workspace.mode !== "edit")
+    renderer.select([currentState[8 + body], currentState[8 + B + body]]);
+  $("execution-status").textContent = running
+    ? workspace.mode === "drive"
+      ? "Driving"
+      : "Running"
+    : "Paused";
+  refreshMode();
+}
+function updateDecision(data) {
+  if (!data) {
+    $("decision-details").textContent = "No decision selected.";
+    return;
+  }
+  const parts = [
+    `Decision ${data.decision ?? "—"}`,
+    `Selected path reward: ${data.selectedReward ?? "Not recorded"}`,
+    `Action: ${data.action ? Array.from(data.action, (v) => v.toFixed(3)).join(", ") : "Not recorded"}`,
+    `Outcome: ${data.executionMode || "Not recorded"}`,
+    `Reward weights: ${data.rewards ? JSON.stringify(data.rewards) : "Not recorded"}`,
+    "Individual reward contributions: Not recorded",
+  ];
+  $("decision-details").textContent = parts.join("\n");
+}
+function installWorkspaceActions() {
+  workspace.addEventListener("change", refreshPending);
+  runSession = new RunSession({
+    getRecording: () => replay.recording,
+    attach: (r) => replay.attach(r),
+    getEntries: () => record.entries,
+    download,
+    status: (message) => {
+      $("save-status").textContent = message;
+    },
+  });
+  $("export-scene").onclick = () =>
+    download(JSON.stringify(currentScene, null, 2), `${slug()}.json`);
+  $("run-name").onchange = () => {
+    if (!replay.recording || workspace.readOnly) return;
+    replay.recording.name = $("run-name").value.trim() || currentScene.name;
+    runSession.save().catch(error);
+  };
+  $("flush-run").onclick = () => runSession.save().catch(error);
+  $("apply-configuration").onclick = applyConfiguration;
+  $("discard-configuration").onclick = discardConfiguration;
+  $("apply-editor").onclick = applyConfiguration;
+  $("discard-editor").onclick = discardConfiguration;
+  for (const mode of ["inspect", "edit", "drive"])
+    $("mode-" + mode).onclick = () => setMode(mode);
+  $("edit").onclick = () =>
+    setMode(workspace.mode === "edit" ? "inspect" : "edit");
+  $("close-editor").onclick = () => setMode("inspect");
+  $("world").tabIndex = 0;
+  document.addEventListener("lab-timeline", ({ detail }) => {
+    workspace.timeline = detail;
+  });
+  document.addEventListener("lab-modal", () => {
+    if (workspace.mode === "drive") stop();
+  });
+  $("reward-terms").addEventListener("input", () => {
+    try {
+      stageRewards(readRewardDraft());
+    } catch {
+      /* incomplete draft */
+    }
+  });
+  $("reward-terms").addEventListener("click", (e) => {
+    if (e.target.textContent === "Reset defaults")
+      stageRewards(readRewardDraft());
+  });
+  $("agent-action-settings").addEventListener("input", () => {
+    const values = {};
+    for (const input of actionSettings.inputs)
+      (values[input.dataset.agentType] ||= {})[input.dataset.channel] =
+        +input.value;
+    stageScene(withActionMultipliers(workspace.draft.scene, values));
+  });
+  for (const id of [
+    "rock-size",
+    "rock-count",
+    "rock-weight-slider",
+    "hook-stiffness",
+    "hook-stiffness-slider",
+  ])
+    $(id).addEventListener("change", () => $("apply-rocks").click());
+  $("apply-rocks").textContent = "Update draft";
+  $("apply-action-settings").textContent = "Update draft";
+  $("recording").addEventListener("change", stageSettings);
+  $("persistent-recording").addEventListener("change", stageSettings);
+  document.querySelectorAll(".controls [data-help]").forEach((node) => {
+    node.dataset.help = node.dataset.help.replace(
+      /Changing[^.]*restarts[^.]*\./g,
+      "Apply and restart commits your changes.",
+    );
+  });
+}

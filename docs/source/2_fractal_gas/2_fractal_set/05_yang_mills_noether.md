@@ -4633,6 +4633,7 @@ Z_{\mathrm{alg}}=\int e^{-S_{\mathrm{alg}}}\,d\lambda
 \mathcal Z(J)=\int\exp\!\left(i\sum_{a=1}^mJ_aO_a(y)\right)
                            e^{-S_{\mathrm{alg}}(y)}\lambda(dy)
 =\mathbb E_P\exp\!\left(i\sum_{a=1}^mJ_aO_a(Y)\right).
+\end{gathered}
 \tag{YM.17}
 $$
 

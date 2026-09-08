@@ -391,9 +391,9 @@ $$
 
 where $R:\mathcal{Z}\to\mathbb{R}$ is a scalar reward signal (for example, $R=-U$ for potential minimization).
 In agent/1-form settings, the reward is directional:
-$
+$$
 r_i = \langle \mathcal{R}(z_i), v_i \rangle_G
-$
+$$
 with $\mathcal{R}: \mathcal{Z} \to T^*\mathcal{Z}$ a reward 1-form.
 :::
 
@@ -447,9 +447,9 @@ z_r(i) = \frac{r_i - \mu_r}{\sigma_r'}, \quad z_d(i) = \frac{d_i - \mu_d}{\sigma
 $$
 
 where $\mu_r, \sigma_r$ (resp. $\mu_d, \sigma_d$) are the mean and standard deviation of rewards (resp. distances) over $\mathcal{A}(\mathcal{S})$, and
-$
+$$
 \sigma_r' = \sqrt{\sigma_r^2 + \sigma_{\min}^2}, \quad \sigma_d' = \sqrt{\sigma_d^2 + \sigma_{\min}^2}
-$
+$$
 with $\sigma_{\min} > 0$ a regularizer.
 
 **Step 2: Logistic rescaling**:

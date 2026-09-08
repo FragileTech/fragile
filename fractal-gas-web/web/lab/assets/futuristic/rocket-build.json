@@ -2,12 +2,12 @@
   "high": {
     "sourceTriangles": 7782,
     "drawMeshes": 9,
-    "bytes": 1349348
+    "bytes": 874380
   },
   "low": {
     "sourceTriangles": 1672,
     "drawMeshes": 8,
-    "bytes": 646568
+    "bytes": 172988
   },
   "style": "futuristic",
   "model": "rocket"

@@ -1,0 +1,917 @@
+{
+  "version": 1,
+  "date": "2026-09-08T06:35:43.420993+00:00",
+  "baselineCommit": "c1c11f4327fa206526e8400d64e9ee3f1141e5d8",
+  "scope": "16 vehicle GLBs and 8 editable Blender sources; no rendering",
+  "rootAndPivotTolerance": 1e-06,
+  "assets": {
+    "futuristic/rocket-high": {
+      "sha256": "d670588f5e7d615f358071cf9cb4b42da16dcf3b17d1cc20e6e00adcd44c6fa4",
+      "costs": {
+        "triangles": 7782,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 874380,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 7782,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1349348,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 7782,
+        "primitives": 9,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1349348,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 3,
+      "changedPositionEntries": 2748,
+      "changedMeshes": [
+        {
+          "name": "Export batch/0",
+          "verticesBefore": 4298,
+          "verticesAfter": 4298,
+          "changedPositionEntries": 2160
+        },
+        {
+          "name": "Export batch.002/0",
+          "verticesBefore": 396,
+          "verticesAfter": 396,
+          "changedPositionEntries": 396
+        },
+        {
+          "name": "Export batch.003/0",
+          "verticesBefore": 3342,
+          "verticesAfter": 3342,
+          "changedPositionEntries": 192
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/rocket-low": {
+      "sha256": "fe261f1ad835ccc88a4a0ef22b5f5a181e20706393a02b5af349b6e34eabd0e5",
+      "costs": {
+        "triangles": 1253,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 172988,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 1253,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 646568,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 1253,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 646568,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 3,
+      "changedPositionEntries": 1297,
+      "changedMeshes": [
+        {
+          "name": "Export batch.009/0",
+          "verticesBefore": 426,
+          "verticesAfter": 430,
+          "changedPositionEntries": 301
+        },
+        {
+          "name": "Export batch.011/0",
+          "verticesBefore": 52,
+          "verticesAfter": 52,
+          "changedPositionEntries": 52
+        },
+        {
+          "name": "Export batch.012/0",
+          "verticesBefore": 905,
+          "verticesAfter": 944,
+          "changedPositionEntries": 944
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/kart-high": {
+      "sha256": "31e9d6092a2b9f375b5433346b176a241fb40524991a2c79bebb04166aff151a",
+      "costs": {
+        "triangles": 15964,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1347816,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 15968,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1823052,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 15968,
+        "primitives": 20,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1823052,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 13,
+      "changedPositionEntries": 2492,
+      "changedMeshes": [
+        {
+          "name": "Export batch.014/0",
+          "verticesBefore": 2724,
+          "verticesAfter": 2788,
+          "changedPositionEntries": 1764
+        },
+        {
+          "name": "Export batch.015/0",
+          "verticesBefore": 432,
+          "verticesAfter": 432,
+          "changedPositionEntries": 432
+        },
+        {
+          "name": "Export batch.016/0",
+          "verticesBefore": 1384,
+          "verticesAfter": 1312,
+          "changedPositionEntries": 296
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/kart-low": {
+      "sha256": "6c9d228227d41cd98a00cdfa2df1576d118d555e0ad4c64d3cc9ae48d0bc657a",
+      "costs": {
+        "triangles": 2274,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 249792,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 2274,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 724760,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 2274,
+        "primitives": 19,
+        "materials": 7,
+        "images": 5,
+        "bytes": 724760,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 13,
+      "changedPositionEntries": 168,
+      "changedMeshes": [
+        {
+          "name": "Export batch.034/0",
+          "verticesBefore": 371,
+          "verticesAfter": 371,
+          "changedPositionEntries": 130
+        },
+        {
+          "name": "Export batch.035/0",
+          "verticesBefore": 38,
+          "verticesAfter": 38,
+          "changedPositionEntries": 38
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/drone-high": {
+      "sha256": "a0b9dd1da54f977656c1f3daab05ec1fe3877c0d0facb3a5cb408a0b4dca7cb2",
+      "costs": {
+        "triangles": 11950,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1115328,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 11958,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1548460,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 11958,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 1548460,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 6,
+      "changedPositionEntries": 2890,
+      "changedMeshes": [
+        {
+          "name": "Export batch.003/0",
+          "verticesBefore": 4300,
+          "verticesAfter": 4284,
+          "changedPositionEntries": 2228
+        },
+        {
+          "name": "Export batch.004/0",
+          "verticesBefore": 3466,
+          "verticesAfter": 3466,
+          "changedPositionEntries": 468
+        },
+        {
+          "name": "Export batch.001/0",
+          "verticesBefore": 894,
+          "verticesAfter": 894,
+          "changedPositionEntries": 194
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/drone-low": {
+      "sha256": "3a10e4b3cfcf0c0085c312ff85f0c56ab3b3e216abaf2d340cee8813545573d6",
+      "costs": {
+        "triangles": 1761,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 216480,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 1761,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 648856,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 1761,
+        "primitives": 14,
+        "materials": 5,
+        "images": 5,
+        "bytes": 648856,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 6,
+      "changedPositionEntries": 993,
+      "changedMeshes": [
+        {
+          "name": "Export batch.017/0",
+          "verticesBefore": 1001,
+          "verticesAfter": 1007,
+          "changedPositionEntries": 852
+        },
+        {
+          "name": "Export batch.018/0",
+          "verticesBefore": 755,
+          "verticesAfter": 755,
+          "changedPositionEntries": 76
+        },
+        {
+          "name": "Export batch.015/0",
+          "verticesBefore": 207,
+          "verticesAfter": 207,
+          "changedPositionEntries": 65
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/harvester-high": {
+      "sha256": "45b09f39a1667a14822ba4a5996eee62815b2afc47b4400bcaa8a2e45f115cf6",
+      "costs": {
+        "triangles": 28838,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2162664,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 28850,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2632244,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 28850,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2632244,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 18,
+      "changedPositionEntries": 20496,
+      "changedMeshes": [
+        {
+          "name": "Export batch.014/0",
+          "verticesBefore": 5676,
+          "verticesAfter": 5652,
+          "changedPositionEntries": 1236
+        },
+        {
+          "name": "Export batch.015/0",
+          "verticesBefore": 592,
+          "verticesAfter": 634,
+          "changedPositionEntries": 634
+        },
+        {
+          "name": "Export batch.003/0",
+          "verticesBefore": 18858,
+          "verticesAfter": 19010,
+          "changedPositionEntries": 18626
+        }
+      ],
+      "violations": []
+    },
+    "futuristic/harvester-low": {
+      "sha256": "e6197e762b59992f52f24a5c96ee5d42cfb5c936df3ffa5276fe8d65868039d3",
+      "costs": {
+        "triangles": 3774,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 351408,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 3774,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 826168,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 3774,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 826168,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 18,
+      "changedPositionEntries": 210,
+      "changedMeshes": [
+        {
+          "name": "Export batch.035/0",
+          "verticesBefore": 636,
+          "verticesAfter": 636,
+          "changedPositionEntries": 52
+        },
+        {
+          "name": "Export batch.036/0",
+          "verticesBefore": 56,
+          "verticesAfter": 62,
+          "changedPositionEntries": 62
+        },
+        {
+          "name": "Export batch.024/0",
+          "verticesBefore": 1648,
+          "verticesAfter": 1648,
+          "changedPositionEntries": 96
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/rocket-high": {
+      "sha256": "47c288ba52431febcfe16da894215a78209f3f65d6c9d881c485dde8c55e5ea7",
+      "costs": {
+        "triangles": 9432,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 924936,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 9432,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1230304,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 9432,
+        "primitives": 10,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1230304,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 3,
+      "changedPositionEntries": 1236,
+      "changedMeshes": [
+        {
+          "name": "Export batch.006/0",
+          "verticesBefore": 276,
+          "verticesAfter": 276,
+          "changedPositionEntries": 276
+        },
+        {
+          "name": "Export batch.002/0",
+          "verticesBefore": 7618,
+          "verticesAfter": 7618,
+          "changedPositionEntries": 960
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/rocket-low": {
+      "sha256": "194b86021b6b48ddcc92d1c81f208123ee1020e50c2d21640fac0f4092719db3",
+      "costs": {
+        "triangles": 1780,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 186872,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 1780,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 491384,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 1780,
+        "primitives": 8,
+        "materials": 6,
+        "images": 5,
+        "bytes": 491384,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 3,
+      "changedPositionEntries": 1502,
+      "changedMeshes": [
+        {
+          "name": "Export batch.014/0",
+          "verticesBefore": 86,
+          "verticesAfter": 86,
+          "changedPositionEntries": 86
+        },
+        {
+          "name": "Export batch.012/0",
+          "verticesBefore": 1997,
+          "verticesAfter": 2024,
+          "changedPositionEntries": 1416
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/kart-high": {
+      "sha256": "69fa36dd094b84b7f478605e4fceaf79f493570845f9608b2b5527a7d87bb625",
+      "costs": {
+        "triangles": 17572,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1405788,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 17572,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1711744,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 17572,
+        "primitives": 16,
+        "materials": 8,
+        "images": 5,
+        "bytes": 1711744,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 13,
+      "changedPositionEntries": 1565,
+      "changedMeshes": [
+        {
+          "name": "Export batch.015/0",
+          "verticesBefore": 236,
+          "verticesAfter": 236,
+          "changedPositionEntries": 236
+        },
+        {
+          "name": "Export batch.010/0",
+          "verticesBefore": 1164,
+          "verticesAfter": 1146,
+          "changedPositionEntries": 1134
+        },
+        {
+          "name": "Export batch/0",
+          "verticesBefore": 1985,
+          "verticesAfter": 1985,
+          "changedPositionEntries": 195
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/kart-low": {
+      "sha256": "f9086905c7d3e61102d7b50082ccdd1449a1c8ce4f1943afef5f3b136e2a75c7",
+      "costs": {
+        "triangles": 2428,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 242040,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 2428,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 547416,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 2428,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 547416,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 13,
+      "changedPositionEntries": 140,
+      "changedMeshes": [
+        {
+          "name": "Export batch.030/0",
+          "verticesBefore": 40,
+          "verticesAfter": 40,
+          "changedPositionEntries": 40
+        },
+        {
+          "name": "Export batch.026/0",
+          "verticesBefore": 52,
+          "verticesAfter": 52,
+          "changedPositionEntries": 52
+        },
+        {
+          "name": "Export batch.016/0",
+          "verticesBefore": 348,
+          "verticesAfter": 348,
+          "changedPositionEntries": 48
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/drone-high": {
+      "sha256": "c34f685056b867f9b2b5360c39cd1400b4192e7711c626127dfed2ab97c88325",
+      "costs": {
+        "triangles": 15580,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1282840,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 15580,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1588208,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 15580,
+        "primitives": 15,
+        "materials": 7,
+        "images": 5,
+        "bytes": 1588208,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 5,
+      "changedPositionEntries": 260,
+      "changedMeshes": [
+        {
+          "name": "Export batch.003/0",
+          "verticesBefore": 3212,
+          "verticesAfter": 3212,
+          "changedPositionEntries": 4
+        },
+        {
+          "name": "Export batch/0",
+          "verticesBefore": 16518,
+          "verticesAfter": 16518,
+          "changedPositionEntries": 256
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/drone-low": {
+      "sha256": "6d3bb7a36a0628ab7de300a7ca413b23157dadb445b235d4bef9136d79ad9403",
+      "costs": {
+        "triangles": 2086,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 217916,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 2088,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 523460,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 2088,
+        "primitives": 14,
+        "materials": 6,
+        "images": 5,
+        "bytes": 523460,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 5,
+      "changedPositionEntries": 1319,
+      "changedMeshes": [
+        {
+          "name": "Export batch.018/0",
+          "verticesBefore": 928,
+          "verticesAfter": 928,
+          "changedPositionEntries": 4
+        },
+        {
+          "name": "Export batch.015/0",
+          "verticesBefore": 1849,
+          "verticesAfter": 1844,
+          "changedPositionEntries": 1315
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/harvester-high": {
+      "sha256": "04919bd86dabefd8c2018311f0c8e0efa68bc2d5c86aa3f5ae2ee05b5f327d67",
+      "costs": {
+        "triangles": 32680,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2352080,
+        "texturePixels": 1310720
+      },
+      "headCosts": {
+        "triangles": 32692,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2652204,
+        "texturePixels": 1310720
+      },
+      "immediateBaselineCosts": {
+        "triangles": 32692,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2652204,
+        "texturePixels": 1310720
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 18,
+      "changedPositionEntries": 28099,
+      "changedMeshes": [
+        {
+          "name": "Export batch.014/0",
+          "verticesBefore": 592,
+          "verticesAfter": 630,
+          "changedPositionEntries": 630
+        },
+        {
+          "name": "Export batch.003/0",
+          "verticesBefore": 25023,
+          "verticesAfter": 25175,
+          "changedPositionEntries": 24791
+        },
+        {
+          "name": "Export batch/0",
+          "verticesBefore": 9342,
+          "verticesAfter": 9318,
+          "changedPositionEntries": 2678
+        }
+      ],
+      "violations": []
+    },
+    "steampunk/harvester-low": {
+      "sha256": "15086b716e431557e7f6966826bade78e2812720b694555f9e38fb1d36424c17",
+      "costs": {
+        "triangles": 4030,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 347024,
+        "texturePixels": 1064960
+      },
+      "headCosts": {
+        "triangles": 4030,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 652168,
+        "texturePixels": 1064960
+      },
+      "immediateBaselineCosts": {
+        "triangles": 4030,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 652168,
+        "texturePixels": 1064960
+      },
+      "rootTransformsAndMetadataMatchHead": true,
+      "motionSocketAndFittingMetadataMatchHead": true,
+      "motionAndMetadataNodeCount": 18,
+      "changedPositionEntries": 1004,
+      "changedMeshes": [
+        {
+          "name": "Export batch.037/0",
+          "verticesBefore": 52,
+          "verticesAfter": 64,
+          "changedPositionEntries": 64
+        },
+        {
+          "name": "Export batch.026/0",
+          "verticesBefore": 2026,
+          "verticesAfter": 2021,
+          "changedPositionEntries": 875
+        },
+        {
+          "name": "Export batch.023/0",
+          "verticesBefore": 1378,
+          "verticesAfter": 1378,
+          "changedPositionEntries": 65
+        }
+      ],
+      "violations": []
+    }
+  },
+  "sources": {
+    "futuristic/rocket": {
+      "sha256": "0e30eafc1fa4a8e9aff926940d9456094535dc40ac4ce03e4df2005d2f2edaf9",
+      "bytes": 575032,
+      "changedFromHead": true
+    },
+    "futuristic/kart": {
+      "sha256": "098f7a994f9355185d9d2a449b6def2e7b4051a2aa896a0b450a6f24fee9d946",
+      "bytes": 769089,
+      "changedFromHead": true
+    },
+    "futuristic/drone": {
+      "sha256": "7a12107a018f61877e29e4190ffbacd1ecf4b6e1331b4892888b59f5f515f0d0",
+      "bytes": 615620,
+      "changedFromHead": true
+    },
+    "futuristic/harvester": {
+      "sha256": "18f4cf4830ece4534c9231ae3befdba6f0dfe3e7f09a676139e5b9fc693cfb63",
+      "bytes": 994592,
+      "changedFromHead": true
+    },
+    "steampunk/rocket": {
+      "sha256": "310d7b889443ed40e8427da09854f61755c311be6e0caf2c85ed55163020098d",
+      "bytes": 594834,
+      "changedFromHead": true
+    },
+    "steampunk/kart": {
+      "sha256": "824ae77f2957285615be7fd3120e0a0e803f7580cdb02353812dbdb5831b3591",
+      "bytes": 754594,
+      "changedFromHead": true
+    },
+    "steampunk/drone": {
+      "sha256": "6dcd4c5454c5cd1900b02037243ddfea5a9ba4d60611107ba5783ec4359eba63",
+      "bytes": 646715,
+      "changedFromHead": true
+    },
+    "steampunk/harvester": {
+      "sha256": "8608b14de77a9ac302ef6b0fbd4b371a2b07144286463aa96f695ad936a2c457",
+      "bytes": 1020812,
+      "changedFromHead": true
+    }
+  },
+  "violations": [],
+  "totals": {
+    "costs": {
+      "triangles": 159184,
+      "primitives": 247,
+      "materials": 111,
+      "images": 80,
+      "bytes": 13450352,
+      "texturePixels": 19005440
+    },
+    "headCosts": {
+      "triangles": 159222,
+      "primitives": 247,
+      "materials": 111,
+      "images": 80,
+      "bytes": 19596344,
+      "texturePixels": 19005440
+    },
+    "immediateBaselineCosts": {
+      "triangles": 159222,
+      "primitives": 247,
+      "materials": 111,
+      "images": 80,
+      "bytes": 19596344,
+      "texturePixels": 19005440
+    }
+  },
+  "geometryComparisonNote": "Changed position entries compare exported named mesh streams by vertex index; topology/order changes also count. This demonstrates changed mesh payloads, not a perceptual quality score.",
+  "editableSourceCargoChecks": [
+    {
+      "style": "futuristic",
+      "model": "harvester",
+      "lod": "high",
+      "cargoCount": 24,
+      "maxAbsoluteBedGapLocal": 1.1920928955078125e-07,
+      "allCargoSeated": true
+    },
+    {
+      "style": "futuristic",
+      "model": "harvester",
+      "lod": "low",
+      "cargoCount": 8,
+      "maxAbsoluteBedGapLocal": 2.1606683731079102e-07,
+      "allCargoSeated": true
+    },
+    {
+      "style": "steampunk",
+      "model": "harvester",
+      "lod": "high",
+      "cargoCount": 28,
+      "maxAbsoluteBedGapLocal": 1.7881393432617188e-07,
+      "allCargoSeated": true
+    },
+    {
+      "style": "steampunk",
+      "model": "harvester",
+      "lod": "low",
+      "cargoCount": 8,
+      "maxAbsoluteBedGapLocal": 1.043081283569336e-07,
+      "allCargoSeated": true
+    }
+  ],
+  "hierarchyCheck": "Every named root, motion, socket or metadata node retains its parent name, extras and local transform; children indices excluded because mesh ordering may change.",
+  "passed": true
+}

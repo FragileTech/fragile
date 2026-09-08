@@ -1,3 +1,4 @@
+import { VariantSettings, configurationDiff } from "./variant-settings.js";
 import "./controllers/index.js";
 import { controllerDefinitions } from "./controllers/registry.js";
 import { ComparisonView } from "./comparison-view.js";
@@ -14,9 +15,42 @@ export class ExperimentPanel {
       );
     $("variant-a").value = "fmc";
     $("variant-b").value = "cem";
+    const differences = document.createElement("p");
+    differences.id = "variant-differences";
+    const duplicate = document.createElement("button");
+    duplicate.textContent = "Duplicate A into B";
+    $("experiment-dialog")
+      .querySelector(".experiment-fields")
+      .after(duplicate, differences);
+    const changed = () => {
+      differences.textContent =
+        configurationDiff(this.variants[0].model, this.variants[1].model).join(
+          " · ",
+        ) || "Identical configurations. Change B to compare one parameter.";
+    };
+    this.variants = ["a", "b"].map(
+      (key) =>
+        new VariantSettings(
+          $("variant-" + key),
+          $("variant-settings-" + key),
+          changed,
+        ),
+    );
+    duplicate.onclick = () => {
+      this.variants[1].set(this.variants[0].values());
+      changed();
+    };
+    for (const id of [
+      "benchmark-walkers",
+      "benchmark-horizon",
+      "benchmark-action-frames",
+    ])
+      $(id).closest("label").hidden = true;
     $("experiments").onclick = () => {
       stop();
       const scene = getScene();
+      this.variants.forEach((v) => v.set(getSettings()));
+      changed();
       if (scene !== this.lastScene) {
         const goal = scene.evaluation;
         if (
@@ -51,21 +85,15 @@ export class ExperimentPanel {
         metric: $("benchmark-goal").value,
         target: +$("benchmark-target").value,
       },
-      variants: ["variant-a", "variant-b"].map((id) => ({
-        ...getSettings(),
-        algorithm: $(id).value,
-        walkers: +$("benchmark-walkers").value,
-        horizon: +$("benchmark-horizon").value,
-        frames: +$("benchmark-action-frames").value,
-        recording: 0,
-        ...JSON.parse(
-          $(id === "variant-a" ? "variant-settings-a" : "variant-settings-b")
-            .value || "{}",
-        ),
-      })),
+      variants: this.variants.map((v) => ({ ...v.values(), recording: 0 })),
     });
     const start = (type) => {
       try {
+        const submitted = structuredClone({
+          scene: getScene(),
+          spec: spec(),
+          root: type === "compare" ? getRoot() : undefined,
+        });
         this.worker?.terminate();
         this.worker = new Worker(
           new URL("./experiment-worker.js", import.meta.url),
@@ -89,11 +117,12 @@ export class ExperimentPanel {
           if (data.type === "comparison") {
             this.report = {
               version: 1,
-              scene: getScene(),
-              spec: spec(),
+              scene: submitted.scene,
+              spec: submitted.spec,
               branches: data.branches,
             };
             $("comparison-timeline").max = this.comparison.load(data.branches);
+            $("comparison-timeline").step = "0.001";
             $("comparison-timeline").value = 0;
             $("comparison-section").hidden = false;
             $("experiment-status").textContent =
@@ -117,9 +146,9 @@ export class ExperimentPanel {
             type === "benchmark" && $("benchmark-all-scenes").checked
               ? Array.from($("scenario").options, (o) => o.value)
               : undefined,
-          scene: getScene(),
-          spec: spec(),
-          root: type === "compare" ? getRoot() : undefined,
+          scene: submitted.scene,
+          spec: submitted.spec,
+          root: submitted.root,
           worlds: 256,
         });
       } catch (e) {
@@ -132,6 +161,7 @@ export class ExperimentPanel {
     $("profile-batch").onclick = () => start("profile");
     $("cancel-experiment").onclick = () => {
       this.worker?.postMessage({ type: "cancel" });
+      this.worker?.terminate();
       this.busy(false);
       $("experiment-status").textContent = "Cancelled";
     };
@@ -151,10 +181,13 @@ export class ExperimentPanel {
       if (+$("comparison-timeline").value >= +$("comparison-timeline").max)
         $("comparison-timeline").value = 0;
       $("comparison-play").textContent = "Pause both";
+      let previous = performance.now();
       this.playTimer = setInterval(() => {
-        const value = +$("comparison-timeline").value + 1;
+        const now = performance.now();
+        const value = +$("comparison-timeline").value + (now - previous) / 1000;
+        previous = now;
         $("comparison-timeline").value = value;
-        this.comparison.seek(value);
+        this.comparison.seek(Math.min(value, +$("comparison-timeline").max));
         if (value >= +$("comparison-timeline").max)
           $("comparison-play").click();
       }, 1000 / 60);
@@ -168,6 +201,11 @@ export class ExperimentPanel {
     for (const id of ["run-benchmark", "compare-branches", "profile-batch"])
       this.$(id).disabled = value;
     this.$("cancel-experiment").disabled = !value;
+    for (const input of document.querySelectorAll(
+      "#experiment-dialog input,#experiment-dialog select,#variant-settings-a,#variant-settings-b",
+    ))
+      input.disabled = value;
+    this.$("variant-differences").previousElementSibling.disabled = value;
     if (value)
       this.$("experiment-status").textContent = "Running in a separate worker…";
   }

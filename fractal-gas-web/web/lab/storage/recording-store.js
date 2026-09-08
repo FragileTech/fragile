@@ -8,12 +8,21 @@ export class StoredMotionRecording extends MotionRecording {
     info,
     root,
     dt,
-    { scene, settings, id = crypto.randomUUID(), onError = () => {} } = {},
+    {
+      scene,
+      settings,
+      id = crypto.randomUUID(),
+      name,
+      parent,
+      onError = () => {},
+    } = {},
   ) {
     super(info, root, dt);
     this.limit = Number.MAX_SAFE_INTEGER;
     this.id = id;
     this.scene = scene;
+    this.name = name || scene?.name || "Experiment";
+    this.parent = parent;
     this.settings = settings;
     this.onError = onError;
     this.queue = Promise.resolve();
@@ -36,7 +45,8 @@ export class StoredMotionRecording extends MotionRecording {
     return {
       id: this.id,
       version: 3,
-      name: this.scene.name || "Experiment",
+      name: this.name,
+      parent: this.parent,
       scene: this.scene,
       settings: this.settings,
       info: this.info,
@@ -201,14 +211,53 @@ export class StoredMotionRecording extends MotionRecording {
     }
     return record;
   }
-  async exportFile() {
+  async retry() {
+    await this.queue;
+    this.failed = null;
+    for (
+      let index = Math.floor(this.durableFrames / CHUNK_FRAMES);
+      index < this.chunks.length;
+      index++
+    ) {
+      if (this.chunks[index])
+        this.persist(
+          index,
+          Math.min(CHUNK_FRAMES, this.length - index * CHUNK_FRAMES),
+        );
+    }
     await this.flush();
-    const header = encodeObject(this.metadata()),
+  }
+  async exportFile({ recovery = false } = {}) {
+    if (!recovery && !this.readOnly) await this.flush();
+    else await this.queue;
+    const header = encodeObject(
+        this.metadata(recovery ? this.length : this.durableFrames),
+      ),
       head = new Uint32Array([0x52434746, 3, header.length]);
     const parts = [head, header];
     // IndexedDB cursors would keep a transaction alive during compression;
     // records are already compressed, so export holds only compressed chunks.
-    for (const r of await records(this.id)) {
+    const saved = await records(this.id);
+    if (recovery) {
+      for (let index = 0; index < this.chunks.length; index++) {
+        if (!this.chunks[index]) continue;
+        const count = Math.min(
+          CHUNK_FRAMES,
+          this.length - index * CHUNK_FRAMES,
+        );
+        const packed = await compress(
+          this.chunks[index].subarray(0, count * this.frameBytes),
+        );
+        const old = saved.findIndex(
+          (r) => r.kind === "motion" && r.index === index,
+        );
+        const row = { run: this.id, kind: "motion", index, count, ...packed };
+        if (old >= 0) saved[old] = row;
+        else saved.push(row);
+      }
+      saved.sort((a, b) => a.kind.localeCompare(b.kind) || a.index - b.index);
+    }
+    for (const r of saved) {
       const { data, ...meta } = r,
         description = encodeObject(meta);
       parts.push(

@@ -19,6 +19,7 @@ try {
   });
   context.setDefaultTimeout(60000);
   await context.addInitScript(() => {
+    localStorage.setItem("lab.workspace.onboarded", "true");
     window.coi = { shouldRegister: () => false };
   });
   const page = await context.newPage();
@@ -129,6 +130,7 @@ try {
   await main.waitForFunction(() => window.animationQA?.renderer, null, {
     timeout: 60000,
   });
+  await main.locator("#tab-view").click();
   const toggle = main.getByRole("checkbox", {
     name: "Animations",
     exact: true,

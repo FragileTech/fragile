@@ -17,13 +17,26 @@ and editor, {doc}`control_lab_replay` explains recordings, and
 :::
 
 (sec-lab-controls-running)=
-## Run, step, reset, and inspect a Wave
+## Choose a task, run, and inspect a Wave
 
 :::{div} feynman-prose
 Wait until the backend indicator reports **WEBASSEMBLY** and the run buttons become
-available. The first page load automatically plans and commits one action, so the
-initial view can already contain movement and a search tree. Later preset changes
-and resets leave the new world paused.
+available. A fresh scene starts paused at tick zero; no action runs automatically. The first-visit
+chooser introduces the six tasks; **Tasks** opens it again later. Choose a task,
+press **Run**, then click a vehicle to inspect the result. The short introduction
+can be dismissed, and the browser remembers that choice.
+
+The toolbar keeps the environment, execution controls, and status above the world.
+**Setup**, **Controller**, **Rewards**, and **View** organize the settings. Advanced
+sections start collapsed and remember their expanded state. On narrow screens,
+**Settings** and **Inspector** open drawers so the world remains the main surface.
+
+Changing a physical or planner setting edits a draft. The pending-changes summary
+shows the old and proposed values; **Apply and restart** commits them together in
+one rebuild. The active world continues to use its existing configuration until
+then. **Discard changes** restores that configuration. Nonempty runs are saved on
+this device before replacement; a failed save keeps the original run available
+and offers recovery choices. See {doc}`control_lab_replay` for storage and exports.
 
 Flight is a three-way scene choice hiding behind one field. If
 `environment.flight` is omitted (or null), the lab detects flight when at least one
@@ -37,26 +50,27 @@ of its thrust countering gravity before that thrust can produce upward accelerat
 :::{div} feynman-added
 | Control | Operation | What to expect |
 |---|---|---|
-| **Environment** | Load a preset from the scene catalog. | Rebuilds physics and clears the current in-memory history. |
+| **Environment** | Choose a preset from the scene catalog. | Stages the chosen scene; **Apply and restart** loads it paused after preserving the current run. |
 | **Flight override** (`environment.flight`) | Omitted/null, `true`, or `false` | Omitted/null auto-detects flight from a controlled `flight_capable` body; `true` enables flight; `false` disables it. |
 | **Downward gravity** (`environment.downward_gravity`) | 9.81 m/s²; scene value | Downward acceleration used in flight mode. A rocket or drone's propulsion must counter it to climb or hover. |
-| **Vehicle type** | Choose **Rockets**, **Drones**, **Karts**, or **Harvesters** in any environment or racing track. | Replaces physics and visuals for all controlled vehicles, preserves the edited world, clears run/replay and editor history, and restarts paused. Each preset keeps its default until you choose a type. |
-| **Vehicle count** | Set the vehicle count to a whole number from 1 to 128 in any environment. | Starts from the preset's count. Rebuilds the scene paused; invalid entries leave the scene intact. |
-| **Problem properties** | Set each controlled agent type's action multiplier from `0×` to `10×`, independently for every compiled degree of freedom. | `1×` keeps the native range; `0×` disables a channel; larger values expand the action range and its built-in physical output. Applying rebuilds the scene paused and saves the values in the scene's agent type properties. |
-| **Run experiment** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause experiment**. |
-| **Pause experiment** | Stop further execution. | The displayed state remains available for inspection and export. Wave Jump preserves its remaining trajectory for resumption. |
-| **Step** | Plan once, then execute one action, or the selected trajectory for Wave Jump; if all final walkers are dead, execute only its first positive-duration action. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
-| **↺** (Reset) | Rebuild the current scene with the current seed. | Resets task progress and recordings; preserves scene edits and selected settings. |
+| **Vehicle type** | Choose **Rockets**, **Drones**, **Karts**, or **Harvesters** in any environment or racing track. | Stages physics and visuals for all controlled vehicles while preserving other world edits. **Apply and restart** commits the fleet change paused. Each preset keeps its default until you choose a type. |
+| **Vehicle count** | Set the vehicle count to a whole number from 1 to 128 in any environment. | Starts from the preset's count. Stages a fleet change for **Apply and restart**; invalid entries leave the active scene intact. |
+| **Problem properties** | Set each controlled agent type's action multiplier from `0×` to `10×`, independently for every compiled degree of freedom. | `1×` keeps the native range; `0×` disables a channel; larger values expand the action range and its built-in physical output. **Apply and restart** commits the draft values to the scene's agent type properties and rebuilds paused. |
+| **Run** | Repeatedly plan and execute actions using the selected clock. | Button becomes **Pause**. |
+| **Pause** | Stop further execution. | The displayed state remains available for inspection and export. Wave Jump preserves its remaining trajectory for resumption. |
+| **Step action / Execute trajectory** | Plan once, then execute one action, or the selected trajectory for Wave Jump; if all final walkers are dead, execute only its first positive-duration action. | Pauses continuous running and waits for planning with either clock. A paused Wave Jump trajectory finishes its remaining actions. |
+| **Restart** | Rebuild the active scene with its active seed. | Preserves the previous run, resets task progress, and starts paused. With pending edits the button reads **Apply and restart** and commits those edits together. |
+| **Start driving / Step physics frame** | In Drive mode, start continuous physics or apply the current command for one frame. | Start driving becomes **Pause**; releasing keys returns to neutral input while motion continues. |
 | **Advance Wave population** | Advance the native FMC population by one Wave iteration. | Displays population row zero as the world, with a labeled **Wave selection** recording cut. |
 :::
 
 :::{div} feynman-prose
-The vehicle controls appear beneath **Environment** in all six environments.
+The vehicle controls appear in **Setup** in all six environments.
 The tab remembers your chosen type separately for each environment, with one
 shared choice across racing tracks. Changing type keeps the vehicle count and
 starting positions, world edits, rocks, tethers, rewards, and environment settings.
 An explicit **Flight mode** choice remains in effect; automatic mode detects
-flight for rockets and drones. **Reset** retains the current scene.
+flight for rockets and drones. **Restart** retains the current scene.
 
 Imported scenes load unchanged. A mixed or unrecognized fleet displays the
 disabled **Mixed / custom** placeholder; choosing a standard type replaces the
@@ -68,9 +82,10 @@ from **0.01×** to **10×** in their rock settings. Weight can make a rock one
 hundred times lighter or ten times heavier without changing its hull or rendered
 size. They also expose **Hook stiffness (N/m)**.
 The numeric input accepts values from **0** to **1,000,000** and stays synchronized
-with a logarithmic slider. Press **Apply rock settings** to apply the value to every
-tow hook, rebuild the scene, and leave the new world paused. Pending edits do not
-change the running physics. The presets retain their stiffness defaults: **35 N/m**
+with a logarithmic slider. These settings update the draft; **Update draft** also
+stages the displayed rock properties. Press **Apply and restart** to commit the
+value to every tow hook and leave the new world paused. Pending edits do not change
+the running physics. The presets retain their stiffness defaults: **35 N/m**
 for collaborative mining and **25 N/m** for harvesting.
 
 Beside the rock properties, the **Flight mode** control makes that scene choice
@@ -78,8 +93,8 @@ visible without editing JSON. **AUTO** preserves capability-based detection: fli
 is enabled when a controlled body is marked `flight_capable`. From **AUTO**, the
 first click forces the opposite of the current effective mode: **OFF** for an
 auto-detected rocket/drone scene, or **ON** for an auto-planar scene. Subsequent
-clicks toggle the forced **ON**/**OFF** state. Applying either forced choice
-rebuilds the scene and leaves the new world paused. The control changes the mode
+clicks toggle the forced **ON**/**OFF** state. Either forced choice enters the draft.
+**Apply and restart** rebuilds the scene and leaves the new world paused. The control changes the mode
 for the rebuilt scene, not the already-running physics.
 
 A low stiffness makes a hook stretch like a rubber band. Raising it makes the
@@ -99,7 +114,7 @@ live planner. Selected-action risk is not evaluated in this mode. This inspectio
 button is separate from the **Wave Jump** controller, which executes the chosen
 branch through ordinary physics steps in the original world.
 
-Use **Reset** before switching from a Wave demonstration to an ordinary control
+Use **Restart** before switching from a Wave demonstration to an ordinary control
 trial. Wave checkpoints can preserve its population; see
 {doc}`control_lab_replay`. The authoritative world stops continuous running when
 its terminal flag is set. A collision only ends an episode if that scene's physics
@@ -147,7 +162,7 @@ trajectory duration is the sum of these frame counts times `scene.physics.dt`.
 :::{div} feynman-added
 | Session control | Default and range | Meaning |
 |---|---|---|
-| **Clock** (`clock`) | `reproducible`; alternative `realtime` | Worker scheduling policy. Changing it restarts the current scene. |
+| **Clock** (`clock`) | `reproducible`; alternative `realtime` | Worker scheduling policy. A change is staged until **Apply and restart**. |
 | **Worker threads** (`threads`) | 8; integers 1–64 | Total native simulation threads in the live planning engine, including its calling thread. |
 :::
 
@@ -171,12 +186,19 @@ portable planner-settings object. Set them explicitly when reproducing a run.
 ## Shared settings and FMC controls
 
 :::{div} feynman-prose
-Changing a field in **Planner settings**, controller, seed, clock, thread count,
-or **Tree** mode rebuilds the scene and clears its current in-memory history.
-The coefficients in **Reward terms** instead use **Apply settings**, described
-below. Export anything you want to keep first. Algorithm-specific values are remembered while switching
-controllers within the current page session. The table gives browser defaults and
-UI ranges; lower-level APIs can have different limits.
+The **Controller** panel holds the controller choice and common planner settings.
+Controller, seed, clock, thread count, and **Tree** changes enter a shared draft.
+Editing Walkers and Horizon, for example, produces two pending changes and one
+rebuild when you press **Apply and restart**. Recordings and the running planner
+continue to use the active values while you edit. Invalid values must be corrected
+before Apply can replace the world; **Discard changes** restores the active values.
+
+Reward-only changes use **Apply to current run**, described below. If the draft
+also contains changes that require a restart, **Apply and restart** commits the
+whole draft together. Presentation controls in **View** take effect immediately.
+Algorithm-specific values are remembered while switching controllers within the
+current page session. The table gives browser defaults and UI ranges; lower-level
+APIs can have different limits.
 :::
 
 :::{div} feynman-added
@@ -279,7 +301,7 @@ the reward earned by the simulated world: movement, target progress, collisions,
 deliveries, checkpoints, formation, and full loads. Those reward weights also
 affect the futures evaluated by the shooting controllers.
 
-Edits stay pending until you press **Apply settings**. This applies the coefficients
+For reward-only edits, press **Apply to current run**. This applies the coefficients
 and term weights together. At a physics-frame boundary, the lab prepares replacement
 native engines and a planner, discards old plans, and carries across the current
 world state, tick, cargo, camera, selection, and decision count. A running
@@ -291,8 +313,8 @@ films. Applying a reward configuration adds a configuration and snapshot boundar
 it does not rewind the world or recalculate earlier rewards. Replay continuation
 restores the historical reward configuration at each such boundary, so the old
 frames keep the rewards they actually recorded. Typing a pending value therefore
-changes neither the running physics nor the existing recording until **Apply
-settings** succeeds.
+changes neither the running physics nor the existing recording until **Apply to
+current run** succeeds.
 
 **Distance travelled²** defaults to weight **1**; set it explicitly to **0** to
 disable the movement bonus. At each physics frame, each controlled vehicle
@@ -305,7 +327,7 @@ bonus, while **Target progress** separately rewards approaching the task target.
 
 **Hooked rock travel** defaults to **1 reward per metre**. Its slider runs from
 **0–10** in increments of **0.1**; the numeric input accepts **0–1,000**. Set it
-to **0** to disable this term, then press **Apply settings** to apply the change
+to **0** to disable this term, then press **Apply to current run** to apply the change
 while preserving the physical world. At the start of each physics frame, the
 engine identifies cargo rocks hooked to an active controlled vehicle. It sums
 their distances travelled during that frame, `sqrt(Δx² + Δy²)`, and multiplies
@@ -413,21 +435,41 @@ a side-on view (showing altitude against the horizontal direction) and an overhe
 view (showing the physics plane from above). These are two projections of the same
 state, not two different simulations; the side-on view does not turn a planar
 flight model into full three-dimensional physics. Scroll to zoom, then left-drag to bring another part of the environment
-into view without changing the zoom. A click without dragging still selects an
-exploration node. With **Edit scene** open, left-drag moves scene objects; use
-middle/right-drag or Alt-drag to pan instead. These pan shortcuts also work with
-the editor closed. **Follow agent** follows the selected body, or the first
-controlled body when none is selected. Panning disengages following so the camera
+into view without changing the zoom. In **Inspect**, a click selects a body;
+select **Planner decisions** in the timeline to inspect exploration nodes instead.
+In **Edit**, left-drag moves draft scene objects; use middle/right-drag or Alt-drag
+to pan instead. These pan shortcuts also work outside Edit. Scene edits support
+Undo/Redo and remain a draft until **Apply and restart**. Leaving a dirty editor
+offers Apply and restart, Discard, or Cancel. **Follow agent** follows the selected
+body, or the first controlled body when none is selected. Panning disengages following so the camera
 stays where you put it. The follow button's **Whole arena** state and **Reset view**
 return to the centered view of the entire arena.
 
-For manual driving, enable **Keyboard control**, then click the world so a text,
-numeric, or selection input no longer has focus. Select a body in **Edit scene**
-to control that body; otherwise input targets the first controlled body. Manual
-input pauses autonomous running and records its actual motion. The keyboard sends
-two physics frames about 30 times per wall-clock second while a recognized key is
-held. Releasing all keys stops these manual steps; it does not coast the world on
-an independent clock. Disable the checkbox before resuming autonomous control.
+**Inspect / Edit / Drive** describes how you interact with the world; **Live /
+Replay** describes which world you are looking at. Opening a saved run gives
+read-only replay. Use **Create run from this frame** before editing or driving
+that historical state.
+
+Enter **Drive** to pause autonomous execution and open the selected vehicle's
+controls in the inspector. With no controlled vehicle selected, driving uses the
+first controlled body. Selection is shared with camera follow and action guides.
+Click the world if a text or numeric field has focus: typing into settings should
+not steer a vehicle. The inspector shows the supported keys and pointer-operated
+buttons, together with actuator sliders.
+
+**Start driving** starts the worker's physics clock. It advances fixed
+`scene.physics.dt` frames independently of keyboard repeat. Releasing the keys
+returns the command to neutral; the vehicle can coast, fall, or continue moving
+under its existing forces. Neutral input is not a brake. Each timer callback
+advances at most five frames and discards excess catch-up backlog, so a slow tab
+can run slower than wall time rather than suddenly jumping ahead. Actual executed
+motion enters the recording.
+
+**Pause** stops physics and clears held input. Losing focus, hiding the tab,
+opening a modal, or leaving Drive also pauses and clears commands. Selecting
+**Inspect** returns to paused controller operation, with stale plans discarded
+before the next run. While paused, **Step physics frame** or **Apply action · 1
+frame** advances exactly one frame using the proposed actuator command.
 :::
 
 :::{div} feynman-added
@@ -437,7 +479,7 @@ an independent clock. Disable the checkbox before resuming autonomous control.
 | **A / D** | Positive/negative `torque` or `steering`. |
 | **Q / E** | Positive/negative body-local `force_y`. |
 | **Space** | `brake = 1` where a brake channel exists. |
-| **Actuator channels → Apply action · 1 frame** | Set named sliders in **Edit scene**, then commit one physics frame using the full joint action. |
+| **Drive controls → Apply action · 1 frame** | Set named sliders in the inspector, then commit one physics frame while paused. |
 :::
 
 :::{div} feynman-prose
@@ -447,9 +489,10 @@ The live keyboard adapter recognizes the channel names listed above. Independent
 channel descriptors supplied to the adapter include names and bounds, but not the
 thruster geometry needed to combine drive, strafe, and turning input. Unrecognized
 custom channels also use sliders until a keyboard mapping is added. Sliders expose
-every controlled body's channels, bounds, and current proposed value, with increments
-of one two-hundredth of each channel range. Moving a slider alone does not advance
-the world.
+the selected controlled body's channels, bounds, and current proposed value, with
+increments of one two-hundredth of each channel range. In paused Drive, moving a
+slider changes the proposed command without advancing physics. During continuous
+driving, the new command takes effect on subsequent physics frames.
 :::
 
 :::{div} feynman-added
@@ -457,7 +500,7 @@ the world.
 |---|---|---|
 | **Animations** (beside **Visual style**) | On; off when the system requests reduced motion and no explicit choice is saved | Enables cosmetic vehicle motion and effects across live views, replay, comparisons, and the workshop. Your explicit choice persists in this browser. Off freezes decorative motion and skips its updates. Static thrust and individual-jet cues, steering, reverse/brake lamps, and enabled action guides still follow current commands; native movement, cargo amounts, pickup visibility, tether connections, and diagnostics still update. Toggling does not reset the simulation or change recordings. |
 | **Action guides** (beside **Animations**) | Off; explicit choice persists across Lab tabs | Shows signed command arrows and a numeric readout for the selected controlled body, falling back to the first controlled body. Percentages are relative to each channel’s configured action limits, not measured forces. Guides remain available with animations off. |
-| **Pause experiment** with animations on | Gentle idle motion continues | Stops simulation-dependent wheel motion and event progression while retaining small hover and engine motion. Turn **Animations** off for a still presentation of the paused world. |
+| **Pause** with animations on | Gentle idle motion continues | Stops simulation-dependent wheel motion and event progression while retaining small hover and engine motion. Turn **Animations** off for a still presentation of the paused world. |
 | Workshop **Play animation / Pause animation** | Stopped initially | Advances or pauses decorative motion using the current actuator sliders; playback does not change commands or simulate physics. The global **Animations** switch must be on to play. Selecting **Side** or **Top** resets decorative motion while preserving slider values. |
 | Workshop actuator sliders and **Neutral / Max** | Neutral commands | Shows the selected asset’s catalog actuator channels with their signed bounds. **Neutral** sets all channels to zero; **Max** sets each to its upper bound. Rocket variants expose vector thrust/torque or individual thrusters. Values persist across asset, style, and detail changes during the workshop session; static action cues update even with animations off. |
 | **Rollout paths** | On | Recorded controlled-body paths, available for FMC and Wave Jump. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
@@ -470,13 +513,22 @@ the world.
 :::{div} feynman-prose
 The renderer samples large trees to draw roughly at most 50,000 path segments.
 This drawing limit does not prune the native record. Hiding paths also does not
-disable recording. For that, change **Tree** below the world view.
+disable recording. For that, change **Tree** in the **Planner decisions** timeline
+and commit the change with **Apply and restart**.
 :::
 
 (sec-lab-controls-diagnostics)=
 ## Read the telemetry and choose recording detail
 
 :::{div} feynman-prose
+Task progress, simulation time, and planning progress remain near the world.
+Open the inspector's **Diagnostics** for population, risk, memory, and performance
+measurements. **Selected decision** shows recorded action, path reward, outcome,
+and reward weights when available. Missing values read **Not recorded**; individual
+reward contributions are not inferred from the weights or recomputed for old frames.
+The timeline separates **World motion** from **Planner decisions**, whose cursors
+count different things: physics frames and controller decisions.
+
 For Wave Jump, the selected path reward describes the chosen final walker and
 trajectory progress describes execution of the full path, shared prefix, or
 one-action fallback. The status identifies shared-prefix execution or fallback

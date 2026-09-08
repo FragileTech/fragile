@@ -157,6 +157,25 @@ and a shared 512-pixel metal roughness map (128 in the crowd LOD) adds surface v
 without introducing material batches. Closed-shell normals are repaired before export,
 including mirrored armor and Y-axis wheel geometry. The visual assets retain the same
 native collision hulls and simulation controls.
+
+The latest vehicle polish reshapes existing canopy frames, shoulder armor, kart
+seating and side pods, drone optics and harvester cab/hopper panels in both LODs.
+[`vehicle_surface_finish.py`](../../../tools/blender/vehicle_surface_finish.py)
+applies the final vehicle-only finish: subdued silver armor, neutral iron, aged
+copper, darker glazing and narrow rubbed panel edges. It repaints existing packed
+maps and reuses material slots; the normal maps and transparency modes stay intact.
+The final hook runs after mesh refinements so rebuilding reproduces the finish.
+The [before-and-after sheet](previews/vehicle-polish-comparison.jpg) compares all
+eight vehicle designs under matching studio views.
+See [the polish validation](vehicle-polish-validation.json) for comparisons against
+the preceding exports. Geometry, draw batches and texture memory retain their
+per-asset ceilings, alongside the same motion pivots and action-effect sockets.
+Together the 16 vehicle GLBs use 13,450,352 bytes, down from 19,596,344, and
+159,184 triangles, down from 159,222. The
+[browser checks](vehicle-polish-browser-validation.json) cover both styles at
+1, 16, 64 and 128 agents with animation and guides independently switched on/off.
+All 313 checks passed on SwiftShader at 0.5 raster pixel ratio; the recorded CPU
+measurements exclude rasterization and are not frame-rate guarantees.
 Rocket close-up models use dark tinted alpha glazing without a refraction pass;
 their crowd LOD keeps opaque glazing. Futuristic drone armor uses the concept's
 graphite finish and a lower hull; the steampunk diamond panels form its outer shell.

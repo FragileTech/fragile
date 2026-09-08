@@ -1,3 +1,4 @@
+import { prepareWorkspace, applyDraft, openFiles, closeFiles } from "./helpers/workspace-ui.mjs";
 // End-to-end motion replay, extensible model kits, and graphics inspection.
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
@@ -41,27 +42,30 @@ async function graphicsReady() {
     });
 }
 try {
+    await prepareWorkspace(page);
     await page.goto(base);
     await ready();
     // Keep the replay fixture at six frames after checking the new default.
     await page.waitForFunction(
-      () => document.getElementById("tick").textContent === "TICK 000012",
+      () => document.getElementById("tick").textContent === "TICK 000000",
     );
+    await page.locator("#tab-controller").click();
     await page.locator("#frames").fill("6");
     await page.locator("#frames").press("Tab");
+    await applyDraft(page);
     await ready();
     await page.locator("#step").click();
     await page.waitForFunction(
       () => document.getElementById("tick").textContent === "TICK 000006",
     );
     await tick(6);
-    const recordedDead = await page.locator("#dead").innerText();
+    const recordedDead = await page.locator("#dead").textContent();
     await seek(0);
     await tick(0);
-    assert.equal(await page.locator("#dead").innerText(), "—");
+    assert.equal(await page.locator("#dead").textContent(), "—");
     await seek(6);
     await tick(6);
-    assert.equal(await page.locator("#dead").innerText(), recordedDead);
+    assert.equal(await page.locator("#dead").textContent(), recordedDead);
     await page.locator("#motion-live").click();
     await page.locator("#focus").click();
     await page.locator("#clean").click();
@@ -88,13 +92,13 @@ try {
     await tick(11);
     assert.match(
         await page.locator("#motion-position").innerText(),
-        /20 \/ 20 frames/,
+        /7 \/ 7 frames/,
     );
-    await seek(13);
+    await seek(0);
     await tick(5);
     assert.match(
         await page.locator("#motion-segment").innerText(),
-        /Continued from replay/,
+        /Initial world/,
     );
     await page.locator("#motion-speed").selectOption("0.25");
     await page.locator("#motion-play").click();
@@ -104,47 +108,51 @@ try {
             .textContent.includes("Play world"),
     );
     await tick(11);
+    await page.locator("#timeline-decisions").click();
     await page.locator("#recording").selectOption("0");
+    await applyDraft(page);
+    await page.locator("#timeline-motion").click();
     await ready();
     await tick(0);
     await page.locator("#step").click();
     await tick(6);
     assert.match(
-        await page.locator("#record-count").innerText(),
+        await page.locator("#record-count").textContent(),
         /No decisions/,
     );
-    await page.locator("#edit").click();
-    await page.locator("#manual").check();
-    await page.locator("#close-editor").click();
+    await page.locator("#mode-drive").click();
+    await page.locator("#run").click();
+    await page.locator("#world").focus();
     await page.keyboard.down("w");
     await page.waitForFunction(
         () =>
             parseInt(document.getElementById("tick").textContent.slice(5)) >= 8,
     );
     await page.keyboard.up("w");
-    await page.locator("#edit").click();
-    await page.locator("#manual").uncheck();
-    await page.locator("#close-editor").click();
+    await page.locator("#mode-inspect").click();
     assert(
         Number(await page.locator("#motion-timeline").getAttribute("max")) >= 8,
     );
+    await openFiles(page);
     const download = page.waitForEvent("download");
     await page.locator("#export-run").click();
-    const file = `${output}/motion-only.fgclab`;
+    const file = `${output}/motion-only.fgcrec`;
     await (await download).saveAs(file);
-    const archive = JSON.parse(await readFile(file, "utf8"));
-    assert.equal(archive.version, 2);
-    assert.equal(archive.entries.length, 0);
-    assert(archive.motion.frames.length > 0);
+    const exported = await readFile(file);
+    assert.equal(exported.readUInt32LE(0), 0x52434746);
+    assert.equal(exported.readUInt32LE(4), 3);
     const choose = page.waitForEvent("filechooser");
     await page.locator("#import-run").click();
     await (await choose).setFiles(file);
-    await ready();
+    await closeFiles(page);
+    await page.waitForFunction(() => !document.querySelector("main").inert && document.querySelector("#playback-status").textContent === "Replay");
     await tick(0);
     await seek(6);
     await tick(6);
+    await page.locator("#motion-resume").click();
+    await ready();
     // Mix types and introduce a new body entirely through declarative scene data.
-    await page.locator("#edit").click();
+    await page.locator("#mode-edit").click();
     await page.locator("#edit-json").click();
     const scene = JSON.parse(await page.locator("#scene-json").inputValue());
     scene.name = "Vehicle design range";
@@ -181,6 +189,7 @@ try {
     ];
     await page.locator("#scene-json").fill(JSON.stringify(scene));
     await page.locator("#apply-json").click();
+    await applyDraft(page);
     await ready();
     assert.deepEqual(
         await page.locator("#agent-type option").evaluateAll((options) =>
@@ -188,7 +197,6 @@ try {
         ),
         Object.keys(scene.agent_types).sort(),
     );
-    await page.locator("#close-editor").click();
     await graphicsReady();
     await page.screenshot({
         path: `${output}/vehicle-lineup.png`,
@@ -207,7 +215,7 @@ try {
     // Place a custom agent using the editor's type selector; the C++ compiler supplies controlled/mass defaults.
     await page.locator("#motion-live").click();
     await page.locator("#focus").click();
-    await page.locator("#edit").click();
+    await page.locator("#mode-edit").click();
     await page.locator("#tool").selectOption("bodies");
     await page.locator("#agent-type").selectOption("beacon");
     const canvas = await page.locator("#world").boundingBox();
@@ -215,7 +223,6 @@ try {
         canvas.x + canvas.width * 0.55,
         canvas.y + canvas.height * 0.6,
     );
-    await ready();
     await page.locator("#edit-json").click();
     const edited = JSON.parse(await page.locator("#scene-json").inputValue());
     assert.equal(edited.bodies.length, 5);
@@ -223,7 +230,7 @@ try {
     await page
         .getByRole("button", { name: "Close JSON editor", exact: true })
         .click();
-    await page.locator("#close-editor").click();
+    await applyDraft(page);
     await page.setViewportSize({ width: 768, height: 1024 });
     await graphicsReady();
     await page.screenshot({

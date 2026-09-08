@@ -51,6 +51,7 @@ export function createSceneEditor({
     undo.push(copy(currentScene));
     if (undo.length > 40) undo.shift();
     redo = [];
+    currentScene = copy(scene);
     loadScene(scene);
   }
   $("edit").onclick = () => {
@@ -83,7 +84,7 @@ export function createSceneEditor({
     ])
       for (const [i, entity] of (currentScene[key] || []).entries()) {
         const pos =
-          key === "bodies" && getState()
+          key === "bodies" && getState() && $("editor").hidden
             ? [getState()[8 + i], getState()[8 + getInfo()[1] + i]]
             : entity.position;
         const d = Math.hypot(point[0] - pos[0], point[1] - pos[1]);
@@ -327,13 +328,15 @@ export function createSceneEditor({
   $("undo").onclick = () => {
     if (undo.length) {
       redo.push(copy(currentScene));
-      loadScene(undo.pop());
+      currentScene = copy(undo.pop());
+      loadScene(currentScene);
     }
   };
   $("redo").onclick = () => {
     if (redo.length) {
       undo.push(copy(currentScene));
-      loadScene(redo.pop());
+      currentScene = copy(redo.pop());
+      loadScene(currentScene);
     }
   };
   $("export-scene").onclick = () =>
@@ -358,6 +361,29 @@ export function createSceneEditor({
   };
 
   return {
+    selectBody(i) {
+      if (i == null || !currentScene.bodies[i]) return;
+      selected = { key: "bodies", i, pos: currentScene.bodies[i].position };
+      selections = [selected];
+      showEntity();
+    },
+    selectAt(point) {
+      const hit = nearest(point);
+      selected = hit;
+      selections = hit ? [hit] : [];
+      showEntity();
+    },
+    setDraftScene(scene) {
+      currentScene = copy(scene);
+      if (selected && !currentScene[selected.key]?.[selected.i]) {
+        selected = undefined;
+        selections = [];
+      }
+      for (const selection of selections)
+        selection.pos = currentScene[selection.key][selection.i].position;
+      showEntity();
+      renderer.showDraft?.(scene);
+    },
     get selection() {
       return selected;
     },

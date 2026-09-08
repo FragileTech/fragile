@@ -26,6 +26,8 @@ export function exportRecording(scene, settings, entries, motion) {
     version: 2,
     motion: motion
       ? {
+          name: motion.name,
+          parent: motion.parent,
           info: motion.info,
           channels: motion.channels,
           root: encode(motion.root),
@@ -45,6 +47,10 @@ export function exportRecording(scene, settings, entries, motion) {
     settings: motion?.settings || settings,
     entries: entries.map((e) => ({
       decision: e.decision,
+      selectedReward: e.selectedReward,
+      executionMode: e.executionMode,
+      settings: e.settings,
+      rewards: e.rewards,
       risk: e.risk,
       riskSamples: e.riskSamples,
       riskFrames: e.riskFrames,
@@ -110,6 +116,8 @@ export function importRecording(text) {
     motion = new MotionRecording(m.info, decode(m.root), m.dt);
     motion.append(frames);
     motion.validate();
+    motion.name = typeof m.name === "string" ? m.name : undefined;
+    motion.parent = m.parent;
     motion.scene = data.scene;
     motion.settings = data.settings;
     motion.restoreRewardChanges(

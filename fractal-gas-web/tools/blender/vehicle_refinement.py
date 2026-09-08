@@ -1112,6 +1112,122 @@ def concept_materials_and_profiles(b):
         shader.inputs["Roughness"].default_value = 0.19
 
 
+def gameplay_profiles(b, fittings_only=False):
+    """Give broad existing panels distinct profiles without adding export geometry."""
+    for obj in b.scene.objects:
+        if obj.type != "MESH" or obj.parent != b.root:
+            continue
+        name = obj.name
+        is_frame = name.startswith((
+            "Cockpit titanium frame",
+            "Arched canopy mullion",
+            "Canopy sill",
+            "Diamond hull brass perimeter",
+        ))
+        if is_frame != fittings_only:
+            continue
+        transform = None
+        if b.kind == "rocket":
+            if name.startswith(("Closed faceted cyan canopy", "Cockpit titanium frame")):
+
+                def transform(p):
+                    return (p.x, p.y * 1.18, 0.55 + (p.z - 0.55) * 1.12)
+
+            elif name.startswith("Closed arched amber canopy"):
+
+                def transform(p):
+                    return (p.x, p.y * 1.12, 0.60 + (p.z - 0.60) * 1.15)
+
+            elif name.startswith(("Arched canopy mullion", "Canopy sill")):
+
+                def transform(p):
+                    return (p.x, p.y * 1.18, 0.64 + (p.z - 0.60) * 1.15)
+
+            elif name.startswith("Raised arrowhead canopy shoulder"):
+
+                def transform(p):
+                    return (p.x, p.y, p.z + max(0, 1 - abs(p.x) / 1.4) * 0.055)
+
+            elif name.startswith("Engine segmented armor"):
+
+                def transform(p):
+                    return (p.x, p.y, p.z + 0.055 * max(0, (p.z - 0.62) / 0.18))
+
+            elif name.startswith("Arrowhead shoulder armor"):
+
+                def transform(p):
+                    return (p.x, p.y * 1.12, p.z)
+
+        elif b.kind == "drone":
+            if name.startswith(("Layered avionics armor", "Low armored drone hull")):
+
+                def transform(p):
+                    return (p.x, p.y * (0.87 + 0.11 * abs(p.x)), p.z)
+
+            elif name.startswith(("Diamond burgundy armor facet", "Diamond hull brass perimeter")):
+
+                def transform(p):
+                    return (p.x, p.y * 1.08, p.z)
+
+            elif name.startswith("Convex gold survey lens"):
+
+                def transform(p):
+                    return (p.x, p.y * 1.12, 0.49 + (p.z - 0.49) * 0.84)
+
+        elif b.kind == "kart":
+            if name.startswith((
+                "Seat back",
+                "Leather bucket seat back",
+                "Vertical leather bolster",
+                "Seat cushion",
+            )):
+
+                def transform(p):
+                    return (p.x, p.y * 1.14, p.z)
+
+            elif name.startswith(("Rounded riveted bonnet", "Burgundy bonnet inlay")):
+
+                def transform(p):
+                    return (p.x, p.y * (1.08 - 0.08 * max(0, p.x) / 1.53), p.z)
+
+            elif name.startswith("Nose folded shoulder plate"):
+
+                def transform(p):
+                    return (p.x, p.y, p.z + 0.12 * max(0, 1 - p.x / 1.46))
+
+            elif name.startswith("Faceted cockpit side armor"):
+
+                def transform(p):
+                    return (p.x, p.y * 1.10, p.z + 0.07 * max(0, (p.z - 0.3) / 0.36))
+
+        elif b.kind == "harvester":
+            if name.startswith((
+                "Raised sensor cab",
+                "Panoramic front cab glass",
+                "Side cab glass",
+                "Cab corner frame",
+                "Front glass mullion",
+                "Faceted cab roof",
+            )):
+                # Shared shear keeps glazing, framing and cabin shell attached.
+                def transform(p):
+                    return (p.x - 0.20 * max(0, p.z - 1.42), p.y, p.z)
+
+            elif name.startswith("Hopper graphite inset field"):
+
+                def transform(p):
+                    return (p.x + 0.10 * max(0, p.z - 1.25), p.y, p.z)
+
+        if transform is not None:
+            matrix = obj.matrix_local.copy()
+            inverse = matrix.inverted()
+            for vertex in obj.data.vertices:
+                point = matrix @ vertex.co
+                point[:] = transform(point)
+                vertex.co = inverse @ point
+            obj.data.update()
+
+
 def refine_vehicle(builder):
     mechanical_finish(builder)
     precision_panel_finish(builder)
@@ -1123,6 +1239,7 @@ def refine_vehicle(builder):
         "harvester": harvester_equipment,
     }[builder.kind](builder)
     concept_materials_and_profiles(builder)
+    gameplay_profiles(builder)
 
 
 def optimize_small_fittings(builder):
@@ -1453,7 +1570,7 @@ def reclaim_mechanical_detail(b):
     if b.low:
         current = {
             "futuristic": {"rocket": 1338, "kart": 2456, "drone": 1960, "harvester": 4066},
-            "steampunk": {"rocket": 1904, "kart": 2610, "drone": 2288, "harvester": 4318},
+            "steampunk": {"rocket": 1904, "kart": 2610, "drone": 2288, "harvester": 4314},
         }
         b.triangle_budget = current[b.style][b.kind]
         return
@@ -1504,6 +1621,16 @@ def repair_vehicle_normals(builder):
     mechanical_second_pass(builder)
     optimize_small_fittings(builder)
     reclaim_mechanical_detail(builder)
+    if builder.kind == "kart" and not builder.steam and not builder.low:
+        # Six optical pixels retain the sensor readout; fund the broader armor bevels.
+        for obj in list(builder.scene.objects):
+            if (
+                obj.name.startswith("Autonomous optical pixel")
+                and abs(obj.location.z - 0.945) < 0.001
+            ):
+                bpy.data.objects.remove(obj, do_unlink=True)
+    # Cylindrical fitting simplification rebuilds local rings; profile frames afterward.
+    gameplay_profiles(builder, fittings_only=True)
     for obj in builder.scene.objects:
         if obj.type != "MESH" or len(obj.data.polygons) < 2:
             continue

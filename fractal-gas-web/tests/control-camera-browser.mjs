@@ -19,6 +19,7 @@ try {
       body: `${(await response.text()).replace("installStyleControls();", "cancelAnimationFrame(renderer.frame); installStyleControls();")}\nwindow.cameraTest = { renderer, editor };`,
     });
   });
+  await page.addInitScript(() => localStorage.setItem("lab.workspace.onboarded", "true"));
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8088/lab/");
   await page
     .waitForFunction(() => window.cameraTest?.renderer.state, null, {
@@ -146,7 +147,7 @@ try {
   await page.mouse.up();
   assert.equal((await state()).dragging, false);
   await page.locator("#reset-view").click();
-  await page.locator("#edit").click();
+  await page.locator("#mode-edit").click();
   const beforeEdit = await state();
   await page.mouse.move(x, y);
   await page.mouse.down();
@@ -154,7 +155,7 @@ try {
   await page.mouse.up();
   assert.deepEqual((await state()).center, beforeEdit.center);
   assert.equal((await state()).dragging, false);
-  await page.waitForFunction(() => !document.querySelector("#run").disabled);
+  assert.equal(await page.locator("#run").isDisabled(), true);
   await page.locator("#world").scrollIntoViewIfNeeded();
   // Drag an actual body through the editor and check the committed scene.
   const body = await page.evaluate(async () => {
@@ -184,6 +185,7 @@ try {
 
   await page.mouse.move(body.x + 20, body.y + 10);
   await page.mouse.up();
+  await page.locator("#apply-editor").click();
   await page.waitForFunction(
     ({ i, position }) =>
       JSON.stringify(cameraTest.renderer.config.bodies[i].position) !==
@@ -198,6 +200,7 @@ try {
   });
   await page.screenshot({ path: "/tmp/lab-camera.png" });
   await page.locator("#scenario").selectOption("rocket");
+  await page.locator("#apply-configuration").click();
   await page.waitForFunction(
     () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
   );
@@ -230,12 +233,16 @@ try {
   assert.equal(flightControl.checked, true);
   assert.equal(flightControl.indeterminate, true);
   assert.equal(flightControl.state, "AUTO");
+  await page.locator("#world-physics").evaluate(e => e.open = true);
   await page.locator("#flight-mode").click();
+  await page.locator("#apply-configuration").click();
   await page.waitForFunction(
     () => cameraTest.renderer.state && !cameraTest.renderer.flightMode,
   );
   assert.equal(await page.locator("#flight-mode-state").textContent(), "OFF");
+  await page.locator("#world-physics").evaluate(e => e.open = true);
   await page.locator("#flight-mode").click();
+  await page.locator("#apply-configuration").click();
   await page.waitForFunction(
     () => cameraTest.renderer.state && cameraTest.renderer.flightMode,
   );

@@ -2,12 +2,12 @@
   "high": {
     "sourceTriangles": 9432,
     "drawMeshes": 10,
-    "bytes": 1230304
+    "bytes": 924936
   },
   "low": {
     "sourceTriangles": 2344,
     "drawMeshes": 8,
-    "bytes": 491384
+    "bytes": 186872
   },
   "style": "steampunk",
   "model": "rocket"
