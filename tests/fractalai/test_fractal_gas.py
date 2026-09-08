@@ -281,3 +281,36 @@ class TestExternalActionCloning:
         # the action cloning logic ran because actions is not None.
         assert new_state.N == 10
         assert new_state.observations.shape[0] == 10
+
+
+class TestEliteProtection:
+    def test_elite_buffer_only_contains_alive_walkers(self, mock_env):
+        gas = AtariFractalGas(env=mock_env, N=5, n_elite=2)
+        state = gas.reset()
+        state.rewards = torch.tensor([1.0, 2.0, 3.0, 4.0, 100.0])
+        state.dones[-1] = True
+
+        gas._update_elites(state)
+
+        assert gas._elite_walkers is not None
+        assert torch.all(gas._elite_walkers.alive)
+        assert torch.equal(gas._elite_walkers.rewards, torch.tensor([4.0, 3.0]))
+
+    def test_elite_slots_cannot_clone(self, mock_env, monkeypatch):
+        gas = AtariFractalGas(env=mock_env, N=5, n_elite=2)
+        state = gas.reset()
+        state.rewards = torch.arange(5, dtype=torch.float32)
+        gas._update_elites(state)
+
+        def force_all_to_clone(virtual_rewards, alive):
+            companions = torch.roll(torch.arange(5), shifts=-1)
+            return companions, torch.ones(5, dtype=torch.bool)
+
+        monkeypatch.setattr(gas.clone_op, "decide_cloning", force_all_to_clone)
+        _, info = gas.step(state)
+
+        assert torch.equal(
+            info["will_clone"],
+            torch.tensor([False, False, True, True, True]),
+        )
+        assert torch.equal(info["elite_mask"], torch.tensor([True, True, False, False, False]))

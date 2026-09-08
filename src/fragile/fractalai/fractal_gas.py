@@ -416,7 +416,9 @@ class FractalGas:
         """
         # 0. Inject elites into first n_elite positions
         if self.n_elite > 0 and self._elite_walkers is not None:
-            state = state.inject(self._elite_walkers, slice(0, self.n_elite))
+            elite_count = min(self.n_elite, self.N, self._elite_walkers.N)
+            if elite_count > 0:
+                state = state.inject(self._elite_walkers, slice(0, elite_count))
 
         # 1. Calculate fitness (pass both cumulative and step rewards)
         virtual_rewards, _fitness_companions = self.clone_op.calculate_fitness(
@@ -428,6 +430,18 @@ class FractalGas:
 
         # 2. Decide cloning
         clone_companions, will_clone = self.clone_op.decide_cloning(virtual_rewards, state.alive)
+
+        # Elite slots are protected from being replaced. They may still be selected
+        # as clone sources by other walkers. Apply this after the cloning operator's
+        # decision because dead walkers are otherwise forced to clone there.
+        elite_count = 0
+        elite_mask = torch.zeros(self.N, dtype=torch.bool, device=will_clone.device)
+        if self.n_elite > 0 and self._elite_walkers is not None:
+            elite_count = min(self.n_elite, self.N, self._elite_walkers.N)
+            elite_mask[:elite_count] = True
+            will_clone = will_clone.clone()
+            will_clone[elite_mask] = False
+            self.clone_op.last_will_clone = will_clone
 
         # 3. Clone state
         state_after_clone = state.clone(clone_companions, will_clone)
@@ -503,6 +517,7 @@ class FractalGas:
             # Cloning data for tree history recording
             "clone_companions": clone_companions,
             "will_clone": will_clone,
+            "elite_mask": elite_mask,
             "_state_before_clone": state,
             "_state_after_clone": state_after_clone,
         }
@@ -510,8 +525,9 @@ class FractalGas:
         # 8. Update elite buffer
         if self.n_elite > 0:
             self._update_elites(new_state)
-            elite_max = self._elite_walkers.rewards.max().item()
-            info["max_reward"] = max(elite_max, info["max_reward"])
+            if self._elite_walkers is not None:
+                elite_max = self._elite_walkers.rewards.max().item()
+                info["max_reward"] = max(elite_max, info["max_reward"])
 
         # 9. Record best walker frame (if enabled)
         if self.record_frames:
@@ -528,24 +544,38 @@ class FractalGas:
         return new_state, info
 
     def _update_elites(self, state: WalkerState):
-        """Update elite buffer with the best n_elite walkers overall."""
+        """Update elite buffer with the best alive walkers only."""
         n = self.n_elite
 
+        # Filter both sources before ranking. This prevents a terminated walker
+        # with a large historical reward from entering (or remaining in) the
+        # elite buffer.
+        alive_state_idx = torch.where(state.alive)[0]
         if self._elite_walkers is None:
-            # First call: take top n from current population
-            _, top_idx = state.rewards.topk(min(n, state.N))
-            self._elite_walkers = self._extract_walkers(state, top_idx)
+            if alive_state_idx.numel() == 0:
+                self._elite_walkers = None
+                return
+            _, local_idx = state.rewards[alive_state_idx].topk(min(n, alive_state_idx.numel()))
+            self._elite_walkers = self._extract_walkers(state, alive_state_idx[local_idx])
             return
 
-        # Concatenate elite and current rewards, pick global top n
-        all_rewards = torch.cat([self._elite_walkers.rewards, state.rewards])
-        _, top_idx = all_rewards.topk(min(n, len(all_rewards)))
+        alive_elite_idx = torch.where(self._elite_walkers.alive)[0]
+        candidate_rewards = torch.cat(
+            [
+                self._elite_walkers.rewards[alive_elite_idx],
+                state.rewards[alive_state_idx],
+            ]
+        )
+        if candidate_rewards.numel() == 0:
+            self._elite_walkers = None
+            return
 
-        n_elite_current = self._elite_walkers.N
-        # Split indices into those from elite buffer vs current state
-        elite_mask = top_idx < n_elite_current
-        elite_idx = top_idx[elite_mask]
-        state_idx = top_idx[~elite_mask] - n_elite_current
+        _, top_idx = candidate_rewards.topk(min(n, candidate_rewards.numel()))
+
+        n_alive_elites = alive_elite_idx.numel()
+        elite_mask = top_idx < n_alive_elites
+        elite_idx = alive_elite_idx[top_idx[elite_mask]]
+        state_idx = alive_state_idx[top_idx[~elite_mask] - n_alive_elites]
 
         parts = []
         if elite_idx.numel() > 0:
