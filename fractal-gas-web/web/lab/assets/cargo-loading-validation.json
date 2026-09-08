@@ -1,0 +1,103 @@
+{
+  "date": "2026-09-08T08:30:31.788679+00:00",
+  "scope": "Four vehicle types, two styles, two LODs, native cargo loading/full-off/unloading display. No changes to physics, action schemas, or recording formats.",
+  "browserVisualReview": {
+    "status": "passed",
+    "completedCases": 12,
+    "note": "First complete GLB/CargoVisuals browser run passed all 12 cases and captured images. A later repeat adding crowd-cost checks lost WebGL context before its first case; original per-case render-cost JSON was overwritten by the repeat, so only independently retained image evidence is listed here."
+  },
+  "laterBrowserAttempt": {
+    "cases": [],
+    "status": "failed",
+    "error": "Error: page.evaluate: Error: WebGL context lost\n    at eval (eval at evaluate (:290:30), <anonymous>:21:19)\n    at UtilityScript.evaluate (<anonymous>:292:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)"
+  },
+  "captures": {
+    "previews/cargo/steampunk-low-unloading.png": "d3f26292b4472449abd7e6915304e3097c550f12a988e92e1f5f298d5a4db2df",
+    "previews/cargo/steampunk-low-full-off.png": "229b3e8aeaadc62df622e38fe1d9ae9ed70f196fe06a857b37c3e952f5d32e91",
+    "previews/cargo/steampunk-low-loading.png": "c2f88b2e27d521893e00edc2d7b6a7a602e48e35bbd5e0771c9a05b6babc679c",
+    "previews/cargo/steampunk-high-unloading.png": "74d3d3f99df17464c69709905ecd9f6f755eaa6654fa003f9f4d880c06c98f8c",
+    "previews/cargo/steampunk-high-full-off.png": "ed84b950b0e66d13a29a7685f1964fa3e79a07264004820a99d676b8f587f5cd",
+    "previews/cargo/steampunk-high-loading.png": "90da71a364c4b8d39f8e669ef315047560b7de1416bbed2d4b603efcb8f8a023",
+    "previews/cargo/futuristic-low-unloading.png": "f6ab0723e71031e8054f2852c84d07f9dd127bc603f2dc016bd40749bb5c86e4",
+    "previews/cargo/futuristic-low-full-off.png": "ed212c6d23456cb3daea7cdf2dec875bb9c7a49692e8cfb0b5a8b0475967e8dc",
+    "previews/cargo/futuristic-low-loading.png": "878bfb7c619c12242e7b250960d30ff5960d124424675dd33b2df03cad73e24e",
+    "previews/cargo/futuristic-high-unloading.png": "0664b11263425d7ba58dfe2d05b42fe170cfe09abc4b7148fe777a221a8418fd",
+    "previews/cargo/futuristic-high-full-off.png": "109a2f468b1180767d756ece8115978c79bb075010852095ad7989ca5a9ede5c",
+    "previews/cargo/futuristic-high-loading.png": "76412712d6cb239cf7cea9057ce0be4ae14e204c579a73f2c4db86af5133a167"
+  },
+  "tests": {
+    "control-vehicle-mechanics": {
+      "tests": 8,
+      "pass": 8,
+      "fail": 0
+    },
+    "control-action-effects": {
+      "tests": 6,
+      "pass": 6,
+      "fail": 0
+    },
+    "control-assets": {
+      "tests": 19,
+      "pass": 19,
+      "fail": 0
+    },
+    "control-render-budgets": {
+      "tests": 24,
+      "pass": 24,
+      "fail": 0
+    },
+    "control-cargo-readout": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0
+    },
+    "control-web": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "control-cargo": {
+      "tests": 5,
+      "pass": 5,
+      "fail": 0
+    },
+    "control-world-animation": {
+      "tests": 4,
+      "pass": 4,
+      "fail": 0
+    },
+    "control-cargo-visuals": {
+      "tests": 9,
+      "pass": 9,
+      "fail": 0
+    }
+  },
+  "gpuBudget": {
+    "drawCallsPerViewport": 3,
+    "trianglesPerVisibleVehicle": 106,
+    "texturesAdded": 0,
+    "lightsAdded": 0,
+    "renderPassesAdded": 0,
+    "domLabelLimit": 16,
+    "labelDrawCalls": 0,
+    "validation": "Enforced by deterministic geometry/instance tests at 1, 16, 64 and 128 vehicles; browser cost attempt did not complete. No frame-rate claim."
+  },
+  "testTotals": {
+    "tests": 84,
+    "pass": 84,
+    "fail": 0
+  },
+  "isolatedBrowserCostAttempt": {
+    "cases": [],
+    "status": "failed",
+    "crowds": [],
+    "error": "Error: page.evaluate: Error: Cargo crowd budget exceeded\n    at eval (eval at evaluate (:290:30), <anonymous>:49:17)\n    at async <anonymous>:316:30"
+  },
+  "assetAudit": "cargo-asset-validation.json",
+  "runtimeFiles": {
+    "visuals/cargo.js": "0a7f3471f2e3f1d10644a0c47e507de0eabf7cf5d7a88e2d386ac8915312d1b1",
+    "visuals/cargo-readout.js": "8d987859f888d4953141f2e7a54446f7c3f7214965b3a72ead75f82e09b3b1e9",
+    "visuals/cargo-readout.css": "85200b072a3dd0c40f064892adaf0be26d75cd7ea73453e89a2a88db5ad8ef02",
+    "renderer.js": "553d5a856f2b2e3733eba6c96d7d54ba16875dc56d187daa111a1110f0ad00ea"
+  }
+}

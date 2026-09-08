@@ -768,7 +768,7 @@ target hardware before choosing a real-time budget.
 
 ### Ants & Drops cargo and refineries
 
-Both fleet types hold five drops. Pickups earn `rewards.pickup`; filling a tank
+Cargo-enabled vehicles hold five drops by default. Pickups earn `rewards.pickup`; filling a tank
 earns `cargo.full_reward` (defaults to the pickup reward). Full vehicles return
 to the marked refinery and unload over two simulation seconds, earning
 `rewards.delivery` proportionally across one full load. Leaving pauses discharge;
@@ -786,6 +786,29 @@ collection stays locked until empty. Partial loads cannot start unloading.
 Capacity is an integer from 1 to 10000; unloading time is 0.01–10000 seconds.
 Cargo-enabled scenes require at least one refinery. Vehicles can unload together.
 The refinery tool edits zones; cargo settings are edited through the scene JSON.
+
+Vehicles show a segmented capacity meter and a resource pile that fills as they
+collect. Nearby labels show held/capacity, Loading +N, Full or Unloading, plus
+cumulative picked and delivered units. Selection takes priority when labels
+would overlap; the viewport reuses at most 16 labels. The inspector also exposes
+picked and delivered totals, including controlled vehicles with disabled actuators.
+
+Observed gains in consecutive displayed states trigger a short intake-to-storage
+transfer. Each piece travels once, then settles into the pile. Unloading carries
+pieces from storage to the refinery receiving hopper. The animation follows
+simulation time, so pausing holds its pose; seeks and sparse jumps clear transient
+loading. Pickup ownership is not guessed from proximity. Counts always come from
+native cargo state (picked = held + delivered), with no recording format change.
+**Animations off** immediately shows the authoritative pile and meter, hides
+transfer motion and keeps numeric readouts current. Empty harvesters have empty
+hoppers in both styles and LODs.
+
+Cargo uses three shared instanced draws, at most 106 triangles per visible vehicle,
+and no new textures, lights or render passes. Hidden/inactive vehicles are culled;
+secondary attachment updates reuse the crowd animation cadence. Labels add no GPU
+draws. Scenes without cargo keep their existing unlimited-pickup mechanics and do
+not display invented per-vehicle resource totals.
+
 Place refinery machinery behind its apron: it extends north from `y + radius`
 to approximately `y + 1.7 × radius`. The preset uses the north arena boundary
 to keep vehicles outside that machinery. Custom scenes must supply appropriate

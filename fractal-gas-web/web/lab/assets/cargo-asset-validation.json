@@ -216,7 +216,8 @@
         0.5,
         0.39
       ],
-      "rimZ": 0.669
+      "rimZ": 0.669,
+      "maxCargoSurfaceZ": 0.65
     },
     "steampunk": {
       "bedCenter": [
@@ -228,7 +229,9 @@
         0.55,
         0.42
       ],
-      "rimZ": 0.714
+      "rimZ": 0.714,
+      "maxCargoSurfaceZ": 0.67
     }
-  }
+  },
+  "visualInspection": "Final futuristic top and steampunk hero/top renders show empty hopper beds; steam pile top must stay below z=.67 to clear the fixed overhead boiler retaining hoops."
 }

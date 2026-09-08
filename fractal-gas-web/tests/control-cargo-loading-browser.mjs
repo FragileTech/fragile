@@ -23,7 +23,9 @@ try {
   await page.goto(new URL("cargo-loading-review.html", base).href);
   await page.evaluate(async () => {
     const T = await import("./vendor/three.module.js");
-    const { GLTFLoader } = await import("./vendor/GLTFLoader.js");
+    const { GLTFLoader } = await import(
+      "./vendor/addons/loaders/GLTFLoader.js"
+    );
     const { CargoVisuals } = await import("./visuals/cargo.js");
     const { CargoReadout } = await import("./visuals/cargo-readout.js");
     const renderer = new T.WebGLRenderer({
@@ -41,7 +43,9 @@ try {
     readout.resize(1400, 900);
     window.review = { T, GLTFLoader, CargoVisuals, renderer, camera, readout };
   });
-  for (const style of ["futuristic", "steampunk"])
+  for (const style of process.env.CARGO_BUDGET_ONLY
+    ? []
+    : ["futuristic", "steampunk"])
     for (const lod of ["high", "low"]) {
       await page.evaluate(
         async ({ style, lod }) => {
@@ -190,6 +194,81 @@ try {
         window.review.renderer.renderLists.dispose();
       });
     }
+  report.crowds = [];
+  for (const count of [1, 16, 64, 128]) {
+    const rows = await page.evaluate(async (count) => {
+      const { T, CargoVisuals, renderer } = window.review;
+      const { disposeGroup } = await import("./visuals/resources.js");
+      const world = new T.Scene();
+      const info = new Uint32Array(16);
+      info[1] = count;
+      info[15] = 8 + count * 6;
+      const state = new Float32Array(info[15] + count * 4);
+      const controlled = Array.from({ length: count }, (_, i) => i);
+      const layer = {
+        controlled,
+        models: controlled.map(() => new T.Group()),
+        bodies: controlled.map(() => ({ visual: { model: "drone" } })),
+        presentations: [],
+        active: controlled.map(() => true),
+        inView: controlled.map(() => true),
+        presentationVersion: 0,
+      };
+      for (const i of controlled) {
+        state[8 + i] = (i % 16) - 8;
+        state[8 + count + i] = Math.floor(i / 16) - 4;
+        state[info[15] + 4 * i] = 6;
+        state[info[15] + 4 * i + 1] = 1;
+      }
+      const cargo = new CargoVisuals(
+        {
+          cargo: { capacity: 6 },
+          refineries: [{ position: [0, 0], radius: 20 }],
+        },
+        info,
+        layer,
+        world,
+        "futuristic",
+      );
+      const camera = new T.OrthographicCamera(-20, 20, 15, -15, 0.1, 100);
+      camera.position.z = 30;
+      camera.lookAt(0, 0, 0);
+      const rows = [];
+      for (const animations of [true, false]) {
+        cargo.setAnimationsEnabled(animations);
+        cargo.update(state);
+        renderer.render(world, camera);
+        const calls = renderer.info.render.calls,
+          triangles = renderer.info.render.triangles;
+        if (
+          calls !== (animations ? 3 : 2) ||
+          triangles !== (animations ? 106 : 58) * count
+        )
+          throw new Error(
+            `Cargo cost check: count=${count}, animations=${animations}, calls=${calls}, triangles=${triangles}, contextLost=${renderer.getContext().isContextLost()}`,
+          );
+        rows.push({
+          count,
+          animations,
+          calls,
+          triangles,
+          geometryBudget: 106 * count,
+          labelsDraws: 0,
+        });
+      }
+      layer.inView.fill(false);
+      layer.presentationVersion++;
+      cargo.animate();
+      renderer.render(world, camera);
+      if (renderer.info.render.calls !== 0)
+        throw new Error("Culled cargo still draws");
+      disposeGroup(world);
+      renderer.renderLists.dispose();
+      return rows;
+    }, count);
+    report.crowds.push(...rows);
+    await writeFile(`${output}/results.json`, JSON.stringify(report, null, 2));
+  }
   report.status = "passed";
 } catch (error) {
   report.status = "failed";

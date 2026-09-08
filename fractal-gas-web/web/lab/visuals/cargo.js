@@ -13,7 +13,7 @@ const smooth = (t) => t * t * (3 - 2 * t);
 // open hopper; smaller vehicles carry a compact load on the rear/central deck.
 const mounts = {
   harvester: {
-    center: [-0.3, 0, 0.47],
+    center: [-0.3, 0, 0.54],
     size: [0.5, 0.37, 0.18],
     intake: [0.66, 0, 0.22],
   },
@@ -105,13 +105,13 @@ export class CargoVisuals {
         });
         mount = !authored
           ? {
-              center: [-0.19, 0, 0.36],
+              center: [-0.19, 0, 0.4],
               size: [0.42, 0.3, 0.16],
               intake: [0.63, 0, 0.15],
             }
           : style === "steampunk"
             ? {
-                center: [-0.37, 0, 0.505],
+                center: [-0.37, 0, 0.56],
                 size: [0.55, 0.42, 0.18],
                 intake: [0.62, 0, 0.23],
               }
@@ -287,10 +287,10 @@ export class CargoVisuals {
           fills++,
           center[0] + (row - 1) * size[0] * 0.3,
           side * size[1] * 0.23,
-          center[2] + size[2] * (0.45 + 0.08 * (j % 3)),
+          center[2] + size[2] * 0.04 * (j % 3),
           size[0] * 0.22 * growth,
           size[1] * 0.31 * growth,
-          size[2] * 0.6 * growth,
+          size[2] * 0.5 * growth,
           j * 1.7,
         );
       }

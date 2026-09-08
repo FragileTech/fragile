@@ -3,6 +3,8 @@
 Unreleased
 ----------
 
+* Show vehicle resource loads as growing cargo piles with intake and unloading transfers, visible held/picked/delivered counts and loading status; remove permanently full harvester cargo while preserving animation-off updates and shared rendering budgets.
+
 * Strengthen Lab world silhouettes, reactor and docking rings, scenery housings and refinery loading machinery; separate painted panels, tinted glass and rough mineral surfaces while retaining existing asset budgets and animation attachments.
 
 * Lower the default Collaborative mining rock mass to 0.24 kg so a single upright rocket can lift it at normal thrust in gravity mode.

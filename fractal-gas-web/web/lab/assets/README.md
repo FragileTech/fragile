@@ -9,6 +9,15 @@ The styles retain their common collision envelopes. See the
 The [latest concept review](CONCEPT_REVIEW.md) describes the subsequent shape and
 surface refinements and the stricter budgets for every runtime pack and world prop.
 
+## Runtime resource loads
+
+Harvesters now export empty hoppers in both styles and detail levels; their
+permanent decorative ore has been removed so the runtime cargo display is accurate.
+The cargo renderer shares faceted resource pieces, a capacity meter and transfer
+geometry across vehicles. See the [asset audit](cargo-asset-validation.json) and
+[runtime review](cargo-loading-validation.json) for costs and validation. Sources,
+previews and authoring scripts reflect the empty state.
+
 ## World collections
 
 The third world refinement strengthens capture collars and reactor hoops, shapes

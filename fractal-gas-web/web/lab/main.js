@@ -779,9 +779,9 @@ function updateCargoReadout(
   label = scenePresentation(currentScene).score.label,
 ) {
   if (currentInfo?.[15] && currentState) {
-    const ids = [
-      ...new Set((currentChannels || []).map((channel) => channel.body)),
-    ];
+    const ids = currentBodies.flatMap((body, i) =>
+      body.controlled ? [i] : [],
+    );
     const selected =
       editor.selection?.key === "bodies" ? editor.selection.i : ids[0];
     const c = ids.indexOf(selected),
@@ -1537,12 +1537,16 @@ function updateSelection() {
       : "Not recorded",
     Mass: definition.mass == null ? "Scene default" : `${definition.mass} kg`,
   };
-  const controlled = [
-    ...new Set((currentChannels || []).map((c) => c.body)),
-  ].indexOf(body);
+  const controlled = currentBodies
+    .flatMap((definition, i) => (definition.controlled ? [i] : []))
+    .indexOf(body);
   if (currentInfo[15] && controlled >= 0) {
     const at = currentInfo[15] + controlled * 4;
     values.Cargo = `${currentState[at].toFixed(1)} / ${currentScene.cargo.capacity ?? 5}`;
+    values["Resources picked up"] = (
+      currentState[at] + currentState[at + 2]
+    ).toFixed(1);
+    values["Resources delivered"] = currentState[at + 2].toFixed(1);
     values["Task state"] = currentState[at + 1]
       ? "Return / unload"
       : "Collecting";
