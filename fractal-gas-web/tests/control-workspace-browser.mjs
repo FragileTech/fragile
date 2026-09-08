@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright";
 const browser = await chromium.launch({
   headless: true,
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", "--use-angle=swiftshader"],
 });
 try {
   const context = await browser.newContext({
@@ -18,7 +18,7 @@ try {
       response,
       body:
         (await response.text()) +
-        `\nwindow.workspaceTest={workspace,transitions,runSession,replay,renderer,editor,settings,getWorker:()=>worker,getScene:()=>currentScene,getReady:()=>ready};`,
+        `\nwindow.workspaceTest={workspace,transitions,loadScene,runSession,replay,renderer,editor,settings,getWorker:()=>worker,getScene:()=>currentScene,getReady:()=>ready};`,
     });
   });
   await page.goto(process.env.CONTROL_TEST_URL || "http://127.0.0.1:8089/lab/");
@@ -82,14 +82,32 @@ try {
   console.log(
     "Layout, onboarding, staged settings, durable replacement passed",
   );
+  await page.evaluate(() =>
+    workspaceTest.loadScene({
+      name: "Continuous driving fixture",
+      task: "navigation",
+      size: [1000, 1000],
+      bodies: [
+        {
+          controlled: true,
+          position: [500, 500],
+          velocity: [0.1, 0],
+          drag: 0,
+          actuator: { kind: "kart" },
+        },
+      ],
+    }),
+  );
   await page.locator("#mode-drive").click();
   await page.locator("#run").click();
   await page.waitForFunction(
     () => document.querySelector("#tick").textContent !== "TICK 000000",
   );
   const t1 = await tick();
-  await page.waitForTimeout(120);
-  assert.notEqual(await tick(), t1);
+  await page.waitForFunction(
+    (previous) => document.querySelector("#tick").textContent !== previous,
+    t1,
+  );
   await page.locator("#run").click();
   await page.waitForTimeout(70);
   const paused = await tick();
@@ -110,7 +128,7 @@ try {
   await page.locator("#lab-reward-delivery").fill("150");
   await page.locator("#apply-configuration").click();
   await page.waitForFunction(
-    () => workspaceTest.getScene().rewards.delivery === 150,
+    () => workspaceTest.getScene().rewards?.delivery === 150,
   );
   assert.equal(await tick(), beforeReward);
   assert.equal(
@@ -158,6 +176,26 @@ try {
   );
   await page.locator("#discard-configuration").click();
   console.log("Failed-save recovery passed");
+  await page.locator("#horizon").fill("4");
+  await page.locator("#horizon").press("Tab");
+  const failure = await page.evaluate(async () => {
+    const { loadScene, getScene, replay, workspace } = workspaceTest;
+    const id = replay.recording.id,
+      draft = JSON.stringify(workspace.draft);
+    const result = await loadScene({ ...getScene(), size: [-1, -1] });
+    return {
+      result,
+      retained: replay.recording.id === id,
+      draftRetained: JSON.stringify(workspace.draft) === draft,
+    };
+  });
+  assert.deepEqual(failure, {
+    result: false,
+    retained: true,
+    draftRetained: true,
+  });
+  await page.locator("#discard-configuration").click();
+  console.log("Failed replacement preserves the run and draft");
   await page.locator("#experiments").click();
   await page.locator("#variant-b").selectOption("random");
   await page.locator("#benchmark-frames").fill("12");

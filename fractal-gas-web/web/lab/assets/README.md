@@ -11,6 +11,40 @@ surface refinements and the stricter budgets for every runtime pack and world pr
 
 ## World collections
 
+The third world refinement strengthens capture collars and reactor hoops, shapes
+roof eaves and equipment housings, tapers flow ribbons, and gives refineries a
+clearer loading bay and distinct pressure stages. Painted shells, bare fittings,
+tinted glass and rough mineral host rock now have more distinct surface responses.
+The geometry finish runs **after envelope fitting and normal repair**, retaining
+evaluated polygons so sculpted faces share normals without redundant split vertices.
+See the [third-pass audit](world-refinement3-validation.json),
+[world comparison](previews/world-refinement3-comparison.jpg) and
+[refinery comparison](previews/refinery-refinement3-comparison.jpg).
+All eight packs remain within their preceding per-pack and per-prop ceilings:
+371,954 triangles, 859 draw batches and the same material and texture counts.
+Combined GLB size is 28,369,572 bytes, down from 28,383,624 bytes.
+All 73 automated asset, animation and budget tests pass. The single bounded
+[browser smoke attempt](world-refinement3-browser-validation.json) failed its first
+render assertion, so this pass makes no browser frame-rate claim.
+
+The preceding world pass refined the 42 prop types in both styles and LODs, together
+with both unloading refineries. Existing shells and supports gain tapered profiles;
+stone uses irregular, partially lit mineral fractures; panel and road maps carry
+restrained edge wear and roughness variation. The authoring hooks remain in
+`world_machinery_refinement.py`, `world_scenery_refinement.py`,
+`world_surface_finish.py` and `build_refinery_assets.py`.
+The [world polish audit](world-polish-validation.json) compares each prop and pack
+against the exports captured immediately before this pass, including root fitting,
+motion hierarchy and all six rendering/loading cost ceilings.
+The eight world/refinery packs total 28,383,624 bytes versus 33,091,820 before,
+and 371,954 triangles versus 375,222. Draw batches, materials, images and decoded
+texture pixels are unchanged. All 73 automated asset/animation/budget tests pass.
+See the [world comparison](previews/world-polish-comparison.jpg) and
+[refinery comparison](previews/refinery-polish-comparison.jpg) for the final studio
+review. The [browser diagnostics](world-polish-browser-validation.json) record an
+initial successful smoke run and subsequent SwiftShader context losses; browser
+material review is incomplete, and these results make no frame-rate claim.
+
 The [Asset Workshop](../asset-gallery.html) now includes **42 world asset types in
 each style**. Choose a family in the Asset menu, compare Detailed and Simplified
 geometry, and enable **Shared envelope** to inspect the common dimensions.

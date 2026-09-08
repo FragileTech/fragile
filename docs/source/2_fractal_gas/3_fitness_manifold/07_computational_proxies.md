@@ -1814,6 +1814,7 @@ Proxy 5 (graph Laplacian spectral gap) connects to **spectral geometry**, the st
 The viscous force (Section {ref}`sec-scutoidal-viscous-force`) uses a row-normalized graph Laplacian, a structure ubiquitous in modern machine learning.
 
 **Semi-Supervised Learning**: The graph Laplacian regularizes labels on unlabeled data:
+
 $$
 \min_f \sum_{i \in \text{labeled}} (f_i - y_i)^2 + \mu f^T L f
 $$
@@ -1822,6 +1823,7 @@ where $L = D - W$. The term $f^T L f = \sum_{ij} w_{ij}(f_i - f_j)^2$ penalizes 
 **Spectral Clustering**: The eigenvectors of $L$ embed the graph into Euclidean space for clustering. The second eigenvector (Fiedler vector) gives a natural partition minimizing the cut weight.
 
 **Graph Neural Networks (GNNs)**: GCN layers aggregate neighbor features:
+
 $$
 h_i^{(\ell+1)} = \sigma\left( \sum_{j \in \mathcal{N}(i)} \frac{w_{ij}}{\sqrt{d_i d_j}} W^{(\ell)} h_j^{(\ell)} \right)
 $$
@@ -2086,6 +2088,7 @@ Generates 4-panel diagnostic:
 
 **Step size selection**:
 Automatic step size estimation:
+
 $$
 h_{\text{optimal}} = \alpha \cdot \text{median}(\|x_i - x_j\| : j \in \mathcal{N}(i))
 $$
@@ -2111,11 +2114,13 @@ User must provide $\epsilon_\Sigma$ from their theoretical model. Not automatica
 Standard numerical analysis uses finite differences on *regular grids*. Here we apply FD on *irregular Voronoi graphs*—a significant generalization.
 
 **Classical FD (regular grid)**:
+
 $$
 \frac{\partial f}{\partial x} \approx \frac{f(x+h) - f(x-h)}{2h}, \quad \text{error} = O(h^2)
 $$
 
 **Our FD (irregular graph)**:
+
 $$
 \nabla f(x_i) \approx \sum_{j \in \mathcal{N}(i)} w_{ij} \frac{f(x_j) - f(x_i)}{\|x_j - x_i\|^2} (x_j - x_i)
 $$

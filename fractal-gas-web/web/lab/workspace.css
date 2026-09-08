@@ -291,6 +291,9 @@
 .pending-settings button {
   margin: 4px 0;
 }
+#fit-rock-lift {
+  scroll-margin-block: 24px 320px;
+}
 .workspace-intro {
   position: absolute;
   bottom: 36px;
@@ -508,7 +511,7 @@
   }
   .workspace .stage-toolbar button {
     font-size: 11px;
-    min-height: 32px;
+    min-height: 44px;
   }
   .workspace .telemetry {
     padding: 6px 0;
@@ -541,7 +544,7 @@
     flex: 1 0 100%;
   }
   .workspace .motion-controls #motion-resume {
-    min-height: 32px;
+    min-height: 44px;
   }
   .timeline-dock {
     max-height: 34%;
@@ -613,7 +616,54 @@
     display: none;
   }
 }
-.workspace .help-icon { min-height: 20px; height: 20px; width: 20px; padding: 0; font-size: 12px; }
-@media(max-width:779px) { .workspace .help-icon { min-height: 44px; height: 44px; width: 44px; } }
-@media (prefers-reduced-motion: reduce) { .workspace * { transition: none !important; } }
-.workspace #apply-rocks, .workspace #apply-action-settings { display: none; }
+.workspace .help-icon {
+  min-height: 20px;
+  height: 20px;
+  width: 20px;
+  padding: 0;
+  font-size: 12px;
+}
+@media (max-width: 779px) {
+  .workspace .help-icon {
+    min-height: 44px;
+    height: 44px;
+    width: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .workspace * {
+    transition: none !important;
+  }
+}
+.workspace #apply-rocks,
+.workspace #apply-action-settings {
+  display: none;
+}
+@media (max-width: 779px) {
+  #save-menu {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    z-index: 3;
+  }
+  .workspace .masthead {
+    min-height: 52px;
+    height: 52px;
+  }
+  #mode-hint {
+    order: 2;
+  }
+  #toggle-inspector {
+    order: 1;
+    margin-left: auto;
+  }
+}
+@media (max-width: 779px) {
+  .workspace-toolbar select {
+    font-size: 14px;
+  }
+  .workspace input:not([type="checkbox"]):not([type="radio"]),
+  .workspace select {
+    min-height: 44px;
+  }
+}

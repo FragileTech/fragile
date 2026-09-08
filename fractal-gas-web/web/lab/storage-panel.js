@@ -83,7 +83,7 @@ export class StoragePanel {
         row.className = "stored-run";
         if (run.parent) row.dataset.parent = run.parent.run || "imported";
         const title = document.createElement("span");
-        title.textContent = `${run.parent ? "↳ " : ""}${run.name} · ${run.length} frames · ${new Date(run.updated).toLocaleString()}`;
+        title.textContent = `${run.parent ? "↳ " : ""}${run.name || run.scene?.name || "Experiment"} · ${run.length} frames · ${new Date(run.updated).toLocaleString()}`;
         const open = document.createElement("button");
         open.textContent = "Open";
         open.onclick = async () => {

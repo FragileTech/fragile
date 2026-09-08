@@ -17,6 +17,9 @@ export class ExperimentPanel {
     $("variant-b").value = "cem";
     const differences = document.createElement("p");
     differences.id = "variant-differences";
+    const submittedDifferences = document.createElement("p");
+    submittedDifferences.id = "submitted-differences";
+    $("benchmark-results").closest("table").before(submittedDifferences);
     const duplicate = document.createElement("button");
     duplicate.textContent = "Duplicate A into B";
     $("experiment-dialog")
@@ -108,6 +111,14 @@ export class ExperimentPanel {
           if (data.type === "progress")
             $("experiment-status").textContent =
               `Completed ${data.index} / ${data.total}`;
+          if (["benchmark", "comparison"].includes(data.type)) {
+            submittedDifferences.textContent =
+              "Submitted configuration differences: " +
+              (configurationDiff(
+                submitted.spec.variants[0],
+                submitted.spec.variants[1],
+              ).join(" · ") || "Identical configurations");
+          }
           if (data.type === "benchmark") {
             this.report = data.report;
             this.table(data.report.summary);

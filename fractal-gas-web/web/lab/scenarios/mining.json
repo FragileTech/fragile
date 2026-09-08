@@ -1,7 +1,7 @@
 {
   "version": 1,
   "name": "Collaborative mining",
-  "description": "One heavy rock at a time. Team up to haul it faster; delivery spawns the next.",
+  "description": "One liftable rock at a time. Team up to haul it faster; delivery spawns the next.",
   "task": "harvest",
   "size": [
     64,
@@ -132,7 +132,7 @@
         22,
         12.5
       ],
-      "mass": 24,
+      "mass": 0.24,
       "cargo": true,
       "drag": 0.8,
       "vertices": [

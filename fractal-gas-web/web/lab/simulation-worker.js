@@ -492,7 +492,10 @@ self.onmessage = async ({ data }) => {
     }
     if (data.type === "drive-mode") {
       running = single = false;
-      if (driving === !!data.enabled) { publish(); return; }
+      if (driving === !!data.enabled) {
+        publish();
+        return;
+      }
       driving = !!data.enabled;
       revision++;
       pending = undefined;

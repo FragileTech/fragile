@@ -29,7 +29,13 @@ export class VariantSettings {
     this.fields = document.createElement("div");
     this.fields.className = "variant-parameters fields-two";
     select.closest("label").after(this.fields);
-    json.closest("label").firstChild.textContent = "Advanced variant JSON";
+    const advanced = document.createElement("details"),
+      summary = document.createElement("summary");
+    summary.textContent = "Advanced variant JSON";
+    const jsonLabel = json.closest("label");
+    jsonLabel.firstChild.textContent = "Variant settings";
+    jsonLabel.before(advanced);
+    advanced.append(summary, jsonLabel);
     json.addEventListener("change", () => {
       try {
         const data = JSON.parse(json.value);

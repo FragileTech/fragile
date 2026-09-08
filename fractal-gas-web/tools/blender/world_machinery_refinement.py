@@ -495,10 +495,122 @@ def checkpoints(b, kind):
                 )
 
 
+def machinery_profiles(b, kind):
+    """Shape existing shells before fasteners, retaining their mesh budgets.
+
+    Local bounds are retained by the broad lower ring/face. No moving parent,
+    socket, envelope or material allocation is changed by this profile pass.
+    """
+    for obj in b.root.children_recursive:
+        if obj.type != "MESH":
+            continue
+        name = obj.name
+        vertices = obj.data.vertices
+        lo = [min(v.co[i] for v in vertices) for i in range(3)]
+        hi = [max(v.co[i] for v in vertices) for i in range(3)]
+        mid = [(a + c) / 2 for a, c in zip(lo, hi)]
+        span = [max(c - a, 1e-6) for a, c in zip(lo, hi)]
+        taper = None
+        shear = 0.0
+        rock = False
+        if kind.startswith("drop-"):
+            if name.startswith(("Low armored base", "Octagonal mineral tray")):
+                taper = (0.82, 0.82)
+            elif name.startswith("Mineral prism") and kind == "drop-crystal":
+                # Narrow shoulders make cut prisms readable above the host rock.
+                for vertex in vertices:
+                    t = (vertex.co.z - lo[2]) / span[2]
+                    if 0.5 < t < 0.95:
+                        vertex.co.x *= 0.72
+                        vertex.co.y *= 0.72
+            elif name.startswith(("Cut nugget armor facets", "Core facet armor")):
+                taper = (0.68, 0.78)
+                shear = -span[0] * 0.12
+            elif name.startswith(("Salvage crate", "Crate corner shoe", "Crate front inset")):
+                taper = (0.88, 0.88) if b.steam else (0.76, 0.88)
+            elif name.startswith("Capsule longitudinal guard"):
+                taper = (0.68, 0.85)
+            elif name.startswith("Fractured mineral stone") and kind == "drop-pile":
+                rock = True
+        elif kind.startswith("ore-"):
+            rock = name.startswith("Fractured mineral stone")
+        elif kind == "capture-clamp":
+            if name.startswith(("Clamp cheek housing", "Magnetic capture body", "Winch chassis")):
+                # Detailed body/chassis side fasteners define the rear envelope.
+                # Keep those shells flat so their original extrema survive.
+                if b.low or name.startswith("Clamp cheek housing"):
+                    taper = (0.70, 0.86)
+        elif kind == "reactor":
+            if name.startswith("Reactor stepped foundation"):
+                taper = (0.91, 0.91)
+            elif name.startswith(("Reactor service bay", "Ring bearing mount")):
+                # Cardinal service-bay fasteners define the detailed plinth's
+                # exact width; the inboard bearing mounts can still be reshaped.
+                if b.low or name.startswith("Ring bearing mount"):
+                    taper = (0.78, 0.86)
+                    shear = -span[0] * 0.10
+            elif name.startswith("Crown field cartridge"):
+                taper = (0.65, 0.90)
+        elif kind == "dock":
+            if name.startswith(("Perimeter recovery machinery", "Dock service bay surround")):
+                taper = (0.82, 0.90)
+                shear = -span[0] * 0.08
+            elif name.startswith("Dock replaceable deck quadrant"):
+                # Sloped inner lips integrate the insert with the clear deck.
+                for vertex in vertices:
+                    t = (vertex.co.x - lo[0]) / span[0]
+                    vertex.co.z = lo[2] + (vertex.co.z - lo[2]) * (0.40 + 0.60 * t)
+        elif kind == "beacon":
+            if name.startswith(("Low armored base", "Lantern foot flange")):
+                taper = (0.80, 0.80)
+            elif name.startswith(("Beacon crystal cradle", "Lantern protective upright")):
+                taper = (0.68, 0.85)
+        elif kind in {"gate", "gate-pylons", "finish-arch"}:
+            if name.startswith(("Gate angled pedestal", "Checkpoint heel gusset")) or (
+                b.low and name.startswith("Gate foot")
+            ):
+                taper = (0.64, 0.80)
+            elif name.startswith("Arch upright"):
+                taper = (0.82, 0.80)
+            elif name.startswith("Finish beam cassette"):
+                taper = (0.84, 0.78)
+        elif kind == "gate-marker" and name.startswith("Checkpoint ground index"):
+            taper = (0.70, 0.82)
+        if kind == "gate" and name.startswith("Gate articulated armor sector"):
+            # Reuse each annular cover as a beveled retaining shoe, rather than
+            # another rectangular strip stacked on the checkpoint ring.
+            for vertex in vertices:
+                t = (vertex.co.x - lo[0]) / span[0]
+                radius = math.hypot(vertex.co.y, vertex.co.z)
+                if radius > 1e-6:
+                    inset = 0.954 + (radius - 0.954) * (1 - 0.35 * t)
+                    vertex.co.y *= inset / radius
+                    vertex.co.z *= inset / radius
+        if taper:
+            for vertex in vertices:
+                t = (vertex.co.z - lo[2]) / span[2]
+                vertex.co.x = (
+                    mid[0] + (vertex.co.x - mid[0]) * (1 - t * (1 - taper[0])) + shear * t
+                )
+                vertex.co.y = mid[1] + (vertex.co.y - mid[1]) * (1 - t * (1 - taper[1]))
+        if kind == "finish-arch" and name.startswith("Arch upright"):
+            for vertex in vertices:
+                t = (vertex.co.z - lo[2]) / span[2]
+                vertex.co.y -= math.copysign(0.16, obj.location.y) * t
+        if rock:
+            # Clip the rounded host into broad fracture planes. Existing extrema
+            # stay fixed so the embedded receiver and normalized footprint agree.
+            for vertex in vertices:
+                for axis in range(3):
+                    q = (vertex.co[axis] - mid[axis]) / (span[axis] / 2)
+                    vertex.co[axis] = mid[axis] + max(-1, min(1, q * 1.13)) * span[axis] / 2
+        obj.data.update()
+
+
 def refine_world_machinery(builder, kind):
     if kind not in COVERAGE:
         return
-    builder.root["refinementRevision"] = "machinery-concept-3"
+    builder.root["refinementRevision"] = "machinery-concept-4"
     if kind.startswith("drop-"):
         resources(builder, kind)
     elif kind.startswith("ore-") or kind == "capture-clamp":
@@ -509,3 +621,108 @@ def refine_world_machinery(builder, kind):
         dock(builder)
     else:
         checkpoints(builder, kind)
+    machinery_profiles(builder, kind)
+
+
+def machinery_polish_after_fit(builder):
+    """Strengthen existing cast rings and optical barrels after envelope fitting.
+
+    This pass changes only unmodified, unfastened meshes. Existing outer surfaces,
+    local bounds, indices, materials and object transforms are retained. Growing
+    collars into their openings leaves the outer-mounted fittings seated.
+    """
+    ring_profiles = {
+        "Ore docking collar": 2.05,
+        "Core cage": 1.80,
+        "Core energy band": 1.65,
+        "Forged containment hoop": 1.85,
+        "Upper field crown": 1.90,
+        "Core energy collector": 1.80,
+        "Deck lower retaining flange": 2.00,
+        "Deck perimeter rim": 1.85,
+        "Perimeter retaining band": 1.55,
+        "Cap inset light annulus": 1.65,
+    }
+    changed = []
+    for root in builder.roots.values():
+        kind = root.get("assetModel")
+        if kind not in COVERAGE:
+            continue
+        for obj in root.children_recursive:
+            if obj.type != "MESH" or obj.modifiers:
+                continue
+            mesh = obj.data
+            if mesh.get("machineryPolishVersion") == 1:
+                continue
+            ring_factor = next(
+                (
+                    factor
+                    for prefix, factor in ring_profiles.items()
+                    if obj.name.startswith(prefix)
+                ),
+                None,
+            )
+            barrel = kind == "drop-capsule" and obj.name.startswith((
+                "Pressure vessel",
+                "Field cartridge",
+            ))
+            lens = kind == "gate-pylons" and obj.name.startswith("Pylon terminal lens")
+            if ring_factor is None and not barrel and not lens:
+                continue
+            points = [v.co.copy() for v in mesh.vertices]
+            lo = [min(p[i] for p in points) for i in range(3)]
+            hi = [max(p[i] for p in points) for i in range(3)]
+            center = [(a + c) / 2 for a, c in zip(lo, hi)]
+            spans = [c - a for a, c in zip(lo, hi)]
+            if ring_factor is not None:
+                axis = min(range(3), key=lambda i: spans[i])
+                plane = [i for i in range(3) if i != axis]
+                radii = [
+                    math.hypot(p[plane[0]] - center[plane[0]], p[plane[1]] - center[plane[1]])
+                    for p in points
+                ]
+                inner, outer = min(radii), max(radii)
+                width = outer - inner
+                for vertex, point, radius in zip(mesh.vertices, points, radii):
+                    if radius <= 1e-8 or width <= 1e-8:
+                        continue
+                    # The outer edge and its bolt seats stay exactly fixed.
+                    fraction = (outer - radius) / width
+                    target = radius - min(width * (ring_factor - 1), inner * 0.32) * fraction
+                    for i in plane:
+                        vertex.co[i] = center[i] + (point[i] - center[i]) * target / radius
+            elif barrel:
+                # Eight broad cut-glass panels replace a smooth test-tube body.
+                # Cardinal points and end planes still meet the existing guards.
+                for vertex, point in zip(mesh.vertices, points):
+                    angle = math.atan2(point.y - center[1], point.x - center[0])
+                    phase = angle % (math.pi / 4) - math.pi / 8
+                    factor = math.cos(math.pi / 8) / math.cos(phase)
+                    vertex.co.x = center[0] + (point.x - center[0]) * factor
+                    vertex.co.y = center[1] + (point.y - center[1]) * factor
+            else:
+                # A pointed optical terminal has a clear silhouette at lab zoom.
+                for vertex, point in zip(mesh.vertices, points):
+                    t = (point.z - lo[2]) / max(spans[2], 1e-8)
+                    vertex.co.x = center[0] + (point.x - center[0]) * (1 - 0.82 * t)
+                    vertex.co.y = center[1] + (point.y - center[1]) * (1 - 0.82 * t)
+            anchors = {
+                (i, boundary): min(
+                    (j for j, p in enumerate(points) if p[i] == boundary),
+                    key=lambda j: points[j].z,
+                )
+                for i in range(3)
+                for boundary in (lo[i], hi[i])
+            }
+            for index, (vertex, point) in enumerate(zip(mesh.vertices, points)):
+                for i in range(3):
+                    # Keep exact witnesses for all six existing local bounds.
+                    # Lens rims retain bottom witnesses while their crown tapers.
+                    if index in {anchors[i, lo[i]], anchors[i, hi[i]]}:
+                        vertex.co[i] = point[i]
+                    else:
+                        vertex.co[i] = max(lo[i], min(hi[i], vertex.co[i]))
+            mesh["machineryPolishVersion"] = 1
+            mesh.update()
+            changed.append(obj.name)
+    return changed

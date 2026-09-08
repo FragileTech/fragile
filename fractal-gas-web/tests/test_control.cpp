@@ -581,9 +581,14 @@ TEST_CASE(control_mining_heavy_load_and_replenishment) {
   json << file.rdbuf();
   auto s = Scene::compile(json.str());
   CHECK(s->bodies.size() == 3);
-  CHECK(s->bodies[2].mass == 24);
+  CHECK_CLOSE(s->bodies[2].mass, .24f, 1e-6);
   CHECK(s->bodies[2].drag == .8f);
   CHECK(s->bodies[2].respawn);
+  // Keep this overload/coop stress case separate from the liftable preset.
+  auto overloaded = std::make_shared<Scene>(*s);
+  overloaded->bodies[2].inertia *= 24 / overloaded->bodies[2].mass;
+  overloaded->bodies[2].mass = 24;
+  s = overloaded;
   Physics p(s);
   StateBatch a(1, *s), b(1, *s), replay(1, *s);
   const auto& l = s->layout;

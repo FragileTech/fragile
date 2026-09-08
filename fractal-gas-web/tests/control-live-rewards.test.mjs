@@ -4,6 +4,7 @@ import { loadNative, NativeEngine } from "../web/lab/native.js";
 import { prepareRewardEngines } from "../web/lab/live-rewards.js";
 import { MotionRecording, WorldCapture, bytesOf } from "../web/lab/motion.js";
 import { exportRecording, importRecording } from "../web/lab/archive.js";
+import { runEpisode } from "../web/lab/experiments.js";
 
 const module = await loadNative();
 const scene = {
@@ -74,7 +75,7 @@ test("live replacements preserve bytes, change future rewards, and roll back inv
     next?.predict.dispose();
   }
 });
-test("continuous archive keeps reward boundaries and restores omitted-default scene snapshots", () => {
+test("continuous archive keeps reward boundaries and restores omitted-default scene snapshots", async () => {
   const engine = new NativeEngine(module, scene);
   let next, restored;
   try {
@@ -112,6 +113,25 @@ test("continuous archive keeps reward boundaries and restores omitted-default sc
     assert.equal(
       imported.rewardConfiguration().scene.rewards.distance_squared,
       2,
+    );
+    // Comparisons use active rewards even when their physical rows come from
+    // an earlier boundary. The fingerprint must come from the active scene.
+    const comparison = await runEpisode({
+      module,
+      scene: next.scene,
+      settings: { algorithm: "random", walkers: 4, horizon: 1, frames: 1 },
+      seed: 7,
+      maxFrames: 1,
+      record: true,
+      root: {
+        snapshot: imported.rewardConfiguration().root,
+        rows: imported.rows(0),
+      },
+    });
+    assert.equal(comparison.stats.frames, 1);
+    assert.deepEqual(
+      bytesOf(comparison.motion.rows(0)),
+      bytesOf(imported.rows(0)),
     );
     const base = imported.rewardConfiguration(0);
     restored = prepareRewardEngines(

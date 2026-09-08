@@ -1,0 +1,10 @@
+{
+  "date": "2026-09-08T08:06:48.519526+00:00",
+  "status": "incomplete",
+  "attempts": 1,
+  "timeoutSeconds": 90,
+  "command": "WORLD_REVIEW_DIR=/tmp/world-refinement3-browser timeout 90s node tests/control-world-polish-browser.mjs",
+  "error": "page.evaluate: Error: futuristic/high: models rendered",
+  "completedCases": 0,
+  "note": "Bounded smoke check reached the first model-render assertion but did not submit the expected visible geometry. No browser visual, culling, frame-rate or GPU performance claim. All GLBs are separately validated with the production loader in automated asset tests; complete final visual review uses Blender previews."
+}

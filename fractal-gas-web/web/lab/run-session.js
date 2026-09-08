@@ -18,6 +18,8 @@ export class RunSession {
           {
             scene: recording.scene,
             settings: recording.settings,
+            name: recording.name,
+            parent: recording.parent,
           },
         );
         stored.channels = recording.channels;
@@ -55,7 +57,11 @@ export class RunSession {
       } catch (error) {
         const choice = await this.failure(error);
         if (choice === "retry") {
-          await this.getRecording()?.retry?.();
+          try {
+            await this.getRecording()?.retry?.();
+          } catch {
+            /* Offer recovery again if the device is still full. */
+          }
           continue;
         }
         if (choice === "discard") return;

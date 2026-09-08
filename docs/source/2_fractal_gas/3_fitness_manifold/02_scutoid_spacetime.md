@@ -1071,8 +1071,7 @@ cost when required. Let $M_k$ include metric evaluations, index maintenance,
 and additional global repairs. For the stated reconstruction procedure,
 
 $$
- T_k=O\!\left(N+M_k+\sum_i R_i+\sum_{i\ {
-m located}}L_i\right).
+ T_k=O\!\left(N+M_k+\sum_i R_i+\sum_{i:\,\mathrm{located}}L_i\right).
 \tag{SC.20}
 $$
 

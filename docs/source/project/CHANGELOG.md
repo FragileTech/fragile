@@ -3,6 +3,12 @@
 Unreleased
 ----------
 
+* Strengthen Lab world silhouettes, reactor and docking rings, scenery housings and refinery loading machinery; separate painted panels, tinted glass and rough mineral surfaces while retaining existing asset budgets and animation attachments.
+
+* Lower the default Collaborative mining rock mass to 0.24 kg so a single upright rocket can lift it at normal thrust in gravity mode.
+
+* Refine Lab world props and both refineries with shaped structural housings, clearer capture hardware, fractured mineral surfaces, worn industrial finishes and refreshed Blender sources, within the preceding per-asset rendering budgets.
+
 * Refine both Lab vehicle collections with stronger canopy, armor, seating and cab profiles, plus aged metal and clearer panel finishes using existing geometry and texture budgets.
 
 * Apply Lab rewards mid-run without resetting the world, camera, or recording, and retain reward-change boundaries for replay and saved runs.

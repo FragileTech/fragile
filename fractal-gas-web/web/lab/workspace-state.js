@@ -36,8 +36,10 @@ export class WorkspaceState extends EventTarget {
           after &&
           typeof before === "object" &&
           typeof after === "object" &&
-          !Array.isArray(before) &&
-          !Array.isArray(after)
+          ((!Array.isArray(before) && !Array.isArray(after)) ||
+            (Array.isArray(before) &&
+              Array.isArray(after) &&
+              before.length === after.length))
         )
           walk(before, after, path);
         else changes.push({ path, before, after });

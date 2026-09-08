@@ -621,7 +621,7 @@ O_L=\bar\psi P_L\psi,
 \qquad
 O_R=\bar\psi P_R\psi,
 \qquad
-O_{LR}=\bar\psi P_L\psi\ \text{on $L\!\to\!R$ pairs}.
+O_{LR}=\bar\psi P_L\psi\ \text{on }L\!\to\!R\text{ pairs}.
 $$
 
 Multiplication by the implemented scalar phases gives channels carrying the following historical labels:
@@ -1043,7 +1043,7 @@ $$
 
 $$
 O_{u1,d}(t) = \left\langle A_{d,i}\,e^{i\phi_i^{(U1)}(t)} \right\rangle_{\text{alive}},
-\\qquad A_{d,i}=\sqrt{w_{d,i}}.
+\qquad A_{d,i}=\sqrt{w_{d,i}}.
 $$
 
 **Sweep hypotheses to check:**

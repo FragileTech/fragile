@@ -1,5 +1,5 @@
 (sec-control-lab-task-mining)=
-# Collaborative mining: haul a heavy rock together
+# Collaborative mining: lift and haul a rock together
 
 :::{div} feynman-prose
 The two shipped rockets pull one rock toward a delivery base. They now fly
@@ -24,9 +24,10 @@ and learn what happens when cargo is delivered. For installation, begin with
 :::{div} feynman-prose
 Choose **Collaborative mining** under **Environment**, then press **↺** to reset.
 The scene contains two controlled rockets and **one** passive cargo rock. The
-rock has mass 24 kg and linear drag 0.8; each rocket has mass 1 kg and maximum
-thrust 16 N. One rocket can move the load slowly. Cooperation provides additional
-force; this is not a rule that makes solo transport mathematically impossible.
+rock has mass 0.24 kg and linear drag 0.8; each rocket has mass 1 kg and maximum
+thrust 16 N. One upright rocket has enough thrust to lift the rock on its own.
+Cooperation provides additional force, provided both rockets help support the
+connected load.
 
 The rockets start at `[19, 10]` and `[19, 15]`, flanking the rock at `[22, 12.5]`.
 The delivery base is the circular zone centered at `[12, 12]`, with radius 3 m.
@@ -46,8 +47,31 @@ overview. Use **Side / overhead** to switch between the side view and overhead
 inspection.
 :::
 
+:::{div} feynman-prose
+Moving the rock and lifting it are different jobs. In gravity mode, the supplied
+rock and two rockets weigh $(0.24 + 1 + 1)\times 9.81 \approx 21.97$ N, while
+their engines supply at most 32 N together. Pointing both engines upward leaves
+thrust available to accelerate the load. The engine supports lifting tethered
+cargo, and the default **Rock weight → 1×** now makes that physically possible.
+
+Open the rock settings and inspect the thrust-to-weight readout. **Use a lighter
+flight load** stages a suitable **Rock weight**, sized for the weakest rocket or
+drone to carry one rock on its own while reserving 20% of its maximum upward
+thrust. The setting rounds down to the weight slider's ticks. Press **Apply and
+restart** to use the staged value. The default 0.24 kg rock and one 1 kg rocket
+need about 12.16 N to hover, below the rocket's 16 N maximum. This solo calculation
+excludes a second attached rocket: one engine cannot support the full 21.97 N
+weight if its partner remains connected and unpowered.
+
+**Rock size** changes geometry independently of mass. Increasing hook stiffness
+reduces spring stretch; it does not add thrust. Point the thrust upward to lift:
+tilting spends some force sideways. Gravity wells, drag, tether angles, and the
+planner's actions still shape the journey, so sufficient thrust alone does not
+guarantee an autonomous delivery.
+:::
+
 :::{figure} ../../_static/control_lab/tutorials/mining-overview.png
-:alt: Side reset view of Collaborative mining showing two rockets, the heavy rock, delivery base, central obstacle, and gravity well.
+:alt: Side reset view of Collaborative mining showing two rockets, the cargo rock, delivery base, central obstacle, and gravity well.
 :class: feynman-added
 
 The reset scene has one cargo rock and two connections. Identify the delivery base before watching the planner's paths.
@@ -257,8 +281,8 @@ clock and thread selection separately.
 
 :::{div} feynman-prose
 If the rock barely moves, inspect the actual thrust direction, altitude, and
-whether both rockets are helping. A heavy load responds gradually, and each
-rocket must also counter downward gravity; increasing planner population does
+whether both rockets are helping. Each rocket must also counter downward
+gravity; increasing planner population does
 not increase engine strength. If a connection disappears, inspect
 for a delivery or force-induced break, then approach the active cargo within hook
 range. Advancing physics is necessary for reacquisition.

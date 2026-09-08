@@ -14,8 +14,9 @@ import bpy
 from mathutils import Matrix, Vector
 import numpy as np
 from vehicle_refinement import precision_panel_finish
-from world_machinery_refinement import refine_world_machinery
-from world_scenery_refinement import refine_world_scenery
+from world_machinery_refinement import machinery_polish_after_fit, refine_world_machinery
+from world_scenery_refinement import refine_world_scenery, scenery_polish_after_fit
+from world_surface_finish import finish_world_materials, finish_world_panels, pack_rgb
 
 
 SCRIPT = Path(__file__).with_name("build_lab_assets.py")
@@ -111,22 +112,34 @@ SIZES = {
 def stone_maps(style, n=1024):
     y, x = np.mgrid[0:n, 0:n] / n
     rng = np.random.default_rng(972)
-    # Straight cellular fractures and broad mineral planes reproduce the concept
-    # swatches. Quantized grain compresses well and avoids shimmering white noise.
+    # Broken mineral fractures and broad planes reproduce the concept swatches.
+    # Quantized grain compresses well and avoids shimmering white noise.
     noise = np.repeat(np.repeat(rng.integers(0, 8, (n // 4, n // 4)), 4, 0), 4, 1) / 7
-    distances = []
-    for px, py in rng.random((28, 2)):
-        dx = np.minimum(abs(x - px), 1 - abs(x - px))
-        dy = np.minimum(abs(y - py), 1 - abs(y - py))
-        distances.append(dx * dx + dy * dy)
-    cells = np.stack(distances)
-    nearest = np.partition(cells, 1, axis=0)[:2]
-    gap = np.sqrt(nearest[1]) - np.sqrt(nearest[0])
-    vein = np.exp(-gap * 340)
-    facet = rng.uniform(0.55, 1.35, 28)[np.argmin(cells, axis=0)]
+    # Periodic domain warping breaks the smooth cellular outlines into mineral
+    # fractures without a seam at the spherical UV join. Track two neighbors
+    # incrementally rather than allocating a full cells × pixels volume.
+    wx = (x + 0.023 * np.sin(TAU * y * 5) + 0.009 * np.sin(TAU * (x * 11 + y * 7))) % 1
+    wy = (y + 0.020 * np.sin(TAU * x * 4) + 0.008 * np.sin(TAU * (y * 13 - x * 3))) % 1
+    nearest = np.full_like(x, np.inf)
+    second = nearest.copy()
+    cell_id = np.zeros(x.shape, dtype=np.int32)
+    for index, (px, py) in enumerate(rng.random((48, 2))):
+        dx = np.minimum(abs(wx - px), 1 - abs(wx - px))
+        dy = np.minimum(abs(wy - py), 1 - abs(wy - py))
+        distance = dx * dx + dy * dy
+        closer = distance < nearest
+        second = np.where(closer, nearest, np.minimum(second, distance))
+        cell_id[closer] = index
+        nearest = np.minimum(nearest, distance)
+    gap = np.sqrt(second) - np.sqrt(nearest)
+    vein = np.exp(-gap * 440)
+    # Concentrated deposits leave stretches of unlit fracture and rough host rock.
+    deposits = 0.22 + 0.78 * np.clip(np.sin(TAU * (x * 3 + y * 2)) * 0.7 + 0.5, 0, 1)
+    vein *= deposits
+    facet = rng.uniform(0.62, 1.28, 48)[cell_id]
     base = np.array([0.13, 0.078, 0.033] if style == "steampunk" else [0.075, 0.062, 0.115])
     glow = np.array([1, 0.42, 0.045] if style == "steampunk" else [0.48, 0.12, 1])
-    grain = facet * (0.90 + noise * 0.16)
+    grain = facet * (0.87 + noise * 0.18)
     color = base * grain[..., None] + vein[..., None] * glow * 0.8
     height = facet * 0.015 - vein * 0.12
     dy, dx = np.gradient(height)
@@ -136,19 +149,13 @@ def stone_maps(style, n=1024):
     for key, data in [
         ("Base Color", color),
         ("Normal", normal * 0.5 + 0.5),
-        ("Roughness", np.repeat((0.48 + noise * 0.09)[..., None], 3, 2)),
+        ("Roughness", np.repeat((0.61 + noise * 0.10)[..., None], 3, 2)),
         ("Emission Color", vein[..., None] * glow),
     ]:
         image = bpy.data.images.new(f"{style} mineral {key}", width=n, height=n)
         if key not in {"Base Color", "Emission Color"}:
             image.colorspace_settings.name = "Non-Color"
-        image.pixels.foreach_set(
-            np
-            .concatenate([np.clip(data, 0, 1), np.ones((n, n, 1))], -1)
-            .astype(np.float32)
-            .ravel()
-        )
-        image.pack()
+        pack_rgb(image, data, steps=31 if key == "Roughness" else 255)
         maps[key] = image
     return maps
 
@@ -160,21 +167,20 @@ def road_maps(style, n=256):
     edge = np.minimum.reduce([x, y, 1 - x, 1 - y])
     seam = (edge < 0.014) | (abs(x - 0.5) < 0.004)
     border = (edge > 0.026) & (edge < 0.037)
-    grain = ((np.sin(x * 1508) + np.cos(y * 1234)) * 0.012)
+    grain = np.sin(y * 373) * 0.006
+    traffic = np.exp(-(((x - 0.24) / 0.11) ** 2)) + np.exp(-(((x - 0.76) / 0.11) ** 2))
     base = np.array([0.085, 0.070, 0.053] if style == "steampunk" else [0.060, 0.070, 0.082])
-    rgb = np.broadcast_to(base, (n, n, 3)).copy() * (1 + grain[..., None])
+    rgb = np.broadcast_to(base, (n, n, 3)).copy() * (1 + grain + traffic * 0.065)[..., None]
     rgb[seam] *= 0.32
     rgb[border] *= 1.7
-    rough = np.repeat((0.67 + grain)[..., None], 3, 2)
+    rough = np.repeat((0.69 + grain - traffic * 0.055)[..., None], 3, 2)
     height = seam * -0.045
     dy, dx = np.gradient(height)
     normals = np.stack([-dx * 4, -dy * 4, np.ones_like(x)], -1)
     normals /= np.linalg.norm(normals, axis=-1, keepdims=True)
     for key, data in [("Base Color", rgb), ("Roughness", rough), ("Normal", normals * 0.5 + 0.5)]:
         image = maps[key]
-        rgba = np.concatenate([data, np.ones((n, n, 1))], -1).astype(np.float32)
-        image.pixels.foreach_set(rgba.ravel())
-        image.pack()
+        pack_rgb(image, data, steps=63 if key == "Roughness" else 255)
     return maps
 
 
@@ -204,6 +210,7 @@ class WorldBuilder(lab.Builder):
         super().__init__(style, "world", low)
         precision_panel_finish(self)
         world_metal_finish(self)
+        finish_world_panels(self)
         self.pack = self.root
         self.roots = {}
         self.seg = 8 if low else 24
@@ -244,6 +251,7 @@ class WorldBuilder(lab.Builder):
             0.6,
         )
         self.mats["vapor"].node_tree.nodes["Principled BSDF"].inputs["Alpha"].default_value = 0.18
+        finish_world_materials(self)
 
     def assembly(self, name, pos=(0, 0, 0), parent=None, motion=None):
         return self.empty(name, pos, parent or self.root, motion)
@@ -1181,6 +1189,8 @@ class WorldBuilder(lab.Builder):
                 )
         self.root = self.pack
         lab.repair_vehicle_normals(self)
+        machinery_polish_after_fit(self)
+        scenery_polish_after_fit(self)
         bpy.context.view_layer.update()
         return self
 

@@ -23,11 +23,36 @@ spec.loader.exec_module(lab)
 class Refinery(lab.Builder):
     def __init__(self, style, low=False):
         super().__init__(style, "refinery", low)
-        self.triangle_budget = 3596 if low else 19736
+        self.triangle_budget = (
+            (3576 if self.steam else 2848) if low else (9812 if self.steam else 7228)
+        )
         self.seg = 6 if low else 16
         from vehicle_refinement import precision_panel_finish
 
         precision_panel_finish(self)
+        from vehicle_surface_finish import finish_vehicle_surfaces
+
+        finish_vehicle_surfaces(self)
+        # Refinery jackets are large and read as painted vessels rather than the
+        # vehicles' small recess panels; lift their existing packed albedo only.
+        import numpy as np
+
+        image = (
+            self
+            .mats["plate"]
+            .node_tree.nodes.get("Principled BSDF")
+            .inputs["Base Color"]
+            .links[0]
+            .from_node.image
+        )
+        pixels = np.empty(len(image.pixels), dtype=np.float32)
+        image.pixels.foreach_get(pixels)
+        rgba = pixels.reshape(-1, 4)
+        rgba[:, :3] = (
+            np.round(np.minimum(rgba[:, :3] * (1.60 if self.steam else 1.35), 1) * 255) / 255
+        )
+        image.pixels.foreach_set(rgba.ravel())
+        image.pack()
         if not self.steam:
             # Mineral cargo shares the process-light material: restrained emission
             # preserves purple facets instead of clipping the hopper to white.
@@ -98,8 +123,212 @@ class Refinery(lab.Builder):
                 self.box("Apron light", (x, y, 0.35), (0.17, 0.22, 0.05), "energy")
         self.refine()
         self.concept_forms()
+        self.polish_existing_forms()
         lab.repair_vehicle_normals(self)
+        self.architectural_forms()
         return self
+
+    def architectural_forms(self):
+        """Give existing evaluated shells distinct architectural roles at fixed cost."""
+        bpy.context.window.scene = self.scene
+        bpy.context.view_layer.update()
+        depsgraph = bpy.context.evaluated_depsgraph_get()
+        vessels = (
+            "Tank ",
+            "Processing tank",
+            "Transfer pipe",
+            "Pressure ",
+            "Ivory gauge",
+            "Dial index",
+            "Boiler amber",
+            "Boiler sight",
+            "Process cell",
+            "Process bus",
+            "Overhead tank",
+        )
+        annex = ("Inclined armored", "Sloped annex", "Annex front", "Console ")
+        intake = (
+            "Conveyor sloped",
+            "Sloped hopper",
+            "Hopper side",
+            "Hopper rear",
+            "Furnace mouth",
+            "Processor violet",
+        )
+        for obj in self.root.children_recursive:
+            name = obj.name
+            if obj.type != "MESH" or not name.startswith(vessels + annex + intake):
+                continue
+            # Deform the already-budgeted bevel result, rather than retessellating
+            # the bevel around a new profile. Roots, UVs and face counts stay fixed.
+            if obj.modifiers:
+                evaluated = obj.evaluated_get(depsgraph)
+                obj.data = bpy.data.meshes.new_from_object(
+                    evaluated, preserve_all_data_layers=True, depsgraph=depsgraph
+                )
+                obj.modifiers.clear()
+            matrix = obj.matrix_world.copy()
+            inverse = matrix.inverted()
+            for vertex in obj.data.vertices:
+                point = matrix @ vertex.co
+                if name.startswith(vessels):
+                    # Broad primary vessel and a lower secondary pressure stage.
+                    center = -0.4 if matrix.translation.x < 0.95 else 2.3
+                    right = 0.0 if center < 0 else 1.0
+                    bridge = (
+                        name.startswith(("Overhead tank", "Process bus"))
+                        and abs(matrix.translation.x - 0.95) < 0.20
+                    )
+                    if bridge:
+                        right = max(0.0, min(1.0, (point.x + 0.4) / 2.7))
+                    else:
+                        point.x = center + (point.x - center) * 1.07
+                    point.y = 8.2 + (point.y - 8.2) * 1.03
+                    point.z = 0.44 + (point.z - 0.44) * (1 - 0.10 * right)
+                elif name.startswith(annex):
+                    # A wider access housing: higher front brow and lower rear
+                    # roof, with the existing vents/ribs carried along its surface.
+                    point.x = 4.55 + (point.x - 4.65) * 1.08
+                    if point.y <= 8.45:
+                        t = max(0.0, min(1.0, (point.y - 6.48) / 1.97))
+                        roof = 1.65 + t * (3.02 - 1.65)
+                        delta = 0.44 * (1 - t)
+                    else:
+                        t = max(0.0, min(1.0, (point.y - 8.45) / 1.27))
+                        roof = 3.02 - t * 0.20
+                        delta = -0.36 * t
+                    fraction = max(0.0, min(1.0, (point.z - 0.44) / (roof - 0.44)))
+                    point.z += delta * fraction
+                elif name.startswith("Conveyor sloped"):
+                    # Lift the solid front infill into a suspended conveyor tray;
+                    # its authored side cheeks become the visible carrying feet.
+                    y = point.y
+                    if y <= 7.58:
+                        t = max(0.0, min(1.0, (y - 6.12) / 1.46))
+                        top, bottom = 1.48 + t * 0.87, 1.18 + t * 0.52
+                    else:
+                        t = max(0.0, min(1.0, (y - 7.58) / 2.30))
+                        top, bottom = 2.35 + t * 0.02, 1.70 - t * 1.26
+                    fraction = max(0.0, min(1.0, (point.z - 0.35) / (top - 0.35)))
+                    point.z = bottom + fraction * (top - bottom)
+                elif name.startswith("Sloped hopper"):
+                    # Separate the bright carrying frame from the dark belt tray.
+                    center = -5.42 if point.x < -3.8 else -2.18
+                    point.x = center + (point.x - center) * 1.18
+                elif name.startswith(("Hopper side", "Hopper rear")):
+                    lift = max(0.0, min(1.0, (point.z - 2.55) / 0.9))
+                    point.z += 0.20 * lift
+                    if name.startswith("Hopper rear"):
+                        point.y += 0.16 * lift
+                    else:
+                        point.x += (-0.09 if point.x < -3.8 else 0.09) * lift
+                elif name.startswith("Furnace mouth frame"):
+                    point.z = 1.42 + (point.z - 1.05) * 0.24
+                elif name.startswith("Furnace mouth recess"):
+                    point.y += 0.46
+                elif name.startswith("Processor violet"):
+                    point.z += 0.34
+                vertex.co = inverse @ point
+            if name.startswith("Sloped hopper"):
+                obj.data.materials[0] = self.mats["trim"]
+            elif name.startswith("Conveyor sloped"):
+                obj.data.materials[0] = self.mats["dark"]
+            elif name.startswith("Tank shoulder") and not self.steam:
+                obj.data.materials[0] = self.mats["trim"]
+            obj.data.update()
+
+    def polish_existing_forms(self):
+        """Reshape existing parts into supported machinery without new topology."""
+        cargo_index = 0
+        for obj in self.root.children_recursive:
+            name = obj.name
+            if obj.type != "MESH":
+                continue
+            if name.startswith("Tank shoulder"):
+                # Taller tapered pressure dome joins the existing crown boss.
+                for vertex in obj.data.vertices:
+                    vertex.co.z *= 1.35
+                    if vertex.co.z > 0:
+                        vertex.co.x *= 0.72
+                        vertex.co.y *= 0.72
+                obj.location.z = 3.69
+                obj.data.materials[0] = self.mats["plate"]
+            elif name.startswith("Tank crown boss"):
+                obj.scale = (1.34, 1.34, 1.18)
+                obj.location.z = 3.94
+                obj.data.materials[0] = self.mats["trim"]
+            elif name.startswith("Tank crown pressure cap"):
+                obj.scale = (1.25, 1.25, 1.18)
+                obj.location.z = 4.075
+            elif name.startswith("Tank base"):
+                # Flared pedestal rises directly into the bottom pressure collar.
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 0:
+                        vertex.co.x *= 0.85
+                        vertex.co.y *= 0.85
+                        vertex.co.z += 0.10
+            elif name.startswith("Tank service plinth"):
+                obj.location.y = 7.10
+                obj.scale.y = 1.85
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 0 and vertex.co.y > 0:
+                        vertex.co.z += 0.23
+                    elif vertex.co.z > 0:
+                        vertex.co.z -= 0.07
+                obj.data.materials[0] = self.mats["plate"]
+            elif name.startswith("Sloped hopper cheek"):
+                # Broad feet visibly carry the receiving pocket and conveyor.
+                for vertex in obj.data.vertices:
+                    if vertex.co.x < 6.7:
+                        vertex.co.y *= 1.30
+                        if vertex.co.z < 1.2:
+                            vertex.co.z = 0.44
+                obj.data.materials[0] = self.mats["dark"]
+            elif name.startswith("Conveyor cross cleat"):
+                obj.scale.x = 0.91
+                obj.data.materials[0] = self.mats["dark"]
+            elif name.startswith("Conveyor motor case"):
+                obj.scale.z = 1.6
+                obj.location.z = 0.96
+                obj.data.materials[0] = self.mats["plate"]
+            elif name.startswith(("Hopper coal", "Hopper violet crystal")):
+                # Seed-free deterministic scatter breaks the former regular rows.
+                j = cargo_index
+                cargo_index += 1
+                obj.location.x += 0.12 * math.sin(j * 2.7)
+                obj.location.y += 0.08 * math.cos(j * 1.9)
+                obj.rotation_euler = (0.19 * math.sin(j), 0.23 * math.cos(j * 1.6), j * 1.7)
+                obj.scale = (
+                    1 + 0.17 * math.sin(j * 0.7),
+                    1 + 0.14 * math.cos(j),
+                    0.82 + 0.19 * math.sin(j * 2.3),
+                )
+            elif name.startswith("Sloped annex vent recess") and obj.location.x < 4.65:
+                obj.data.materials[0] = self.mats["plate"]
+                obj.scale.x = 0.82
+            elif name.startswith("Sloped annex vent blade") and obj.location.x < 4.65:
+                # Reuse one louver bank as attached side armor stiffeners.
+                y = obj.location.y
+                obj.location = (5.84, y + 0.48, 1.23)
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 0:
+                        vertex.co.x -= 0.90
+                obj.rotation_euler = (0, 0, 0)
+                obj.scale = (0.14 / 0.65, 0.20 / 0.12, 1.28 / 0.035)
+                obj.data.materials[0] = self.mats["trim"]
+            elif name.startswith("Inclined armored control annex"):
+                # Widen the upper shoulder so roof panels are seated in armor.
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 1.60:
+                        vertex.co.y *= 1.20
+            elif name.startswith("Apron loading threshold"):
+                obj.data.materials[0] = self.mats["dark"]
+            elif name.startswith("Apron perimeter armored guard"):
+                # Lower sill with a stronger rear stop, outside the open apron.
+                for vertex in obj.data.vertices:
+                    if vertex.co.z > 0.2:
+                        vertex.co.z *= 0.85
+            obj.data.update()
 
     def concept_forms(self):
         """Recover large concept forms with geometry saved from hidden band detail."""
@@ -429,6 +658,14 @@ def build_refinery(style, render=True):
                 obj.data.size *= 5
         lab.frame_camera(builder.scene, (3, -4, 5))
     bpy.context.window.scene = high.scene
+    # Publish matching runtime/source artifacts before optional slow previews.
+    bpy.data.libraries.write(
+        str(lab.ROOT / "sources" / style / "refinery.blend"),
+        {high.scene, low.scene},
+        fake_user=True,
+        compress=True,
+    )
+    (lab.ROOT / style / "refinery-build.json").write_text(json.dumps(info, indent=2) + "\n")
     if render:
         for view, direction in [("hero", (3, -4, 5)), ("side", (1, 0, 0.15)), ("top", (0, 0, 1))]:
             lab.frame_camera(high.scene, direction)
@@ -437,16 +674,14 @@ def build_refinery(style, render=True):
             )
             bpy.ops.render.render(write_still=True)
     lab.frame_camera(high.scene, (3, -4, 5))
-    bpy.data.libraries.write(
-        str(lab.ROOT / "sources" / style / "refinery.blend"),
-        {high.scene, low.scene},
-        fake_user=True,
-        compress=True,
-    )
-    (lab.ROOT / style / "refinery-build.json").write_text(json.dumps(info, indent=2) + "\n")
     return info
 
 
 if __name__ == "__main__":
+    if not bpy.app.background:
+        message = "Run standalone refinery generation in background Blender"
+        raise RuntimeError(message)
     for style in ["steampunk", "futuristic"]:
+        # Each standalone source keeps the same native root names.
+        bpy.ops.wm.read_factory_settings(use_empty=True)
         print(build_refinery(style))

@@ -1,0 +1,234 @@
+{
+  "date": "2026-09-08T08:20:20.710445+00:00",
+  "scope": "Remove permanent harvester load from both styles and LODs so runtime native cargo provides an accurate empty-to-full display. Immediate on-disk exports are the baseline.",
+  "assets": {
+    "futuristic/harvester-high": {
+      "costs": {
+        "triangles": 28454,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2138856,
+        "texturePixels": 1310720
+      },
+      "baselineCosts": {
+        "triangles": 28838,
+        "primitives": 21,
+        "materials": 7,
+        "images": 5,
+        "bytes": 2162664,
+        "texturePixels": 1310720
+      },
+      "sha256": "e5a772102df3ff125895a589e7843a2102266dc7f34cab77c8afcc44be5b46e3",
+      "baselineSha256": "83380d4a45438061a60eaed2221110a449b05a235c70f5d43cb0f23343bc3703",
+      "rootPivotHierarchyMetadataMatch": true,
+      "changedMetadata": {},
+      "violations": []
+    },
+    "futuristic/harvester-low": {
+      "costs": {
+        "triangles": 3736,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 348748,
+        "texturePixels": 1064960
+      },
+      "baselineCosts": {
+        "triangles": 3774,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 351408,
+        "texturePixels": 1064960
+      },
+      "sha256": "d0515adc14386d372c8995e8618130da416011b0186f58dda1fd72f362d1cca9",
+      "baselineSha256": "e6197e762b59992f52f24a5c96ee5d42cfb5c936df3ffa5276fe8d65868039d3",
+      "rootPivotHierarchyMetadataMatch": true,
+      "changedMetadata": {},
+      "violations": []
+    },
+    "steampunk/harvester-high": {
+      "costs": {
+        "triangles": 32232,
+        "primitives": 22,
+        "materials": 8,
+        "images": 5,
+        "bytes": 2323200,
+        "texturePixels": 1310720
+      },
+      "baselineCosts": {
+        "triangles": 32680,
+        "primitives": 23,
+        "materials": 9,
+        "images": 5,
+        "bytes": 2352080,
+        "texturePixels": 1310720
+      },
+      "sha256": "3ea633b6bb395384803973bb7c370b2ac803de1216aa82f4a6badad4a20d33d0",
+      "baselineSha256": "04919bd86dabefd8c2018311f0c8e0efa68bc2d5c86aa3f5ae2ee05b5f327d67",
+      "rootPivotHierarchyMetadataMatch": true,
+      "changedMetadata": {},
+      "violations": []
+    },
+    "steampunk/harvester-low": {
+      "costs": {
+        "triangles": 3966,
+        "primitives": 20,
+        "materials": 7,
+        "images": 5,
+        "bytes": 340996,
+        "texturePixels": 1064960
+      },
+      "baselineCosts": {
+        "triangles": 4030,
+        "primitives": 21,
+        "materials": 8,
+        "images": 5,
+        "bytes": 347024,
+        "texturePixels": 1064960
+      },
+      "sha256": "e889e12ed92eae48527f5a1c6c1be225a1f46de5890286e73aeba9134b24fdb2",
+      "baselineSha256": "15086b716e431557e7f6966826bade78e2812720b694555f9e38fb1d36424c17",
+      "rootPivotHierarchyMetadataMatch": true,
+      "changedMetadata": {},
+      "violations": []
+    }
+  },
+  "sources": {
+    "futuristic": {
+      "sha256": "174ee4f58eed4311f8d0f8ca4b4a69410ac8b0a7c10b272f72e4939ee726c612",
+      "bytes": 952342
+    },
+    "steampunk": {
+      "sha256": "45c3c7ed51066a8f6b079753431b96c01aadb7462e70e02e3dc7d73cd69347c5",
+      "bytes": 999481
+    }
+  },
+  "violations": [],
+  "transformTolerance": 1e-06,
+  "totals": {
+    "costs": {
+      "triangles": 68388,
+      "primitives": 83,
+      "materials": 29,
+      "images": 20,
+      "bytes": 5151800,
+      "texturePixels": 4751360
+    },
+    "baselineCosts": {
+      "triangles": 69322,
+      "primitives": 85,
+      "materials": 31,
+      "images": 20,
+      "bytes": 5213176,
+      "texturePixels": 4751360
+    }
+  },
+  "passed": true,
+  "sourceInspections": {
+    "futuristic": {
+      "scenes": [
+        {
+          "scene": "Lab / futuristic / harvester / high",
+          "permanentCargo": [],
+          "bedCount": 1,
+          "intakePivots": 1
+        },
+        {
+          "scene": "Lab / futuristic / harvester / low",
+          "permanentCargo": [],
+          "bedCount": 1,
+          "intakePivots": 1
+        }
+      ]
+    },
+    "steampunk": {
+      "scenes": [
+        {
+          "scene": "Lab / steampunk / harvester / high",
+          "permanentCargo": [],
+          "bedCount": 1,
+          "intakePivots": 1
+        },
+        {
+          "scene": "Lab / steampunk / harvester / low",
+          "permanentCargo": [],
+          "bedCount": 1,
+          "intakePivots": 1
+        }
+      ]
+    }
+  },
+  "previews": {
+    "previews/futuristic/harvester-hero.png": {
+      "sha256": "f469d1a529f5fb09cec5725d8140a1e9e96dd027fd988099314c5586c412b9e0",
+      "bytes": 851449
+    },
+    "previews/futuristic/harvester-side.png": {
+      "sha256": "96c4f62049fc53ce5050565791e1d1c5e82e0b5bfabdb733a0b44fb9770bb0f6",
+      "bytes": 804890
+    },
+    "previews/futuristic/harvester-top.png": {
+      "sha256": "8b340d348a0407804c4c728f56f6fcd5a077c015923efcf3ea91385b90bd05de",
+      "bytes": 759167
+    },
+    "previews/futuristic/harvester-rear.png": {
+      "sha256": "57c0754515f5aa3165df969f8baf4e6007750bda6233fa2a2448630c7ba0eb11",
+      "bytes": 848440
+    },
+    "previews/steampunk/harvester-hero.png": {
+      "sha256": "a7cafa51961cc40ef1c36c47c289ef0c7ba726034914dac21b0eb2aad9429284",
+      "bytes": 900413
+    },
+    "previews/steampunk/harvester-side.png": {
+      "sha256": "599e7ef3c3d274f34e3b126122c36e163a202b52ff2b57575faea88b3401ee45",
+      "bytes": 887755
+    },
+    "previews/steampunk/harvester-top.png": {
+      "sha256": "49d5d107339ac9aa0d620aed4bb6cd7b1e3183471a3434a83d376c2ab10edae3",
+      "bytes": 830941
+    },
+    "previews/steampunk/harvester-rear.png": {
+      "sha256": "fb460f7ae3a6ec3716c8c10427d2e7a7dda10f410246ff6c74b4072de180f0eb",
+      "bytes": 901210
+    }
+  },
+  "tests": {
+    "control-assets.test.mjs": {
+      "passed": 19
+    },
+    "control-vehicle-mechanics.test.mjs": {
+      "passed": 8
+    },
+    "control-render-budgets.test.mjs": {
+      "passed": 24
+    }
+  },
+  "normalizedCargoBay": {
+    "futuristic": {
+      "bedCenter": [
+        -0.3,
+        0,
+        0.447
+      ],
+      "usableSpan": [
+        0.5,
+        0.39
+      ],
+      "rimZ": 0.669
+    },
+    "steampunk": {
+      "bedCenter": [
+        -0.372,
+        0,
+        0.4765
+      ],
+      "usableSpan": [
+        0.55,
+        0.42
+      ],
+      "rimZ": 0.714
+    }
+  }
+}

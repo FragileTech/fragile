@@ -8,9 +8,11 @@ export class ConfigurationTransition {
     this.busy = true;
     let candidate;
     try {
+      // Native initialization validates the complete candidate before the
+      // running session is paused or any device writes are requested.
+      candidate = await prepare();
       await quiesce();
       await save();
-      candidate = await prepare();
       await commit(candidate);
     } catch (error) {
       candidate?.worker?.terminate();

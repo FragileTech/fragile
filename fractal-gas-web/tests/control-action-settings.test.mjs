@@ -139,7 +139,7 @@ test("rock edits preserve later per-agent actuator multipliers", () => {
     rocket: { thrust: 10, torque: 10 },
   });
   assert.equal(boosted.bodies[0].actuator, undefined);
-  assert.equal(boosted.bodies[2].mass, 0.24);
+  assert.equal(boosted.bodies[2].mass, 0.0024);
   const engine = new NativeEngine(module, boosted);
   try {
     assert.deepEqual(

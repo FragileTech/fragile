@@ -114,6 +114,11 @@
             </span>
             <span class="rock-range-labels" aria-hidden="true"><span>100× lighter</span><span>10× heavier</span></span>
           </label>
+          <div id="rock-lift-controls" hidden>
+            <p id="rock-lift-budget" class="scenario-description" aria-live="polite"></p>
+            <button id="fit-rock-lift" type="button">Use a lighter flight load</button>
+            <p class="scenario-description">Point rockets upward to lift. The estimate assumes one rock and upward thrust from the towing fleet; rope angle, drag and gravity wells affect motion. The lighter load leaves 20% thrust spare for each solo rocket or drone. Apply and restart commits it.</p>
+          </div>
           <label class="field" id="rock-count-field">Rock count<input id="rock-count" type="number" min="1" max="20" step="1" value="5" required /></label>
           <label class="field" id="hook-stiffness-field" data-help="Spring constant shared by all tow hooks, in N/m. Low values stretch like a rubber band; high values approximate a fixed-length towline. A rope can still swing sideways. Zero removes spring tension but retains existing radial damping. Apply rock settings to restart with this value.">Hook stiffness (N/m)
             <input id="hook-stiffness-slider" aria-label="Hook stiffness slider" type="range" min="0" max="6" step="0.01" />

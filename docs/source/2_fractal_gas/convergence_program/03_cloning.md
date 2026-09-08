@@ -383,7 +383,7 @@ To prove that the synergistic dissipation between the cloning and kinetic stages
 
 We begin by formally defining the mathematical objects required for this decomposition.
 
-:::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
+::::{prf:definition} Barycentres and Centered Vectors (Alive Walkers Only)
 :label: def-barycentres-and-centered-vectors
 
 For each swarm ({prf:ref}`def-swarm-and-state-space`) $k \in \{1, 2\}$ (see {prf:ref}`def-single-swarm-space`) in a coupled state $(S_1, S_2)$, let $\mathcal{A}(S_k)$ denote the set of alive walker ({prf:ref}`def-walker`) indices and let $k_{\text{alive}} := |\mathcal{A}(S_k)|$ denote the number of alive walkers in swarm $k$. We define:
@@ -441,7 +441,7 @@ Dead walkers retain their last known position $(x_i, v_i)$ but have status $s_i 
 
 Referenced by {prf:ref}`def-full-synergistic-lyapunov-function` and {prf:ref}`def-structural-error-component`.
 :::
-:::
+::::
 
 ### 3.2. Permutation-Invariant Error Components
 
@@ -799,7 +799,7 @@ This proves the contrapositive statement. By logical equivalence, the original i
 
 With the permutation-invariant decomposition of the inter-swarm error established, we now define the full Lyapunov function. This **synergistic** function is constructed as a weighted sum of three distinct error components (see {prf:ref}`prop-lyapunov-necessity` for why this structure is mathematically necessary). It is designed to capture not only the distance *between* the swarms, but also the internal disorder *within* each swarm, which is the primary target of the cloning operator.
 
-:::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function
+::::{prf:definition} The Full Synergistic Hypocoercive Lyapunov Function
 :label: def-full-synergistic-lyapunov-function
 
 For any pair of swarm ({prf:ref}`def-swarm-and-state-space`) configurations $(S_1, S_2)$ with corresponding empirical measures $(\mu_1, \mu_2)$, the **total synergistic Lyapunov function** is defined as:
@@ -913,7 +913,7 @@ The separation between algorithmic calculations (using $k_{\text{alive}}$) and a
 
 Referenced by {prf:ref}`def-boundary-potential-cloning`.
 :::
-:::
+::::
 
 #### 3.3.1. Variance Notation Reference
 
@@ -1080,8 +1080,7 @@ $$
 
 This condition ensures that there exist constants $\lambda_1, \lambda_2 > 0$ such that:
 *   $V_{\text{loc}} \ge \lambda_1 (\|\Delta\mu_x\|^2 + \|\Delta\mu_v\|^2)$
-*   $V_{\text{struct}} \ge \lambda_2 \frac{1}{N}\sum_i (\|\Delta\delta_{x,i}\|^2 + \|\Delta\delta_{v,i}\|^2)$
-:::
+  *   $V_{\text{struct}} \ge \lambda_2 \frac{1}{N}\sum_i (\|\Delta\delta_{x,i}\|^2 + \|\Delta\delta_{v,i}\|^2)$
 :::{prf:proof}
 **Proof.**
 
@@ -1228,6 +1227,7 @@ Under the condition $b^2 < 4\lambda_v$, both $V_{\text{loc}}$ and $V_{\text{stru
 
 **Q.E.D.**
 :::
+::::
 
 (sec-cloning-assumptions)=
 ## 4. Foundational Assumptions and System Properties
@@ -2040,7 +2040,7 @@ V_{COM, c} := \frac{1}{M+1} \left( v_c + \sum_{j \in I_c} v_j \right)
 $$
 
     *   **b. Update Relative Velocities:** For each walker ({prf:ref}`def-walker`) `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
-        Let $\alpha_restitution \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
+        Let $\alpha_{\mathrm{restitution}} \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
 
 
 $$
@@ -2058,17 +2058,17 @@ $$
 
 3.  **Uninvolved Walkers:** Any walker ({prf:ref}`def-walker`) `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
 
-**Analysis of the Restitution Parameter $\alpha_restitution$:**
+**Analysis of the Restitution Parameter $\alpha_{\mathrm{restitution}}$:**
 
-This model introduces $\alpha_restitution$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.
+This model introduces $\alpha_{\mathrm{restitution}}$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.
 
-*   If **$\alpha_restitution = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\text{Var},v}$ as walkers' velocities are reset based on their companions.
+*   If **$\alpha_{\mathrm{restitution}} = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\text{Var},v}$ as walkers' velocities are reset based on their companions.
 
-*   If **$\alpha_restitution = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.
+*   If **$\alpha_{\mathrm{restitution}} = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.
 
-*   If **$\alpha_restitution \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_restitution^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
+*   If **$\alpha_{\mathrm{restitution}} \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_{\mathrm{restitution}}^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
 
-The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_restitution$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in {doc}`05_kinetic_contraction`.
+The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_{\mathrm{restitution}}$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in {doc}`05_kinetic_contraction`.
 :::
 
 #### 5.7.5. Bounded Velocity Variance Expansion from Cloning
@@ -2753,7 +2753,7 @@ With the clustering-based definition from Section 6.3 established, we can now pr
 :::{prf:lemma} N-Uniform Lower Bound on the Outlier-Cluster Fraction
 :label: lem-outlier-cluster-fraction-lower-bound
 
-Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_diam(\varepsilon) = c_d · \varepsilon$ where $c_d > 0$ is a fixed constant.
+Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_{\mathrm{diam}}(\varepsilon) = c_d \cdot \varepsilon$ where $c_d > 0$ is a fixed constant.
 
 For any choice of $c_d$ and variance threshold $R^2_{\text{var}}$ satisfying $c_d · \epsilon < 2\sqrt{R^2_{\text{var}}}$, there exists a positive constant $f_H(\epsilon) > 0$, independent of `N` and `k`, such that:
 
@@ -2798,7 +2798,7 @@ $$
 
 $$
 
-Let's define a new positive, N-uniform constant $R^{2}_means := R^{2}_var - (D_diam(\varepsilon)/2)^{2}$. The premise of this lemma requires that we choose $D_diam(\varepsilon)$ small enough to ensure `R^{2}_means > 0`. With this, we have a guaranteed lower bound on the size-weighted variance of the cluster means:
+Let's define a new positive, N-uniform constant $R_{\mathrm{means}}^{2} := R_{\mathrm{var}}^{2} - (D_{\mathrm{diam}}(\varepsilon)/2)^{2}$. The premise of this lemma requires that we choose $D_{\mathrm{diam}}(\varepsilon)$ small enough to ensure $R_{\mathrm{means}}^{2} > 0$. With this, we have a guaranteed lower bound on the size-weighted variance of the cluster means:
 
 $$
 \frac{1}{k}\sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > R^2_{\mathrm{means}} > 0
@@ -2822,7 +2822,7 @@ $$
 
 $$
 
-The term $\Sigma_{m\inO_M} |G_m|$ is, by definition, the total number of walkers in the high-error set, $|H_k(\varepsilon)|$. Combining the inequalities:
+The term $\sum_{m\in O_M} |G_m|$ is, by definition, the total number of walkers in the high-error set, $|H_k(\varepsilon)|$. Combining the inequalities:
 
 $$
 (1-\varepsilon_O) k \cdot R^2_{\mathrm{means}} < |H_k(\epsilon)| \cdot D_{\mathrm{valid}}^2
@@ -3441,20 +3441,20 @@ This section provides the formal proof that this condition, which we call the **
 
 Let the rescaled diversity values be defined as $d'_i = g_A(\gamma · z_{d,i}) + \eta$, where $\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`)** (see {prf:ref}`def-logistic-rescale` for the canonical choice).
 
-For any system in a high-error state (`Var(x) > R^{2}_var`) that generates a non-zero raw distance signal ($\kappa_meas(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
+For any system in a high-error state (`Var(x) > R^{2}_{\mathrm{var}}`) that generates a non-zero raw distance signal ($\kappa_{\mathrm{meas}}(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
 
 $$
 \kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')
 
 $$
 
-where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_var(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
+where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_{\mathrm{var}}(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
 :::
 :::{prf:proof}
 
 **Proof.**
 
-The proof strategy is to show that the guaranteed signal variance of the rescaled values, $\kappa_var(d')$, scales with $\gamma^{2}$ in the small-signal limit, while the maximum possible noise, `Var_max(d')`, remains a fixed constant independent of $\gamma$. This algebraic advantage allows $\gamma$ to be chosen to ensure the signal always dominates the noise.
+The proof strategy is to show that the guaranteed signal variance of the rescaled values, $\kappa_{\mathrm{var}}(d')$, scales with $\gamma^{2}$ in the small-signal limit, while the maximum possible noise, `Var_max(d')`, remains a fixed constant independent of $\gamma$. This algebraic advantage allows $\gamma$ to be chosen to ensure the signal always dominates the noise.
 
 **1. The Noise Term (`Var_max(d')`): A Fixed, $\gamma$-Independent Constant.**
 
@@ -3469,13 +3469,13 @@ $$
 
 This value is a constant determined solely by the choice of the rescale function `g_A`; it does not depend on the Signal Gain $\gamma$. For the **Canonical Logistic Rescale function**, `g_A(z) = 2/(1+e^{-z})`, the range is `(0, 2)`, yielding a fixed maximum noise of `Var_max(d') = 1`.
 
-Our goal is to prove that we can choose $\gamma$ such that the guaranteed signal variance $\kappa_var(d')$ is greater than this fixed constant.
+Our goal is to prove that we can choose $\gamma$ such that the guaranteed signal variance $\kappa_{\mathrm{var}}(d')$ is greater than this fixed constant.
 
-**2. The Signal Term ($\kappa_var(d')$): Amplification by $\gamma$.**
+**2. The Signal Term ($\kappa_{\mathrm{var}}(d')$): Amplification by $\gamma$.**
 
 The signal originates from the raw distance measurements `d`, propagates to the standardized scores `z_d`, and is then amplified.
 
-*   **Raw and Standardized Signal:** From {prf:ref}`thm-geometry-guarantees-variance`, a high-error state guarantees $\text{Var}(d) \geq \kappa_meas(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_max$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
+*   **Raw and Standardized Signal:** From {prf:ref}`thm-geometry-guarantees-variance`, a high-error state guarantees $\text{Var}(d) \geq \kappa_{\mathrm{meas}}(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_{\max}$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
 
 
 $$
@@ -3483,9 +3483,9 @@ $$
 
 $$
 
-*   **Signal Amplification:** The input to the rescale function is $u_i = \gammaz_{d,i}$. The variance of this amplified signal is $\text{Var}(u) = \gamma^{2}\text{Var}(z_d) \geq \gamma^{2}\kappa_var(z)$.
+*   **Signal Amplification:** The input to the rescale function is $u_i = \gamma z_{d,i}$. The variance of this amplified signal is $\text{Var}(u) = \gamma^{2}\text{Var}(z_d) \geq \gamma^{2}\kappa_{\mathrm{var}}(z)$.
 
-*   **Rescaled Signal ($\kappa_var(d')$):** The rescaled values are $d' = g_A(u) + \eta$. For any differentiable function, a first-order Taylor expansion around the mean $\mu_u$ gives $g_A(u_i) \approx g_A(\mu_u) + g'_A(\mu_u)(u_i - \mu_u)$. The variance is then approximated by:
+*   **Rescaled Signal ($\kappa_{\mathrm{var}}(d')$):** The rescaled values are $d' = g_A(u) + \eta$. For any differentiable function, a first-order Taylor expansion around the mean $\mu_u$ gives $g_A(u_i) \approx g_A(\mu_u) + g'_A(\mu_u)(u_i - \mu_u)$. The variance is then approximated by:
 
 
 $$
@@ -3511,7 +3511,7 @@ $$
 
 **3. Proving Satisfiability.**
 
-The Signal-to-Noise Condition is $\kappa_var(d') > Var_max(d')$. Substituting our results from the steps above:
+The Signal-to-Noise Condition is $\kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')$. Substituting our results from the steps above:
 
 $$
 (g'_{\min})^2 \cdot \gamma^2 \kappa_{\mathrm{var}}(z) > \frac{1}{4}(g_{A,\max} - g_{A,\min})^2
@@ -3525,7 +3525,7 @@ $$
 
 $$
 
-Since $\kappa_var(z)$ is a fixed positive constant for a given $\varepsilon$, and `g_A`'s properties (`g_{A,max}`, `g_{A,min}`, `g'_{min}`) are fixed, the right-hand side is a fixed, positive real number. This proves that there always exists a sufficiently large choice of $\gamma$ that satisfies the condition.
+Since $\kappa_{\mathrm{var}}(z)$ is a fixed positive constant for a given $\varepsilon$, and `g_A`'s properties (`g_{A,max}`, `g_{A,min}`, `g'_{min}`) are fixed, the right-hand side is a fixed, positive real number. This proves that there always exists a sufficiently large choice of $\gamma$ that satisfies the condition.
 
 **Conclusion:** The Signal-to-Noise Condition is not a restrictive assumption on the environment but is a design criterion that can always be satisfied by appropriately tuning the algorithm's sensitivity $\gamma$. This holds for any valid rescale function, including the Canonical choice.
 
@@ -3538,14 +3538,14 @@ The introduction of the $\gamma$ parameter is a crucial step in ensuring the mat
 
 *   $\gamma$ acts as a tuning knob that determines how strongly the system reacts to the standardized signals it measures. A low $\gamma$ will map a wide range of Z-scores to a narrow band of rescaled values, making the system very stable but potentially slow to adapt. A high $\gamma$ will amplify small differences in Z-scores, making the system highly responsive.
 
-*   This proposition proves that for the system's "intelligence" to be guaranteed (i.e., for the proofs in the subsequent sections to hold), $\gamma$ must be chosen to be above a certain threshold. This threshold depends on the intrinsic signal strength of the problem ($\kappa_meas$) and the properties of the chosen rescale function.
+*   This proposition proves that for the system's "intelligence" to be guaranteed (i.e., for the proofs in the subsequent sections to hold), $\gamma$ must be chosen to be above a certain threshold. This threshold depends on the intrinsic signal strength of the problem ($\kappa_{\mathrm{meas}}$) and the properties of the chosen rescale function.
 
 *   Therefore, the requirement for a sufficiently large $\gamma$ should be considered a foundational property for any well-posed Fragile Gas instantiation. It is recommended to add $\gamma$ to the list of **Algorithmic Dynamics Axioms (Section 4)**, with the condition $\gamma > 0$, noting that its value must be chosen large enough to satisfy the inequality derived herein.
 :::
 
 ### 7.3. Signal Propagation Through the Pipeline
 
-The preceding theorem ({prf:ref}`thm-geometry-guarantees-variance`) established that a swarm in a high-error state, possessing the geometric structure proven in Section 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\text{E}[\text{Var}(d)] \geq \kappa_meas(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Section 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
+The preceding theorem ({prf:ref}`thm-geometry-guarantees-variance`) established that a swarm in a high-error state, possessing the geometric structure proven in Section 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\mathbb{E}[\operatorname{Var}(d)] \geq \kappa_{\mathrm{meas}}(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Section 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
 
 The proof will follow the signal's journey in two stages:
 1.  First, we prove that a guaranteed variance in any set of raw values implies the existence of a guaranteed *gap* between at least two of those values.
@@ -3670,14 +3670,14 @@ With the uniform bounds on the pipeline's components now established, we can pro
 :::{prf:lemma} From Raw Measurement Gap to Rescaled Value Gap
 :label: lem-raw-gap-to-rescaled-gap
 
-Let the system parameters be fixed. There exists a function $\kappa_rescaled(\kappa_raw)$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_raw > 0$, then the corresponding rescaled values are guaranteed to have a gap:
+Let the system parameters be fixed. There exists a function $\kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}})$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_{\mathrm{raw}} > 0$, then the corresponding rescaled values are guaranteed to have a gap:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) > 0
 
 $$
 
-The function $\kappa_rescaled$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
+The function $\kappa_{\mathrm{rescaled}}$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
 
 $$
 \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) := \frac{g'_{\min}}{\sigma'_{\max}} \cdot \kappa_{\mathrm{raw}}
@@ -3699,7 +3699,7 @@ $$
 
 $$
 
-We are given the premise that the numerator is bounded below by $\kappa_raw$. The denominator $\sigma'$ is the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) of the full set of `k` raw values. By Definition {prf:ref}`def-max-patched-std`, $\sigma'$ is uniformly bounded above by the state-independent constant $\sigma'_max$. Combining these gives a uniform lower bound on the z-score gap:
+We are given the premise that the numerator is bounded below by $\kappa_{\mathrm{raw}}$. The denominator $\sigma'$ is the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) of the full set of `k` raw values. By Definition {prf:ref}`def-max-patched-std`, $\sigma'$ is uniformly bounded above by the state-independent constant $\sigma'_{\max}$. Combining these gives a uniform lower bound on the z-score gap:
 
 $$
 |z_a - z_b| \ge \frac{\kappa_{\mathrm{raw}}}{\sigma'_{\max}} =: \kappa_z > 0

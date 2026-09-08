@@ -734,6 +734,121 @@ def effects(b, kind):
             )
 
 
+def scenery_profiles(b, kind):
+    """Resculpt existing silhouettes, retaining each mesh's exact local bounds.
+
+    The world builder computes normalization from bounds. Anchoring all three
+    extrema keeps native envelopes and motion pivots independent of this finish.
+    No extra mesh, vertex, material slot or modifier is introduced here.
+    """
+    roof_names = (
+        "Cantilever alloy roof",
+        "Directional lamp armored head",
+        "Gantry bolted capital",
+        "Signal service backplane",
+        "Segmented alloy impact shoulder",
+        "Column armor corner pilaster",
+        "Magnetic hoist gripper",
+        "Lamp fluted foot",
+        "Column machined perimeter collar",
+        "Pressure column brass collar",
+        "Rail post domed cap",
+    )
+    panel_names = (
+        "Armored rail wedge",
+        "Burgundy rail panel",
+        "Alloy rail cap",
+        "Gantry column reinforcement",
+        "Recessed impact absorber",
+        "Service equipment cabinet",
+        "Riveted boiler room",
+        "Tether tapered pedestal",
+        "Latch chamber end cage",
+        "Latch glass pressure chamber",
+        "Sign frame horizontal surround",
+        "Direction board",
+    )
+    fleck_names = (
+        "Pickup radiant splinter",
+        "Field flow glint",
+        "Drifting steam eddy",
+        "Plume shock diamond",
+        "Steam billow",
+    )
+    for obj in list(b.root.children_recursive):
+        if obj.type != "MESH" or not obj.data.vertices:
+            continue
+        name = obj.name
+        if (
+            b.steam
+            and not b.low
+            and kind == "direction-board"
+            and name.startswith(("Direction board", "Sign frame horizontal surround"))
+        ):
+            # Their bevels and generated face fasteners define the high-LOD
+            # envelope in X; preserve those boundaries and native fitting scale.
+            continue
+        mode = None
+        if name.startswith(roof_names):
+            mode = "shoulder"
+        elif name.startswith(panel_names):
+            mode = "frame"
+        elif name.startswith("Inset alternating kerb slab"):
+            mode = "kerb"
+        elif name.startswith(("Energy ribbon", "Steam wisp")):
+            mode = "ribbon"
+        elif name.startswith(fleck_names):
+            mode = "fleck"
+        elif kind in {"deposit", "rock-obstacle"} and name.startswith((
+            "Fractured mineral stone",
+            "Broken outcrop scree",
+            "Crystal",
+        )):
+            mode = "mineral"
+        elif name.startswith(("Articulated forged capture jaw", "Vaulted burgundy pit shelter")):
+            mode = "fold"
+        if mode is None:
+            continue
+        vertices = obj.data.vertices
+        lo = [min(v.co[i] for v in vertices) for i in range(3)]
+        hi = [max(v.co[i] for v in vertices) for i in range(3)]
+        span = [max(hi[i] - lo[i], 1e-8) for i in range(3)]
+        center = [(a + z) / 2 for a, z in zip(lo, hi)]
+        for vertex in vertices:
+            v = vertex.co
+            x, y, z = [(v[i] - lo[i]) / span[i] for i in range(3)]
+            if mode == "shoulder":
+                # Narrow upper armor exposes a strong sloped shoulder highlight.
+                v.x = center[0] + (v.x - center[0]) * (1 - 0.20 * z)
+                v.y = center[1] + (v.y - center[1]) * (1 - 0.16 * z)
+            elif mode == "frame":
+                # Recess the lower face so broad structures gain a planted lip.
+                v.y = center[1] + (v.y - center[1]) * (0.80 + 0.20 * z)
+                v.x = center[0] + (v.x - center[0]) * (0.94 + 0.06 * z)
+            elif mode == "kerb":
+                v.y = center[1] + (v.y - center[1]) * (1 - 0.24 * z)
+            elif mode == "ribbon":
+                # Pinching intermediate ribbon edges breaks the uniform tape look.
+                v.y += span[1] * 0.06 * math.sin(x * math.pi * 4) * y * (1 - y)
+            elif mode == "fleck":
+                v.x -= span[0] * 0.22 * (1 - abs(2 * x - 1))
+            elif mode == "mineral":
+                v.x += span[0] * 0.18 * x * (1 - x) * (2 * z - 1)
+                v.y -= span[1] * 0.14 * y * (1 - y) * (2 * x - 1)
+            elif mode == "fold":
+                v.z += span[2] * 0.10 * z * (1 - z) * (2 * y - 1)
+        # Retain authored bounds even when a tilted or irregular face held an
+        # extremum. The transform stays inside the preceding geometry envelope.
+        for axis in range(3):
+            new_lo = min(v.co[axis] for v in vertices)
+            new_hi = max(v.co[axis] for v in vertices)
+            if new_hi - new_lo > 1e-8:
+                factor = (hi[axis] - lo[axis]) / (new_hi - new_lo)
+                for vertex in vertices:
+                    vertex.co[axis] = lo[axis] + (vertex.co[axis] - new_lo) * factor
+        obj.data.update()
+
+
 def refine_world_scenery(b, kind):
     """Refine an unnormalized asset root; return whether the ID was handled."""
     if kind not in COVERED_ASSETS:
@@ -761,5 +876,156 @@ def refine_world_scenery(b, kind):
         fittings(b, kind)
     else:
         effects(b, kind)
+    scenery_profiles(b, kind)
     b.root["sceneryRefinement"] = "concept-assemblies-v3"
     return True
+
+
+def scenery_polish_after_fit(b):
+    """Finish fixed scenery after fitting, without changing its runtime contract.
+
+    Bake only modifiers already evaluated by export, then retain their polygon
+    topology and local bounds. Frame details created earlier stay attached, and
+    no normalization, motion transform, socket or material batch is introduced.
+    """
+    bpy.context.window.scene = b.scene
+    bpy.context.view_layer.update()
+    deps = bpy.context.evaluated_depsgraph_get()
+    changed = []
+    roofs = (
+        "Cantilever alloy roof",
+        "Vaulted burgundy pit shelter",
+        "Pit roof brass rib",
+        "Directional lamp armored head",
+        "Lantern bell roof",
+        "Gantry bolted capital",
+        "Signal eyebrow visor",
+        "Alloy rail cap",
+        "Sign frame horizontal surround",
+    )
+    panels = (
+        "Burgundy rail panel",
+        "Armored rail wedge",
+        "Segmented alloy impact shoulder",
+        "Rail post",
+        "Column armor corner pilaster",
+        "Tether tapered pedestal",
+        "Service equipment cabinet",
+        "Riveted boiler room",
+        "Direction board",
+        "Start signal housing",
+        "Latch chamber end cage",
+        "Post stepped alloy foot",
+    )
+    collars = (
+        "Tether swivel bearing",
+        "Tether keyed spindle",
+        "Tether mechanical coupling",
+        "Latch brass pipe ferrule",
+        "Latch cable gland",
+        "Pressure column brass collar",
+        "Forged post shoulder",
+        "Column machined perimeter collar",
+        "Lamp fluted foot",
+    )
+    for kind, root in b.roots.items():
+        if kind not in COVERED_ASSETS:
+            continue
+        meshes = [o for o in root.children_recursive if o.type == "MESH"]
+        parent_materials = {}
+        for obj in meshes:
+            parent_materials.setdefault(obj.parent, set()).update(obj.data.materials)
+        for obj in meshes:
+            name = obj.name
+            mode = (
+                "roof"
+                if name.startswith(roofs)
+                else "panel"
+                if name.startswith(panels)
+                else "collar"
+                if name.startswith(collars)
+                else "jaw"
+                if name.startswith("Articulated forged capture jaw")
+                else "kerb"
+                if name.startswith((
+                    "Inset alternating kerb slab",
+                    "Alternating curved kerb block",
+                ))
+                else "ribbon"
+                if name.startswith(("Energy ribbon", "Steam wisp"))
+                else None
+            )
+            if mode is None:
+                continue
+            # Export already evaluates these bevels. Baking freezes their cost
+            # before a shape change can affect bevel clamps or tessellation.
+            if obj.modifiers:
+                mesh = bpy.data.meshes.new_from_object(
+                    obj.evaluated_get(deps), preserve_all_data_layers=True, depsgraph=deps
+                )
+                obj.modifiers.clear()
+                obj.data = mesh
+            elif obj.data.users > 1:
+                obj.data = obj.data.copy()
+            mesh = obj.data
+            # Keep evaluated polygons intact: splitting a flat-shaded quad here
+            # gives its deformed triangles different normals and duplicates
+            # exported vertices. Export triangulates each polygon at the same
+            # n-2 triangle cost while sharing the polygon normal.
+            vertices = mesh.vertices
+            lo = [min(v.co[i] for v in vertices) for i in range(3)]
+            hi = [max(v.co[i] for v in vertices) for i in range(3)]
+            span = [max(hi[i] - lo[i], 1e-9) for i in range(3)]
+            center = [(a + z) / 2 for a, z in zip(lo, hi)]
+            if mode == "ribbon":
+                # Paired ribbon vertices share a spine; taper only its outer
+                # edge, leaving flow trajectories and the near-nozzle join fixed.
+                pairs = len(vertices) // 2
+                for j in range(pairs):
+                    spine = vertices[2 * j].co.copy()
+                    edge = vertices[2 * j + 1].co
+                    t = j / max(1, pairs - 1)
+                    width = 0.22 + 0.78 * math.sin(math.pi * t) ** 0.65
+                    width *= 0.82 + 0.18 * math.cos(t * math.pi * 5) ** 2
+                    edge[:] = spine + (edge - spine) * width
+            else:
+                for vertex in vertices:
+                    v = vertex.co
+                    x, y, z = [(v[i] - lo[i]) / span[i] for i in range(3)]
+                    if mode == "roof":
+                        # Broad lower eaves support a narrower raised crown.
+                        crown = max(0, (z - 0.24) / 0.76)
+                        v.x = center[0] + (v.x - center[0]) * (1 - 0.18 * crown)
+                        v.y = center[1] + (v.y - center[1]) * (1 - 0.26 * crown)
+                    elif mode == "panel":
+                        axis = 0 if kind in {"direction-board", "start-light"} else 1
+                        v[axis] = center[axis] + (v[axis] - center[axis]) * (0.62 + 0.38 * z)
+                    elif mode == "collar":
+                        # Keep each ferrule's mating end broad and its opposite
+                        # face smaller, revealing a readable machined shoulder.
+                        v.x = center[0] + (v.x - center[0]) * (1 - 0.20 * z)
+                        v.y = center[1] + (v.y - center[1]) * (1 - 0.20 * z)
+                    elif mode == "jaw":
+                        v.y = center[1] + (v.y - center[1]) * (0.76 + 0.24 * x)
+                        v.x += span[0] * 0.10 * x * (1 - x) * (2 * y - 1)
+                    elif mode == "kerb":
+                        v.y = center[1] + (v.y - center[1]) * (1 - 0.28 * z)
+            for axis in range(3):
+                lower = min(v.co[axis] for v in vertices)
+                upper = max(v.co[axis] for v in vertices)
+                if upper - lower > 1e-9:
+                    factor = (hi[axis] - lo[axis]) / (upper - lower)
+                    for vertex in vertices:
+                        vertex.co[axis] = lo[axis] + (vertex.co[axis] - lower) * factor
+            # These are complete, pre-existing batches, never additional slots.
+            target = None
+            if name.startswith(("Latch chamber end cage", "Tether keyed spindle")):
+                target = b.mats["dark"]
+            elif not b.steam and name.startswith(("Rail post", "Column armor corner pilaster")):
+                target = b.mats["trim"]
+            if target is not None and target in parent_materials[obj.parent]:
+                mesh.materials[0] = target
+            mesh.update()
+            changed.append((kind, obj.name))
+    bpy.context.view_layer.update()
+    return changed

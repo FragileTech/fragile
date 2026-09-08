@@ -78,8 +78,8 @@ export function harvesterModel(color = 0xb88a43) {
     truck.add(box([0.15, 0.14, 0.045], [-0.84, side * 0.4, 0.29], brass));
   }
 
-  // Open hopper with sloped walls and raised rim; no decorative ore implies
-  // inventory that the current collection task does not actually simulate.
+  // Open hopper with sloped walls and raised rim. The runtime cargo layer
+  // fills it from the native carried amount, so an empty vehicle stays empty.
   truck.add(box([0.8, 0.54, 0.05], [-0.28, 0, 0.46], iron));
   for (const side of [-1, 1]) {
     const wall = box([0.92, 0.045, 0.31], [-0.28, side * 0.34, 0.64], enamel);

@@ -12,11 +12,11 @@
   "high": {
     "sourceTriangles": 7228,
     "drawMeshes": 6,
-    "bytes": 1248112
+    "bytes": 556256
   },
   "low": {
     "sourceTriangles": 2848,
     "drawMeshes": 6,
-    "bytes": 945456
+    "bytes": 253996
   }
 }

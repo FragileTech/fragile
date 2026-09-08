@@ -65,7 +65,11 @@ export function mountWorkspace() {
   controls.append(...Object.values(panels));
   const physics = element("details", "", "<summary>World physics</summary>");
   physics.id = "world-physics";
-  physics.append($("flight-controls"), $("rock-controls"), $("problem-settings"));
+  physics.append(
+    $("flight-controls"),
+    $("rock-controls"),
+    $("problem-settings"),
+  );
   panels.setup.append(physics);
   for (const details of controls.querySelectorAll("details")) {
     const key =
@@ -98,6 +102,14 @@ export function mountWorkspace() {
   );
   inspector.id = "selection-inspector";
   document.querySelector("main").append(inspector);
+  $("selected-body").after($("drive-controls"));
+  for (const id of ["technical-diagnostics", "decision-inspector"]) {
+    const details = $(id);
+    details.open = readPreference(`expanded.${id}`, false);
+    details.addEventListener("toggle", () =>
+      savePreference(`expanded.${id}`, details.open),
+    );
+  }
   const metrics = document.querySelector(".telemetry");
   for (const child of [...metrics.children])
     if (
@@ -110,7 +122,8 @@ export function mountWorkspace() {
   $("used").previousElementSibling.textContent = "Planning progress";
   $("score").previousElementSibling.textContent = "Task progress";
   $("time").previousElementSibling.textContent = "Simulation";
-  document.querySelector(".legend").innerHTML = '<span><i class="green"></i>High reward</span><span><i class="rose"></i>Terminal</span><span><i class="violet"></i>Tethered / alternative</span>';
+  document.querySelector(".legend").innerHTML =
+    '<span><i class="green"></i>High reward</span><span><i class="rose"></i>Terminal</span><span><i class="violet"></i>Tethered / alternative</span>';
   const dock = element(
     "section",
     "timeline-dock",
@@ -258,11 +271,14 @@ export function mountWorkspace() {
   return {
     async tasks(entries, choose) {
       const watch = {
-        harvest: "Watch the rocket attach to a rock and tow it to the refinery.",
+        harvest:
+          "Watch the rocket attach to a rock and tow it to the refinery.",
         ants: "Watch harvesters collect drops, fill their tanks, and return to unload.",
-        tandem: "Watch two vehicles coordinate their movement through the gates.",
-        mining: "Watch vehicles cooperate to haul a heavy rock.",
-        rocket: "Watch the planner explore alternative routes through the arena.",
+        tandem:
+          "Watch two vehicles coordinate their movement through the gates.",
+        mining: "Watch vehicles cooperate to haul a rock.",
+        rocket:
+          "Watch the planner explore alternative routes through the arena.",
         racing: "Watch the kart steer through checkpoints and complete a lap.",
       };
       for (const entry of entries) {
@@ -272,13 +288,16 @@ export function mountWorkspace() {
         const button = element("button", "task-card");
         const title = document.createElement("strong");
         title.textContent = entry.label;
+        const objective = document.createElement("span");
+        objective.textContent = scene.description || scene.name;
         const description = document.createElement("span");
         description.textContent =
-          watch[entry.id] || scene.description ||
+          watch[entry.id] ||
+          scene.description ||
           "Explore this world and inspect the controller’s decisions.";
         const detail = document.createElement("small");
-        detail.textContent = `${scene.bodies?.filter((b) => b.controlled || b.agent_type).length || scene.bodies?.length || 1} vehicles · Default FMC configuration`;
-        button.append(title, description, detail);
+        detail.textContent = `${scene.bodies?.filter((b) => b.controlled || b.agent_type).length || scene.bodies?.length || 1} vehicles · FMC · 128 candidates · 32-action lookahead`;
+        button.append(title, objective, description, detail);
         button.onclick = async () => {
           savePreference("onboarded", true);
           chooser.close();

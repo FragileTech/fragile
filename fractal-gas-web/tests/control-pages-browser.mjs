@@ -62,7 +62,9 @@ try {
         Object.defineProperty(navigator, "serviceWorker", { value: undefined });
       });
     }
-    await context.addInitScript(() => localStorage.setItem("lab.workspace.onboarded", "true"));
+    await context.addInitScript(() =>
+      localStorage.setItem("lab.workspace.onboarded", "true"),
+    );
     const page = await context.newPage();
     const messages = [];
     page.on("console", (m) => messages.push(m.text()));
@@ -225,7 +227,7 @@ async function checkAntsControls(page) {
     );
   assert.equal(await page.locator("#ants-controls").isVisible(), true);
   await page.locator("#scenario").selectOption("ants");
-      await applyDraft(page);
+  await applyDraft(page);
   await ready(5, "harvesters");
   console.log("Ants & Drops: default fleet loaded");
   assert.equal(await page.locator("#ants-controls").isVisible(), true);
@@ -259,7 +261,7 @@ async function checkAntsControls(page) {
   await applyDraft(page);
   await ready(1, "harvester");
   await page.locator("#ants-vehicle-type").selectOption("drone");
-      await applyDraft(page);
+  await applyDraft(page);
   console.log("Ants & Drops: loading one drone");
   await ready(1, "drone");
   await count.fill("3");
@@ -300,14 +302,14 @@ async function checkAntsControls(page) {
   assert.equal(scene.respawn_seconds, 3);
   await page.locator("#files-dialog .dialog-close").click();
   await page.locator("#scenario").selectOption("racing");
-      await applyDraft(page);
+  await applyDraft(page);
   await page.waitForFunction(
     () =>
       !document.getElementById("run").disabled &&
       document.getElementById("ants-vehicle-type").value === "kart",
   );
   await page.locator("#scenario").selectOption("ants");
-      await applyDraft(page);
+  await applyDraft(page);
   await ready(3, "drones");
   // Import a saved fleet with edited initial conditions; do not regenerate it.
   scene.bodies[0].position = [10, 10];
@@ -392,6 +394,10 @@ async function applyDraft(page) {
   await page.waitForFunction(() => !document.body.dataset.loadingPreset);
   if (await page.locator("#pending-settings").isVisible()) {
     await page.locator("#apply-configuration").click();
-    await page.waitForFunction(() => !document.querySelector("main").inert && document.querySelector("#pending-settings").hidden);
+    await page.waitForFunction(
+      () =>
+        !document.querySelector("main").inert &&
+        document.querySelector("#pending-settings").hidden,
+    );
   }
 }

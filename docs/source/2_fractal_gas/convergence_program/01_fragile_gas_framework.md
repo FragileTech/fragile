@@ -119,7 +119,7 @@ where:
 2.  $s \in \{0, 1\}$ is the walker ({prf:ref}`def-walker`)'s **survival status**. A status of $s=1$ indicates the walker is **alive**, while $s=0$ indicates it is **dead**.
 :::
 
-::: {note} Framework Abstraction
+:::{note} Framework Abstraction
 This minimal definition isolates the position and status components required by every fragile-gas instantiation. Specific models may enrich the walker ({prf:ref}`def-walker`) state with additional continuous variables—for example, the Euclidean Gas augments the representation to $(x, v, s)$. The status-dependent arguments below apply unchanged to such extensions.
 :::
 
@@ -369,7 +369,7 @@ The N-Particle Displacement function $d_{\text{Disp},\mathcal{Y}}$ is a pseudome
 The parameter $\lambda_{\text{status}}$ is like a "conversion rate" between physical movement and life/death changes. A high $\lambda_{\text{status}}$ means that a walker dying or coming alive is considered much more significant than a walker simply moving. This reflects the reality that life/death transitions are often more impactful than gradual position changes.
 :::
 
-:::{prf:definition} N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
+::::{prf:definition} N-Particle Displacement Pseudometric ($d_{\text{Disp},\mathcal{Y}}$)
 :label: def-n-particle-displacement-metric
 
 For any two swarms, $\mathcal{S}_1$ and $\mathcal{S}_2$, define the (pseudo)metric by
@@ -401,6 +401,7 @@ This formula has two parts:
 
 The $\frac{1}{N}$ factors normalize by swarm ({prf:ref}`def-swarm-and-state-space`) size, so larger swarms don't automatically have larger distances.
 :::
+::::
 
 #### 1.6.1 Metric identification (Kolmogorov quotient)
 
@@ -467,7 +468,7 @@ By breaking displacement into position and status components, we can analyze eac
 
 This section formally defines the two components of swarm ({prf:ref}`def-swarm-and-state-space`) displacement that will be used as inputs to the generalized continuity axioms.
 
-:::{prf:definition} Components of Swarm Displacement
+::::{prf:definition} Components of Swarm Displacement
 :label: def-displacement-components
 
 For any two swarms $\mathcal{S}_1$ and $\mathcal{S}_2$ ({prf:ref}`def-swarm-and-state-space`), their total displacement ({prf:ref}`def-n-particle-displacement-metric`) is decomposed into two fundamental components:
@@ -495,7 +496,7 @@ This formula cleverly counts status changes: since $s_i \in \{0,1\}$, we have $(
 :::
 
 The **N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`)** defined in Section 1.5 is a specific weighted average of these components: $d_{\text{Disp},\mathcal{Y}}^2 = \frac{1}{N}\Delta_{\text{pos}}^2 + \frac{\lambda_{\mathrm{status}}}{N}n_c$. The generalized continuity framework will use $\Delta_{\text{pos}}^2$ and $n_c$ as direct inputs to provide a more detailed analysis of error propagation.
-:::
+::::
 
 
 :::{prf:definition} Markov and killed kernels
@@ -535,6 +536,7 @@ quasi-stationary distribution is a separate property.
 :label: def-wasserstein-distance
 
 For probability measures with finite second moments on a metric space $(E,d)$,
+
 $$
 W_2(\mu,\nu)^2=\inf_{\gamma\in\Pi(\mu,\nu)}\int d(x,y)^2\,\gamma(dx,dy),
 $$
@@ -549,6 +551,7 @@ $W_2$ requires an estimate proportional to the initial $W_2$ distance.
 For a smooth potential $U$, friction $\gamma>0$ and noise amplitude $\sigma>0$,
 the kinetic diffusion $dX_t=V_tdt$,
 $dV_t=-\nabla U(X_t)dt-\gamma V_tdt+\sigma dB_t$ has backward generator
+
 $$
 Lf=v\cdot\nabla_xf-(\nabla U+\gamma v)\cdot\nabla_vf
        +\tfrac12\sigma^2\Delta_vf.
@@ -693,7 +696,7 @@ The risk of swarm collapse is primarily the single catastrophic event where all 
 - Larger $L_{\text{death}}$ = more unpredictable boundaries = higher risk
 :::
 
-:::{prf:axiom} Axiom of Boundary Regularity
+::::{prf:axiom} Axiom of Boundary Regularity
 :label: axiom-boundary-regularity
 
 *   **Core Assumption:** The marginal probability of a single walker ({prf:ref}`def-walker`) becoming invalid after the perturbation and status update stages must be a smooth (Hölder continuous) function of the initial N-particle swarm state ({prf:ref}`def-swarm-and-state-space`). This axiom applies to any valid noise measure ({prf:ref}`def-valid-noise-measure`), including those with state-dependent coupling between walkers.
@@ -721,7 +724,7 @@ where $d_{\text{Disp},\mathcal{Y}}$ is the N-Particle Displacement Metric ({prf:
 :::{warning}
 **Red Flag**: If you measure $L_{\text{death}}$ and find it's very large, your environment has dangerous "cliff edges" where small missteps lead to mass casualties. Consider smoothing the boundary (adding buffer zones) or increasing noise to help walker ({prf:ref}`def-walker`)s "probe" dangerous areas more gently.
 :::
-:::
+::::
 
 #### 2.1.3 Axiom of Boundary Smoothness
 
@@ -901,9 +904,9 @@ The swarm ({prf:ref}`def-swarm-and-state-space`) relies on noise to explore the 
 *   **Failure Mode Analysis:** If **$\sigma = 0$** and **$\delta = 0$**, the swarm ({prf:ref}`def-swarm-and-state-space`) cannot introduce new positions into the system, leading to a complete loss of exploration and eventual collapse to a few points.
 :::
 
-#### 2.3. ({prf:ref}`def-standardization-operator-n-dimensional`)3 Mean-Square Continuity of the Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)
+#### 2.3. Mean-Square Continuity of the Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)
 
-Because the **Raw Value Operator** $V$ (e.g., distance-to-companion) is  ({prf:ref}`def-standardization-operator-n-dimensional`)stochastic, the **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)** $z(S)$ is also a stochastic operator. Its output, $z$, is a random variable. Therefore, its continuity must be analyzed in a probabilistic sense. The strongest and most useful form for the subsequent stability analysis is **mean-square continuity**, which bounds the *expected* squared error between the outputs for two different input swarms.
+Because the **Raw Value Operator** $V$ (e.g., distance-to-companion) is stochastic, the **N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)** $z(S)$ is also a stochastic operator. Its output, $z$, is a random variable. Therefore, its continuity must be analyzed in a probabilistic sense. The strongest and most useful form for the subsequent stability analysis is **mean-square continuity**, which bounds the *expected* squared error between the outputs for two different input swarms.
 
 To formalize this analysis, we first define the two fundamental and independent sources of error that contribute to the total mean-square error.
 
@@ -1024,7 +1027,7 @@ $$
 
 For the algorithm's adaptive and contractive forces to function, a swarm ({prf:ref}`def-swarm-and-state-space`) that is not collapsed to a single point must generate a non-zero probability of cloning. This is the engine of adaptation.
 
-:::{prf:theorem} Theorem of Forced Activity
+::::{prf:theorem} Theorem of Forced Activity
 :label: thm-forced-activity
 
 This theorem demonstrates that {prf:ref}`axiom-guaranteed-revival` ensures all walker ({prf:ref}`def-walker`)s eventually become active during the cloning process.
@@ -1062,7 +1065,7 @@ $$
 :::{warning}
 **Stagnation Risk**: When $p_{\text{clone,min}} = 0$, the swarm can enter "dead zones" where everyone looks equally fit (no reward gradients visible), so no one gets cloned. The swarm becomes a collection of independent random walker ({prf:ref}`def-walker`)s, losing its collective intelligence. Always check that your swarm stays spread out enough ($> r_{\min}$) to sense environmental structure!
 :::
-:::
+::::
 
 ### 2.5 Summary of Axiomatic Parameters and Key Theorems
 
@@ -1128,13 +1131,15 @@ d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^2 = \tfrac{1}{N}\,\Delt
 $$
 
 which would otherwise allow a tautological “margin” by tuning $\lambda_{\mathrm{status}}$.
+
+$$
 n_c\;\le\; \frac{N}{\lambda_{\mathrm{status}}}\, d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^2,\qquad
 n_c^2\;\le\; \left(\frac{N}{\lambda_{\mathrm{status}}}\right)^2 d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1,\mathcal{S}_2)^4.
 
 $$
 The margin-based axiom strengthens this near zero by ensuring $n_c=0$ whenever the displacement is small enough, which is crucial to guarantee deterministic continuity of downstream operators.
 :::
-| Theorem of Deterministic Potential Continuity ({prf:ref}`thm-deterministic-potential-continuity`) | The fitness potential operator can be made globally Lipschitz continuous.                                          | The deterministic squared error $                                                                                                                                                                                                                |                                                                                                                                                 | V_1 - V_2 \|^2$ is bounded by a Lipschitz-Hölder function of the input displacement and raw value difference.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | The **Axiom of Variance Regularization** ($\kappa_{\text{var}},min$) and all other axiomatic parameters.                                                              | This is the **strongest continuity result**, available when using the patched standardization operator. It proves the potential is a well-behaved, deterministic function suitable for worst-case analysis. This property is the key prerequisite for validating stronger convergence results like those from Feynman-Kac theory. If the axiom is not enforced, this theorem does not hold. |
+| Theorem of Deterministic Potential Continuity ({prf:ref}`thm-deterministic-potential-continuity`) | The fitness potential operator can be made globally Lipschitz continuous. | The deterministic squared error $\|V_1 - V_2\|^2$ is bounded by a Lipschitz-Hölder function of the input displacement and raw value difference. | The **Axiom of Variance Regularization** ($\kappa_{\text{var,min}}$) and all other axiomatic parameters. | This is the **strongest continuity result**, available when using the patched standardization operator. It proves the potential is a well-behaved, deterministic function suitable for worst-case analysis. This property is the key prerequisite for validating stronger convergence results like those from Feynman-Kac theory. If the axiom is not enforced, this theorem does not hold. |
 ## 4. The Environment: State and Reward Measurement ({prf:ref}`def-reward-measurement`)
 The environment provides the static context for the swarm ({prf:ref}`def-swarm-and-state-space`)'s evolution. Its core properties—the state space and the reward function—are defined axiomatically in Section 2.2. The algorithm interacts with the environment through a formal measurement process.
 ### 4.1 Reward Measurement ({prf:ref}`def-reward-measurement`)
@@ -1157,14 +1162,14 @@ The algorithm uses two distinct noise measures, both of which are required to be
 :label: def-perturbation-measure
 For a given noise scale $\sigma > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Perturbation Measure ({prf:ref}`def-perturbation-measure`)**, $\mathcal{P}_\sigma(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the random walks during the perturbation step of the algorithm.
 :::
-:::{prf:definition} Cloning Measure
+::::{prf:definition} Cloning Measure
 :label: def-cloning-measure
 For a given cloning noise scale $\delta > 0$ ({prf:ref}`axiom-non-degenerate-noise`), the **Cloning Measure ({prf:ref}`def-cloning-measure`)**, $\mathcal{Q}_\delta(x, \cdot)$, is a **Valid Noise Measure** according to {prf:ref}`def-valid-noise-measure`. It governs the displacement for newly created walker ({prf:ref}`def-walker`)s ({prf:ref}`def-alive-dead-sets`) during the cloning step.
-:::
+::::
 ### 5.2 Guidance on Validating Noise Measures (Illustrative Examples)
 The axiomatic framework requires that any chosen noise measure satisfies two key properties: uniform displacement ({prf:ref}`axiom-non-degenerate-noise`) and boundary regularity ({prf:ref}`axiom-boundary-regularity`). The user of this framework is responsible for selecting a specific measure and providing a formal proof that it satisfies these axioms. The following lemmas are provided not as part of the core framework, but as illustrative templates for how such a validation proof would be constructed for two canonical examples.
 #### 5.2.1 Lemma: Validation of the Heat Kernel
-:::{prf:lemma} Validation of the Heat Kernel
+::::{prf:lemma} Validation of the Heat Kernel
 :label: lem-validation-of-the-heat-kernel
 If the state space $(\mathcal{X}, d_{\mathcal{X}}, \mu)$ is a Polish metric measure space with a canonical heat kernel $p_t(x, \cdot)$ that has a uniformly bounded second moment, then defining the perturbation noise measure ({prf:ref}`def-valid-noise-measure`) as $\mathcal{P}_\sigma(x, \cdot) := p_{\sigma^2}(x, \cdot)$ satisfies the required axioms, provided the boundary valid set $\mathcal{X}_{\mathrm{valid}}$ is sufficiently regular.
 :::{prf:proof}
@@ -1173,6 +1178,7 @@ If the state space $(\mathcal{X}, d_{\mathcal{X}}, \mu)$ is a Polish metric meas
 2.  **Axiom of Boundary Regularity** ({prf:ref}`axiom-boundary-regularity`): The death probability is given by the function $P(s_{\text{out}}=0 | x) = \int_{\mathcal{X} \setminus \mathcal{X}_{\mathrm{valid}}} p_{\sigma^2}(x, dx')$. This is the convolution of the indicator function of the invalid set with the heat kernel. For non-pathological boundaries (e.g., boundaries that are not space-filling curves), the heat kernel is a well-known smoothing operator. Standard results in analysis show that the convolution of a smooth kernel with an indicator function results in a continuous function. For heat kernels specifically, the resulting function $P$ is smooth and therefore locally Hölder continuous. Global Hölder continuity follows on compact subsets of $\mathcal X$ by a finite subcover argument.
 **Q.E.D.**
 :::
+::::
 #### 11.3.8 Remark: Explicit Constants for Standardization Bounds
 For quick reference, the constants appearing in the deterministic and mean-square bounds are given explicitly as follows (see the cited definitions):
 - C_{V,\text{total}}(\mathcal{S}): 3\big(C_{V,\text{direct}} + C_{V,\mu}(\mathcal{S}) + C_{V,\sigma}(\mathcal{S})\big) from {prf:ref}`def-value-error-coefficients` and {prf:ref}`def-lipschitz-value-error-coefficients`.
@@ -1180,7 +1186,6 @@ For quick reference, the constants appearing in the deterministic and mean-squar
 - C_{S,\text{indirect}}(\mathcal{S}_1,\mathcal{S}_2): $2 k_{\text{stable}} (L_{\mu,S})^2 / \sigma'^2_{\min\,\text{bound}} + 2 k_1 \big(2V_{\max}/\sigma'_{\min\,\text{bound}}\big)^2 (L_{\sigma',S})^2 / \sigma'^2_{\min\,\text{bound}}$ from {prf:ref}`def-lipschitz-structural-error-coefficients`.
 - $L_{\sigma'_{\text{reg}}}$: $\sup_{V\ge 0} |(\sigma'_{\text{reg}})'(V)| = \frac{1}{2\sigma'_{\min}}$, the global Lipschitz constant of the regularized standard deviation from {prf:ref}`lem-sigma-reg-derivative-bounds`.
 These constants depend only on the fixed algorithmic parameters and the pair $(\mathcal{S}_1, \mathcal{S}_2)$ via the alive set ({prf:ref}`def-alive-dead-sets`)s and aggregation Lipschitz functions, and are finite under the axioms stated in Section 2.
-:::
 #### 5.2.2 Lemma: Validation of the Uniform Ball Measure
 :::{prf:lemma} Validation of the Uniform Ball Measure
 :label: lem-validation-of-the-uniform-ball-measure
@@ -1214,7 +1219,7 @@ The function $f(x) = \text{Volume}(\mathcal{X}_{\mathrm{invalid}} \cap B(x, \sig
 **Q.E.D.**
 :::
 #### 5.2.3 Lemma: BV/perimeter Lipschitz bound for uniform‑ball death probability
-:::{prf:lemma} Uniform‑ball death probability Lipschitz continuity for finite perimeter
+:::::{prf:lemma} Uniform-ball death probability Lipschitz continuity for finite perimeter
 :label: lem-boundary-uniform-ball
 This lemma provides the quantitative Lipschitz bound required by {prf:ref}`axiom-boundary-regularity` for the uniform ball perturbation measure. Let $E=\mathcal{X}_{\mathrm{invalid}}\subset\mathcal X$ have finite perimeter (BV boundary) and let $\mathcal P_\sigma(x,\cdot)$ be the uniform law on $B(x,\sigma)$. Define
 
@@ -1231,17 +1236,17 @@ $$
 
 $$
 If $\varphi$ is $L_\varphi$‑Lipschitz and distances are measured in the algorithmic space ({prf:ref}`def-algorithmic-space-generic`), the bound becomes $L_{\text{death}}\le C_d (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$.
-:::
-:::{prf:proof}
+::::{prf:proof}
 Write $P_\sigma= (\chi_E * K_\sigma)$ with $K_\sigma= \mathbb 1_{B_\sigma}/\mathrm{Vol}(B_\sigma)$. Approximate $K_\sigma$ in $W^{1,1}$ by smooth mollifiers $\{K_\sigma^{(\varepsilon)}\}$ with $\|\nabla K_\sigma^{(\varepsilon)}\|_1\le C_d/\sigma$. For $f\in BV$, $\nabla(f*K)=(Df)*K$ and $\|\nabla(f*K)\|_\infty\le \|Df\|(\mathbb R^d)\,\|\nabla K\|_1$. Taking $f=\chi_E$ gives a Lipschitz bound $\le C_d\,\mathrm{Per}(E)/\sigma$ for $\chi_E*K_\sigma^{(\varepsilon)}$. Passing to the $\varepsilon\to 0$ limit yields the stated bound. The projection to algorithmic space ({prf:ref}`def-algorithmic-space-generic`) introduces the $L_\varphi$ factor.
 :::{prf:remark} Projection choice
 :label: rem-projection-choice
 In this document we take $\varphi=\mathrm{Id}$ so that $L_\varphi=1$ and no perimeter distortion arises from projection. If a nontrivial projection is used, insert the BV/coarea bound for $\mathrm{Per}(\varphi(E))$ with the appropriate distortion factor.
 :::
 **Q.E.D.**
-:::
+::::
+:::::
 #### 5.2.4 Lemma: Heat‑kernel Lipschitz bound via BV smoothing
-:::{prf:lemma} Heat‑kernel death probability is Lipschitz
+::::{prf:lemma} Heat‑kernel death probability is Lipschitz
 :label: lem-boundary-heat-kernel
 This lemma provides the quantitative Lipschitz bound required by {prf:ref}`axiom-boundary-regularity` for the heat kernel perturbation measure ({prf:ref}`def-perturbation-measure`).
 
@@ -1253,12 +1258,11 @@ $$
 
 $$
 with a constant $C_d'$ depending on dimension. Consequently $L_{\text{death}}\lesssim (\mathrm{Per}(\varphi(E))/\sigma)\,L_\varphi$ in the algorithmic metric.
-:::
 :::{prf:proof}
 As above, $P_\sigma=\chi_E * p_{\sigma^2}$ and $\nabla(\chi_E * p_{\sigma^2})=(D\chi_E)*p_{\sigma^2}$. Since $\|\nabla p_{\sigma^2}\|_1\asymp 1/\sigma$, convolution with the BV measure $D\chi_E$ yields a Lipschitz bound $\lesssim (\mathrm{Per}(E)/\sigma)$. The projection factor $L_\varphi$ carries distances to the algorithmic space ({prf:ref}`def-algorithmic-space-generic`).
 **Q.E.D.**
 :::
-:::
+::::
 ## 6. Algorithm Space and Distance Measurement
 ### 6.1 Specification of the Algorithmic Space ({prf:ref}`def-algorithmic-space-generic`)
 :::{prf:definition} Algorithmic Space
@@ -1322,7 +1326,7 @@ The formula $d_{\text{Disp},\mathcal{Y}}^2 = \frac{1}{N}\Delta_{\text{pos}}^2 + 
 The Swarm Aggregation Operator is like taking a "group photo" of the swarm's measurements. Instead of tracking every individual walker ({prf:ref}`def-walker`)'s reward or distance, we compute summary statistics (mean, variance) that capture the collective behavior. This compression is essential—it reduces N-dimensional chaos to manageable 2D statistics while preserving the information needed for decision-making.
 :::
 #### 7.2.1 Definition: Swarm Aggregation Operator
-:::{prf:definition} Swarm Aggregation Operator
+::::{prf:definition} Swarm Aggregation Operator
 :label: def-swarm-aggregation-operator-axiomatic
 A **Swarm Aggregation Operator ({prf:ref}`def-swarm-aggregation-operator-axiomatic`)**, denoted $M$, is a function that maps a swarm state $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) and a raw value vector $\mathbf{v}$ (defined on the alive set $\mathcal{A}(\mathcal{S})$ from {prf:ref}`def-alive-dead-sets`) to a probability measure $\mu_{\mathbf{v}}$ on $\mathbb{R}$.
 **Signature:** $M: \Sigma_N \times \mathbb{R}^{|\mathcal{A}(\mathcal{S})|} \to \mathcal{P}(\mathbb{R})$
@@ -1353,7 +1357,7 @@ $$
 :::{hint}
 Why quadratic dependence on status changes? When a walker ({prf:ref}`def-walker`) dies or revives, it's like suddenly adding or removing a data point from your dataset. The resulting error in statistics (like the mean) jumps discontinuously. The quadratic form $n_c$ counts these discontinuous jumps, making it the natural measure for how much the aggregated statistics can change.
 :::
-:::
+::::
 #### 7.2.2 Example Instantiation: The Empirical Measure Aggregator
 :::{admonition} The "Simple Average" Operator
 :class: tip
@@ -1398,7 +1402,7 @@ Lipschitz constants equal the suprema of these gradient norms, giving the stated
 **Q.E.D.**
 :::
 The most fundamental aggregation operator is one that produces the standard empirical measure of the raw values from the alive set ({prf:ref}`def-alive-dead-sets`). We now formally prove that this operator satisfies the axiomatic requirements of {prf:ref}`def-swarm-aggregation-operator-axiomatic` and derive its specific continuity constants and growth exponents.
-:::{prf:lemma} Axiomatic Properties of the Empirical Measure Aggregator
+::::{prf:lemma} Axiomatic Properties of the Empirical Measure Aggregator
 :label: lem-empirical-aggregator-properties
 Let the aggregation operator $M$ be defined such that for any swarm state $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) with alive set $\mathcal{A}(\mathcal{S})$ ({prf:ref}`def-alive-dead-sets`) of size $k = |\mathcal{A}(\mathcal{S})| \ge 1$, and any raw value vector $\mathbf{v}$, it produces the discrete empirical measure:
 
@@ -1433,7 +1437,7 @@ This operator is a valid **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregat
     *   Variance Deviation Factor: $\kappa_{\text{var}} = 1$
     *   Range-to-Variance Factor: $\kappa_{\text{range}} = 1$
     *   Structural Growth Exponents: $p_{\mu,S} = -1$, $p_{m_2,S} = -1$, $p_{\text{worst-case}} = -1$
-:::
+::::
 :::{prf:proof}
 
 **Proof.**
@@ -2731,7 +2735,13 @@ This theorem consolidates the error bounds from the preceding lemmas to establis
 :::{prf:theorem} Bound on the Expected Raw Distance Vector Change
 :label: thm-expected-raw-distance-bound
 Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, with $|\mathcal{A}(\mathcal{S}_1)| = k_1 \ge 2$ ({prf:ref}`def-algorithmic-space-generic`) ({prf:ref}`def-alive-dead-sets`) ({prf:ref}`def-swarm-and-state-space`). Let $\mathbb{E}[\mathbf{d}(\mathcal{S})]$ be the $N$-dimensional vector of expected raw distances.
-The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement component ({prf:ref}`def-displacement-components`)mathbf{d}(\mathcal{S}_1)] - \mathbb{E}[\mathbf{d}(\mathcal{S}_2)] \|_2^2 \le C_{\text{pos},d} \cdot \Delta_{\text{pos}}^2(\mathcal{S}_1, \mathcal{S}_2) + C_{\text{status},d}^{(1)} \cdot n_c(\mathcal{S}_1, \mathcal{S}_2) + C_{\text{status},d}^{(2)}(k_1) \cdot n_c^2(\mathcal{S}_1, \mathcal{S}_2)
+The squared Euclidean distance between the expected raw distance vectors of the two swarms is deterministically bounded by a function of the displacement components ({prf:ref}`def-displacement-components`):
+
+$$
+\left\|\mathbb{E}[\mathbf{d}(\mathcal{S}_1)]-\mathbb{E}[\mathbf{d}(\mathcal{S}_2)]\right\|_2^2
+\le C_{\text{pos},d}\Delta_{\text{pos}}^2(\mathcal{S}_1, \mathcal{S}_2)
++ C_{\text{status},d}^{(1)}n_c(\mathcal{S}_1, \mathcal{S}_2)
++ C_{\text{status},d}^{(2)}(k_1)n_c^2(\mathcal{S}_1, \mathcal{S}_2)
 
 $$
 where the **Expected Distance Error Coefficients** are defined as:
@@ -3030,7 +3040,7 @@ The bound for the mean $\mu$ is a direct application of the axiom in {prf:ref}`d
 :::
 :::{prf:lemma} Structural Continuity of Statistical Properties
 :label: lem-stats-structural-continuity
-L raw value a fixed raw value vector. Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. The mean $\mu(\mathcal{S}, \mathbf{v})$ and regularized standard deviation $\sigma'(\mathcal{S}, \mathbf{v})$ are continuous with respect to changes in the swarm structure.
+For a fixed raw value vector, let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. The mean $\mu(\mathcal{S}, \mathbf{v})$ and regularized standard deviation $\sigma'(\mathcal{S}, \mathbf{v})$ are continuous with respect to changes in the swarm structure.
 
 $$
 |\mu(\mathcal{S}_1, \mathbf{v}) - \mu(\mathcal{S}_2, \mathbf{v})| \le L_{\mu,S}(\mathcal{S}_1, \mathcal{S}_2) \cdot \|\mathbf{s}_1 - \mathbf{s}_2\|_2^2
@@ -3198,7 +3208,7 @@ By bounding the expectation of these two components separately, we establish a u
 :::{prf:theorem} Decomposition of Mean-Square Standardization Error
 :label: thm-standardization-operator-unified-mean-square-continuity
 
-Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let the standardiz raw valuerf:ref}`def-standardization-operator-n-dimensional`) $z$ use a raw value operator $V$ and a swarm aggregation operator $M$. Let $z_1 = z(S_1, V, M)$ and $z_2 = z(S_2, V, M)$ be the corresponding standardized vectors resulting from the full stochastic process.
+Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let the standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) $z$ use a raw value operator $V$ and a swarm aggregation operator $M$. Let $z_1 = z(S_1, V, M)$ and $z_2 = z(S_2, V, M)$ be the corresponding standardized vectors resulting from the full stochastic process.
 The expected squared Euclidean distance between the output vectors $z_1$ and $z_2$ is bounded by the sum of two fundamental error components:
 
 $$
@@ -3369,7 +3379,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 :::
 #### 11.2.2.3. Sub-Lemma: Bounding the Mean Shift Error Component
 
-:::{prf:lemma} Boundi raw valueError Component
+:::{prf:lemma} Bounding the Mean-Shift Error Component
 :label: lem-sub-mean-shift-bound
 
 Let $\mathcal{S}$ be a swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value vectors. The squared Euclidean norm of the mean shift error component, $\Delta_{\text{mean}} = ((\mu_2 - \mu_1) / \sigma'_1) \cdot \mathbf{1}$, is bounded as follows:
@@ -3392,7 +3402,7 @@ The squared norm is $k \cdot (\mu_2 - \mu_1)^2 / (\sigma'_1)^2$. From the aggreg
 :::{prf:lemma} Bounding the Statistical Fluctuation Error Component
 :label: lem-sub-statistical-fluctuation-bound
 
-Let $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) be a fixed raw valuealive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value ({prf:ref}`def-raw-value-operator`) vectors with components bounded by $V_{\max}$. The squared Euclidean norm of the statistical fluctuation error component, $\Delta_{\text{fluc}} = \mathbf{z}_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
+Let $\mathcal{S}$ ({prf:ref}`def-swarm-and-state-space`) be a fixed swarm state with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}$ of size **k**. Let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two raw value ({prf:ref}`def-raw-value-operator`) vectors with components bounded by $V_{\max}$. The squared Euclidean norm of the statistical fluctuation error component, $\Delta_{\text{fluc}} = \mathbf{z}_2 \cdot ((\sigma'_2 - \sigma'_1) / \sigma'_1)$, is bounded as follows:
 
 $$
 \|\Delta_{\text{fluc}}\|_2^2 \le k \left( \frac{2V_{\max}}{\sigma'_{\min,\text{bound}}} \right)^2 \left( \frac{L_{\sigma',M}(\mathcal{S})}{\sigma'_{\min,\text{bound}}} \right)^2 \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2^2
@@ -3438,7 +3448,7 @@ C_{V,\sigma}(\mathcal{S}) := k \left( \frac{2V_{\max}}{\sigma'_{\min,\text{bound
 
 $$
 
-4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.
+4.  **The Total Value Error Coefficient ($C_{V,\text{total}}(S)$):** The composite coefficient that bounds the total squared error.
 
 $$
 C_{V,\text{total}}(\mathcal{S}) := 3 \cdot \left( C_{V,\text{direct}} + C_{V,\mu}(\mathcal{S}) + C_{V,\sigma}(\mathcal{S}) \right)
@@ -3667,12 +3677,12 @@ This result reveals two distinct operational regimes:
     If a significant fraction of the swarm dies, such that $n_c \propto k_1$, then the total error **grows linearly with the initial swarm size** with coefficients proportional to $L_{\sigma'_{\text{reg}}}^2/\sigma'^4_{\min,\text{bound}}$. In the $\kappa_{\text{var,min}} \ll \varepsilon_{\text{std}}^2$ regime this again matches the $O(k_1\varepsilon_{\mathrm{std}}^{-6})$ scaling.
 ### 11.3 Deterministic Lipschitz Continuity of the Patched Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`)
 The introduction of the **Regularized Standard Deviation Function** ({prf:ref}`def-statistical-properties-measurement`) ($\sigma'_{\text{reg}}$) in Section 11.1.2 provides a critical stability guarantee that is stronger than mean-square continuity. By ensuring the denominator of the standardization formula is a globally Lipschitz function of the raw value variance, the pathological sensitivity near zero-variance states is eliminated. This, in turn, enables a deterministic, worst-case **global continuity with a Lipschitz–Hölder modulus** for the entire N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`).
-This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\Deltaz = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`) and the L2-norm of the raw value difference.
+This property is a non-negotiable prerequisite for certain powerful long-term convergence results, such as those derived from Feynman-Kac particle system theory. The following sections provide a rigorous, self-contained proof of this property. The strategy is to deterministically decompose the total error vector, $\Delta\mathbf{z} = z(S_1, v_1, M) - z(S_2, v_2, M)$, into a series of manageable components and to bound the L2-norm of each component by a term proportional to the N-Particle Displacement Metric ({prf:ref}`def-n-particle-displacement-metric`) and the L2-norm of the raw value difference.
 #### 11.3.1 Theorem: Decomposition of the Total Standardization Error
 To establish the joint Lipschitz continuity of the standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`) with respect to both the swarm state **S** and the raw value vector **v**, we first decompose the total squared error into two distinct components: a **Value Error** arising from the change in the raw value vector for a fixed swarm structure, and a **Structural Error** arising from the change in the swarm structure for a fixed raw value vector.
 :::{prf:theorem} Decomposition of the Total Standardization Error
 :label: thm-deterministic-error-decomposition
-Let $z(S, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) ({prf:r raw valueation-operator-n-dimensional`). Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.
+Let $z(S, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`). Let $S_1$ and $S_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $v_1$ and $v_2$ be two corresponding N-dimensional raw value vectors. Let the output standardized vectors be $z_1 = z(S_1, v_1, M)$ and $z_2 = z(S_2, v_2, M)$.
 The total squared Euclidean error between the output vectors is bounded by the sum of two fundamental error components:
 
 $$
@@ -3697,8 +3707,8 @@ $$
 :::
 :::{prf:proof}
 **Proof.**
-The proof follows from decomposing the total error using an intermediate vector and then applying the triangle inequality. Let the intermediate vector be $z_{\text{in}}ter := z(S_1, v_2, M)$, which uses the second raw value ({prf:ref}`def-raw-value-operator`) vector with the first swarm ({prf:ref}`def-swarm-and-state-space`)'s structure.
-The total error vector is $z_1 - z_2 = (z_1 - z_{\text{in}}ter) + (z_{\text{in}}ter - z_2)$.
+The proof follows from decomposing the total error using an intermediate vector and then applying the triangle inequality. Let the intermediate vector be $z_{\text{inter}} := z(S_1, v_2, M)$, which uses the second raw value ({prf:ref}`def-raw-value-operator`) vector with the first swarm ({prf:ref}`def-swarm-and-state-space`)'s structure.
+The total error vector is $z_1 - z_2 = (z_1 - z_{\text{inter}}) + (z_{\text{inter}} - z_2)$.
 The total squared error is bounded using the elementary inequality $\|A+B\|_2^2 \leq 2(\|A\|_2^2 + \|B\|_2^2)$:
 
 $$
@@ -3710,11 +3720,11 @@ The first term on the right-hand side is the squared Value Error, $E_V^2$, as it
 **Q.E.D.**
 :::
 #### 11.3.2 Sub-Lemma: Algebraic Decomposition of the Value Error
-To bound the squared value error, $E_V^2$, we first perform a purely algebraic decomposition of the error vector $\Deltaz = z(S, v_1, M) - z(S, v_2, M)$ for a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state **S**. This decomposition isolates the different sources of error: the direct change in the raw values, the change in the computed mean, and the change in the computed standard deviation.
+To bound the squared value error, $E_V^2$, we first perform a purely algebraic decomposition of the error vector $\Delta\mathbf{z} = z(S, v_1, M) - z(S, v_2, M)$ for a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state **S**. This decomposition isolates the different sources of error: the direct change in the raw values, the change in the computed mean, and the change in the computed standard deviation.
 :::{prf:lemma} Algebraic Decomposition of the Value Error
-:lab raw valueitz-value-error-decomposition
+:label: lem-algebraic-value-error-decomposition
 Let **S** be a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state with alive set ({prf:ref}`def-alive-dead-sets`) **A** of size **k**. Let $v_1$ and $v_2$ be two raw value vectors for the alive set. Let $(\mu_1, \sigma'_1)$ and $(\mu_2, \sigma'_2)$ be the corresponding statistical properties, and let $z_1$ and $z_2$ be the corresponding standardized vectors.
-The total value error vector, $\Deltaz = z_1 - z_2$, can be expressed as the sum of three components:
+The total value error vector, $\Delta\mathbf{z} = z_1 - z_2$, can be expressed as the sum of three components:
 
 $$
 
@@ -3756,7 +3766,7 @@ $$
 **Proof.**
 The proof of the decomposition is a direct algebraic manipulation.
 1.  **Start with the Definition of the Error.**
-    The total error is $\Deltaz = z_1 - z_2 = (v_1 - \mu_1) / \sigma'_1 - (v_2 - \mu_2) / \sigma'_2$.
+    The total error is $\Delta\mathbf{z} = z_1 - z_2 = (v_1 - \mu_1) / \sigma'_1 - (v_2 - \mu_2) / \sigma'_2$.
 2.  **Decomposition.**
     We add and subtract terms to isolate the desired components.
 
@@ -3789,7 +3799,7 @@ With the algebraic decomposition in place, we can now establish a deterministic 
 Let **S** be a fixed swarm ({prf:ref}`def-swarm-and-state-space`) state. Let $v_1$ and $v_2$ be lipschitz ({prf:ref}`axiom-reward-regularity`)ors. The squared value error, $E_V^2(S; v_1, v_2) = \|z(S, v_1, M) - z(S, v_2, M)\|_2^2$, is deterministically bounded as follows:
 
 $$
-E_{V}^2(\mathcal{S}; \mathbf{v}_1, \mathbf{v}_2) \le C_{V,\te raw valuel{S}) \cdot \|\mathblipschitz ({prf:ref}`axiom-reward-regularity`)}_2\|_2^2
+E_{V}^2(\mathcal{S}; \mathbf{v}_1, \mathbf{v}_2) \le C_{V,\text{total}}(\mathcal{S}) \cdot \|\mathbf{v}_1 - \mathbf{v}_2\|_2^2
 
 $$
 
@@ -3797,7 +3807,7 @@ where $C_{V,total}(S)$ is the **Total Value Error Coefficient**, a deterministic
 :::
 :::{prf:proof}
 **Proof.**
-The proof proceeds by bounding the squared L2-norm of each of the three components from the algebraic decomposition in {prf:ref}`lem-sub-value-error-decomposition` and then summing them.
+The proof proceeds by bounding the squared L2-norm of each of the three components from the algebraic decomposition in {prf:ref}`lem-algebraic-value-error-decomposition` and then summing them.
 1.  **Bound the Direct Shift Component ($\Delta_{\text{direct}}$):**
     The squared norm is $\|(v_1 - v_2) / \sigma'_1\|_2^2 = (1/(\sigma'_1)^2)\|v_1 - v_2\|_2^2$. From the definition of the Regularized Standard Deviation Function ({prf:ref}`def-statistical-properties-measurement`), the denominator $\sigma'_1$ is always bounded below by $\sigma'_{\min\,\text{bound}}$. Therefore, $1/(\sigma'_1)^2 \le 1/\sigma'^2_{\min\,\text{bound}}$. This gives:
 
@@ -3821,7 +3831,7 @@ $$
     *   The term $1/(\sigma'_1)^2$ is bounded by $1/\sigma'^2_{\min\,\text{bound}}$.
     Combining these gives a bound of the form $C \cdot \|v_1 - v_2\|_2^2$ for this component as well.
 4.  **Combine the Bounds:**
-    Substituting the bounds for each of the three components into the inequality from {prf:ref}`lem-sub-value-error-decomposition` ($\|\Deltaz\|_2^2 \leq 3(\|\Delta_{\text{direct}}\|_2^2 + ...)$), and factoring out the common term $\|v_1 - v_2\|_2^2$, yields the final result. The sum of the coefficients for each component, multiplied by 3, constitutes the **Total Value Error Coefficient**, $C_{V,total}(S)$. Since all constituent parts are finite for a given state **S**, $C_{V,total}(S)$ is a finite constant.
+    Substituting the bounds for each of the three components into the inequality from {prf:ref}`lem-algebraic-value-error-decomposition` ($\|\Delta\mathbf{z}\|_2^2 \leq 3(\|\Delta_{\text{direct}}\|_2^2 + \cdots)$), and factoring out the common term $\|v_1 - v_2\|_2^2$, yields the final result. The sum of the coefficients for each component, multiplied by 3, constitutes the **Total Value Error Coefficient**, $C_{V,\text{total}}(S)$. Since all constituent parts are finite for a given state **S**, $C_{V,\text{total}}(S)$ is a finite constant.
 **Q.E.D.**
 :::
 #### 11.3.4 Definition: Value Error Coefficients
@@ -3857,7 +3867,7 @@ $$
 
 $$
 
-4.  **The Total Value Error Coefficient ($C_V,total(S)$):** The composite coefficient that bounds the total squared error.
+4.  **The Total Value Error Coefficient ($C_{V,\text{total}}(S)$):** The composite coefficient that bounds the total squared error.
 
 $$
     C_{V,\text{total}}(\mathcal{S}) := 3 \cdot \left( C_{V,\text{direct}} + C_{V,\mu}(\mathcal{S}) + C_{V,\sigma}(\mathcal{S}) \right)
@@ -3881,8 +3891,8 @@ where $C_{S,direct}$ and $C_{S,indirect}(S_1, S_2)$ are the **Structural Error C
 :::
 :::{prf:proof}
 **Proof.**
-The proof proceeds by decomposing the total structural error vector $\Deltaz = z(S_1, v) - z(S_2, v)$ into two orthogonal components: a "direct" error from walker ({prf:ref}`def-walker`)s whose status changes, and an "indirect" error affecting walkers whose status is stable.
-1.  **Decomposition of Structural Error:** The N-dimensional error vector $\Deltaz$ is partitioned based on walker ({prf:ref}`def-walker`) indices. The squared norm is the sum of the squared norms over these disjoint sets:
+The proof proceeds by decomposing the total structural error vector $\Delta\mathbf{z} = z(S_1, v) - z(S_2, v)$ into two orthogonal components: a "direct" error from walker ({prf:ref}`def-walker`)s whose status changes, and an "indirect" error affecting walkers whose status is stable.
+1.  **Decomposition of Structural Error:** The N-dimensional error vector $\Delta\mathbf{z}$ is partitioned based on walker ({prf:ref}`def-walker`) indices. The squared norm is the sum of the squared norms over these disjoint sets:
 
 $$
     \|\Delta\mathbf{z}\|_2^2 = \|\Delta_{\text{direct}}\|_2^2 + \|\Delta_{\text{indirect}}\|_2^2
@@ -3940,7 +3950,7 @@ where $L_{\mu,S}$ and $L_{\sigma',S}$ are the structural continuity functions fo
 By combining the bounds for the value error and the structural error, we can now state the final deterministic continuity property of the patched standardization operator ({prf:ref}`def-standardization-operator-n-dimensional`). The operator is not globally Lipschitz, but it is jointly continuous with a well-defined Lipschitz-Hölder structure.
 :::{prf:theorem} Global Continuity of the Patched Standardization Operator
 :label: thm-global-continuity-patched-standardization
-Let $z(\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) using th raw valueandard Deviation Function** ({prf:ref}`def-statistical-properties-measurement`). Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors.
+Let $z(\mathcal{S}, v, M)$ be the N-Dimensional Standardization Operator ({prf:ref}`def-standardization-operator-n-dimensional`) using the **Regularized Standard Deviation Function** ({prf:ref}`def-statistical-properties-measurement`). Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states, and let $\mathbf{v}_1$ and $\mathbf{v}_2$ be two corresponding N-dimensional raw value vectors.
 The squared Euclidean error between the output standardized vectors, $\|z(\mathcal{S}_1, \mathbf{v}_1, M) - z(\mathcal{S}_2, \mathbf{v}_2, M)\|_2^2$, is deterministically bounded by a function of the swarm ({prf:ref}`def-swarm-and-state-space`) displacement and the raw value difference:
 
 $$
@@ -4565,7 +4575,7 @@ S(v_c, v_i) := \frac{v_c - v_i}{v_i + \varepsilon}
 
 $$
 where $\varepsilon > 0$ is the cloning denominator regularizer.
-::::
+:::
 #### 15.1.2 Stochastic Threshold Cloning
 This procedure defines the cloning action for each walker ({prf:ref}`def-walker`). It replaces a probabilistic model with a deterministic comparison between the walker's score and a randomly sampled threshold.
 :::{prf:definition} Stochastic Threshold Cloning
@@ -4883,14 +4893,14 @@ $$
     \mathbb{E}[d_{\text{out}}^2] \le \left(3 + \frac{3D_{\mathcal{Y}}^2 C_P}{N}\right)V_{\text{in}} + \left(\frac{3D_{\mathcal{Y}}^2 H_P}{N}\right)\sqrt{V_{\text{in}}} + \frac{3D_{\mathcal{Y}}^2 K_P}{N}
 
 $$
-This expression is of the required form $C_L V + C_H sqrt(V) + K$. By inspection, we can identify the coefficients $C_{\text{clone},L}$, $C_{\text{clone},H}$, and $K_{\text{clone}}$ from this final expression. This completes the proof.
+This expression is of the required form $C_L V + C_H \sqrt{V} + K$. By inspection, we can identify the coefficients $C_{\text{clone},L}$, $C_{\text{clone},H}$, and $K_{\text{clone}}$ from this final expression. This completes the proof.
 **Q.E.D.**
 :::
 #### 15.2.8.3. Sub-Lemma: Bounding the Sum of Total Cloning Probabilities
 :::{prf:lemma} Bounding the Sum of Total Cloning Probabilities
 :label: lem-sub-bound-sum-total-cloning-probs
 
-Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \matExpected Cloning ({prf:ref}`def-expected-cloning-action`)ared displacement.
+Let $\mathcal{S}_1$ and $\mathcal{S}_2$ be two swarm ({prf:ref}`def-swarm-and-state-space`) states. Let $V_{\text{in}} := d_{\text{Disp},\mathcal{Y}}(\mathcal{S}_1, \mathcal{S}_2)^2$ be the squared input displacement.
 
 The sum of the **Total Expected Cloning Probabilities**, $\sum_{i=1}^N (\overline{P}_{\text{clone}}(\mathcal{S}_1)_i + \overline{P}_{\text{clone}}(\mathcal{S}_2)_i)$, is bounded by a sum of a linear term, a Hölder term, and a constant offset of the initial displacement:
 
@@ -4926,7 +4936,7 @@ $$
 *   The structural error term from {prf:ref}`lem-total-clone-prob-structural-error` is bounded by $N \cdot C_{\text{struct}}^{(\pi)}(k_1) \cdot n_c$.
     *   The value error term from {prf:ref}`lem-total-clone-prob-value-error` is bounded by $N \cdot C_{\text{val}}^{(\pi)} \sqrt{2N \cdot F_{\text{pot}}}$.
 3.  **Substitute the Bound for the Fitness Potential Error ($F_{\text{pot}}$).**
-    The crucial step is to substitute the bound for the **Expected Squared Potential Error Bound** ($F_{\text{pot}}$) from {prf:ref}`thm-potential-operator-is-mean-square-continuous`. $F_{\text{pot}}$ is itself a function of the input displacement components: $F_{\text{pot}}(S_1, S_2) = F_unstable + F_{\text{stable}}$, where $F_{\text{stable}}$ is bounded by the mean-square errors of the standardization pipelines for reward and distance. The distance standardization error ($E_[\|\Deltaz_d\|^2]$) from {prf:ref}`thm-distance-operator-mean-square-continuity` contains a term proportional to $n_c^2$.
+    The crucial step is to substitute the bound for the **Expected Squared Potential Error Bound** ($F_{\text{pot}}$) from {prf:ref}`thm-potential-operator-is-mean-square-continuous`. $F_{\text{pot}}$ is itself a function of the input displacement components: $F_{\text{pot}}(S_1, S_2) = F_{\text{unstable}} + F_{\text{stable}}$, where $F_{\text{stable}}$ is bounded by the mean-square errors of the standardization pipelines for reward and distance. The distance standardization error ($\mathbb{E}[\|\Delta\mathbf{z}_d\|^2]$) from {prf:ref}`thm-distance-operator-mean-square-continuity` contains a term proportional to $n_c^2$.
     Therefore, the full bound for $F_{\text{pot}}$ takes the form:
 
 $$
@@ -4940,10 +4950,10 @@ where $A_k$ are state-dependent coefficients.
     *   $\Delta_{\text{pos}}^2 \le N \cdot V_{\text{in}}$
     *   $n_c \le \frac{N}{\lambda_{\text{status}}} \cdot V_{\text{in}}$
     *   $n_c^2 \le \left(\frac{N}{\lambda_{\text{status}}}\right)^2 \cdot V_{\text{in}}^2$
-    Substituting these into the bound for $F_{\text{pot}}$ shows that $F_{\text{pot}}$ is bounded by a quadratic function of $V_{\text{in}}$: $F_{\text{pot}} <= B_2 V_{\text{in}}^2 + B_1 V_{\text{in}} + B_0$.
+    Substituting these into the bound for $F_{\text{pot}}$ shows that $F_{\text{pot}}$ is bounded by a quadratic function of $V_{\text{in}}$: $F_{\text{pot}} \leq B_2 V_{\text{in}}^2 + B_1 V_{\text{in}} + B_0$.
 5.  **Finalize the Bound on the L1-Norm.**
     The term $\sqrt{F_{\text{pot}}}$ is therefore bounded by $\sqrt{B_2 V_{\text{in}}^2 + B_1 V_{\text{in}} + B_0}$, which is asymptotically linear in $V_{\text{in}}$ for large $V_{\text{in}}$. Applying {prf:ref}`lem-subadditivity-power` with $\alpha=1/2$ yields $\sqrt{a+b} \le \sqrt{a} + \sqrt{b}$, so we can bound $\sqrt{F_{\text{pot}}}$ by a sum of linear and square-root terms of $V_{\text{in}}$.
-    Combining all terms, the total L1-norm $\|\DeltaP\|_1$ is bounded by an expression of the form $C'_P V_{\text{in}} + H'_P sqrt(V_{\text{in}}) + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.
+    Combining all terms, the total L1-norm $\|\Delta\overline{\mathbf{P}}\|_1$ is bounded by an expression of the form $C'_P V_{\text{in}} + H'_P \sqrt{V_{\text{in}}} + K'_P$. Absorbing the term **2N** into the constant offset gives the final result as stated in the sub-lemma.
 **Q.E.D.**
 :::
 ## 17. The Revival State: Dynamics at $k=1$

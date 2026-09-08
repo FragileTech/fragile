@@ -476,17 +476,13 @@ def drone(b):
 def harvester(b):
     # The concept puts the intake inside a heavy articulated casing, with covered
     # wheel arches and a visibly sloping hopper rather than exposed box primitives.
-    # Reprofile existing hopper walls and cargo, preserving topology and pivots.
-    # The concepts have tapered heavy bins and low, irregular loads.
+    # Reprofile the empty hopper walls, preserving topology and pivots.
+    # Resource contents are drawn from native state by the runtime cargo layer.
     for obj in b.scene.objects:
         if obj.name.startswith("Flared cargo hopper side"):
             for vertex in obj.data.vertices:
                 if vertex.co.z < 0:
                     vertex.co.x *= 0.83
-        elif obj.name.startswith("Collected mineral"):
-            obj.scale.z = 0.65
-            obj.rotation_euler.x = 0.27 * math.sin(obj.location.x * 17)
-            obj.rotation_euler.y = 0.35 * math.cos(obj.location.y * 19)
     for s in [-1, 1]:
         side_plate(
             b,
@@ -577,23 +573,6 @@ def harvester(b):
         b.box("Front glass mullion", (1.417, y, 1.74), (0.03, 0.028, 0.49), "trim")
     b.box("Cab lower instrument brow", (1.43, -0.05, 1.48), (0.12, 1.03, 0.12), "dark")
     b.box("Low roof sensor array", (1.02, -0.05, 2.25), (0.38, 0.30, 0.10), "trim")
-    # The steampunk concept carries irregular ore, not gold crystals.
-    if b.steam:
-        remove(b, "Collected mineral")
-        rng = np.random.default_rng(203)
-        for i in range(8 if b.low else 28):
-            x, y = -1.62 + rng.random() * 1.53, (rng.random() - 0.5) * 1.25
-            size = 0.09 + rng.random() * 0.10
-            obj = b.cyl(
-                "Collected ore nugget",
-                (x, y, 1.39 + rng.random() * 0.20),
-                size,
-                size * 1.2,
-                "gold" if i % 3 else "dark",
-                r2=size * 0.6,
-                segments=5,
-            )
-            obj.rotation_euler = (rng.random(), rng.random(), rng.random())
     if not b.low:
         for s in [-1, 1]:
             for x in [-1.30, -0.70, -0.10]:
@@ -1090,18 +1069,7 @@ def concept_materials_and_profiles(b):
                 obj.scale.x *= 1.07
     elif b.kind == "harvester":
         for obj in b.scene.objects:
-            if obj.name.startswith(("Collected mineral", "Collected ore nugget")):
-                if obj.name.startswith("Collected mineral"):
-                    obj.scale.z *= 0.76
-                # Re-seat the irregular load after reprofiling: preserve the bed
-                # contact rather than shrinking each stone about its floating center.
-                rotation = obj.rotation_euler.to_matrix()
-                bottom = min(
-                    sum(rotation[2][axis] * v.co[axis] * obj.scale[axis] for axis in range(3))
-                    for v in obj.data.vertices
-                )
-                obj.location.z = 1.245 - bottom
-            elif obj.name.startswith("Flared cargo hopper side"):
+            if obj.name.startswith("Flared cargo hopper side"):
                 for vertex in obj.data.vertices:
                     if vertex.co.z < 0:
                         vertex.co.x *= 0.94
@@ -1567,10 +1535,12 @@ def mechanical_second_pass(b):
 
 def reclaim_mechanical_detail(b):
     """Exchange subpixel circumference samples for the functional geometry above."""
+    if b.kind not in {"rocket", "kart", "drone", "harvester"}:
+        return
     if b.low:
         current = {
-            "futuristic": {"rocket": 1338, "kart": 2456, "drone": 1960, "harvester": 4066},
-            "steampunk": {"rocket": 1904, "kart": 2610, "drone": 2288, "harvester": 4314},
+            "futuristic": {"rocket": 1338, "kart": 2456, "drone": 1960, "harvester": 4000},
+            "steampunk": {"rocket": 1904, "kart": 2610, "drone": 2288, "harvester": 4250},
         }
         b.triangle_budget = current[b.style][b.kind]
         return

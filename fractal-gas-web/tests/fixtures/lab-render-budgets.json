@@ -64,35 +64,35 @@
     "texturePixels": 1064960
   },
   "futuristic/world-high": {
-    "triangles": 162704,
-    "primitives": 236,
+    "triangles": 140804,
+    "primitives": 231,
     "materials": 12,
     "images": 11,
-    "bytes": 17215028,
+    "bytes": 10525988,
     "texturePixels": 5439488
   },
   "futuristic/world-low": {
-    "triangles": 16892,
-    "primitives": 218,
+    "triangles": 16660,
+    "primitives": 213,
     "materials": 12,
     "images": 11,
-    "bytes": 3663988,
+    "bytes": 1848728,
     "texturePixels": 2293760
   },
   "futuristic/refinery-high": {
-    "triangles": 19736,
+    "triangles": 7228,
     "primitives": 6,
     "materials": 6,
     "images": 4,
-    "bytes": 2066184,
+    "bytes": 556256,
     "texturePixels": 1048576
   },
   "futuristic/refinery-low": {
-    "triangles": 3596,
+    "triangles": 2848,
     "primitives": 6,
     "materials": 6,
     "images": 4,
-    "bytes": 984144,
+    "bytes": 253996,
     "texturePixels": 1048576
   },
   "steampunk/rocket-high": {
@@ -160,35 +160,35 @@
     "texturePixels": 1064960
   },
   "steampunk/world-high": {
-    "triangles": 181440,
-    "primitives": 207,
+    "triangles": 162920,
+    "primitives": 204,
     "materials": 15,
     "images": 11,
-    "bytes": 18043428,
+    "bytes": 11771712,
     "texturePixels": 5439488
   },
   "steampunk/world-low": {
-    "triangles": 28354,
-    "primitives": 188,
+    "triangles": 28106,
+    "primitives": 185,
     "materials": 13,
     "images": 11,
-    "bytes": 4080344,
+    "bytes": 2448164,
     "texturePixels": 2293760
   },
   "steampunk/refinery-high": {
-    "triangles": 17700,
-    "primitives": 8,
-    "materials": 8,
+    "triangles": 9812,
+    "primitives": 7,
+    "materials": 7,
     "images": 4,
-    "bytes": 1720968,
+    "bytes": 688056,
     "texturePixels": 1048576
   },
   "steampunk/refinery-low": {
-    "triangles": 3640,
-    "primitives": 8,
-    "materials": 8,
+    "triangles": 3576,
+    "primitives": 7,
+    "materials": 7,
     "images": 4,
-    "bytes": 802724,
+    "bytes": 276672,
     "texturePixels": 1048576
   }
 }

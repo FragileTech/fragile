@@ -43,7 +43,7 @@ try {
   let init = await latest();
   assert.equal(init.scene.rock_options.scale, 0.1);
   assert.equal(init.scene.rock_options.weight, 0.01);
-  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 0.24);
+  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 0.0024);
   assert.ok(init.scene.tethers.every((t) => t.stiffness === 3000));
   assert.equal(await page.locator("#tick").textContent(), "TICK 000000");
   await page.locator("#scenario").selectOption("harvest");
@@ -67,7 +67,7 @@ try {
   await apply();
   init = await latest();
   assert.equal(init.scene.rock_options.weight, 10);
-  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 240);
+  assert.equal(init.scene.bodies.find((b) => b.cargo).mass, 2.4);
   assert.ok(init.scene.tethers.every((t) => t.stiffness === 1000000));
   const n = await count();
   await page.locator("#rock-size").fill("0.09");

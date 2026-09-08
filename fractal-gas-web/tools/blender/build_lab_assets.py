@@ -901,19 +901,7 @@ class Builder:
                 self.box("Hopper external rib", (x, s * 0.86, 1.51), (0.065, 0.055, 0.69), "trim")
         for x in [-1.82, 0.20]:
             self.box("Hopper end wall", (x, 0, 1.51), (0.13, 1.69, 0.71), "dark")
-        rng = np.random.default_rng(203)
-        for i in range(8 if self.low else 24):
-            x, y = -1.62 + rng.random() * 1.53, (rng.random() - 0.5) * 1.28
-            r = 0.12 + rng.random() * 0.13
-            self.cyl(
-                "Collected mineral",
-                (x, y, 1.38 + rng.random() * 0.24),
-                r,
-                r * 1.7,
-                "gold" if self.steam else "energy",
-                r2=r * 0.34,
-                segments=5,
-            )
+        # The runtime cargo layer fills this empty bay from native carried amount.
         # Intake roller rotates independently of the two front steering hubs.
         drum = self.empty("Mineral intake roller", (1.91, 0, 0.56), self.root, "wheel")
         drum["wheelRadius"] = 0.39

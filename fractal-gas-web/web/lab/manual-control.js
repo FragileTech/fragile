@@ -62,8 +62,8 @@ export function installManualControl({
     const selected = all.filter((c) => c.body === body);
     $("drive-channels").replaceChildren();
     $("drive-keys").replaceChildren();
-    for (const [key, names] of Object.entries(bindings)) {
-      if (!selected.some((c) => names.includes(c.name))) continue;
+    for (const key of Object.keys(bindings)) {
+      if (!supportsKey(all, body, key)) continue;
       const button = document.createElement("button");
       button.textContent = labels[key];
       button.dataset.key = key;
@@ -113,8 +113,10 @@ export function installManualControl({
       `Vehicle ${(body ?? 0) + 1} · ${selected.length ? "Use the supported keys or actuator sliders. Start driving to advance physics." : "No controllable channels."}`;
   }
   function clearSliders() {
-    for (const { input, channel } of sliders)
+    for (const { input, channel } of sliders) {
       input.value = Math.max(channel.low, Math.min(channel.high, 0));
+      input.nextElementSibling.textContent = input.value;
+    }
   }
   window.addEventListener("keydown", (e) => {
     if (
@@ -124,13 +126,7 @@ export function installManualControl({
     )
       return;
     const key = e.key.toLowerCase();
-    if (
-      !bindings[key] ||
-      !channels().some(
-        (c) => c.body === selectedBody() && bindings[key].includes(c.name),
-      )
-    )
-      return;
+    if (!bindings[key] || !supportsKey(channels(), selectedBody(), key)) return;
     e.preventDefault();
     keys.add(key);
     clearSliders();
@@ -162,4 +158,11 @@ export function installManualControl({
       if (isReady()) step(command());
     },
   };
+}
+
+export function supportsKey(channels, body, key) {
+  const neutral = manualAction(channels, new Set(), body);
+  return manualAction(channels, new Set([key]), body).some(
+    (v, i) => v !== neutral[i],
+  );
 }

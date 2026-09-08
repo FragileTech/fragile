@@ -1,4 +1,9 @@
-import { prepareWorkspace, applyDraft, openFiles, closeFiles } from "./helpers/workspace-ui.mjs";
+import {
+  prepareWorkspace,
+  applyDraft,
+  openFiles,
+  closeFiles,
+} from "./helpers/workspace-ui.mjs";
 // Generic controllers, complete checkpoints, experiments, and durable replay.
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
@@ -9,7 +14,7 @@ const output =
 await mkdir(output, { recursive: true });
 const browser = await chromium.launch({
   headless: true,
-  args: ["--no-sandbox"],
+  args: ["--no-sandbox", "--use-angle=swiftshader"],
 });
 const page = await browser.newPage({ viewport: { width: 1536, height: 1100 } }),
   errors = [];
@@ -19,7 +24,11 @@ page.on("console", (m) => {
   if (m.type() === "error") errors.push(m.text());
 });
 const ready = () =>
-  page.waitForFunction(() => !document.querySelector("main").inert && document.getElementById("backend").textContent.includes("WEBASSEMBLY"));
+  page.waitForFunction(
+    () =>
+      !document.querySelector("main").inert &&
+      document.getElementById("backend").textContent.includes("WEBASSEMBLY"),
+  );
 const tick = (n) =>
   page.waitForFunction(
     (n) =>
@@ -28,11 +37,13 @@ const tick = (n) =>
     n,
   );
 const download = async (id, name) => {
+  console.log("Exporting", name);
   if (id !== "export-experiment") await openFiles(page);
   const pending = page.waitForEvent("download");
   await page.locator("#" + id).click();
   const file = `${output}/${name}`;
   await (await pending).saveAs(file);
+  console.log("Exported", name);
   await closeFiles(page);
   return file;
 };
@@ -52,6 +63,8 @@ try {
     () => document.getElementById("tick").textContent === "TICK 000000",
   );
   await page.locator("#tab-controller").click();
+  // Keep this semantic regression deterministic on shared CPU hosts.
+  await page.locator("#threads").evaluate((e) => (e.value = "1"));
   await page.locator("#frames").fill("6");
   await page.locator("#frames").press("Tab");
   await applyDraft(page);
@@ -72,6 +85,7 @@ try {
       document.getElementById(id).value = value;
   });
   for (const algorithm of ["random", "cem", "icem", "mppi"]) {
+    console.log("Testing controller", algorithm);
     await page.locator("#algorithm").selectOption(algorithm);
     await applyDraft(page);
     await ready();
@@ -97,7 +111,7 @@ try {
       assert.deepEqual(await readFile(replayed), await readFile(future));
     }
   }
-  await page.locator("#technical-diagnostics").evaluate(e => e.open=true);
+  await page.locator("#technical-diagnostics").evaluate((e) => (e.open = true));
   await page.locator("#inspect-physics").check();
   await page.waitForFunction(() =>
     document
@@ -121,7 +135,8 @@ try {
   assert.deepEqual(await readFile(restored), await readFile(expected));
   await page.locator("#inspect-physics").uncheck();
   await page
-    .locator(".controls summary").filter({ hasText: "Planner settings" })
+    .locator(".controls summary")
+    .filter({ hasText: "Planner settings" })
     .evaluate((e) => (e.parentElement.open = true));
   await page.locator("#wave").click();
   await page.waitForFunction(
@@ -197,9 +212,13 @@ try {
   await page.waitForFunction(
     () => document.querySelectorAll("#comparison-worlds canvas").length === 2,
   );
-  await page.locator("#comparison-timeline").fill(await page.locator("#comparison-timeline").getAttribute("max"));
+  await page
+    .locator("#comparison-timeline")
+    .fill(await page.locator("#comparison-timeline").getAttribute("max"));
   await page.locator("#comparison-timeline").dispatchEvent("input");
-  await page.locator("#experiment-dialog details summary").click();
+  await page
+    .locator("#profile-batch")
+    .evaluate((e) => (e.closest("details").open = true));
   await page.locator("#profile-batch").click();
   await page.waitForFunction(() =>
     document.getElementById("batch-profile").textContent.includes("GB/s"),
@@ -237,7 +256,8 @@ try {
   await page.locator("#apply-json").click();
   await applyDraft(page);
   await ready();
-  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
+  if (!(await page.locator("#editor").isVisible()))
+    await page.locator("#mode-edit").click();
   await tick(0);
   await page.locator("#view").click();
   const selectBody = async (index, shift = false) => {
@@ -262,7 +282,8 @@ try {
   await page.locator("#apply-properties").click();
   await applyDraft(page);
   await ready();
-  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
+  if (!(await page.locator("#editor").isVisible()))
+    await page.locator("#mode-edit").click();
   await selectBody(0);
   await selectBody(1, true);
   assert.match(
@@ -272,7 +293,8 @@ try {
   await page.locator("#duplicate-entities").click();
   await applyDraft(page);
   await ready();
-  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
+  if (!(await page.locator("#editor").isVisible()))
+    await page.locator("#mode-edit").click();
   assert.match(await page.locator("#footer-stats").textContent(), /4 BODIES/);
   await page.locator("#edit-json").click();
   const duplicated = JSON.parse(await page.locator("#scene-json").inputValue());
@@ -282,13 +304,15 @@ try {
   await page.locator("#undo").click();
   await applyDraft(page);
   await ready();
-  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
+  if (!(await page.locator("#editor").isVisible()))
+    await page.locator("#mode-edit").click();
   await selectBody(0);
   await page.locator("#template-name").fill("Custom kart");
   await page.locator("#save-template").click();
   await applyDraft(page);
   await ready();
-  if (!await page.locator("#editor").isVisible()) await page.locator("#mode-edit").click();
+  if (!(await page.locator("#editor").isVisible()))
+    await page.locator("#mode-edit").click();
   assert.equal(await page.locator("#agent-type option").count(), 1);
   await page.locator("#close-editor").click();
   await page.locator("#mode-drive").click();

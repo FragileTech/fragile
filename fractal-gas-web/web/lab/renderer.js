@@ -14,6 +14,7 @@ import { labAnimations } from "./animations.js";
 import { AnimationClock } from "./animation-clock.js";
 import { labActionGuides } from "./action-guides.js";
 import { ActionEffects } from "./visuals/action-effects.js";
+import { CargoReadout } from "./visuals/cargo-readout.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -55,6 +56,7 @@ export class LabRenderer {
     this.actionReadout.className = "action-guide-readout";
     this.actionReadout.hidden = true;
     canvas.parentElement.append(this.actionReadout);
+    this.cargoReadout = new CargoReadout(canvas);
     this.animationClock = new AnimationClock();
     this.animationStep = { playing: false, speed: 1 };
     this.animationsEnabled = labAnimations.enabled;
@@ -241,6 +243,8 @@ export class LabRenderer {
       this.camera.lookAt(this.viewCenter[0], this.viewCenter[1], 0);
     }
     this.camera.updateProjectionMatrix();
+    this.cargoReadout.resize(width, height);
+    this.refreshCargoReadout();
   }
   worldPoint(event) {
     this.camera.updateMatrixWorld(true);
@@ -275,12 +279,26 @@ export class LabRenderer {
     if (seek) {
       this.animationClock.reset(this.simulationTime || 0);
       this.bodyLayer?.resetAnimation();
+      this.worldDynamics?.cargo.resetTransitions();
+      this.refreshCargoReadout();
       this.animationPulseUntil = 0;
     }
   }
   setActionGuideBody(index) {
     this.actionGuideBody = index;
     this.refreshActionGuides();
+    this.refreshCargoReadout();
+  }
+  refreshCargoReadout() {
+    this.cargoReadout.update(
+      this.worldDynamics?.cargo.entries,
+      this.bodyLayer,
+      this.camera,
+      this.coordinateFrame,
+      this.actionGuideBody,
+      this.followBody,
+      this.style,
+    );
   }
   refreshActionGuides() {
     if (!this.actionEffects) return;
@@ -310,6 +328,7 @@ export class LabRenderer {
     this.action = null;
     this.actionGuideBody = undefined;
     this.actionReadout.hidden = true;
+    this.cargoReadout.clear();
     this.flightMode = flightMode(scene);
     this.top = false;
     this.size = scene.size || [64, 44];
@@ -594,6 +613,7 @@ export class LabRenderer {
     this.bodyLayer.updateLod(this.camera, this.canvas.clientHeight);
     this.actionEffects?.update();
     this.refreshActionGuides();
+    this.refreshCargoReadout();
     this.static.traverse((object) => {
       if (!object.userData.refinery) return;
       const pixels =
@@ -848,6 +868,7 @@ export class LabRenderer {
     this.unsubscribeAnimations();
     this.unsubscribeActionGuides();
     this.actionReadout.remove();
+    this.cargoReadout.dispose();
     this.canvas.removeEventListener(
       "webglcontextrestored",
       this.restoreContext,
@@ -897,6 +918,8 @@ export class LabRenderer {
     this.actionEffects?.update();
     if (this.actionReadout && this.actionEffects)
       this.actionReadout.hidden = !this.actionEffects.guides.visible;
+    this.worldDynamics?.cargo.animate();
+    this.refreshCargoReadout();
     this.renderer.render(this.world, this.camera);
     const previous = this.performance || {};
     this.performance = {

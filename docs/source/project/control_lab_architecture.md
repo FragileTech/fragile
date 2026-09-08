@@ -36,11 +36,14 @@ without silently changing the live experiment.
 Scene JSON ──compile──> immutable geometry, types, channels, layout
                                │
 Browser main thread            │          Python ControlEngine
-  UI / editor / renderer       │            ctypes → C API
-  replay presentation          │                  │
+  main.js → workspace.js       │            ctypes → C API
+  workspace-state.js           │                  │
+    active / draft config      │                  │
+  editor / renderer / replay   │                  │
           │ commands           ▼                  ▼
           └──────> simulation-worker.js       native runtime
                      one live world             world batch
+                     drive-clock.js (≤5 catch-up steps)
                           │ snapshot
                           ▼
                    planner-worker.js
@@ -52,15 +55,30 @@ Browser main thread            │          Python ControlEngine
                           │ selected action
                           └─────────> simulation worker commits motion
 
+Configuration replacement (configuration-transition.js):
+  prepare / validate candidate → quiesce current worker → save → commit
+                                captured frames drain    │
+                                before matching ack      └─ run-session.js
+
 Experiments → experiment-worker.js → separate serial runtimes → reports/replays
 ```
 
 :::{div} feynman-prose
-`main.js` connects the panels; `simulation-worker.js` handles live stepping, the clock,
-and captured motion; `planner-worker.js` runs incremental decisions. The main thread
-uses `renderer.js` for presentation and `replay-panel.js` for playback. Recording and
-storage are separate modules (`motion.js`, `playback.js`, and `storage/`), so saving a
-world does not require a particular visual model or controller.
+`main.js` connects the workspace modules. `workspace.js` mounts the panels and modes;
+`workspace-state.js` separates active configuration from editable drafts.
+`configuration-transition.js` prepares and validates a candidate worker before
+quiescing the current worker, saving its run, and committing the replacement.
+Quiescence uses request-correlated acknowledgements: the current worker sends its
+remaining captured frames before acknowledging, so the save includes that final
+motion. `run-session.js` handles durable device saves and failure recovery.
+
+`simulation-worker.js` remains the sole writer of the live world and captures its
+executed motion. Its `drive-clock.js` advances fixed physics steps during continuous
+Drive, allows at most five catch-up steps per callback, and discards excess backlog.
+`planner-worker.js` runs incremental decisions. The main thread uses `renderer.js`
+for presentation and `replay-panel.js` for playback. Recording and storage remain
+separate modules (`motion.js`, `playback.js`, and `storage/`), so saving a world does
+not require a particular visual model or controller.
 
 A native runtime has one caller. Give simultaneous Python callers separate
 `ControlEngine` instances; sharing one handle across calling threads is not supported.

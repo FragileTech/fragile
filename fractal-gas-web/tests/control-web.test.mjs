@@ -57,7 +57,15 @@ test("WASM state restores exactly; branch replay and recording round trip", () =
     engine.step(engine.action(), 6);
     assert(equalBytes(future, engine.snapshot()));
     const record = new Recording();
-    record.append({ tree, decision: 1, action: engine.action(), selectedReward: 12.5, executionMode: "controller", settings: { horizon: 6 }, rewards: { progress: 2 } });
+    record.append({
+      tree,
+      decision: 1,
+      action: engine.action(),
+      selectedReward: 12.5,
+      executionMode: "controller",
+      settings: { horizon: 6 },
+      rewards: { progress: 2 },
+    });
     const restored = importRecording(
       exportRecording(scene, {}, record.entries),
     );
