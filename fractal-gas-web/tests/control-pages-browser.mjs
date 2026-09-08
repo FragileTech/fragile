@@ -175,7 +175,7 @@ try {
       assert.equal(
         new URL(
           await arcade
-            .getByRole("link", { name: /Lab user guide/ })
+            .getByRole("link", { name: /User guide/ })
             .getAttribute("href"),
           arcade.url(),
         ).pathname,

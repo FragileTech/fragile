@@ -63,6 +63,23 @@ async function configureSmallRun() {
   await ready();
 }
 
+// A running swarm keeps the main thread busy for hundreds of milliseconds at
+// a time, so trusted input events are not acknowledged and a Playwright click
+// on Pause times out. Dispatch the click from inside the page instead.
+async function pauseRun() {
+  const paused = await page.evaluate(() => {
+    const pause = document.getElementById("btn-pause");
+    if (pause.disabled) return false; // the run already ended on its own
+    pause.click();
+    return true;
+  });
+  if (!paused) return;
+  await page.waitForFunction(
+    () => document.getElementById("status").textContent === "Paused" ||
+      !document.getElementById("run-ended").hidden,
+  );
+}
+
 async function runIterations(target) {
   await page.locator("#btn-start").click();
   await page.waitForFunction(
@@ -71,12 +88,7 @@ async function runIterations(target) {
       !document.getElementById("run-ended").hidden,
     target,
   );
-  if (await page.locator("#btn-pause").isEnabled()) {
-    await page.locator("#btn-pause").click();
-    await page.waitForFunction(
-      () => document.getElementById("status").textContent === "Paused",
-    );
-  }
+  await pauseRun();
 }
 
 async function runPlayedFrames(target) {
@@ -87,12 +99,7 @@ async function runPlayedFrames(target) {
       !document.getElementById("run-ended").hidden,
     target,
   );
-  if (await page.locator("#btn-pause").isEnabled()) {
-    await page.locator("#btn-pause").click();
-    await page.waitForFunction(
-      () => document.getElementById("status").textContent === "Paused",
-    );
-  }
+  await pauseRun();
 }
 
 async function selectConsole(id) {
@@ -195,8 +202,10 @@ try {
 
   await openArcade();
   await configureSmallRun();
-  await setField("param-horizon", 3);
+  // The planning panel (and its horizon field) only exists once a planner
+  // algorithm is selected, so pick FMC before touching the horizon.
   await selectAlgorithm(2);
+  await setField("param-horizon", 3);
   await runPlayedFrames(4);
   await capture(
     "arcade-planner",
