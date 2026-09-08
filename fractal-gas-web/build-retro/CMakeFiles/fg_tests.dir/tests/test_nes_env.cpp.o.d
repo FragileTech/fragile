@@ -175,10 +175,30 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: \
  /usr/include/c++/15/bits/stl_vector.h \
  /usr/include/c++/15/bits/stl_bvector.h \
  /usr/include/c++/15/bits/vector.tcc \
- /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
- /usr/include/c++/15/utility /usr/include/c++/15/bits/stl_relops.h \
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/env.hpp \
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
- /usr/include/c++/15/random /usr/include/c++/15/cmath /usr/include/math.h \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /usr/include/c++/15/locale /usr/include/c++/15/bits/locale_classes.h \
+ /usr/include/c++/15/bits/locale_classes.tcc \
+ /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
+ /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_base.h \
+ /usr/include/c++/15/bits/ios_base.h /usr/include/c++/15/system_error \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/streambuf \
+ /usr/include/c++/15/bits/streambuf.tcc \
+ /usr/include/c++/15/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_inline.h \
+ /usr/include/c++/15/bits/locale_facets.tcc \
+ /usr/include/c++/15/bits/locale_facets_nonio.h /usr/include/c++/15/ctime \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/15/bits/codecvt.h \
+ /usr/include/c++/15/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/15/bits/locale_conv.h /usr/include/c++/15/random \
+ /usr/include/c++/15/cmath /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/flt-eval-method.h \
@@ -207,28 +227,57 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: \
  /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h \
  /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
  /usr/include/c++/15/bits/stl_numeric.h \
- /usr/include/c++/15/pstl/glue_numeric_defs.h \
- /home/guillem/fragile/fractal-gas-web/src/env.hpp \
- /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
- /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
- /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
- /home/guillem/fragile/fractal-gas-web/src/nes_env.hpp \
- /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
- /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
- /usr/include/c++/15/condition_variable /usr/include/c++/15/bits/chrono.h \
- /usr/include/c++/15/ratio /usr/include/c++/15/ctime \
- /usr/include/c++/15/bits/parse_numbers.h \
- /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
- /usr/include/c++/15/bits/std_mutex.h \
- /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/functional \
- /usr/include/c++/15/bits/std_function.h \
+ /usr/include/c++/15/pstl/glue_numeric_defs.h /usr/include/c++/15/sstream \
+ /usr/include/c++/15/istream /usr/include/c++/15/ios \
+ /usr/include/c++/15/bits/basic_ios.h \
+ /usr/include/c++/15/bits/basic_ios.tcc /usr/include/c++/15/ostream \
+ /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
+ /usr/include/c++/15/bits/istream.tcc \
+ /usr/include/c++/15/bits/sstream.tcc /usr/include/c++/15/utility \
+ /usr/include/c++/15/bits/stl_relops.h \
+ /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
  /usr/include/c++/15/unordered_map \
  /usr/include/c++/15/bits/unordered_map.h \
  /usr/include/c++/15/bits/hashtable.h \
  /usr/include/c++/15/bits/hashtable_policy.h \
  /usr/include/c++/15/bits/enable_special_members.h \
  /usr/include/c++/15/bits/node_handle.h \
- /usr/include/c++/15/bits/erase_if.h /usr/include/c++/15/array \
+ /usr/include/c++/15/bits/erase_if.h \
+ /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+ /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+ /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
+ /usr/include/c++/15/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/nes_env.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
+ /usr/include/c++/15/atomic /usr/include/c++/15/condition_variable \
+ /usr/include/c++/15/bits/chrono.h /usr/include/c++/15/ratio \
+ /usr/include/c++/15/bits/parse_numbers.h \
+ /usr/include/c++/15/bits/std_mutex.h \
+ /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/functional \
+ /usr/include/c++/15/bits/std_function.h /usr/include/c++/15/array \
  /usr/include/c++/15/compare /usr/include/c++/15/mutex \
  /usr/include/c++/15/thread /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/bits/this_thread_sleep.h \

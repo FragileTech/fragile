@@ -7,14 +7,16 @@ fg_atari_tests: \
   libfg_atari_env.a \
   libfractal_gas_core.a \
   libnes_core.a \
+  libfg_swarm_core.a \
+  libfg_fractal_core.a \
   ale-build/src/ale/libale.a \
   /usr/lib/x86_64-linux-gnu/libz.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
-  /lib/x86_64-linux-gnu/libm.so.6 \
-  /lib/x86_64-linux-gnu/libmvec.so.1 \
+  /usr/lib/x86_64-linux-gnu/libm.so.6 \
+  /usr/lib/x86_64-linux-gnu/libmvec.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -24,7 +26,7 @@ fg_atari_tests: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
-  /lib/x86_64-linux-gnu/libc.so.6 \
+  /usr/lib/x86_64-linux-gnu/libc.so.6 \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
   /lib64/ld-linux-x86-64.so.2 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -53,6 +55,10 @@ libfractal_gas_core.a:
 
 libnes_core.a:
 
+libfg_swarm_core.a:
+
+libfg_fractal_core.a:
+
 ale-build/src/ale/libale.a:
 
 /usr/lib/x86_64-linux-gnu/libz.so:
@@ -65,9 +71,9 @@ ale-build/src/ale/libale.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so:
 
-/lib/x86_64-linux-gnu/libm.so.6:
+/usr/lib/x86_64-linux-gnu/libm.so.6:
 
-/lib/x86_64-linux-gnu/libmvec.so.1:
+/usr/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
 
@@ -87,7 +93,7 @@ ale-build/src/ale/libale.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so:
 
-/lib/x86_64-linux-gnu/libc.so.6:
+/usr/lib/x86_64-linux-gnu/libc.so.6:
 
 /usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 

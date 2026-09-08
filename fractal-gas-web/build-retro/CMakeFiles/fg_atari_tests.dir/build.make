@@ -115,6 +115,8 @@ fg_atari_tests: CMakeFiles/fg_atari_tests.dir/compiler_depend.ts
 fg_atari_tests: libfg_atari_env.a
 fg_atari_tests: libfractal_gas_core.a
 fg_atari_tests: libnes_core.a
+fg_atari_tests: libfg_swarm_core.a
+fg_atari_tests: libfg_fractal_core.a
 fg_atari_tests: ale-build/src/ale/libale.a
 fg_atari_tests: /usr/lib/x86_64-linux-gnu/libz.so
 fg_atari_tests: CMakeFiles/fg_atari_tests.dir/link.txt

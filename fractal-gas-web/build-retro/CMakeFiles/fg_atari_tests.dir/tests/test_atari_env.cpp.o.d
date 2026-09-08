@@ -17,9 +17,6 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: \
  /usr/include/c++/15/bits/version.h /usr/include/c++/15/type_traits \
  /usr/include/c++/15/ext/type_traits.h /usr/include/math.h \
  /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \
- /usr/include/x86_64-linux-gnu/bits/types.h \
- /usr/include/x86_64-linux-gnu/bits/typesizes.h \
- /usr/include/x86_64-linux-gnu/bits/time64.h \
  /usr/include/x86_64-linux-gnu/bits/math-vector.h \
  /usr/include/x86_64-linux-gnu/bits/libm-simd-decl-stubs.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
@@ -39,6 +36,9 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/locale_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h \
  /usr/include/x86_64-linux-gnu/sys/types.h \
+ /usr/include/x86_64-linux-gnu/bits/types.h \
+ /usr/include/x86_64-linux-gnu/bits/typesizes.h \
+ /usr/include/x86_64-linux-gnu/bits/time64.h \
  /usr/include/x86_64-linux-gnu/bits/types/clock_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/clockid_t.h \
  /usr/include/x86_64-linux-gnu/bits/types/time_t.h \
@@ -198,10 +198,11 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: \
  /usr/include/c++/15/pstl/glue_memory_defs.h \
  /usr/include/c++/15/pstl/execution_defs.h \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/montezuma_logic.hpp \
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
- /usr/include/c++/15/condition_variable /usr/include/c++/15/bits/chrono.h \
- /usr/include/c++/15/ratio /usr/include/c++/15/ctime \
- /usr/include/c++/15/bits/parse_numbers.h \
+ /usr/include/c++/15/atomic /usr/include/c++/15/condition_variable \
+ /usr/include/c++/15/bits/chrono.h /usr/include/c++/15/ratio \
+ /usr/include/c++/15/ctime /usr/include/c++/15/bits/parse_numbers.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
  /usr/include/c++/15/bits/std_mutex.h \
  /usr/include/c++/15/bits/unique_lock.h /usr/include/c++/15/utility \
@@ -218,14 +219,63 @@ CMakeFiles/fg_atari_tests.dir/tests/test_atari_env.cpp.o: \
  /usr/include/c++/15/thread /usr/include/c++/15/bits/std_thread.h \
  /usr/include/c++/15/bits/this_thread_sleep.h \
  /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp \
- /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
- /usr/include/c++/15/random /usr/include/c++/15/bits/random.h \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /usr/include/c++/15/locale /usr/include/c++/15/bits/locale_classes.h \
+ /usr/include/c++/15/bits/locale_classes.tcc \
+ /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
+ /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_base.h \
+ /usr/include/c++/15/bits/ios_base.h /usr/include/c++/15/system_error \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/streambuf \
+ /usr/include/c++/15/bits/streambuf.tcc \
+ /usr/include/c++/15/bits/streambuf_iterator.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_inline.h \
+ /usr/include/c++/15/bits/locale_facets.tcc \
+ /usr/include/c++/15/bits/locale_facets_nonio.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/time_members.h \
+ /usr/include/x86_64-linux-gnu/c++/15/bits/messages_members.h \
+ /usr/include/libintl.h /usr/include/c++/15/bits/codecvt.h \
+ /usr/include/c++/15/bits/locale_facets_nonio.tcc \
+ /usr/include/c++/15/bits/locale_conv.h /usr/include/c++/15/random \
+ /usr/include/c++/15/bits/random.h \
  /usr/include/c++/15/bits/uniform_int_dist.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/opt_random.h \
  /usr/include/c++/15/bits/random.tcc /usr/include/c++/15/numeric \
  /usr/include/c++/15/bits/stl_numeric.h \
- /usr/include/c++/15/pstl/glue_numeric_defs.h \
+ /usr/include/c++/15/pstl/glue_numeric_defs.h /usr/include/c++/15/sstream \
+ /usr/include/c++/15/istream /usr/include/c++/15/ios \
+ /usr/include/c++/15/bits/basic_ios.h \
+ /usr/include/c++/15/bits/basic_ios.tcc /usr/include/c++/15/ostream \
+ /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
+ /usr/include/c++/15/bits/istream.tcc \
+ /usr/include/c++/15/bits/sstream.tcc \
+ /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+ /usr/include/c++/15/algorithm /usr/include/c++/15/bits/stl_algo.h \
+ /usr/include/c++/15/bits/algorithmfwd.h \
+ /usr/include/c++/15/bits/stl_heap.h \
+ /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+ /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
+ /usr/include/c++/15/cstring /usr/include/string.h /usr/include/strings.h \
+ /usr/include/x86_64-linux-gnu/bits/strings_fortified.h \
+ /usr/include/x86_64-linux-gnu/bits/string_fortified.h \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp

@@ -6,15 +6,22 @@ fg_tests: \
   CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o \
   CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o \
   CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o \
   CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o \
+  CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o \
   libfractal_gas_core.a \
   libnes_core.a \
+  libfg_swarm_core.a \
+  libfg_fractal_core.a \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
-  /lib/x86_64-linux-gnu/libm.so.6 \
-  /lib/x86_64-linux-gnu/libmvec.so.1 \
+  /usr/lib/x86_64-linux-gnu/libm.so.6 \
+  /usr/lib/x86_64-linux-gnu/libmvec.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -24,7 +31,7 @@ fg_tests: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
-  /lib/x86_64-linux-gnu/libc.so.6 \
+  /usr/lib/x86_64-linux-gnu/libc.so.6 \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
   /lib64/ld-linux-x86-64.so.2 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -51,11 +58,25 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o:
 
 CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o:
 
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o:
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o:
+
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o:
+
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o:
+
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o:
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o:
 
 libfractal_gas_core.a:
 
 libnes_core.a:
+
+libfg_swarm_core.a:
+
+libfg_fractal_core.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
 
@@ -65,9 +86,9 @@ libnes_core.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so:
 
-/lib/x86_64-linux-gnu/libm.so.6:
+/usr/lib/x86_64-linux-gnu/libm.so.6:
 
-/lib/x86_64-linux-gnu/libmvec.so.1:
+/usr/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
 
@@ -87,7 +108,7 @@ libnes_core.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so:
 
-/lib/x86_64-linux-gnu/libc.so.6:
+/usr/lib/x86_64-linux-gnu/libc.so.6:
 
 /usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 

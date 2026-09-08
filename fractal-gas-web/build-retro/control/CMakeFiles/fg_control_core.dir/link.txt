@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfg_control_core.a CMakeFiles/fg_control_core.dir/__/src/control/agent_types.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/actuators.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/extensions.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/scene.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/state.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/physics.cpp.o CMakeFiles/fg_control_core.dir/__/src/control/wave.cpp.o
+/usr/bin/ranlib libfg_control_core.a

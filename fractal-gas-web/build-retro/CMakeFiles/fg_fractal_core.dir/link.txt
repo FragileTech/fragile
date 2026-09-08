@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfg_fractal_core.a CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o
+/usr/bin/ranlib libfg_fractal_core.a

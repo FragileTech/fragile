@@ -302,6 +302,18 @@ CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 //Enable sanitizer (thread, address, or empty to disable)
 ENABLE_SANITIZER:STRING=
 
+//Build the standalone continuous-control laboratory
+FG_CONTROL_ONLY:BOOL=OFF
+
+//Instrument collision work in benchmark builds
+FG_CONTROL_PROFILE:BOOL=OFF
+
+//Enable pthreads in the laboratory WebAssembly build
+FG_CONTROL_THREADS:BOOL=OFF
+
+//Build the standalone optimization laboratory
+FG_OPTIMIZATION_ONLY:BOOL=OFF
+
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=/usr/bin/git
 
@@ -489,7 +501,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

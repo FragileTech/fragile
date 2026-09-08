@@ -1,0 +1,1 @@
+/usr/bin/c++ -O3 -DNDEBUG -Wl,--dependency-file=CMakeFiles/fg_control_allocations.dir/link.d CMakeFiles/fg_control_allocations.dir/__/tests/test_control_allocations.cpp.o -o fg_control_allocations  libfg_control_core.a ../libfg_fractal_core.a

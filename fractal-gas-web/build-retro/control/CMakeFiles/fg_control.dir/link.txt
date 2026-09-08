@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -O3 -DNDEBUG -shared -Wl,--dependency-file=CMakeFiles/fg_control.dir/link.d -Wl,-soname,libfg_control.so -o libfg_control.so CMakeFiles/fg_control.dir/__/src/control/c_api.cpp.o  libfg_control_core.a ../libfg_fractal_core.a

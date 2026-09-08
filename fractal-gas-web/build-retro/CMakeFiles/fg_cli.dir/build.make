@@ -98,6 +98,8 @@ fg_cli: CMakeFiles/fg_cli.dir/build.make
 fg_cli: CMakeFiles/fg_cli.dir/compiler_depend.ts
 fg_cli: libfractal_gas_core.a
 fg_cli: libnes_core.a
+fg_cli: libfg_swarm_core.a
+fg_cli: libfg_fractal_core.a
 fg_cli: CMakeFiles/fg_cli.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable fg_cli"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fg_cli.dir/link.txt --verbose=$(VERBOSE)

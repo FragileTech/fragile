@@ -5,7 +5,7 @@
 #define ALE_VERSION_MAJOR "0"
 #define ALE_VERSION_MINOR "12"
 #define ALE_VERSION_PATCH "1"
-#define ALE_VERSION_GIT_SHA "7c60e31c"
+#define ALE_VERSION_GIT_SHA "85c63ab3"
 
 // This isn't entirely accurate, there's been
 // some changes post 2.4.2.

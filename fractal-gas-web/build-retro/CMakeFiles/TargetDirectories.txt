@@ -1,3 +1,5 @@
+/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/fg_fractal_core.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/fg_swarm_core.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/nes_core.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/fractal_gas_core.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/fg_atari_env.dir
@@ -14,6 +16,18 @@
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/install.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/install/local.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles/install/strip.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/fg_control_core.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/fg_control.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/fg_control_tests.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/fg_control_allocations.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/fg_control_benchmark.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/test.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/edit_cache.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/rebuild_cache.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/list_install_components.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/install.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/install/local.dir
+/home/guillem/fragile/fractal-gas-web/build-retro/control/CMakeFiles/install/strip.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/ale-build/CMakeFiles/test.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/ale-build/CMakeFiles/edit_cache.dir
 /home/guillem/fragile/fractal-gas-web/build-retro/ale-build/CMakeFiles/rebuild_cache.dir

@@ -115,6 +115,8 @@ fg_retro_tests: CMakeFiles/fg_retro_tests.dir/compiler_depend.ts
 fg_retro_tests: libfg_retro_env.a
 fg_retro_tests: libfractal_gas_core.a
 fg_retro_tests: libnes_core.a
+fg_retro_tests: libfg_swarm_core.a
+fg_retro_tests: libfg_fractal_core.a
 fg_retro_tests: /usr/lib/x86_64-linux-gnu/libz.so
 fg_retro_tests: CMakeFiles/fg_retro_tests.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX executable fg_retro_tests"

@@ -5,12 +5,14 @@ fg_cli: \
   CMakeFiles/fg_cli.dir/native/main.cpp.o \
   libfractal_gas_core.a \
   libnes_core.a \
+  libfg_swarm_core.a \
+  libfg_fractal_core.a \
   /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so \
-  /lib/x86_64-linux-gnu/libm.so.6 \
-  /lib/x86_64-linux-gnu/libmvec.so.1 \
+  /usr/lib/x86_64-linux-gnu/libm.so.6 \
+  /usr/lib/x86_64-linux-gnu/libmvec.so.1 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -20,7 +22,7 @@ fg_cli: \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
   /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so \
-  /lib/x86_64-linux-gnu/libc.so.6 \
+  /usr/lib/x86_64-linux-gnu/libc.so.6 \
   /usr/lib/x86_64-linux-gnu/libc_nonshared.a \
   /lib64/ld-linux-x86-64.so.2 \
   /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so \
@@ -45,6 +47,10 @@ libfractal_gas_core.a:
 
 libnes_core.a:
 
+libfg_swarm_core.a:
+
+libfg_fractal_core.a:
+
 /usr/lib/gcc/x86_64-linux-gnu/15/libstdc++.so:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so:
@@ -53,9 +59,9 @@ libnes_core.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libm.so:
 
-/lib/x86_64-linux-gnu/libm.so.6:
+/usr/lib/x86_64-linux-gnu/libm.so.6:
 
-/lib/x86_64-linux-gnu/libmvec.so.1:
+/usr/lib/x86_64-linux-gnu/libmvec.so.1:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/libgcc_s.so:
 
@@ -75,7 +81,7 @@ libnes_core.a:
 
 /usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libc.so:
 
-/lib/x86_64-linux-gnu/libc.so.6:
+/usr/lib/x86_64-linux-gnu/libc.so.6:
 
 /usr/lib/x86_64-linux-gnu/libc_nonshared.a:
 

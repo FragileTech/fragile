@@ -98,6 +98,12 @@ class Wave {
                                    fitness_companions_);
     backend_.fitness_bonus(current, fitness_);
     cloning.decide_cloning_into(fitness_, alive_, rng, companions_, mask_);
+    // Elite slots are protected from replacement. They remain valid donor
+    // sources for other walkers, but their own clone flags are always clear.
+    if (has_elite) {
+      const int injected = std::min(elites, elite.N);
+      for (int i = 0; i < injected; ++i) mask_[static_cast<size_t>(i)] = 0;
+    }
     uint32_t iteration = metrics.iteration + 1;
     metrics = {};
     metrics.iteration = iteration;
@@ -274,16 +280,27 @@ class Wave {
   void update_elites(int count) {
     if (!count) return;
     const int old = has_elite ? elite.N : 0;
+    ranked_.clear();
+    ranked_.reserve(current.N + old);
+    for (int i = 0; i < old; ++i)
+      if (elite.alive(i)) ranked_.push_back(i);
+    for (int i = 0; i < current.N; ++i)
+      if (current.alive(i)) ranked_.push_back(old + i);
+    if (ranked_.empty()) {
+      has_elite = false;
+      return;
+    }
+    const int selected = std::min(count, static_cast<int>(ranked_.size()));
     prepare(elite_next, count, current.obs_dim, current.action_dim, current.has_infos);
     elite_next.has_virtual_rewards = current.has_virtual_rewards;
-    ranked_.resize(current.N + old);
-    std::iota(ranked_.begin(), ranked_.end(), 0);
     auto reward = [&](int i) { return i < old ? elite.rewards[i] : current.rewards[i - old]; };
-    std::partial_sort(ranked_.begin(), ranked_.begin() + count, ranked_.end(), [&](int a, int b) {
+    std::partial_sort(ranked_.begin(), ranked_.begin() + selected, ranked_.end(), [&](int a, int b) {
       return reward(a) == reward(b) ? a < b : reward(a) > reward(b);
     });
     for (int i = 0; i < count; ++i) {
-      int src = ranked_[i];
+      // Keep the elite bank at the requested size when fewer alive candidates
+      // exist by repeating the best alive candidate; no dead state is stored.
+      int src = ranked_[static_cast<size_t>(i % selected)];
       copy_row(src < old ? elite : current, src < old ? src : src - old, elite_next, i);
     }
     std::swap(elite, elite_next);

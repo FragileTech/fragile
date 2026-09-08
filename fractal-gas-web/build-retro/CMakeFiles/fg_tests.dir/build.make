@@ -128,10 +128,38 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_fractal_gas.cpp -o CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.s
 
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o: CMakeFiles/fg_tests.dir/flags.make
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_arcade_planner.cpp
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_arcade_planner.cpp
+
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/tests/test_arcade_planner.cpp > CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.i
+
+CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_arcade_planner.cpp -o CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.s
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o: CMakeFiles/fg_tests.dir/flags.make
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_fractal_core.cpp
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_fractal_core.cpp
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/tests/test_fractal_core.cpp > CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.i
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_fractal_core.cpp -o CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.s
+
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: CMakeFiles/fg_tests.dir/flags.make
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_nes_env.cpp
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_nes_env.cpp
 
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.i: cmake_force
@@ -142,13 +170,60 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_nes_env.cpp -o CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.s
 
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o: CMakeFiles/fg_tests.dir/flags.make
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_montezuma_logic.cpp
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_montezuma_logic.cpp
+
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/tests/test_montezuma_logic.cpp > CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.i
+
+CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_montezuma_logic.cpp -o CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.s
+
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o: CMakeFiles/fg_tests.dir/flags.make
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_visit_grid.cpp
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_visit_grid.cpp
+
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/tests/test_visit_grid.cpp > CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.i
+
+CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_visit_grid.cpp -o CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.s
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o: CMakeFiles/fg_tests.dir/flags.make
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o: /home/guillem/fragile/fractal-gas-web/tests/test_fractal_tree.cpp
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o: CMakeFiles/fg_tests.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o -MF CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o.d -o CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o -c /home/guillem/fragile/fractal-gas-web/tests/test_fractal_tree.cpp
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/tests/test_fractal_tree.cpp > CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.i
+
+CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/tests/test_fractal_tree.cpp -o CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.s
+
 # Object files for target fg_tests
 fg_tests_OBJECTS = \
 "CMakeFiles/fg_tests.dir/tests/test_main.cpp.o" \
 "CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o" \
 "CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o" \
 "CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o" \
-"CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o"
+"CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o" \
+"CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o" \
+"CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o" \
+"CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o" \
+"CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o" \
+"CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o"
 
 # External object files for target fg_tests
 fg_tests_EXTERNAL_OBJECTS =
@@ -157,13 +232,20 @@ fg_tests: CMakeFiles/fg_tests.dir/tests/test_main.cpp.o
 fg_tests: CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o
 fg_tests: CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o
 fg_tests: CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o
+fg_tests: CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o
+fg_tests: CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
 fg_tests: CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o
+fg_tests: CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o
+fg_tests: CMakeFiles/fg_tests.dir/tests/test_visit_grid.cpp.o
+fg_tests: CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o
 fg_tests: CMakeFiles/fg_tests.dir/build.make
 fg_tests: CMakeFiles/fg_tests.dir/compiler_depend.ts
 fg_tests: libfractal_gas_core.a
 fg_tests: libnes_core.a
+fg_tests: libfg_swarm_core.a
+fg_tests: libfg_fractal_core.a
 fg_tests: CMakeFiles/fg_tests.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable fg_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Linking CXX executable fg_tests"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fg_tests.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

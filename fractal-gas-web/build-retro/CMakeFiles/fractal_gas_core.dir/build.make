@@ -72,52 +72,10 @@ include CMakeFiles/fractal_gas_core.dir/flags.make
 CMakeFiles/fractal_gas_core.dir/codegen:
 .PHONY : CMakeFiles/fractal_gas_core.dir/codegen
 
-CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o: /home/guillem/fragile/fractal-gas-web/src/tensor_ops.cpp
-CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/tensor_ops.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/tensor_ops.cpp > CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/tensor_ops.cpp -o CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.s
-
-CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp
-CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp > CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp -o CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.s
-
-CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o: /home/guillem/fragile/fractal-gas-web/src/cloning.cpp
-CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/cloning.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/cloning.cpp > CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/cloning.cpp -o CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.s
-
 CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
 CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o: /home/guillem/fragile/fractal-gas-web/src/mario_reward.cpp
 CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/mario_reward.cpp
 
 CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.i: cmake_force
@@ -131,7 +89,7 @@ CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.s: cmake_force
 CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
 CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o: /home/guillem/fragile/fractal-gas-web/src/nes_env.cpp
 CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/nes_env.cpp
 
 CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.i: cmake_force
@@ -142,57 +100,19 @@ CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/nes_env.cpp -o CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s
 
-CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o: /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp
-CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp > CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp -o CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.s
-
-CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal_gas.cpp
-CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal_gas.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/fractal_gas.cpp > CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/fractal_gas.cpp -o CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.s
-
 # Object files for target fractal_gas_core
 fractal_gas_core_OBJECTS = \
-"CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o" \
 "CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o"
+"CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o"
 
 # External object files for target fractal_gas_core
 fractal_gas_core_EXTERNAL_OBJECTS =
 
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/tensor_ops.cpp.o
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/walker_state.cpp.o
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/cloning.cpp.o
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/thread_pool.cpp.o
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/fractal_gas.cpp.o
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/build.make
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX static library libfractal_gas_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libfractal_gas_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/fractal_gas_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fractal_gas_core.dir/link.txt --verbose=$(VERBOSE)
 
