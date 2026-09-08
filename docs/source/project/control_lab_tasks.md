@@ -30,6 +30,13 @@ Keep {doc}`control_lab_controls` nearby for shared settings and diagnostics.
 :::{div} feynman-prose
 For a first encounter with physical control, start with **Asteroid harvesting**:
 one rocket makes it easier to follow the difference between steering and towing.
+Both this solo preset and **Collaborative mining** start their rockets upright
+($\pi/2$ radians), with **24 N** of thrust per rocket. Walls still cause physical
+collisions, but wall contact does not kill the rockets (`lethal_walls = false`).
+Their reward settings use **Progress = 1**, **Catch = 10**, and
+**Distance squared = 0**, so moving toward cargo and catching it remain useful
+without rewarding motion or falling for their own sake.
+
 Choose **Racing** if you would rather begin with familiar driving controls. Its
 circuit sections explain the different layouts instead of assuming that one
 successful route transfers to every track.
@@ -46,9 +53,15 @@ Once the difference between actual motion and predicted motion is clear,
 ## Use a shared starting configuration
 
 :::{div} feynman-prose
-The tutorials use an explicit baseline so comparisons have a clear starting
-point. Select the task before setting these fields; then finish configuration
-before collecting a recording you want to keep.
+The tutorials use an explicit comparison configuration below. For everyday play,
+the **Asteroid harvesting** and **Collaborative mining** presets instead recommend
+**Wave Jump**, **128 Walkers**, **Horizon 32**, **Action frames 6**, **Elites 4**,
+and **Stop at first bifurcation** enabled. Switching presets updates settings
+that still match the previous recommendations and preserves custom controller
+settings; starting a fresh task resets them to its recommendations.
+
+Select the task before applying the tutorial comparison settings below, then
+finish configuration before collecting a recording you want to keep.
 
 1. Choose **Fractal Monte Carlo** under **Controller** and
    **Reproducible · wait for planning** under **Clock**.

@@ -1,5 +1,7 @@
 # Changelog
 
+- Make solo and collaborative flight mining playable with upright 24 N rockets, recoverable wall contacts, catch/target-focused rewards, and a 32-action, 6-frame, 4-elite planner preset. Preserve explicit controller tuning when switching scenes.
+
 - Consolidate native Wave, Graph, FMC, Jump Wave, and Euclidean Gas in the application-independent `fractal-gas-web/src/fractal/` library. Arcade, Control Lab, and optimization retain their batch storage and action policies; Lab Jump Wave decisions now run in C++. Reuse numerical scratch and preserve direct packed donor-to-output physics stepping. Standard comparison algorithms and Python/Torch research implementations remain separate.
 - Introduce Control Lab checkpoint version 2 with shared population, elite, RNG, history, and incremental planner state; reject previous checkpoints without migration. Advance the optimization replay engine identifier to `fgopt-4`. Stable cumulative-reward elite ties, complete elite metadata, common lifecycle ordering, and terminal bookkeeping can change historical seeded trajectories; replay remains deterministic within the new backend/build.
 - Keep Arcade WASM builds from overwriting Lab's standalone module, and allow fractional benchmark targets so the default target does not block applying controller settings.

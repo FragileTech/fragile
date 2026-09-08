@@ -214,9 +214,29 @@ The files under `scenarios/` are editable examples:
 | Asteroid harvesting | 1 | Hook polygon ore and deliver it to a base under local gravity |
 | Ants & drops | 1–128 (default 5) | Choose any of the four vehicle types; seeded drop respawning |
 | Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
-| Collaborative mining | 2 | Two elastic tethers carrying the same heavy asteroid |
+| Collaborative mining | 2 | Two elastic tethers sharing one liftable asteroid |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
 | Racing / select track | 1 | Ordered checkpoints around a closed circuit, with lap progress and manual driving |
+
+### Flight mining defaults
+
+Asteroid harvesting and Collaborative mining start with upright rockets and
+24 N of thrust each. A single rocket can lift the stock rock and hook with
+turning headroom; wall contacts remain physical but do not end the run.
+The presets reward target progress and catches, with unrestricted movement
+reward (`distance_squared`) disabled so falling or racing around is not a goal.
+
+Their `controller_defaults` select a 32-action horizon, 6 physics frames per
+action, and 4 elites. Wave Jump keeps the standard 128 walkers and shared-prefix
+execution. New tasks use these recommendations; switching scenes updates values
+that still match the previous preset and preserves custom controller settings.
+Imported runs and checkpoints retain their recorded settings.
+
+Run `npm run test:lab-mining` from `fractal-gas-web/` to check ten simulated
+seconds of both shipped presets in WASM at seed 7. The acceptance run requires
+a new catch, sustained towing, a delivery, and no termination in each mode;
+`CONTROL_MINING_SEEDS=7,19,42` checks additional seeds. This longer gameplay
+check is separate from the quick preset and lift-budget unit tests.
 
 ### Ants & drops
 

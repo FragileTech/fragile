@@ -61,7 +61,7 @@ try {
   await page.locator("#walkers").press("Tab");
   await page.locator("#horizon").fill("2");
   await page.locator("#horizon").press("Tab");
-  assert.equal(await page.evaluate(() => workspaceTest.settings().horizon), 64);
+  assert.equal(await page.evaluate(() => workspaceTest.settings().horizon), 32);
   assert.match(await tick(), /000000/);
   const oldId = await page.evaluate(() => workspaceTest.replay.recording.id);
   await page.locator("#apply-configuration").click();

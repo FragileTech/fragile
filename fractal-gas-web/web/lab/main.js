@@ -35,6 +35,7 @@ import { treePoseDim, treeWidth } from "./actions.js";
 import { bytesOf } from "./motion.js";
 import { ExperimentPanel } from "./experiment-panel.js";
 import { ControllerSettings } from "./controller-settings.js";
+import { presetControllerSettings } from "./preset-settings.js";
 import { scenePresentation, sceneReadout } from "./scene-presentation.js";
 import { renderCircuitPreview } from "./circuit-preview.js";
 import { StoragePanel } from "./storage-panel.js";
@@ -919,7 +920,7 @@ function upload(accept, callback) {
   };
   $("file").click();
 }
-async function preset() {
+async function preset({ resetControllerDefaults = false } = {}) {
   const request = ++presetRequest,
     scenario = $("scenario").value,
     sceneId = scenario === "racing" ? $("track").value || "racing" : scenario;
@@ -944,6 +945,13 @@ async function preset() {
         scene,
         miningOptions.get(scenario) ?? rockOptions(scene),
       );
+    const configuration = presetControllerSettings(
+      scene,
+      draftSettings(),
+      workspace.draft?.scene,
+      !initialized || resetControllerDefaults,
+    );
+    applySettings(configuration);
     $("toy").textContent = String($("scenario").selectedIndex + 1).padStart(
       2,
       "0",
@@ -955,6 +963,7 @@ async function preset() {
       initialized = true;
     } else {
       stageScene(scene);
+      stageSettings();
       renderSetupDraft(scene);
     }
   } catch (e) {
@@ -1361,7 +1370,7 @@ async function loadPresets() {
       vehicleCounts.delete(id);
       miningOptions.delete(id);
       $("scenario").value = id;
-      await preset();
+      await preset({ resetControllerDefaults: true });
       await applyConfiguration();
     });
   } catch (e) {

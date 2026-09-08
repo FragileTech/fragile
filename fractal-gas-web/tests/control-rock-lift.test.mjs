@@ -11,22 +11,46 @@ const mining = JSON.parse(
 );
 const module = await loadNative();
 
+test("stock flight rockets start upright with enough thrust to bank while towing", async () => {
+  for (const name of ["harvest", "mining"]) {
+    const scene = JSON.parse(
+      await readFile(
+        new URL(`../web/lab/scenarios/${name}.json`, import.meta.url),
+      ),
+    );
+    const rock = Math.max(
+      ...scene.bodies.filter((b) => b.cargo).map((b) => b.mass),
+    );
+    for (const body of scene.bodies.filter((b) => b.controlled)) {
+      assert.ok(Math.abs(body.angle - Math.PI / 2) < 1e-6);
+      assert.ok(
+        body.thrust / Math.sqrt(2) >
+          (body.mass + scene.hook_mass + rock) * 9.81,
+        "one rocket must support the heaviest stock rock even banked 45 degrees",
+      );
+    }
+    assert.equal(scene.physics.lethal_walls, false);
+    assert.equal(scene.rewards.distance_squared, 0);
+    assert.ok(scene.rewards.catch > 0 && scene.rewards.progress > 0);
+  }
+});
+
 test("mining lift budget accounts for rocket weight and respects thrust settings", () => {
   const budget = rockLiftBudget(mining);
-  assert.equal(budget.thrust, 32);
+  assert.equal(budget.thrust, 48);
   assert.ok(Math.abs(budget.load - 26.8794) < 1e-8);
   assert.equal(budget.canLift, true);
-  assert.ok(budget.suggestedWeight >= 0.01 && budget.suggestedWeight < 1);
+  assert.ok(budget.suggestedWeight >= 1);
   const light = configureRocks(mining, {
     scale: 1,
     count: 1,
     weight: budget.suggestedWeight,
   });
   assert.ok(rockLiftBudget(light).canLift);
-  assert.ok((1.25 + light.bodies[2].mass) * 9.81 <= 0.8 * 16);
+  assert.ok((1.25 + light.bodies[2].mass) * 9.81 <= 0.8 * 24);
   assert.equal(rockLiftBudget(light).suggestedWeight, budget.suggestedWeight);
   const boosted = withActionMultipliers(mining, { rocket: { thrust: 10 } });
-  assert.equal(rockLiftBudget(boosted).thrust, 320);
+  assert.equal(rockLiftBudget(boosted).thrust, 480);
   assert.equal(rockLiftBudget(boosted).canLift, true);
   assert.ok(rockLiftBudget(boosted).suggestedWeight > budget.suggestedWeight);
   const disabled = withActionMultipliers(mining, { rocket: { thrust: 0 } });
@@ -61,7 +85,7 @@ test("lift estimates handle gravity overrides, hook settings, and unsupported ac
     kind: "holonomic",
     action_multipliers: { force_x: 0, force_y: 2 },
   };
-  assert.equal(rockLiftBudget(scene).thrust, 64);
+  assert.equal(rockLiftBudget(scene).thrust, 96);
 });
 
 // Use the shipped polygon and actuator definitions in a clear vertical takeoff
@@ -129,7 +153,7 @@ test("every stock asteroid lifts with one rocket and the default hook at 1×", a
   );
   assert.equal(baseline.rock_options.weight, 1);
   const budget = rockLiftBudget(baseline);
-  assert.equal(budget.thrust, 16);
+  assert.equal(budget.thrust, 24);
   assert.ok(Math.abs(budget.load - 12.753) < 1e-8);
   assert.ok(budget.load <= 0.8 * budget.thrust);
   assert.ok(budget.suggestedWeight >= 1);

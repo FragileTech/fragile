@@ -1,4 +1,5 @@
 import { controllerDefinitions } from "./controllers/registry.js";
+import { DEFAULT_PLANNING_BUDGET } from "./preset-settings.js";
 
 const common = {
   walkers: {
@@ -12,14 +13,14 @@ const common = {
     label: "Lookahead actions",
     min: 1,
     max: 4096,
-    default: 64,
+    default: DEFAULT_PLANNING_BUDGET.horizon,
     step: 1,
   },
   frames: {
     label: "Action duration (frames)",
     min: 1,
     max: 60,
-    default: 12,
+    default: DEFAULT_PLANNING_BUDGET.frames,
     step: 1,
   },
 };
