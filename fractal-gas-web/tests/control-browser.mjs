@@ -155,7 +155,12 @@ try {
     await ready();
     await page.locator("#step").click();
     await idle();
-    assert.equal(await page.locator("#tick").innerText(), "TICK 000006");
+    // Scenarios can restage the planning budget, so read back the applied one.
+    const frames = Number(await page.locator("#frames").inputValue());
+    assert.equal(
+      await page.locator("#tick").innerText(),
+      `TICK ${String(frames).padStart(6, "0")}`,
+    );
     console.log(`Checked ${scenario}: staged scene and controller step.`);
     await graphicsReady();
     await captureScreenshot(page, {

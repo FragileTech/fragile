@@ -99,6 +99,9 @@ try {
       );
       // Exercise real planning in both backends with a small smoke-test budget.
       // Set six action frames so tick and replay assertions stay meaningful.
+      await page.locator("#scenario").selectOption("racing");
+      // Scenario presets restage the planning budget, so tune after the switch.
+      await page.waitForFunction(() => !document.body.dataset.loadingPreset);
       await page.locator("#tab-controller").click();
       for (const [id, value] of [
         ["walkers", "8"],
@@ -111,7 +114,6 @@ try {
           () => !document.getElementById("run").disabled,
         );
       }
-      await page.locator("#scenario").selectOption("racing");
       await applyDraft(page);
       await page.waitForFunction(
         () => !document.getElementById("run").disabled,

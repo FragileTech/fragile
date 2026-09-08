@@ -156,7 +156,8 @@ test("rock edits preserve later per-agent actuator multipliers", () => {
       inspected.slice(i * 8, i * 8 + 8),
     ).find((row) => row[0] === 0 && row[1] === 0);
     assert.ok(force);
-    assert.ok(force[5] > 159);
+    // Column 7 is the force magnitude, so the check survives spawn-angle tweaks.
+    assert.ok(force[7] > 159);
   } finally {
     engine.dispose();
   }

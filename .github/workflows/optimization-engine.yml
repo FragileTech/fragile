@@ -55,6 +55,11 @@ jobs:
             --workdir /work \
             mcr.microsoft.com/playwright:v1.58.2-noble \
             bash fractal-gas-web/tools/test-optimization-browser.sh
+      # The container runs as root, so downloads land owner-only and the
+      # runner user cannot read them while zipping the artifact.
+      - name: Make container artifacts readable
+        if: always()
+        run: sudo chmod -R a+rX "$RUNNER_TEMP/optimization-browser"
       - uses: actions/upload-artifact@v4
         if: always()
         with:

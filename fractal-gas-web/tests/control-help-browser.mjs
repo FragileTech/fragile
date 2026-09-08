@@ -42,8 +42,11 @@ for (const [name, type] of Object.entries({ chromium, firefox })) {
       [],
     );
 
-    // Resolve the actual checkbox id from the page rather than assuming it.
-    const checkLabel = page.locator("label.check[data-help]:has(input:not(:disabled))").first();
+    // Resolve the actual checkbox id from the page rather than assuming it, and
+    // skip the checkboxes that live inside collapsed panels.
+    const checkLabel = page
+      .locator("label.check[data-help]:has(input:not(:disabled)):visible")
+      .first();
     const checkbox = checkLabel.locator('input[type="checkbox"]');
     const checked = await checkbox.isChecked();
     await checkLabel.click({ position: { x: 90, y: 7 } });
