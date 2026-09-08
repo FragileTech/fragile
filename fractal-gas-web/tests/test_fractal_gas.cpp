@@ -1,10 +1,10 @@
 #include <deque>
 
+#include "fixtures/fixtures_generated.hpp"
 #include "fractal_gas.hpp"
 #include "mock_env.hpp"
 #include "test_framework.hpp"
 #include "visit_mock_env.hpp"
-#include "fixtures/fixtures_generated.hpp"
 
 using namespace fg;
 
@@ -17,16 +17,16 @@ class ReplayCloningOperator final : public FractalCloningOperator {
   mutable std::deque<std::vector<int32_t>> companions_queue;
   mutable std::deque<std::vector<float>> uniforms_queue;
 
-  std::vector<int32_t> sample_companions(const std::vector<uint8_t>&,
-                                         Rng&) const override {
+  void sample_companions_into(const std::vector<uint8_t>&, Rng&,
+                              std::vector<int32_t>& out) const override {
     auto v = companions_queue.front();
     companions_queue.pop_front();
-    return v;
+    out = std::move(v);
   }
-  std::vector<float> sample_uniforms(int32_t, Rng&) const override {
+  void sample_uniforms_into(int32_t, Rng&, std::vector<float>& out) const override {
     auto v = uniforms_queue.front();
     uniforms_queue.pop_front();
-    return v;
+    out = std::move(v);
   }
 };
 
@@ -35,15 +35,13 @@ class ReplayActionOperator final : public RandomActionOperator {
   mutable std::deque<std::vector<int32_t>> actions_queue;
   mutable std::deque<std::vector<int32_t>> dt_queue;
 
-  std::vector<int32_t> sample_actions(int32_t, int32_t, Rng&) const override {
-    auto v = actions_queue.front();
+  void sample_actions_into(int32_t, int32_t, Rng&, std::vector<int32_t>& v) const override {
+    v = actions_queue.front();
     actions_queue.pop_front();
-    return v;
   }
-  std::vector<int32_t> sample_dt(int32_t, Rng&) const override {
-    auto v = dt_queue.front();
+  void sample_dt_into(int32_t, Rng&, std::vector<int32_t>& v) const override {
+    v = dt_queue.front();
     dt_queue.pop_front();
-    return v;
   }
 };
 
@@ -73,8 +71,8 @@ TEST_CASE(full_run_replays_python_reference) {
   params.dt_max = 4;
   params.n_elite = fixtures::kRunNElite;
 
-  FractalGas gas(env, params, std::make_unique<Mt19937Rng>(0),
-                 std::move(clone_op), std::move(kinetic_op));
+  FractalGas gas(env, params, std::make_unique<Mt19937Rng>(0), std::move(clone_op),
+                 std::move(kinetic_op));
   gas.reset();
 
   for (int it = 0; it < fixtures::kRunIters; ++it) {
@@ -123,17 +121,23 @@ TEST_CASE(same_seed_is_deterministic) {
 TEST_CASE(wave_optional_tree_preserves_elite_and_clone_ancestry) {
   MockEnv env;
   for (auto recording : {RecordingMode::Full, RecordingMode::Pruned}) {
-    FractalGasParams params; params.N = 16; params.n_elite = 3; params.seed = 33;
+    FractalGasParams params;
+    params.N = 16;
+    params.n_elite = 3;
+    params.seed = 33;
     params.recording = recording;
-    FractalGas gas(env, params); gas.reset();
+    FractalGas gas(env, params);
+    gas.reset();
     for (int i = 0; i < 6; ++i) gas.step();
     const auto& tree = gas.exploration_tree();
     for (int i = 0; i < gas.state().N; ++i) {
       float expected[3] = {0, 0, 0};
       for (uint32_t id : tree.branch(gas.state().lineage[i])) {
-        const auto& node = tree.node(id); if (!node.parent) continue;
+        const auto& node = tree.node(id);
+        if (!node.parent) continue;
         expected[0] += (tree.action(id)[0] + 1) * node.frames;
-        expected[1] += .5f * node.frames; expected[2] += 1;
+        expected[1] += .5f * node.frames;
+        expected[2] += 1;
       }
       CHECK(std::memcmp(expected, gas.state().states[i].data(), sizeof(expected)) == 0);
     }
@@ -162,19 +166,15 @@ class RecoverableMockEnv final : public BatchEnv {
   }
 
   void step_batch(const std::vector<std::vector<char>>& states,
-                  const std::vector<int32_t>& actions,
-                  const std::vector<int32_t>& dt,
-                  std::vector<std::vector<char>>& new_states,
-                  std::vector<float>& observations, std::vector<float>& rewards,
-                  std::vector<uint8_t>& dones,
+                  const std::vector<int32_t>& actions, const std::vector<int32_t>& dt,
+                  std::vector<std::vector<char>>& new_states, std::vector<float>& observations,
+                  std::vector<float>& rewards, std::vector<uint8_t>& dones,
                   std::vector<uint8_t>& truncated) override {
-    inner_.step_batch(states, actions, dt, new_states, observations, rewards,
-                      dones, truncated);
+    inner_.step_batch(states, actions, dt, new_states, observations, rewards, dones, truncated);
     recoverable_.assign(states.size(), 0);
     for (size_t i = 0; i < states.size(); ++i) {
       const float steps = observations[i * kObsDim + 2];
-      const bool dies = mode_ == Mode::kEvenSoft ? (i % 2 == 0)
-                                                 : steps >= kDeathStep;
+      const bool dies = mode_ == Mode::kEvenSoft ? (i % 2 == 0) : steps >= kDeathStep;
       dones[i] = dies ? 1 : 0;
       if (dies && mode_ != Mode::kAllHard) recoverable_[i] = 1;
     }
@@ -185,8 +185,7 @@ class RecoverableMockEnv final : public BatchEnv {
     return recoverable_[static_cast<size_t>(i)] != 0;
   }
 
-  void render_frame(const std::vector<char>&,
-                    std::vector<uint8_t>& rgba) override {
+  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override {
     rgba.clear();
   }
   int32_t frame_width() const override { return 0; }
@@ -331,7 +330,8 @@ TEST_CASE(wave_visit_term_switches_live) {
   // Elite injection keeps the info consistent with the injected walker.
   const WalkerState& s = gas.state();
   for (int32_t i = 0; i < s.N; ++i) {
-    CHECK(s.infos[static_cast<size_t>(i)].visit_x == static_cast<int32_t>(s.observations[static_cast<size_t>(i) * 3]));
+    CHECK(s.infos[static_cast<size_t>(i)].visit_x ==
+          static_cast<int32_t>(s.observations[static_cast<size_t>(i) * 3]));
   }
 }
 
@@ -360,7 +360,9 @@ class EarlyStopMockEnv final : public BatchEnv {
  public:
   int32_t n_actions() const override { return inner_.n_actions(); }
   int32_t obs_dim() const override { return inner_.obs_dim(); }
-  void reset(std::vector<char>& state, std::vector<float>& obs) override { inner_.reset(state, obs); }
+  void reset(std::vector<char>& state, std::vector<float>& obs) override {
+    inner_.reset(state, obs);
+  }
   void step_batch(const std::vector<std::vector<char>>& states,
                   const std::vector<int32_t>& actions, const std::vector<int32_t>& dt,
                   std::vector<std::vector<char>>& new_states, std::vector<float>& observations,
@@ -371,9 +373,12 @@ class EarlyStopMockEnv final : public BatchEnv {
     for (size_t i = 0; i < states.size(); ++i) frames_[i] = (i % 2) ? dt[i] - 1 : dt[i];
   }
   int32_t frames_stepped(int32_t i) const override { return frames_[static_cast<size_t>(i)]; }
-  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override { rgba.clear(); }
+  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override {
+    rgba.clear();
+  }
   int32_t frame_width() const override { return 0; }
   int32_t frame_height() const override { return 0; }
+
  private:
   MockEnv inner_;
   std::vector<int32_t> frames_;

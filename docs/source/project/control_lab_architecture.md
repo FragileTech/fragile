@@ -86,6 +86,47 @@ A native runtime has one caller. Give simultaneous Python callers separate
 parallelize independent worlds. Browser workers likewise own separate native runtimes.
 :::
 
+(sec-lab-architecture-fractal)=
+## Share the algorithm, specialize the state backend
+
+:::{div} feynman-prose
+The common C++ implementation lives in `src/fractal/` and is built through
+`fg_fractal_core`. Arcade, Lab, and optimization supply adapters around it. Wave
+owns the population lifecycle: restore elites, calculate fitness, choose donors,
+sample actions, advance worlds, update rewards and ancestry, and retain elites.
+`FractalGas` and Lab's `PackedWave` wrap that same template. Elite state travels with
+both cumulative and step rewards, actions, terminal metadata, and lineage. Selection
+uses cumulative reward, with stable ties retaining prior elites before current
+walkers in index order. Shared history and checkpoint primitives also live in the
+core, without depending on Lab's scene or JSON types.
+
+The core's metadata arrays are separate from backend-owned physical storage.
+`src/backends/control.hpp` uses packed `StateBatch` rows and float action vectors;
+the snapshot backend uses opaque saved states and integer actions. Optimization
+retains integer seed actions for its perturbation adapter. Templates specialize
+these storage and action operations at compile time. Lab still passes donor indices
+directly to `Physics::step`, which reads the original source bank and writes the next
+batch. It does not serialize each walker or construct an intermediate cloned physics
+batch for a Wave iteration. Existing execution slots and physics scratch storage
+remain in the backend.
+
+Graph owns a separate update loop in the common library: it advances selected
+leaves while keeping parents frozen and respecting population growth limits. It uses
+indexed batch transitions and remains available in Arcade and optimization.
+Euclidean Gas also has its own common implementation, with position/velocity arrays
+and domain capabilities for evaluation, gradients, bounds, and proposal noise. Its
+kinetic dynamics require meaningful coordinates; extracting the implementation does
+not make it an algorithm over opaque emulator snapshots or add it to Lab.
+
+FMC and Jump Wave use the common incremental native planner around Wave. Action
+selection is explicit: Arcade and optimization use discrete voting, while Lab FMC
+uses the population mean of inherited root actions. Lab's bounded continuous-action
+policy also retains its optional noisy mutation of inherited actions. Standard
+comparison controllers keep their own implementations, and Python/Torch Fractal
+algorithms remain separate research implementations. Python's native Lab wrapper
+calls the shared C++ engine.
+:::
+
 (sec-lab-architecture-state)=
 ## Compile once, copy complete state rows
 
@@ -220,8 +261,9 @@ omit information such as the environment RNG and pickup respawn timers.
 | `transition_results(out=None)` | Float32 `[worlds, 4]`: reward, actual frames, terminal flag, collisions. |
 | `observations(out=None)` | Float32 `[worlds, observation_dim]` derived observations. |
 | `metrics()` | Last-transition aggregates plus first-world task counters and planner statistics. |
-| `begin_plan(seed=7, **settings)` / `advance_plan()` | Start native FMC and advance incrementally; `True` means complete. |
-| `selected_action()` / `plan(**settings)` | One joint action; `plan` runs FMC to completion and returns `(action, metrics)`. |
+| `begin_plan(seed=7, **settings)` / `advance_plan()` | Start native Fractal planning and advance incrementally; `True` means complete. |
+| `plan_result()` | Finalize native planning if necessary; return selected actions, recorded durations, search depth, and selection reason. |
+| `selected_action()` / `plan(**settings)` | One joint action; `plan` runs the configured native search to completion and returns `(action, metrics)`. |
 | `wave_step()` | Advance the active native Wave population. |
 | `checkpoint()` / `restore_checkpoint(bytes)` | Save/restore native world and search computation state. |
 | `exploration_tree()` / `replay_node(node_id)` | Export FMC ancestry or restore a recorded future. |
@@ -236,7 +278,7 @@ omit information such as the environment RNG and pickup respawn timers.
 including per-walker `ControlState` objects and observations. Use it to compose those
 algorithms, with `record_frames=False` because RGB rendering belongs to the browser.
 Use `ControlEngine` directly when avoiding per-walker Python objects matters. Python
-`plan()` invokes native FMC; the JavaScript CEM, iCEM, and MPPI plugins are available
+`plan()` defaults to native FMC; the JavaScript CEM, iCEM, and MPPI plugins are available
 through browser and Node hosts, not through that Python method.
 :::
 
@@ -264,6 +306,15 @@ tests check thread-count determinism. This does not promise bitwise equality bet
 arbitrary compiler versions, CPU architectures, and WebAssembly implementations.
 Planner checkpoints additionally identify the backend and preserve search RNG and
 optimizer memory. Match the backend when resuming computation.
+
+Native Lab computation checkpoints now use format version 2. They contain physical
+state, Wave population and elite metadata, ancestry, search RNG, action-policy
+settings, and incremental planner progress. Older computation checkpoints are
+rejected; there is no legacy loader or migration. This version is separate from the
+physical-world snapshot header described above. Continuation is intended for the
+same backend and build. Standardized bookkeeping and random-draw ordering can change
+historical seeded trajectories, so a seed from the earlier implementation is not a
+promise of the same future in this version.
 
 The reproducible clock waits for search; the real-time clock may commit a fallback
 when a deadline is missed. Scheduling can therefore change real-time trajectories
@@ -297,19 +348,23 @@ A result needs one finite, bounded joint `action` of length `engine.dim`. Option
 defaults when omitted. Action dimension is independent of the tree's pose dimension.
 
 Wave Jump (`wave-jump`) additionally returns `trajectory: [{ action, frames }, ...]`,
-`selectedLeaf`, and `selectedReward`. Each edge has a finite, bounded joint action
-and a positive integer physics-frame duration; the controller removes zero-duration
-edges before returning it. The ordinary `action` remains the trajectory's first
-action. `selectedLeaf` is the selected final walker's native tree node ID, and
-`selectedReward` is its accumulated path reward. The adapter's `bestLeaf()` calls
-`fgc_plan_best_leaf`, which selects the alive final walker with the highest accumulated
-reward and breaks ties by lower walker index. Alive means nonterminal in the native
-physics state. If every final walker is terminal, the accessor returns the
-highest-reward final walker, with the same tie-breaking rule. Wave Jump checks the
-selected leaf's terminal flag: an alive winner supplies its full ancestral path;
-a terminal winner supplies only the first positive-duration action on its path,
-with that action's original recorded frame duration. Wave Jump retains at least
-pruned native ancestry internally even when public tree recording is disabled.
+`selectedLeaf`, and `selectedReward`. The native planner filters zero-duration edges
+and returns their actual recorded physics-frame durations. The ordinary `action`
+is the trajectory's first action. `selectedLeaf` identifies the highest-reward alive
+final walker, breaking ties by lower walker index; if all are terminal, it identifies
+the highest-reward terminal walker. `selectedReward` is that walker's accumulated
+path reward, which may extend beyond a returned shared prefix.
+
+The native planner owns the stopping and execution decisions. With **Stop at first
+bifurcation** enabled, it returns the executable ancestral prefix shared by surviving
+final walkers. If no prefix exists at the normal horizon, it extends search up to
+the configured maximum, then returns one best-path action. With that option disabled,
+it returns the best surviving walker's full path. An all-dead population returns one
+best-path action. Both fallbacks preserve that action's recorded duration. Wave Jump
+retains at least pruned ancestry internally even when public tree recording is
+disabled. Its JavaScript plugin calls native `begin`, `advance`, and `planResult`
+and packages diagnostics; cancellation and deadlines occur between complete native
+search iterations.
 
 The planner worker validates and transfers the trajectory. Live Wave Jump hosts
 keep physics paused throughout search, including with the real-time clock, then
@@ -325,8 +380,8 @@ alone do not save a JavaScript optimizer's arrays or warm-start plan. Wave Jump'
 planner checkpoint preserves its native search separately from the host execution
 checkpoint, whose cursor stores `trajectory`, `index`, and `remaining` frames with
 the executed world. Restore the cursor to finish a partly executed trajectory
-without repeating actions or planning again. These additions are browser Lab and
-experiment-runner interfaces; they add no Python-facing algorithm API.
+without repeating actions or planning again. Python exposes native selection through
+`plan_result()`; browser hosts additionally own the trajectory execution cursor.
 :::
 
 ### A complete small controller plugin

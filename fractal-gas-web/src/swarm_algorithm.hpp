@@ -4,8 +4,8 @@
 //   - "Graph" = FractalTree (src/fractal_tree.hpp): growing tree of states,
 //               only cloning leaves step, parents recorded.
 // The bindings, the native CLI and the UI only talk to this interface. The
-// two implementations are independent of each other (they share nothing but
-// the pure tensor helpers, exactly like the two Python references).
+// Their distinct update rules live in src/fractal/. Snapshot backends and
+// numerical operators are shared; application rendering stays in the adapters.
 #ifndef FRACTAL_GAS_SWARM_ALGORITHM_HPP
 #define FRACTAL_GAS_SWARM_ALGORITHM_HPP
 
@@ -14,35 +14,12 @@
 #include <vector>
 
 #include "env.hpp"
+#include "fractal/metrics.hpp"
 #include "visit_grid.hpp"
 
 namespace fg {
 
-/// The info dict emitted by one iteration of either algorithm (tensor-valued
-/// diagnostic entries from the Python versions are omitted).
-struct StepInfo {
-  int32_t iteration = 0;
-  int32_t num_cloned = 0;
-  int32_t num_revived = 0;
-  int32_t alive_count = 0;
-  float mean_reward = 0.0f;
-  float max_reward = 0.0f;
-  float min_reward = 0.0f;
-  float mean_virtual_reward = 0.0f;
-  float max_virtual_reward = 0.0f;
-  float min_virtual_reward = 0.0f;
-  float mean_dt = 0.0f;
-  int32_t min_dt = 0;
-  int32_t max_dt = 0;
-  int32_t best_walker_idx = 0;
-  // Population bookkeeping. Wave: all three equal N. Graph: the live tree
-  // size after the step, its leaf count (the mask that drove the step) and
-  // the number of walkers that actually ran the environment.
-  int32_t n_walkers = 0;
-  int32_t n_leaves = 0;
-  int32_t num_stepped = 0;
-};
-
+/// Application-facing access to population metrics and display state.
 class SwarmAlgorithm {
  public:
   virtual ~SwarmAlgorithm() = default;

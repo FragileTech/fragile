@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "control/physics.hpp"
+#include "control/wave.hpp"
 static std::atomic<size_t> allocations{0};
 void* operator new(size_t n) {
   void* p = std::malloc(n ? n : 1);
@@ -21,7 +22,9 @@ int main() {
   auto scene = Scene::compile(
       R"({"rewards":{"distance_squared":1},"bodies":[{"position":[10,10],"controlled":true},{"position":[13,10],"cargo":true}],"tethers":[{"a":0,"b":1}],"pickups":[{"position":[10,10]}]})");
   for (bool resting : {false, true}) {
-    if (resting) scene = Scene::compile(R"({"environment":{"flight":true},"bodies":[{"position":[10,0.5],"controlled":true,"vertices":[[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5]]},{"position":[13,0.5],"cargo":true}]})");
+    if (resting)
+      scene = Scene::compile(
+          R"({"environment":{"flight":true},"bodies":[{"position":[10,0.5],"controlled":true,"vertices":[[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5]]},{"position":[13,0.5],"cargo":true}]})");
     for (int threads : {1, 4}) {
       size_t small = 0;
       for (int worlds : {16, 256}) {
@@ -42,6 +45,33 @@ int main() {
         else if (count != small || count > size_t(threads + 2))
           return 1;
       }
+    }
+  }
+  // Count the complete shared Wave lifecycle, including non-cumulative elite
+  // restoration and action inheritance, after both state banks are warm.
+  for (int threads : {1, 4}) {
+    size_t small = 0;
+    for (int walkers : {16, 256}) {
+      Physics physics(scene, threads);
+      StateBatch root(1, *scene);
+      root.reset(*scene, 7);
+      WaveConfig config;
+      config.walkers = walkers;
+      config.elites = 4;
+      config.cumulative = false;
+      config.recording = fg::RecordingMode::Off;
+      PackedWave wave(physics, config, 7);
+      wave.reset(root);
+      for (int i = 0; i < 12; ++i) wave.step();
+      allocations = 0;
+      for (int i = 0; i < 10; ++i) wave.step();
+      size_t count = allocations.load();
+      std::cout << walkers << " walkers, " << threads << " threads: " << count / 10.0
+                << " allocations per complete Wave iteration\n";
+      if (walkers == 16)
+        small = count;
+      else if (count != small || count > 10 * size_t(threads + 3))
+        return 1;
     }
   }
 }

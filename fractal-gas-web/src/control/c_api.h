@@ -43,6 +43,7 @@ int fgc_observe(void* p, float* out, size_t count);
 int fgc_plan_begin(void* p, const char* settings, uint32_t seed);
 int fgc_plan_advance(void* p);
 float* fgc_plan_action(void* p);
+const char* fgc_plan_result(void* p);
 int fgc_plan_best_leaf(void* p);
 int fgc_plan_common_ancestor(void* p);
 int fgc_wave_step(void* p);
@@ -56,8 +57,7 @@ size_t fgc_checkpoint_size(void* p);
 int fgc_checkpoint_write(void* p, uint8_t* out, size_t capacity);
 int fgc_checkpoint_restore(void* p, const uint8_t* data, size_t size);
 int fgc_replay_node(void* p, uint32_t id);
-float fgc_raycast(void* p, float x, float y, float dx, float dy,
-                  float distance);
+float fgc_raycast(void* p, float x, float y, float dx, float dy, float distance);
 #ifdef __cplusplus
 }
 #endif

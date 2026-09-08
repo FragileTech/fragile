@@ -75,15 +75,17 @@ solutions; use fitness and companion overlays to understand selection. **Fitness
 (pre-step)** and **Pre-step fitness** label the selection-stage value retained in
 a snapshot. It is not recomputed at the displayed post-step coordinates.
 
-**Wave** and **Graph** use the existing C++ `FractalGas` and `FractalTree`
-implementations in a continuous benchmark environment. A move earns the change
+**Wave** and **Graph** use the shared C++ Fractal implementations through
+`FractalGas` and `FractalTree` adapters for a continuous benchmark environment.
+A move earns the change
 in selection score: objective decrease when minimizing, increase when maximizing.
 Cumulative reward is anchored to a common baseline, so different path lengths do
 not give a walker credit merely for taking more steps. Cloning carries the
 corresponding state and reward history together. Graph also retains ancestry;
 its population can grow beyond its starting set of walkers.
 
-**FMC** and **Wave Jump** reuse the existing `ArcadePlanner` over a Wave search.
+**FMC** and **Wave Jump** use the shared Fractal planner through `ArcadePlanner`
+over a shared Wave search.
 They keep one committed position and explore possible continuations from it.
 **Step** advances one search iteration or executes one chosen action; it does not
 complete an entire planning cycle. During search, the cloud can move while the
@@ -704,13 +706,25 @@ snapshot, sample objectives, and destroy it. The main thread receives transferre
 snapshot buffers and draws them with Three.js. It does not implement a second
 version of the objective or advance the algorithm during rendering.
 
-`fg_swarm_core` supplies the shared `FractalGas`, `FractalTree`, and
-`ArcadePlanner` implementations. Optimization's Wave, Graph, FMC, and Wave Jump
-adapters configure those classes; they do not reimplement the swarm or planning
-algorithms. The config IDs are `wave`, `graph`, `fmc`, and `wave_jump`; the general
-Euclidean Gas implementation uses `euclidean`.
+`fractal-gas-web/src/fractal/` contains the shared Wave, Graph, FMC, Wave Jump,
+and Euclidean Gas implementations. Its `fg_fractal_core` library supplies common
+numerical and history operations; the algorithm templates specialize state storage
+and actions without depending on benchmarks or application configuration. Wave
+owns the population lifecycle, including cloning, rewards, elites, and lineage.
+The shared planner owns action selection and search-horizon decisions; each host
+retains its execution clock and presentation.
 
-GAS (2017) uses `gas` and registers its adaptive position proposal as
+Optimization reaches Wave, Graph, FMC, and Wave Jump through the `fg_swarm_core`
+snapshot adapters, using integer action seeds for position perturbations. Lab
+instantiates the same Wave implementation with packed physics states and continuous
+actions, so sharing the algorithm does not require serializing its state batches.
+Euclidean Gas instead uses an objective-domain adapter for evaluation, gradients,
+bounds, and evaluation accounting, with a separate proposal interface for noise.
+The config IDs remain `wave`, `graph`, `fmc`, `wave_jump`, and `euclidean`;
+consolidation does not change the algorithm menu.
+
+GAS (2017) and the CMA-ES comparison algorithms retain their separate
+implementations. GAS (2017) uses `gas` and registers its adaptive position proposal as
 `gas_adaptive`. Its bounded local solver and dependencies are shared by native
 and WebAssembly builds. GAS settings travel through the existing configuration
 and recording paths; its population uses the existing snapshot layout.
@@ -785,7 +799,9 @@ The benchmark environment uses 24-bit action IDs as perturbation seeds, exactly
 representable in the shared planner's float action recorder. Given the same
 engine, configuration, starting state, action ID, and proposal-step count, the
 environment repeats the same perturbations and stochastic objective sample.
-Thus executing a recorded search edge does not draw a different future. Planner
+The proposal geometry stays frozen throughout each planning cycle, including
+execution, and updates before the next search. Thus executing a recorded search
+edge does not draw a different future. Planner
 rewards are changes from their search root's score; the adapter adds that root
 baseline back when exposing an absolute candidate score. This preserves the
 objective ranking across searches without changing the planner's reward logic.
@@ -801,11 +817,16 @@ recorded-frame replay uses the saved arrays directly and does not require
 regenerating those draws. Python uses its own random streams, so matching seeds
 alone does not establish Python/C++ operator parity.
 
+The shared Wave implementation standardizes elite bookkeeping, carrying each
+elite's state, rewards, actions, terminal flags, and lineage together. Its
+cumulative-reward ordering can change trajectories from earlier engine versions
+even with the same seed; the fitness and cloning formulas are retained.
+
 Two details matter when comparing Euclidean Gas with its Python reference. The
 reference `random_pairing` operator pairs live rows and leaves dead rows pointing
-to themselves. The C++ operator preserves that rule; the optimization host then
+to themselves. The C++ operator preserves that rule; the shared Euclidean engine then
 replaces a dead cloning donor with a live donor so cloning can revive the row.
-This revival is a small host extension, not a change to the pairing operator.
+This revival belongs to the population update, not the pairing operator.
 Also, when **Clone every N iterations** skips a cloning update, the engine still
 consumes the companion, decision, and proposed-clone random draws before
 discarding that proposal, following the reference's draw order. Removing those

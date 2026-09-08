@@ -1,0 +1,186 @@
+{
+  "baseline": {
+    "lab-0": {
+      "us_per_iteration": 1503.77,
+      "allocations_per_iteration": 23.0,
+      "allocated_bytes_per_iteration": 15792.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-0": {
+      "us_per_iteration": 407.766,
+      "allocations_per_iteration": 569.0,
+      "allocated_bytes_per_iteration": 55652.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-1": {
+      "us_per_iteration": 1774.63,
+      "allocations_per_iteration": 550.025,
+      "allocated_bytes_per_iteration": 32007.2,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-1": {
+      "us_per_iteration": 797.128,
+      "allocations_per_iteration": 1095.15,
+      "allocated_bytes_per_iteration": 95242.8,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-2": {
+      "us_per_iteration": 1526.04,
+      "allocations_per_iteration": 279.3,
+      "allocated_bytes_per_iteration": 63483.4,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-2": {
+      "us_per_iteration": 616.946,
+      "allocations_per_iteration": 828.3,
+      "allocated_bytes_per_iteration": 105407.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-0-4t": {
+      "us_per_iteration": 1223.47,
+      "allocations_per_iteration": 23.0,
+      "allocated_bytes_per_iteration": 15792.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-1-4t": {
+      "us_per_iteration": 3086.9,
+      "allocations_per_iteration": 550.025,
+      "allocated_bytes_per_iteration": 32007.2,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-2-4t": {
+      "us_per_iteration": 1639.44,
+      "allocations_per_iteration": 279.3,
+      "allocated_bytes_per_iteration": 63483.4,
+      "process_peak_rss_kib": 12164.0
+    },
+    "graph": {
+      "us_per_iteration": 373.459,
+      "allocations_per_iteration": 238.475,
+      "allocated_bytes_per_iteration": 28825.7,
+      "process_peak_rss_kib": 12164.0
+    },
+    "fmc": {
+      "us_per_iteration": 845.228,
+      "allocations_per_iteration": 983.525,
+      "allocated_bytes_per_iteration": 63698.3,
+      "process_peak_rss_kib": 12164.0
+    },
+    "jump": {
+      "us_per_iteration": 361.844,
+      "allocations_per_iteration": 467.125,
+      "allocated_bytes_per_iteration": 30059.8,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-fmc-cycle": {
+      "us_per_iteration": 8586.07,
+      "allocations_per_iteration": 2339.03,
+      "allocated_bytes_per_iteration": 143566.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "euclidean": {
+      "us_per_iteration": 1261.59,
+      "allocations_per_iteration": 1235.65,
+      "allocated_bytes_per_iteration": 86955.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "euclidean-no-force": {
+      "us_per_iteration": 1153.81,
+      "allocations_per_iteration": 725.9,
+      "allocated_bytes_per_iteration": 54211.0,
+      "process_peak_rss_kib": 12164.0
+    }
+  },
+  "candidate": {
+    "lab-0": {
+      "us_per_iteration": 1731.28,
+      "allocations_per_iteration": 1.0,
+      "allocated_bytes_per_iteration": 72.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-0": {
+      "us_per_iteration": 288.847,
+      "allocations_per_iteration": 0.0,
+      "allocated_bytes_per_iteration": 0.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-1": {
+      "us_per_iteration": 2075.62,
+      "allocations_per_iteration": 257.275,
+      "allocated_bytes_per_iteration": 4528.52,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-1": {
+      "us_per_iteration": 514.289,
+      "allocations_per_iteration": 257.2,
+      "allocated_bytes_per_iteration": 29988.3,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-2": {
+      "us_per_iteration": 1823.78,
+      "allocations_per_iteration": 257.3,
+      "allocated_bytes_per_iteration": 47763.4,
+      "process_peak_rss_kib": 12164.0
+    },
+    "wave-2": {
+      "us_per_iteration": 473.657,
+      "allocations_per_iteration": 256.3,
+      "allocated_bytes_per_iteration": 47691.4,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-0-4t": {
+      "us_per_iteration": 1434.66,
+      "allocations_per_iteration": 1.0,
+      "allocated_bytes_per_iteration": 72.0,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-1-4t": {
+      "us_per_iteration": 1709.58,
+      "allocations_per_iteration": 257.275,
+      "allocated_bytes_per_iteration": 4528.52,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-2-4t": {
+      "us_per_iteration": 1474.72,
+      "allocations_per_iteration": 257.3,
+      "allocated_bytes_per_iteration": 47763.4,
+      "process_peak_rss_kib": 12164.0
+    },
+    "graph": {
+      "us_per_iteration": 328.884,
+      "allocations_per_iteration": 3.4,
+      "allocated_bytes_per_iteration": 40.8,
+      "process_peak_rss_kib": 12164.0
+    },
+    "fmc": {
+      "us_per_iteration": 599.474,
+      "allocations_per_iteration": 231.175,
+      "allocated_bytes_per_iteration": 3736.25,
+      "process_peak_rss_kib": 12164.0
+    },
+    "jump": {
+      "us_per_iteration": 261.898,
+      "allocations_per_iteration": 108.225,
+      "allocated_bytes_per_iteration": 1711.65,
+      "process_peak_rss_kib": 12164.0
+    },
+    "lab-fmc-cycle": {
+      "us_per_iteration": 7652.71,
+      "allocations_per_iteration": 1045.03,
+      "allocated_bytes_per_iteration": 17181.6,
+      "process_peak_rss_kib": 12164.0
+    },
+    "euclidean": {
+      "us_per_iteration": 1170.35,
+      "allocations_per_iteration": 768.025,
+      "allocated_bytes_per_iteration": 49152.8,
+      "process_peak_rss_kib": 12164.0
+    },
+    "euclidean-no-force": {
+      "us_per_iteration": 1073.88,
+      "allocations_per_iteration": 256.025,
+      "allocated_bytes_per_iteration": 16384.8,
+      "process_peak_rss_kib": 12164.0
+    }
+  }
+}

@@ -170,20 +170,23 @@ test("Wave Jump executes a shortened terminal edge and stops", async () => {
   }
 });
 
-test("Wave Jump skips zero-duration ancestry and reports an empty path", () => {
+test("Wave Jump forwards the native trajectory and propagates selection errors", () => {
   const tree = {
     dim: 1,
     poseDim: 0,
     root: new Uint8Array(),
-    meta: new Uint32Array([
-      1, 0, 0, 0, 0, 2, 1, 1, 2, 0, 3, 2, 2, 0, 1, 4, 3, 3, 1, 1,
-    ]),
-    values: new Float32Array([
-      0, 0, 0, 0, 2, 2, 0, 0.5, 2, 0, 0, 0.75, 3, 1, 0, 1,
-    ]),
+    meta: new Uint32Array([4, 1, 1, 2, 0]),
+    values: new Float32Array([3, 1, 0, 0.5]),
+  };
+  let result = {
+    selectedLeaf: 4,
+    executionMode: "all-dead fallback",
+    searchDepth: 2,
+    action: new Float32Array([0.5]),
+    trajectory: [{ action: new Float32Array([0.5]), frames: 2 }],
   };
   const engine = {
-    bestLeaf: () => 4,
+    planResult: () => result,
     tree: () => tree,
     metrics: () => new Float32Array(16),
     states: () => new Float32Array(),
@@ -192,19 +195,19 @@ test("Wave Jump skips zero-duration ancestry and reports an empty path", () => {
     ...settings,
     recording: 2,
   });
-  assert.deepEqual(
-    controller.result().trajectory.map((e) => [e.action[0], e.frames]),
-    [[0.5, 2]],
-  );
-  tree.meta[19] = 0; // An alive winner still executes the entire branch.
-  assert.deepEqual(
-    controller.result().trajectory.map((e) => [e.action[0], e.frames]),
-    [
-      [0.5, 2],
-      [1, 1],
+  assert.deepEqual(controller.result().trajectory, result.trajectory);
+  result = {
+    ...result,
+    executionMode: "full path",
+    trajectory: [
+      ...result.trajectory,
+      { action: new Float32Array([1]), frames: 1 },
     ],
-  );
-  engine.bestLeaf = () => 1;
+  };
+  assert.deepEqual(controller.result().trajectory, result.trajectory);
+  engine.planResult = () => {
+    throw new Error("Planner found no executable trajectory");
+  };
   assert.throws(() => controller.result(), /no executable trajectory/);
 });
 
@@ -250,67 +253,62 @@ test("all-dead lookahead commits one safe action and experiments replan", async 
   }
 });
 
-test("consensus extends the same search, stops at agreement, and bounds fallback", () => {
-  for (const agreement of [3, Infinity]) {
-    let depth = 0,
-      begins = 0,
-      limit;
-    const tree = {
-      dim: 1,
-      poseDim: 0,
-      root: new Uint8Array(),
-      meta: new Uint32Array([1, 0, 0, 0, 0, 2, 1, 1, 2, 0, 3, 2, 2, 4, 0]),
-      values: new Float32Array([0, 0, 0, 0, 1, 1, 0, 0.25, 2, 1, 0, 0.75]),
-    };
-    const engine = {
-      restore() {},
-      begin(s) {
-        begins++;
-        limit = s.horizon;
-      },
-      advance() {
-        return ++depth >= limit;
-      },
-      commonAncestor: () => (depth >= agreement ? 2 : 1),
-      bestLeaf: () => 3,
-      tree: () => tree,
-      states: () => new Float32Array(),
-      metrics() {
-        const m = new Float32Array(16);
-        m[8] = depth;
-        return m;
-      },
-      checkpoint: () => depth,
-      restoreCheckpoint: (saved) => {
-        depth = saved;
-      },
-    };
-    const controller = instantiateController("wave-jump", engine, {
-      ...settings,
-      horizon: 2,
-      consensus_prefix: true,
-    });
-    controller.begin(new Uint8Array(), 1);
-    assert.equal(controller.advance(), false);
-    assert.equal(controller.advance(), false);
-    if (agreement === Infinity) assert.equal(controller.advance(), false);
-    const saved = controller.checkpoint();
-    while (!controller.advance()) {}
-    const result = controller.result();
-    assert.equal(depth, agreement === 3 ? 3 : 4);
-    assert.equal(begins, 1);
-    assert.equal(
-      result.executionMode,
-      agreement === 3 ? "shared prefix" : "horizon fallback",
-    );
-    assert.deepEqual(
-      result.trajectory.map((e) => [e.action[0], e.frames]),
-      [[0.25, 2]],
-    );
-    controller.restore(saved);
-    while (!controller.advance()) {}
-    assert.deepEqual(controller.result(), result);
-  }
+test("Wave Jump delegates search limits and checkpoint progress to the native planner", () => {
+  let depth = 0,
+    begins = 0,
+    received;
+  const tree = {
+    dim: 1,
+    poseDim: 0,
+    root: new Uint8Array(),
+    meta: new Uint32Array([3, 1, 2, 2, 0]),
+    values: new Float32Array([2, 1, 0, 0.25]),
+  };
+  const engine = {
+    restore() {},
+    begin(s) {
+      begins++;
+      received = s;
+    },
+    advance() {
+      return ++depth >= 4;
+    },
+    planResult: () => ({
+      selectedLeaf: 3,
+      executionMode: "horizon fallback",
+      searchDepth: depth,
+      action: new Float32Array([0.25]),
+      trajectory: [{ action: new Float32Array([0.25]), frames: 2 }],
+    }),
+    tree: () => tree,
+    states: () => new Float32Array(),
+    metrics: () => new Float32Array(16),
+    checkpoint: () => depth,
+    restoreCheckpoint(saved) {
+      depth = saved;
+    },
+  };
+  const controller = instantiateController("wave-jump", engine, {
+    ...settings,
+    horizon: 2,
+    consensus_prefix: true,
+  });
+  controller.begin(new Uint8Array(), 1);
+  assert.equal(received.horizon, 2);
+  assert.equal(received.consensus_prefix, true);
+  assert.equal(controller.advance(), false);
+  const saved = controller.checkpoint();
+  while (!controller.advance()) {}
+  const result = controller.result();
+  assert.equal(depth, 4);
+  assert.equal(begins, 1);
+  controller.restore(saved);
+  while (!controller.advance()) {}
+  assert.deepEqual(controller.result(), result);
+  assert.throws(
+    () => controller.restore({ ...saved, version: 1 }),
+    /Unsupported/,
+  );
 });
 
 test("native consensus checkpoints resume and experiments respect frame limits", async () => {
@@ -368,19 +366,23 @@ test("Wave Jump defaults to shared-prefix mode and preserves explicit full-path 
     try {
       strategy.controller.begin(strategy.engine.snapshot(), 19);
       const saved = strategy.controller.checkpoint();
-      assert.equal(saved.consensus, choice ?? true);
-      assert.equal(saved.maxHorizon, settings.horizon * 2);
+      assert.equal(saved.version, 2);
       while (!strategy.controller.advance()) {}
       assert.equal(
         strategy.controller.result().executionMode === "full path",
         choice === false,
       );
-      // Older in-flight checkpoints retain their original full-path semantics.
-      if (choice === false) {
-        delete saved.consensus;
-        strategy.controller.restore(saved);
-        assert.equal(strategy.controller.checkpoint().consensus, false);
-      }
+      const selected = strategy.controller.result();
+      strategy.controller.restore(saved);
+      while (!strategy.controller.advance()) {}
+      assert.equal(
+        strategy.controller.result().executionMode,
+        selected.executionMode,
+      );
+      assert.equal(
+        strategy.controller.result().searchDepth,
+        selected.searchDepth,
+      );
     } finally {
       strategy.dispose();
     }

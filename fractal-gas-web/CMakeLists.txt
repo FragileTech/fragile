@@ -15,9 +15,14 @@ if(FG_OPTIMIZATION_ONLY)
   add_subdirectory(optimization)
   return()
 endif()
-add_subdirectory(control)
 if(FG_CONTROL_ONLY)
+  add_subdirectory(control)
   return()
+endif()
+# The Arcade WASM core uses pthreads. Lab has separate single/threaded builds
+# and output files; an Arcade build must not overwrite its single-thread module.
+if(NOT EMSCRIPTEN)
+  add_subdirectory(control)
 endif()
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
@@ -201,6 +206,7 @@ else()
     tests/test_cloning.cpp
     tests/test_fractal_gas.cpp
     tests/test_arcade_planner.cpp
+    tests/test_fractal_core.cpp
     tests/test_nes_env.cpp
     tests/test_montezuma_logic.cpp
     tests/test_visit_grid.cpp

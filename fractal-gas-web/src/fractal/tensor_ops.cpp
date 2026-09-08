@@ -1,4 +1,4 @@
-#include "tensor_ops.hpp"
+#include "fractal/tensor_ops.hpp"
 
 #include <cmath>
 #include <cstddef>
@@ -36,15 +36,21 @@ double l2_squared(const float* a, const float* b, size_t d) {
 
 }  // namespace
 
-std::vector<float> relativize_with_stats(const std::vector<float>& x,
-                                         double mean, double stdv) {
-  const size_t n = x.size();
-  std::vector<float> out(n, 1.0f);
-  if (stdv == 0.0 || !std::isfinite(stdv) || !std::isfinite(mean)) return out;
-  for (size_t i = 0; i < n; ++i) {
-    const double s = (static_cast<double>(x[i]) - mean) / stdv;
-    out[i] = static_cast<float>(s > 0.0 ? std::log1p(s) + 1.0 : std::exp(s));
+void relativize_with_stats_into(const std::vector<float>& x, double mean, double stdv,
+                                std::vector<float>& out) {
+  out.resize(x.size());
+  if (stdv == 0.0 || !std::isfinite(stdv) || !std::isfinite(mean)) {
+    std::fill(out.begin(), out.end(), 1.f);
+    return;
   }
+  for (size_t i = 0; i < x.size(); ++i) {
+    const double z = (static_cast<double>(x[i]) - mean) / stdv;
+    out[i] = static_cast<float>(z > 0.0 ? std::log1p(z) + 1.0 : std::exp(z));
+  }
+}
+std::vector<float> relativize_with_stats(const std::vector<float>& x, double mean, double stdv) {
+  std::vector<float> out;
+  relativize_with_stats_into(x, mean, stdv, out);
   return out;
 }
 
@@ -73,71 +79,97 @@ std::pair<double, double> mean_std_masked(const std::vector<float>& x,
 }
 
 std::vector<float> asymmetric_rescale(const std::vector<float>& x) {
-  // torch: std of a single element (or empty) is NaN -> all-ones branch.
-  if (x.size() < 2) return std::vector<float>(x.size(), 1.0f);
-  const std::vector<uint8_t> all(x.size(), 1);
-  const auto stats = mean_std_masked(x, all);
-  return relativize_with_stats(x, stats.first, stats.second);
+  std::vector<float> out;
+  asymmetric_rescale_into(x, out);
+  return out;
+}
+void asymmetric_rescale_into(const std::vector<float>& x, std::vector<float>& out) {
+  double mean = 0, var = 0;
+  for (float v : x) mean += v;
+  if (!x.empty()) mean /= x.size();
+  for (float v : x) {
+    double d = double(v) - mean;
+    var += d * d;
+  }
+  const double stdv = x.size() < 2 ? 0 : std::sqrt(var / double(x.size() - 1));
+  out.resize(x.size());
+  if (stdv == 0 || !std::isfinite(stdv) || !std::isfinite(mean)) {
+    std::fill(out.begin(), out.end(), 1.f);
+    return;
+  }
+  for (size_t i = 0; i < x.size(); ++i) {
+    double z = (double(x[i]) - mean) / stdv;
+    out[i] = float(z > 0 ? std::log1p(z) + 1 : std::exp(z));
+  }
 }
 
 std::vector<float> l2_norm_companions(const std::vector<float>& observations,
-                                      const std::vector<int32_t>& companions,
-                                      int32_t n, int32_t obs_dim,
-                                      ThreadPool* pool) {
-  std::vector<float> distances(static_cast<size_t>(n));
+                                      const std::vector<int32_t>& companions, int32_t n,
+                                      int32_t obs_dim, ThreadPool* pool) {
+  std::vector<float> distances;
+  l2_norm_companions_into(observations, companions, n, obs_dim, pool, distances);
+  return distances;
+}
+void l2_norm_companions_into(const std::vector<float>& observations,
+                             const std::vector<int32_t>& companions, int32_t n, int32_t obs_dim,
+                             ThreadPool* pool, std::vector<float>& distances) {
+  distances.resize(n);
   const auto d = static_cast<size_t>(obs_dim);
   const float* obs = observations.data();
   const auto row = [&](int32_t i, int /*slot*/) {
     const auto ii = static_cast<size_t>(i);
     const auto c = static_cast<size_t>(companions[ii]);
-    distances[ii] =
-        static_cast<float>(std::sqrt(l2_squared(obs + ii * d, obs + c * d, d)));
+    distances[ii] = static_cast<float>(std::sqrt(l2_squared(obs + ii * d, obs + c * d, d)));
   };
   // Waking the pool costs more than small batches (RAM obs and below stay
   // borderline; Coords is tiny) — only fan out when there is real work.
-  if (pool != nullptr && pool->size() > 1 &&
-      static_cast<int64_t>(n) * obs_dim >= 65536) {
+  if (pool != nullptr && pool->size() > 1 && static_cast<int64_t>(n) * obs_dim >= 65536) {
     pool->parallel_for(n, row);
   } else {
     for (int32_t i = 0; i < n; ++i) row(i, 0);
   }
-  return distances;
 }
 
-std::vector<int32_t> random_alive_compas(const std::vector<uint8_t>& alive,
-                                         Rng& rng) {
+std::vector<int32_t> random_alive_compas(const std::vector<uint8_t>& alive, Rng& rng) {
+  std::vector<int32_t> out;
+  CompanionScratch scratch;
+  random_alive_compas_into(alive, rng, out, scratch);
+  return out;
+}
+void random_alive_compas_into(const std::vector<uint8_t>& alive, Rng& rng,
+                              std::vector<int32_t>& out, CompanionScratch& scratch) {
   const auto n = static_cast<int32_t>(alive.size());
-  std::vector<int32_t> alive_idx;
+  auto& alive_idx = scratch.alive;
+  alive_idx.clear();
   alive_idx.reserve(static_cast<size_t>(n));
   for (int32_t i = 0; i < n; ++i) {
     if (alive[static_cast<size_t>(i)]) alive_idx.push_back(i);
   }
 
-  std::vector<int32_t> pool;
+  auto& pool = scratch.pool;
   if (alive_idx.empty()) {
     // get_alive_indexes: torch.all(oobs) -> arange(N)
     pool.resize(static_cast<size_t>(n));
     for (int32_t i = 0; i < n; ++i) pool[static_cast<size_t>(i)] = i;
   } else if (static_cast<int32_t>(alive_idx.size()) == n) {
     // random_choice(arange(N), size=N, replace=False) -> random permutation
-    pool = rng.permutation(n);
+    rng.permutation_into(n, pool);
   } else {
     // random_choice(alive_indices, size=N, replace=True)
     pool.resize(static_cast<size_t>(n));
     const auto n_alive = static_cast<int64_t>(alive_idx.size());
     for (int32_t i = 0; i < n; ++i) {
-      pool[static_cast<size_t>(i)] =
-          alive_idx[static_cast<size_t>(rng.randint(0, n_alive))];
+      pool[static_cast<size_t>(i)] = alive_idx[static_cast<size_t>(rng.randint(0, n_alive))];
     }
   }
 
   // random_alive_compas: compas[torch.randperm(compas.size(0))]
-  const std::vector<int32_t> perm = rng.permutation(n);
-  std::vector<int32_t> out(static_cast<size_t>(n));
+  auto& perm = scratch.permutation;
+  rng.permutation_into(n, perm);
+  out.resize(n);
   for (int32_t i = 0; i < n; ++i) {
     out[static_cast<size_t>(i)] = pool[static_cast<size_t>(perm[static_cast<size_t>(i)])];
   }
-  return out;
 }
 
 }  // namespace fg

@@ -217,6 +217,17 @@ export class NativeEngine {
     if (!p) throw new Error(this.m.UTF8ToString(this.m._fgc_error()));
     return this.m.HEAPF32.slice(p / 4, p / 4 + this.dim);
   }
+  planResult() {
+    const p = this.m._fgc_plan_result(this.h);
+    if (!p) throw new Error(this.m.UTF8ToString(this.m._fgc_error()));
+    const plan = JSON.parse(this.m.UTF8ToString(p));
+    plan.trajectory = plan.trajectory.map((edge) => ({
+      ...edge,
+      action: Float32Array.from(edge.action),
+    }));
+    plan.action = plan.trajectory[0].action;
+    return plan;
+  }
   tree() {
     const m = this.m,
       count = this.check(m._fgc_tree_export(this.h));

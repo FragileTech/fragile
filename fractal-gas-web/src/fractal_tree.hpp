@@ -51,83 +51,53 @@
 #include <utility>
 #include <vector>
 
+#include "backends/snapshot_graph.hpp"
 #include "env.hpp"
+#include "fractal/graph.hpp"
 #include "rng.hpp"
 #include "swarm_algorithm.hpp"
 #include "visit_grid.hpp"
 
 namespace fg {
 
-struct FractalTreeParams {
-  int32_t start_walkers = 15;   // demo: start_walkers = min_leafs = 15
-  int32_t min_leafs = 15;
-  int32_t max_walkers = 100000; // hard cap on the population
-  float dist_coef = 1.0f;
-  float reward_coef = 1.0f;
-  int32_t dt_min = 1;  // INCLUSIVE range like the wave; the reference's
-  int32_t dt_max = 4;  // UniformDtSampler(1, 5) draws {1, 2, 3, 4}
-  float eps = 1e-8f;
-  bool count_visits = true;    // effective only when env.has_visit_key()
-  bool visit_reward = true;    // ablation: multiply the visit term into vr
-  float visit_coef = 1.0f;     // exponent on the visit term (reference: 1)
-  float erase_coef = 0.05f;
-  int32_t agg_block_size = 5;
-  bool record_frames = false;
-  uint64_t seed = 0;
-};
+using FractalTreeParams = fractal::GraphConfig;
 
 /// The tree's RNG-facing choices. Virtual so tests can replay recorded
 /// draws from the Python reference (same pattern as the wave operators).
 class FractalTreeSampler {
  public:
+  virtual void sample_companions_into(const std::vector<uint8_t>& alive, Rng& rng,
+                                      std::vector<int32_t>& out) const;
+  virtual void sample_uniforms_into(int32_t n, Rng& rng, std::vector<float>& out) const;
+  virtual void sample_actions_into(int32_t n, int32_t count, Rng& rng,
+                                   std::vector<int32_t>& out) const;
+  virtual void sample_dt_into(int32_t n, int32_t low, int32_t high, Rng& rng,
+                              std::vector<int32_t>& out) const;
+
   virtual ~FractalTreeSampler() = default;
   /// random_alive_compas(oobs, ...) — alive-only companions (with
   /// replacement when some walkers are dead), then a random permutation.
-  virtual std::vector<int32_t> sample_companions(
-      const std::vector<uint8_t>& alive, Rng& rng) const;
+  virtual std::vector<int32_t> sample_companions(const std::vector<uint8_t>& alive,
+                                                 Rng& rng) const;
   /// torch.rand(n): the clone-decision thresholds.
   virtual std::vector<float> sample_uniforms(int32_t n, Rng& rng) const;
   /// RandomPolicy: k uniform discrete actions.
-  virtual std::vector<int32_t> sample_actions(int32_t k, int32_t n_actions,
-                                              Rng& rng) const;
+  virtual std::vector<int32_t> sample_actions(int32_t k, int32_t n_actions, Rng& rng) const;
   /// UniformDtSampler: k frame skips uniform in [dt_min, dt_max] inclusive.
-  virtual std::vector<int32_t> sample_dt(int32_t k, int32_t dt_min,
-                                         int32_t dt_max, Rng& rng) const;
+  virtual std::vector<int32_t> sample_dt(int32_t k, int32_t dt_min, int32_t dt_max,
+                                         Rng& rng) const;
+
+ private:
+  mutable CompanionScratch companion_scratch_;
 };
 
 /// Structure-of-arrays tree state; every array is sized n (the live
 /// population). Fresh slots appended by growth hold the reset values.
-struct TreeState {
-  int32_t n = 0;
-  int32_t obs_dim = 0;
-  std::vector<std::vector<char>> states;  // empty = never stepped
-  std::vector<float> observations;        // [n * obs_dim]
-  std::vector<float> rewards;             // last step reward
-  std::vector<float> cum_rewards;
-  std::vector<uint8_t> oobs;              // dead flag (env done)
-  std::vector<int32_t> parent;
-  std::vector<uint8_t> is_leaf;           // mask of the last phase 2
-  std::vector<int32_t> actions;
-  std::vector<int32_t> dt;
-  std::vector<float> virtual_rewards;
-  std::vector<float> other_rewards;
-  std::vector<float> distances;
-  std::vector<float> clone_probs;
-  std::vector<int32_t> distance_ix;       // compas1
-  std::vector<int32_t> clone_ix;          // compas2
-  std::vector<uint8_t> wants_clone;
-  std::vector<uint8_t> is_cloned;
-  std::vector<uint8_t> will_clone;
-  std::vector<WalkerInfo> info;           // per walker, gathered on clone
-
-  std::vector<uint8_t> alive_mask() const;
-  int32_t alive_count() const;
-};
+using TreeState = fractal::GraphPopulation<SnapshotGraphBackend::Storage, WalkerInfo, int32_t>;
 
 class FractalTree final : public SwarmAlgorithm {
  public:
-  FractalTree(BatchEnv& env, FractalTreeParams params,
-              std::unique_ptr<Rng> rng = nullptr,
+  FractalTree(BatchEnv& env, FractalTreeParams params, std::unique_ptr<Rng> rng = nullptr,
               std::unique_ptr<FractalTreeSampler> sampler = nullptr);
 
   const FractalTreeParams& params() const { return params_; }
@@ -144,15 +114,11 @@ class FractalTree final : public SwarmAlgorithm {
   const std::vector<char>& walker_state(int32_t i) const override {
     return state_.states[static_cast<size_t>(i)];
   }
-  bool walker_alive(int32_t i) const override {
-    return !state_.oobs[static_cast<size_t>(i)];
-  }
+  bool walker_alive(int32_t i) const override { return !state_.oobs[static_cast<size_t>(i)]; }
   float walker_cum_reward(int32_t i) const override {
     return state_.cum_rewards[static_cast<size_t>(i)];
   }
-  int32_t walker_parent(int32_t i) const override {
-    return state_.parent[static_cast<size_t>(i)];
-  }
+  int32_t walker_parent(int32_t i) const override { return state_.parent[static_cast<size_t>(i)]; }
   bool walker_is_leaf(int32_t i) const override {
     return state_.is_leaf[static_cast<size_t>(i)] != 0;
   }
@@ -193,28 +159,19 @@ class FractalTree final : public SwarmAlgorithm {
 
  private:
   int32_t best_index() const;  // first argmax of cum_rewards
-  void grow(int32_t count);
-  void copy_info_from_env(const std::vector<int32_t>& batch_walkers);
-  void collect_visit_keys(const std::vector<int32_t>& walkers,
-                          std::vector<VisitKey>& keys) const;
-  StepInfo collect_info(int32_t k, int32_t leaves);
-
   BatchEnv& env_;
   FractalTreeParams params_;
   std::unique_ptr<Rng> rng_;
   std::unique_ptr<FractalTreeSampler> sampler_;
-  bool count_visits_ = false;
-
-  TreeState state_;
-  VisitGrid visits_;
+  VisitGrid adapter_visits_;
+  SnapshotGraphBackend backend_;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> core_;
+  bool& count_visits_;
+  TreeState& state_;
+  VisitGrid& visits_;
   std::vector<uint8_t> best_frame_;
-
-  int64_t total_steps_ = 0;
-  int64_t total_clones_ = 0;
-  int64_t total_frames_ = 0;
-  int32_t iteration_ = 0;
+  int64_t &total_steps_, &total_clones_, &total_frames_;
+  int32_t& iteration_;
 };
-
 }  // namespace fg
-
-#endif  // FRACTAL_GAS_FRACTAL_TREE_HPP
+#endif

@@ -24,26 +24,22 @@ class ReplayTreeSampler final : public FractalTreeSampler {
   mutable std::deque<std::vector<int32_t>> actions_queue;
   mutable std::deque<std::vector<int32_t>> dt_queue;
 
-  std::vector<int32_t> sample_companions(const std::vector<uint8_t>&,
-                                         Rng&) const override {
-    auto v = companions_queue.front();
+  void sample_companions_into(const std::vector<uint8_t>&, Rng&,
+                              std::vector<int32_t>& v) const override {
+    v = companions_queue.front();
     companions_queue.pop_front();
-    return v;
   }
-  std::vector<float> sample_uniforms(int32_t, Rng&) const override {
-    auto v = uniforms_queue.front();
+  void sample_uniforms_into(int32_t, Rng&, std::vector<float>& v) const override {
+    v = uniforms_queue.front();
     uniforms_queue.pop_front();
-    return v;
   }
-  std::vector<int32_t> sample_actions(int32_t, int32_t, Rng&) const override {
-    auto v = actions_queue.front();
+  void sample_actions_into(int32_t, int32_t, Rng&, std::vector<int32_t>& v) const override {
+    v = actions_queue.front();
     actions_queue.pop_front();
-    return v;
   }
-  std::vector<int32_t> sample_dt(int32_t, int32_t, int32_t, Rng&) const override {
-    auto v = dt_queue.front();
+  void sample_dt_into(int32_t, int32_t, int32_t, Rng&, std::vector<int32_t>& v) const override {
+    v = dt_queue.front();
     dt_queue.pop_front();
-    return v;
   }
 };
 
@@ -161,36 +157,63 @@ void run_replay(BatchEnv& env, const ReplayCase& c, bool count_visits,
 
 TEST_CASE(tree_run_replays_python_reference) {
   MockEnv env;
-  const ReplayCase c{
-      fixtures::kTreeStart, fixtures::kTreeMinLeafs, fixtures::kTreeMaxWalkers,
-      fixtures::kTreeIters, &fixtures::kTreeResetActions, &fixtures::kTreeResetDts,
-      &fixtures::kTreeFitCompanions, &fixtures::kTreeCloneCompanions,
-      &fixtures::kTreeUniforms, &fixtures::kTreeActions, &fixtures::kTreeDts,
-      &fixtures::kTreeExpectedNBefore, &fixtures::kTreeExpectedNAfter,
-      &fixtures::kTreeExpectedLeaves, &fixtures::kTreeExpectedStepped,
-      &fixtures::kTreeExpectedBest, &fixtures::kTreeExpectedParent,
-      &fixtures::kTreeExpectedLeaf, &fixtures::kTreeExpectedOobs,
-      &fixtures::kTreeExpectedWillClone, &fixtures::kTreeExpectedCloneIx,
-      &fixtures::kTreeExpectedCum, &fixtures::kTreeExpectedVr,
-      &fixtures::kTreeFinalObservations, fixtures::kTreePyTotalSteps, nullptr};
+  const ReplayCase c{fixtures::kTreeStart,
+                     fixtures::kTreeMinLeafs,
+                     fixtures::kTreeMaxWalkers,
+                     fixtures::kTreeIters,
+                     &fixtures::kTreeResetActions,
+                     &fixtures::kTreeResetDts,
+                     &fixtures::kTreeFitCompanions,
+                     &fixtures::kTreeCloneCompanions,
+                     &fixtures::kTreeUniforms,
+                     &fixtures::kTreeActions,
+                     &fixtures::kTreeDts,
+                     &fixtures::kTreeExpectedNBefore,
+                     &fixtures::kTreeExpectedNAfter,
+                     &fixtures::kTreeExpectedLeaves,
+                     &fixtures::kTreeExpectedStepped,
+                     &fixtures::kTreeExpectedBest,
+                     &fixtures::kTreeExpectedParent,
+                     &fixtures::kTreeExpectedLeaf,
+                     &fixtures::kTreeExpectedOobs,
+                     &fixtures::kTreeExpectedWillClone,
+                     &fixtures::kTreeExpectedCloneIx,
+                     &fixtures::kTreeExpectedCum,
+                     &fixtures::kTreeExpectedVr,
+                     &fixtures::kTreeFinalObservations,
+                     fixtures::kTreePyTotalSteps,
+                     nullptr};
   run_replay(env, c, /*count_visits=*/true);  // MockEnv has no visit key -> off
 }
 
 TEST_CASE(tree_visits_run_replays_python_reference) {
   VisitMockEnv env;
-  const ReplayCase c{
-      fixtures::kTVStart, fixtures::kTVMinLeafs, fixtures::kTVMaxWalkers,
-      fixtures::kTVIters, &fixtures::kTVResetActions, &fixtures::kTVResetDts,
-      &fixtures::kTVFitCompanions, &fixtures::kTVCloneCompanions,
-      &fixtures::kTVUniforms, &fixtures::kTVActions, &fixtures::kTVDts,
-      &fixtures::kTVExpectedNBefore, &fixtures::kTVExpectedNAfter,
-      &fixtures::kTVExpectedLeaves, &fixtures::kTVExpectedStepped,
-      &fixtures::kTVExpectedBest, &fixtures::kTVExpectedParent,
-      &fixtures::kTVExpectedLeaf, &fixtures::kTVExpectedOobs,
-      &fixtures::kTVExpectedWillClone, &fixtures::kTVExpectedCloneIx,
-      &fixtures::kTVExpectedCum, &fixtures::kTVExpectedVr,
-      &fixtures::kTVFinalObservations, fixtures::kTVPyTotalSteps,
-      &fixtures::kTVExpectedOther};
+  const ReplayCase c{fixtures::kTVStart,
+                     fixtures::kTVMinLeafs,
+                     fixtures::kTVMaxWalkers,
+                     fixtures::kTVIters,
+                     &fixtures::kTVResetActions,
+                     &fixtures::kTVResetDts,
+                     &fixtures::kTVFitCompanions,
+                     &fixtures::kTVCloneCompanions,
+                     &fixtures::kTVUniforms,
+                     &fixtures::kTVActions,
+                     &fixtures::kTVDts,
+                     &fixtures::kTVExpectedNBefore,
+                     &fixtures::kTVExpectedNAfter,
+                     &fixtures::kTVExpectedLeaves,
+                     &fixtures::kTVExpectedStepped,
+                     &fixtures::kTVExpectedBest,
+                     &fixtures::kTVExpectedParent,
+                     &fixtures::kTVExpectedLeaf,
+                     &fixtures::kTVExpectedOobs,
+                     &fixtures::kTVExpectedWillClone,
+                     &fixtures::kTVExpectedCloneIx,
+                     &fixtures::kTVExpectedCum,
+                     &fixtures::kTVExpectedVr,
+                     &fixtures::kTVFinalObservations,
+                     fixtures::kTVPyTotalSteps,
+                     &fixtures::kTVExpectedOther};
   std::unique_ptr<FractalTree> tree;
   run_replay(env, c, /*count_visits=*/true, nullptr, &tree);
   CHECK(tree->counting_visits());
@@ -321,9 +344,8 @@ class KillerEnv final : public BatchEnv {
     state.assign(4, 0);
     obs.assign(1, 0.0f);
   }
-  void step_batch(const std::vector<std::vector<char>>& states,
-                  const std::vector<int32_t>&, const std::vector<int32_t>&,
-                  std::vector<std::vector<char>>& new_states,
+  void step_batch(const std::vector<std::vector<char>>& states, const std::vector<int32_t>&,
+                  const std::vector<int32_t>&, std::vector<std::vector<char>>& new_states,
                   std::vector<float>& observations, std::vector<float>& rewards,
                   std::vector<uint8_t>& dones, std::vector<uint8_t>& truncated) override {
     for (size_t i = 0; i < states.size(); ++i) {
@@ -335,7 +357,9 @@ class KillerEnv final : public BatchEnv {
       truncated[i] = 0;
     }
   }
-  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override { rgba.clear(); }
+  void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override {
+    rgba.clear();
+  }
   int32_t frame_width() const override { return 0; }
   int32_t frame_height() const override { return 0; }
 };
@@ -429,7 +453,8 @@ TEST_CASE(tree_total_frames_counts_stepped_walkers_only) {
   tree.reset();
   // reset() steps every start walker once.
   int64_t expected = 0;
-  for (int32_t i = 0; i < tree.n_walkers(); ++i) expected += tree.state().dt[static_cast<size_t>(i)];
+  for (int32_t i = 0; i < tree.n_walkers(); ++i)
+    expected += tree.state().dt[static_cast<size_t>(i)];
   CHECK(tree.total_frames() == expected);
   for (int it = 0; it < 12; ++it) {
     tree.step();

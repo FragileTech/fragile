@@ -76,7 +76,7 @@ else()
   add_executable(fg_swarm_tests ${OPT_ROOT}/tests/test_main.cpp
     ${OPT_ROOT}/tests/test_tensor_ops.cpp ${OPT_ROOT}/tests/test_cloning.cpp
     ${OPT_ROOT}/tests/test_fractal_gas.cpp ${OPT_ROOT}/tests/test_fractal_tree.cpp
-    ${OPT_ROOT}/tests/test_arcade_planner.cpp)
+    ${OPT_ROOT}/tests/test_arcade_planner.cpp ${OPT_ROOT}/tests/test_fractal_core.cpp)
   target_include_directories(fg_swarm_tests PRIVATE ${OPT_ROOT}/tests)
   target_link_libraries(fg_swarm_tests PRIVATE fg_swarm_core)
   add_test(NAME fg_swarm_tests COMMAND fg_swarm_tests)

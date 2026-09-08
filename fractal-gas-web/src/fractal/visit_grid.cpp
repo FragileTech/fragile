@@ -1,4 +1,4 @@
-#include "visit_grid.hpp"
+#include "fractal/visit_grid.hpp"
 
 #include <algorithm>
 #include <utility>
@@ -6,9 +6,7 @@
 namespace fg {
 
 VisitGrid::VisitGrid(int32_t block_size, float erase_coef, float clip_max)
-    : block_(block_size < 1 ? 1 : block_size),
-      erase_coef_(erase_coef),
-      clip_max_(clip_max) {}
+    : block_(block_size < 1 ? 1 : block_size), erase_coef_(erase_coef), clip_max_(clip_max) {}
 
 void VisitGrid::reset() { tiles_.clear(); }
 
@@ -28,8 +26,7 @@ uint64_t VisitGrid::tile_id(int32_t plane, int32_t tx, int32_t ty) {
   return pack_id(plane, tx, ty);
 }
 
-const VisitGrid::Tile* VisitGrid::find_tile(int32_t plane, int32_t tx,
-                                            int32_t ty) const {
+const VisitGrid::Tile* VisitGrid::find_tile(int32_t plane, int32_t tx, int32_t ty) const {
   const auto it = tiles_.find(tile_id(plane, tx, ty));
   return it == tiles_.end() ? nullptr : &it->second;
 }
@@ -43,8 +40,7 @@ void VisitGrid::update(const std::vector<VisitKey>& keys) {
   for (const VisitKey& key : keys) {
     const int32_t x = std::max(key.x, 0), y = std::max(key.y, 0);
     const uint64_t id = tile_id(key.plane, x / kTile, y / kTile);
-    const size_t off = static_cast<size_t>(y % kTile) * kTile +
-                       static_cast<size_t>(x % kTile);
+    const size_t off = static_cast<size_t>(y % kTile) * kTile + static_cast<size_t>(x % kTile);
     cells.emplace_back(id, off);
   }
   std::sort(cells.begin(), cells.end());
@@ -94,8 +90,7 @@ double VisitGrid::block_sum(int32_t plane, int32_t bx, int32_t by) const {
   return sum;
 }
 
-void VisitGrid::block_sums(const std::vector<VisitKey>& keys,
-                           std::vector<float>& out) const {
+void VisitGrid::block_sums(const std::vector<VisitKey>& keys, std::vector<float>& out) const {
   out.resize(keys.size());
   // Many walkers share a block: compute each distinct block once per call.
   std::unordered_map<uint64_t, float> cache;
@@ -114,8 +109,7 @@ void VisitGrid::block_sums(const std::vector<VisitKey>& keys,
   }
 }
 
-void VisitGrid::export_blocks(std::vector<int32_t>& keys,
-                              std::vector<float>& sums) const {
+void VisitGrid::export_blocks(std::vector<int32_t>& keys, std::vector<float>& sums) const {
   keys.clear();
   sums.clear();
   // Bin every nonzero pixel into its BxB block.

@@ -1,9 +1,10 @@
 // Discrete receding-horizon controllers over the arcade's snapshot interface.
 #pragma once
 
-#include "fractal_gas.hpp"
-
 #include <string>
+
+#include "fractal/planner.hpp"
+#include "fractal_gas.hpp"
 
 namespace fg {
 struct ArcadePlannerSettings {
@@ -49,7 +50,9 @@ class ArcadePlanner {
   bool search_advanced() const { return search_advanced_; }
   bool new_search_pending() const { return new_search_ && !done_; }
   bool execution_pending() const { return next_action_ < plan_.actions.size(); }
-  const char* phase() const { return done_ ? "ended" : (search_advanced_ ? "planning" : "playing"); }
+  const char* phase() const {
+    return done_ ? "ended" : (search_advanced_ ? "planning" : "playing");
+  }
   const std::string& execution_mode() const { return plan_.mode; }
 
  private:
@@ -57,6 +60,7 @@ class ArcadePlanner {
   BatchEnv& env_;
   FractalGas& gas_;
   ArcadePlannerSettings settings_;
+  fractal::Planner<int32_t> search_;
   std::vector<char> state_;
   std::vector<float> obs_;
   std::vector<uint8_t> frame_;

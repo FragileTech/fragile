@@ -2,6 +2,7 @@
 #include <functional>
 #include <memory>
 
+#include "fractal/euclidean.hpp"
 #include "optimization/benchmark.hpp"
 #include "optimization/perturbation.hpp"
 #include "swarm_algorithm.hpp"
@@ -16,36 +17,21 @@ struct Settings {
   int gas_local_evaluations;
   bool gas_tabu, gas_local_search;
   uint64_t max_evaluations;
-  double proposal, gamma, beta, delta_t, epsilon, clone_epsilon, lambda_alg,
-      reward_coef, distance_coef, eta, sigma_min, amplitude, epsilon_dist, rho,
-      p_max, epsilon_clone, sigma_x, restitution;
+  double proposal, gamma, beta, delta_t, epsilon, clone_epsilon, lambda_alg, reward_coef,
+      distance_coef, eta, sigma_min, amplitude, epsilon_dist, rho, p_max, epsilon_clone, sigma_x,
+      restitution;
   bool periodic, potential_force, cloning, kinetic, consensus_prefix;
-  double score(double value) const {
-    return objective == "minimize" ? -value : value;
-  }
+  double score(double value) const { return objective == "minimize" ? -value : value; }
   bool better(double a, double b) const { return score(a) > score(b); }
-  double worst() const {
-    return objective == "minimize" ? INFINITY : -INFINITY;
-  }
+  double worst() const { return objective == "minimize" ? INFINITY : -INFINITY; }
   bool cma() const { return algorithm == "cmaes_active" || algorithm == "cmaes_bipop"; }
-  bool planning() const {
-    return algorithm == "fmc" || algorithm == "wave_jump";
-  }
+  bool planning() const { return algorithm == "fmc" || algorithm == "wave_jump"; }
 };
-struct Population {
-  int n = 0, d = 0;
-  bool has_velocity = false;
-  std::vector<float> x, v, fitness;
-  std::vector<double> objective;
-  std::vector<uint8_t> alive, cloned, leaf;
-  std::vector<int32_t> companions, clone_companions, parent;
-  void resize(int count, int dimensions);
-};
+using Population = fractal::EuclideanPopulation;
 // Pure operators share the Python reference's semantics and accept injected
 // RNG.
-std::vector<int32_t> select_companions(const Population&, const Settings&,
-                                       const Benchmark&, const std::string&,
-                                       double, Rng&);
+std::vector<int32_t> select_companions(const Population&, const Settings&, const Benchmark&,
+                                       const std::string&, double, Rng&);
 std::vector<float> fitness(const Population&, const Settings&, const Benchmark&,
                            const std::vector<int32_t>&);
 void clone_population(Population&, const Settings&, const std::vector<int32_t>&,
@@ -69,11 +55,9 @@ class Algorithm {
   // cumulative reward held by the underlying algorithm.
   virtual double objective_score(int i) const = 0;
 };
-using Factory =
-    std::function<std::unique_ptr<Algorithm>(Benchmark&, const Settings&)>;
-void register_algorithm(const std::string& id, const std::string& name,
-                        bool velocity, Factory factory,
-                        const Json& parameters = Json{});
+using Factory = std::function<std::unique_ptr<Algorithm>(Benchmark&, const Settings&)>;
+void register_algorithm(const std::string& id, const std::string& name, bool velocity,
+                        Factory factory, const Json& parameters = Json{});
 std::string discovery_json();
 class Session {
  public:

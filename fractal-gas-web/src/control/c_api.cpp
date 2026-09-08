@@ -16,8 +16,7 @@ using namespace fg::control;
 namespace {
 using Clock = std::chrono::steady_clock;
 double elapsed(Clock::time_point start) {
-  return std::chrono::duration<double, std::milli>(Clock::now() - start)
-      .count();
+  return std::chrono::duration<double, std::milli>(Clock::now() - start).count();
 }
 thread_local std::string error;
 struct Runtime {
@@ -31,6 +30,7 @@ struct Runtime {
   std::unique_ptr<FmcPlanner> planner;
   double planning_ms = 0;
   std::string planner_settings;
+  std::string plan_json;
   std::vector<uint8_t> checkpoint;
   std::vector<float> debug;
   std::array<double, 12> profile{};
@@ -94,8 +94,7 @@ Runtime& runtime(void* p) {
 fg::control::WaveConfig config(const char* text, const Scene& s) {
   Json j = JsonReader(std::string(text ? text : "{}")).read();
   WaveConfig c;
-  auto integer = [&](const char* key, uint32_t fallback, uint32_t lo,
-                     uint32_t hi) {
+  auto integer = [&](const char* key, uint32_t fallback, uint32_t lo, uint32_t hi) {
     double n = j[key].num(fallback);
     if (n < lo || n > hi || n != std::floor(n))
       throw std::invalid_argument(std::string("Invalid planner ") + key);
@@ -108,21 +107,28 @@ fg::control::WaveConfig config(const char* text, const Scene& s) {
   c.distance_coef = float(j["distance_coef"].num(1));
   c.reward_coef = float(j["reward_coef"].num(1));
   c.noise = float(j["noise"].num(.2));
-  if (c.distance_coef < 0 || c.distance_coef > 10 || c.reward_coef < 0 ||
-      c.reward_coef > 10 || c.noise < 0 || c.noise > 10)
+  if (c.distance_coef < 0 || c.distance_coef > 10 || c.reward_coef < 0 || c.reward_coef > 10 ||
+      c.noise < 0 || c.noise > 10)
     throw std::invalid_argument("Invalid planner coefficients");
   c.cumulative = j["cumulative"].flag(true);
   c.inertial = j["inertial"].flag(true);
   c.recording = static_cast<fg::RecordingMode>(integer("recording", 2, 0, 2));
-  size_t estimated =
-      size_t(c.walkers) * (s.layout.stride * 8 + s.channels.size() * 4 * 6 +
-                           (s.bodies.size() * 7 + s.controlled.size() +
-                            s.tethers.size() * 2 + s.extension_observations +
-                            (s.cargo_capacity > 0 ? s.controlled.size() * 4 : 0)) *
-                               4);
+  c.planning_algorithm = j["algorithm"].str() == "wave-jump" ? 3 : 2;
+  c.max_horizon = integer("max_horizon", 0, 0, 4096);
+  if (j["consensus_prefix"].kind != Json::Null && j["consensus_prefix"].kind != Json::Boolean)
+    throw std::invalid_argument("Invalid consensus_prefix setting");
+  c.consensus_prefix = j["consensus_prefix"].flag(true);
+  if (c.planning_algorithm == 3 && c.recording == fg::RecordingMode::Off)
+    c.recording = fg::RecordingMode::Pruned;
+  const size_t observations = s.bodies.size() * 7 + s.controlled.size() + s.tethers.size() * 2 +
+                              s.extension_observations +
+                              (s.cargo_capacity > 0 ? s.controlled.size() * 4 : 0);
+  const size_t metadata = observations * 4 + s.channels.size() * 8 + 27 + sizeof(StepResult);
+  // Two immutable/output populations and two elite banks, plus cloning scratch.
+  size_t estimated = size_t(2 * c.walkers + 2 * c.elites) * (s.layout.stride * 4 + metadata) +
+                     size_t(c.walkers) * 80 + s.layout.stride * 4;
   if (estimated > 512 * 1024 * 1024)
-    throw std::invalid_argument(
-        "Planner exceeds the 512 MiB working-memory budget");
+    throw std::invalid_argument("Planner exceeds the 512 MiB working-memory budget");
   return c;
 }
 }  // namespace
@@ -154,12 +160,10 @@ FGC_EXPORT int fgc_reset(void* p, uint32_t lo, uint32_t hi) {
   });
 }
 FGC_EXPORT uint32_t fgc_hash_lo(void* p) {
-  return guard<uint32_t>(
-      0, [&] { return uint32_t(runtime(p).scene->fingerprint); });
+  return guard<uint32_t>(0, [&] { return uint32_t(runtime(p).scene->fingerprint); });
 }
 FGC_EXPORT uint32_t fgc_hash_hi(void* p) {
-  return guard<uint32_t>(
-      0, [&] { return uint32_t(runtime(p).scene->fingerprint >> 32); });
+  return guard<uint32_t>(0, [&] { return uint32_t(runtime(p).scene->fingerprint >> 32); });
 }
 FGC_EXPORT int fgc_info(void* p, int field) {
   return guard(-1, [&] {
@@ -213,9 +217,8 @@ FGC_EXPORT int fgc_action_body(void* p, int channel) {
   return guard(-1, [&] { return runtime(p).scene->channels.at(channel).body; });
 }
 FGC_EXPORT const char* fgc_action_name(void* p, int channel) {
-  return guard<const char*>(nullptr, [&] {
-    return runtime(p).scene->channels.at(channel).name.c_str();
-  });
+  return guard<const char*>(nullptr,
+                            [&] { return runtime(p).scene->channels.at(channel).name.c_str(); });
 }
 FGC_EXPORT float* fgc_actions(void* p) {
   return guard<float*>(nullptr, [&] { return runtime(p).actions.data(); });
@@ -239,9 +242,7 @@ FGC_EXPORT double* fgc_profile(void* p) {
     size_t memory = r.state.bytes() + r.next.bytes() + 4 * r.actions.capacity();
     if (r.planner) {
       const auto& w = r.planner->wave;
-      memory += w.current.bytes() + w.next.bytes() + w.elite.bytes() +
-                4 * (w.actions.capacity() + w.root_actions.capacity() +
-                     w.observations.capacity());
+      memory += w.working_bytes();
     }
     r.profile[10] = double(memory);
     r.profile[11] = double(r.state.serialized_size());
@@ -281,8 +282,7 @@ FGC_EXPORT int fgc_step(void* p) {
     auto& r = runtime(p);
     r.writable_next();
     const auto started = Clock::now();
-    r.physics.step(r.state, nullptr, r.actions.data(), r.frames.data(), r.next,
-                   r.results.data());
+    r.physics.step(r.state, nullptr, r.actions.data(), r.frames.data(), r.next, r.results.data());
     r.profile[0] += elapsed(started);
     for (const auto& result : r.results) r.profile[1] += result.frames;
     std::swap(r.state, r.next);
@@ -292,8 +292,7 @@ FGC_EXPORT int fgc_step(void* p) {
 FGC_EXPORT int fgc_get_states(void* p, float* out, size_t bytes) {
   return guard(-1, [&] {
     auto& r = runtime(p);
-    if (!out || bytes < r.state.bytes())
-      throw std::invalid_argument("State output too small");
+    if (!out || bytes < r.state.bytes()) throw std::invalid_argument("State output too small");
     const auto started = Clock::now();
     std::memmove(out, r.state.row(0), r.state.bytes());
     r.profile[2] += elapsed(started);
@@ -304,8 +303,7 @@ FGC_EXPORT int fgc_get_states(void* p, float* out, size_t bytes) {
 FGC_EXPORT int fgc_set_states(void* p, const float* in, size_t bytes) {
   return guard(-1, [&] {
     auto& r = runtime(p);
-    if (!in || bytes != r.state.bytes())
-      throw std::invalid_argument("State input shape mismatch");
+    if (!in || bytes != r.state.bytes()) throw std::invalid_argument("State input shape mismatch");
     const auto started = Clock::now();
     for (size_t w = 0; w < r.state.count; ++w)
       r.state.validate_row(in + w * r.state.layout.stride);
@@ -332,8 +330,7 @@ FGC_EXPORT int fgc_broadcast(void* p, const uint8_t* data, size_t size) {
 FGC_EXPORT int fgc_gather(void* p, const int32_t* indices, size_t count) {
   return guard(-1, [&] {
     auto& r = runtime(p);
-    if (!indices || count != r.state.count)
-      throw std::invalid_argument("Gather shape mismatch");
+    if (!indices || count != r.state.count) throw std::invalid_argument("Gather shape mismatch");
     r.writable_next();
     const auto started = Clock::now();
     r.next.gather(r.state, indices, count);
@@ -364,8 +361,7 @@ FGC_EXPORT int fgc_deserialize(void* p, const uint8_t* in, size_t bytes) {
   });
 }
 FGC_EXPORT void* fgc_borrow(void* p) {
-  return guard<void*>(
-      nullptr, [&]() -> void* { return new StateBatch(runtime(p).state); });
+  return guard<void*>(nullptr, [&]() -> void* { return new StateBatch(runtime(p).state); });
 }
 FGC_EXPORT float* fgc_batch_data(void* p) {
   return p ? static_cast<StateBatch*>(p)->row(0) : nullptr;
@@ -387,8 +383,7 @@ FGC_EXPORT int fgc_plan_begin(void* p, const char* settings, uint32_t seed) {
     auto& r = runtime(p);
     std::string text = settings ? settings : "{}";
     if (!r.planner || text != r.planner_settings) {
-      r.planner = std::make_unique<FmcPlanner>(
-          r.physics, config(text.c_str(), *r.scene), seed);
+      r.planner = std::make_unique<FmcPlanner>(r.physics, config(text.c_str(), *r.scene), seed);
       r.planner_settings = text;
     } else
       r.planner->wave.reseed(seed);
@@ -407,9 +402,9 @@ FGC_EXPORT int fgc_plan_advance(void* p) {
     if (advances) r.profile[1] += r.planner->wave.stats.frames;
     r.profile[8] += elapsed(start);
     r.profile[9]++;
-    r.planning_ms += std::chrono::duration<double, std::milli>(
-                         std::chrono::steady_clock::now() - start)
-                         .count();
+    r.planning_ms +=
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start)
+            .count();
     return int(done);
   });
 }
@@ -435,18 +430,42 @@ FGC_EXPORT float* fgc_plan_action(void* p) {
     return r.planner->selected.data();
   });
 }
+FGC_EXPORT const char* fgc_plan_result(void* p) {
+  return guard<const char*>(nullptr, [&] {
+    auto& r = runtime(p);
+    if (!r.planner) throw std::logic_error("No plan");
+    r.planner->finish();
+    const auto& plan = r.planner->search.result;
+    std::ostringstream out;
+    out.precision(std::numeric_limits<float>::max_digits10);
+    out << "{\"selectedLeaf\":" << plan.selected_leaf << ",\"executionMode\":\"" << plan.mode
+        << "\",\"searchDepth\":" << r.planner->search.depth << ",\"trajectory\":[";
+    for (size_t i = 0; i < plan.frames.size(); ++i) {
+      if (i) out << ',';
+      out << "{\"frames\":" << plan.frames[i] << ",\"action\":[";
+      for (int k = 0; k < plan.action_dim; ++k) {
+        if (k) out << ',';
+        out << plan.actions[i * plan.action_dim + k];
+      }
+      out << "]}";
+    }
+    out << "]}";
+    r.plan_json = out.str();
+    return r.plan_json.c_str();
+  });
+}
 FGC_EXPORT int fgc_wave_step(void* p) {
   return guard(-1, [&] {
     auto& r = runtime(p);
     if (!r.planner) throw std::logic_error("Begin a Wave run first");
     auto start = std::chrono::steady_clock::now();
-    r.planner->wave.step();
+    r.planner->wave_step();
     r.profile[1] += r.planner->wave.stats.frames;
     r.profile[8] += elapsed(start);
     r.profile[9]++;
-    r.planning_ms += std::chrono::duration<double, std::milli>(
-                         std::chrono::steady_clock::now() - start)
-                         .count();
+    r.planning_ms +=
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start)
+            .count();
     return 0;
   });
 }
@@ -489,11 +508,11 @@ FGC_EXPORT size_t fgc_checkpoint_size(void* p) {
     auto& r = runtime(p);
     CheckpointWriter out;
     out.scalar(uint32_t(0x50434746));
-    out.scalar(uint32_t(1));
+    out.scalar(uint32_t(2));
 #ifdef __EMSCRIPTEN__
-    out.string("wasm-control-2");
+    out.string("wasm-control-3");
 #else
-    out.string("native-control-2");
+    out.string("native-control-3");
 #endif
     out.scalar(r.scene->fingerprint);
     out.string(r.planner_settings);
@@ -504,9 +523,8 @@ FGC_EXPORT size_t fgc_checkpoint_size(void* p) {
     out.vector(r.frames);
     out.scalar(uint32_t(bool(r.planner)));
     if (r.planner) {
-      out.scalar(uint32_t(r.planner->ready));
-      out.vector(r.planner->selected);
       r.planner->wave.save_checkpoint(out);
+      r.planner->search.save(out);
     }
     out.scalar(checkpoint_hash(out.data.data(), out.data.size()));
     r.checkpoint = std::move(out.data);
@@ -522,8 +540,7 @@ FGC_EXPORT int fgc_checkpoint_write(void* p, uint8_t* out, size_t capacity) {
     return 0;
   });
 }
-FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data,
-                                      size_t size) {
+FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data, size_t size) {
   return guard(-1, [&] {
     auto& r = runtime(p);
     if (!data || size < 24 || size > 512 * 1024 * 1024)
@@ -533,12 +550,12 @@ FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data,
     if (checkpoint_hash(data, size - 8) != hash)
       throw std::invalid_argument("Checkpoint checksum mismatch");
     CheckpointReader in(data, size - 8);
-    if (in.scalar<uint32_t>() != 0x50434746 || in.scalar<uint32_t>() != 1)
+    if (in.scalar<uint32_t>() != 0x50434746 || in.scalar<uint32_t>() != 2)
       throw std::invalid_argument("Unsupported checkpoint version");
 #ifdef __EMSCRIPTEN__
-    const std::string backend = "wasm-control-2";
+    const std::string backend = "wasm-control-3";
 #else
-    const std::string backend="native-control-2";
+    const std::string backend="native-control-3";
 #endif
     if (in.string() != backend || in.scalar<uint64_t>() != r.scene->fingerprint)
       throw std::invalid_argument("Checkpoint backend or scene mismatch");
@@ -551,30 +568,20 @@ FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data,
     if (actions.size() != r.actions.size() || frames.size() != r.frames.size())
       throw std::invalid_argument("Checkpoint runtime shape mismatch");
     for (float a : actions)
-      if (!std::isfinite(a))
-        throw std::invalid_argument("Nonfinite checkpoint action");
+      if (!std::isfinite(a)) throw std::invalid_argument("Nonfinite checkpoint action");
     for (int32_t f : frames)
-      if (f < 0 || f > 4096)
-        throw std::invalid_argument("Invalid checkpoint duration");
+      if (f < 0 || f > 4096) throw std::invalid_argument("Invalid checkpoint duration");
     const auto has = in.scalar<uint32_t>();
     if (has > 1) throw std::invalid_argument("Invalid planner checkpoint flag");
     std::unique_ptr<FmcPlanner> planner;
     if (has) {
-      planner = std::make_unique<FmcPlanner>(
-          r.physics, config(settings.c_str(), *r.scene), 0);
-      const auto ready = in.scalar<uint32_t>();
-      if (ready > 1) throw std::invalid_argument("Invalid planner ready flag");
-      planner->ready = ready;
-      planner->selected = in.vector<float>();
-      if (!planner->selected.empty() &&
-          planner->selected.size() != r.scene->channels.size())
-        throw std::invalid_argument("Invalid selected action shape");
-      if (ready && planner->selected.size() != r.scene->channels.size())
-        throw std::invalid_argument("Missing selected action");
-      for (float a : planner->selected)
-        if (!std::isfinite(a))
-          throw std::invalid_argument("Nonfinite selected action");
+      planner = std::make_unique<FmcPlanner>(r.physics, config(settings.c_str(), *r.scene), 0);
       planner->wave.load_checkpoint(in);
+      planner->search.load(in, r.scene->channels.size());
+      planner->ready = planner->search.result.ready;
+      if (planner->search.depth != int(planner->wave.stats.iterations))
+        throw std::invalid_argument("Checkpoint search depth mismatch");
+      if (planner->ready) planner->select();
     }
     in.finish();
     r.state = std::move(restored);
@@ -596,8 +603,7 @@ FGC_EXPORT int fgc_replay_node(void* p, uint32_t id) {
     return 0;
   });
 }
-FGC_EXPORT float fgc_raycast(void* p, float x, float y, float dx, float dy,
-                             float distance) {
+FGC_EXPORT float fgc_raycast(void* p, float x, float y, float dx, float dy, float distance) {
   return guard(-1.f, [&] {
     auto& r = runtime(p);
     if (!std::isfinite(x + y + dx + dy + distance) || distance < 0)

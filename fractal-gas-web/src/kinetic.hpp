@@ -26,17 +26,23 @@ class RandomActionOperator {
 
   virtual ~RandomActionOperator() = default;
 
-  virtual std::vector<int32_t> sample_actions(int32_t n, int32_t n_actions,
-                                              Rng& rng) const {
-    std::vector<int32_t> actions(static_cast<size_t>(n));
-    for (auto& a : actions) a = static_cast<int32_t>(rng.randint(0, n_actions));
+  virtual void sample_actions_into(int32_t n, int32_t n_actions, Rng& rng,
+                                   std::vector<int32_t>& actions) const {
+    actions.resize(n);
+    for (auto& a : actions) a = int32_t(rng.randint(0, n_actions));
+  }
+  virtual void sample_dt_into(int32_t n, Rng& rng, std::vector<int32_t>& dt) const {
+    dt.resize(n);
+    for (auto& d : dt) d = int32_t(rng.randint(dt_min, dt_max + 1));
+  }
+  virtual std::vector<int32_t> sample_actions(int32_t n, int32_t n_actions, Rng& rng) const {
+    std::vector<int32_t> actions;
+    sample_actions_into(n, n_actions, rng, actions);
     return actions;
   }
-
   virtual std::vector<int32_t> sample_dt(int32_t n, Rng& rng) const {
-    // np.random.randint(dt_min, dt_max + 1)
-    std::vector<int32_t> dt(static_cast<size_t>(n));
-    for (auto& d : dt) d = static_cast<int32_t>(rng.randint(dt_min, dt_max + 1));
+    std::vector<int32_t> dt;
+    sample_dt_into(n, rng, dt);
     return dt;
   }
 
@@ -44,24 +50,22 @@ class RandomActionOperator {
   /// the env batch. Outputs are resized here.
   void apply(BatchEnv& env, const std::vector<std::vector<char>>& states,
              const std::vector<int32_t>* external_actions, Rng& rng,
-             std::vector<std::vector<char>>& new_states,
-             std::vector<float>& observations, std::vector<float>& rewards,
-             std::vector<uint8_t>& dones, std::vector<uint8_t>& truncated) {
+             std::vector<std::vector<char>>& new_states, std::vector<float>& observations,
+             std::vector<float>& rewards, std::vector<uint8_t>& dones,
+             std::vector<uint8_t>& truncated) {
     const auto n = static_cast<int32_t>(states.size());
     // Python order: actions first, then dt.
-    last_actions = external_actions ? *external_actions
-                                    : sample_actions(n, env.n_actions(), rng);
+    last_actions = external_actions ? *external_actions : sample_actions(n, env.n_actions(), rng);
     last_dt = sample_dt(n, rng);
 
     new_states.resize(static_cast<size_t>(n));
-    observations.resize(static_cast<size_t>(n) *
-                        static_cast<size_t>(env.obs_dim()));
+    observations.resize(static_cast<size_t>(n) * static_cast<size_t>(env.obs_dim()));
     rewards.assign(static_cast<size_t>(n), 0.0f);
     dones.assign(static_cast<size_t>(n), 0);
     truncated.assign(static_cast<size_t>(n), 0);
 
-    env.step_batch(states, last_actions, last_dt, new_states, observations,
-                   rewards, dones, truncated);
+    env.step_batch(states, last_actions, last_dt, new_states, observations, rewards, dones,
+                   truncated);
   }
 };
 

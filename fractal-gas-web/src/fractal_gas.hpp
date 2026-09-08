@@ -8,9 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "backends/snapshot.hpp"
 #include "cloning.hpp"
 #include "env.hpp"
 #include "exploration_tree.hpp"
+#include "fractal/wave.hpp"
 #include "kinetic.hpp"
 #include "rng.hpp"
 #include "swarm_algorithm.hpp"
@@ -49,13 +51,15 @@ class FractalGas final : public SwarmAlgorithm {
  public:
   /// The operators are owned; passing subclasses (with overridden sampling)
   /// enables replay tests. Defaults reproduce the Python configuration.
-  FractalGas(BatchEnv& env, FractalGasParams params,
-             std::unique_ptr<Rng> rng = nullptr,
+  FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<Rng> rng = nullptr,
              std::unique_ptr<FractalCloningOperator> clone_op = nullptr,
              std::unique_ptr<RandomActionOperator> kinetic_op = nullptr);
 
   const FractalGasParams& params() const { return params_; }
   const WalkerState& state() const { return state_; }
+  const std::vector<int32_t>& fitness_companions() const { return core_.fitness_companions(); }
+  const std::vector<int32_t>& clone_companions() const { return core_.clone_companions(); }
+  const std::vector<uint8_t>& clone_mask() const { return core_.clone_mask(); }
   const ExplorationTree& exploration_tree() const { return exploration_tree_; }
 
   // Live-tunable parameters (used by the web demo's sidebar).
@@ -94,8 +98,7 @@ class FractalGas final : public SwarmAlgorithm {
   void set_n_elite(int32_t k) override {
     params_.n_elite = k;
     if (k <= 0) {
-      has_elite_ = false;
-      elite_walkers_ = WalkerState{};
+      core_.has_elite = false;
     }
   }
 
@@ -109,8 +112,7 @@ class FractalGas final : public SwarmAlgorithm {
   /// One iteration of the algorithm, preserving the Python phase order.
   StepInfo step() override;
 
-  std::vector<StepInfo> run(int32_t max_iterations,
-                            bool stop_when_all_dead = false);
+  std::vector<StepInfo> run(int32_t max_iterations, bool stop_when_all_dead = false);
 
   /// (index, cumulative reward) of the best walker.
   std::pair<int32_t, float> get_best_walker() const override;
@@ -144,8 +146,6 @@ class FractalGas final : public SwarmAlgorithm {
   }
 
  private:
-  void update_elites();
-
   BatchEnv& env_;
   FractalGasParams params_;
   std::unique_ptr<Rng> rng_;
@@ -153,13 +153,14 @@ class FractalGas final : public SwarmAlgorithm {
   std::unique_ptr<RandomActionOperator> kinetic_op_;
   bool owns_rng_ = false;
 
-  WalkerState state_;
-  WalkerState elite_walkers_;
-  ExplorationTree exploration_tree_;
-  bool has_elite_ = false;
+  VisitGrid visits_;
+  SnapshotBackend backend_;
+  DiscreteActions action_policy_;
+  fractal::Wave<WalkerState, SnapshotBackend, DiscreteActions> core_;
+  WalkerState& state_;
+  ExplorationTree& exploration_tree_;
 
   std::vector<uint8_t> best_frame_;
-  VisitGrid visits_;
   bool count_visits_ = false;
 
   int64_t total_steps_ = 0;

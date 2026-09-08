@@ -1,0 +1,12 @@
+16 worlds, 1 threads: 1 allocations per batch
+256 worlds, 1 threads: 1 allocations per batch
+16 worlds, 4 threads: 1 allocations per batch
+256 worlds, 4 threads: 1 allocations per batch
+16 worlds, 1 threads: 1 allocations per batch
+256 worlds, 1 threads: 1 allocations per batch
+16 worlds, 4 threads: 1 allocations per batch
+256 worlds, 4 threads: 1 allocations per batch
+16 walkers, 1 threads: 1 allocations per complete Wave iteration
+256 walkers, 1 threads: 1 allocations per complete Wave iteration
+16 walkers, 4 threads: 1 allocations per complete Wave iteration
+256 walkers, 4 threads: 1 allocations per complete Wave iteration

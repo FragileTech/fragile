@@ -76,6 +76,7 @@ def _library(path: str | Path | None = None) -> ct.CDLL:
         "observe": (_I, [_P, _P, _Z]),
         "plan_begin": (_I, [_P, ct.c_char_p, _U]),
         "plan_advance": (_I, [_P]),
+        "plan_result": (ct.c_char_p, [_P]),
         "plan_action": (_P, [_P]),
         "wave_step": (_I, [_P]),
         "wave_states": (_P, [_P]),
@@ -459,6 +460,16 @@ class ControlEngine:
         if not pointer:
             raise ValueError(self._lib.fgc_error().decode())
         return self._array(pointer, np.float32, (self.action_dim,)).copy()
+
+    def plan_result(self) -> dict:
+        """Finish the current native search and return its selected trajectory."""
+        result = self._lib.fgc_plan_result(self._live())
+        if not result:
+            raise ValueError(self._lib.fgc_error().decode())
+        plan = json.loads(result)
+        for edge in plan["trajectory"]:
+            edge["action"] = np.asarray(edge["action"], dtype=np.float32)
+        return plan
 
     def plan(self, **settings) -> tuple[np.ndarray, dict[str, float]]:
         self.begin_plan(**settings)

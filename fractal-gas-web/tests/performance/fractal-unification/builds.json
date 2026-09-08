@@ -1,0 +1,45 @@
+{
+  "baseline_commit": "d91d23d0a522d28dc4650229f8bc80889b1d52b4",
+  "platform": "Linux-7.0.0-31-generic-x86_64-with-glibc2.43",
+  "compiler": "c++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0",
+  "node": "v22.22.1",
+  "emscripten": "6.0.8",
+  "native_flags": "Libraries: Release -O3 -DNDEBUG -ffp-contract=off; harness: -O3 -ffp-contract=off; C++17; identical ordinary new instrumentation",
+  "wasm_flags": "Release -O3 -DNDEBUG -ffp-contract=off -fexceptions -msimd128; single-thread; initial memory 33554432; memory growth enabled",
+  "cpu": "13th Gen Intel(R) Core(TM) i9-13900H",
+  "sampling": "Nine runs with eight warmup and forty timed operations each. Native: seven adjacent per-workload pairs, alternating order. WASM: three alternating complete-process pairs. Raw timing medians and median within-pair percentage changes are both retained.",
+  "wasm_artifacts": {
+    "baseline": {
+      "control": {
+        "bytes": 452808,
+        "sha256": "03f3568b47dc00774219300e34cc3e115d530a0dab9841e43bae262a6bbabdeb"
+      },
+      "optimization": {
+        "bytes": 1133603,
+        "sha256": "394da3b2c0552b9d6065e03da2b996acdd6c241e26f8d2846d3635e91ebb1db6"
+      }
+    },
+    "candidate": {
+      "control": {
+        "bytes": 470982,
+        "sha256": "770f8a58c778ac162e30bc40e9781eb9bbe3e8dd6933b39261b67d2664523cc7"
+      },
+      "optimization": {
+        "bytes": 1109252,
+        "sha256": "9232885e71158ba4b1b0c81588e5a74511bfce7365829ecfb50c93a060d48b2e"
+      }
+    }
+  },
+  "native_affinity": {
+    "single_thread": [
+      4
+    ],
+    "four_threads": [
+      4,
+      6,
+      8,
+      10
+    ]
+  },
+  "native_timing_limit": "Host load fluctuated substantially. Paired medians pass the 5% threshold; absolute timing parity is inconclusive for Lab off/full recording. See the performance report and retained unrestricted-affinity investigation."
+}

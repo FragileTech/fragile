@@ -34,7 +34,7 @@ test("IOHanalyzer CSV uses actual evaluation checkpoints and keeps direction/set
     /"evaluations","best","function","algorithm","dimension","run"/,
   );
   assert.match(lines[3], /^"33","25","bbob_24","wave_jump","5"/);
-  assert.match(lines[3], /"maximize","100","fgopt-3","gaussian","0.1"$/);
+  assert.match(lines[3], /"maximize","100","fgopt-4","gaussian","0.1"$/);
   assert.ok(!lines.some((line) => line.startsWith('"100",')));
 });
 

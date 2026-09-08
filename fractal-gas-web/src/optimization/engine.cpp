@@ -14,63 +14,31 @@ namespace fg::optimization {
 std::unique_ptr<Algorithm> make_euclidean(Benchmark&, const Settings&);
 std::unique_ptr<Algorithm> make_cma(Benchmark&, const Settings&);
 std::unique_ptr<Algorithm> make_gas2017(Benchmark&, const Settings&);
-// Capture the existing Wave operator's draws without changing its decisions.
-class ObservedCloning final : public FractalCloningOperator {
- public:
-  mutable std::vector<std::vector<int32_t>> draws;
-  mutable std::vector<uint8_t> alive;
-  mutable std::vector<float> uniforms;
-  std::vector<int32_t> sample_companions(const std::vector<uint8_t>& mask,
-                                         Rng& rng) const override {
-    auto result = FractalCloningOperator::sample_companions(mask, rng);
-    if (draws.size() == 2) draws.clear();
-    draws.push_back(result);
-    alive = mask;
-    return result;
-  }
-  std::vector<float> sample_uniforms(int32_t n, Rng& rng) const override {
-    uniforms = FractalCloningOperator::sample_uniforms(n, rng);
-    return uniforms;
-  }
-};
 class ExistingSwarm final : public Algorithm {
   BenchmarkEnvironment env;
   Settings s;
   std::unique_ptr<SwarmAlgorithm> swarm;
   std::unique_ptr<ArcadePlanner> planner;
   Population p;
-  ObservedCloning* observed = nullptr;
   void update() {
     const int count = swarm->n_walkers();
     p.resize(count + (planner ? 1 : 0), env.b.d);
     p.has_velocity = false;
     auto* wave = dynamic_cast<FractalGas*>(swarm.get());
     auto* graph = dynamic_cast<FractalTree*>(swarm.get());
-    std::vector<uint8_t> cloned;
-    if (wave && wave->state().has_virtual_rewards && observed &&
-        observed->draws.size() == 2) {
-      const auto probabilities = observed->clone_probs_with_companions(
-          wave->state().virtual_rewards, observed->draws[1]);
-      cloned = observed->decide_with_uniforms(probabilities, observed->uniforms,
-                                              observed->alive);
-    }
     for (int i = 0; i < count; ++i) {
-      p.objective[i] =
-          env.decode(swarm->walker_state(i), p.x.data() + size_t(i) * p.d);
-      p.alive[i] = swarm->walker_alive(i) &&
-                   env.b.valid(p.x.data() + size_t(i) * p.d) &&
+      p.objective[i] = env.decode(swarm->walker_state(i), p.x.data() + size_t(i) * p.d);
+      p.alive[i] = swarm->walker_alive(i) && env.b.valid(p.x.data() + size_t(i) * p.d) &&
                    std::isfinite(p.objective[i]);
       p.leaf[i] = swarm->walker_is_leaf(i);
       p.parent[i] = swarm->walker_parent(i);
       if (wave) {
         auto& st = wave->state();
         if (st.has_virtual_rewards) p.fitness[i] = st.virtual_rewards[i];
-        if (observed && observed->draws.size() == 2) {
-          p.companions[i] = observed->draws[0][i];
-          p.clone_companions[i] = observed->draws[1][i];
-          p.cloned[i] = cloned.empty() ? 0 : cloned[i];
-          p.parent[i] = p.cloned[i] ? p.clone_companions[i] : i;
-        }
+        p.companions[i] = wave->fitness_companions()[i];
+        p.clone_companions[i] = wave->clone_companions()[i];
+        p.cloned[i] = wave->clone_mask()[i];
+        p.parent[i] = p.cloned[i] ? p.clone_companions[i] : i;
       }
       if (graph) {
         auto& st = graph->state();
@@ -91,10 +59,8 @@ class ExistingSwarm final : public Algorithm {
       }
     }
     if (planner) {
-      p.objective[count] =
-          env.decode(planner->state(), p.x.data() + size_t(count) * p.d);
-      p.alive[count] = !planner->done() &&
-                       env.b.valid(p.x.data() + size_t(count) * p.d) &&
+      p.objective[count] = env.decode(planner->state(), p.x.data() + size_t(count) * p.d);
+      p.alive[count] = !planner->done() && env.b.valid(p.x.data() + size_t(count) * p.d) &&
                        std::isfinite(p.objective[count]);
       p.leaf[count] = 0;
       if (planner->done()) std::fill(p.alive.begin(), p.alive.end(), 0);
@@ -102,8 +68,7 @@ class ExistingSwarm final : public Algorithm {
   }
 
  public:
-  ExistingSwarm(Benchmark& b, const Settings& settings)
-      : env(b, settings), s(settings) {
+  ExistingSwarm(Benchmark& b, const Settings& settings) : env(b, settings), s(settings) {
     if (s.algorithm == "wave" || s.planning()) {
       FractalGasParams a;
       a.N = s.walkers;
@@ -117,18 +82,15 @@ class ExistingSwarm final : public Algorithm {
       a.count_visits = false;
       a.recording = s.planning() ? RecordingMode::Pruned : RecordingMode::Off;
       a.record_observations = false;
-      auto trace = std::make_unique<ObservedCloning>();
-      observed = trace.get();
-      swarm = std::make_unique<FractalGas>(
-          env, a, std::make_unique<OptimizationRng>(s.seed), std::move(trace));
+      swarm = std::make_unique<FractalGas>(env, a, std::make_unique<OptimizationRng>(s.seed));
       if (s.planning()) {
         ArcadePlannerSettings options;
         options.algorithm = s.algorithm == "fmc" ? 2 : 3;
         options.horizon = s.horizon;
         options.max_horizon = s.max_horizon;
         options.consensus_prefix = s.consensus_prefix;
-        planner = std::make_unique<ArcadePlanner>(
-            env, *static_cast<FractalGas*>(swarm.get()), options);
+        planner =
+            std::make_unique<ArcadePlanner>(env, *static_cast<FractalGas*>(swarm.get()), options);
         planner->reset();
       } else {
         swarm->reset();
@@ -146,8 +108,7 @@ class ExistingSwarm final : public Algorithm {
       a.dt_max = s.dt_max;
       a.count_visits = false;
       a.visit_reward = false;
-      swarm = std::make_unique<FractalTree>(
-          env, a, std::make_unique<OptimizationRng>(s.seed));
+      swarm = std::make_unique<FractalTree>(env, a, std::make_unique<OptimizationRng>(s.seed));
       swarm->reset();
     }
     update();
@@ -168,9 +129,7 @@ class ExistingSwarm final : public Algorithm {
   uint64_t next_evaluations_upper_bound() const override {
     if (planner && planner->execution_pending()) return 1;
     return uint64_t(swarm->n_walkers()) +
-           (s.algorithm == "graph"
-                ? std::min(s.walkers, s.max_walkers - swarm->n_walkers())
-                : 0);
+           (s.algorithm == "graph" ? std::min(s.walkers, s.max_walkers - swarm->n_walkers()) : 0);
   }
   uint64_t next_population_size() const override {
     return s.algorithm == "graph" ? std::min(s.max_walkers, swarm->n_walkers() + s.walkers) : p.n;
@@ -178,12 +137,10 @@ class ExistingSwarm final : public Algorithm {
   double objective_score(int i) const override {
     if (!planner) return swarm->walker_cum_reward(i);
     if (i == swarm->n_walkers()) return s.score(p.objective.at(i));
-    const auto& bytes =
-        static_cast<FractalGas*>(swarm.get())->exploration_tree().root_snapshot;
+    const auto& bytes = static_cast<FractalGas*>(swarm.get())->exploration_tree().root_snapshot;
     std::vector<float> x(env.b.d);
     return swarm->walker_cum_reward(i) +
-           s.score(env.decode(std::vector<char>(bytes.begin(), bytes.end()),
-                              x.data()));
+           s.score(env.decode(std::vector<char>(bytes.begin(), bytes.end()), x.data()));
   }
 };
 static std::map<std::string, Factory>& factories() {
@@ -193,28 +150,20 @@ static std::map<std::string, Factory>& factories() {
       {"gas", make_gas2017},
       {"euclidean", make_euclidean},
       {"fmc",
-       [](Benchmark& b, const Settings& s) {
-         return std::make_unique<ExistingSwarm>(b, s);
-       }},
+       [](Benchmark& b, const Settings& s) { return std::make_unique<ExistingSwarm>(b, s); }},
       {"wave_jump",
-       [](Benchmark& b, const Settings& s) {
-         return std::make_unique<ExistingSwarm>(b, s);
-       }},
+       [](Benchmark& b, const Settings& s) { return std::make_unique<ExistingSwarm>(b, s); }},
       {"wave",
-       [](Benchmark& b, const Settings& s) {
-         return std::make_unique<ExistingSwarm>(b, s);
-       }},
-      {"graph", [](Benchmark& b, const Settings& s) {
-         return std::make_unique<ExistingSwarm>(b, s);
-       }}};
+       [](Benchmark& b, const Settings& s) { return std::make_unique<ExistingSwarm>(b, s); }},
+      {"graph",
+       [](Benchmark& b, const Settings& s) { return std::make_unique<ExistingSwarm>(b, s); }}};
   return f;
 }
 static std::map<std::string, Json>& descriptions() {
   static auto entries = [] {
     std::map<std::string, Json> result;
     const auto catalog = JsonReader(catalog_json()).read();
-    for (const auto& entry : catalog["algorithms"].array)
-      result.emplace(entry["id"].str(), entry);
+    for (const auto& entry : catalog["algorithms"].array) result.emplace(entry["id"].str(), entry);
     result.emplace("gas", JsonReader(std::string(R"json({
       "id":"gas", "name":"GAS (2017)", "velocity":false,
       "parameters":[
@@ -223,26 +172,32 @@ static std::map<std::string, Json>& descriptions() {
         {"id":"gas_local_evaluations", "label":"Evaluations per local search",
          "type":"integer", "default":200, "min":1, "max":1000000}
       ]
-    })json")).read());
+    })json"))
+                              .read());
     for (auto id : {"cmaes_active", "cmaes_bipop"}) {
       Json entry = JsonReader(std::string(R"json({"velocity":false,"parameters":[
         {"id":"cma_sigma","label":"Initial standard deviation (0 = 20% of width)","type":"number","default":0,"min":0,"max":1000000},
         {"id":"cma_population","label":"Initial population (0 = automatic)","type":"integer","default":0,"min":0,"max":100000}
-      ]})json")).read();
+      ]})json"))
+                       .read();
       entry.object["id"].kind = entry.object["name"].kind = Json::String;
       entry.object["id"].string = id;
-      entry.object["name"].string = std::string(id) == "cmaes_active" ? "Active CMA-ES" : "BIPOP-active CMA-ES";
+      entry.object["name"].string =
+          std::string(id) == "cmaes_active" ? "Active CMA-ES" : "BIPOP-active CMA-ES";
       if (std::string(id) == "cmaes_bipop")
-        entry.object["parameters"].array.push_back(JsonReader(std::string(R"({"id":"cma_runs","label":"Large-population runs","type":"integer","default":9,"min":1,"max":1000})")).read());
+        entry.object["parameters"].array.push_back(
+            JsonReader(
+                std::string(
+                    R"({"id":"cma_runs","label":"Large-population runs","type":"integer","default":9,"min":1,"max":1000})"))
+                .read());
       result.emplace(id, entry);
     }
     return result;
   }();
   return entries;
 }
-void register_algorithm(const std::string& id, const std::string& name,
-                        bool velocity, Factory factory,
-                        const Json& parameters) {
+void register_algorithm(const std::string& id, const std::string& name, bool velocity,
+                        Factory factory, const Json& parameters) {
   if (id.empty() || name.empty() || !factory || factories().count(id))
     throw std::invalid_argument("Duplicate or invalid optimization algorithm");
   Json entry;
@@ -270,30 +225,25 @@ std::string discovery_json() {
   result.object["perturbations"] = perturbation_catalog();
   return stringify(result);
 }
-Session::Session(const Json& config)
-    : benchmark(config), settings(benchmark.config) {
+Session::Session(const Json& config) : benchmark(config), settings(benchmark.config) {
   // Enforce bounded allocations before native or WASM construction.
-  uint64_t count =
-      settings.algorithm == "graph" ? settings.max_walkers : settings.walkers;
-  const uint64_t state_bytes = count * uint64_t(benchmark.d) *
-      (settings.algorithm == "gas" ? 64 : 32) +
+  uint64_t count = settings.algorithm == "graph" ? settings.max_walkers : settings.walkers;
+  const uint64_t state_bytes =
+      count * uint64_t(benchmark.d) * (settings.algorithm == "gas" ? 64 : 32) +
       (settings.algorithm == "gas" ? uint64_t(benchmark.d) * 4096 + count * 256 : 0);
   if (!settings.cma() && state_bytes > 128 * 1024 * 1024)
     throw std::invalid_argument(
         "Swarm exceeds 128 MiB state budget; reduce walkers or dimensions");
   if (settings.algorithm == "euclidean" && settings.walkers > 4096 &&
-      (settings.companion != "uniform" ||
-       settings.clone_companion != "uniform" || settings.rho > 0))
+      (settings.companion != "uniform" || settings.clone_companion != "uniform" ||
+       settings.rho > 0))
     throw std::invalid_argument(
         "Use uniform companions and global fitness for more than 4096 walkers");
   auto it = factories().find(settings.algorithm);
-  if (it == factories().end())
-    throw std::invalid_argument("Unknown optimization algorithm");
+  if (it == factories().end()) throw std::invalid_argument("Unknown optimization algorithm");
   if (!settings.cma() && settings.max_evaluations &&
-      settings.max_evaluations <
-          uint64_t(settings.planning() ? 1 : settings.walkers))
-    throw std::invalid_argument(
-        "Evaluation budget is too small to initialize the swarm");
+      settings.max_evaluations < uint64_t(settings.planning() ? 1 : settings.walkers))
+    throw std::invalid_argument("Evaluation budget is too small to initialize the swarm");
   if (benchmark.stochastic) {
     settings.potential_force = false;
     Json off;
@@ -305,17 +255,18 @@ Session::Session(const Json& config)
     }
   }
   if (settings.algorithm == "gas" && settings.max_evaluations &&
-      settings.max_evaluations < uint64_t(settings.walkers) +
-          (settings.gas_local_search ? uint64_t(settings.gas_local_evaluations) : 0))
-    throw std::invalid_argument("Evaluation budget is too small for GAS initialization and local search cap");
+      settings.max_evaluations <
+          uint64_t(settings.walkers) +
+              (settings.gas_local_search ? uint64_t(settings.gas_local_evaluations) : 0))
+    throw std::invalid_argument(
+        "Evaluation budget is too small for GAS initialization and local search cap");
   best = settings.worst();
   config_json = stringify(settings.json);
   algorithm = it->second(benchmark, settings);
   for (const auto& field : algorithm->resolved_config().object)
     settings.json.object[field.first] = field.second;
   config_json = stringify(settings.json);
-  if (settings.max_evaluations &&
-      benchmark.evaluations > settings.max_evaluations)
+  if (settings.max_evaluations && benchmark.evaluations > settings.max_evaluations)
     throw std::invalid_argument("Initialization exceeds the evaluation budget");
   capture();
 }
@@ -323,24 +274,25 @@ std::string Session::status_json() const {
   Json info = algorithm->metadata();
   info.object["finished"].kind = Json::Boolean;
   info.object["finished"].number = algorithm->finished();
-  info.object["next_evaluations"] = number(algorithm->finished() ? 0 : algorithm->next_evaluations_upper_bound());
+  info.object["next_evaluations"] =
+      number(algorithm->finished() ? 0 : algorithm->next_evaluations_upper_bound());
   info.object["next_population"] = number(algorithm->next_population_size());
   info.object["budget_exhausted"].kind = Json::Boolean;
-  info.object["budget_exhausted"].number = settings.max_evaluations &&
-    algorithm->next_evaluations_upper_bound() > settings.max_evaluations - benchmark.evaluations;
+  info.object["budget_exhausted"].number =
+      settings.max_evaluations &&
+      algorithm->next_evaluations_upper_bound() > settings.max_evaluations - benchmark.evaluations;
   return stringify(info);
 }
 void Session::step() {
-  if (algorithm->finished()) throw std::runtime_error("Optimizer finished; reset to start a new run");
+  if (algorithm->finished())
+    throw std::runtime_error("Optimizer finished; reset to start a new run");
   if (settings.max_evaluations &&
-      algorithm->next_evaluations_upper_bound() >
-          settings.max_evaluations - benchmark.evaluations)
+      algorithm->next_evaluations_upper_bound() > settings.max_evaluations - benchmark.evaluations)
     throw std::runtime_error(
         "Evaluation budget reached: paused before the next complete step would "
         "exceed it. Save the run or reset with a larger budget.");
   const auto& p = algorithm->population();
-  if (std::none_of(p.alive.begin(), p.alive.end(),
-                   [](uint8_t v) { return v != 0; }))
+  if (std::none_of(p.alive.begin(), p.alive.end(), [](uint8_t v) { return v != 0; }))
     throw std::runtime_error(
         "All walkers are invalid or outside the domain. "
         "Reset or change bounds/time step.");
@@ -364,8 +316,7 @@ void Session::capture() {
     }
   }
   if (settings.better(current, best)) best = current;
-  if (settings.better(benchmark.best_observed, best))
-    best = benchmark.best_observed;
+  if (settings.better(benchmark.best_observed, best)) best = benchmark.best_observed;
   snapshot = {1,
               double(p.n),
               double(p.d),
@@ -381,13 +332,12 @@ void Session::capture() {
   snapshot.reserve(12 + size_t(p.n) * (2 * p.d + 8));
   const double* precise = algorithm->precise_positions();
   for (int i = 0; i < p.n; ++i) {
-    for (int k = 0; k < p.d; ++k) snapshot.push_back(precise ? precise[size_t(i) * p.d + k] : p.x[size_t(i) * p.d + k]);
+    for (int k = 0; k < p.d; ++k)
+      snapshot.push_back(precise ? precise[size_t(i) * p.d + k] : p.x[size_t(i) * p.d + k]);
     for (int k = 0; k < p.d; ++k) snapshot.push_back(p.v[size_t(i) * p.d + k]);
-    snapshot.insert(
-        snapshot.end(),
-        {p.objective[i], double(p.fitness[i]), double(p.alive[i]),
-         double(p.companions[i]), double(p.clone_companions[i]),
-         double(p.parent[i]), double(p.cloned[i]), double(p.leaf[i])});
+    snapshot.insert(snapshot.end(), {p.objective[i], double(p.fitness[i]), double(p.alive[i]),
+                                     double(p.companions[i]), double(p.clone_companions[i]),
+                                     double(p.parent[i]), double(p.cloned[i]), double(p.leaf[i])});
   }
 }
 }  // namespace fg::optimization

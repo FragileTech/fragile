@@ -1,5 +1,4 @@
 import { registerController, emptyTree } from "./registry.js";
-import { branchActions } from "../timing.js";
 
 registerController("wave-jump", {
   label: "Wave Jump",
@@ -22,89 +21,23 @@ registerController("wave-jump", {
   create: ({ engine, settings }) => ({
     begin(root, seed) {
       this.root = root;
-      this.consensus = settings.consensus_prefix ?? true;
-      if (typeof this.consensus !== "boolean")
-        throw new Error("Invalid consensus_prefix setting");
-      this.normalHorizon = settings.horizon;
-      const maximum = settings.max_horizon ?? 0;
-      this.maxHorizon =
-        maximum === 0 ? Math.min(4096, 2 * settings.horizon) : maximum;
-      if (
-        this.consensus &&
-        (!Number.isInteger(this.maxHorizon) ||
-          this.maxHorizon < settings.horizon ||
-          this.maxHorizon > 4096)
-      )
-        throw new Error(
-          "Maximum search horizon must be an integer between the normal horizon and 4096, or 0 for automatic.",
-        );
-      this.done = false;
-      this.prefix = 0;
       engine.restore(root);
-      engine.begin(
-        {
-          ...settings,
-          horizon: this.consensus ? this.maxHorizon : settings.horizon,
-          recording: Math.max(1, settings.recording || 0),
-        },
-        seed,
-      );
+      engine.begin({ ...settings, algorithm: "wave-jump" }, seed);
     },
     advance() {
-      if (this.done) return true;
-      const done = engine.advance();
-      if (!this.consensus) return (this.done = done);
-      if (done || engine.metrics()[8] >= this.normalHorizon) {
-        this.prefix = engine.commonAncestor();
-        const executable =
-          this.prefix &&
-          branchActions(engine.tree(), this.prefix).some(
-            (edge) => edge.frames > 0,
-          );
-        this.done = Boolean(done || executable);
-      }
-      return this.done;
+      return engine.advance();
     },
     result() {
-      const selectedLeaf = engine.bestLeaf(),
+      const result = engine.planResult(),
         tree = engine.tree();
-      let trajectory = branchActions(tree, selectedLeaf).filter(
-        (edge) => edge.frames > 0,
-      );
-      if (!trajectory.length)
-        throw new Error(
-          "Wave Jump found no executable trajectory. Reset or change the search settings.",
-        );
       const row =
         tree.meta.findIndex(
-          (value, i) => i % 5 === 0 && value === selectedLeaf,
+          (value, i) => i % 5 === 0 && value === result.selectedLeaf,
         ) / 5;
-      // A terminal winner means no final walker survived. Commit only the
-      // first executable action, then let the host search from the new world.
-      let executionMode = "full path";
-      if (tree.meta[row * 5 + 4] & 1) {
-        trajectory.splice(1);
-        executionMode = "all-dead fallback";
-      } else if (this.consensus) {
-        const shared = branchActions(tree, this.prefix).filter(
-          (edge) => edge.frames > 0,
-        );
-        if (shared.length) {
-          trajectory = shared;
-          executionMode = "shared prefix";
-        } else {
-          trajectory.splice(1);
-          executionMode = "horizon fallback";
-        }
-      }
       return {
-        action: trajectory[0].action,
-        trajectory,
-        selectedLeaf,
-        executionMode,
-        searchDepth: engine.metrics()[8],
+        ...result,
         selectedReward: tree.values[row * (3 + tree.dim + tree.poseDim)],
-        budgetUsed: engine.metrics()[8] / settings.horizon,
+        budgetUsed: result.searchDepth / settings.horizon,
         tree: settings.recording === 0 ? emptyTree(engine, this.root) : tree,
         cloud: engine.states(true, settings.walkers),
         metrics: engine.metrics(),
@@ -112,25 +45,17 @@ registerController("wave-jump", {
     },
     checkpoint() {
       return {
-        version: 1,
+        version: 2,
         algorithm: "wave-jump",
         root: this.root,
         bytes: engine.checkpoint(),
-        consensus: this.consensus,
-        normalHorizon: this.normalHorizon,
-        maxHorizon: this.maxHorizon,
-        done: this.done,
-        prefix: this.prefix,
       };
     },
     restore(saved) {
+      if (saved.version !== 2)
+        throw new Error("Unsupported Wave Jump checkpoint version");
       engine.restoreCheckpoint(saved.bytes);
       this.root = saved.root;
-      this.consensus = saved.consensus ?? false;
-      this.normalHorizon = saved.normalHorizon ?? settings.horizon;
-      this.maxHorizon = saved.maxHorizon ?? settings.horizon;
-      this.done = saved.done ?? false;
-      this.prefix = saved.prefix ?? 0;
     },
   }),
 });

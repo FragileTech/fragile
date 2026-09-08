@@ -4,23 +4,12 @@
 
 namespace fg {
 
-std::vector<uint8_t> WalkerState::alive_mask() const {
-  std::vector<uint8_t> mask(static_cast<size_t>(N));
-  for (int32_t i = 0; i < N; ++i) mask[static_cast<size_t>(i)] = alive(i) ? 1 : 0;
-  return mask;
-}
-
-int32_t WalkerState::alive_count() const {
-  int32_t count = 0;
-  for (int32_t i = 0; i < N; ++i) count += alive(i) ? 1 : 0;
-  return count;
-}
-
 WalkerState WalkerState::clone(const std::vector<int32_t>& companions,
                                const std::vector<uint8_t>& will_clone) const {
   WalkerState out;
   out.N = N;
   out.obs_dim = obs_dim;
+  out.action_dim = action_dim;
 
   out.states = states;
   for (size_t i = 0; i < will_clone.size(); ++i) {
@@ -34,6 +23,9 @@ WalkerState WalkerState::clone(const std::vector<int32_t>& companions,
   out.truncated = gather_clone(truncated, companions, will_clone);
   out.actions = gather_clone(actions, companions, will_clone);
   out.dt = gather_clone(dt, companions, will_clone);
+  if (!root_actions.empty()) out.root_actions = gather_clone(root_actions, companions, will_clone);
+  if (!actual_dt.empty()) out.actual_dt = gather_clone(actual_dt, companions, will_clone);
+  if (!recoverable.empty()) out.recoverable = gather_clone(recoverable, companions, will_clone);
 
   out.has_virtual_rewards = has_virtual_rewards;
   if (has_virtual_rewards) {
@@ -59,6 +51,11 @@ void WalkerState::inject(const WalkerState& source, int32_t count) {
     truncated[ui] = source.truncated[ui];
     actions[ui] = source.actions[ui];
     dt[ui] = source.dt[ui];
+    if (!root_actions.empty() && !source.root_actions.empty())
+      root_actions[ui] = source.root_actions[ui];
+    if (!actual_dt.empty() && !source.actual_dt.empty()) actual_dt[ui] = source.actual_dt[ui];
+    if (!recoverable.empty() && !source.recoverable.empty())
+      recoverable[ui] = source.recoverable[ui];
     if (has_virtual_rewards && source.has_virtual_rewards) {
       virtual_rewards[ui] = source.virtual_rewards[ui];
     }
@@ -67,11 +64,11 @@ void WalkerState::inject(const WalkerState& source, int32_t count) {
   }
 }
 
-WalkerState WalkerState::extract(const WalkerState& s,
-                                 const std::vector<int32_t>& indices) {
+WalkerState WalkerState::extract(const WalkerState& s, const std::vector<int32_t>& indices) {
   WalkerState out;
   out.N = static_cast<int32_t>(indices.size());
   out.obs_dim = s.obs_dim;
+  out.action_dim = s.action_dim;
   const auto d = static_cast<size_t>(s.obs_dim);
 
   out.states.reserve(indices.size());
@@ -82,6 +79,9 @@ WalkerState WalkerState::extract(const WalkerState& s,
   out.truncated.resize(indices.size());
   out.actions.resize(indices.size());
   out.dt.resize(indices.size());
+  if (!s.root_actions.empty()) out.root_actions.resize(indices.size());
+  if (!s.actual_dt.empty()) out.actual_dt.resize(indices.size());
+  if (!s.recoverable.empty()) out.recoverable.resize(indices.size());
   out.has_virtual_rewards = s.has_virtual_rewards;
   if (s.has_virtual_rewards) out.virtual_rewards.resize(indices.size());
   out.has_infos = s.has_infos;
@@ -98,6 +98,9 @@ WalkerState WalkerState::extract(const WalkerState& s,
     out.truncated[i] = s.truncated[j];
     out.actions[i] = s.actions[j];
     out.dt[i] = s.dt[j];
+    if (!s.root_actions.empty()) out.root_actions[i] = s.root_actions[j];
+    if (!s.actual_dt.empty()) out.actual_dt[i] = s.actual_dt[j];
+    if (!s.recoverable.empty()) out.recoverable[i] = s.recoverable[j];
     if (s.has_virtual_rewards) out.virtual_rewards[i] = s.virtual_rewards[j];
     if (s.has_infos) out.infos[i] = s.infos[j];
     if (!s.lineage.empty()) out.lineage[i] = s.lineage[j];
@@ -109,6 +112,7 @@ WalkerState WalkerState::concat(const WalkerState& a, const WalkerState& b) {
   WalkerState out;
   out.N = a.N + b.N;
   out.obs_dim = a.obs_dim;
+  out.action_dim = a.action_dim;
 
   auto cat = [](auto& dst, const auto& x, const auto& y) {
     dst = x;
@@ -122,6 +126,11 @@ WalkerState WalkerState::concat(const WalkerState& a, const WalkerState& b) {
   cat(out.truncated, a.truncated, b.truncated);
   cat(out.actions, a.actions, b.actions);
   cat(out.dt, a.dt, b.dt);
+  if (!a.root_actions.empty() && !b.root_actions.empty())
+    cat(out.root_actions, a.root_actions, b.root_actions);
+  if (!a.actual_dt.empty() && !b.actual_dt.empty()) cat(out.actual_dt, a.actual_dt, b.actual_dt);
+  if (!a.recoverable.empty() && !b.recoverable.empty())
+    cat(out.recoverable, a.recoverable, b.recoverable);
   // Python guard: concat vr only when both sides have it.
   out.has_virtual_rewards = a.has_virtual_rewards && b.has_virtual_rewards;
   if (out.has_virtual_rewards) {

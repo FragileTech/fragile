@@ -1,4 +1,4 @@
-export const ENGINE_VERSION = "fgopt-3";
+export const ENGINE_VERSION = "fgopt-4";
 export class NativeOptimization {
   constructor(module) {
     this.m = module;

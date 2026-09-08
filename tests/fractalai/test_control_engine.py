@@ -257,3 +257,61 @@ def test_broadcast_profile_and_nonmutating_inspection(scene, library):
         assert profile["set_bytes"] == out.data.nbytes
         assert profile["gather_bytes"] == out.data.nbytes
         assert batch.profile()["world_frames"] == 0
+
+
+@pytest.mark.parametrize("recording", [1, 2])
+@pytest.mark.parametrize("consensus", [False, True])
+def test_native_jump_checkpoint_preserves_progress_and_selected_path(
+    scene, library, recording, consensus
+):
+    with ControlEngine(scene, library=library) as engine:
+        engine.begin_plan(
+            algorithm="wave-jump",
+            walkers=16,
+            horizon=4,
+            max_horizon=8,
+            frames=3,
+            elites=2,
+            cumulative=False,
+            recording=recording,
+            consensus_prefix=consensus,
+            seed=79,
+        )
+        assert not engine.advance_plan()
+        saved = engine.checkpoint()
+        while not engine.advance_plan():
+            pass
+        expected = engine.plan_result()
+        tree = engine.exploration_tree()
+        engine.restore_checkpoint(saved)
+        while not engine.advance_plan():
+            pass
+        actual = engine.plan_result()
+        assert actual["searchDepth"] == expected["searchDepth"]
+        assert actual["executionMode"] == expected["executionMode"]
+        assert actual["selectedLeaf"] == expected["selectedLeaf"]
+        assert len(actual["trajectory"]) == len(expected["trajectory"])
+        for a, b in zip(actual["trajectory"], expected["trajectory"], strict=True):
+            np.testing.assert_array_equal(a["action"], b["action"])
+            assert a["frames"] == b["frames"]
+        np.testing.assert_array_equal(engine.exploration_tree().metadata, tree.metadata)
+        np.testing.assert_array_equal(engine.exploration_tree().values, tree.values)
+        finished = engine.checkpoint()
+        assert engine.advance_plan()
+        assert engine.checkpoint() == finished
+
+
+def test_old_checkpoint_version_is_rejected_without_mutation(scene, library):
+    with ControlEngine(scene, library=library) as engine:
+        engine.begin_plan(walkers=8, horizon=4, seed=8)
+        engine.advance_plan()
+        saved = engine.checkpoint()
+        old = bytearray(saved)
+        old[4:8] = (1).to_bytes(4, "little")
+        checksum = 14695981039346656037
+        for value in old[:-8]:
+            checksum = ((checksum ^ value) * 1099511628211) & ((1 << 64) - 1)
+        old[-8:] = checksum.to_bytes(8, "little")
+        with pytest.raises(ValueError, match="Unsupported checkpoint version"):
+            engine.restore_checkpoint(bytes(old))
+        assert engine.checkpoint() == saved
