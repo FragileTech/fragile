@@ -64,6 +64,10 @@ EXPORT const char* fgo_config(uint32_t h) {
   return guard<const char*>(nullptr,
                             [&] { return get(h).config_json.c_str(); });
 }
+EXPORT const char* fgo_status(uint32_t h) {
+  static std::string status;
+  return guard<const char*>(nullptr, [&] { status = get(h).status_json(); return status.c_str(); });
+}
 EXPORT int fgo_step(uint32_t h) {
   return guard<int>(-1, [&] {
     get(h).step();
@@ -77,6 +81,15 @@ EXPORT int fgo_snapshot_size(uint32_t h) {
   return guard<int>(-1, [&] { return int(get(h).snapshot.size()); });
 }
 EXPORT int fgo_sample(uint32_t h, const float* x, int n, double* out) {
+  return guard<int>(-1, [&] {
+    auto& b = get(h).benchmark;
+    if (n < 0 || n > 1000000 || !x || !out)
+      throw std::invalid_argument("Invalid sampling buffers");
+    for (int i = 0; i < n; ++i) out[i] = b.evaluate(x + size_t(i) * b.d);
+    return 0;
+  });
+}
+EXPORT int fgo_sample64(uint32_t h, const double* x, int n, double* out) {
   return guard<int>(-1, [&] {
     auto& b = get(h).benchmark;
     if (n < 0 || n > 1000000 || !x || !out)

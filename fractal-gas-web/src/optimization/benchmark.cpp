@@ -276,6 +276,12 @@ double Benchmark::value(const std::vector<double>& x) const {
   for (auto l : logs) s += std::exp(l - maximum);
   return -(maximum + std::log(s));
 }
+double Benchmark::evaluate(const double* x, Rng* rng) const {
+  for (int k = 0; k < d; ++k)
+    if (!std::isfinite(x[k])) return INFINITY;
+  if (stochastic && rng) return stddev * normal(*rng);
+  return value(std::vector<double>(x, x + d));
+}
 double Benchmark::evaluate(const float* x, Rng* rng) const {
   for (int k = 0; k < d; ++k)
     if (!std::isfinite(x[k])) return INFINITY;
@@ -289,6 +295,15 @@ void Benchmark::observe(const double* x, double y) const {
     if (!std::isfinite(x[k]) || x[k] < low || x[k] > high) return;
   const bool maximize = config["objective"].str("minimize") == "maximize";
   if (maximize ? y > best_observed : y < best_observed) best_observed = y;
+}
+double Benchmark::evaluate_optimization(const double* x, Rng* rng) const {
+  std::vector<double> point(x, x + d);
+  const bool finite = std::all_of(point.begin(), point.end(),
+                                  [](double v) { return std::isfinite(v); });
+  double y = coco_problem && finite ? coco_problem->evaluate(point.data(), true)
+                                    : evaluate(x, rng);
+  observe(point.data(), y);
+  return y;
 }
 double Benchmark::evaluate_optimization(const float* x, Rng* rng) const {
   std::vector<double> point(x, x + d);
@@ -411,6 +426,11 @@ void Benchmark::gradient(const float* p, float* out, bool optimization) const {
 void Benchmark::initial(float* x, Rng& rng) const {
   for (int k = 0; k < d; ++k)
     x[k] = float(low + (high - low) * rng.uniform01());
+}
+bool Benchmark::valid(const double* x) const {
+  for (int k = 0; k < d; ++k)
+    if (!std::isfinite(x[k]) || x[k] < low || x[k] > high) return false;
+  return true;
 }
 bool Benchmark::valid(const float* x) const {
   for (int k = 0; k < d; ++k)

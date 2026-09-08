@@ -16,6 +16,10 @@ const char* fgo_error(void);
 uint32_t fgo_create(const char* config);
 int fgo_destroy(uint32_t handle);
 const char* fgo_config(uint32_t handle);
+// JSON status: finished, stop_reason (CMA), next_evaluations, next_population,
+// budget_exhausted, and CMA generation/population/restarts/sigma. Read-only.
+// The status string is borrowed until the next fgo_status call (any handle).
+const char* fgo_status(uint32_t handle);
 int fgo_step(uint32_t handle);
 const double* fgo_snapshot(uint32_t handle);
 int fgo_snapshot_size(uint32_t handle);
@@ -23,6 +27,8 @@ int fgo_snapshot_size(uint32_t handle);
 // draws.
 int fgo_sample(uint32_t handle, const float* positions, int count,
                double* values);
+// Double-coordinate display/fixture sampling; does not count evaluations.
+int fgo_sample64(uint32_t handle, const double* positions, int count, double* values);
 #ifdef __cplusplus
 }
 #endif

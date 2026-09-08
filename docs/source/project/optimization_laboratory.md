@@ -61,8 +61,9 @@ from the same seed.
 ## Choose how the swarm explores
 
 :::{div} feynman-prose
-Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, **Euclidean Gas**, or
-**GAS (2017)** under **Algorithm**. All six support **Objective → Minimize** and **Maximize**. The
+Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, **Euclidean Gas**,
+**GAS (2017)**, **Active CMA-ES**, or **BIPOP-active CMA-ES** under **Algorithm**.
+All eight support **Objective → Minimize** and **Maximize**. The
 selection score is the negative of the function value for minimization and the
 function value itself for maximization. Surfaces, colors, and the inspector keep
 the raw objective convention: maximizing does not flip the landscape upside down.
@@ -133,6 +134,79 @@ Wave Jump can use the shared planner's all-dead search fallback while their
 committed position remains valid; an invalid committed position ends the run.
 Reduce the perturbation standard deviation or kinetic step size, review the
 bounds, and apply a reset to recover.
+:::
+
+(sec-optimization-cmaes)=
+### Active CMA-ES and BIPOP-active CMA-ES
+
+:::{div} feynman-prose
+**Active CMA-ES** (`cmaes_active`) and **BIPOP-active CMA-ES** (`cmaes_bipop`)
+add two optimization references to the Algorithm selector. Both use the vendored
+libcmaes implementation and support minimization and maximization. Imagine fitting
+an ellipse around promising moves in a narrow valley. CMA-ES moves the ellipse's
+center, changes its overall size, and learns which coordinate changes belong
+together. Active covariance adaptation also uses poorly ranked samples to reduce
+exploration in unhelpful directions, with safeguards that preserve a valid
+covariance.
+
+This ellipse belongs to the optimizer's search distribution. Each generation
+draws a new candidate cloud from it. The adaptive local perturbation described
+below instead gives each surviving Wave or GAS walker its own centered proposal.
+Selecting CMA-ES therefore selects a complete optimizer; it does not replace a
+swarm's perturbation strategy. The independent **Perturbation** and **Walkers**
+controls do not configure its population or sampling.
+
+Active CMA-ES follows one run until its stopping criteria are met. BIPOP-active
+CMA-ES restarts, alternating searches with larger populations and searches with
+smaller populations and varied initial scales. The best objective found so far
+survives these restarts. A restart changes the visible candidate cloud and can
+change its size; it does not reset the total evaluation counter.
+:::
+
+:::{div} feynman-prose
+**Initial standard deviation** defaults to 20% of the domain width, in coordinate
+units. It sets the initial distribution's scale; CMA-ES subsequently adapts its
+step size. **Initial population** defaults to zero, which selects libcmaes's
+dimension-dependent population size. BIPOP's **Large-population runs** defaults
+to nine. These controls belong to CMA-ES and are independent of the Gaussian
+perturbation's standard deviation. The initial mean follows the benchmark's
+seeded initialization.
+
+CMA uses ordinary bounded domains and the upstream boundary transformation.
+Periodic wrapping is unavailable. Candidates and objective queries use double
+precision, while existing swarm algorithms retain their float-coordinate path.
+Near an optimum, that distinction can affect the smallest attainable objective
+gap; include precision when reporting a comparison. Rendering may convert
+coordinates to floats without changing the evaluated or recorded candidates.
+
+One **Step** evaluates and incorporates a complete generation. Initialization
+already evaluates the first generation, displayed at iteration zero, and counts
+all its queries. A positive evaluation budget must accommodate that generation.
+Before each later generation, the engine checks the remaining budget, including
+after a restart. It pauses if the generation cannot fit; it does not truncate the
+generation or reduce the population to spend the last few evaluations. Read the
+generation, current population size, restart count, step size, and termination
+reason alongside the objective chart to understand why a run progresses or stops.
+:::
+
+:::{div} feynman-prose
+Reset reconstructs the optimizer and its random streams from the configuration.
+The same seed, including zero, is reproducible within the same build. libcmaes
+retains its upstream sampler, so native and WebAssembly builds need not generate
+identical candidate trajectories. Objective noise uses a separate random stream.
+
+Recordings retain the library revision, precision mode, initial mean, resolved
+population, and initial scale with the configuration, plus the displayed frames
+and CMA status. Their Float64 coordinates preserve the evaluated candidates,
+including changes in population size across restarts. Loading a recording replays
+those frames; it does not restore covariance, evolution paths, or a resumable
+optimizer. Older frame recordings retain their existing interpretation.
+
+Compare objective quality at equal evaluation budgets, and report runtime
+separately. A good best objective says that the optimizer found a good answer.
+It does not say that the candidate cloud approximates a reward density. Mode
+occupancy is a separate observation, especially when a restart replaces the
+whole CMA population.
 :::
 
 (sec-optimization-local-covariance)=
@@ -612,8 +686,9 @@ continuous-domain integration.
 :class: feynman-added
 
 Using the official COCO evaluator does not by itself reproduce an unmodified
-official BBOB experimental protocol. The Lab stores walker coordinates as
-float32; maximization, periodic wrapping, custom domain bounds, and optional
+official BBOB experimental protocol. The swarm algorithms store walker coordinates as
+float32, while CMA-ES evaluates double-precision coordinates; maximization,
+periodic wrapping, custom domain bounds, and optional
 finite-difference potential forces also change the experimental procedure or
 numerical assumptions. Identify these settings when comparing or reporting runs.
 The custom CSV export is not an official COCO observer archive.
@@ -718,7 +793,10 @@ objective ranking across searches without changing the planner's reward logic.
 Optimization uses MT19937-64 with explicit portable bit mappings for uniform real
 and integer draws, shared by the native and WebAssembly builds. This makes their
 random draws comparable without depending on a platform's standard-library
-distribution implementation. Retain the engine version when rerunning settings;
+distribution implementation for the swarm algorithms. CMA-ES uses libcmaes's
+upstream sampling distributions and promises deterministic resets within each
+build, rather than identical random trajectories across builds.
+Retain the engine version when rerunning settings;
 recorded-frame replay uses the saved arrays directly and does not require
 regenerating those draws. Python uses its own random streams, so matching seeds
 alone does not establish Python/C++ operator parity.
@@ -749,7 +827,7 @@ Relevant checks include benchmark values and gradients, both objective
 directions, perturbation moments and replay, cloning and kinetic operators,
 cumulative-score ranking, committed planner motion, deterministic resets,
 recording round trips, and native/WebAssembly agreement. Browser verification
-should exercise all six algorithms, both views, dimension changes,
+should exercise all eight algorithms, both views, dimension changes,
 Lennard–Jones inspection, loading all supported recording engine versions, and reset
 while a worker request is outstanding. The **Step** and **Draw** timings report
 simulation and rendering duration separately; either can explain a slow-looking

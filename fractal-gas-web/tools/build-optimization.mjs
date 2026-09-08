@@ -44,3 +44,9 @@ for (const name of [
     new URL(`COCO-${name}.txt`, vendor),
   );
 }
+
+for (const name of ["LICENSE", "COPYING", "README.fragile.md"])
+  await copyFile(
+    new URL(`third_party/libcmaes/${name}`, root),
+    new URL(`libcmaes-${name}`, vendor),
+  );

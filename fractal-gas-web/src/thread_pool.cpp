@@ -1,5 +1,7 @@
 #include "thread_pool.hpp"
 
+#include <algorithm>
+
 namespace fg {
 
 ThreadPool::ThreadPool(int n_slots) : n_slots_(n_slots < 1 ? 1 : n_slots) {
@@ -31,8 +33,22 @@ ThreadPool::~ThreadPool() {
 
 void ThreadPool::parallel_for(int32_t n,
                               const std::function<void(int32_t, int)>& fn) {
+  dispatch(n, fn, 0);
+}
+
+void ThreadPool::parallel_for_dynamic(
+    int32_t n, const std::function<void(int32_t, int)>& fn) {
+  // About eight chunks per slot, capped to keep expensive tails distributable.
+  const int32_t chunk = int32_t(std::clamp(
+      int64_t(n) / (int64_t(n_slots_) * 8), int64_t(1), int64_t(8)));
+  dispatch(n, fn, chunk);
+}
+
+void ThreadPool::dispatch(int32_t n,
+                         const std::function<void(int32_t, int)>& fn,
+                         int32_t chunk) {
   if (n <= 0) return;
-  if (n_slots_ == 1) {
+  if (n_slots_ == 1 || (chunk && n == 1)) {
     for (int32_t i = 0; i < n; ++i) fn(i, 0);
     return;
   }
@@ -41,22 +57,37 @@ void ThreadPool::parallel_for(int32_t n,
     std::lock_guard<std::mutex> lock(mutex_);
     job_fn_ = &fn;
     job_n_ = n;
+    job_chunk_ = chunk;
+    if (chunk) next_index_.store(0, std::memory_order_relaxed);
     completed_slots_ = 0;
     ++generation_;
   }
   cv_start_.notify_all();
 
-  // The caller participates as slot 0, running its static block.
-  const auto range = block_range(n, 0);
-  for (int32_t i = range.first; i < range.second; ++i) {
-    fn(i, 0);
-  }
+  // The caller participates in either scheduling policy as slot 0.
+  run_job(0, n, fn, chunk);
 
   std::unique_lock<std::mutex> lock(mutex_);
   ++completed_slots_;
   // Empty partitions must also finish before job_fn_ can expire or be reused.
   cv_done_.wait(lock, [this] { return completed_slots_ == n_slots_; });
   job_fn_ = nullptr;
+}
+
+void ThreadPool::run_job(int slot, int32_t n,
+                         const std::function<void(int32_t, int)>& fn,
+                         int32_t chunk) {
+  if (!chunk) {
+    const auto range = block_range(n, slot);
+    for (int32_t i = range.first; i < range.second; ++i) fn(i, slot);
+    return;
+  }
+  for (;;) {
+    const int64_t first = next_index_.fetch_add(chunk, std::memory_order_relaxed);
+    if (first >= n) return;
+    const int32_t end = int32_t(std::min(first + chunk, int64_t(n)));
+    for (int32_t i = int32_t(first); i < end; ++i) fn(i, slot);
+  }
 }
 
 std::pair<int32_t, int32_t> ThreadPool::block_range(int32_t n, int slot) const {
@@ -70,7 +101,7 @@ void ThreadPool::worker_loop(int slot) {
   uint64_t seen_generation = 0;
   for (;;) {
     const std::function<void(int32_t, int)>* fn = nullptr;
-    int32_t n = 0;
+    int32_t n = 0, chunk = 0;
     {
       std::unique_lock<std::mutex> lock(mutex_);
       cv_start_.wait(lock, [this, seen_generation] {
@@ -80,12 +111,10 @@ void ThreadPool::worker_loop(int slot) {
       seen_generation = generation_;
       fn = job_fn_;
       n = job_n_;
+      chunk = job_chunk_;
     }
 
-    const auto range = block_range(n, slot);
-    for (int32_t i = range.first; i < range.second; ++i) {
-      (*fn)(i, slot);
-    }
+    run_job(slot, n, *fn, chunk);
 
     {
       std::lock_guard<std::mutex> lock(mutex_);

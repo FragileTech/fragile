@@ -33,3 +33,7 @@ Regenerate the matrix from the repository root:
 make control-native
 fractal-gas-web/build-control-native/control/fg_control_benchmark > native.csv
 ```
+
+See [flight collision optimization](collisions.md) for collision-heavy before/after measurements and reproducible fixed-work and planner benchmarks.
+
+See [dynamic physics scheduling](scheduling.md) for paired static/dynamic measurements and exact-result checks.

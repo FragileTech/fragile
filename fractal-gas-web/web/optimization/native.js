@@ -33,6 +33,11 @@ export class NativeOptimization {
     this.dimension = resolved.dimensions;
     return resolved;
   }
+  status() {
+    const pointer = this.m._fgo_status(this.handle);
+    if (!pointer) throw this.error();
+    return JSON.parse(this.m.UTF8ToString(pointer));
+  }
   snapshot() {
     const size = this.check(this.m._fgo_snapshot_size(this.handle));
     const pointer = this.m._fgo_snapshot(this.handle);
@@ -45,7 +50,9 @@ export class NativeOptimization {
   }
   sample(positions, dimension) {
     if (
-      !(positions instanceof Float32Array) ||
+      !(
+        positions instanceof Float32Array || positions instanceof Float64Array
+      ) ||
       dimension !== this.dimension ||
       !Number.isInteger(dimension) ||
       dimension < 1 ||
@@ -62,8 +69,13 @@ export class NativeOptimization {
       throw new Error("Surface allocation failed");
     }
     try {
-      this.m.HEAPF32.set(positions, p / 4);
-      this.check(this.m._fgo_sample(this.handle, p, count, q));
+      if (positions instanceof Float64Array) {
+        this.m.HEAPF64.set(positions, p / 8);
+        this.check(this.m._fgo_sample64(this.handle, p, count, q));
+      } else {
+        this.m.HEAPF32.set(positions, p / 4);
+        this.check(this.m._fgo_sample(this.handle, p, count, q));
+      }
       return this.m.HEAPF64.slice(q / 8, q / 8 + count);
     } finally {
       this.m._free(p);

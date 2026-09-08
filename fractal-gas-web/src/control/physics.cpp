@@ -55,120 +55,11 @@ bool respawn_cargo(const Scene& s, float* r, size_t b) {
   return false;
 }
 
-struct Shape {
-  Vec2 center;
-  float radius = 0;
-  int n = 0;
-  std::array<Vec2, 32> vertices;
-};
-Shape shape(const BodyDef& body, Vec2 p, float a) {
-  Shape s;
-  s.center = p;
-  s.radius = body.radius;
-  s.n = int(body.vertices.size());
-  float c = std::cos(a), sn = std::sin(a);
-  for (int i = 0; i < s.n; ++i) {
-    Vec2 v = body.vertices[i];
-    s.vertices[i] = p + Vec2{v.x * c - v.y * sn, v.x * sn + v.y * c};
-  }
-  return s;
-}
-Shape shape(const Edge& e) {
-  Shape s;
-  s.center = (e.a + e.b) * .5f;
-  s.n = 2;
-  s.vertices[0] = e.a;
-  s.vertices[1] = e.b;
-  return s;
-}
-std::pair<float, float> project(const Shape& s, Vec2 n) {
-  if (!s.n) {
-    float v = dot(s.center, n);
-    return {v - s.radius, v + s.radius};
-  }
-  float lo = dot(s.vertices[0], n), hi = lo;
-  for (int i = 1; i < s.n; ++i) {
-    float v = dot(s.vertices[i], n);
-    lo = std::min(lo, v);
-    hi = std::max(hi, v);
-  }
-  return {lo, hi};
-}
-// The largest separating-axis gap is a conservative lower bound on distance.
-// Together with the translational + rotational speed bound it supports CCD
-// without hidden caches or allocation. Negative gap means overlap.
-float separation(const Shape& a, const Shape& b, Vec2& normal) {
-  float gap = -std::numeric_limits<float>::infinity();
-  auto axis = [&](Vec2 n) {
-    if (length2(n) < 1e-16f) return;
-    n = normalized(n);
-    auto pa = project(a, n), pb = project(b, n);
-    float g = pb.first - pa.second;
-    if (g > gap) {
-      gap = g;
-      normal = n;
-    }
-    g = pa.first - pb.second;
-    if (g > gap) {
-      gap = g;
-      normal = -n;
-    }
-  };
-  if (!a.n && !b.n) axis(b.center - a.center);
-  for (int i = 0; i < a.n; ++i)
-    axis(perp(a.vertices[(i + 1) % a.n] - a.vertices[i]));
-  for (int i = 0; i < b.n; ++i)
-    axis(perp(b.vertices[(i + 1) % b.n] - b.vertices[i]));
-  // A zero-area segment also needs its tangent, especially at end points.
-  if (a.n == 2) axis(a.vertices[1] - a.vertices[0]);
-  if (b.n == 2) axis(b.vertices[1] - b.vertices[0]);
-  if (!a.n && b.n) {
-    int k = 0;
-    for (int i = 1; i < b.n; ++i)
-      if (length2(b.vertices[i] - a.center) < length2(b.vertices[k] - a.center))
-        k = i;
-    axis(b.vertices[k] - a.center);
-  }
-  if (!b.n && a.n) {
-    int k = 0;
-    for (int i = 1; i < a.n; ++i)
-      if (length2(a.vertices[i] - b.center) < length2(a.vertices[k] - b.center))
-        k = i;
-    axis(b.center - a.vertices[k]);
-  }
-  if (!std::isfinite(gap)) {
-    normal = {1, 0};
-    gap = -(a.radius + b.radius);
-  }
-  return gap;
-}
-Vec2 contact_point(const Shape& a, const Shape& b, Vec2 n) {
-  if (!a.n) return a.center + n * a.radius;
-  if (!b.n) return b.center - n * b.radius;
-  auto pa = project(a, n), pb = project(b, n);
-  Vec2 t = perp(n);
-  // Clip the contact's tangential interval to the intersecting support faces.
-  float amin = 1e30f, amax = -1e30f, bmin = 1e30f, bmax = -1e30f;
-  for (int i = 0; i < a.n; ++i)
-    if (dot(a.vertices[i], n) >= pa.second - 1e-4f) {
-      float v = dot(a.vertices[i], t);
-      amin = std::min(amin, v);
-      amax = std::max(amax, v);
-    }
-  for (int i = 0; i < b.n; ++i)
-    if (dot(b.vertices[i], n) <= pb.first + 1e-4f) {
-      float v = dot(b.vertices[i], t);
-      bmin = std::min(bmin, v);
-      bmax = std::max(bmax, v);
-    }
-  float low = std::max(amin, bmin), high = std::min(amax, bmax);
-  if (low > high) {
-    auto ta = project(a, t), tb = project(b, t);
-    low = std::max(ta.first, tb.first);
-    high = std::min(ta.second, tb.second);
-  }
-  return n * ((pa.second + pb.first) * .5f) + t * ((low + high) * .5f);
-}
+using geometry::Shape;
+using geometry::shape;
+using geometry::separation;
+using geometry::contact_point;
+using geometry::swept_near_edge;
 void impulse(float* r, const Scene& s, Contact& c, bool restitution) {
   const auto& l = s.layout;
   const auto& a = s.bodies[c.a];
@@ -195,11 +86,16 @@ void impulse(float* r, const Scene& s, Contact& c, bool restitution) {
   c.impulse = std::max(0.f, previous + j);
   j = c.impulse - previous;
   Vec2 force = c.normal * j;
+  // Friction acts on the velocity after the normal constraint update.
+  va -= force * inv_a + perp(ra) * (cross(ra, force) * inv_ia);
+  vb += force * inv_b + perp(rb) * (cross(rb, force) * inv_ib);
   Vec2 tangent = perp(c.normal);
   float at = cross(ra, tangent), bt = cross(rb, tangent);
   float jt = -dot(vb - va, tangent) /
              (inv_a + inv_b + at * at * inv_ia + bt * bt * inv_ib);
-  jt = std::clamp(jt, -mu * std::abs(j), mu * std::abs(j));
+  const float previous_tangent = c.tangent_impulse;
+  c.tangent_impulse = std::clamp(previous_tangent + jt, -mu * c.impulse, mu * c.impulse);
+  jt = c.tangent_impulse - previous_tangent;
   force += tangent * jt;
   velocity(r, l, c.a, velocity(r, l, c.a) - force * inv_a);
   omega(r, l, c.a) -= cross(ra, force) * inv_ia;
@@ -217,6 +113,10 @@ Scratch::Scratch(const Scene& s) {
   size_t n = s.bodies.size();
   contacts.reserve(std::min(n * (n - 1) / 2, n * 32) + n * 32 + 16);
   order.resize(n);
+  shapes.resize(n);
+  empty_edge_bounds.resize(n);
+  empty_edge_valid.resize(n);
+  wall_contacts.reserve(n * 32 + 16);
   bounds.resize(n);
   old_positions.resize(n);
   frame_positions.resize(s.controlled.size());
@@ -230,11 +130,16 @@ Scratch::Scratch(const Scene& s) {
 }
 Physics::Physics(std::shared_ptr<const Scene> s, int threads)
     : scene(std::move(s)), pool(threads) {
+  walls_.reserve(scene->edges.size());
+  for (const auto& edge : scene->edges) walls_.push_back(shape(edge));
   scratch_.reserve(pool.size());
   for (int i = 0; i < pool.size(); ++i) scratch_.emplace_back(*scene);
 }
 void Physics::edge_candidates(Scratch& q, Aabb box) {
   const auto& s = *scene;
+#ifdef FG_CONTROL_PROFILE
+  ++q.work.edge_queries;
+#endif
   q.edge_ids.clear();
   if (++q.stamp == 0) {
     std::fill(q.edge_marks.begin(), q.edge_marks.end(), 0);
@@ -253,7 +158,12 @@ void Physics::edge_candidates(Scratch& q, Aabb box) {
       for (int i : s.edge_cells[size_t(y) * s.grid_w + x])
         if (q.edge_marks[i] != q.stamp) {
           q.edge_marks[i] = q.stamp;
-          if (s.edges[i].bounds.overlaps(box)) q.edge_ids.push_back(i);
+          if (s.edges[i].bounds.overlaps(box)) {
+            q.edge_ids.push_back(i);
+#ifdef FG_CONTROL_PROFILE
+            ++q.work.edge_candidates;
+#endif
+          }
         }
   std::sort(q.edge_ids.begin(), q.edge_ids.end());
 }
@@ -277,15 +187,18 @@ void Physics::step(const StateBatch& input, const int32_t* sources,
     if (!std::isfinite(actions[i]))
       throw std::invalid_argument("Non-finite action");
   std::atomic<bool> failed{false};
-  pool.parallel_for(int32_t(output.count), [&](int32_t i, int slot) {
+  pool.parallel_for_dynamic(int32_t(output.count), [&](int32_t i, int slot) {
+    // Accumulate locally so neighboring dynamically scheduled worlds do not
+    // repeatedly write the same cache line in the compact result array.
+    StepResult result;
     try {
       std::memcpy(output.row(i), input.row(sources ? sources[i] : i),
                   input.layout.words * 4);
-      step_world(output.row(i), actions + i * dims, frames[i], results[i],
-                 slot);
+      step_world(output.row(i), actions + i * dims, frames[i], result, slot);
     } catch (...) {
       failed.store(true, std::memory_order_relaxed);
     }
+    results[i] = result;
   });
   if (failed.load())
     throw std::runtime_error(
@@ -296,6 +209,33 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
                       StepResult& result) {
   const auto& s = *scene;
   const auto& l = s.layout;
+  q.wall_contacts.clear();
+  auto separation = [&](const Shape& a, const Shape& b, Vec2& n) {
+#ifdef FG_CONTROL_PROFILE
+    ++q.work.separation_checks;
+#endif
+    return geometry::separation(a, b, n);
+  };
+  auto body_edges = [&](size_t b, Aabb box) {
+    const auto& cached = q.empty_edge_bounds[b];
+    if (q.empty_edge_valid[b] && cached.lo.x <= box.lo.x && cached.lo.y <= box.lo.y &&
+        cached.hi.x >= box.hi.x && cached.hi.y >= box.hi.y) {
+      q.edge_ids.clear();
+      return;
+    }
+    edge_candidates(q, box);
+    if (q.edge_ids.empty()) {
+      Aabb expanded{box.lo - Vec2{s.cell_size, s.cell_size},
+                    box.hi + Vec2{s.cell_size, s.cell_size}};
+      edge_candidates(q, expanded);
+      q.empty_edge_bounds[b] = q.edge_ids.empty() ? expanded : box;
+      q.empty_edge_valid[b] = true;
+      q.edge_ids.clear();  // The original query was empty in either case.
+    }
+  };
+  auto body_shape = [&](size_t b, Vec2 p, float a) -> const Shape& {
+    return q.shapes[b].get(s.bodies[b], p, a);
+  };
   for (size_t b = 0; b < s.bodies.size(); ++b) {
     q.old_positions[b] = position(r, l, b);
     q.old_angles[b] = angle(r, l, b);
@@ -355,6 +295,65 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     omega(r, l, def.a) -= ca * j / s.bodies[def.a].inertia;
     omega(r, l, b) += cb * j / s.bodies[b].inertia;
   }
+  auto wall_contact = [&](int b, int edge, Vec2 normal, Vec2 point) -> Contact& {
+    for (auto& c : q.wall_contacts)
+      if (c.a == b && c.edge == edge) {
+        if (dot(c.normal, normal) < .999f) {
+          c.impulse = c.tangent_impulse = 0;
+        }
+        c.normal = normal;
+        c.point = point;
+        return c;
+      }
+    if (q.wall_contacts.size() == q.wall_contacts.capacity())
+      throw std::runtime_error("Wall contact capacity");
+    Contact c{b, -1, normal, point};
+    c.edge = edge;
+    q.wall_contacts.push_back(c);
+    return q.wall_contacts.back();
+  };
+  auto count_wall = [&](Contact& c, bool impact = false) {
+    if (!c.penalized && (impact || s.bodies[c.a].controlled)) {
+      result.reward -= s.collision_penalty;
+      c.penalized = true;
+    }
+    if (c.counted) return;
+    c.counted = true;
+    ++result.collisions;
+    // Keep harvesting rewards independent of collisions.
+    if (s.bodies[c.a].controlled) {
+      if (s.lethal_walls) word(r, 7, 1);
+    }
+  };
+  // Resolve low-speed contacts before integrating gravity into another impact.
+  // This manifold lasts one substep only; no state is hidden from snapshots.
+  for (size_t b = 0; b < s.bodies.size(); ++b) {
+    if (!(word(r, l.flags + b) & active_flag)) continue;
+    const Vec2 p = position(r, l, b);
+    if (length2(velocity(r, l, b)) == 0 && omega(r, l, b) == 0) continue;
+    body_edges(b, swept(p, p, s.bodies[b].radius + .002f));
+    if (q.edge_ids.empty()) continue;
+    const Shape& moving = body_shape(b, p, angle(r, l, b));
+    for (int e : q.edge_ids) {
+      if (!swept_near_edge(moving.center, moving.center, s.edges[e], moving.radius + .002f)) continue;
+      Vec2 n;
+      const float gap = separation(moving, walls_[e], n);
+      if (gap > .0001f) continue;
+      const Vec2 point = contact_point(moving, walls_[e], n);
+      const float closing = dot(velocity(r, l, b) +
+          perp(point - moving.center) * omega(r, l, b), n);
+      if (std::abs(closing) > .5f) continue;
+      // A skin contact is actionable only if translation actually reaches the
+      // wall this substep. Rotating near misses retain the full sweep.
+      if (gap > 0 && (closing * h < gap ||
+          (!s.bodies[b].vertices.empty() && omega(r, l, b) != 0))) continue;
+      auto& c = wall_contact(int(b), e, n, point);
+      c.depth = std::max(0.f, -gap);
+      count_wall(c);
+    }
+  }
+  for (int iteration = 0; iteration < s.solver_iterations; ++iteration)
+    for (auto& c : q.wall_contacts) impulse(r, s, c, false);
   for (size_t b = 0; b < s.bodies.size(); ++b) {
     if (!(word(r, l.flags + b) & active_flag)) continue;
     const auto& def = s.bodies[b];
@@ -362,29 +361,42 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     for (int bounce = 0; bounce < 4 && remaining > 1e-8f; ++bounce) {
       Vec2 start = position(r, l, b), delta = velocity(r, l, b) * remaining;
       float a0 = angle(r, l, b), da = omega(r, l, b) * remaining;
-      edge_candidates(q, swept(start, start + delta, def.radius + .002f));
+      body_edges(b, swept(start, start + delta, def.radius + .002f));
       float best = 1;
       int hit = -1;
       Vec2 hit_n{};
       bool limited = false;
-      float bound = length(delta) + std::abs(da) * def.radius;
+      float rotational_bound = def.vertices.empty() ? 0.f : std::abs(da) * def.radius;
+      float bound = length(delta) + rotational_bound;
       if (bound > 1e-9f)
         for (int edge_id : q.edge_ids) {
           const auto& edge = s.edges[edge_id];
-          Shape wall = shape(edge);
+          if (!swept_near_edge(start, start + delta, edge, def.radius + .002f)) continue;
+          const Shape& wall = walls_[edge_id];
           float time = 0;
           Vec2 normal{};
           bool found = false;
           for (int iteration = 0; iteration < 64; ++iteration) {
-            Shape moving = shape(def, start + delta * time, a0 + da * time);
+#ifdef FG_CONTROL_PROFILE
+            ++q.work.ccd_iterations;
+#endif
+            const Shape& moving = body_shape(b, start + delta * time, a0 + da * time);
             float gap = separation(moving, wall, normal);
             if (gap < .0001f) {
-              if (time == 0 && dot(delta, normal) <= 0 && std::abs(da) < 1e-5f)
+              // A fixed separating axis certifies the entire remaining sweep.
+              // The rotational support bound also covers segment endpoints.
+              if (time == 0 && gap >= -.0005f &&
+                  dot(delta, normal) + (def.vertices.empty() ? 0.f : std::abs(da) * def.radius) <= 0)
                 break;
               found = true;
               break;
             }
-            time += .9f * gap / bound;
+            // Advance along this separating axis, not the total travel speed.
+            // Tangential motion cannot close its gap; rotation remains bounded
+            // for every hull vertex, so this also certifies no-hit sweeps.
+            const float closing_bound = dot(delta, normal) + rotational_bound;
+            if (closing_bound <= 0) break;
+            time += .9f * gap / closing_bound;
             if (time >= best) break;
             if (iteration == 63) {
               found = true;
@@ -400,15 +412,13 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
       position(r, l, b, start + delta * best);
       angle(r, l, b) = a0 + da * best;
       if (hit < 0) break;
-      Shape moving = shape(def, position(r, l, b), angle(r, l, b)),
-            wall = shape(s.edges[hit]);
-      Contact contact{int(b), -1, hit_n, contact_point(moving, wall, hit_n),
-                      0,      0};
-      impulse(r, s, contact, true);
-      position(r, l, b, position(r, l, b) - hit_n * .0002f);
-      ++result.collisions;
-      result.reward -= s.collision_penalty;
-      if (s.lethal_walls && def.controlled) word(r, 7, 1);
+      const Shape& moving = body_shape(b, position(r, l, b), angle(r, l, b));
+      const Shape& wall = walls_[hit];
+      auto& contact = wall_contact(int(b), hit, hit_n, contact_point(moving, wall, hit_n));
+      impulse(r, s, contact, !contact.counted);
+      if (contact.target_velocity > 0 || (!def.vertices.empty() && omega(r, l, b) != 0))
+        position(r, l, b, position(r, l, b) - hit_n * .0002f);
+      count_wall(contact, true);
       if (limited) ++result.ccd_limits;
       remaining *= 1 - best;
       if (bounce == 3) {
@@ -429,15 +439,24 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     q.bounds[b] =
         swept(q.old_positions[b], position(r, l, b), s.bodies[b].radius);
     if (!(word(r, l.flags + b) & active_flag)) continue;
-    Shape moving = shape(s.bodies[b], position(r, l, b), angle(r, l, b));
-    edge_candidates(q,
-                    swept(moving.center, moving.center, moving.radius + .002f));
+    const Vec2 p = position(r, l, b);
+    body_edges(b, swept(p, p, s.bodies[b].radius + .002f));
+    if (q.edge_ids.empty()) continue;
+    const Shape& moving = body_shape(b, p, angle(r, l, b));
     for (int e : q.edge_ids) {
-      Shape wall = shape(s.edges[e]);
+      if (!swept_near_edge(moving.center, moving.center, s.edges[e], moving.radius + .002f)) continue;
+      const Shape& wall = walls_[e];
       Vec2 n;
       float gap = separation(moving, wall, n);
-      if (gap < 0)
-        append({int(b), -1, n, contact_point(moving, wall, n), -gap, 0});
+      if (gap < 0) {
+        auto& c = wall_contact(int(b), e, n, contact_point(moving, wall, n));
+        c.depth = -gap;
+        // New high-speed overlaps retain restitution. Continuing contacts keep
+        // the target and accumulated impulses from their earlier resolution.
+        if (!c.counted) impulse(r, s, c, true);
+        count_wall(c);
+        append(c);
+      }
     }
   }
   std::sort(q.order.begin(), q.order.end(), [&](int a, int b) {
@@ -454,8 +473,8 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
       if (!(word(r, l.flags + b) & active_flag) ||
           !q.bounds[a].overlaps(q.bounds[b]))
         continue;
-      Shape sa = shape(s.bodies[a], position(r, l, a), angle(r, l, a)),
-            sb = shape(s.bodies[b], position(r, l, b), angle(r, l, b));
+      const Shape& sa = body_shape(a, position(r, l, a), angle(r, l, a));
+      const Shape& sb = body_shape(b, position(r, l, b), angle(r, l, b));
       Vec2 n;
       float gap = separation(sa, sb, n);
       if (gap > 0) {
@@ -470,10 +489,11 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
         bool hit = false;
         if (speed > 1e-8f)
           for (int k = 0; k < 64; ++k) {
-            sa = shape(s.bodies[a], q.old_positions[a] + da * time,
-                       q.old_angles[a] + aa * time);
-            sb = shape(s.bodies[b], q.old_positions[b] + db * time,
-                       q.old_angles[b] + ab * time);
+#ifdef FG_CONTROL_PROFILE
+            ++q.work.ccd_iterations;
+#endif
+            body_shape(a, q.old_positions[a] + da * time, q.old_angles[a] + aa * time);
+            body_shape(b, q.old_positions[b] + db * time, q.old_angles[b] + ab * time);
             gap = separation(sa, sb, n);
             if (gap <= .0001f) {
               hit = time > 0 || dot(db - da, n) < 0;
@@ -502,6 +522,7 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
               return a.point.y < b.point.y;
             });
   for (auto& c : q.contacts) {
+    if (c.b < 0) continue;  // Wall contacts were counted once by body/edge.
     ++result.collisions;
     if (s.bodies[c.a].controlled || (c.b >= 0 && s.bodies[c.b].controlled)) {
       result.reward -= s.collision_penalty;
@@ -510,7 +531,7 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     }
   }
   for (int iteration = 0; iteration < s.solver_iterations; ++iteration)
-    for (auto& c : q.contacts) impulse(r, s, c, iteration == 0);
+    for (auto& c : q.contacts) impulse(r, s, c, iteration == 0 && c.b >= 0);
   for (auto& c : q.contacts) {
     float ia = 1 / s.bodies[c.a].mass,
           ib = c.b < 0 ? 0 : 1 / s.bodies[c.b].mass;
@@ -730,6 +751,8 @@ void Physics::step_world(float* r, const float* actions, int frames,
                          StepResult& result, int slot) {
   result = {};
   const auto& s = *scene;
+  for (auto& cache : scratch_[slot].shapes) cache.valid = false;
+  std::fill(scratch_[slot].empty_edge_valid.begin(), scratch_[slot].empty_edge_valid.end(), 0);
   auto& bounded = scratch_[slot].bounded_actions;
   for (size_t i = 0; i < s.channels.size(); ++i)
     bounded[i] = std::clamp(actions[i], s.channels[i].low, s.channels[i].high);
@@ -798,6 +821,18 @@ void Physics::step_world(float* r, const float* actions, int frames,
     if (!std::isfinite(r[i]))
       throw std::runtime_error("Non-finite extension state");
 }
+#ifdef FG_CONTROL_PROFILE
+CollisionWork Physics::collision_work() const {
+  CollisionWork total;
+  for (const auto& q : scratch_) {
+    total.edge_queries += q.work.edge_queries;
+    total.edge_candidates += q.work.edge_candidates;
+    total.separation_checks += q.work.separation_checks;
+    total.ccd_iterations += q.work.ccd_iterations;
+  }
+  return total;
+}
+#endif
 size_t Physics::observation_dim() const {
   return scene->bodies.size() * 7 + scene->controlled.size() +
          scene->tethers.size() * 2 + scene->extension_observations +
@@ -888,7 +923,7 @@ std::vector<float> Physics::inspect(const float* r,
     const auto body = shape(def, p, angle(r, l, b));
     for (const auto& edge : s.edges) {
       if (!swept(p, p, def.radius + .01f).overlaps(edge.bounds)) continue;
-      auto wall = shape(edge);
+      const auto& wall = walls_[size_t(&edge - s.edges.data())];
       Vec2 normal;
       const float gap = separation(body, wall, normal);
       if (gap < .01f)

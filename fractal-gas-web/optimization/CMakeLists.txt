@@ -6,6 +6,29 @@ if(NOT MSVC)
   target_compile_options(fg_coco PRIVATE -ffp-contract=off)
   target_link_libraries(fg_coco PUBLIC m)
 endif()
+# Pinned libcmaes, built with the same Eigen ABI as the optimization core.
+set(CMA_ROOT ${OPT_ROOT}/third_party/libcmaes)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cma-generated/libcmaes)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cma-generated/libcmaes/cmaes_export.h CONTENT "#define CMAES_EXPORT\n")
+configure_file(${CMA_ROOT}/include/libcmaes/libcmaes_config.h.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/cma-generated/libcmaes/libcmaes_config.h)
+add_library(fg_libcmaes STATIC
+  ${CMA_ROOT}/src/acovarianceupdate.cc ${CMA_ROOT}/src/cmaparameters.cc
+  ${CMA_ROOT}/src/cmastopcriteria.cc ${CMA_ROOT}/src/covarianceupdate.cc
+  ${CMA_ROOT}/src/esostrategy.cc ${CMA_ROOT}/src/pwq_bound_strategy.cc
+  ${CMA_ROOT}/src/vdcmaupdate.cc ${CMA_ROOT}/src/bipopcmastrategy.cc
+  ${CMA_ROOT}/src/cmasolutions.cc ${CMA_ROOT}/src/cmastrategy.cc
+  ${CMA_ROOT}/src/ipopcmastrategy.cc)
+target_include_directories(fg_libcmaes SYSTEM PUBLIC ${CMA_ROOT}/include
+  ${CMAKE_CURRENT_BINARY_DIR}/cma-generated ${OPT_ROOT}/third_party/eigen)
+target_compile_definitions(fg_libcmaes PUBLIC EIGEN_MPL2_ONLY EIGEN_DONT_PARALLELIZE EIGEN_DONT_VECTORIZE)
+set_target_properties(fg_libcmaes PROPERTIES POSITION_INDEPENDENT_CODE ON)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  target_compile_options(fg_libcmaes PRIVATE -ffp-contract=off)
+endif()
+if(EMSCRIPTEN)
+  target_compile_options(fg_libcmaes PRIVATE -fexceptions)
+endif()
 add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/benchmark.cpp
   ${OPT_ROOT}/src/optimization/coco_benchmark.cpp
@@ -13,8 +36,9 @@ add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/environment.cpp
   ${OPT_ROOT}/src/optimization/gas.cpp
   ${OPT_ROOT}/src/optimization/gas2017.cpp
-  ${OPT_ROOT}/src/optimization/engine.cpp)
-target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core fg_coco)
+  ${OPT_ROOT}/src/optimization/engine.cpp
+  ${OPT_ROOT}/src/optimization/cma.cpp)
+target_link_libraries(fg_optimization_core PUBLIC fg_swarm_core fg_coco fg_libcmaes)
 target_include_directories(fg_optimization_core SYSTEM PRIVATE
   ${OPT_ROOT}/third_party/lbfgspp/include ${OPT_ROOT}/third_party/eigen)
 target_compile_definitions(fg_optimization_core PRIVATE EIGEN_MPL2_ONLY EIGEN_DONT_PARALLELIZE EIGEN_DONT_VECTORIZE)
@@ -40,9 +64,11 @@ else()
   add_executable(fg_optimization_tests ${OPT_ROOT}/tests/test_main.cpp
     ${OPT_ROOT}/tests/optimization/test_optimization.cpp
     ${OPT_ROOT}/tests/optimization/test_coco.cpp
+    ${OPT_ROOT}/tests/optimization/test_cma.cpp
     ${OPT_ROOT}/tests/optimization/test_gas2017.cpp)
   target_compile_definitions(fg_optimization_tests PRIVATE
-    COCO_FIXTURES="${OPT_ROOT}/tests/optimization/coco-fixtures.json")
+    COCO_FIXTURES="${OPT_ROOT}/tests/optimization/coco-fixtures.json"
+    CMA_FIXTURES="${OPT_ROOT}/tests/optimization/cma-precision-fixtures.json")
   target_include_directories(fg_optimization_tests PRIVATE ${OPT_ROOT}/tests)
   target_link_libraries(fg_optimization_tests PRIVATE fg_optimization_core)
   add_test(NAME fg_optimization_tests COMMAND fg_optimization_tests)

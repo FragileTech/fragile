@@ -56,6 +56,9 @@ class Benchmark {
   bool stochastic = false;
   bool coco = false;
   Json config;
+  double evaluate(const double* x, Rng* rng = nullptr) const;
+  double evaluate_optimization(const double* x, Rng* rng = nullptr) const;
+  bool valid(const double* x) const;
   double evaluate(const float* x, Rng* rng = nullptr) const;
   double evaluate_optimization(const float* x, Rng* rng = nullptr) const;
   void gradient(const float* x, float* out, bool optimization = false) const;

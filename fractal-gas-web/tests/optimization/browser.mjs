@@ -70,6 +70,48 @@ for (const [name, type] of [
         before,
       );
     };
+    for (const algorithm of ["cmaes_active", "cmaes_bipop"]) {
+      await page.locator("#algorithm").selectOption(algorithm);
+      assert.equal(await page.locator('[name="walkers"]').isDisabled(), true);
+      assert.equal(await page.locator('[name="periodic"]').isDisabled(), true);
+      assert.equal(await page.locator("#perturbation").isDisabled(), true);
+      await page.locator('[name="cma_population"]').fill("8");
+      if (algorithm === "cmaes_bipop")
+        await page.locator('[name="cma_runs"]').fill("2");
+      await apply();
+      await step();
+      assert.match(await page.locator("#cma-note").textContent(), /8/);
+    }
+    await page.locator("#record-history").check();
+    for (const algorithm of ["cmaes_active", "cmaes_bipop"]) {
+      await page.locator("#benchmark").selectOption("constant");
+      await page.locator("#algorithm").selectOption(algorithm);
+      if (algorithm === "cmaes_bipop")
+        await page.locator('[name="cma_runs"]').fill("2");
+      await apply();
+      await page.locator("#run").click();
+      await page.waitForFunction(() =>
+        document
+          .getElementById("status")
+          .textContent.startsWith("Optimizer finished:"),
+      );
+      assert.equal(await page.locator("#step").isDisabled(), true);
+      const download = page.waitForEvent("download");
+      await page.locator("#save").click();
+      const path = `${output}/${name}-${algorithm}.fgopt`;
+      await (await download).saveAs(path);
+      const saved = JSON.parse(await readFile(path, "utf8"));
+      assert.equal(saved.config.precision, "float64");
+      assert.ok(saved.frames.at(-1).metadata.finished);
+      if (algorithm === "cmaes_bipop")
+        assert.ok(saved.frames.at(-1).metadata.restarts > 0);
+      await page.locator("#file").setInputFiles(path);
+      await page.waitForFunction(
+        () => document.getElementById("iteration").textContent === "0",
+      );
+    }
+    await page.locator("#record-history").uncheck();
+    await page.locator("#benchmark").selectOption("quadratic");
     for (const algorithm of ["wave", "fmc", "wave_jump", "gas"]) {
       await page.locator("#algorithm").selectOption(algorithm);
       await page.locator("#perturbation").selectOption("local_covariance");

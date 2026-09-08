@@ -12,19 +12,26 @@ self.onmessage = ({ data: message }) => {
       if (message.type === "catalog") result = engine.catalog();
       else if (message.type === "create") {
         config = engine.create(message.config);
-        result = { config, frame: engine.snapshot() };
+        result = { config, frame: engine.snapshot(), status: engine.status() };
       } else if (message.type === "step") {
         const before = frameInfo(engine.snapshot());
-        const maxN =
-          config.algorithm === "graph"
-            ? Math.min(config.max_walkers, before.n + config.walkers)
-            : before.n;
-        if ((12 + maxN * before.stride) * 8 > message.remaining)
+        const status = engine.status();
+        if (status.finished)
+          throw new Error(`Optimizer finished: ${status.stop_reason}`);
+        if (status.budget_exhausted)
+          throw new Error(
+            "Evaluation budget reached before the next complete generation or step.",
+          );
+        const maxN = status.next_population;
+        // Reserve bounded status JSON space before advancing the optimizer.
+        const metadataBytes = config.algorithm.startsWith("cmaes_") ? 2048 : 0;
+        if ((12 + maxN * before.stride) * 8 + metadataBytes > message.remaining)
           throw new Error(
             "Recording reached 64 MiB. Save this run and reset to continue.",
           );
         result = {
           frame: engine.step(),
+          status: engine.status(),
           simulationMs: performance.now() - start,
         };
       } else if (message.type === "surface") {

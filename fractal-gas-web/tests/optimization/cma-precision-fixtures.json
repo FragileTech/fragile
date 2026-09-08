@@ -1,0 +1,158 @@
+[
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "quadratic",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      1.0000000001,
+      1
+    ],
+    "expected": 0.10000000001
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "quadratic",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      0.125,
+      -0.375
+    ],
+    "expected": 0.0078125
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "quadratic",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      -3.25,
+      2.75
+    ],
+    "expected": 0.90625
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rosenbrock",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      1.0000000001,
+      1
+    ],
+    "expected": 4.010000663577803e-18
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rosenbrock",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      0.125,
+      -0.375
+    ],
+    "expected": 16.0244140625
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rosenbrock",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      -3.25,
+      2.75
+    ],
+    "expected": 6121.578125
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rastrigin",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      1.0000000001,
+      1
+    ],
+    "expected": 2.0000000002
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rastrigin",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      0.125,
+      -0.375
+    ],
+    "expected": 20.15625
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "rastrigin",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      -3.25,
+      2.75
+    ],
+    "expected": 38.125000000000036
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "bbob_10",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      1.0000000001,
+      1
+    ],
+    "expected": 8840589.332541728
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "bbob_10",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      0.125,
+      -0.375
+    ],
+    "expected": 2068903.5182027218
+  },
+  {
+    "config": {
+      "algorithm": "cmaes_active",
+      "benchmark": "bbob_10",
+      "dimensions": 2,
+      "seed": 0
+    },
+    "x": [
+      -3.25,
+      2.75
+    ],
+    "expected": 14509930.59464091
+  }
+]

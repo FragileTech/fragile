@@ -7,6 +7,7 @@
 #ifndef FRACTAL_GAS_THREAD_POOL_HPP
 #define FRACTAL_GAS_THREAD_POOL_HPP
 
+#include <atomic>
 #include <condition_variable>
 #include <utility>
 #include <cstdint>
@@ -38,8 +39,18 @@ class ThreadPool {
   /// services which walker must not depend on thread scheduling.
   void parallel_for(int32_t n, const std::function<void(int32_t, int)>& fn);
 
+  /// Opt-in dynamic scheduling for jobs whose results do not depend on slot.
+  /// Threads claim small contiguous chunks until all indices are processed.
+  /// Slot-local scratch is still exclusive; the default API remains static.
+  void parallel_for_dynamic(int32_t n,
+                            const std::function<void(int32_t, int)>& fn);
+
  private:
   void worker_loop(int slot);
+  void dispatch(int32_t n, const std::function<void(int32_t, int)>& fn,
+                int32_t chunk);
+  void run_job(int slot, int32_t n,
+               const std::function<void(int32_t, int)>& fn, int32_t chunk);
   std::pair<int32_t, int32_t> block_range(int32_t n, int slot) const;
 
   int n_slots_;
@@ -49,7 +60,8 @@ class ThreadPool {
   std::condition_variable cv_start_;
   std::condition_variable cv_done_;
   const std::function<void(int32_t, int)>* job_fn_ = nullptr;
-  int32_t job_n_ = 0;
+  int32_t job_n_ = 0, job_chunk_ = 0;
+  std::atomic<int64_t> next_index_{0};
   int completed_slots_ = 0;
   uint64_t generation_ = 0;
   bool shutdown_ = false;

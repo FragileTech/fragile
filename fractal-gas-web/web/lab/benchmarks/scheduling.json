@@ -1,0 +1,105 @@
+{
+  "samples": [
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "worlds": 128,
+      "framesPerWorld": 12,
+      "heavyWorlds": 0,
+      "staticMs": 26.862741999999344,
+      "dynamicMs": 42.86144899999999,
+      "times": [
+        [
+          31.173853000000236,
+          24.457682000000204,
+          18.321028000000297,
+          26.862741999999344,
+          33.91813099999945
+        ],
+        [
+          52.49855600000001,
+          49.40223700000024,
+          42.86144899999999,
+          19.51536699999997,
+          27.866078000000016
+        ]
+      ]
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "worlds": 128,
+      "framesPerWorld": 12,
+      "heavyWorlds": 16,
+      "staticMs": 173.68399300000056,
+      "dynamicMs": 62.415461999999934,
+      "times": [
+        [
+          185.26126300000033,
+          175.19802299999992,
+          152.1906829999998,
+          152.30184299999928,
+          173.68399300000056
+        ],
+        [
+          66.42899500000021,
+          81.37898899999982,
+          56.4468310000002,
+          56.78212600000006,
+          62.415461999999934
+        ]
+      ]
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "worlds": 128,
+      "framesPerWorld": 12,
+      "heavyWorlds": 128,
+      "staticMs": 300.4814260000003,
+      "dynamicMs": 263.7556230000009,
+      "times": [
+        [
+          267.607223,
+          312.2054589999998,
+          300.45136999999977,
+          300.4814260000003,
+          310.2553659999994
+        ],
+        [
+          264.6365740000001,
+          269.98790700000063,
+          228.40505200000007,
+          263.7556230000009,
+          244.12914099999944
+        ]
+      ]
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "seed": 7,
+      "staticMs": 20557.411755999994,
+      "dynamicMs": 19756.370804,
+      "depth": 64
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "seed": 11,
+      "staticMs": 5531.700318000003,
+      "dynamicMs": 1924.4841489999963,
+      "depth": 28
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "seed": 19,
+      "staticMs": 11867.551221000002,
+      "dynamicMs": 9784.980494999996,
+      "depth": 64
+    }
+  ],
+  "measuredDate": "2026-09-08",
+  "note": "Paired release WASM measurements on a shared host; the static baseline already includes the collision optimizations. Only the eight-thread comparison completed; timings are not latency guarantees."
+}

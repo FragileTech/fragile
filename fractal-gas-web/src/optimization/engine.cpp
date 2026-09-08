@@ -12,6 +12,7 @@
 
 namespace fg::optimization {
 std::unique_ptr<Algorithm> make_euclidean(Benchmark&, const Settings&);
+std::unique_ptr<Algorithm> make_cma(Benchmark&, const Settings&);
 std::unique_ptr<Algorithm> make_gas2017(Benchmark&, const Settings&);
 // Capture the existing Wave operator's draws without changing its decisions.
 class ObservedCloning final : public FractalCloningOperator {
@@ -171,6 +172,9 @@ class ExistingSwarm final : public Algorithm {
                 ? std::min(s.walkers, s.max_walkers - swarm->n_walkers())
                 : 0);
   }
+  uint64_t next_population_size() const override {
+    return s.algorithm == "graph" ? std::min(s.max_walkers, swarm->n_walkers() + s.walkers) : p.n;
+  }
   double objective_score(int i) const override {
     if (!planner) return swarm->walker_cum_reward(i);
     if (i == swarm->n_walkers()) return s.score(p.objective.at(i));
@@ -184,6 +188,8 @@ class ExistingSwarm final : public Algorithm {
 };
 static std::map<std::string, Factory>& factories() {
   static std::map<std::string, Factory> f{
+      {"cmaes_active", make_cma},
+      {"cmaes_bipop", make_cma},
       {"gas", make_gas2017},
       {"euclidean", make_euclidean},
       {"fmc",
@@ -218,6 +224,18 @@ static std::map<std::string, Json>& descriptions() {
          "type":"integer", "default":200, "min":1, "max":1000000}
       ]
     })json")).read());
+    for (auto id : {"cmaes_active", "cmaes_bipop"}) {
+      Json entry = JsonReader(std::string(R"json({"velocity":false,"parameters":[
+        {"id":"cma_sigma","label":"Initial standard deviation (0 = 20% of width)","type":"number","default":0,"min":0,"max":1000000},
+        {"id":"cma_population","label":"Initial population (0 = automatic)","type":"integer","default":0,"min":0,"max":100000}
+      ]})json")).read();
+      entry.object["id"].kind = entry.object["name"].kind = Json::String;
+      entry.object["id"].string = id;
+      entry.object["name"].string = std::string(id) == "cmaes_active" ? "Active CMA-ES" : "BIPOP-active CMA-ES";
+      if (std::string(id) == "cmaes_bipop")
+        entry.object["parameters"].array.push_back(JsonReader(std::string(R"({"id":"cma_runs","label":"Large-population runs","type":"integer","default":9,"min":1,"max":1000})")).read());
+      result.emplace(id, entry);
+    }
     return result;
   }();
   return entries;
@@ -260,7 +278,7 @@ Session::Session(const Json& config)
   const uint64_t state_bytes = count * uint64_t(benchmark.d) *
       (settings.algorithm == "gas" ? 64 : 32) +
       (settings.algorithm == "gas" ? uint64_t(benchmark.d) * 4096 + count * 256 : 0);
-  if (state_bytes > 128 * 1024 * 1024)
+  if (!settings.cma() && state_bytes > 128 * 1024 * 1024)
     throw std::invalid_argument(
         "Swarm exceeds 128 MiB state budget; reduce walkers or dimensions");
   if (settings.algorithm == "euclidean" && settings.walkers > 4096 &&
@@ -271,7 +289,7 @@ Session::Session(const Json& config)
   auto it = factories().find(settings.algorithm);
   if (it == factories().end())
     throw std::invalid_argument("Unknown optimization algorithm");
-  if (settings.max_evaluations &&
+  if (!settings.cma() && settings.max_evaluations &&
       settings.max_evaluations <
           uint64_t(settings.planning() ? 1 : settings.walkers))
     throw std::invalid_argument(
@@ -293,12 +311,27 @@ Session::Session(const Json& config)
   best = settings.worst();
   config_json = stringify(settings.json);
   algorithm = it->second(benchmark, settings);
+  for (const auto& field : algorithm->resolved_config().object)
+    settings.json.object[field.first] = field.second;
+  config_json = stringify(settings.json);
   if (settings.max_evaluations &&
       benchmark.evaluations > settings.max_evaluations)
     throw std::invalid_argument("Initialization exceeds the evaluation budget");
   capture();
 }
+std::string Session::status_json() const {
+  Json info = algorithm->metadata();
+  info.object["finished"].kind = Json::Boolean;
+  info.object["finished"].number = algorithm->finished();
+  info.object["next_evaluations"] = number(algorithm->finished() ? 0 : algorithm->next_evaluations_upper_bound());
+  info.object["next_population"] = number(algorithm->next_population_size());
+  info.object["budget_exhausted"].kind = Json::Boolean;
+  info.object["budget_exhausted"].number = settings.max_evaluations &&
+    algorithm->next_evaluations_upper_bound() > settings.max_evaluations - benchmark.evaluations;
+  return stringify(info);
+}
 void Session::step() {
+  if (algorithm->finished()) throw std::runtime_error("Optimizer finished; reset to start a new run");
   if (settings.max_evaluations &&
       algorithm->next_evaluations_upper_bound() >
           settings.max_evaluations - benchmark.evaluations)
@@ -346,8 +379,9 @@ void Session::capture() {
               alive ? mean / alive : INFINITY,
               double(best_index)};
   snapshot.reserve(12 + size_t(p.n) * (2 * p.d + 8));
+  const double* precise = algorithm->precise_positions();
   for (int i = 0; i < p.n; ++i) {
-    for (int k = 0; k < p.d; ++k) snapshot.push_back(p.x[size_t(i) * p.d + k]);
+    for (int k = 0; k < p.d; ++k) snapshot.push_back(precise ? precise[size_t(i) * p.d + k] : p.x[size_t(i) * p.d + k]);
     for (int k = 0; k < p.d; ++k) snapshot.push_back(p.v[size_t(i) * p.d + k]);
     snapshot.insert(
         snapshot.end(),

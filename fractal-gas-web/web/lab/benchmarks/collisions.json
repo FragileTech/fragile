@@ -1,0 +1,606 @@
+{
+  "baseline": [
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 7,
+      "medianMs": 34.368911000000026,
+      "times": [
+        34.59238600000003,
+        34.15197600000005,
+        34.368911000000026
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 11,
+      "medianMs": 34.913539000000014,
+      "times": [
+        48.97833400000002,
+        34.913539000000014,
+        30.725757999999928
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 19,
+      "medianMs": 31.15806299999997,
+      "times": [
+        31.15806299999997,
+        32.24404500000003,
+        30.656836999999996
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 7,
+      "medianMs": 718.754813,
+      "times": [
+        720.6105419999999,
+        718.754813,
+        612.8997159999999
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 11,
+      "medianMs": 578.0898390000002,
+      "times": [
+        587.2714879999994,
+        578.0898390000002,
+        563.9911000000002
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 19,
+      "medianMs": 887.6145700000006,
+      "times": [
+        741.4471100000001,
+        887.6145700000006,
+        1026.1390150000007
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 7,
+      "medianMs": 19.8286420000004,
+      "times": [
+        43.13326699999925,
+        19.571890999999596,
+        19.8286420000004
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 11,
+      "medianMs": 20.154786000000968,
+      "times": [
+        20.154786000000968,
+        19.97868500000004,
+        20.211358000000473
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 19,
+      "medianMs": 19.54019900000094,
+      "times": [
+        20.18528399999923,
+        19.54019900000094,
+        19.478084000000308
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 7,
+      "medianMs": 240.62110399999983,
+      "times": [
+        248.4724499999993,
+        240.62110399999983,
+        229.11243599999943
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 11,
+      "medianMs": 263.2621849999996,
+      "times": [
+        231.24776199999906,
+        282.2953149999994,
+        263.2621849999996
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 19,
+      "medianMs": 286.54511699999966,
+      "times": [
+        263.0990010000005,
+        286.54511699999966,
+        309.3353590000006
+      ],
+      "frames": 3840,
+      "collisions": 124768
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 7,
+      "searchMs": 912.004754,
+      "frames": 95559,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 72
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 11,
+      "searchMs": 1147.762941,
+      "frames": 90505,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 600
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 19,
+      "searchMs": 941.6824650000003,
+      "frames": 96301,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 396
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 7,
+      "searchMs": 15859.049587000001,
+      "frames": 86377,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 648
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 11,
+      "searchMs": 7906.568202000002,
+      "frames": 93250,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 216
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 19,
+      "searchMs": 10066.330901000001,
+      "frames": 91289,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 204
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 7,
+      "searchMs": 600.6575640000083,
+      "frames": 95559,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 72
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 11,
+      "searchMs": 836.0947610000003,
+      "frames": 90505,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 600
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 19,
+      "searchMs": 748.013472000006,
+      "frames": 96301,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 396
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 7,
+      "searchMs": 5302.898531999992,
+      "frames": 86377,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 648
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 11,
+      "searchMs": 3071.0508490000066,
+      "frames": 93250,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 216
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 19,
+      "searchMs": 5470.793132000006,
+      "frames": 91289,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 204
+    }
+  ],
+  "optimized": [
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 7,
+      "medianMs": 9.320625000000007,
+      "times": [
+        12.062517999999997,
+        9.320625000000007,
+        7.360278000000008
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 11,
+      "medianMs": 7.708930000000009,
+      "times": [
+        7.821509999999989,
+        7.708930000000009,
+        7.596356000000014
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": false,
+      "seed": 19,
+      "medianMs": 7.943162999999998,
+      "times": [
+        7.985343999999998,
+        7.852677,
+        7.943162999999998
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 7,
+      "searchMs": 491.12421699999993,
+      "frames": 94769,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 624
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 11,
+      "searchMs": 627.9783789999999,
+      "frames": 93079,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 444
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": false,
+      "seed": 19,
+      "searchMs": 615.802733,
+      "frames": 96285,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 168
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 7,
+      "medianMs": 239.85845699999982,
+      "times": [
+        237.67058399999996,
+        239.85845699999982,
+        295.9873929999999
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 11,
+      "medianMs": 489.9250499999998,
+      "times": [
+        350.1618480000002,
+        489.9250499999998,
+        538.0433679999996
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "fixed",
+      "threads": 1,
+      "flight": true,
+      "seed": 19,
+      "medianMs": 388.70560900000055,
+      "times": [
+        388.70560900000055,
+        399.2095330000002,
+        320.3539209999999
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 7,
+      "searchMs": 4880.835562,
+      "frames": 88624,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 396
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 11,
+      "searchMs": 1752.6009900000008,
+      "frames": 35501,
+      "depth": 28,
+      "mode": "all-dead fallback",
+      "committedFrames": 12
+    },
+    {
+      "kind": "search",
+      "threads": 1,
+      "flight": true,
+      "seed": 19,
+      "searchMs": 4754.406457000001,
+      "frames": 88378,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 180
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 7,
+      "medianMs": 3.2228380000015022,
+      "times": [
+        17.803782999999385,
+        3.2228380000015022,
+        2.996860999999626
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 11,
+      "medianMs": 2.848409999998694,
+      "times": [
+        2.6516689999989467,
+        2.8623509999997623,
+        2.848409999998694
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": false,
+      "seed": 19,
+      "medianMs": 3.111736999999266,
+      "times": [
+        3.1152729999994335,
+        3.111736999999266,
+        3.095765999998548
+      ],
+      "frames": 3840,
+      "collisions": 0
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 7,
+      "searchMs": 248.7086620000009,
+      "frames": 94769,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 624
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 11,
+      "searchMs": 289.75937799999883,
+      "frames": 93079,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 444
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": false,
+      "seed": 19,
+      "searchMs": 317.80805600000167,
+      "frames": 96285,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 168
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 7,
+      "medianMs": 72.0779079999993,
+      "times": [
+        72.0779079999993,
+        70.59906000000046,
+        76.13849400000254
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 11,
+      "medianMs": 102.14411699999982,
+      "times": [
+        95.60963199999969,
+        102.14411699999982,
+        103.23913700000048
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "fixed",
+      "threads": 8,
+      "flight": true,
+      "seed": 19,
+      "medianMs": 104.23307299999942,
+      "times": [
+        102.48101600000155,
+        104.23307299999942,
+        110.56230100000175
+      ],
+      "frames": 3840,
+      "collisions": 95392
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 7,
+      "searchMs": 1996.7905040000005,
+      "frames": 88624,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 396
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 11,
+      "searchMs": 739.2483339999999,
+      "frames": 35501,
+      "depth": 28,
+      "mode": "all-dead fallback",
+      "committedFrames": 12
+    },
+    {
+      "kind": "search",
+      "threads": 8,
+      "flight": true,
+      "seed": 19,
+      "searchMs": 2017.4667369999988,
+      "frames": 88378,
+      "depth": 64,
+      "mode": "shared prefix",
+      "committedFrames": 180
+    }
+  ]
+}

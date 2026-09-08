@@ -7,25 +7,41 @@ export class Recording {
     this.engine = engine;
     this.config = structuredClone(config);
     this.frames = [];
+    this.metadata = [];
     this.bytes = new TextEncoder().encode(
       JSON.stringify(this.config),
     ).byteLength;
     if (this.bytes >= RECORDING_LIMIT)
       throw new Error("Configuration exceeds the 64 MiB recording limit");
   }
-  append(frame) {
-    if (!this.retainHistory) {
-      this.bytes -= this.frames[0]?.byteLength || 0;
-      this.frames = [frame];
-      this.bytes += frame.byteLength;
-      return;
-    }
-    if (this.bytes + frame.byteLength > RECORDING_LIMIT)
+  append(frame, metadata = null) {
+    const copy = metadata === null ? null : structuredClone(metadata);
+    if (copy !== null && (typeof copy !== "object" || Array.isArray(copy)))
+      throw new Error("Invalid frame metadata");
+    const metaBytes =
+      copy === null
+        ? 0
+        : new TextEncoder().encode(JSON.stringify(copy)).byteLength;
+    const oldMetaBytes =
+      !this.retainHistory && this.metadata[0]
+        ? new TextEncoder().encode(JSON.stringify(this.metadata[0])).byteLength
+        : 0;
+    const oldBytes = !this.retainHistory
+      ? (this.frames[0]?.byteLength || 0) + oldMetaBytes
+      : 0;
+    const nextBytes = this.bytes - oldBytes + frame.byteLength + metaBytes;
+    if (nextBytes > RECORDING_LIMIT)
       throw new Error(
         "Recording reached 64 MiB. Save this run and reset to continue.",
       );
-    this.frames.push(frame);
-    this.bytes += frame.byteLength;
+    this.bytes = nextBytes;
+    if (!this.retainHistory) {
+      this.frames = [frame];
+      this.metadata = [copy];
+    } else {
+      this.frames.push(frame);
+      this.metadata.push(copy);
+    }
   }
   export() {
     return JSON.stringify({
@@ -33,7 +49,8 @@ export class Recording {
       version: 1,
       engine: this.engine,
       config: this.config,
-      frames: this.frames.map((frame) => ({
+      frames: this.frames.map((frame, i) => ({
+        ...(this.metadata[i] === null ? {} : { metadata: this.metadata[i] }),
         data: encode(frame),
         checksum: checksum(
           new Uint8Array(frame.buffer, frame.byteOffset, frame.byteLength),
@@ -117,7 +134,7 @@ export function importRecording(text) {
     if (checksum(new Uint8Array(frame.buffer)) !== entry.checksum)
       throw new Error("Recording checksum mismatch");
     previous = validateFrame(frame, value.config, previous);
-    recording.append(frame);
+    recording.append(frame, entry.metadata ?? null);
   }
   return recording;
 }

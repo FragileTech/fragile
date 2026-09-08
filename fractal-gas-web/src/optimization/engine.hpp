@@ -27,6 +27,7 @@ struct Settings {
   double worst() const {
     return objective == "minimize" ? INFINITY : -INFINITY;
   }
+  bool cma() const { return algorithm == "cmaes_active" || algorithm == "cmaes_bipop"; }
   bool planning() const {
     return algorithm == "fmc" || algorithm == "wave_jump";
   }
@@ -54,6 +55,11 @@ void baoab(Population&, const Settings&, const Benchmark&, Rng&,
 class Algorithm {
  public:
   virtual ~Algorithm() = default;
+  virtual const double* precise_positions() const { return nullptr; }
+  virtual bool finished() const { return false; }
+  virtual Json metadata() const { return JsonReader(std::string("{}")).read(); }
+  virtual Json resolved_config() const { return JsonReader(std::string("{}")).read(); }
+  virtual uint64_t next_population_size() const { return population().n; }
   virtual void step() = 0;
   virtual const Population& population() const = 0;
   virtual uint64_t evaluations() const = 0;
@@ -79,6 +85,7 @@ class Session {
   double best = INFINITY;
   std::vector<double> snapshot;
   std::string config_json;
+  std::string status_json() const;
   void step();
   void capture();
 };

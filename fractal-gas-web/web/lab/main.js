@@ -358,10 +358,18 @@ function applySettings(values = {}) {
   }
   controllerSettings.render(values);
 }
-function status(text = "", error = false) {
+let dismissStatusOnInteraction = false;
+function status(text = "", error = false, dismissOnInteraction = false) {
+  dismissStatusOnInteraction = dismissOnInteraction;
   $("status").textContent = text;
   $("status").classList.toggle("error", error);
 }
+function dismissEpisodeStatus() {
+  if (dismissStatusOnInteraction) status();
+}
+// Clear before replay controls handle the same click or timeline drag.
+document.addEventListener("pointerdown", dismissEpisodeStatus, { capture: true });
+document.addEventListener("click", dismissEpisodeStatus, { capture: true });
 function error(value) {
   status(value.message || String(value), true);
   stop();
@@ -825,7 +833,7 @@ function updateFrame(data) {
     `${currentInfo?.[1] || 0} BODIES · ${currentInfo?.[12] ?? (currentInfo?.[2] || 0) * 2} ACTION DIMENSIONS · ${data.missed} MISSED DEADLINES`;
   if (m[3] > 0 && running) {
     stop();
-    status("Episode ended. Reset to start another run.");
+    status("Episode ended. Reset to start another run.", false, true);
   }
   if (data.running) $("run-state").textContent = "RUNNING";
 }

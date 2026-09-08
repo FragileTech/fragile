@@ -184,7 +184,21 @@ function objectiveNote() {
       ? "Maximize the function value. Best values increase."
       : "Minimize the function by maximizing its negative value.";
 }
+function isCma(algorithm = config?.algorithm) {
+  return ["cmaes_active", "cmaes_bipop"].includes(algorithm);
+}
+function cmaControls() {
+  const cma = isCma($("algorithm").value);
+  for (const name of ["walkers", "periodic", "perturbation"])
+    form.elements.namedItem(name).disabled = cma;
+  if (cma) form.elements.namedItem("periodic").checked = false;
+  $("perturbation-parameters").hidden = cma;
+  $("perturbation-note").hidden = cma;
+  $("edges").disabled = cma;
+  $("trails").disabled = cma;
+}
 function algorithmFields(values = {}) {
+  cmaControls();
   perturbationNote();
   const panel = $("algorithm-parameters");
   panel.replaceChildren();
@@ -383,6 +397,7 @@ function populateForm(values) {
     else input.value = value;
   }
   gasLocalSearchNote();
+  cmaControls();
 }
 function viewSettings() {
   return {
@@ -392,8 +407,8 @@ function viewSettings() {
     pointSize: Number($("point-size").value),
     opacity: Number($("opacity").value),
     height: Number($("height").value),
-    edges: $("edges").value,
-    trails: $("trails").checked,
+    edges: isCma() ? "none" : $("edges").value,
+    trails: !isCma() && $("trails").checked,
     showSlice: $("show-slice").checked,
     slice,
     planning: ["fmc", "wave_jump"].includes(config?.algorithm),
@@ -606,6 +621,11 @@ function inspect(frame) {
     ["Cloned", w.cloned ? "Yes" : "No"],
     ["Parent", w.parent],
   ]) {
+    if (
+      isCma() &&
+      ["Pre-step fitness", "Leaf", "Cloned", "Parent"].includes(key)
+    )
+      continue;
     const dt = document.createElement("dt"),
       dd = document.createElement("dd");
     dt.textContent = key;
@@ -651,6 +671,11 @@ function renderFrame() {
     selected,
   );
   $("planner-note").hidden = !settings.planning;
+  const cmaMeta = recording.metadata[index];
+  $("cma-note").hidden = !isCma();
+  $("cma-note").textContent = cmaMeta
+    ? `Generation ${cmaMeta.generation} · Population ${info.n} · Restarts ${cmaMeta.restarts} · σ ${number(cmaMeta.sigma)}${cmaMeta.stop_reason ? ` · ${cmaMeta.stop_reason}` : ""}`
+    : "CMA-ES candidates";
   $("iteration").textContent = info.iteration;
   $("best").textContent = number(info.best);
   $("mean").textContent = number(info.mean);
@@ -713,13 +738,17 @@ async function createSession(next, loaded = null) {
     config = result.config;
     recordingEnabled = !!loaded || $("record-history").checked;
     recording = loaded || new Recording(config, undefined, recordingEnabled);
-    if (!loaded) recording.append(result.frame);
+    if (!loaded)
+      recording.append(
+        result.frame,
+        isCma(config.algorithm) ? result.status : null,
+      );
     imported = !!loaded;
     index = 0;
     selected = -1;
     $("walker-index").value = "";
     simulationMs = 0;
-    budgetStopped = false;
+    budgetStopped = !!result.status?.finished;
     renderer.setConfig(config);
     populateForm(config);
     objectiveNote();
@@ -754,11 +783,15 @@ async function step() {
     });
     if (token !== epoch) return;
     const atLatest = index === recording.frames.length - 1;
-    recording.append(result.frame);
+    recording.append(result.frame, isCma() ? result.status : null);
     simulationMs = result.simulationMs;
     if (atLatest) index = recording.frames.length - 1;
     scheduleFrame();
-    if (!frameInfo(result.frame).alive) {
+    if (result.status?.finished) {
+      pause();
+      budgetStopped = true;
+      status(`Optimizer finished: ${result.status.stop_reason || "converged"}`);
+    } else if (!frameInfo(result.frame).alive) {
       pause();
       status(
         "All walkers left the domain or became invalid. Save the run, then reset or change settings.",

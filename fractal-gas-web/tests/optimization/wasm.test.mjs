@@ -27,7 +27,16 @@ test(
         .catalog()
         .algorithms.map((a) => a.id)
         .sort(),
-      ["euclidean", "fmc", "gas", "graph", "wave", "wave_jump"],
+      [
+        "cmaes_active",
+        "cmaes_bipop",
+        "euclidean",
+        "fmc",
+        "gas",
+        "graph",
+        "wave",
+        "wave_jump",
+      ],
     );
     assert.equal(native.catalog().perturbations.length, 4);
     for (const objective of ["minimize", "maximize"])

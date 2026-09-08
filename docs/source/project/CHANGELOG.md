@@ -1,11 +1,19 @@
 # Changelog
 
+- Dynamically distribute Control Lab physics futures in small batches across worker threads, reducing idle time when collision workloads differ while preserving planner settings and deterministic results. Keep static scheduling for other backends.
+
+- Speed up collision-heavy flight with conservative wall filtering, reusable geometry, and substep-local resting contacts. Count continuing wall contacts once per substep; old recordings remain viewable, while re-simulated trajectories can differ.
+
+- Dismiss the episode-ended notice on the next click or timeline drag so replay remains unobstructed.
+
 - Add persistent dropped asteroids with inner delivery and outer re-hook release zones.
 
 - Add persistent weighted harvesting hooks, live hook mass controls, and approach/catch/movement rewards.
 - Make the default asteroid masses light enough for solo rocket towing at 1× in flight mode.
 
 ## Optimization Lab
+
+- Add pinned libcmaes Active and BIPOP-active CMA-ES to native and WASM builds, with bounded double-precision candidates, deterministic restart streams, complete-generation budgets, and recorded optimizer status.
 
 - Enable adaptive local covariance perturbations in GAS (2017), learning from accepted jumps while preserving retry scaling and existing defaults.
 
