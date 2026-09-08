@@ -6,8 +6,8 @@ Arcade Lab is a laboratory for watching a search process happen in public. The
 browser runs many complete copies of an arcade game. Each copy—called a
 **walker**—chooses discrete actions, advances for a small number of frames,
 records what it earned, and may later be copied by another walker. The pictures
-on the screen show the current evidence, not a policy pretending to know the
-answer.
+on the screen show the current evidence produced by the search; repeated trials
+accumulate the evidence that guides the swarm.
 
 Open [Arcade in the browser](https://fragiletech.github.io/fragile/web/). The page puts Mario, Atari, Sonic, and
 Montezuma behind one interface. It runs the Fractal Gas machinery and emulator
@@ -17,8 +17,8 @@ single exciting score can be luck. A population that repeatedly finds and
 preserves progress is evidence of a different kind.
 
 Arcade Lab sits next to the continuous-control and optimization laboratories.
-Here the state is not a point on a smooth surface: it is an emulator snapshot,
-and a one-frame mistake can change everything.
+Here the state is a discrete emulator snapshot, while smooth-surface models use
+points; a one-frame mistake can change everything.
 :::
 
 (sec-arcade-laboratory-start)=
@@ -27,9 +27,10 @@ and a one-frame mistake can change everything.
 :::{div} feynman-prose
 From the repository root, serve the browser build with the command below, then
 open the local address. The small server supplies the cross-origin-isolation
-headers required by `SharedArrayBuffer` and WebAssembly threads; opening
-`index.html` directly, or using an ordinary static server, is not enough. This
-command serves the existing `fractal-gas-web/web` assets. Rebuilding the
+headers required by `SharedArrayBuffer` and WebAssembly threads. Directly
+opening `index.html` and ordinary static serving provide the page itself, while
+this command adds the headers that enable the threaded runtime. This command
+serves the existing `fractal-gas-web/web` assets. Rebuilding the
 WebAssembly artifacts follows the Emscripten workflow in `fractal-gas-web/README.md`.
 :::
 
@@ -43,7 +44,7 @@ make web
 
 On a hosted build, the ROM vault may ask for one password. The browser decrypts
 the bundled ROM locally and remembers the successful unlock in that browser;
-the ROM is not sent to a server. Sonic also accepts a one-time local upload of
+the ROM remains inside that browser. Sonic also accepts a one-time local upload of
 your own Genesis ROM. Local development can use the plaintext ROM files when
 they are present.
 :::
@@ -55,17 +56,19 @@ they are present.
 Imagine putting 48 identical game machines on a table and giving each one a
 slightly different sequence of button presses. After a short while, some
 machines have moved farther, found a ring, entered a new room, or simply stayed
-alive. Arcade Lab does the bookkeeping for this crowd. A walker is not just a
-dot on a map: it carries the emulator state, its reward history, and any
-game-specific information needed to continue from that exact moment.
+alive. Arcade Lab does the bookkeeping for this crowd. A walker carries the
+emulator state, its reward history, and any game-specific information needed to
+continue from that exact moment. The map shows one projection of this richer
+object.
 
-Now comes the important operation: cloning is copying a **timeline**, not merely
-copying a position. A promising walker can become the starting point for
-another attempt, while the other attempts continue to explore. In **Wave**, the
+Now comes the important operation: cloning copies a complete **timeline**—the
+emulator state, reward history, and game-specific context together. A promising
+walker can become the starting point for another attempt, while the other
+attempts continue to explore. In **Wave**, the
 population stays fixed and every walker steps on each iteration. In **Graph**,
 visited states remain as nodes in a growing tree, and active leaves are the
 states from which new alternatives can be extended. The graph is therefore a
-record of alternatives, not a single path with the past erased.
+record of alternatives that preserves its earlier branches.
 
 **FMC** and **Jump Wave** use the same search population differently: they look
 ahead, then advance one committed game and search again from the resulting
@@ -78,30 +81,30 @@ while the plots still describe the search population.
 ## Four environments, four kinds of difficulty
 
 :::{div} feynman-prose
-The four buttons are not four skins on one benchmark. They expose different
-state variables, reward signals, and map constructions. The defaults are chosen
-to make the state useful to the swarm: Mario, Sonic, and Montezuma start in
-**Coords** mode, while generic Atari starts in **RAM** mode because it has no
-game-specific coordinate tuple.
+The four buttons open four benchmark setups, each with its own state variables,
+reward signals, and map construction. The defaults are chosen to make the state
+useful to the swarm: Mario, Sonic, and Montezuma start in **Coords** mode, while
+generic Atari starts in **RAM** mode because its generic interface uses a shared
+memory representation across the game picker.
 :::
 
 :::{div} feynman-added
 | Setup | Browser runtime | Default observation and reward | Map in the app |
 |---|---|---|---|
 | **Mario** | NES, `nes-py`; World/Stage selectors | Coords; shaped progress with time, death, area, and flag terms | Full level map with the swarm overlaid |
-| **Generic Atari** | Atari 2600, ALE; bundled game picker, default Ms. Pac-Man | RAM; the selected game's own score | No level map panel |
+| **Generic Atari** | Atari 2600, ALE; bundled game picker, default Ms. Pac-Man | RAM; the selected game's own score | Gameplay view with the selected game's score; generic Atari allocates this display to gameplay |
 | **Sonic** | Sega Genesis, Genesis Plus GX; Zone/Act selectors | Coords; shaped progress through the act, rings, score, lives, and completion | Fog of war assembled from walker views |
 | **Montezuma** | Atari/ALE with room-aware logic | Coords; score plus a new-room bonus | A 24-room pyramid assembled as rooms are found |
 :::
 
 :::{div} feynman-prose
-The table also tells you why raw reward values should not be compared across
-games. Mario's reward is not Atari's score, and Montezuma's room bonus is an
-explicit exploration signal. Likewise, the map is not always a supplied level
-image: Sonic's map is stitched from the swarm's downsampled views, and
-Montezuma's rooms appear as walkers discover and render them. In both cases,
-dark or missing territory means “not seen yet,” not “the game has no level
-there.”
+The table also tells you why raw reward values deserve game-by-game comparisons.
+Mario's reward uses shaped progress, Atari reports its own score, and Montezuma's
+room bonus is an explicit exploration signal. Likewise, maps take different
+forms: some use a supplied level image, Sonic's map is stitched from the
+swarm's downsampled views, and Montezuma's rooms appear as walkers discover and
+render them. In both cases, unrevealed territory marks portions the swarm has
+yet to see, while those portions remain part of the game level.
 :::
 
 (sec-arcade-laboratory-controls)=
@@ -113,31 +116,32 @@ it for `dt` frames, with `dt` drawn uniformly between **dt min** and **dt max**
 (the defaults are 6 and 30 frames, roughly 0.1 to 0.5 seconds at 60 frames per
 second). The cloning step uses virtual reward: a combination of how well a
 walker has done and how far it is from its comparison walker, with an optional
-visit-count term. Thus a good score and a good virtual reward are related, but
-they are not the same measurement.
+visit-count term. Thus a good score and a good virtual reward are related, while
+they remain distinct measurements.
 
 **Observation** chooses what the distance calculation sees: console RAM, RGB
-pixels, grayscale pixels, or a compact Coords tuple. It does not change the
-game's controls. Changing observation, algorithm, game, or start level restarts
-the run because these choices change the state that is being copied. The seed,
+pixels, grayscale pixels, or a compact Coords tuple. It preserves the game's
+controls. Changing observation, algorithm, game, or start level restarts the run
+because these choices change the state that is being copied. The seed,
 walker count, elite buffer, fitness coefficients, visit settings, and frame
 range are the experimental knobs; keep them with a result you want to repeat.
 
 The reward-term sliders for Mario, Sonic, and Montezuma apply to rewards earned
 from that point onward. Reward already banked by a walker keeps its old
-weighting, so a live change does not rewrite history. **Pause** preserves the
+weighting, so a live change leaves its history intact. **Pause** preserves the
 current search or trajectory. **Reset** reconstructs the run with the same
 settings and seed. The **Env frames** readout counts frames actually emulated,
-including steps that end early because of death or life loss.
+including each action step that concludes with death or life loss.
 :::
 
 :::{warning}
 :class: feynman-added
 
-Do not read the **Virtual reward** plot as the game's score. Virtual reward is
-the selection signal used for cloning; **Cumulative reward** is the reward
-accumulated by each walker. A swarm can improve the selection signal by
-spreading out, while a game score can remain flat. Read both plots together.
+Read the **Virtual reward** plot as the cloning signal alongside the game's
+score. Virtual reward is the selection signal used for cloning; **Cumulative
+reward** is the reward accumulated by each walker. A swarm can improve the
+selection signal by spreading out, while a game score can remain flat. Read
+both plots together.
 :::
 
 (sec-arcade-laboratory-guide)=

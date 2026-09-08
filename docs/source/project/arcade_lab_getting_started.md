@@ -3,11 +3,11 @@
 
 :::{div} feynman-prose
 The Arcade Lab is a crowd of game timelines. Each **walker** is a complete
-emulator state, not merely a dot that remembers where it was. It tries a random
-sequence of button presses for a little while, earns a game-specific reward,
-and may be copied by another walker. The swarm is useful precisely because one
-lucky attempt is not the whole story: you can watch many alternatives being
-tried, compared, and copied.
+emulator state carrying the current game state and its timeline. It tries a
+random sequence of button presses for a little while, earns a game-specific
+reward, and may be copied by another walker. The swarm reveals the complete
+story through many alternatives being tried, compared, and copied, so one lucky
+attempt becomes one part of a larger experiment.
 
 This page gets you from a checkout to a running browser demo, then makes one
 small Mario run reproducible. For the larger picture—why Wave, Graph, FMC, and
@@ -55,9 +55,10 @@ git submodule status -- \
 :::{warning}
 :class: feynman-added
 
-The C++ build can appear to be configured correctly while a submodule is empty.
-If headers or source files under `third_party/` are missing, check the submodule
-status before debugging CMake.
+The C++ build can appear to be configured correctly while a submodule still
+awaits initialization. A healthy submodule supplies headers and source files
+under `third_party/`; check the submodule status whenever those files await
+initialization, before debugging CMake.
 :::
 
 (sec-arcade-lab-build)=
@@ -75,9 +76,9 @@ changing the C++ core.
 
 :::{div} feynman-prose
 Run this from the repository root. The commands enter `fractal-gas-web`, create
-a Release build, and compile both `fg_tests` and `fg_cli`. The test suite does
-not require a user ROM for its ordinary tests; the `FG_ROM` invocation adds the
-NES smoke tests using the ROM shipped by the `nes-py` submodule.
+a Release build, and compile both `fg_tests` and `fg_cli`. The test suite runs
+its ordinary tests from the build artifacts alone; the `FG_ROM` invocation adds
+the NES smoke tests using the ROM shipped by the `nes-py` submodule.
 :::
 
 ```bash
@@ -91,10 +92,10 @@ FG_ROM=third_party/nes-py/nes_py/tests/games/super-mario-bros-1.nes \
 ```
 
 :::{div} feynman-prose
-`fg_cli` is not the browser launcher. It is a native experiment runner: give it
-a ROM with `--rom`, and it measures the C++ algorithm without a web page. The
-browser target is built separately below and writes its runtime modules into
-`fractal-gas-web/web/`.
+`fg_cli` is the native experiment runner, while the browser launcher is built
+separately below. Give `fg_cli` a ROM with `--rom`, and it measures the C++
+algorithm in a terminal, independently of a web page. The browser target
+writes its runtime modules into `fractal-gas-web/web/`.
 :::
 
 ### WebAssembly build
@@ -117,18 +118,19 @@ cmake --build build-wasm -j
 :::{div} feynman-prose
 The main build produces `web/fractal_gas.js` and `web/fractal_gas.wasm`; the
 Genesis path also produces the `web/retro_shim.js` and `web/retro_shim.wasm`
-worker module. If `emcmake` or `embuilder` cannot be found, the SDK environment
-has not been activated in that shell. Re-run the `source` command there.
+worker module. The shell finds `emcmake` and `embuilder` once the SDK
+environment is active; re-run the `source` command there to activate it.
 :::
 
 (sec-arcade-lab-serve)=
 ## Serve the app with cross-origin isolation
 
 :::{div} feynman-prose
-A WebAssembly module is not enough by itself. The browser must be told that the
-page and its embedded resources belong to a controlled origin before it will
-allow the shared memory used by WebAssembly threads. This is why the repository
-contains a small server instead of asking you to open `index.html` directly.
+A WebAssembly module works together with the browser's origin controls. The
+browser must be told that the page and its embedded resources belong to a
+controlled origin before it will allow the shared memory used by WebAssembly
+threads. The repository therefore contains a small server that launches
+`index.html` with those controls in place.
 
 From `fractal-gas-web`, run `serve.py` and open the `/web/` route:
 :::
@@ -147,12 +149,13 @@ With the default command, open
 `Cross-Origin-Embedder-Policy: require-corp`, and it serves `.wasm` and module
 files with the MIME types the browser expects.
 
-The page checks `crossOriginIsolated` before it initializes the emulator. If the
-status says **Not cross-origin isolated**, you are either using the wrong URL or
-another server. Stop that server, start `serve.py`, and reload the page. A plain
-`python3 -m http.server` serves files but does not supply the headers this app
-needs. The page includes a COI service-worker fallback for hosts that cannot set
-headers, but local development should use `serve.py` directly.
+The page checks `crossOriginIsolated` before it initializes the emulator. When
+the status says **Not cross-origin isolated**, correct the active URL or server:
+stop that server, start `serve.py`, and reload the page. A plain
+`python3 -m http.server` serves files with its standard headers, while this app
+gets its required headers from `serve.py`. The page includes a COI
+service-worker fallback for hosting environments that provide these headers
+through a service worker; local development should use `serve.py` directly.
 :::
 
 (sec-arcade-lab-doc-captures)=
@@ -173,13 +176,13 @@ The command writes the PNGs beside the existing Arcade figures and updates
 `docs/_static/arcade_lab/capture-manifest.json`. The manifest is the lab notebook
 for the pictures: it records the capture name and note, viewport, selected game,
 algorithm, observation and level, the relevant run parameters, iteration or
-played-frame counts, and the final status. This is what makes a screenshot
-repeatable rather than merely plausible.
+played-frame counts, and the final status. This record makes each screenshot
+repeatable and evidence-backed.
 
 The capture uses the local plaintext ROM fixtures already described above. It
-does not create, download, or add ROM files. Before running it, start the
-cross-origin-isolated `serve.py` server on port `8091` and build the browser
-artifact so the served WebAssembly and JavaScript files exist.
+reuses those existing files and leaves the ROM files unchanged. Before running
+it, start the cross-origin-isolated `serve.py` server on port `8091` and build
+the browser artifact so the served WebAssembly and JavaScript files exist.
 :::
 
 (sec-arcade-lab-roms)=
@@ -188,8 +191,8 @@ artifact so the served WebAssembly and JavaScript files exist.
 :::{div} feynman-prose
 The page looks for a ROM in a deliberate order: a plaintext file next to the
 page, this browser's IndexedDB cache, and then the encrypted blob in
-`web/roms-enc/`. This lets a local checkout work without a password while a
-hosted copy can avoid distributing plaintext ROMs.
+`web/roms-enc/`. A local checkout can read the plaintext file directly, while a
+hosted copy can keep plaintext ROMs out of its distribution.
 
 For local development, the browser names are:
 
@@ -223,11 +226,12 @@ FG_ROM_PASSWORD='choose-a-password' node tools/encrypt-rom.mjs --all
 
 :::{div} feynman-prose
 Sonic has one extra escape hatch. Select **Sonic**, then choose a file in
-**Sonic ROM (.md)** if no usable local or encrypted ROM is available. The input
-accepts `.md`, `.bin`, `.gen`, and `.smd`; the file is read in the browser and
-stored in that browser for future visits. It is not uploaded by the Arcade UI.
-After the ROM is ready, choose Sonic's **Zone** and **Act**. Changing either
-start-level selector initializes a new run.
+**Sonic ROM (.md)** after the local and encrypted sources have been checked and
+the browser still needs a usable ROM. The input accepts `.md`, `.bin`, `.gen`,
+and `.smd`; the file is read in the browser and stored in that browser for
+future visits. The Arcade UI keeps the file in the browser. After the ROM is
+ready, choose Sonic's **Zone** and **Act**. Changing either start-level
+selector initializes a new run.
 :::
 
 (sec-arcade-lab-first-run)=
@@ -236,40 +240,39 @@ start-level selector initializes a new run.
 :::{div} feynman-prose
 We want the first experiment to be small enough to understand and specific
 enough to repeat. The important phrase is **same ROM, same settings, same
-seed**. The seed fixes the random choices made by the swarm; it does not make
-your processor run at the same wall-clock speed as somebody else's machine.
-The UI starts with Mario, Wave, Coords, World 1, Stage 1, and seed 7, but set
-the values explicitly so the experiment is written down rather than merely
-remembered.
+seed**. The seed fixes the random choices made by the swarm; your processor may
+run at a different wall-clock speed from somebody else's machine. The UI starts
+with Mario, Wave, Coords, World 1, Stage 1, and seed 7. Set the values
+explicitly so the experiment is written down and easy to recall.
 
-1. Open `/web/` and wait for the status to say **Ready - press Start**. If the
-   page shows **Unlock ROMs**, enter the vault password; if it says the Mario
-   ROM is missing, put `web/test-rom.nes` in place first.
+1. Open `/web/` and wait for the status to say **Ready - press Start**. When the
+   page shows **Unlock ROMs**, enter the vault password. Place
+   `web/test-rom.nes` whenever the Mario ROM needs a local file.
 2. Select **Mario**, **Wave**, and **Coords**. Set **World** to `1` and
    **Stage** to `1`.
 3. In **Swarm**, set **Walkers (N)** to `48`, **Seed** to `7`, and **Elite
    walkers** to `2`. In **Kinetics**, set **dt min** to `6` and **dt max** to
    `30`. Leave **Distance coef** and **Reward coef** at `1.0`.
-4. In the Mario Coords controls, leave **Visit reward** **Off**, **Visit pooling
-   (px)** at `5`, **Erase coef** at `0.05`, and **Visit coef** at `1.0`. Wave's
-   default is Off; naming it here matters because the visit term changes the
-   selection signal, even though the game is the same.
+4. In the Mario Coords controls, set **Visit reward** to **Off**, **Visit
+   pooling (px)** to `5`, **Erase coef** to `0.05`, and **Visit coef** to `1.0`.
+   Wave starts with this setting Off; naming it here matters because the visit
+   term changes the selection signal while the game remains the same.
 5. Press **Start**. Wave advances every walker, updates the screen of the
    leading walker, draws the swarm on **Level map — swarm**, and fills the
    cumulative-reward, virtual-reward, clone, alive, and frame-skip plots.
 6. Let a few iterations accumulate, then press **Pause**. Record the seed and
-   settings with any observation you want to keep. The `Env frames` statistic is
-   the number of frames actually emulated, not an estimate from an average
-   frame skip.
+   settings with any observation you want to keep. The `Env frames` statistic
+   reports the number of frames actually emulated; average frame skip provides
+   a separate estimate.
 7. Press **Reset**, then **Start** again. Reset returns to the initial Mario
    state with the same active settings and seed, clears the readouts, plots, and
    map overlay, and leaves the run paused until you press Start.
 
-Do not expect every walker to move right. That is not a failure of the map: the
-swarm is exploring alternatives, and dead walkers are replaced by cloning on a
-later iteration. Read **Cumulative reward** as game progress and **Virtual
-reward** as the signal used to decide which timelines get copied; they answer
-different questions.
+Expect the walkers to explore multiple directions. This behavior shows the map
+working as intended: the swarm is exploring alternatives, and dead walkers are
+replaced by cloning on a later iteration. Read **Cumulative reward** as game
+progress and **Virtual reward** as the signal used to decide which timelines
+get copied; they answer different questions.
 :::
 
 :::{figure} ../../_static/arcade_lab/mario-map.png
@@ -278,22 +281,24 @@ different questions.
 
 The Mario map shows the whole selected level with the current swarm overlaid.
 Alive walkers are magenta, dead walkers are gray, and the gold ring marks the
-best walker. It is a picture of many emulator states, not a single promised
-playthrough.
+best walker. It depicts many emulator states across the population and captures
+the evolving search, while a single playthrough represents a separate
+trajectory.
 :::
 
 (sec-arcade-lab-run-controls)=
 ## Use Start, Pause, and Reset
 
 :::{div} feynman-prose
-The three buttons control the run state, not the experiment definition.
+The three buttons control the run state; the selected settings define the
+experiment.
 
 **Start** begins the worker loop, or resumes it after a pause. **Pause** stops
-new iterations without throwing away the current swarm; for FMC and Jump Wave,
-it also preserves the current search or committed trajectory. **Reset** stops
-the loop and calls the emulator's reset operation, then clears the browser's
-run readouts, plots, map state, and displayed frame. It keeps the selected
-console, level, algorithm, and settings, so it is the button to use after an
+new iterations while preserving the current swarm; for FMC and Jump Wave, it
+also preserves the current search or committed trajectory. **Reset** stops the
+loop and calls the emulator's reset operation, then clears the browser's run
+readouts, plots, map state, and displayed frame. It keeps the selected console,
+level, algorithm, and settings, so it is the button to use after an
 all-walkers-dead stop or a completed game.
 
 Wave and Graph show the leading search walker. FMC and Jump Wave show the one
@@ -308,12 +313,12 @@ to **Played game** when you select a planner.
 :::{div} feynman-prose
 Here is the distinction that saves the most confusion. A restart-required
 setting changes the shape or identity of the state being copied: changing the
-number of walkers, for example, cannot be done by editing one number inside the
-existing population. The UI reinitializes the run when such a control changes.
+number of walkers, for example, requires the UI to construct a new population.
+The UI reinitializes the run when such a control changes.
 
-The live controls modify the next planning steps. They do not rewrite the
-past. In particular, a reward-term change applies to reward earned from then
-onward; reward already banked by a walker keeps its earlier weighting.
+The live controls modify the next planning steps and preserve the past. In
+particular, a reward-term change applies to reward earned from then onward;
+reward already banked by a walker keeps its earlier weighting.
 :::
 
 :::{div} feynman-added
@@ -328,14 +333,15 @@ onward; reward already banked by a walker keeps its earlier weighting.
 :::
 
 :::{div} feynman-prose
-For FMC and Jump Wave, changing a live planner or fitness setting discards any
-pending plan and searches again from the currently committed game. The game is
-not silently rewound. For Wave and Graph, the existing swarm continues and uses
-the new live values on subsequent iterations.
+For FMC and Jump Wave, changing a live planner or fitness setting clears any
+pending plan and searches again from the currently committed game. The current
+game state remains in place. For Wave and Graph, the existing swarm continues
+and uses the new live values on subsequent iterations.
 
 The Graph has a special vocabulary: the Swarm number is shown as **Leaves
 (start = min leaves)**, and **Max walkers** is its node cap. Graph also turns
-visit counting on by default in Coords mode for games with maps; Wave leaves it
-off by default. These are not cosmetic changes, so switching algorithms
-restarts the run and resets the interpretation of the population.
+visit counting on by default in Coords mode for games with maps; Wave begins
+with visit counting set to **Off** by default. These changes affect behavior, so
+switching algorithms restarts the run and resets the interpretation of the
+population.
 :::
