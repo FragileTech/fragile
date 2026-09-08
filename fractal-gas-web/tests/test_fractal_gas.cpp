@@ -252,7 +252,9 @@ TEST_CASE(soft_deaths_stay_dead_while_others_live) {
   }
 }
 
-TEST_CASE(elite_max_reward_never_decreases) {
+TEST_CASE(elites_cannot_clone_after_initialization) {
+  // Wave's game reward is always maximized. Objective minimization belongs to
+  // the separate optimization engine, which does not use this elite buffer.
   MockEnv env;
   FractalGasParams params;
   params.N = 16;
@@ -261,11 +263,12 @@ TEST_CASE(elite_max_reward_never_decreases) {
 
   FractalGas gas(env, params);
   gas.reset();
-  float best = -1e30f;
   for (int it = 0; it < 20; ++it) {
-    const StepInfo info = gas.step();
-    CHECK(info.max_reward >= best - 1e-6f);
-    best = std::max(best, info.max_reward);
+    gas.step();
+    if (it > 0) {
+      const auto& mask = gas.clone_mask();
+      for (int i = 0; i < params.n_elite && i < params.N; ++i) CHECK(mask[i] == 0);
+    }
   }
 }
 
