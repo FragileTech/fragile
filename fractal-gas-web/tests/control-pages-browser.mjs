@@ -171,7 +171,9 @@ try {
       );
 
       const arcade = await context.newPage();
-      await arcade.goto(`http://127.0.0.1:${server.address().port}${prefix}`);
+      await arcade.goto(
+        `http://127.0.0.1:${server.address().port}${prefix}arcade.html`,
+      );
       assert.equal(
         new URL(
           await arcade
