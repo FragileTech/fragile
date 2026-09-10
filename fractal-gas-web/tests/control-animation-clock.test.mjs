@@ -84,6 +84,7 @@ test("toggle reapplies current gameplay state after resetting cosmetic poses", (
   const renderer = {
     animationClock: new AnimationClock(),
     simulationTime: 3,
+    checkpointMotionChanged: () => calls.push(["checkpoint"]),
     bodyLayer: { setAnimationsEnabled: (value) => calls.push(["body", value]) },
     worldDynamics: {
       setAnimationsEnabled: (value) => calls.push(["world", value]),
@@ -98,5 +99,10 @@ test("toggle reapplies current gameplay state after resetting cosmetic poses", (
     },
   };
   LabRenderer.prototype.setAnimationsEnabled.call(renderer, true);
-  assert.deepEqual(calls, [["body", true], ["world", true], ["state"]]);
+  assert.deepEqual(calls, [
+    ["checkpoint"],
+    ["body", true],
+    ["world", true],
+    ["state"],
+  ]);
 });
