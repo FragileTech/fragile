@@ -539,6 +539,10 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("frameWidth", &fg_frame_width);
   emscripten::function("frameHeight", &fg_frame_height);
   emscripten::function("nActions", &fg_n_actions);
+  emscripten::function("setDistanceMetric", +[](std::string name) {
+    const auto metric = fg::parse_distance_metric(name);
+    if (g_algo) g_algo->set_distance_metric(metric);
+  });
   emscripten::function("setParams", &fg_set_params);
   emscripten::function("setRewardWeights", &fg_set_reward_weights);
   emscripten::function("reset", &fg_reset);

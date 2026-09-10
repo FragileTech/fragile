@@ -55,7 +55,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/home/guillem/fragile/fractal-gas-web/cmake/FgAtari.cmake"
   "/home/guillem/fragile/fractal-gas-web/cmake/FgRetro.cmake"
   "/home/guillem/fragile/fractal-gas-web/cmake/FgSwarm.cmake"
-  "/home/guillem/fragile/fractal-gas-web/control/CMakeLists.txt"
   "/home/guillem/fragile/fractal-gas-web/third_party/ale/CMakeLists.txt"
   "/home/guillem/fragile/fractal-gas-web/third_party/ale/cmake/ParseVersion.cmake"
   "/home/guillem/fragile/fractal-gas-web/third_party/ale/cmake/ale-config.cmake.in"
@@ -77,7 +76,6 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
-  "control/CMakeFiles/CMakeDirectoryInformation.cmake"
   "ale-build/CMakeFiles/CMakeDirectoryInformation.cmake"
   "ale-build/src/ale/version.hpp"
   "ale-build/src/ale/ale-config-version.cmake"
@@ -92,15 +90,13 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/fg_numeric_core.dir/DependInfo.cmake"
+  "CMakeFiles/fg_fractal_core.dir/DependInfo.cmake"
   "CMakeFiles/fg_swarm_core.dir/DependInfo.cmake"
   "CMakeFiles/nes_core.dir/DependInfo.cmake"
   "CMakeFiles/fractal_gas_core.dir/DependInfo.cmake"
   "CMakeFiles/gpgx_core_wasm.dir/DependInfo.cmake"
   "CMakeFiles/retro_shim.dir/DependInfo.cmake"
   "CMakeFiles/fractal_gas.dir/DependInfo.cmake"
-  "control/CMakeFiles/fg_control_core.dir/DependInfo.cmake"
-  "control/CMakeFiles/fg_control.dir/DependInfo.cmake"
   "ale-build/src/ale/CMakeFiles/ale.dir/DependInfo.cmake"
   "ale-build/src/ale/CMakeFiles/ale-lib.dir/DependInfo.cmake"
   )

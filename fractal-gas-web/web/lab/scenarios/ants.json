@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "rewards": {
+    "wall_collision": 100
+  },
   "name": "Ants & drops",
   "description": "5 harvesters. Fill 5-drop tanks and unload at the refinery over 2 simulation seconds. Drops return after 3 seconds.",
   "task": "forage",

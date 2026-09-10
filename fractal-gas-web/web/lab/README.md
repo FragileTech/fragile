@@ -218,8 +218,8 @@ The files under `scenarios/` are editable examples:
 | --- | ---: | --- |
 | Asteroid harvesting | 1 | Hook polygon ore and deliver it to a base under local gravity |
 | Ants & drops | 1–128 (default 5) | Choose any of the four vehicle types; seeded drop respawning |
-| Tandem flight | 2 | Sequential checkpoint loop and formation penalty |
-| Collaborative mining | 2 | Two elastic tethers sharing one liftable asteroid |
+| Tandem flight | 2 | Shared ordered checkpoints with team proximity and normalized crossing rewards, pairwise formation, squared travel, and collision penalties |
+| Collaborative mining | 2 | Two elastic tethers sharing one liftable asteroid; retained delivery by default |
 | Mining rocket / thinking graphs | 1 | Tethered search, risk and tree diagnostics |
 | Racing / select track | 1 | Ordered checkpoints around a closed circuit, with lap progress and manual driving |
 
@@ -231,15 +231,28 @@ turning headroom; wall contacts remain physical but do not end the run.
 The presets reward target progress and catches, with unrestricted movement
 reward (`distance_squared`) disabled so falling or racing around is not a goal.
 
-Their `controller_defaults` select a 32-action horizon, 6 physics frames per
-action, and 4 elites. Wave Jump keeps the standard 128 walkers and shared-prefix
+Both mining presets default to `keep_delivered_rocks: true` and offer the
+**Keep delivered rocks** toggle.
+With retention enabled, a rock is delivered when its centre enters the inner
+delivery disk (half the base radius). Delivery detaches every hook but leaves
+the rock active and collidable; it is locked until its centre is strictly
+outside every outer delivery zone, after which an automatic hook can acquire it
+again. Set `keep_delivered_rocks: false` to restore full-radius delivery and the
+scene's seeded random `respawn: true` behavior.
+
+Their `controller_defaults` select a 32-action horizon for Asteroid harvesting
+and a 64-action horizon for Collaborative mining, giving the coupled rockets a
+longer look-ahead to reach the inner delivery disk. Both use 6 physics frames per
+action and 4 elites. Wave Jump keeps the standard 128 walkers and shared-prefix
 execution. New tasks use these recommendations; switching scenes updates values
 that still match the previous preset and preserves custom controller settings.
 Imported runs and checkpoints retain their recorded settings.
 
 Run `npm run test:lab-mining` from `fractal-gas-web/` to check ten simulated
 seconds of both shipped presets in WASM at seed 7. The acceptance run requires
-a new catch, sustained towing, a delivery, and no termination in each mode;
+hooked cargo (including mining's initial attachments), sustained towing, retained
+delivery with every towing hook detached, subsequent release from the delivery
+lock, and no termination in each mode;
 `CONTROL_MINING_SEEDS=7,19,42` checks additional seeds. This longer gameplay
 check is separate from the quick preset and lift-budget unit tests.
 
@@ -348,16 +361,35 @@ Static raycasting uses the same compiled boundary geometry.
 
 Important JSON fields and defaults:
 
+All Control Lab tasks expose **Wall collision penalty** under Rewards and
+**Die on wall collision** under Setup → World physics. The penalty is 100 by
+default (0 disables it; maximum 10,000), charged once per controlled vehicle per
+physics frame touching an outer wall or obstacle-hole boundary. Sustained contact
+continues to cost reward; corners and solver substeps do not multiply the charge.
+Cargo and physical hooks do not incur wall penalties or trigger wall death.
+
+Wall death defaults off in every shipped preset. Enabling it ends the entire
+world when any controlled vehicle touches a wall, charging the wall penalty on
+that terminating frame too. Penalty changes use **Apply to current run** without
+resetting motion; death changes use **Apply and restart**. Both settings travel
+with scene JSON. Imported explicit `physics.lethal_walls` values are honored.
+Applied wall settings are remembered per named environment during preset
+switching in the current session; starting a fresh task restores preset defaults.
+Omitted `rewards.wall_collision` now means 100, including in older mining scenes.
+Stored historical rewards remain intact, but re-simulation can yield new rewards;
+the snapshot layout is unchanged.
+
 | Object | Fields |
 | --- | --- |
 | Root | `version:1`, `name`, `task`, `size:[64,44]`, `boundary`, `holes`, `bodies`, `gravity`, `bases`, `gates`, `pickups`, `tethers`, optional `environment.flight` and `environment.downward_gravity` |
+| Root | `keep_delivered_rocks:false`: enable to retain delivered rocks as active/collidable, unhookable until they leave every outer base zone; delivery uses the inner half-radius disk. When false, delivery uses the full radius and `respawn:true` cargo uses seeded random respawn. Both shipped mining presets set this to `true`. |
 | `physics` | `dt:1/60`, `substeps:4`, `solver_iterations:8`, `lethal_walls:false`, `lethal_bodies:false` |
 | Body | `position`, `velocity:[0,0]`, `angle:0`, `omega:0`, `radius:0.5`, optional convex local `vertices`, `mass:1`, optional `inertia`, `drag:0.15`, `angular_drag:2`, `thrust:12`, `torque:8`, `restitution:0.25`, `friction:0.3`, `controlled:false`, `cargo:false`, `flight_capable:false` |
 | Gravity | `position`, `strength:10`, `softening:2`; negative strength repels |
 | Base/gate/pickup | `position`, `radius:1` |
 | Tether | `a` source body, `b:-1` for disconnected, `rest_length`, `stiffness:25`, `damping:6`, `break_force:500`, `hook_range:2`, `automatic:false` |
-| `rewards` | `progress:1`, `collision:2`, `pickup:10`, `delivery:100`, `gate:30`, `formation:0.15` |
-| Root task settings | `formation_distance:3`, `respawn_seconds:4` |
+| `rewards` | `progress:1`, `distance_squared:1`, `wall_collision:100`, `collision:2` (vehicle/body contacts only), `pickup:10`, `delivery:100`, `gate:30`, `formation:0.15` (inactive outside tandem). Tandem defaults to `progress:1`, `gate:30`, `distance_squared:1`, `wall_collision:100`, `collision:2`, `formation:50`, and zero for all other terms, including `cargo.full_reward`; formation accepts values from 0 to 100 and explicit weights override the defaults. Harvest tasks allow `progress`, `distance_squared`, `catch`, and `wall_collision`; other reward terms remain disabled. |
+| Root task settings | `formation_distance:3`, optional `formation_pairs:[{"a":0,"b":1,"distance":5}]`, `respawn_seconds:4` |
 
 Bodies may have up to 32 convex vertices. The compiler validates geometry,
 finite values, ranges, simple boundaries, hole separation and body centers.
@@ -366,12 +398,53 @@ The working limits are 4096 bodies and 8192 worlds, also subject to a 512 MiB
 estimated working-memory guard. These are limits, not interactive performance
 targets. Snapshots never contain GPU assets or cached contact impulses.
 
-Automatic tethers attach to the nearest active cargo within range, using the
-current distance as the rest length. Tethers act between centers, not arbitrary
-local attachment points. Cargo inside a base is marked delivered and detached.
-Food respawns after its timer using the row's PRNG. Gates advance independently
-for each controlled body. The tandem overlay draws a forward virtual anchor;
-the reward penalizes deviation from the requested formation spacing.
+Automatic tethers attach to the nearest eligible active cargo within range, using
+the current distance as the rest length. Tethers act between centers, not arbitrary
+local attachment points. In retained-rock mode, cargo entering the inner base disk
+is marked delivered, all hooks detach, and the active/collidable rock cannot be
+targeted until it leaves every outer base zone. With retention disabled, cargo
+inside the full base radius is marked delivered and detached; `respawn:true` then
+uses seeded random placement. Food respawns after its timer using the row's PRNG.
+Tandem agents advance through the authored checkpoint order together. The shared
+stage is the minimum completed-checkpoint counter. Only agents at that stage
+earn crossing credit; leaders wait until everyone clears it.
+**Checkpoint proximity**, stored as `progress` (default 1), earns
+`weight × radius / (radius + mean_distance)` each physics frame. Average all
+controlled agents' centre distances to the shared active checkpoint, including
+those that already crossed. Staying nearby earns more; moving away lowers this
+positive reward without a negative penalty. Evaluate after movement using the
+frame's original shared target. Each crossing earns
+`gate / agent_count` (default 30 for the complete team). The next stage unlocks
+on the following physics frame; zero weights preserve tracking and synchronization.
+The shared active checkpoint has an amber ring and a crossed-agent count. Each
+crossing flashes green for 600 ms; the final arrival immediately highlights the
+next checkpoint while the completed one finishes flashing. Seeking and returning
+to live reset the flash baseline. Reduced motion or disabled animations keep
+the steady highlight/count but suppress flashes. These cues remain visible when
+diagnostic overlays are hidden, in both visual styles and camera views.
+Other tasks keep independent checkpoint progression. The tandem overlay draws a direct dashed line for
+every scored pair: two agents have one line, three have three, and four have six.
+Line colors show each unweighted pair score on a continuous rose/red (0), amber
+(0.5), and green (1) scale, with a matching **Pair quality** legend below
+**Tethers & formation**. Lines follow the displayed centres during live movement,
+paused updates, and replay; they use the same colors in both visual styles.
+Lines and legend appear only for tandem scenes with at least two controlled
+agents and the overlay enabled. They remain informative when the formation
+weight is zero. Physical tethers keep their existing rendering.
+The formation reward uses centre distances alone: each unordered controlled-body
+pair scores `target / (target + abs(target - actual))`, and the pair scores multiply.
+The engine adds `rewards.formation` times that product once per physics frame,
+independently of target progress. Perfect formation scores 1, including while
+stationary; fewer than two controlled bodies score 0. Squared travel and collision
+penalties remain separate terms.
+
+Pair overrides use indices into `bodies`, require distinct controlled bodies and
+distances in `[0.1, 1000]` metres, and reject duplicate or reversed pairs. Pairs
+without overrides use `formation_distance`; the tandem preset retains its 4 m
+target. Edit targets in complete scene JSON. Deletion removes affected overrides
+and remaps the rest; duplicating a group copies its internal pair overrides.
+Snapshot layouts and stored historical rewards are unchanged; future simulation
+uses the new reward formula and omitted-field defaults.
 
 This is a fixed-step custom solver, not an exact mechanics oracle. Conservative
 advancement has iteration/bounce caps, and dense contact configurations can
@@ -639,9 +712,16 @@ Save a selected body as an agent template; channel sliders support all compiled
 actuators. Keyboard W/S, A/D, Q/E and Space control drive, steering, strafe and
 braking on the selected controlled body, or the first agent. Mouse wheel zoom,
 side/overhead switching for flight scenes, 2D/3D switching for standard scenes,
-and **Follow agent** (selected body, or the first controlled agent), and
-middle/right-drag panning are available independently of diagnostics. **Whole
-arena** resets the camera.
+and **Follow agent** (selected body, or the first controlled agent) are available
+independently of diagnostics. Right-drag rotates and tilts the upright camera
+around the current center or followed agent. Left-drag pans outside Edit;
+middle-drag and Alt-drag pan in every mode. Rotation keeps following active;
+panning disengages it. Preset buttons snap to their original angles. **Whole
+arena** and **Reset view** restore the scene's initial angle, center, and zoom.
+Camera angles survive simulation updates, replay scrubbing, style changes,
+live reward changes, and resizing; loading or restarting a scene resets them.
+Near an edge-on flight view, rotate away from the edge before selecting, editing,
+or panning on the physics plane. Camera changes do not alter physics or recordings.
 
 The masthead's **Visual style** selector switches between **Futuristic** and
 **Steampunk** vehicles, props, scenery materials, lighting and interface accents.
@@ -849,4 +929,4 @@ normalized vector to the nearest refinery. Motion recordings accept the appended
 layout and record full, unloading/resumed, and empty events. Legacy recordings
 without cargo retain their original layout.
 
-Mining environments provide **Rock size (×)** from 0.1 to 2 and **Rock weight (×)** from 0.01 to 10. Asteroid harvesting also provides **Rock count** from 1 to 20; collaborative mining keeps one shared rock. Apply rock settings restarts paused and clears the run. Size scales collision geometry and visuals while weight scales mass. Delivered rocks respawn in clear space, reusing their existing body slots. These settings are saved with exported scenes.
+Mining environments provide **Rock size (×)** from 0.1 to 2 and **Rock weight (×)** from 0.01 to 10. Asteroid harvesting also provides **Rock count** from 1 to 20; collaborative mining keeps one shared rock. Both retain delivered rocks by default and offer **Keep delivered rocks**. Apply rock settings restarts paused and clears the run. Size scales collision geometry and visuals while weight scales mass. With retention disabled, delivered rocks respawn in seeded random clear space when their body has `respawn: true`, reusing their existing body slots. These settings are saved with exported scenes.

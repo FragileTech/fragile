@@ -10,6 +10,7 @@
 namespace fg::control {
 struct WaveConfig {
   uint32_t walkers = 128, horizon = 16, frames = 6, elites = 0;
+  DistanceMetric distance_metric = DistanceMetric::L2;
   float distance_coef = 1, reward_coef = 1, noise = .2f;
   bool cumulative = true, inertial = true;
   RecordingMode recording = RecordingMode::Full;

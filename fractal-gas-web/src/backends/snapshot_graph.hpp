@@ -22,6 +22,7 @@ struct SnapshotGraphBackend : SnapshotBackend {
   }
   void grow(Storage& s, int n) { s.resize(n); }
   void broadcast(const std::vector<char>& root, Storage& s, int n) { s.assign(n, root); }
+  bool best_candidate(const Storage& s, size_t i) const { return env.best_candidate(s[i]); }
   bool valid_slot(const Storage& s, size_t i) const { return !s[i].empty(); }
   void commit(Storage& from, size_t i, Storage& to, size_t j) { std::swap(to[j], from[i]); }
 };

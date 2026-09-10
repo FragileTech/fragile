@@ -16,7 +16,13 @@ import { AnimationClock } from "./animation-clock.js";
 import { labActionGuides } from "./action-guides.js";
 import { ActionEffects } from "./visuals/action-effects.js";
 import { CargoReadout } from "./visuals/cargo-readout.js";
+import { CheckpointPresentation } from "./visuals/checkpoints.js";
 import { arenaBounds, arenaHalfSpan } from "./camera-fit.js";
+import {
+  FormationOverlay,
+  FORMATION_GRADIENT,
+} from "./visuals/formation-overlay.js";
+import { dragOrbit, orbitPosition, presetOrbit } from "./camera-orbit.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -49,6 +55,23 @@ function prop(kind, style, radius = 1, color = palette.gold) {
 export class LabRenderer {
   constructor(canvas, { isEditing = () => false } = {}) {
     this.canvas = canvas;
+    this.checkpointMotion = canvas.ownerDocument.defaultView.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    );
+    this.checkpointMotionChanged = () =>
+      this.checkpoints?.setEnabled(
+        this.animationsEnabled && !this.checkpointMotion.matches,
+      );
+    this.checkpointMotion.addEventListener(
+      "change",
+      this.checkpointMotionChanged,
+    );
+    this.formationLegend =
+      canvas.ownerDocument.getElementById("formation-legend");
+    if (this.formationLegend)
+      this.formationLegend.querySelector(
+        ".formation-quality-ramp",
+      ).style.background = FORMATION_GRADIENT;
     this.actionGuidesEnabled = labActionGuides.enabled;
     this.unsubscribeActionGuides = labActionGuides.subscribe((enabled) => {
       this.actionGuidesEnabled = enabled;
@@ -119,6 +142,7 @@ export class LabRenderer {
     this.zoom = 1;
     this.top = false;
     this.flightMode = false;
+    this.orbit = presetOrbit(false, false);
     this.arena = arenaBounds({ size: [64, 44] });
     this.viewCenter = [32, 22];
     this.ray = new T.Raycaster();
@@ -135,7 +159,7 @@ export class LabRenderer {
       "wheel",
       (e) => {
         e.preventDefault();
-        this.clearPan();
+        this.clearCameraGesture();
         this.zoom = T.MathUtils.clamp(
           this.zoom * Math.exp(-e.deltaY * 0.001),
           0.6,
@@ -147,71 +171,85 @@ export class LabRenderer {
     );
     listen("contextmenu", (e) => e.preventDefault());
     listen("pointerdown", (e) => {
-      if (this.panGesture) return;
-      const shortcut =
-        e.button === 1 || e.button === 2 || (e.button === 0 && e.altKey);
-      if (!shortcut && (e.button !== 0 || isEditing())) return;
-      const anchor = this.worldPoint(e);
-      if (!anchor) return;
-      this.panGesture = {
+      if (this.cameraGesture) {
+        e.stopImmediatePropagation();
+        return;
+      }
+      const rotating = e.button === 2 && e.pointerType !== "touch";
+      const shortcut = e.button === 1 || (e.button === 0 && e.altKey);
+      if (!rotating && !shortcut && (e.button !== 0 || isEditing())) return;
+      const anchor = rotating ? null : this.worldPoint(e);
+      if (!rotating && !anchor) return;
+      this.cameraGesture = {
         id: e.pointerId,
+        kind: rotating ? "rotate" : "pan",
         anchor,
         x: e.clientX,
         y: e.clientY,
         dragging: false,
-        click: !shortcut,
+        click: !shortcut && !rotating,
       };
       canvas.setPointerCapture(e.pointerId);
-      if (shortcut) e.preventDefault();
+      if (shortcut || rotating) e.preventDefault();
       e.stopImmediatePropagation();
     });
     const move = (e) => {
-      const gesture = this.panGesture;
+      const gesture = this.cameraGesture;
       if (!gesture || gesture.id !== e.pointerId) return;
       if (
         !gesture.dragging &&
         Math.hypot(e.clientX - gesture.x, e.clientY - gesture.y) >= 4
       ) {
         gesture.dragging = true;
-        this.followBody = null;
-        canvas.classList.add("panning");
+        if (gesture.kind === "pan") this.followBody = null;
+        canvas.classList.add(gesture.kind === "pan" ? "panning" : "rotating");
         canvas.dispatchEvent(new Event("camerachange"));
       }
-      if (gesture.dragging) {
+      if (gesture.dragging && gesture.kind === "rotate") {
+        this.orbit = dragOrbit(
+          this.orbit,
+          e.clientX - gesture.x,
+          e.clientY - gesture.y,
+          this.flightMode && !this.top,
+        );
+        gesture.x = e.clientX;
+        gesture.y = e.clientY;
+        this.updateCamera();
+      } else if (gesture.dragging) {
         const point = this.worldPoint(e);
         if (point) {
           this.viewCenter = this.viewCenter.map(
             (v, i) => v + gesture.anchor[i] - point[i],
           );
-          this.resize();
+          this.updateCamera();
         }
       }
       e.stopImmediatePropagation();
     };
     listen("pointermove", move);
     listen("pointerup", (e) => {
-      const gesture = this.panGesture;
+      const gesture = this.cameraGesture;
       if (!gesture || gesture.id !== e.pointerId) return;
       move(e);
       const point =
         !gesture.dragging && gesture.click && !isEditing()
           ? this.worldPoint(e)
           : null;
-      this.clearPan();
+      this.clearCameraGesture();
       if (point)
         canvas.dispatchEvent(new CustomEvent("worldclick", { detail: point }));
     });
     for (const type of ["pointercancel", "lostpointercapture"])
       listen(type, (e) => {
-        if (this.panGesture?.id === e.pointerId) this.clearPan();
+        if (this.cameraGesture?.id === e.pointerId) this.clearCameraGesture();
       });
     this.animate = this.animate.bind(this);
     this.frame = requestAnimationFrame(this.animate);
   }
-  clearPan() {
-    const gesture = this.panGesture;
-    this.panGesture = null;
-    this.canvas.classList.remove("panning");
+  clearCameraGesture() {
+    const gesture = this.cameraGesture;
+    this.cameraGesture = null;
+    this.canvas.classList.remove("panning", "rotating");
     if (gesture && this.canvas.hasPointerCapture(gesture.id))
       this.canvas.releasePointerCapture(gesture.id);
   }
@@ -224,23 +262,26 @@ export class LabRenderer {
     this.camera.right = (span * width) / height;
     this.camera.top = span;
     this.camera.bottom = -span;
+    this.cargoReadout.resize(width, height);
+    this.updateCamera();
+  }
+  setViewPreset(top) {
+    this.clearCameraGesture();
+    this.top = top;
+    this.orbit = presetOrbit(top, this.flightMode && !top);
+    this.updateCamera();
+  }
+  updateCamera() {
     const side = this.flightMode && !this.top;
     this.coordinateFrame.rotation.x = side ? Math.PI / 2 : 0;
     this.plane.normal.set(0, side ? 1 : 0, side ? 0 : 1);
     this.plane.constant = 0;
-    if (side) {
-      this.camera.position.set(this.viewCenter[0], -90, this.viewCenter[1]);
-      this.camera.lookAt(this.viewCenter[0], 0, this.viewCenter[1]);
-    } else {
-      this.camera.position.set(
-        this.viewCenter[0],
-        this.viewCenter[1] - (this.top ? 0.001 : 45),
-        this.top ? 90 : 60,
-      );
-      this.camera.lookAt(this.viewCenter[0], this.viewCenter[1], 0);
-    }
+    const pose = orbitPosition(this.orbit, this.arena, this.viewCenter, side);
+    this.camera.position.set(...pose.position);
+    this.camera.lookAt(...pose.target);
+    this.camera.far = pose.far;
     this.camera.updateProjectionMatrix();
-    this.cargoReadout.resize(width, height);
+    this.camera.updateMatrixWorld(true);
     this.refreshCargoReadout();
   }
   worldPoint(event) {
@@ -254,11 +295,17 @@ export class LabRenderer {
       ),
       this.camera,
     );
+    if (
+      Math.abs(this.ray.ray.direction.dot(this.plane.normal)) <
+      Math.sin((5 * Math.PI) / 180) - 1e-12
+    )
+      return null;
     const p = this.ray.ray.intersectPlane(this.plane, new T.Vector3());
     return p ? [p.x, this.flightMode && !this.top ? p.z : p.y] : null;
   }
   setAnimationsEnabled(enabled) {
     this.animationsEnabled = !!enabled;
+    this.checkpointMotionChanged();
     this.animationClock.reset(this.simulationTime || 0);
     this.bodyLayer?.setAnimationsEnabled(this.animationsEnabled);
     this.worldDynamics?.setAnimationsEnabled(this.animationsEnabled);
@@ -312,10 +359,12 @@ export class LabRenderer {
   }
   load(scene, info, channels) {
     scene = harvestPresentation(scene, info);
-    this.clearPan();
+    this.clearCameraGesture();
     this.simulationTime = 0;
     this.animationPulseUntil = 0;
     this.animationClock.reset();
+    this.formationOverlay?.dispose();
+    this.checkpoints?.dispose();
     dispose(this.static);
     dispose(this.dynamic);
     dispose(this.overlays);
@@ -329,6 +378,7 @@ export class LabRenderer {
     this.cargoReadout.clear();
     this.flightMode = flightMode(scene);
     this.top = false;
+    this.orbit = presetOrbit(false, this.flightMode);
     this.size = scene.size || [64, 44];
     this.arena = arenaBounds(scene);
     this.viewCenter = [...this.arena.center];
@@ -348,9 +398,16 @@ export class LabRenderer {
     });
     this.models = this.bodyLayer.models;
     this.controlled = this.bodyLayer.controlled;
+    this.checkpoints = new CheckpointPresentation(scene, info, this.canvas);
+    this.coordinateFrame.add(this.checkpoints.group);
+    this.checkpointMotionChanged();
     this.tethers = new T.Group();
-    this.tandemTethers = new T.Group();
-    this.overlays.add(this.tethers, this.tandemTethers);
+    this.formationOverlay = new FormationOverlay(
+      scene,
+      this.controlled,
+      info[1],
+    );
+    this.overlays.add(this.tethers, this.formationOverlay.group);
     this.worldDynamics = new WorldDynamics(
       scene,
       info,
@@ -403,7 +460,8 @@ export class LabRenderer {
       ["bases", palette.green],
       ["gates", palette.gold],
     ])
-      for (const [i, def] of (kind === "gates" && scenery.replacesGates
+      for (const [i, def] of (kind === "gates" &&
+      (scenery.replacesGates || (scene.task === "tandem" && this.info?.[2]))
         ? []
         : scene[kind] || []
       ).entries()) {
@@ -624,12 +682,13 @@ export class LabRenderer {
     sprite.scale.set(size, (size * 80) / 512, 1);
     parent.add(sprite);
   }
-  update(state, action) {
+  update(state, action, { discontinuity = false } = {}) {
     if (!this.info) return;
     this.state = state;
+    this.checkpoints?.update(state, { discontinuity });
+    this.checkpoints?.project(this.camera);
     this.action = action;
-    const n = this.models.length,
-      bits = new Uint32Array(state.buffer, state.byteOffset, state.length);
+    const bits = new Uint32Array(state.buffer, state.byteOffset, state.length);
     this.bodyLayer.update(state, action);
     this.scenery.update?.(state, this.info);
     this.models.forEach((mesh, i) => {
@@ -640,7 +699,7 @@ export class LabRenderer {
     if (this.followBody != null) {
       const model = this.models[this.followBody];
       this.viewCenter = [model.position.x, model.position.y];
-      this.resize();
+      this.updateCamera();
     }
     this.worldDynamics.update(state, action);
     this.worldDynamics.pickupBatch.updateLod(
@@ -670,30 +729,7 @@ export class LabRenderer {
       animateWorld(reactor, this.simulationTime, {
         enabled: this.animationsEnabled,
       });
-    dispose(this.tandemTethers);
-    if (this.config.task === "tandem" && this.controlled.length >= 2) {
-      const points = this.controlled.map((b) => [
-        state[8 + b],
-        state[8 + n + b],
-        0.3,
-      ]);
-      const center = points.reduce(
-        (s, p) => s.map((v, k) => v + p[k] / points.length),
-        [0, 0, 0],
-      );
-      const gate = this.config.gates?.[
-        bits[this.info[6]] % this.config.gates.length
-      ]?.position || [center[0] + 3, center[1]];
-      const d = Math.hypot(gate[0] - center[0], gate[1] - center[1]) || 1;
-      const anchor = [
-        center[0] + ((gate[0] - center[0]) * 3) / d,
-        center[1] + ((gate[1] - center[1]) * 3) / d,
-        0.3,
-      ];
-      this.tandemTethers.add(
-        line([points[0], anchor, points[1], points[0]], palette.gold, true),
-      );
-    }
+    this.formationOverlay.update(state);
     if (bits[4] !== this.delivered) {
       this.deliveryFlash = performance.now();
       this.delivered = bits[4];
@@ -793,8 +829,10 @@ export class LabRenderer {
       this.cloudGroup.visible = this.layers.cloud;
       this.hulls.visible = this.layers.geometry;
       this.tethers.visible = this.layers.tethers;
-      this.tandemTethers.visible = this.layers.tethers;
     }
+    this.formationOverlay?.setVisible(this.layers.tethers);
+    if (this.formationLegend)
+      this.formationLegend.hidden = !this.formationOverlay?.group.visible;
   }
   clearDraft() {
     if (this.draftGroup) {
@@ -887,25 +925,43 @@ export class LabRenderer {
     }
   }
   focus(body = null) {
-    this.clearPan();
+    if (body == null) return this.resetView();
+    this.clearCameraGesture();
     this.followBody = body;
-    this.viewCenter =
-      body == null
-        ? [...this.arena.center]
-        : [this.models[body].position.x, this.models[body].position.y];
-    this.zoom = body == null ? 1 : 7;
+    this.viewCenter = [
+      this.models[body].position.x,
+      this.models[body].position.y,
+    ];
+    this.zoom = 7;
+    this.resize();
+    this.canvas.dispatchEvent(new Event("camerachange"));
+  }
+  resetView() {
+    this.clearCameraGesture();
+    this.followBody = null;
+    this.viewCenter = [...this.arena.center];
+    this.zoom = 1;
+    this.top = false;
+    this.orbit = presetOrbit(false, this.flightMode);
     this.resize();
     this.canvas.dispatchEvent(new Event("camerachange"));
   }
   dispose() {
     this.disposed = true;
-    this.clearPan();
+    this.clearCameraGesture();
     this.inputController.abort();
     this.unsubscribeStyle();
     this.unsubscribeAnimations();
     this.unsubscribeActionGuides();
     this.actionReadout.remove();
     this.cargoReadout.dispose();
+    this.checkpoints?.dispose();
+    this.checkpointMotion.removeEventListener(
+      "change",
+      this.checkpointMotionChanged,
+    );
+    this.formationOverlay?.dispose();
+    if (this.formationLegend) this.formationLegend.hidden = true;
     this.canvas.removeEventListener(
       "webglcontextrestored",
       this.restoreContext,
@@ -929,6 +985,8 @@ export class LabRenderer {
       visible && this.animationsEnabled,
     );
     if (!visible) return;
+    this.checkpoints?.paint(time);
+    this.checkpoints?.project(this.camera);
     this.bodyLayer?.updateLod(this.camera, this.canvas.clientHeight);
     this.scenery?.updateLod?.(this.camera, this.canvas.clientHeight);
     this.worldDynamics?.pickupBatch.updateLod(

@@ -104,6 +104,12 @@ class Wave {
       const int injected = std::min(elites, elite.N);
       for (int i = 0; i < injected; ++i) mask_[static_cast<size_t>(i)] = 0;
     }
+    if (cloning.diagnostics.enabled)
+      for (int i = 0; i < n; ++i) {
+        auto& d = cloning.diagnostics.decisions[i];
+        d.elite_protected = has_elite && i < std::min(elites, elite.N);
+        d.cloned = mask_[i];
+      }
     uint32_t iteration = metrics.iteration + 1;
     metrics = {};
     metrics.iteration = iteration;

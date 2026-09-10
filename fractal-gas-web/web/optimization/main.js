@@ -93,6 +93,7 @@ const defaults = {
   clone_every: 1,
   reward_coef: 1,
   distance_coef: 1,
+  distance_metric: "l2",
   epsilon: 0.1,
   clone_epsilon: 0.1,
   lambda_alg: 0,
@@ -235,6 +236,8 @@ function algorithmFields(values = {}) {
   const content = document.createElement("div");
   details.append(summary, content);
   panel.append(details);
+  if (["wave", "graph", "fmc", "wave_jump"].includes(algorithm))
+    content.append(selectInput("distance_metric", "Observation distance", values.distance_metric ?? "l2", [["l2", "L2"], ["cosine", "Cosine"]]));
   const common = [
     ["reward_coef", "Reward exponent", 0, 10],
     ["distance_coef", "Distance exponent", 0, 10],

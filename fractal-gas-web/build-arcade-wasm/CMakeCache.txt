@@ -268,8 +268,10 @@ CMAKE_STRIP:FILEPATH=/usr/bin/strip
 //Path to a program.
 CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 
-//The CMake toolchain file
-CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
+//Path to a CMake toolchain file, read early in the CMake run,
+// that specifies the compilers, toolchain utilities, and target-platform
+// information used when cross-compiling.
+CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -292,6 +294,9 @@ FG_CONTROL_ONLY:BOOL=OFF
 
 //Enable pthreads in the laboratory WebAssembly build
 FG_CONTROL_THREADS:BOOL=OFF
+
+//Build the standalone LLM laboratory
+FG_LLM_ONLY:BOOL=OFF
 
 //Build the standalone optimization laboratory
 FG_OPTIMIZATION_ONLY:BOOL=OFF
@@ -454,7 +459,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELEASE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO
 CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

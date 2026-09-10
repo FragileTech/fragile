@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
 
-const base = process.env.ARCADE_TEST_URL || "http://127.0.0.1:8091/web/";
+const base = process.env.ARCADE_TEST_URL || "http://127.0.0.1:8091/web/arcade.html";
 const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
 try {
   const page = await browser.newPage();

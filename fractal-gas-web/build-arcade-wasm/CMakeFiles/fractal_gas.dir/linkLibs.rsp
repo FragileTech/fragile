@@ -1,1 +1,1 @@
- libfractal_gas_core.a "ale-build/src/ale/libale.a" libnes_core.a libfg_swarm_core.a libfg_numeric_core.a "/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libz.a" 
+ libfractal_gas_core.a "ale-build/src/ale/libale.a" libnes_core.a libfg_swarm_core.a libfg_fractal_core.a "/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libz.a" 

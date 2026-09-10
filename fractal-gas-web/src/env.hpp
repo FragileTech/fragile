@@ -37,6 +37,8 @@ class BatchEnv {
  public:
   virtual ~BatchEnv() = default;
 
+  // An environment can exclude unscored roots from best-result selection.
+  virtual bool best_candidate(const std::vector<char>&) const { return true; }
   virtual int32_t n_actions() const = 0;
   virtual int32_t obs_dim() const = 0;
 

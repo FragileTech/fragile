@@ -227,21 +227,23 @@ export function circuitEnvironment(scene, { style = "futuristic" } = {}) {
     sponsor.position.set(...position, 0.01);
     group.add(sponsor);
   }
-  const markers = (scene.gates || []).map((gate, i) => {
-    const circle = new T.Mesh(
-      new T.RingGeometry(gate.radius - 0.05, gate.radius, 48),
-      new T.MeshBasicMaterial({
-        color: 0xc6a0d6,
-        transparent: true,
-        opacity: 0.2,
-        depthWrite: false,
-      }),
-    );
-    circle.position.set(...gate.position, 0.04);
-    circle.name = `Checkpoint ${i + 1}`;
-    group.add(circle);
-    return circle;
-  });
+  const markers = (scene.task === "tandem" ? [] : scene.gates || []).map(
+    (gate, i) => {
+      const circle = new T.Mesh(
+        new T.RingGeometry(gate.radius - 0.05, gate.radius, 48),
+        new T.MeshBasicMaterial({
+          color: 0xc6a0d6,
+          transparent: true,
+          opacity: 0.2,
+          depthWrite: false,
+        }),
+      );
+      circle.position.set(...gate.position, 0.04);
+      circle.name = `Checkpoint ${i + 1}`;
+      group.add(circle);
+      return circle;
+    },
+  );
   return {
     group,
     replacesGates: true,

@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o"
-  "CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o.d"
   "CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o"
   "CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o.d"
   "CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o"

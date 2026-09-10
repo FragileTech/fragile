@@ -27,8 +27,11 @@ scene customization in {doc}`control_lab_scenes`.
 Choose **Asteroid harvesting** from **Environment**, wait for the backend to become
 ready, and press **↺** (Reset). This removes any movement from the initial page
 load. The shipped scene presents the flight side-on, with downward gravity; use
-**Side / overhead** to compare that view with the overhead map. Scroll to
-zoom; middle/right-drag or Alt-drag pans. These camera operations preserve physics.
+**Side / overhead** to snap between those preset angles. Scroll to zoom,
+right-drag to rotate and tilt the camera, and middle-drag or Alt-drag to pan.
+**Follow agent** keeps your chosen angle as the rocket moves. **Whole arena** and
+**Reset view** restore the scene's initial angle, arena center, and default zoom.
+These camera operations preserve physics.
 
 The scene occupies a 64-by-44 world-coordinate rectangle, but its irregular outer
 boundary encloses a smaller playable region. The rocket starts at `[16, 16]`.
@@ -55,10 +58,16 @@ The central polygon is a hole in the arena, not a shortcut. The gravity well at 
 and softening 3. Softening moderates the field near its center, but does not remove
 its pull.
 
-Enable **Collision geometry** to see the physical boundaries. The preset has
-lethal walls, including the hole boundary: a controlled rocket's wall collision
-can end the episode. Body collisions are not configured as lethal in this scene,
-but bumping a rock can still spoil an approach or throw the tow toward a wall.
+Enable **Collision geometry** to see the physical boundaries. All shipped presets
+start with wall death disabled and a wall collision penalty of **100**. To make wall
+contact terminal, enable **Setup > World physics > Die on wall collision**
+(`physics.lethal_walls`) and choose **Apply and restart**. Contact by any controlled
+vehicle with an outer wall or hole boundary then ends the whole world, with the
+wall penalty still charged on that frame. Passive cargo and hooks trigger neither
+wall penalties nor wall death. Older imported scenes that explicitly set
+`physics.lethal_walls` to `true` retain that behavior. Body collisions are not
+configured as lethal in this scene, but bumping a rock can still spoil an approach
+or throw the tow toward a wall.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/harvest-overview.png
@@ -101,7 +110,7 @@ will always deliver cargo with these settings.
    Use **Pause experiment** to inspect an approach, attachment, or apparent stall.
 7. Watch the hook acquire a rock, then watch for an increase in the delivery counter.
    The hook and its rocket cable are visible even before a catch.
-   If the episode ends at a wall, pause and inspect the last frames before reset.
+   If wall death is enabled and the episode ends at a wall, inspect the last frames before reset.
    A failed run still provides the information needed to diagnose the maneuver.
 
 **Walkers** counts candidate worlds, each containing the rocket, its hook, and all
@@ -158,7 +167,8 @@ Older scene definitions that omit this setting also use the disabled behavior.
 There is no special automatic victory termination after the first delivery; the
 experiment runner's chosen success criterion is a separate stopping rule.
 
-Harvesting uses three reward terms, evaluated once per physics frame:
+Harvesting allows four reward terms: `progress`, `distance_squared`, `catch`, and
+`wall_collision`, evaluated once per physics frame:
 
 - With an empty hook, progress is the reduction in distance from that hook to the
   nearest eligible active asteroid.
@@ -166,14 +176,26 @@ Harvesting uses three reward terms, evaluated once per physics frame:
   to the nearest discharge-zone center. Moving away gives negative progress.
 - Each catch adds **10**, including a catch after a break. The baseline adds the
   mean squared displacement of the controlled rockets during that frame.
+- Each controlled vehicle touching an outer wall or hole boundary costs **100** by
+  default. The penalty is charged once per vehicle per physics frame: sustained
+  contact costs again every frame, while corners and repeated physics substeps
+  add no extra charge within that frame.
 
 Progress and the squared movement baseline both have default weight **1**. Progress
 is averaged over controlled vehicles, while catch bonuses are summed. Progress
 compares the same attachment phase before and after physics; catches, deliveries,
 and respawns are handled afterward, so switching targets or respawning cargo does
 not create a distance-reduction bonus. The catch bonus is editable in the reward
-controls. No collision penalty, delivery bonus, unrestricted hooked-rock travel,
-or other reward term contributes to harvesting.
+controls. The separate `rewards.collision` term covers vehicle/body contacts only
+and remains disabled for harvesting. No delivery bonus, unrestricted hooked-rock
+travel, or other reward term contributes to harvesting.
+
+Set **Rewards > Wall collision penalty** (`rewards.wall_collision`) anywhere from
+**0** to **10000**, then choose **Apply to current run** to change it live while
+preserving the run state. This term applies to every Control Lab task, including
+harvesting, mining, and older imported scenes. When an older scene omits the term,
+the new default of **100** affects future or resimulated rewards; historical stored
+records are not rewritten, and the snapshot layout is unchanged.
 
 A positive reward total does not prove a delivery: approach, catches, and rocket
 movement can all add reward earlier. Use the delivery counter to answer “did ore
@@ -266,11 +288,11 @@ for device-backed recording and planner checkpoints.
 | An empty hook changes rocket motion | This is expected: the hook has mass and transmits loads through its cable. Check **Hook mass** and watch its swing before increasing thrust. |
 | The rocket reaches the base but deliveries stay at zero | Follow the attached rock. With **Keep delivered rocks** enabled, its center must enter the inner radius-1.5 disk; the rocket's position is insufficient. |
 | The rocket keeps moving after zero thrust | Momentum and gravity remain. In manual mode, advance zero-input frames to observe coasting, or turn and thrust against motion. |
-| Motion stops and Run does not continue | Inspect terminal status and the last recorded wall contact. Reset starts another episode; camera changes cannot revive a terminal world. |
+| Motion stops and Run does not continue | Inspect terminal status. If **Die on wall collision** is enabled, check the last controlled-vehicle wall contact. Reset starts another episode; camera changes cannot revive a terminal world. |
 | The cloud reaches the base but actual motion does not | The cloud contains predictions. Inspect the solid bodies and **WORLD REPLAY** for executed motion. |
 | Delivered cargo remains near the base but cannot be hooked | With **Keep delivered rocks** enabled, this is expected. Its center must leave every outer radius-3 zone before it becomes eligible again. |
 | Cargo vanishes near the base | Check **Keep delivered rocks** and the delivery counter. With retention disabled, stock cargo respawns after delivery; its relocation does not earn progress reward. |
 | Keyboard input seems ineffective | Enable **Keyboard control**, click outside form fields, and check that the selected body is the controlled rocket. |
-| A settings adjustment lost the trajectory | Many settings rebuild the scene, although **Hook mass** changes live. Export the next run before changing other fields; use a reopened recording to revisit an earlier trial. |
+| A settings adjustment lost the trajectory | **Die on wall collision** requires **Apply and restart**. **Wall collision penalty** uses **Apply to current run** and preserves state, as do live **Hook mass** changes. Export the run before changing settings that restart it; use a reopened recording to revisit an earlier trial. |
 | Reward rises without experiment success | Check the selected metric. Progress reward can increase without a cargo delivery; success also requires a nonterminal world. |
 :::

@@ -29,9 +29,10 @@
         >
       </a>
       <nav class="app-nav" aria-label="Laboratory navigation">
-        <a href="../">Arcade</a>
+        <a href="../arcade.html">Arcade</a>
         <span class="nav-active is-active" aria-current="page">Control Lab</span>
         <a href="../optimization/">Optimization Lab</a>
+        <a href="../llm/">LLM Lab</a>
         <a href="./asset-gallery.html">Models</a>
         <a href="../docs/lab/" target="_blank" rel="noopener noreferrer"
           >User guide ↗</a
@@ -99,6 +100,7 @@
         <label class="field" data-help="Number of vehicles in the live world, from 1 to 128. This differs from the planner population of candidate worlds. Apply and restart changes the count after saving the current run."
           >Vehicle count<input id="ants-vehicle-count" type="number" min="1" max="128" step="1" value="5" required /></label>
         <p class="scenario-description">Vehicle changes are staged. Apply and restart when ready.</p>
+        <label class="check" data-help="End the entire run when any controlled vehicle touches an arena wall or obstacle boundary. Cargo and hooks do not count. Independent of the wall penalty. Apply and restart commits this setting."><input id="lethal-walls" type="checkbox" /> Die on wall collision</label>
         <div id="flight-controls">
           <label id="flight-control" class="check flight-toggle" data-help="Apply downward gravity and use propulsors to stay aloft. When the scene has no explicit override, the lab detects flight automatically from controlled rockets and drones. This stages a flight override; Apply and restart commits it.">
             <input id="flight-mode" type="checkbox" aria-describedby="flight-mode-state" disabled />
@@ -252,11 +254,15 @@
         ><label class="check" data-help="Show the cloud of candidate future states returned by the controller."
           ><input id="layer-cloud" type="checkbox" checked /> Future-state cloud
           <span class="swatch cyan"></span></label
-        ><label class="check" data-help="Show tether constraints and formation links between bodies."
+        ><label class="check" data-help="Show physical tethers and a dashed line for every formation pair. Color shows each pair's target-distance score from 0 to 1; the pair scores multiply into the formation score."
           ><input id="layer-tethers" type="checkbox" checked />
           Tethers & formation
-          <span class="swatch violet"></span></label
-        ><label class="check" data-help="Show collision boundaries and physical geometry used by the engine."
+          <span class="swatch violet"></span></label>
+        <div id="formation-legend" class="formation-legend" hidden>
+          <span class="formation-quality-ramp" aria-hidden="true"></span>
+          <span>Pair quality: 0 — 0.5 — 1 · Perfect</span>
+        </div>
+        <label class="check" data-help="Show collision boundaries and physical geometry used by the engine."
           ><input id="layer-geometry" type="checkbox" /> Collision geometry
           <span class="swatch gold"></span
         ></label>
@@ -278,7 +284,7 @@
             ><button id="clean" title="Toggle all diagnostic layers" data-help="Temporarily hide or restore diagnostic overlays so the world movement is easier to inspect.">
               Clean view</button
             ><button id="focus" data-help="Keep the camera centered on the selected or best agent.">Follow agent</button
-            ><button id="reset-view" title="Restore the centered whole-arena view">Reset view</button
+            ><button id="reset-view" title="Restore the initial angle, arena center, and zoom">Reset view</button
             ><button id="experiments" data-help="Compare controller variants on fixed seeds or fork the current world into independent outcomes.">Experiments</button
             ><button id="edit" data-help="Open the scene editor to place agents, geometry, pickups, tethers, and reusable agent types.">Edit scene</button>
           </div>
@@ -299,7 +305,7 @@
           <div id="status" role="status" aria-live="polite">
             Compiling possible futures…
           </div>
-          <div class="camera-hint">Scroll to zoom · Drag to pan</div>
+          <div class="camera-hint">Scroll to zoom · Left-drag to pan · Right-drag to rotate</div>
           <div class="compass"><span>Y</span><i></i><span>X</span></div>
           <div class="legend">
             <span><i class="green"></i>High reward</span
@@ -430,7 +436,7 @@
         </div>
         <p>
           Shift-click to select several entities. Drag to move the selection.
-          Middle/right-drag to pan. Changes edit a draft; Apply and restart commits them.
+          Right-drag to rotate. Middle-drag or Alt-drag to pan. Changes edit a draft; Apply and restart commits them.
         </p>
         <label class="field" data-help="Choose what a click in the world creates or selects. Agent uses the selected reusable agent type; polygon tools compile geometry after Finish polygon."
           >Tool<select id="tool">

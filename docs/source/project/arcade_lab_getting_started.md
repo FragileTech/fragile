@@ -144,7 +144,7 @@ python3 serve.py 8091
 
 :::{div} feynman-prose
 With the default command, open
-[http://localhost:8000/web/](http://localhost:8000/web/). The server adds
+[http://localhost:8000/web/arcade.html](http://localhost:8000/web/arcade.html). The server adds
 `Cross-Origin-Opener-Policy: same-origin` and
 `Cross-Origin-Embedder-Policy: require-corp`, and it serves `.wasm` and module
 files with the MIME types the browser expects.
@@ -168,7 +168,7 @@ photographs the resulting workspace. From the repository root, run:
 :::
 
 ```bash
-ARCADE_DOC_URL=http://127.0.0.1:8091/web/ ARCADE_SCREENSHOTS=docs/_static/arcade_lab npm --prefix fractal-gas-web run capture:arcade-docs
+ARCADE_DOC_URL=http://127.0.0.1:8091/web/arcade.html ARCADE_SCREENSHOTS=docs/_static/arcade_lab npm --prefix fractal-gas-web run capture:arcade-docs
 ```
 
 :::{div} feynman-prose

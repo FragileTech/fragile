@@ -6,6 +6,9 @@
 
 namespace fg::optimization {
 Settings::Settings(const Json& input) : json(input) {
+  distance_metric = parse_distance_metric(input["distance_metric"].str("l2"));
+  json.object["distance_metric"].kind = Json::String;
+  json.object["distance_metric"].string = distance_metric_name(distance_metric);
   auto i = [&](const char* k, int f, int lo, int hi) {
     int v = integer(json[k], f, lo, hi, k);
     json.object[k] = number(v);

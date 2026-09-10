@@ -1,7 +1,7 @@
 # Shared emulator-independent numerical and swarm libraries.
 find_package(Threads REQUIRED)
 add_library(fg_fractal_core STATIC
-  src/fractal/tensor_ops.cpp src/fractal/cloning.cpp src/thread_pool.cpp
+  src/fractal/distance.cpp src/fractal/tensor_ops.cpp src/fractal/cloning.cpp src/thread_pool.cpp
   src/fractal/exploration_tree.cpp src/fractal/visit_grid.cpp)
 add_library(fg_numeric_core ALIAS fg_fractal_core)
 target_include_directories(fg_fractal_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -17,7 +17,7 @@ foreach(target fg_fractal_core fg_swarm_core)
   endif()
   if(EMSCRIPTEN)
     target_compile_options(${target} PRIVATE -fexceptions -msimd128)
-    if(FG_CONTROL_THREADS OR (NOT FG_CONTROL_ONLY AND NOT FG_OPTIMIZATION_ONLY))
+    if(FG_CONTROL_THREADS OR (NOT FG_CONTROL_ONLY AND NOT FG_OPTIMIZATION_ONLY AND NOT FG_LLM_ONLY))
       target_compile_options(${target} PUBLIC -pthread)
       target_link_options(${target} PUBLIC -pthread)
     endif()

@@ -1,0 +1,2 @@
+/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/emar qc libfg_fractal_core.a CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o
+/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/emranlib libfg_fractal_core.a

@@ -73,6 +73,7 @@ class ExistingSwarm final : public Algorithm {
       FractalGasParams a;
       a.N = s.walkers;
       a.seed = s.seed;
+      a.distance_metric = s.distance_metric;
       a.dist_coef = float(s.distance_coef);
       a.reward_coef = float(s.reward_coef);
       a.use_cumulative_reward = true;
@@ -102,6 +103,7 @@ class ExistingSwarm final : public Algorithm {
       a.min_leafs = s.walkers;
       a.max_walkers = s.max_walkers;
       a.seed = s.seed;
+      a.distance_metric = s.distance_metric;
       a.dist_coef = float(s.distance_coef);
       a.reward_coef = float(s.reward_coef);
       a.dt_min = s.dt_min;

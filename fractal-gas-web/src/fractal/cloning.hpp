@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "fractal/rng.hpp"
+#include "fractal/diagnostics.hpp"
 #include "fractal/tensor_ops.hpp"
 
 namespace fg {
@@ -22,6 +23,8 @@ class ThreadPool;
 
 class FractalCloningOperator {
  public:
+  mutable CloneDiagnostics diagnostics;
+  DistanceMetric distance_metric = DistanceMetric::L2;
   float dist_coef = 1.0f;
   float reward_coef = 1.0f;
   bool use_cumulative_reward = false;

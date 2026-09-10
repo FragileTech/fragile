@@ -100,6 +100,8 @@ class FractalTree final : public SwarmAlgorithm {
   FractalTree(BatchEnv& env, FractalTreeParams params, std::unique_ptr<Rng> rng = nullptr,
               std::unique_ptr<FractalTreeSampler> sampler = nullptr);
 
+  void enable_diagnostics(bool enabled = true) { core_.diagnostics.enabled = enabled; }
+  const CloneDiagnostics& diagnostics() const { return core_.diagnostics; }
   const FractalTreeParams& params() const { return params_; }
   const TreeState& state() const { return state_; }
   const VisitGrid& visits() const { return visits_; }
@@ -134,6 +136,7 @@ class FractalTree final : public SwarmAlgorithm {
   int64_t total_frames() const override { return total_frames_; }
   int32_t iteration_count() const override { return iteration_; }
 
+  void set_distance_metric(DistanceMetric v) override { params_.distance_metric = v; }
   void set_dist_coef(float v) override { params_.dist_coef = v; }
   void set_reward_coef(float v) override { params_.reward_coef = v; }
   void set_dt_range(int32_t lo, int32_t hi) override {

@@ -117,27 +117,27 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.s"
 	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/fractal_tree.cpp -o CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.s
 
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o: CMakeFiles/fg_swarm_core.dir/flags.make
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o: CMakeFiles/fg_swarm_core.dir/includes_CXX.rsp
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o: /home/guillem/fragile/fractal-gas-web/src/visit_grid.cpp
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o: CMakeFiles/fg_swarm_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o -MF CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o.d -o CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/visit_grid.cpp
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fg_swarm_core.dir/flags.make
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fg_swarm_core.dir/includes_CXX.rsp
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o: /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fg_swarm_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o"
+	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o -MF CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o.d -o CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp
 
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.i"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/visit_grid.cpp > CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.i
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.i"
+	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp > CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.i
 
-CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.s"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/visit_grid.cpp -o CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.s
+CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.s"
+	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp -o CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.s
 
 # Object files for target fg_swarm_core
 fg_swarm_core_OBJECTS = \
 "CMakeFiles/fg_swarm_core.dir/src/walker_state.cpp.o" \
 "CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o" \
 "CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o" \
-"CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o"
+"CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o"
 
 # External object files for target fg_swarm_core
 fg_swarm_core_EXTERNAL_OBJECTS =
@@ -145,7 +145,7 @@ fg_swarm_core_EXTERNAL_OBJECTS =
 libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/src/walker_state.cpp.o
 libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o
 libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o
-libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o
+libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o
 libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/build.make
 libfg_swarm_core.a: CMakeFiles/fg_swarm_core.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libfg_swarm_core.a"

@@ -527,6 +527,34 @@ details .field {
   border-radius: 50%;
   margin-left: auto;
 }
+.checkpoint-readout {
+  position: absolute;
+  transform: translateX(-50%);
+  pointer-events: none;
+  padding: 4px 8px;
+  border: 1px solid #ffce7080;
+  border-radius: 5px;
+  background: #15121bea;
+  color: #ffce70;
+  font: 11px var(--mono);
+  white-space: nowrap;
+  z-index: 2;
+}
+.formation-legend {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 14px 23px;
+  color: var(--muted);
+  font: 10px var(--mono);
+}
+.formation-legend[hidden] {
+  display: none;
+}
+.formation-quality-ramp {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+}
 .green {
   background: #7bffc1;
 }
@@ -1420,7 +1448,7 @@ dialog .control-heading {
 
 /* Camera gestures are available outside the scene editor. */
 body:not(.editing) #world { cursor: grab; }
-body #world.panning { cursor: grabbing; }
+body #world.panning, body #world.rotating { cursor: grabbing; }
 #world { touch-action: none; }
 .camera-hint {
   position: absolute;

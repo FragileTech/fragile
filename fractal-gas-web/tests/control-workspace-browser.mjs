@@ -120,6 +120,21 @@ try {
   await page.waitForTimeout(80);
   assert.equal(await tick(), blur);
   await page.locator("#mode-inspect").click();
+  const cameraBox = await page.locator("#world").boundingBox();
+  await page.mouse.move(
+    cameraBox.x + cameraBox.width / 2,
+    cameraBox.y + cameraBox.height / 2,
+  );
+  await page.mouse.down({ button: "right" });
+  await page.mouse.move(
+    cameraBox.x + cameraBox.width / 2 + 55,
+    cameraBox.y + cameraBox.height / 2 - 25,
+  );
+  await page.mouse.up({ button: "right" });
+  const orbit = await page.evaluate(() => ({
+    ...workspaceTest.renderer.orbit,
+  }));
+  assert.notEqual(orbit.yaw, 0);
   console.log("Continuous driving and focus-loss pause passed");
   await page.locator("#tab-rewards").click();
   await page.locator("#reward-settings").evaluate((e) => (e.open = true));
@@ -131,11 +146,19 @@ try {
     () => workspaceTest.getScene().rewards?.delivery === 150,
   );
   assert.equal(await tick(), beforeReward);
+  assert.deepEqual(
+    await page.evaluate(() => workspaceTest.renderer.orbit),
+    orbit,
+  );
   assert.equal(
     await page.evaluate(() => workspaceTest.replay.recording.id),
     runId,
   );
   await page.locator("#motion-timeline").fill("1");
+  assert.deepEqual(
+    await page.evaluate(() => workspaceTest.renderer.orbit),
+    orbit,
+  );
   await page.locator("#motion-resume").click();
   await page.waitForFunction(
     (old) =>

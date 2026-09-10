@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "rewards": {
+    "wall_collision": 100
+  },
   "name": "Fearless Circuit \u00b7 kart racing",
   "task": "navigation",
   "description": "Linked bends, a deep left hairpin, and a tightening right-hand section reward patient corner entries.",

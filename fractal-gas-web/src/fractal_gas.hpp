@@ -22,6 +22,7 @@ namespace fg {
 
 struct FractalGasParams {
   int32_t N = 32;
+  DistanceMetric distance_metric = DistanceMetric::L2;
   float dist_coef = 1.0f;
   float reward_coef = 1.0f;
   bool use_cumulative_reward = false;
@@ -55,6 +56,8 @@ class FractalGas final : public SwarmAlgorithm {
              std::unique_ptr<FractalCloningOperator> clone_op = nullptr,
              std::unique_ptr<RandomActionOperator> kinetic_op = nullptr);
 
+  void enable_diagnostics(bool enabled = true) { clone_op_->diagnostics.enabled = enabled; }
+  const CloneDiagnostics& diagnostics() const { return clone_op_->diagnostics; }
   const FractalGasParams& params() const { return params_; }
   const WalkerState& state() const { return state_; }
   const std::vector<int32_t>& fitness_companions() const { return core_.fitness_companions(); }
@@ -63,6 +66,10 @@ class FractalGas final : public SwarmAlgorithm {
   const ExplorationTree& exploration_tree() const { return exploration_tree_; }
 
   // Live-tunable parameters (used by the web demo's sidebar).
+  void set_distance_metric(DistanceMetric v) override {
+    params_.distance_metric = v;
+    clone_op_->distance_metric = v;
+  }
   void set_dist_coef(float v) override {
     params_.dist_coef = v;
     clone_op_->dist_coef = v;

@@ -53,6 +53,7 @@ of its thrust countering gravity before that thrust can produce upward accelerat
 | **Environment** | Choose a preset from the scene catalog. | Stages the chosen scene; **Apply and restart** loads it paused after preserving the current run. |
 | **Flight override** (`environment.flight`) | Omitted/null, `true`, or `false` | Omitted/null auto-detects flight from a controlled `flight_capable` body; `true` enables flight; `false` disables it. |
 | **Downward gravity** (`environment.downward_gravity`) | 9.81 m/s²; scene value | Downward acceleration used in flight mode. A rocket or drone's propulsion must counter it to climb or hover. |
+| **Die on wall collision** (`physics.lethal_walls`) | Off in all shipped presets; under **Setup → World physics** | When enabled, any controlled vehicle touching an outer wall or hole boundary ends the whole world. **Apply and restart** commits this physics setting. |
 | **Vehicle type** | Choose **Rockets**, **Drones**, **Karts**, or **Harvesters** in any environment or racing track. | Stages physics and visuals for all controlled vehicles while preserving other world edits. **Apply and restart** commits the fleet change paused. Each preset keeps its default until you choose a type. |
 | **Vehicle count** | Set the vehicle count to a whole number from 1 to 128 in any environment. | Starts from the preset's count. Stages a fleet change for **Apply and restart**; invalid entries leave the active scene intact. |
 | **Problem properties** | Set each controlled agent type's action multiplier from `0×` to `10×`, independently for every compiled degree of freedom. | `1×` keeps the native range; `0×` disables a channel; larger values expand the action range and its built-in physical output. **Apply and restart** commits the draft values to the scene's agent type properties and rebuilds paused. |
@@ -72,7 +73,9 @@ starting positions, world edits, rocks, tethers, rewards, and environment settin
 An explicit **Flight mode** choice remains in effect; automatic mode detects
 flight for rockets and drones. **Restart** retains the current scene.
 
-Imported scenes load unchanged. A mixed or unrecognized fleet displays the
+Imported scenes preserve explicit settings; omitted fields receive their defaults,
+including a wall collision penalty of **100**. An explicit `physics.lethal_walls: true`
+in an older import remains enabled. A mixed or unrecognized fleet displays the
 disabled **Mixed / custom** placeholder; choosing a standard type replaces the
 whole controlled fleet. **Vehicle count** counts physical vehicles; **Walkers**
 counts planner candidates, each representing a possible future for the whole group.
@@ -118,7 +121,12 @@ Use **Restart** before switching from a Wave demonstration to an ordinary contro
 trial. Wave checkpoints can preserve its population; see
 {doc}`control_lab_replay`. The authoritative world stops continuous running when
 its terminal flag is set. A collision only ends an episode if that scene's physics
-and task rules make it terminal.
+and task rules make it terminal. All shipped presets start with **Die on wall
+collision** off and a wall collision penalty of **100**. When wall death is enabled,
+contact by any controlled vehicle ends the whole world, and the wall penalty is
+still charged on that death frame. Passive cargo and hooks cause neither wall
+reward penalties nor wall-contact death. Retained-rock physics is unchanged;
+mining retains its **64**-action horizon.
 :::
 
 (sec-lab-controls-clock)=
@@ -325,7 +333,64 @@ does not count as travel. These frame rewards are summed over an action or journ
 the total journey distance is not squared. Movement in any direction earns this
 bonus, while **Target progress** separately rewards approaching the task target.
 
-**Hooked rock travel** defaults to **1 reward per metre**. Its slider runs from
+For **Tandem flight**, **Formation reward** (`rewards.formation`) defaults to **50**
+and accepts values from **0–100**.
+Each physics frame, it pays this weight times the product of the distance-agreement
+scores for all controlled-body pairs. The engine measures centre distances after
+motion and before scene mechanics and respawns. A stationary group can earn this
+reward, and setting **Checkpoint proximity** to zero leaves it active. Set **Formation
+reward** to zero to disable it. Use **Edit complete scene JSON** to choose the
+distances; see {doc}`control_lab_scene_reference` for the formula and `formation_pairs`.
+
+Tandem flight labels `rewards.progress` as **Checkpoint proximity** and defaults it
+to **1**. It also defaults the checkpoint bonus
+`rewards.gate = 30`, **Distance travelled² = 1**, **Wall collision penalty = 100**,
+and body collision penalty **2**. All other reward terms, including **Hooked rock
+travel** and `cargo.full_reward`, default to **0**. Explicit custom weights remain
+effective. **Reset defaults** stages these values for Tandem flight, including
+**Formation reward = 50**; press **Apply to current run** to apply them.
+
+Tandem checkpoints advance together in the authored gate order. At the start of
+each physics frame, the smallest controlled-body checkpoint counter sets the
+shared stage. Only vehicles at that stage can register a crossing. A vehicle that
+has already crossed waits and receives no further crossing credit while the others
+approach.
+When everyone has crossed, the next checkpoint unlocks on the following frame.
+Formation and movement rewards remain active while a vehicle waits.
+
+**Checkpoint proximity** pays on every physics frame, including while vehicles
+that have crossed are waiting. Let `r` be the shared active checkpoint's radius
+and let `d̄` be the mean distance from that checkpoint to all controlled vehicles.
+The term pays `rewards.progress × r / (r + d̄)`. Thus staying near the checkpoint
+continues to earn a positive reward. Moving farther away reduces the reward toward
+zero, but never makes it negative. Cleared and waiting vehicles remain in the
+distance mean.
+
+Each eligible crossing pays `rewards.gate` divided by the total controlled count:
+with two vehicles and bonus 30, each receives 15. Setting either reward weight to
+zero disables its contribution while preserving the existing counters and shared
+checkpoint lock. See {doc}`control_lab_scene_reference` for the exact reward
+definition.
+
+**Rewards → Wall collision penalty** (`rewards.wall_collision`) accepts **0–10,000**
+and defaults to **100** in every Control Lab task, including harvesting, mining, and
+older imported scenes that omit the field. Set it to **0** to disable the penalty.
+Each controlled vehicle touching an outer wall or hole boundary is charged once
+per physics frame. Sustained contact costs the penalty again on every frame;
+corners, multiple contact points, and physics substeps add no extra charges within
+that frame. Use **Apply to current run** to change this reward while preserving
+the current world state. Wall-contact death is controlled separately by
+**Setup → World physics → Die on wall collision**, which requires **Apply and restart**.
+Only applied wall penalty and wall-death options are remembered per named environment
+when switching presets in the current session; abandoned drafts are not remembered,
+and fresh tasks restore preset defaults.
+
+The existing `rewards.collision` weight now applies only to vehicle/body contacts.
+Harvesting still disables body collisions; its allowed reward terms are
+`progress`, `distance_squared`, `catch`, and `wall_collision`.
+
+**Hooked rock travel** defaults to **0** for Tandem flight and **1 reward per metre**
+for other tasks. Its slider runs from
 **0–10** in increments of **0.1**; the numeric input accepts **0–1,000**. Set it
 to **0** to disable this term, then press **Apply to current run** to apply the change
 while preserving the physical world. At the start of each physics frame, the
@@ -352,8 +417,12 @@ settings keys `distance_coef` and `reward_coef`. A scene that omits
 files. An explicit zero remains disabled. See {doc}`control_lab_scene_reference`
 for the scene fields.
 
-The hooked-rock weight is saved as `rewards.hooked_rock_distance`, also with a
-default of **1** when omitted and with an explicit **0** preserved.
+The hooked-rock weight is saved as `rewards.hooked_rock_distance`. Omitting it uses
+the task's default above; an explicit **0** remains disabled.
+
+For older scenes that omit `rewards.wall_collision`, the new default affects
+future and resimulated rewards. Historical stored records are not rewritten,
+and the snapshot layout is unchanged.
 :::
 
 (sec-lab-controls-shooting)=
@@ -429,25 +498,37 @@ and elapsed planning time on the same tasks and seeds.
 
 :::{div} feynman-prose
 Camera and layer controls change presentation without changing physics or resetting
-the run. In an ordinary planar scene, **2D / 3D** switches between overhead and
-angled views of the same world. In flight mode the control instead switches between
-a side-on view (showing altitude against the horizontal direction) and an overhead
-view (showing the physics plane from above). These are two projections of the same
-state, not two different simulations; the side-on view does not turn a planar
-flight model into full three-dimensional physics. Scroll to zoom, then left-drag to bring another part of the environment
-into view without changing the zoom. In **Inspect**, a click selects a body;
-select **Planner decisions** in the timeline to inspect exploration nodes instead.
-In **Edit**, left-drag moves draft scene objects; use middle/right-drag or Alt-drag
-to pan instead. These pan shortcuts also work outside Edit. Scene edits support
-Undo/Redo and remain a draft until **Apply and restart**. Leaving a dirty editor
-offers Apply and restart, Discard, or Cancel. **Follow agent** follows the selected
-body, or the first controlled body when none is selected. Panning disengages following so the camera
-stays where you put it. The follow button's **Whole arena** state and **Reset view**
-return to the center of the collision boundary's bounding box with the largest
-view that leaves a 5% margin around the playable arena. Think of this as placing
-a snug rectangle around the actual fence, then widening it just enough to leave
-breathing room; the rectangle is recalculated for the viewport and applies to
-both overhead and flight side views.
+the run. **Right-drag** horizontally to look around the current view center, or
+vertically to change the tilt. The camera stays upright and orbits that center;
+it does not fly freely through the scene. Scroll to zoom, and left-drag outside
+**Edit** to bring another part of the environment into view without changing the
+zoom. In **Edit**, left-drag moves draft scene objects. **Middle-drag** or
+**Alt-left-drag** pans in every mode. Right-drag only changes the viewpoint.
+
+In an ordinary planar scene, **2D / 3D** snaps the camera to its preset overhead or
+angled view. In flight mode, **Side / overhead** switches between a side-on view
+(showing altitude against the horizontal direction) and a view of the physics
+plane from above. You can rotate from either preset. All these views show the
+same physical state; changing the angle adds no dimensions to the simulation.
+If you turn the flight plane almost edge-on, clicks and dragging on that plane
+are ignored: a small pointer movement could otherwise jump a long way across
+the scene. Right-drag away from that angle to select, edit, or pan again.
+
+**Follow agent** follows the selected body, or the first controlled body when
+none is selected. Right-drag changes the angle around that body while following
+continues; panning disengages following so the camera stays where you put it.
+Your angle survives simulation updates, replay scrubbing, style and live reward
+changes, and window resizing. Loading or restarting a scene restores its initial
+view. **Whole arena** and **Reset view** also restore that initial preset, the
+arena center, and the default zoom. The framing uses the collision boundary's
+bounding box with a 5% margin around the playable arena, recalculated for the
+viewport. Think of placing a snug rectangle around the actual fence, then
+widening it just enough to leave breathing room.
+
+In **Inspect**, a click selects a body; select **Planner decisions** in the
+timeline to inspect exploration nodes instead. Scene edits support Undo/Redo and
+remain a draft until **Apply and restart**. Leaving a dirty editor offers Apply
+and restart, Discard, or Cancel.
 
 **Inspect / Edit / Drive** describes how you interact with the world; **Live /
 Replay** describes which world you are looking at. Opening a saved run gives
@@ -509,12 +590,39 @@ driving, the new command takes effect on subsequent physics frames.
 | Workshop actuator sliders and **Neutral / Max** | Neutral commands | Shows the selected asset’s catalog actuator channels with their signed bounds. **Neutral** sets all channels to zero; **Max** sets each to its upper bound. Rocket variants expose vector thrust/torque or individual thrusters. Values persist across asset, style, and detail changes during the workshop session; static action cues update even with animations off. |
 | **Rollout paths** | On | Recorded controlled-body paths, available for FMC and Wave Jump. Green is at/above mean recorded reward; rose indicates terminal state; violet indicates a tethered path; blue shows other alternatives. Terminal color takes precedence over tether color. |
 | **Future-state cloud** | On | Controlled-body positions in the planner's returned world batch, which may be at a partial horizon in deadline mode. |
-| **Tethers & formation** | On | Current tether geometry linking bodies. |
+| **Tethers & formation** | On | Physical tethers plus, for `task: "tandem"` with at least two controlled bodies, dashed links between every scored pair's displayed centres. Link colors show pair quality; turning the layer off hides its links and legend. |
 | **Collision geometry** | Off | Native hull outlines, useful when a decorative model differs from its collider. |
-| **Clean view / Show diagnostics** | Diagnostics visible | Temporarily hides these four layers, then restores their previous visibility. The separate Physics inspector remains independent. |
+| **Clean view / Show diagnostics** | Diagnostics visible | Temporarily hides these four layers, then restores their previous visibility. Checkpoint indicators and the separate Physics inspector remain independent. |
 :::
 
 :::{div} feynman-prose
+Formation links use a continuous, fixed color scale in both visual styles:
+rose/red at **0**, amber at **0.5**, and green at **1**, the perfect pair distance.
+The matching **Pair quality: 0 — 0.5 — 1 · Perfect** legend appears beneath
+**Tethers & formation** when formation links are enabled and the scene has at
+least two controlled bodies with `task: "tandem"`. Every unordered pair appears
+once, with endpoints following the displayed centres live, paused, and in replay.
+Colors use the configured pair targets and their scalar fallback; the scores
+multiply to give total formation quality. They remain visible at formation
+reward weight zero. Physical tethers retain their existing appearance and behavior.
+
+In Tandem flight, the shared active checkpoint has an amber ring and fill, while
+inactive checkpoints stay subdued. A label such as **Checkpoint 2 · 1/3 crossed**
+identifies the checkpoint and how many controlled vehicles have already crossed
+it. These indicators follow the displayed world in live, paused, and replay views.
+
+Each registered crossing flashes that checkpoint green, fading over **600 ms**.
+When the final vehicle arrives, the amber highlight immediately moves to the next
+checkpoint while the completed checkpoint's green flash fades. The next physics
+frame then begins using the newly unlocked checkpoint, as described above.
+
+Forward replay playback shows crossing flashes. Seeking or scrubbing to a replay
+frame, or returning to live view, updates the checkpoint indicators without
+inventing crossing flashes for the jump. Turning **Animations** off or requesting
+reduced motion in the operating system suppresses these transient flashes;
+the active highlight and crossing-count label still update. Checkpoint indicators
+remain visible when **Tethers & formation** is off and in **Clean view**.
+
 The renderer samples large trees to draw roughly at most 50,000 path segments.
 This drawing limit does not prune the native record. Hiding paths also does not
 disable recording. For that, change **Tree** in the **Planner decisions** timeline

@@ -205,6 +205,83 @@ engine.dispose();
         np.testing.assert_allclose(engine.get_states().kinematics[0, 0], wasm["state"], atol=1e-5)
 
 
+@pytest.mark.parametrize("threaded", [False, True])
+@pytest.mark.parametrize("checkpoints", [False, True])
+def test_native_wasm_formation_rewards_agree(library, threaded, checkpoints, tmp_path):
+    root = repository_root()
+    filename = "control-threaded.wasm" if threaded else "control.wasm"
+    if not (root / "fractal-gas-web/web/lab/engine" / filename).exists():
+        pytest.skip("Build the WebAssembly module to run cross-backend validation")
+    formation = {
+        "task": "tandem",
+        "size": [100, 100],
+        "physics": {"dt": 0.1, "substeps": 4},
+        "formation_distance": 5,
+        "formation_pairs": [{"a": 0, "b": 1, "distance": 3}, {"a": 0, "b": 2, "distance": 4}],
+        "bodies": [
+            {"controlled": True, "position": p, "velocity": [2, 3], "drag": 0}
+            for p in [[20, 20], [26, 20], [20, 28]]
+        ],
+    }
+    if checkpoints:
+        formation["bodies"] = [
+            {"controlled": True, "position": [20, 20], "drag": 0, "radius": 0.01},
+            {
+                "controlled": True,
+                "position": [26, 20],
+                "velocity": [-10, 0],
+                "drag": 0,
+                "radius": 0.01,
+            },
+        ]
+        formation.pop("formation_pairs")
+        formation["gates"] = [
+            {"position": [20, 20], "radius": 1},
+            {"position": [26, 20], "radius": 1},
+        ]
+    program = (
+        """
+import {loadNative, NativeEngine} from NATIVE_MODULE;
+const engine = new NativeEngine(await loadNative(THREADED, 3), SCENE, 1, THREADS);
+const trace = [];
+for (let i = 0; i < 8; ++i) {
+  engine.step(engine.neutralAction(), 1);
+  trace.push({reward: engine.results()[0], states: Array.from(engine.states())});
+}
+console.log(JSON.stringify(trace));
+engine.dispose();
+process.exit(0);
+"""
+        .replace("THREADED", json.dumps(threaded))
+        .replace("THREADS", "3" if threaded else "1")
+        .replace("SCENE", json.dumps(formation))
+        .replace(
+            "NATIVE_MODULE", json.dumps((root / "fractal-gas-web/web/lab/native.js").as_uri())
+        )
+    )
+    # A file avoids passing --input-type=module to Emscripten's file-based workers.
+    script = tmp_path / "formation-parity.mjs"
+    script.write_text(program)
+    output = subprocess.run(
+        ["node", str(script)],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    wasm = json.loads(output.stdout)
+    with ControlEngine(formation, library=library, threads=3 if threaded else 1) as engine:
+        for frame in wasm:
+            engine.step_batch(np.zeros(engine.action_dim, dtype=np.float32), 1)
+            if not checkpoints:
+                assert frame["reward"] == pytest.approx(50 * 0.125 + 0.13, abs=1e-4)
+            assert frame["reward"] == pytest.approx(engine.transition_results()[0, 0], abs=1e-6)
+            np.testing.assert_allclose(
+                engine.get_states().data.view(np.float32)[0], frame["states"], atol=1e-5
+            )
+
+
 def test_variable_actions_checkpoint_restores_search_and_rng(scene, library):
     scene["bodies"][0]["actuator"] = {"kind": "kart"}
     with ControlEngine(scene, library=library) as engine:

@@ -106,7 +106,7 @@ compiler and browser renderer.
 | `version` | Number, `1` | Only version 1 is supported. |
 | `name` | String, `"Untitled experiment"` | Human-readable scene name. |
 | `description` | Optional string | Text shown beneath the environment controls; defaults to `"Custom continuous-control experiment."` when absent or empty. |
-| `task` | String, `"navigation"` | Presentation defaults and the special `"tandem"` formation term; see reward semantics below. It is not a preset-file identifier. |
+| `task` | String, `"navigation"` | Presentation defaults and the special `"tandem"` formation reward and synchronized checkpoints; see reward semantics below. It is not a preset-file identifier. |
 | `size` | Two numbers, `[64, 44]` | Arena extent in metres; each dimension is in `[4, 4096]`. |
 | `boundary` | Array of `[x, y]`; rectangle if omitted | Outer playable polygon. Default corners are `[0,0]`, `[width,0]`, `[width,height]`, `[0,height]`. |
 | `holes` | Array of polygon arrays, `[]` | Excluded regions inside the boundary. |
@@ -116,8 +116,10 @@ compiler and browser renderer.
 | `cargo` | Optional object; disabled when omitted | Enables limited pickup storage on each controlled vehicle. Requires at least one refinery; distinct from body `cargo: true`. |
 | `gravity`, `tethers` | Arrays, each `[]` | Force sources and body-to-body springs. |
 | `physics`, `rewards` | Objects, `{}` | Numerical integration and reward settings. |
-| `formation_distance` | Number, `3` | Desired pair separation in metres, `[0.1, 1000]`; formation interpretation for larger groups appears below. |
+| `formation_distance` | Number, `3` | Default desired centre separation in metres for each controlled-body pair, `[0.1, 1000]`; used when that pair has no override. |
+| `formation_pairs` | Array, `[]` | Optional pair-distance overrides for formation reward; each entry requires `a`, `b`, and `distance`, as specified below. |
 | `respawn_seconds` | Number, `4` | Pickup cooldown in simulation seconds, `[0, 10000]`. Cargo uses its own `respawn` flag instead. |
+| `keep_delivered_rocks` | Boolean, `false` | Retain delivered cargo. Asteroid harvesting and Collaborative mining both default to `true`; see the {doc}`mining guide <control_lab_task_mining>`. |
 | `presentation`, `evaluation` | Optional objects | Display and batch-experiment success settings. |
 | `environment`, `circuit` | Optional objects | Rendering, flight, and circuit-preview metadata. |
 | `environment.flight` | Optional Boolean; auto-detected when omitted | `true` enables side-on flight dynamics, `false` keeps legacy planar behavior. Automatic mode activates when a controlled body resolves with `flight_capable: true`. |
@@ -156,7 +158,7 @@ visual outline you have overlooked; turn on **Collision geometry** to inspect it
 | `dt` | `1/60` s; `[0.0001, 0.1]` | Simulation time per frame. In JSON, write a decimal, not the expression `1/60`. |
 | `substeps` | Integer `4`; `[1, 32]` | Divide each frame into this many integration/collision substeps. More substeps increase work. |
 | `solver_iterations` | Integer `8`; `[1, 32]` | Contact-impulse solver iterations per substep. |
-| `lethal_walls` | Boolean `false` | A controlled body's wall collision can mark the whole world dead. |
+| `lethal_walls` | Boolean `false` | When enabled, any controlled vehicle touching an outer wall or hole boundary ends the whole world; the wall penalty is still charged on that frame. Passive cargo and hooks do not trigger wall death. |
 | `lethal_bodies` | Boolean `false` | A body-body contact involving a controlled body can mark the whole world dead. |
 :::
 
@@ -166,6 +168,11 @@ experiment. It does not simply speed up playback. Strong forces, light bodies,
 stiff springs, and large steps can be a difficult numerical combination even when
 each setting individually passes validation. Begin with the defaults, change one
 quantity, and inspect a few manual frames before starting a large planning run.
+
+Set **Setup > World physics > Die on wall collision** to change
+`physics.lethal_walls`, then press **Apply and restart**. Every shipped preset
+starts with wall death off and `rewards.wall_collision: 100`. An older imported
+scene with explicit `physics.lethal_walls: true` keeps that setting.
 :::
 
 (sec-lab-json-bodies)=
@@ -199,7 +206,7 @@ to this complete array, starting at zero, including passive bodies.
 | `controlled` | Boolean `false` | Compile action channels for this body. |
 | `flight_capable` | Boolean `false` | Marks a controlled body as eligible for automatic flight-mode detection. It does not add an action channel or provide hover assistance. |
 | `cargo` | Boolean `false` | Eligible for delivery and automatic cargo hooking. |
-| `respawn` | Boolean `false` | Respawn delivered cargo at a random clear position throughout the playable map. |
+| `respawn` | Boolean `false` | In `keep_delivered_rocks: false` mode, respawn delivered cargo at a seeded random clear position throughout the playable map. Retained rocks ignore this flag until retention is disabled. |
 | `actuator` | Vector actuator if omitted | Applied only to controlled bodies; options below. |
 | `visual` | Optional object | Appearance metadata; does not replace the physical hull. |
 :::
@@ -214,14 +221,33 @@ custom hull sensibly around `[0, 0]`; the compiler does not recenter it for you.
 Winding is normalized, but a concave hull is rejected. Increasing `visual.scale`
 only enlarges the drawing. Change `radius` or `vertices` to enlarge collisions.
 
-On cargo delivery, `respawn: false` makes the cargo inactive. With `true`, the same
-cargo body normally respawns immediately at a seeded random clear position
-throughout the playable map, outside bases and with clearance from walls, holes,
-and active bodies. It retains its configured `angle`, with zero linear and angular
-velocity. This deliberately does not restore its initial `velocity` or `omega`.
-Tethers targeting that cargo detach. If 256 placement attempts find no clear
-position, the cargo stays delivered and inactive and retries on the next frame,
-without counting another delivery.
+With `keep_delivered_rocks: true`, both mining and solo harvesting use the same
+native delivery rule: the cargo centre must lie strictly inside the inner disk
+at half the base radius. Every towing hook targeting that cargo detaches, but
+the rock stays active and collidable, continuing to move under normal physics;
+retention does not physically freeze it.
+It is excluded from hooks and approach targets until its centre is strictly
+outside every base's outer radius, when it becomes eligible again. Crossing an inner disk
+again during the lock does not count another delivery.
+
+Both presets enable retention by default. Collaborative mining's base is at
+`[12, 32]`, with outer radius 3 m and inner delivery radius 1.5 m. Turn
+**Keep delivered rocks** off and press **Apply and restart** to restore
+full-radius delivery and seeded random respawn for the presets' cargo.
+
+With `keep_delivered_rocks: false` (the compiler default), delivery uses the
+full base radius. `respawn: false` then makes the cargo inactive; with `true`,
+the same cargo body normally respawns immediately at a seeded random clear
+position throughout the playable map, outside bases and with clearance from
+walls, holes, and active bodies. It retains its configured `angle`, with zero
+linear and angular velocity. If 256 placement attempts find no clear position,
+the cargo stays delivered and inactive and retries on the next frame, without
+counting another delivery.
+
+Collaborative mining's `controller_defaults` use `horizon: 64`, `frames: 6`,
+and `elites: 4`; solo harvesting remains at 32, 6, and 4 respectively. The longer
+lookahead helps plan coupled delivery, but does not guarantee success in every
+stochastic run. See the {doc}`mining guide <control_lab_task_mining>`.
 :::
 
 ### Type definitions and inheritance
@@ -367,12 +393,18 @@ The important question is what arrays and body flags you have actually supplied.
 :::
 
 :::{div} feynman-prose
-A **base** delivers any active cargo whose centre lies strictly inside its radius.
+A **base** delivers active cargo whose centre lies strictly inside its full radius
+when `keep_delivered_rocks: false`. With retention enabled, delivery uses half that
+radius and excludes cargo still locked from a previous delivery.
 A tug need not enter the base itself, and a tether is not a delivery prerequisite.
 A **gate** counts when a controlled body's centre lies strictly inside its next
 zone. Each controlled body has its own ordered gate counter; the displayed `gates`
 metric sums their gate events. The sequence wraps around indefinitely and checks
-one gate per controlled body per frame. Neither rule adds the body's radius.
+one gate per controlled body per frame. For `task: "tandem"`, only bodies at the
+group's shared checkpoint stage can register a crossing; a body that has already
+crossed waits for the others before its next checkpoint becomes eligible. The
+stage follows the authored `gates` array order, as specified below. Neither the
+base nor gate rule adds the body's radius.
 
 A **pickup** is collected when a controlled body approaches within the sum of its
 bounding radius and the pickup radius. Only one vehicle gets that slot's event in
@@ -399,7 +431,7 @@ substitutes for the other.
 |---|---|---|
 | `capacity` | Integer `5`; `[1,10000]` | Number of pickups that fill each controlled vehicle. |
 | `unload_seconds` | `2` s; `[0.01,10000]` | Time spent inside a refinery to discharge a complete load. |
-| `full_reward` | Current `rewards.pickup`; `[0,10000]` | Additional reward when a vehicle first fills its storage. |
+| `full_reward` | `0` for `task: "tandem"`; current `rewards.pickup` otherwise; `[0,10000]` | Additional reward when a vehicle first fills its storage. An explicit value overrides the default. |
 :::
 
 :::{div} feynman-prose
@@ -514,28 +546,97 @@ does not prevent a rocket from moving around its cargo.
 ### Reward settings and priority
 
 :::{div} feynman-added
-| `rewards` field | Default; range | Contribution |
-|---|---|---|
-| `progress` | `1`; `[0,1000]` | Multiplies the frame's change in progress potential, including formation shaping. |
-| `distance_squared` | `1`; `[0,1000]` | Multiplies the mean squared displacement of controlled vehicles in each physics frame, measured in m². |
-| `hooked_rock_distance` | `1`; `[0,1000]` | Reward per metre of travel summed over distinct active cargo bodies hooked to active controlled vehicles at the start of each physics frame. |
-| `collision` | `2`; `[0,10000]` | Penalty for qualifying contacts involving controlled bodies; a collision need not be lethal. |
-| `pickup` | `10`; `[0,10000]` | Reward per collected food slot. |
-| `delivery` | `100`; `[0,10000]` | Reward per cargo-body delivery, or total reward distributed across unloading one full vehicle load. |
-| `gate` | `30`; `[0,10000]` | Reward per controlled-body gate event. |
-| `formation` | `0.15`; `[0,1000]` | Weight of radial formation error inside the potential for `task: "tandem"`. |
+| `rewards` field | Default for other tasks | Default for `tandem` | Range | Contribution |
+|---|---|---|---|---|
+| `progress` | `1` | `1` | `[0,1000]` | In tandem with gates, weights the checkpoint-proximity score once per physics frame, using all controlled bodies. Other tasks and tandem scenes without gates use the change in target-distance potential. |
+| `distance_squared` | `1` | `1` | `[0,1000]` | Multiplies the mean squared displacement of controlled vehicles in each physics frame, measured in m². |
+| `hooked_rock_distance` | `1` | `0` | `[0,1000]` | Reward per metre of travel summed over distinct active cargo bodies hooked to active controlled vehicles at the start of each physics frame. |
+| `collision` | `2` | `2` | `[0,10000]` | Penalty for qualifying vehicle/body contacts only; excludes walls and hole boundaries. Harvest disables this body-contact penalty. |
+| `wall_collision` | `100` | `100` | `[0,10000]` | Penalty once per controlled vehicle per physics frame touching an outer wall or hole boundary, in every Control Lab task, including harvest and mining. |
+| `pickup` | `10` | `0` | `[0,10000]` | Reward per collected food slot. |
+| `delivery` | `100` | `0` | `[0,10000]` | Reward per cargo-body delivery, or total reward distributed across unloading one full vehicle load. |
+| `gate` | `30` | `30` | `[0,10000]` | Reward per controlled-body gate event in other tasks; in tandem, each eligible crossing receives this weight divided by the total controlled-body count. |
+| `formation` | `0.15` (inactive) | `50` | `[0,100]` | Multiplies the pairwise formation score once per physics frame for `task: "tandem"`, independently of `progress`. |
 :::
 
 :::{div} feynman-prose
-The progress potential is the negative target distance, averaged over controlled
-bodies. Its target selection follows this priority: the next **gate**, if any gates
-exist; otherwise the nearest **refinery** while a vehicle is in its cargo return
+These defaults apply when a field is omitted. Formation flight rewards proximity
+to and crossing of synchronized checkpoints, squared vehicle travel, and formation;
+the two collision penalties also remain enabled. All other reward terms default
+to zero. Explicit custom weights are honoured, including zero. The separate
+`cargo.full_reward` defaults to zero for `tandem` even if you enable
+`rewards.pickup`; set it explicitly to award a full-load bonus. Setting both
+`gate` and `progress` to zero removes those rewards while preserving checkpoint
+synchronization and its counters.
+
+In other tasks, **Target progress** weights the change in a potential equal to
+negative target distance, averaged over controlled bodies. Tandem scenes without
+gates retain this target-distance fallback. Target selection follows this priority:
+the next **gate**, if any gates exist; otherwise the nearest **refinery** while a
+vehicle is in its cargo return
 phase; otherwise the nearest active **pickup**, if pickup slots exist; otherwise,
 when **bases** exist, either the nearest active cargo or the attached cargo's distance
 to the nearest base. Refinery distance is measured to the zone edge and is zero inside it, while
 other target distances use centres. A returning vehicle keeps its refinery target
 even after partially unloading. Gates still take priority over that return target.
 A temporarily empty pickup field does not switch to cargo-body navigation. With no relevant target the distance contribution is zero.
+For tandem, the same `rewards.progress` field is labelled **Checkpoint proximity**.
+When gates are present, it weights the following score at its unchanged default
+of 1.
+:::
+
+:::{prf:definition} Synchronized tandem checkpoint rewards
+:label: def-control-lab-tandem-checkpoint-rewards
+
+For `task: "tandem"` with $N>0$ controlled bodies and $G>0$ gates, let $c_i$ be
+body $i$'s existing gate counter at the start of a physics frame. Define the
+shared stage $s=\min_i c_i$ and eligible set $E=\{i:c_i=s\}$. During that frame,
+only bodies in $E$ can register crossings of gate `gates[s % G]`. Bodies with
+higher counters wait for their next crossing, but still contribute to proximity.
+The stage and eligible set stay fixed throughout the frame; a newly unlocked
+stage takes effect next frame.
+
+Let $R>0$ be that gate's radius in metres, and let $\ell_i$ be the distance between
+body $i$'s centre and the gate's centre after physical motion and before scene
+mechanics and respawns. Average these distances across all $N$ controlled bodies, including
+those that have already crossed, then transform that mean:
+
+$$
+\bar\ell_t=\frac{1}{N}\sum_{i=1}^{N}\ell_i,
+\qquad
+r_{\mathrm{progress},t}
+=w_{\mathrm{progress}}\frac{R}{R+\bar\ell_t},
+\qquad
+r_{\mathrm{gate},t}=\frac{w_{\mathrm{gate}}}{N}K_t,
+$$
+
+where $K_t$ is the number of eligible bodies whose centres lie strictly inside
+the current gate during event processing. Each such crossing increments that
+body's counter and the existing total gate counter once. A waiting body cannot
+receive another crossing bonus at that stage. Proximity is one group reward per
+physics frame, with no timestep multiplier; its score is dimensionless and
+positive for finite distances. The weights are `rewards.progress` and
+`rewards.gate`; zero weights do not change the eligibility or counter rules.
+:::
+
+:::{div} feynman-prose
+With two rockets and the default checkpoint bonus of 30, the first arrival earns
+15 and waits for its next crossing opportunity. Both rockets' distances still
+affect proximity while the second approaches. The second arrival earns the
+remaining 15, and the next checkpoint unlocks on the following physics frame.
+The arrival frame uses the old checkpoint for proximity. Formation and movement
+rewards remain active while a rocket waits. No extra scene field or counter is
+needed: the minimum of their existing counters determines the stage. Other tasks retain
+their independent checkpoint progression and full per-body gate bonuses.
+
+For a checkpoint of radius 2 m and two rockets at centre distances 0 m and 6 m,
+the mean distance is 3 m, so proximity pays $2/(2+3)=0.4$ at weight 1. Average
+the distances first; averaging the two separately transformed scores would give
+a different reward. For a fixed shared checkpoint, keeping the same positions
+earns the same positive proximity reward on each physics frame. Moving away lowers
+this score rather than producing
+a negative distance-change reward. Setting **Checkpoint proximity** to zero
+disables this bonus independently of formation and checkpoint crossing rewards.
 
 For cargo hauling, the target used to measure progress is held fixed through each
 physical frame. If a hook breaks during that frame, both distance measurements
@@ -543,20 +644,22 @@ still use the same hauling target; the new detached target takes effect next
 frame. Breaking a hook therefore cannot earn a progress bonus merely by switching
 from cargo-to-base distance to rocket-to-cargo distance.
 
-For exact `task: "tandem"` and more than one controlled body, the potential also
-subtracts `rewards.formation` times each body's radial error from the group centroid.
-The desired radius is `formation_distance / 2`. For two bodies this encourages the
-specified pair separation. For three or more it encourages a radius around the
-centroid, not every pairwise distance. This term rewards improvement in formation
-through the change in potential; it is not a standalone fixed penalty every frame.
-Setting `rewards.progress` to zero also disables its effect.
-
 Reward values use the scene's chosen reward scale: event coefficients are reward
-per event, and progress converts a distance change into reward. Contact penalties
-can accumulate across substeps and repeated contacts; they are not a one-time fee
-for an entire crash. Progress is measured before event bookkeeping updates the next
-target. Gate, food, and delivery bonuses are then added independently. A large task
-counter and a low total reward are therefore compatible.
+per event, target-progress weights convert a distance change into reward in other
+tasks and tandem scenes without gates, and tandem **Checkpoint proximity** with
+gates weights a dimensionless score per physics frame. Body-contact penalties
+can accumulate across substeps and repeated contacts. The separate wall penalty
+is charged once per controlled vehicle per physics frame: sustained contact costs
+again every frame, but corners, multiple boundary contacts, and substeps do not
+add extra charges within a frame. Passive cargo and hooks incur no wall penalty
+and cannot trigger wall death. A lethal wall contact still incurs the penalty on
+the death frame.
+
+Harvest allows `progress`, `distance_squared`, `catch`, and `wall_collision`
+reward terms; disabling its body-contact penalty does not disable wall penalties.
+Proximity and target-progress measurements precede event bookkeeping updates to
+the next target. Gate, food, and delivery bonuses are then added independently.
+A large task counter and a low total reward are therefore compatible.
 
 The `distance_squared` term pays for motion in any direction. In each
 physics frame, measure each controlled vehicle's displacement $(\Delta x_i,
@@ -594,24 +697,144 @@ and delivery rewards supply the incentive to move it toward a base.
 This distance is Euclidean, in metres: it is neither squared nor multiplied by
 the timestep. Measurements happen before scene mechanics and respawns, so a
 teleport on delivery earns no travel bonus. Hook attachment or release changes
-which rocks qualify on the next frame. The coefficient defaults to one reward
-unit per metre, including for scenes that omit it. Set **Hooked rock travel** to
-zero and press **Apply settings** to disable it independently of vehicle motion
+which rocks qualify on the next frame. The coefficient defaults to zero for
+`tandem` and one reward unit per metre for other tasks, including for scenes that
+omit it. Set **Hooked rock travel** to
+zero and press **Apply to current run** to disable it independently of vehicle motion
 and target progress rewards.
 
-The Lab's **Reward terms** panel is expanded by default. Use its synchronized
+The Lab's **Rewards** panel is expanded by default. Use its synchronized
 sliders and numeric inputs to set these weights and `cargo.full_reward`, the bonus
 for first filling vehicle storage. The same panel exposes **Diversity coefficient**
 and **Reward coefficient**, which control FMC selection.
 
-Edits remain pending until you press **Apply settings**. This shared button applies
+Use **Rewards > Wall collision penalty** to set `rewards.wall_collision` from
+0 to 10000. Press **Apply to current run** to apply it live while preserving the
+current physical state. A value of zero disables the wall penalty independently
+of **Die on wall collision**.
+
+Older imported scenes that omit `wall_collision` receive the default of 100. This
+changes their future and resimulated rewards; historical stored records are not
+rewritten. The snapshot layout is unchanged.
+
+Edits remain pending until you press **Apply to current run**. This shared button applies
 both the coefficients and reward weights, keeps the current physical state,
 discards previous plans, replans, and starts a new recording. If the simulation was
 running, it resumes running. Recordings and exports retain the settings actually
-applied rather than pending edits. **Reset defaults** stages the engine defaults,
-including one for `distance_squared`; press **Apply settings** to use them. The
-formation control still acts through the progress potential: increasing it has no
-effect while `progress` is zero.
+applied rather than pending edits. **Reset defaults** stages the engine defaults
+for the current task, using the `tandem` column above for formation flight; press
+**Apply to current run** to use them. **Formation reward** changes its independent
+weight, including when `progress` is zero.
+:::
+
+### Pairwise formation distances
+
+:::{div} feynman-prose
+Choose the distance you want between each pair of rockets, then compare it with
+their actual centre separation. A pair at its requested distance contributes one.
+An error on either side lowers its contribution. Multiply the contributions from
+all pairs to measure the whole formation. This uses distances alone, so moving or
+rotating the entire group leaves its score unchanged.
+:::
+
+:::{prf:definition} Control Lab formation reward
+:label: def-control-lab-formation-reward
+
+For `task: "tandem"`, let $\mathcal C$ be the set of controlled-body indices and
+let $x_i\in\mathbb R^2$ be body $i$'s centre after the frame's physical motion and
+before scene mechanics and respawns. For each unordered pair $i<j$ in
+$\mathcal C$, let $d_{ij}^{*}>0$ be its configured target separation in metres.
+The dimensionless formation score and its reward contribution are
+
+$$
+F_t =
+\begin{cases}
+\displaystyle\prod_{\substack{i,j\in\mathcal C\\i<j}}
+\frac{d_{ij}^{*}}
+{d_{ij}^{*}+\left|d_{ij}^{*}-\lVert x_i-x_j\rVert\right|},
+& |\mathcal C|\ge 2,\\[6pt]
+0, & |\mathcal C|<2,
+\end{cases}
+\qquad
+r_{\mathrm{formation},t}=w_{\mathrm{formation}}F_t,
+$$
+
+where $w_{\mathrm{formation}}$ is `rewards.formation`. Other tasks receive no
+formation contribution. Each pair appears once, including pairs without an
+explicit override. The engine adds this contribution once per physics frame,
+independently of checkpoint proximity and crossing bonuses; it is not multiplied
+by the physics timestep or divided by the number of pairs.
+:::
+
+:::{div} feynman-prose
+For a 5 m target and a 6 m separation, the pair contributes
+$5/(5+|5-6|)=5/6$. A 4 m separation earns the same value. With three rockets,
+multiply the scores for A–B, A–C, and B–C. Perfect agreement gives one; increasing
+any separation error lowers the product toward zero. With positive finite target
+distances and finitely many pairs, the mathematical product is positive for
+finite positions, though floating-point arithmetic can round a very small
+product to zero. Arbitrary hand-picked distances need not be geometrically
+compatible, so some configurations cannot attain a score of one.
+
+A stationary group still earns formation reward every frame. Keeping its
+separations constant while flying also preserves this reward, while
+`distance_squared` separately rewards motion. Setting `rewards.progress` to zero
+does not disable formation; setting `rewards.formation` to zero does. A step that
+advances several physics frames sums their formation contributions.
+
+Enable **Tethers & formation** to see a dashed line between the displayed centres
+of every unordered controlled-body pair: two vehicles produce one line, three
+produce three, and four produce six. The endpoints follow the displayed vehicles
+during live motion, while paused, and in replay. Formation lines appear only for
+`task: "tandem"` with at least two controlled bodies and the overlay enabled.
+
+Each line's color shows its pair's unweighted distance-agreement factor above,
+using `formation_pairs` and the `formation_distance` fallback. The fixed,
+continuous scale runs from rose/red at 0 through amber at 0.5 to green at 1 in
+both visual styles. Read it against **Pair quality: 0 — 0.5 — 1 · Perfect** beneath
+**Tethers & formation**. Multiplying the line scores gives the total formation
+score. These lines remain visible when `rewards.formation` is zero: they show
+geometric agreement, independently of how much reward you assign it.
+
+Use **Edit complete scene JSON** to set pair distances. This fragment requests
+5 m between bodies 0 and 1 and 6 m between bodies 1 and 2. If all three bodies
+are controlled, their remaining pair, 0 and 2, uses `formation_distance: 4`.
+:::
+
+```json
+{
+  "task": "tandem",
+  "formation_distance": 4,
+  "formation_pairs": [
+    {"a": 0, "b": 1, "distance": 5},
+    {"a": 1, "b": 2, "distance": 6}
+  ]
+}
+```
+
+:::{div} feynman-prose
+Each entry must be an object with all three fields. `a` and `b` must be numeric
+integers naming distinct controlled bodies in the complete zero-based `bodies`
+array, which also includes passive bodies. `distance` must be a finite number
+in `[0.1, 1000]` metres. Strings, booleans, missing fields, invalid indices,
+passive endpoints, self-pairs, and duplicate unordered pairs are rejected;
+`{"a": 1, "b": 0, "distance": 5}` duplicates an entry for bodies 0 and 1.
+
+An omitted `formation_pairs` array leaves every pair on the scalar fallback.
+Omitting `formation_distance` uses 3 m; the shipped formation preset retains its
+4 m target. Overrides select target distances, not which pairs are scored.
+The compiler prepares these targets once for use during stepping.
+
+When deleting bodies in the editor, it removes overrides touching those bodies
+and remaps the surviving indices. Duplicating a selected group copies overrides
+whose two endpoints are both in that group to the new bodies. Other new pairs
+use the scalar fallback. If you reorder the JSON `bodies` array by hand, update
+the pair indices yourself, just as for tethers.
+
+The scene version and snapshot layout are unchanged. Previously stored reward
+history remains as recorded; future simulation and resimulation use this pairwise
+formula and the current reward settings. See the
+{doc}`formation-flight guide <control_lab_task_tandem>` for a worked experiment.
 :::
 
 (sec-lab-json-appearance)=

@@ -93,6 +93,7 @@ def racing_scene():
             "lethal_bodies": False,
         },
         "collision_penalty": 4,
+        "rewards": {"wall_collision": 100},
         "progress_reward": 2,
         "gate_reward": 12,
         "boundary": ring(16),

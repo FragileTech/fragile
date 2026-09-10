@@ -56,7 +56,7 @@ export function createSceneEditor({
   }
   $("edit").onclick = () => {
     stop();
-    renderer.clearPan();
+    renderer.clearCameraGesture();
     $("editor").hidden = !$("editor").hidden;
     document.body.classList.toggle("editing", !$("editor").hidden);
   };
@@ -271,6 +271,13 @@ export function createSceneEditor({
           a: mapping.get(tether.a),
           b: mapping.get(tether.b),
         });
+    for (const pair of currentScene.formation_pairs || [])
+      if (mapping.has(pair.a) && mapping.has(pair.b))
+        next.formation_pairs.push({
+          ...pair,
+          a: mapping.get(pair.a),
+          b: mapping.get(pair.b),
+        });
     commitScene(next);
   };
   $("save-template").onclick = () => {
@@ -323,6 +330,10 @@ export function createSceneEditor({
     next.tethers = (next.tethers || [])
       .filter((t) => !removed.has(t.a) && !removed.has(t.b))
       .map((t) => ({ ...t, a: remap.get(t.a), b: remap.get(t.b) }));
+    if (next.formation_pairs)
+      next.formation_pairs = next.formation_pairs
+        .filter((pair) => !removed.has(pair.a) && !removed.has(pair.b))
+        .map((pair) => ({ ...pair, a: remap.get(pair.a), b: remap.get(pair.b) }));
     commitScene(next);
   };
   $("undo").onclick = () => {

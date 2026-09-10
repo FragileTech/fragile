@@ -51,6 +51,7 @@ void PackedWave::step() {
   action_policy_.inertial = config.inertial;
   action_policy_.noise = config.noise;
   action_policy_.frames = config.frames;
+  cloning_.distance_metric = config.distance_metric;
   cloning_.dist_coef = config.distance_coef;
   cloning_.reward_coef = config.reward_coef;
   cloning_.use_cumulative_reward = config.cumulative;

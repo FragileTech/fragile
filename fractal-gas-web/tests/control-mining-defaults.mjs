@@ -20,6 +20,7 @@ for (const name of ["harvest", "mining"]) {
   );
   scene = configureVehicleCount(scene, vehicleCount(scene));
   scene = configureRocks(scene, rockOptions(scene));
+  assert.equal(scene.keep_delivered_rocks, true);
   const settings = presetControllerSettings(scene, {
     algorithm: "wave-jump",
     walkers: 128,
@@ -43,8 +44,10 @@ for (const name of ["harvest", "mining"]) {
       frames: 0,
       decisions: 0,
       catches: 0,
+      initialAttachments: 0,
       attachedFrames: 0,
       deliveries: 0,
+      releasedRocks: 0,
       firstCatch: null,
     };
     const started = performance.now();
@@ -53,6 +56,11 @@ for (const name of ["harvest", "mining"]) {
       const targets = (words) =>
         scene.tethers.map((_, i) => words[world.info[7] + 2 * i]);
       let previous = targets(new Uint32Array(world.states().buffer));
+      stats.initialAttachments = previous.filter((body) => body > 0).length;
+      const cargo = scene.bodies.flatMap((body, i) => (body.cargo ? [i] : []));
+      let previousFlags = cargo.map(
+        (i) => new Uint32Array(world.states().buffer)[world.info[5] + i],
+      );
       while (stats.frames < 600 && stats.decisions < 120) {
         strategy.controller.begin(
           world.snapshot(),
@@ -80,6 +88,26 @@ for (const name of ["harvest", "mining"]) {
               `${name} terminated at frame ${stats.frames}`,
             );
             const attached = targets(words);
+            const flags = cargo.map((i) => words[world.info[5] + i]);
+            if (words[4] > stats.deliveries) {
+              const delivered = cargo.filter(
+                (_, i) => flags[i] === 3 && previousFlags[i] !== 3,
+              );
+              assert.equal(
+                delivered.length,
+                words[4] - stats.deliveries,
+                "every delivery must retain its active body",
+              );
+              for (const body of delivered)
+                assert.ok(
+                  !attached.includes(body + 1),
+                  "delivery must detach every towing hook",
+                );
+            }
+            stats.releasedRocks += flags.filter(
+              (flag, i) => flag === 1 && previousFlags[i] === 3,
+            ).length;
+            previousFlags = flags;
             const catches = attached.filter(
               (body, i) => body > 0 && previous[i] === 0,
             ).length;
@@ -100,12 +128,21 @@ for (const name of ["harvest", "mining"]) {
         600,
         "default search must make useful execution progress",
       );
-      assert.ok(stats.catches >= 1, `${name} never acquired a new rock`);
+      // Collaborative mining starts with its only rock already attached; a
+      // successful retained delivery must not require a respawn/new catch.
+      assert.ok(
+        stats.catches + stats.initialAttachments >= 1,
+        `${name} never hooked a rock`,
+      );
       assert.ok(
         stats.attachedFrames >= 120,
         `${name} failed to keep a rock attached`,
       );
       assert.ok(stats.deliveries >= 1, `${name} never delivered a rock`);
+      assert.ok(
+        stats.releasedRocks >= 1,
+        `${name} left its delivered rocks locked in the base`,
+      );
       console.log(
         JSON.stringify({
           ...stats,

@@ -3,6 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:landing-browser": "node tests/landing-pages-browser.mjs",
+    "capture:landing": "node tools/capture-landing.mjs",
+    "benchmark:llm": "node tools/llm-benchmark.mjs",
+    "test:llm-comparison-browser": "node tests/llm/comparison-browser.mjs",
+    "test:llm-ranking-browser": "node tests/llm/ranking-browser.mjs",
+    "test:llm-benchmark-browser": "node tests/llm/benchmark-browser.mjs",
     "test:arcade-browser": "node tests/arcade-planners-browser.mjs",
     "capture:arcade-docs": "node tools/capture-arcade-docs.mjs",
     "test:visual-cohesion-browser": "node tests/visual-cohesion-browser.mjs",
@@ -11,6 +17,7 @@
     "build:lab": "node tools/build-lab.mjs",
     "test:lab": "node --test --test-concurrency=1 tests/*.test.mjs",
     "test:lab-mining": "node tests/control-mining-defaults.mjs",
+    "test:lab-wall-browser": "node tests/control-wall-collisions-browser.mjs",
     "test:lab-vehicles": "node tests/control-vehicles-browser.mjs",
     "test:lab-camera": "node tests/control-camera-browser.mjs",
     "test:lab-docs": "node tests/control-doc-examples.test.mjs",
@@ -21,9 +28,16 @@
     "test:lab-workspace": "node --test tests/control-workspace.test.mjs && node tests/control-workspace-browser.mjs",
     "build:optimization": "node tools/build-optimization.mjs",
     "test:optimization": "node --test tests/optimization/*.test.mjs",
-    "test:optimization-browser": "node tests/optimization/browser.mjs"
+    "test:optimization-browser": "node tests/optimization/browser.mjs",
+    "build:llm": "node tools/build-llm.mjs",
+    "test:llm": "node --test tests/llm/*.test.mjs",
+    "test:llm-scoring-browser": "node tests/llm/scoring-browser.mjs",
+    "test:llm-browser": "node tests/llm/browser.mjs",
+    "test:llm-live": "node tests/llm/live.mjs"
   },
   "dependencies": {
+    "@huggingface/tokenizers": "0.2.0",
+    "d3-hierarchy": "3.1.2",
     "three": "0.180.0"
   },
   "devDependencies": {

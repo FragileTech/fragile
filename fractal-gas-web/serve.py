@@ -4,7 +4,7 @@
 Adds the COOP/COEP headers required for SharedArrayBuffer (wasm pthreads)
 and the correct MIME type for .wasm/.mjs.
 
-Usage:  python serve.py [port]   then open http://localhost:8000/web/
+Usage:  python serve.py [port]   then open http://localhost:8000/web/arcade.html
 """
 
 import http.server
@@ -46,7 +46,7 @@ def main() -> None:
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     with socketserver.ThreadingTCPServer(("", port), Handler) as httpd:
         httpd.allow_reuse_address = True
-        print(f"Serving on http://localhost:{port}/web/ (Ctrl+C to stop)")
+        print(f"Serving on http://localhost:{port}/web/arcade.html (Ctrl+C to stop)")
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:

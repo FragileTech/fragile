@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "rewards": {
+    "wall_collision": 100
+  },
   "name": "Roots Oval \u00b7 kart racing",
   "task": "navigation",
   "description": "A broad historical oval with generous room to learn braking and steering.",

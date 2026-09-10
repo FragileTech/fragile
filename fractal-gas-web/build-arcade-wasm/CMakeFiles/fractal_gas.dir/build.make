@@ -134,7 +134,7 @@ fractal_gas_EXTERNAL_OBJECTS =
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: ale-build/src/ale/libale.a
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: libnes_core.a
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: libfg_swarm_core.a
-/home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: libfg_numeric_core.a
+/home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: libfg_fractal_core.a
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libz.a
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: CMakeFiles/fractal_gas.dir/linkLibs.rsp
 /home/guillem/fragile/fractal-gas-web/web/fractal_gas.js: CMakeFiles/fractal_gas.dir/objects1.rsp

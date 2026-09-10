@@ -80,5 +80,14 @@ else()
   target_include_directories(fg_swarm_tests PRIVATE ${OPT_ROOT}/tests)
   target_link_libraries(fg_swarm_tests PRIVATE fg_swarm_core)
   add_test(NAME fg_swarm_tests COMMAND fg_swarm_tests)
+  add_library(fg_distance_control STATIC ${OPT_ROOT}/src/control/agent_types.cpp
+    ${OPT_ROOT}/src/control/actuators.cpp ${OPT_ROOT}/src/control/extensions.cpp
+    ${OPT_ROOT}/src/control/scene.cpp ${OPT_ROOT}/src/control/state.cpp
+    ${OPT_ROOT}/src/control/physics.cpp ${OPT_ROOT}/src/control/wave.cpp ${OPT_ROOT}/src/control/c_api.cpp)
+  target_link_libraries(fg_distance_control PUBLIC fg_fractal_core)
+  add_executable(fg_distance_adapter_tests ${OPT_ROOT}/tests/test_main.cpp ${OPT_ROOT}/tests/llm/test_distance_adapters.cpp)
+  target_include_directories(fg_distance_adapter_tests PRIVATE ${OPT_ROOT}/tests)
+  target_link_libraries(fg_distance_adapter_tests PRIVATE fg_distance_control fg_optimization_core)
+  add_test(NAME fg_distance_adapter_tests COMMAND fg_distance_adapter_tests)
 endif()
 target_link_libraries(fg_optimization PRIVATE fg_optimization_core)

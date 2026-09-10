@@ -25,8 +25,28 @@ At reset, the controlled rocket starts at `(20, 12)`, beside cargo at `(23, 14)`
 A second asteroid starts at `(47, 30)`. The delivery base is the circular zone
 centered at `(12, 11)`, with radius 3. A gravity well at `(46, 22)` influences
 motion on the right of the arena. The large polygonal hole in the center and the
-outer boundary are hazards: this scene enables lethal walls. Body collisions
-are not configured as lethal.
+outer boundary charge a wall-contact penalty. All shipped presets start with
+wall death off and `rewards.wall_collision = 100`. Body collisions are not
+configured as lethal.
+
+Under **Rewards → Wall collision penalty**, set `rewards.wall_collision` from
+0 to 10000, then use **Apply to current run** to update it live while preserving
+the world state. Each controlled vehicle touching an outer wall or a hole
+boundary incurs the penalty once per physics frame. Sustained contact costs
+every frame; corners and repeated contacts during physics substeps add no extra
+charge within that frame. Passive cargo and hooks cause neither wall penalties
+nor wall death.
+
+To make wall contact terminal, enable **Setup → World physics → Die on wall
+collision** (`physics.lethal_walls`) and choose **Apply and restart**. Contact
+by any controlled vehicle then ends the whole world, with the wall penalty still
+charged on the death frame. Imported scenes with an explicit
+`physics.lethal_walls = true` retain that setting.
+
+The wall penalty applies to every Control Lab task, including harvest and mining.
+The separate `rewards.collision` setting now covers only vehicle/body contacts;
+harvest still disables that body-collision reward. Its allowed reward terms are
+`progress`, `distance_squared`, `catch`, and `wall_collision`.
 
 The first cargo body has an automatic tether to the rocket. Its hook range is
 3 and its rest length is 3.6. Automatic attachment is part of the environment;
@@ -208,6 +228,11 @@ None of these world restorations promises identical future planner decisions.
 Use **Save planner checkpoint** when you need resumable controller search state.
 The distinction between physical state, scene settings, and planner memory is
 explained in {doc}`control_lab_replay`.
+
+Old imported scenes that omit `rewards.wall_collision` also receive the default
+of 100. This affects rewards in future or resimulated motion, including branch
+replay; historical stored records are not rewritten. The snapshot layout is
+unchanged.
 :::
 
 (sec-lab-rocket-save)=

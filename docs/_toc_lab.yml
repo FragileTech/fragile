@@ -42,3 +42,5 @@ chapters:
     title: Environments
   - file: source/project/arcade_lab_controls
     title: Controls and settings
+- file: source/project/llm_laboratory
+  title: LLM Lab

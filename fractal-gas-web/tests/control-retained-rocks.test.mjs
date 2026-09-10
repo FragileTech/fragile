@@ -260,28 +260,121 @@ test("disabled and omitted options retain full-radius delivery and respawn rules
     }
 });
 
-test("toggle defaults, edits and JSON exports preserve delivery configuration", async () => {
+test("Collaborative mining retains a delivered rock without trapping it on either hook", async () => {
   const stock = JSON.parse(
     await readFile(
-      new URL("../web/lab/scenarios/harvest.json", import.meta.url),
+      new URL("../web/lab/scenarios/mining.json", import.meta.url),
     ),
   );
-  assert.equal(stock.keep_delivered_rocks, true);
-  for (const keep of [false, true]) {
-    const edited = configureRocks(stock, {
-      scale: 1,
-      count: 5,
-      keepDeliveredRocks: keep,
-    });
-    assert.equal(JSON.parse(JSON.stringify(edited)).keep_delivered_rocks, keep);
-    assert.equal(
-      configureRocks(edited, { scale: 0.5, count: 3 }).keep_delivered_rocks,
-      keep,
+  const configured = configureRocks(stock, {
+    scale: 1,
+    count: 1,
+    keepDeliveredRocks: true,
+  });
+  const e = new NativeEngine(module, configured);
+  try {
+    const cargo = configured.bodies.findIndex((body) => body.cargo);
+    const base = configured.bases[0];
+    pose(e, cargo, ...base.position);
+    step(e);
+    assert.equal(deliveries(e), 1);
+    assert.equal(target(e, 0), 0);
+    assert.equal(target(e, 1), 0);
+    assert.ok(target(e, 2), "first rocket keeps its physical hook");
+    assert.ok(target(e, 3), "second rocket keeps its physical hook");
+    assert.equal(new Uint32Array(e.states().buffer)[e.info[5] + cargo], 3);
+    const deliveredY = e.states()[8 + e.bodies + cargo];
+    // Use the shipped gravity, drag, hulls and two spring/hook assemblies.
+    // A retained rock must fall out of the lock rather than remain frozen.
+    for (let frame = 0; frame < 120; frame++) step(e);
+    const after = e.states();
+    assert.ok(after[8 + e.bodies + cargo] < deliveredY - base.radius);
+    assert.equal(new Uint32Array(after.buffer)[e.info[5] + cargo], 1);
+    assert.equal(deliveries(e), 1);
+    pose(e, cargo, 12, 20);
+    pose(e, 0, 10, 23);
+    pose(e, 1, 14, 23);
+    pose(e, 3, 10.3, 20);
+    pose(e, 4, 13.7, 20);
+    step(e);
+    assert.equal(target(e, 0), cargo + 1);
+    assert.equal(target(e, 1), cargo + 1);
+    assert.equal(deliveries(e), 1);
+  } finally {
+    e.dispose();
+  }
+});
+
+test("Collaborative mining delivers and respawns when retention is disabled", async () => {
+  const stock = JSON.parse(
+    await readFile(
+      new URL("../web/lab/scenarios/mining.json", import.meta.url),
+    ),
+  );
+  const configured = configureRocks(stock, {
+    scale: 1,
+    count: 1,
+    keepDeliveredRocks: false,
+  });
+  const e = new NativeEngine(module, configured);
+  try {
+    const cargo = configured.bodies.findIndex((body) => body.cargo);
+    const base = configured.bases[0];
+    // Between the retained inner disk and full delivery boundary: opt-out must
+    // deliver here, detach both towing hooks, and move the existing body slot.
+    pose(e, cargo, base.position[0] + base.radius * 0.75, base.position[1]);
+    step(e);
+    assert.equal(deliveries(e), 1);
+    assert.equal(target(e, 0), 0);
+    assert.equal(target(e, 1), 0);
+    const after = e.states();
+    assert.equal(new Uint32Array(after.buffer)[e.info[5] + cargo], 1);
+    assert.ok(
+      Math.hypot(
+        after[8 + cargo] - base.position[0],
+        after[8 + e.bodies + cargo] - base.position[1],
+      ) > base.radius,
+      "delivered rock must leave the base and respawn elsewhere",
+    );
+    e.step(e.neutralAction(), 3);
+    assert.equal(deliveries(e), 1);
+  } finally {
+    e.dispose();
+  }
+});
+
+test("toggle defaults, edits and JSON exports preserve delivery configuration", async () => {
+  for (const name of ["harvest", "mining"]) {
+    const stock = JSON.parse(
+      await readFile(
+        new URL(`../web/lab/scenarios/${name}.json`, import.meta.url),
+      ),
+    );
+    const count = name === "harvest" ? 5 : 1;
+    assert.equal(stock.keep_delivered_rocks, true);
+    for (const keep of [false, true]) {
+      const edited = configureRocks(stock, {
+        scale: 1,
+        count,
+        keepDeliveredRocks: keep,
+      });
+      assert.equal(
+        JSON.parse(JSON.stringify(edited)).keep_delivered_rocks,
+        keep,
+      );
+      assert.equal(
+        configureRocks(edited, { scale: 0.5, count }).keep_delivered_rocks,
+        keep,
+      );
+    }
+    assert.throws(() =>
+      configureRocks(stock, {
+        scale: 1,
+        count,
+        keepDeliveredRocks: "true",
+      }),
     );
   }
-  assert.throws(() =>
-    configureRocks(stock, { scale: 1, count: 5, keepDeliveredRocks: "true" }),
-  );
   assert.throws(
     () => new NativeEngine(module, { ...scene, keep_delivered_rocks: "true" }),
   );

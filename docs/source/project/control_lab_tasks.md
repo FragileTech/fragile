@@ -21,7 +21,7 @@ Keep {doc}`control_lab_controls` nearby for shared settings and diagnostics.
 |---|---|---|
 | {doc}`Asteroid harvesting <control_lab_task_harvest>` | Approach cargo, acquire an automatic tether, and tow a moving rock into a base. | Cargo deliveries; the rocket reaching the base alone does not count. |
 | {doc}`Ants & drops <control_lab_task_ants>` | Start with five harvesters, fill five-drop tanks, and return to the refinery to unload; try rockets, drones, karts and other fleet sizes. | Collected food, delivered units, and completed loads; full tanks must empty before collecting again. |
-| {doc}`Tandem flight <control_lab_task_tandem>` | Guide two rockets through ordered checkpoints and investigate formation settings. | Gates crossed, together with each rocket's individual checkpoint progress. |
+| {doc}`Tandem flight <control_lab_task_tandem>` | Guide two rockets through synchronized checkpoints while maintaining desired pair distances and avoiding collisions. | Pair distances and Gates crossed; both rockets must register each checkpoint before advancing. |
 | {doc}`Collaborative mining <control_lab_task_mining>` | Inspect two tethers and coordinate transport of one heavy cargo. | Cargo deliveries and the rock's arrival at a base. |
 | {doc}`Thinking graphs <control_lab_task_rocket>` | Record candidate futures, inspect ancestry, select a node, and replay an alternative branch. | Deliveries in the physical task; a saved and reconstructed decision for this tutorial. |
 | {doc}`Racing <control_lab_task_racing>` | Drive with keyboard or planner, follow ordered checkpoints, and practise all six circuits. | Ordered checkpoint progress and completed laps. |
@@ -37,12 +37,41 @@ Their reward settings use **Progress = 1**, **Catch = 10**, and
 **Distance squared = 0**, so moving toward cargo and catching it remain useful
 without rewarding motion or falling for their own sake.
 
+Both **Asteroid harvesting** and **Collaborative mining** enable **Keep delivered
+rocks** (`keep_delivered_rocks: true`) by default. Both use the same native
+delivery rule: reaching the inner half-radius detaches all towing hooks, while
+the retained rock remains active, collidable, and free to move. It is excluded
+from hooking and approach targets until its centre is strictly outside all outer
+delivery zones. Mining's base is at `[12,32]`, with outer radius **3** and inner
+delivery radius **1.5**. Turn **Keep delivered rocks** off, press **Apply**, and
+restart to restore full-radius delivery and random respawn. See the
+{doc}`mining guide <control_lab_task_mining>` for task details.
+
 Choose **Racing** if you would rather begin with familiar driving controls. Its
 circuit sections explain the different layouts instead of assuming that one
 successful route transfers to every track.
 
 Next try **Tandem flight** or **Collaborative mining** to see why controlling two
-bodies changes the problem. **Ants & drops** starts with five harvesters sharing
+bodies changes the problem. Tandem defaults to **Distance squared = 1**,
+**Formation reward = 50**, **Checkpoint proximity = 1**, checkpoint weight `30`,
+**Wall collision penalty = 100**, and vehicle/body collision penalty `2`;
+other reward weights start at zero. The formation reward weight accepts values
+from `0` to `100`. Checkpoint proximity keeps the scene key `rewards.progress`.
+Each physics frame, it uses all controlled bodies' distances to the shared
+checkpoint after movement, including bodies that have already registered it.
+The engine averages those distances, then divides the checkpoint radius by the
+radius plus that mean. This positive proximity score is multiplied by the weight;
+unchanged positions continue earning it.
+
+The first rocket to register waits for its partner before it can register the
+next checkpoint or earn another crossing bonus. The default bonus is `15` per
+rocket, for `30` when both have registered. The proximity target is fixed at the
+start of the physics frame and changes on the following frame after all rockets
+register. Setting the checkpoint reward weights to zero preserves this stage
+restriction and the counters. The tandem tutorial explains the counterclockwise
+preset route and its synchronized rewards.
+
+**Ants & drops** starts with five harvesters sharing
 a refinery. Each full five-drop tank takes two simulated seconds to unload there;
 pickup slots become available again after three simulated seconds.
 Once the difference between actual motion and predicted motion is clear,
@@ -55,8 +84,11 @@ Once the difference between actual motion and predicted motion is clear,
 :::{div} feynman-prose
 The tutorials use an explicit comparison configuration below. For everyday play,
 the **Asteroid harvesting** and **Collaborative mining** presets instead recommend
-**Wave Jump**, **128 Walkers**, **Horizon 32**, **Action frames 6**, **Elites 4**,
-and **Stop at first bifurcation** enabled. Switching presets updates settings
+**Wave Jump**, **128 Walkers**, **Action frames 6**, **Elites 4**, and
+**Stop at first bifurcation** enabled. Solo harvesting keeps **Horizon 32**;
+collaborative mining uses **Horizon 64** in its `controller_defaults`. The longer
+lookahead helps coupled delivery, but does not guarantee success in every
+stochastic run. Switching presets updates settings
 that still match the previous recommendations and preserves custom controller
 settings; starting a fresh task resets them to its recommendations.
 
@@ -95,8 +127,11 @@ controller optimizes, which can improve before a task event occurs. An
 must reach. A positive reward is therefore insufficient evidence of a delivery.
 
 Check the success metric explicitly whenever you change tasks in
-{doc}`control_lab_experiments`. A tandem aggregate count does not establish that
-both rockets completed the route; inspect their individual progress too. A
+{doc}`control_lab_experiments`. From a fresh reset of the two-rocket tandem preset,
+a gate count of `12` means both rockets have registered all six checkpoints under
+the synchronized stage rule. It does not measure formation quality: compare actual
+pair distances with their targets. Historical recordings made before this rule
+may show independent checkpoint progress and require inspecting each rocket. A
 rollout crossing a finish line describes a candidate future. Use the executed
 world and its counters to establish what happened.
 

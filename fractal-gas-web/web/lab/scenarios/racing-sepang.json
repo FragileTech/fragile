@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "rewards": {
+    "wall_collision": 100
+  },
   "name": "Sepang Kart \u00b7 kart racing",
   "task": "navigation",
   "description": "The historical Sepang go-kart layout: eleven bends, close hairpins, and a long diagonal start straight.",

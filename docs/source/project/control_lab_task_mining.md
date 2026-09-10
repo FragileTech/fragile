@@ -25,16 +25,19 @@ and learn what happens when cargo is delivered. For installation, begin with
 Choose **Collaborative mining** under **Environment**, then press **↺** to reset.
 The scene contains two controlled rockets and **one** passive cargo rock. The
 rock has mass 0.24 kg and linear drag 0.8; each rocket has mass 1 kg and maximum
-thrust 16 N. One upright rocket has enough thrust to lift the rock on its own.
+thrust 24 N. One upright rocket has enough thrust to lift the rock on its own.
 Cooperation provides additional force, provided both rockets help support the
 connected load.
 
 The rockets start at `[19, 10]` and `[19, 15]`, flanking the rock at `[22, 12.5]`.
-The delivery base is the circular zone centered at `[12, 12]`, with radius 3 m.
-The rock's center must enter that zone to register a delivery. Merely flying a
+The delivery base is the circular zone centered at `[12, 32]`, with radius 3 m.
+With retention enabled by default, the rock's center must enter the inner
+1.5 m disk to register a delivery. Merely flying a
 rocket into the base does not deliver its cargo.
 
-The irregular outer boundary and central polygonal hole are lethal wall geometry.
+The irregular outer boundary and central polygonal hole are collision geometry;
+the preset uses `physics.lethal_walls: false` and `rewards.wall_collision: 100`.
+Wall contact therefore costs reward without ending the world by default.
 Downward gravity pulls the rockets and cargo toward lower altitude, so a rocket
 that stops thrusting will descend; propulsion is needed to hold altitude while
 hauling. The gravity well at `[47, 22]` attracts bodies too; it is a force
@@ -50,7 +53,7 @@ inspection.
 :::{div} feynman-prose
 Moving the rock and lifting it are different jobs. In gravity mode, the supplied
 rock and two rockets weigh $(0.24 + 1 + 1)\times 9.81 \approx 21.97$ N, while
-their engines supply at most 32 N together. Pointing both engines upward leaves
+their engines supply at most 48 N together. Pointing both engines upward leaves
 thrust available to accelerate the load. The engine supports lifting tethered
 cargo, and the default **Rock weight → 1×** now makes that physically possible.
 
@@ -59,9 +62,9 @@ flight load** stages a suitable **Rock weight**, sized for the weakest rocket or
 drone to carry one rock on its own while reserving 20% of its maximum upward
 thrust. The setting rounds down to the weight slider's ticks. Press **Apply and
 restart** to use the staged value. The default 0.24 kg rock and one 1 kg rocket
-need about 12.16 N to hover, below the rocket's 16 N maximum. This solo calculation
-excludes a second attached rocket: one engine cannot support the full 21.97 N
-weight if its partner remains connected and unpowered.
+need about 12.16 N to hover, below the rocket's 24 N maximum. This solo calculation
+excludes a second attached rocket: with its partner connected and unpowered,
+one upright engine has only about 2.03 N left above the full 21.97 N weight.
 
 **Rock size** changes geometry independently of mass. Increasing hook stiffness
 reduces spring stretch; it does not add thrust. Point the thrust upward to lift:
@@ -86,7 +89,7 @@ Changing these settings resets the current world and recording, so set them befo
 collecting a trial.
 
 1. Select **Controller → Fractal Monte Carlo**, **Walkers → 128**,
-   **Horizon → 16**, **Action frames → 6**, and **Seed → 7**.
+   **Horizon → 64**, **Action frames → 6**, and **Seed → 7**.
 2. Select **Clock → Reproducible · wait for planning** and **Worker threads → 1**.
    The current UI defaults to four requested threads; explicitly choosing one
    removes that difference from this exercise. Wait for **WEBASSEMBLY** readiness.
@@ -112,6 +115,9 @@ collecting a trial.
 Each walker represents a possible future for the whole three-body system. It is
 not an extra physical rocket. Increasing **Walkers** gives the search more
 candidates; it does not add towing force to the executed world.
+The collaborative preset's `controller_defaults` use horizon 64 (previously 32),
+6 action frames, and 4 elites; solo remains at 32/6/4. The longer lookahead helps
+plan coupled delivery, but does not guarantee success in every stochastic run.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/mining-detail.png
@@ -159,21 +165,28 @@ runtime rest length to the current separation, with a minimum of 0.1 m. Therefor
 a reacquired connection need not have the original 3.5 m rest length. There is no
 manual “grab” key: steer close enough and advance physics.
 
-When the cargo center enters the base, the delivery counter increases and the
-cargo's connections detach. Because this rock has `respawn: true`, it normally
-respawns immediately at a randomly sampled collision-free position across the
-entire playable map, outside delivery bases and with clearance from walls, holes, and active
-bodies. It keeps its configured initial angle and has zero linear and angular
-velocity. The same cargo body is reused; another rock is not added. Seeded replay
-reproduces the respawn positions. The rockets remain where they are. Their
-automatic tethers must find the respawned rock again, and can do so immediately
-if they are already close enough. Otherwise, the next job is to travel to the
-rock and reacquire it. Each delivery changes the starting geometry for the next
-haul.
+Collaborative mining and Asteroid harvesting both default to
+`keep_delivered_rocks: true`, using the same native retention behavior as solo
+mode. With retention enabled, the mining base has two
+useful radii: the inner delivery disk has half the base radius (1.5 m), and the
+outer release boundary has radius 3 m. When the rock's center enters the inner
+disk, the delivery counter increases and all towing hooks attached to the cargo
+detach. The rock stays active and
+collidable and continues moving under physics, but it is locked against hooking
+and approach targeting until its center is strictly outside every outer delivery
+zone. Passing back through the inner disk during that lock does not create
+another delivery. Once the rock's center is strictly outside every outer zone,
+it becomes eligible for automatic hooking and approach targeting again. The physical hooks remain on
+their rockets, so you must bring them back to the released rock.
 
-If none of 256 sampled positions is clear, the rock stays delivered and inactive
-until the next frame's placement attempts. Waiting for space does not count as
-another delivery.
+Turn **Keep delivered rocks** off and press **Apply and restart** to restore
+full-radius delivery and random respawn. Delivery then uses the full radius-3 m
+base, increases the counter, and detaches all towing hooks from the cargo.
+This preset's `respawn: true` cargo is placed at a seeded random collision-free
+position throughout the playable map, outside bases and clear of walls, holes,
+and active bodies. The same cargo body is reused, with its configured initial
+angle and zero linear and angular velocity. If 256 placement attempts find no
+clear position, it stays delivered and inactive and retries on the next frame.
 :::
 
 (sec-lab-mining-manual)=
@@ -226,42 +239,56 @@ apply zero-input frames if you want to observe coasting.
 ## Measure deliveries and preserve the evidence
 
 :::{div} feynman-prose
-Use cargo deliveries as the task outcome. Reward is a separate signal: the native
-model adds a delivery bonus and also rewards changes in distance-based progress,
-with collision penalties. For an attached rocket, progress follows the
-cargo's distance to a base; for a disconnected rocket, it follows distance to
-active cargo. Positive reward can therefore occur before any delivery.
+Use cargo deliveries as the task outcome. The native harvest model counts
+deliveries separately, with no delivery bonus. It forces `delivery`, `collision`,
+`pickup`, `gate`, `formation`, and `hooked_rock_distance` rewards to zero.
+The configurable rewards are `progress`, `distance_squared`, `catch`, and
+`wall_collision`; the shipped mining preset uses 1, 0, 10, and 100 respectively.
+Catch rewards apply on each catch,
+including reacquisition after a break. Positive reward can therefore occur
+before any delivery.
+
+Open **Rewards → Wall collision penalty** to set `rewards.wall_collision`
+from 0 to 10,000, with default 100. Press **Apply to current run** to change it
+live while preserving the current state. This setting applies to every Control
+Lab task, including harvesting, mining, and imported older scenes. The separate
+`rewards.collision` term now covers only vehicle/body contacts; the harvest model
+still disables that reward term.
+
+Each controlled vehicle touching an outer wall or a hole boundary costs one
+wall penalty per physics frame. Staying against a wall costs the penalty again
+on every frame; corners and repeated contacts across physics substeps add no
+extra charge for that vehicle in the same frame. Passive cargo and hooks cause
+neither wall penalties nor wall deaths. Retained rocks keep their existing
+physics behavior.
+
+To make wall contact terminal, enable **Setup → World physics → Die on wall
+collision**, which sets the existing `physics.lethal_walls` field, then press
+**Apply and restart**. Any controlled vehicle touching a wall or hole boundary
+then ends the whole world, and the wall penalty is still charged on that death
+frame. Every shipped preset starts with wall death off and wall penalty 100;
+an older imported scene's explicit `lethal_walls: true` is still honored.
+
+Older scenes without a wall reward setting receive the new default of 100 for
+future or resimulated rewards. Historical stored records are not rewritten,
+and the snapshot layout is unchanged.
+
+When attached, progress measures the rock's center-to-base-center distance.
+When unhooked, it measures the physical hook's distance to the nearest eligible
+rock; retained rocks under the delivery lock are excluded. Moving closer earns
+progress reward, while moving away loses it. The optional `distance_squared`
+term rewards mean squared vehicle displacement per physics frame in any
+direction; it is disabled in the shipped mining preset.
 
 Each physics frame measures progress toward the target selected at that frame's
 start, using that same target before and after movement. Breaking a tether
 therefore does not earn a bonus merely by switching from the distant base to a
 nearby rock. The next frame can select a new target for the disconnected rocket.
 
-**Hooked rock travel** adds a separate reward for moving the cargo itself. Open
-the reward settings to adjust it from 0 to 1000 reward units per metre; the
-default is 1. Its scene field is `rewards.hooked_rock_distance`. Press **Apply
-settings** to activate a change while preserving the current world. Setting it
-to zero and applying disables this term.
-
-At the start of each physics frame, the model identifies active cargo rocks
-hooked to an active controlled vehicle. It then adds their centre-to-centre
-travel distances over that frame and multiplies the sum by the coefficient.
-Each rock counts once, even when both rockets hook it. At the default setting,
-moving one hooked rock's centre 0.2 m earns 0.2 reward units. Hook attachments
-and detachments change eligibility on the next frame; a respawn contributes no
-travel reward.
-
-This measures linear distance, not squared distance. Flying around a stationary
-rock earns nothing from this term, and spinning a rock without moving its centre
-earns nothing either. Moving the rock in any direction does earn reward, however,
-including taking it around a loop. Keep **Target progress** and **Delivery
-bonus** active to give that motion a destination; cargo travel alone does not
-distinguish hauling toward the base from hauling away.
-
 For a controlled benchmark, open **Experiments** with this scene selected, leave
 **All preset scenes** unchecked, and explicitly select **Success metric → Cargo
 deliveries** and **Success target → 1**. Check these fields even if you previously
-used a different task. Set **Population → 128**, **Lookahead · actions → 16**, and
+used a different task. Set **Population → 128**, **Lookahead · actions → 64**, and
 **Action duration · frames → 6** to match the live baseline; the dialog has its
 own defaults. Choose seeds and an episode limit before comparing controllers,
 and report that limit alongside results. A trial that runs out of frames without
@@ -296,10 +323,17 @@ and compare hook stiffness from the same paused starting state. A tighter spring
 can keep a rocket close to the rock while it continues to circle.
 
 If delivery stays at zero, inspect the cargo's center rather than a rocket's
-position or an attractive search path. If the rock suddenly returns to its spawn
-point while the counter increases, that is the intended replenishment cycle.
-If the world becomes terminal, inspect the last frames for boundary or hole
-contact and reset before retrying. If keyboard input fails, check focus, selection,
+position or an attractive search path. By default, delivery uses the inner
+1.5 m disk. A delivered rock remains active, collidable, and moving under
+physics; the delivery lock does not physically freeze it. Once its center is strictly
+outside all outer delivery zones, bring a hook within range to reacquire it.
+Turn **Keep delivered rocks** off and press **Apply and restart** for full-radius
+delivery and random respawn instead.
+If the world becomes terminal, inspect the last frames and scene settings and
+reset before retrying. The preset's wall collisions are not lethal, but enabling
+**Die on wall collision** or importing a scene with `lethal_walls: true` makes
+either rocket's wall contact end the whole world.
+If keyboard input fails, check focus, selection,
 and **Keyboard control** before changing the scene.
 
 For a modified course, follow {doc}`control_lab_scenes` and consult

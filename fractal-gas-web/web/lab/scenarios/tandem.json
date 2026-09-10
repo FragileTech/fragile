@@ -1,107 +1,44 @@
 {
   "version": 1,
   "name": "Tandem flight",
-  "description": "Guide a coordinated pair through the checkpoint loop.",
+  "description": "Fly counterclockwise through checkpoints together, maintaining separation and avoiding collisions. Everyone must clear each checkpoint before the next unlocks.",
   "task": "tandem",
-  "size": [
-    64,
-    44
-  ],
+  "size": [64, 44],
   "physics": {
     "dt": 0.016666666666666666,
     "substeps": 4,
     "solver_iterations": 8,
-    "lethal_walls": true,
+    "lethal_walls": false,
     "lethal_bodies": false
   },
   "boundary": [
-    [
-      2,
-      8
-    ],
-    [
-      10,
-      2
-    ],
-    [
-      29,
-      2
-    ],
-    [
-      33,
-      6
-    ],
-    [
-      53,
-      3
-    ],
-    [
-      62,
-      12
-    ],
-    [
-      60,
-      28
-    ],
-    [
-      53,
-      41
-    ],
-    [
-      36,
-      41
-    ],
-    [
-      30,
-      37
-    ],
-    [
-      12,
-      41
-    ],
-    [
-      3,
-      32
-    ],
-    [
-      5,
-      21
-    ]
+    [2, 8],
+    [10, 2],
+    [29, 2],
+    [33, 6],
+    [53, 3],
+    [62, 12],
+    [60, 28],
+    [53, 41],
+    [36, 41],
+    [30, 37],
+    [12, 41],
+    [3, 32],
+    [5, 21]
   ],
   "holes": [
     [
-      [
-        27,
-        17
-      ],
-      [
-        33,
-        15
-      ],
-      [
-        38,
-        20
-      ],
-      [
-        36,
-        26
-      ],
-      [
-        29,
-        28
-      ],
-      [
-        25,
-        23
-      ]
+      [27, 17],
+      [33, 15],
+      [38, 20],
+      [36, 26],
+      [29, 28],
+      [25, 23]
     ]
   ],
   "bodies": [
     {
-      "position": [
-        12,
-        12
-      ],
+      "position": [12, 12],
       "angle": 0,
       "radius": 0.65,
       "mass": 1,
@@ -113,10 +50,7 @@
       "agent_type": "rocket"
     },
     {
-      "position": [
-        12,
-        16
-      ],
+      "position": [12, 16],
       "angle": 0,
       "radius": 0.65,
       "mass": 1,
@@ -131,51 +65,45 @@
   "formation_distance": 4,
   "gates": [
     {
-      "position": [
-        23,
-        10
-      ],
+      "position": [23, 10],
       "radius": 3.5
     },
     {
-      "position": [
-        45,
-        10
-      ],
+      "position": [45, 10],
       "radius": 3.5
     },
     {
-      "position": [
-        53,
-        22
-      ],
+      "position": [53, 22],
       "radius": 3.5
     },
     {
-      "position": [
-        44,
-        34
-      ],
+      "position": [44, 34],
       "radius": 3.5
     },
     {
-      "position": [
-        20,
-        34
-      ],
+      "position": [20, 34],
       "radius": 3.5
     },
     {
-      "position": [
-        12,
-        21
-      ],
+      "position": [12, 21],
       "radius": 3.5
     }
   ],
+  "rewards": {
+    "progress": 1,
+    "distance_squared": 1,
+    "collision": 2,
+    "formation": 50,
+    "pickup": 0,
+    "delivery": 0,
+    "gate": 30,
+    "hooked_rock_distance": 0,
+    "catch": 0,
+    "wall_collision": 100
+  },
   "agent_types": {
     "rocket": {
-      "label": "Kestrel · vector rocket",
+      "label": "Kestrel \u00b7 vector rocket",
       "physics": {
         "controlled": true,
         "flight_capable": true,
@@ -194,7 +122,7 @@
       }
     },
     "kart": {
-      "label": "Mite · electric kart",
+      "label": "Mite \u00b7 electric kart",
       "extends": "rocket",
       "physics": {
         "flight_capable": false,
@@ -213,7 +141,7 @@
       }
     },
     "drone": {
-      "label": "Wisp · survey drone",
+      "label": "Wisp \u00b7 survey drone",
       "extends": "rocket",
       "physics": {
         "flight_capable": true,
@@ -230,55 +158,11 @@
         "color": "#ffce70"
       }
     },
-    "thruster_tug": {
-      "extends": "rocket",
-      "label": "Kestrel · independent thrusters",
-      "physics": {
-        "actuator": {
-          "kind": "thrusters",
-          "thrusters": [
-            {
-              "position": [
-                -0.3,
-                -0.35
-              ],
-              "direction": [
-                1,
-                0
-              ],
-              "force": 8
-            },
-            {
-              "position": [
-                -0.3,
-                0.35
-              ],
-              "direction": [
-                1,
-                0
-              ],
-              "force": 8
-            },
-            {
-              "position": [
-                0,
-                0
-              ],
-              "direction": [
-                0,
-                1
-              ],
-              "force": 4,
-              "reversible": true
-            }
-          ]
-        }
-      }
-    },
     "harvester": {
-      "label": "Harvester · steam ore collector",
+      "label": "Harvester \u00b7 steam ore collector",
       "extends": "kart",
       "physics": {
+        "flight_capable": false,
         "radius": 1.3,
         "mass": 8,
         "thrust": 36,
@@ -295,6 +179,33 @@
       "visual": {
         "model": "harvester",
         "color": "#b88a43"
+      }
+    },
+    "thruster_tug": {
+      "extends": "rocket",
+      "label": "Kestrel \u00b7 independent thrusters",
+      "physics": {
+        "actuator": {
+          "kind": "thrusters",
+          "thrusters": [
+            {
+              "position": [-0.3, -0.35],
+              "direction": [1, 0],
+              "force": 8
+            },
+            {
+              "position": [-0.3, 0.35],
+              "direction": [1, 0],
+              "force": 8
+            },
+            {
+              "position": [0, 0],
+              "direction": [0, 1],
+              "force": 4,
+              "reversible": true
+            }
+          ]
+        }
       }
     }
   }

@@ -11,6 +11,7 @@ namespace fg::optimization {
 struct Settings {
   explicit Settings(const Json& input);
   Json json;
+  DistanceMetric distance_metric = DistanceMetric::L2;
   std::string algorithm, companion, clone_companion, objective, perturbation;
   int walkers, max_walkers, seed, dt_min, dt_max, clone_every, substeps, elites;
   int horizon, max_horizon;

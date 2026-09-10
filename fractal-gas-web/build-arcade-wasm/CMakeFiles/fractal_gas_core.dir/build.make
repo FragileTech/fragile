@@ -102,36 +102,19 @@ CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s"
 	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/nes_env.cpp -o CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s
 
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fractal_gas_core.dir/flags.make
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fractal_gas_core.dir/includes_CXX.rsp
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o: /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o: CMakeFiles/fractal_gas_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o -MF CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o.d -o CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp
-
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.i"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp > CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.i
-
-CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.s"
-	/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/em++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp -o CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.s
-
 # Object files for target fractal_gas_core
 fractal_gas_core_OBJECTS = \
 "CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o" \
-"CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o"
+"CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o"
 
 # External object files for target fractal_gas_core
 fractal_gas_core_EXTERNAL_OBJECTS =
 
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o
-libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/build.make
 libfractal_gas_core.a: CMakeFiles/fractal_gas_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libfractal_gas_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking CXX static library libfractal_gas_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/fractal_gas_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fractal_gas_core.dir/link.txt --verbose=$(VERBOSE)
 

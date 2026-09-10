@@ -742,11 +742,35 @@ paths, the future-state cloud, tethers, and collision geometry independently.
 | Preset | Experiment |
 |---|---|
 | Ants & drops | Joint control of 1–128 rockets, drones, karts or harvesters, defaulting to 5 harvesters. Each of the 24 pickups returns at a seeded random playable position three simulation seconds after collection, indefinitely. |
-| Asteroid harvesting | Attach cargo and deliver it through an arena with obstacles and gravity. |
-| Tandem flight | Coordinate two bodies through sequential gates with a formation reward. |
-| Collaborative mining | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. |
+| Asteroid harvesting | Attach cargo and deliver it through an arena with obstacles and gravity. Defaults to `keep_delivered_rocks: true`; see the {doc}`mining guide <control_lab_task_mining>` for shared delivery behavior. |
+| Tandem flight | Maintain the requested pair distances while advancing together through shared checkpoints and avoiding collisions. |
+| Collaborative mining | Haul one heavy rock: slow with one rocket, faster with two. Defaults to `keep_delivered_rocks: true`, as in solo harvesting; see the {doc}`mining guide <control_lab_task_mining>` for delivery behavior and planner settings. |
 | Mining rocket · thinking graphs | Inspect search ancestry, cloning, and collision diagnostics. |
 | Violet Circuit · kart racing | Drive one Mite R kart through 16 ordered checkpoints around a closed circuit. |
+:::
+
+:::{div} feynman-prose
+Tandem flight multiplies the distance-agreement scores of all controlled-body
+pairs and pays the result once per physics frame, independently of target
+progress. Its defaults are formation weight 50 (adjustable from 0 to 100),
+checkpoint proximity weight 1, checkpoint bonus 30, squared vehicle travel weight 1,
+wall collision penalty 100, and body collision penalty 2; all other reward terms
+are zero. **Reset defaults** restores these task-aware values.
+
+All controlled vehicles share the checkpoint stage given by their minimum crossing
+count. After movement on every physics frame, checkpoint proximity pays
+`weight × r / (r + d̄)`, where `r` is the radius of the checkpoint selected from
+that frame's starting shared stage and `d̄` is the mean distance to it across all
+controlled vehicles. Vehicles that have cleared it and are waiting remain in this
+mean: staying near earns a positive reward each frame, while moving farther away
+reduces the reward toward zero without making it negative.
+
+Each eligible crossing still pays the checkpoint bonus divided by the total
+controlled-vehicle count. A vehicle that gets ahead waits without further crossing
+credit. Once every vehicle has crossed, the next checkpoint becomes eligible on the
+following frame. Setting either checkpoint weight to zero stops its payment without
+disabling counters or the shared lock. The formation formula and manual pair-distance
+settings appear in the {doc}`formation-flight guide <control_lab_task_tandem>`.
 :::
 
 ### Drive Violet Circuit
@@ -810,7 +834,8 @@ and the planners.
 tethers, and draws outer boundaries or holes. Shift-click selects several entities;
 drag moves the selection. **Duplicate selection** also copies tethers whose endpoints
 are both selected. Deleting selected bodies removes their attached tethers and remaps
-remaining body indices. Use middle/right-drag or Alt-drag to pan, and scroll to zoom.
+remaining body indices. Right-drag rotates and tilts the camera; middle-drag or
+Alt-left-drag pans, and scrolling zooms.
 
 The numeric property panel edits the selected entity's physical values and nested
 extension parameters; **Apply properties** applies them. Entity JSON and complete scene

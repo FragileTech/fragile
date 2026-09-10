@@ -28,7 +28,7 @@ The six illustrated task walkthroughs are {doc}`control_lab_task_harvest`,
 {doc}`control_lab_task_mining`, {doc}`control_lab_task_rocket`, and
 {doc}`control_lab_task_racing`. The **SCORE** panel shows a task counter, which
 is different from the accumulated reward that the controller optimizes. Reward can
-include progress, collisions, and formation penalties as well as completed objectives.
+include travel, formation rewards, collision penalties, and checkpoint rewards.
 :::
 
 :::{div} feynman-added
@@ -36,10 +36,36 @@ include progress, collisions, and formation penalties as well as completed objec
 |---|---|---|
 | **Asteroid harvesting** | Guide the tug, acquire cargo with its automatic tether, and bring ore into the delivery base. | Cargo deliveries |
 | **Ants & drops** | Coordinate 1–128 rockets, drones, karts, or harvesters collecting food; defaults to 5 harvesters. | Food collected |
-| **Tandem flight** | Guide a pair through ordered checkpoint zones while maintaining formation. | Gates crossed |
-| **Collaborative mining** | Haul one heavy rock: slow with one rocket, faster with two; delivery immediately replenishes it. | Cargo deliveries |
+| **Tandem flight** | Move through shared checkpoints while maintaining desired pair distances and avoiding collisions. | Gates crossed |
+| **Collaborative mining** | Haul one rock with two rockets; see the {doc}`mining guide <control_lab_task_mining>`. | Cargo deliveries |
 | **Thinking graphs** | Use the harvesting task to inspect alternative futures, cloning, and ancestry. | Cargo deliveries |
 | **Racing** | Choose a circuit with **Select track**, then drive its checkpoint zones in order. | Laps completed; next checkpoint |
+:::
+
+:::{div} feynman-prose
+In Tandem flight, **Gates crossed** reports the minimum crossing count across the
+controlled vehicles: the group advances only when everyone reaches the shared
+checkpoint. A vehicle that gets ahead waits without another crossing credit,
+while its position continues contributing to checkpoint proximity. The next
+checkpoint becomes eligible on the frame after the last vehicle crosses.
+The defaults are **Checkpoint proximity = 1**,
+checkpoint bonus **30**, formation weight **50**, squared travel weight **1**, wall
+collision penalty **100**, and body collision penalty **2**.
+
+Each physics frame, checkpoint proximity uses the shared checkpoint from the
+start of the frame and the vehicles' center positions after movement. Average
+the distances of all controlled vehicles, including those that have already
+registered, then compute `radius / (radius + mean distance)` and multiply by the
+weight. At the default weight, this gives positive reward even at unchanged
+positions. The scene JSON key remains `rewards.progress`; the label in **Rewards**
+is **Checkpoint proximity**.
+The target changes on the next frame after all vehicles register.
+
+Each eligible crossing pays the checkpoint bonus divided by the total controlled
+vehicle count. Zero checkpoint weights stop those payments while
+leaving the counters and shared-stage lock active. **Reset defaults** restores the
+task-aware values above. The {doc}`tandem guide <control_lab_task_tandem>` gives a
+controlled exercise.
 :::
 
 ### Choose vehicles for any environment
@@ -416,10 +442,21 @@ Strings, booleans, adding new fields, and collision `vertices` require JSON edit
 For example, change `controlled`, `cargo`, an actuator's `kind`, or a visual model name
 in JSON. The numeric editor is not a complete scene schema.
 
-For cargo bodies, `respawn: true` immediately restores the body at its configured
-position after delivery, with zero velocity and detached tethers. The default is
-`false`. Collaborative mining uses one 24 kg rock with `drag: 0.8` and respawning
-enabled; each rocket has 16 N of thrust.
+Collaborative mining and Asteroid harvesting both default to
+`keep_delivered_rocks: true` and use the same native delivery rule: entering the
+inner half-radius detaches all towing hooks and retains the rock. It remains
+active, collidable, and free to move; delivery does not physically freeze it.
+The rock is excluded from hooking and approach rewards until strictly outside
+all outer delivery zones. Mining's base is at `[12, 32]`, with outer radius `3`
+and inner delivery radius `1.5`.
+Turn **Keep delivered rocks** off and press **Apply and restart** to restore
+full-radius delivery; cargo with `respawn: true` then respawns at a seeded random
+clear position with zero velocity and detached tethers.
+Collaborative mining uses one 0.24 kg rock with `drag: 0.8`, 24 N of thrust per
+rocket (48 N combined), and `lethal_walls: false`. Its `controller_defaults` use
+horizon `64`, frames `6`, and elites `4`; solo harvesting remains at `32/6/4`.
+The longer lookahead helps coupled delivery but does not guarantee success in
+every stochastic run. See {doc}`control_lab_task_mining` for the task guide.
 
 **Duplicate selection** offsets copies by +2 m in both coordinates. If both endpoints
 of a tether are selected bodies, their connecting tether is duplicated with corrected
@@ -525,10 +562,11 @@ in the harvesting presets is a separate configuration.
     success depends on your actions, not on merely adding a tether.
 
 The cargo has no `respawn: true` field, so this exercise is a single delivery. To
-repeat delivery with the same cargo automatically, add that boolean to the cargo
-entity and apply. After delivery it returns to its configured position with zero
-velocity and detached tethers. A fixed tether is not an automatic reattachment rule;
-use the automatic-tether fields in the reference for a repeatable harvesting setup.
+repeat delivery with the same cargo automatically, add that
+boolean to the cargo entity, leave `keep_delivered_rocks` disabled, and apply.
+The body will then use seeded random respawn with zero velocity and detached
+tethers. A fixed tether is not an automatic reattachment rule; use the
+automatic-tether fields in the reference for a repeatable harvesting setup.
 :::
 
 :::{figure} ../../_static/control_lab/tutorials/editor-tether.png

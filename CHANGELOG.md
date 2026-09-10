@@ -1,5 +1,43 @@
 # Changelog
 
+- Make beam-style length normalization with α = 0.6 the default LLM generation reward while preserving explicit objectives and legacy recording imports.
+
+- Add a visual FragileTech home page introducing Arcade, Control, Optimization, and LLM labs; preserve Arcade at `arcade.html` and update lab navigation.
+
+- Add pairwise LLM answer ranking with Davidson Elo ratings, uncertainty, adaptive comparisons, independent method audits, held-out validation, optional model/human audits, durable request budgets and recovery, and portable version 2 comparison reports with offline CLI processing.
+
+- Add negative mean Xent as the LLM Lab default, adjustable beam-style length normalization, and optional mean XED maximization/minimization through Together. Share cumulative utility with native Wave/Graph, preserve offline scoring provenance, and report scoring usage separately.
+
+- Move judge grading, scores and trace comparisons into a dedicated LLM Evaluation tab. Add direct Gemini Flash evaluation and resolve its moving alias to a concrete model before selecting an active structured-output provider.
+
+- Default optional LLM benchmark grading to OpenRouter's latest Gemini Flash alias while keeping judge and generation settings independent.
+
+- Reward tandem checkpoint proximity with radius / (radius + mean agent distance), including cleared agents waiting for the team. This positive per-frame score replaces signed checkpoint progress; crossing bonuses and synchronization remain unchanged.
+
+- Add a full-width LLM Benchmark tab with linked archived/retained sampling comparisons, trial-weighted statistics, diversity and work curves, pinned trace inspection, optional independent-model grading, offline comparison reports, and CLI report processing.
+
+- Highlight the shared tandem checkpoint in amber with a crossed-agent count, and flash crossings green in live views and forward replay; seeking and reduced-motion preferences suppress transient feedback.
+
+- Preserve LLM EOS traces while recycling terminal walker slots; stop at the initial-population EOS target or shared generated-token budget and retain partial results at run limits. Add version 3 progress recordings with legacy imports. Fix provider continuation markers and verify three consecutive prose chunks before accepting a route. Default to Qwen 3.5 35B A3B with verified Alibaba partial mode; keep DeepSeek selectable.
+
+- Synchronize tandem checkpoints across agents, with default progress weight 1 and checkpoint bonus 30 normalized by team size. Agents wait for the team before advancing to the next ordered checkpoint.
+
+- Add LLM benchmarks comparing Wave or Graph with independent populations, matched generated-token budgets, and temperature-zero answers. Save repeated trials in browser storage or checkpointed CLI journals, with portable archives, offline processing, and explicit retry of unfinished methods.
+
+- Raise the Tandem flight formation reward default to 50 and expose its full 0–100 range in reward controls and scene validation.
+
+- Add an LLM Analysis tab with recorded generation trees, stored Graph views, metric coloring, independent playback, token and decision inspectors, branch comparison, and PNG export. Capture opt-in pre-cloning diagnostics without changing seeded algorithms; export version 2 recordings while retaining offline version 1 inspection.
+
+- Draw formation links between every scored agent pair, with reusable dashed segments colored by pair quality and a matching legend in both visual styles.
+
+- Add right-drag camera rotation and tilt to the Control Lab, preserving pan, zoom, agent following, and replay; reset controls restore the initial scene view.
+
+- Reward formation flight with the product of pairwise target-distance scores each physics frame. Add validated per-pair distance overrides and editor reference handling; default to formation, squared travel, and collision terms with optional checkpoint rewards.
+
+- Increase the default Control Lab wall-collision penalty to 100 per touching vehicle per physics frame; explicit custom penalties and wall-death settings remain unchanged.
+
+- Add an OpenRouter LLM Lab with shared native Wave/Graph token environments, conditional token likelihood objectives, selectable embedding context, and portable trace recordings. Introduce a shared configurable L2/cosine observation-distance API, retaining L2 defaults for existing labs.
+
 - Unify Arcade, Control Lab, and Optimization Lab navigation as compact controls
   with shared spacing, hover, focus, and current-page states.
 
@@ -18,7 +56,11 @@
 
 - Dismiss the episode-ended notice on the next click or timeline drag so replay remains unobstructed.
 
+- Add configurable wall-collision penalties and optional whole-run death in every Control Lab environment. Wall penalties default to 2 per touching vehicle per physics frame, including older scenes; shipped presets default to nonlethal walls.
+
 - Add persistent dropped asteroids with inner delivery and outer re-hook release zones.
+
+- Enable retained rocks in Collaborative mining with a longer cooperative planning horizon and delivery/detachment/re-hook regression coverage; the existing toggle still restores respawning.
 
 - Add persistent weighted harvesting hooks, live hook mass controls, and approach/catch/movement rewards.
 - Make the default asteroid masses light enough for solo rocket towing at 1× in flight mode.

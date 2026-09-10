@@ -104,6 +104,7 @@ fg::control::WaveConfig config(const char* text, const Scene& s) {
   c.horizon = integer("horizon", 16, 1, 4096);
   c.frames = integer("frames", 6, 1, 4096);
   c.elites = integer("elites", 0, 0, c.walkers);
+  c.distance_metric = fg::parse_distance_metric(j["distance_metric"].str("l2"));
   c.distance_coef = float(j["distance_coef"].num(1));
   c.reward_coef = float(j["reward_coef"].num(1));
   c.noise = float(j["noise"].num(.2));

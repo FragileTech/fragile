@@ -1,5 +1,8 @@
 {
   "version": 1,
+  "rewards": {
+    "wall_collision": 100
+  },
   "name": "Original Obstacle Circuit \u00b7 kart racing",
   "task": "navigation",
   "description": "The first kart test circuit, with staggered bollards, edge intrusions, a top chicane, and a hooked lower hairpin.",

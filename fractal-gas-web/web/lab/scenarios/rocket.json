@@ -11,7 +11,7 @@
     "dt": 0.016666666666666666,
     "substeps": 4,
     "solver_iterations": 8,
-    "lethal_walls": true,
+    "lethal_walls": false,
     "lethal_bodies": false
   },
   "boundary": [
@@ -346,6 +346,7 @@
   },
   "hook_mass": 0.25,
   "rewards": {
+    "wall_collision": 100,
     "progress": 1,
     "distance_squared": 1,
     "catch": 10,

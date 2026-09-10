@@ -5,6 +5,7 @@
 #include <numeric>
 
 #include "fractal/metrics.hpp"
+#include "fractal/diagnostics.hpp"
 #include "fractal/population.hpp"
 #include "fractal/tensor_ops.hpp"
 #include "fractal/visit_grid.hpp"
@@ -13,6 +14,7 @@ struct GraphConfig {
   int32_t start_walkers = 15;  // demo: start_walkers = min_leafs = 15
   int32_t min_leafs = 15;
   int32_t max_walkers = 100000;  // hard cap on the population
+  DistanceMetric distance_metric = DistanceMetric::L2;
   float dist_coef = 1.0f;
   float reward_coef = 1.0f;
   int32_t dt_min = 1;  // INCLUSIVE range like the wave; the reference's
@@ -74,6 +76,7 @@ class Graph {
   Rng& rng_;
   GraphConfig& params_;
   State state_;
+  CloneDiagnostics diagnostics;
   VisitGrid visits_;
   bool count_visits_;
   int64_t total_steps_ = 0, total_clones_ = 0, total_frames_ = 0;
@@ -123,6 +126,7 @@ class Graph {
 
   void reset() {
     state_ = {};
+    diagnostics.decisions.clear();
     total_steps_ = total_clones_ = total_frames_ = 0;
     iteration_ = 0;
     visits_.reset();
@@ -158,14 +162,19 @@ class Graph {
       visits_.update(keys);
     }
   }
+  template <class B>
+  static auto eligible(const B& b, const State& s, int i, int)
+      -> decltype(b.best_candidate(s.states, size_t(i))) {
+    return b.best_candidate(s.states, size_t(i));
+  }
+  template <class B>
+  static bool eligible(const B&, const State&, int, long) { return true; }
   int32_t best_index() const {
     // torch.argmax: first maximum.
-    int32_t best = 0;
-    for (int32_t i = 1; i < state_.n; ++i) {
-      if (state_.cum_rewards[static_cast<size_t>(i)] >
-          state_.cum_rewards[static_cast<size_t>(best)]) {
-        best = i;
-      }
+    int32_t best = -1;
+    for (int32_t i = 0; i < state_.n; ++i) {
+      if (eligible(backend_, state_, i, 0) &&
+          (best < 0 || state_.cum_rewards[i] > state_.cum_rewards[best])) best = i;
     }
     return best;
   }
@@ -173,7 +182,7 @@ class Graph {
   std::pair<int32_t, float> get_best_walker() const {
     if (state_.n == 0) return {0, 0.0f};
     const int32_t best = best_index();
-    return {best, state_.cum_rewards[static_cast<size_t>(best)]};
+    return {best, best < 0 ? 0.f : state_.cum_rewards[static_cast<size_t>(best)]};
   }
 
   StepInfo step() {
@@ -187,8 +196,8 @@ class Graph {
     auto& compas1 = compas1_;
     sampler_.sample_companions_into(alive, rng_, compas1);
     auto& distances = distances_;
-    l2_norm_companions_into(state_.observations, compas1, n, state_.obs_dim, backend_.pool(),
-                            distances);
+    companion_distances_into(state_.observations, compas1, n, state_.obs_dim, backend_.pool(),
+                             distances, params_.distance_metric);
     auto& distance_norm = distance_norm_;
     asymmetric_rescale_into(distances, distance_norm);
     const auto reward_stats = mean_std_masked(state_.cum_rewards, state_.is_leaf);
@@ -238,6 +247,18 @@ class Graph {
       state_.other_rewards[ui] = other[ui];
     }
 
+    if (diagnostics.enabled) {
+      diagnostics.decisions.assign(n, {});
+      for (int i = 0; i < n; ++i) {
+        auto& v = diagnostics.decisions[i];
+        v.slot = i; v.distance_companion = compas1[i];
+        v.distance = distances[i]; v.distance_norm = distance_norm[i];
+        v.reward_norm = rewards_norm[i]; v.other = other[i];
+        v.fitness = state_.virtual_rewards[i]; v.alive = alive[i];
+        v.normalization_leaf = state_.is_leaf[i];
+      }
+    }
+
     // ---- 2. is_leaf = get_is_leaf(parent) ------------------------------------
     std::fill(state_.is_leaf.begin(), state_.is_leaf.end(), 1);
     for (int32_t i = 0; i < n; ++i) {
@@ -276,6 +297,14 @@ class Graph {
       state_.will_clone[ui] =
           (state_.wants_clone[ui] && state_.is_leaf[ui] && !state_.is_cloned[ui]) ? 1 : 0;
     }
+    if (diagnostics.enabled)
+      for (int i = 0; i < n; ++i) {
+        auto& v = diagnostics.decisions[i];
+        v.clone_donor = compas2[i]; v.donor_fitness = state_.virtual_rewards[compas2[i]];
+        v.clone_score = state_.clone_probs[i]; v.draw = uniforms[i];
+        v.leaf = state_.is_leaf[i]; v.donor_protected = state_.is_cloned[i];
+        v.wanted = state_.wants_clone[i]; v.cloned = state_.will_clone[i];
+      }
     int32_t leaves = 0;
     for (int32_t i = 0; i < n; ++i) leaves += state_.is_leaf[static_cast<size_t>(i)];
     bool any = false;
@@ -286,7 +315,14 @@ class Graph {
     }
 
     // ---- 5. clone_data --------------------------------------------------------
-    state_.will_clone[static_cast<size_t>(best_index())] = 0;
+    const int best = best_index();
+    if (best >= 0) {
+      state_.will_clone[static_cast<size_t>(best)] = 0;
+      if (diagnostics.enabled) {
+        diagnostics.decisions[best].best_protected = true;
+        diagnostics.decisions[best].cloned = false;
+      }
+    }
     auto& cloning = cloning_;
     cloning.clear();
     for (int32_t i = 0; i < n; ++i) {
@@ -300,6 +336,10 @@ class Graph {
       state_.parent[i] = donor;
       if (!backend_.valid_slot(state_.states, donor)) {
         state_.will_clone[i] = 0;
+        if (diagnostics.enabled) {
+          diagnostics.decisions[i].invalid_donor = true;
+          diagnostics.decisions[i].cloned = false;
+        }
         continue;
       }
       stepping_.push_back(i);

@@ -1,6 +1,6 @@
 # Shared native Fractal library
 
-All three applications link `fg_fractal_core`. Algorithm templates are specialized in their C++ adapters; no browser, scene, emulator, benchmark, or application JSON type is required by this directory. The old numerical include paths forward here for source compatibility. They contain no alternate implementation.
+Arcade, Control, Optimization, and LLM Lab link `fg_fractal_core`. Algorithm templates are specialized in their C++ adapters; no browser, scene, emulator, benchmark, or application JSON type is required by this directory. The old numerical include paths forward here for source compatibility. They contain no alternate implementation.
 
 | Core | Responsibility | Consumers |
 | --- | --- | --- |
@@ -9,9 +9,41 @@ All three applications link `fg_fractal_core`. Algorithm templates are specializ
 | `graph.hpp` | Graph's distinct leaf masks, frozen parents, cloning exclusions, sparse transitions, visits, growth | Arcade and optimization `FractalTree` |
 | `euclidean.hpp` | Phase-space companions, fitness, cloning/revival, BAOAB, periodic geometry, evaluation accounting | Optimization's `EuclideanAdapter` |
 | `population.hpp` | Contiguous metadata and typed actions, C++17 array views, row-copy primitives | Wave and backends |
+| `distance.*` | Observation distance dispatch, validation, serial/threaded batch kernels | Wave and Graph in all adapters |
 | `checkpoint.hpp`, `exploration_tree.*` | Backend-independent serialization primitives and recorded action ancestry | Wave and planners |
 
-The comparison algorithms (CMA-ES, iCEM, MPPI, GAS 2017) and Python/Torch research algorithms keep their own implementations. Graph remains absent from Lab's menu. Euclidean dynamics require coordinate/velocity storage and are not applied to emulator snapshots.
+The comparison algorithms (CMA-ES, iCEM, MPPI, GAS 2017) and Python/Torch research algorithms keep their own implementations. Graph remains absent from Control Lab's menu. Euclidean dynamics require coordinate/velocity storage and are not applied to emulator snapshots.
+
+## Observation distances
+
+`fg::DistanceMetric` serializes through `parse_distance_metric` and `distance_metric_name`
+as `"l2"` or `"cosine"`. Missing configuration fields mean L2. `row_distance(a, b, d, metric)`
+compares a single pair; `companion_distances_into(observations, companions, n, d, pool, out, metric)`
+compares flat `[n, d]` rows to their indexed companions and reuses `out`. Pass `nullptr`
+for serial execution. Inputs must be finite and the output must not alias observations.
+The original L2 arithmetic and `l2_norm_companions[_into]` wrappers are retained.
+
+Cosine computes `clamp(1 - dot(a,b)/(norm(a)*norm(b)), 0, 2)`; two zero vectors have
+distance 0 and exactly one zero vector has distance 1. Unknown metric names fail explicitly.
+Add metrics and dispatch in `distance.*`; fitness normalization and lifecycles need no edits.
+Wave's cloning operator and Graph configuration carry this choice; FMC and Jump Wave use
+their underlying Wave setting. Physical Euclidean phase-space geometry remains separate.
+
+## Token environment
+
+`llm/environment.hpp` implements snapshot `BatchEnv` using an injected batch transport.
+Snapshots contain immutable record IDs, token counts, cumulative log probability and stop
+status; the browser archive owns prefixes, token bytes and embeddings. Duration is a requested
+new-token count, and actions identify sampled continuations within the fixed run configuration.
+The worker caches realized transitions for replay. Rewards are changes in total or mean log
+likelihood, so they telescope across variable-sized chunks and cloning copies the whole state.
+
+`BatchEnv::best_candidate` defaults to true for existing backends. Token states exclude empty
+roots and unused slots. LLM Wave disables historical elite reinjection; completed and deepest
+partial candidates remain available in its separate trace archive. `FG_LLM_ONLY` builds a
+standalone Asyncify module: one native operation awaits concurrent worker requests. Errors
+invalidate the engine; the last committed population remains available for inspection. This
+transport contract can support future native planners without a second algorithm lifecycle.
 
 ## Backend contract
 

@@ -40,6 +40,62 @@ std::shared_ptr<const Scene> floor_scene(bool polygon, float friction = .5f) {
   return Scene::compile(s.str());
 }
 }
+TEST_CASE(control_wall_penalty_is_per_vehicle_per_frame) {
+  for (int threads : {1, 4}) for (int substeps : {1, 4, 32}) {
+    auto s = std::make_shared<Scene>(*Scene::compile(R"({"task":"harvest","size":[20,20],
+      "environment":{"flight":false},
+      "bodies":[{"controlled":true,"position":[0.5,0.5]},
+                {"controlled":true,"position":[19.5,10]},
+                {"cargo":true,"position":[0.5,15]}],
+      "rewards":{"progress":0,"distance_squared":0,"catch":0,"collision":100}})"));
+    CHECK_CLOSE(s->wall_collision_penalty, 100, 1e-6);
+    s->substeps = substeps;
+    Physics physics(s, threads);
+    StateBatch root(1, *s), out(1, *s), replay(1, *s);
+    root.reset(*s, 7);
+    float actions[4] = {};
+    int32_t frames = 5;
+    StepResult result;
+    physics.step(root, nullptr, actions, &frames, out, &result);
+    CHECK_CLOSE(result.reward, -1000, 1e-6);
+    CHECK(result.frames == 5);
+    CHECK(!result.dead);
+    replay.reset(*s, 7);
+    float total = 0;
+    for (int frame = 0; frame < 5; ++frame) {
+      physics.step_world(replay.row(0), actions, 1, result);
+      total += result.reward;
+    }
+    CHECK_CLOSE(total, -1000, 1e-6);
+    CHECK(std::memcmp(out.row(0), replay.row(0), out.bytes()) == 0);
+  }
+}
+
+TEST_CASE(control_wall_death_is_independent_of_penalty) {
+  for (float penalty : {0.f, 2.f}) {
+    auto s = std::make_shared<Scene>(*Scene::compile(R"({"size":[20,20],"physics":{"lethal_walls":true},
+      "bodies":[{"controlled":true,"position":[0.5,10]},
+                {"controlled":true,"position":[10,10]}],
+      "rewards":{"progress":0,"distance_squared":0}})"));
+    s->wall_collision_penalty = penalty;
+    Physics physics(s);
+    StateBatch root(1, *s), out(1, *s);
+    root.reset(*s, 7);
+    float actions[4] = {};
+    int32_t frames = 10;
+    StepResult result;
+    physics.step(root, nullptr, actions, &frames, out, &result);
+    CHECK(result.dead);
+    CHECK(result.frames == 1);
+    CHECK_CLOSE(result.reward, -penalty, 1e-6);
+    CHECK(word(out.row(0), 0) == 1);
+    // A terminated world must not charge again or advance.
+    physics.step_world(out.row(0), actions, 10, result);
+    CHECK(result.frames == 0);
+    CHECK_CLOSE(result.reward, 0, 1e-6);
+  }
+}
+
 TEST_CASE(control_cached_geometry_and_conservative_capsule) {
   BodyDef body;
   body.radius = 1.2f;

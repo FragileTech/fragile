@@ -1,5 +1,15 @@
 # fractal-gas-web
 
+The [LLM Lab guide](../docs/source/project/llm_laboratory.md) covers parallel token decoding
+with the shared Wave and Graph algorithms. Run `make llm-lab` from the repository root and
+open `http://127.0.0.1:8080/llm/`. It builds a standalone Asyncify engine, uses OpenRouter
+generation/log probabilities and embeddings, and keeps the API key in browser memory.
+Defaults are DeepSeek V4 Flash, text-embedding-3-small, and cosine observation distance.
+Other core consumers continue to default to L2. `make llm-test` runs offline native,
+WebAssembly, and browser tests. With an explicitly authorized local key,
+`npm --prefix fractal-gas-web run test:llm-live` tests actual continuation and cloning
+against a running lab (`LLM_LAB_URL`, default `http://127.0.0.1:8876/llm/`).
+
 The new [continuous-control laboratory](web/lab/README.md) runs a custom C++
 physics engine in the browser and Python. It supports packed state batches,
 joint continuous actions, Wave/FMC, extensible agent types, editable scenes,
@@ -362,7 +372,7 @@ silently; Sonic additionally accepts a one-time upload of your own ROM.
 ```bash
 python serve.py            # COOP/COEP headers (required for wasm threads)
 # or, from the repo root:  make web   (WEB_PORT=nnnn to change the port)
-# open http://localhost:8000/web/
+# open http://localhost:8000/web/arcade.html
 ```
 
 `web/autotest.html` is a headless smoke test of the wasm pipeline: copy a ROM
@@ -394,3 +404,198 @@ work: SharedArrayBuffer needs the cross-origin-isolation headers serve.py
 sets.
 
 The Lab’s **Vehicle count** control selects 1–128 vehicles in every environment, including racing tracks. Changing it restarts the scene paused and clears replay history. Added vehicles use the scene’s existing vehicle types and clear starting positions; cargo and obstacles remain in place. Each environment remembers its selected count for the session.
+
+### LLM analysis
+
+`/llm/` opens Generation. Analysis shares the run and selection and draws the
+recorded tree (Wave) or actual population slots (Graph) on Canvas. Playback,
+metric coloring, branch comparison and PNG export work offline. Imported
+recordings open Analysis at their final step. The engine remains `fgllm-1`;
+`fgllm` version 3 adds EOS completion identities, generated-token accounting,
+and run stopping reasons to the version 2 decision diagnostics. Versions 1 and
+2 remain readable; unavailable legacy diagnostics show as “Not recorded”.
+
+An EOS response ends and archives its branch. Its walker slot can clone an
+unfinished companion with that companion's complete prefix and ancestry. Runs
+succeed after saving one EOS completion per initial walker, or stop at the
+shared token budget (`walkers × sequence cap`), exhaustion of active branches,
+or the iteration limit. Already-running responses are retained; queued requests
+stop when the EOS target is reached. Run and Step stay disabled until Reset.
+
+The default generation model is `qwen/qwen3.5-35b-a3b`, with Alibaba preferred
+and revalidated for each run. Qwen requests to Alibaba mark the full final
+assistant prefix with `partial: true`. DeepSeek remains selectable and receives
+its `prefix: true` marker, but tested routes still restarted answers despite
+receiving the complete prefix and marker. Cloning itself preserved the donor's
+full sequence; the provider treated it as a completed turn.
+
+Discovery now verifies three consecutive chunks against an exact prose passage
+at temperature zero, including continuation from two inherited chunks. It never
+continues a probe that ended with EOS. The checks and expected text are recorded
+separately from generation; inherited prefixes, cached results, and probes do
+not consume the Fractal generated-token allowance.
+
+`make llm-web` also bundles the pinned `d3-hierarchy` 3.1.2 source and license
+locally under `web/llm/vendor/`. Publish the whole `web/llm/` directory, including
+`engine/` and `vendor/`. Use `npm run test:llm` and `npm run test:llm-browser`
+for recording/diagnostic and browser coverage; `test:llm-live` is the opt-in
+OpenRouter acceptance check.
+
+### LLM benchmark generation and storage
+
+The **Benchmark** tab, after Generation and Analysis in `/llm/`, runs the current Wave/Graph settings, independent
+sampling matched by starting population or actual generated-token work (or both),
+and one temperature-zero answer per trial. Every method uses the same continuation
+chunks and pinned generation provider. Browser runs autosave to IndexedDB; export
+`.fgllmbench` files to retain a portable copy. The tab uses the full workspace width;
+Generation retains the model and algorithm settings.
+
+Choose **Current Fractal run** to inspect the current or imported recording without
+running baselines. Saved/imported benchmarks provide method, trial, termination and
+attempt filters. Full-answer comparisons include nonempty EOS and sequence-capped
+answers, with counts shown separately; partial-only runs have a labeled preview.
+**Archived answers** includes discarded generated endpoints once each. **Retained
+population** preserves final slot multiplicity, using only the Graph frontier.
+Independently generated identical answers remain observations; exact-text duplicates
+are reported separately.
+
+Both populations have reward/length distributions, ECDFs, embedding distance and
+nearest-neighbor distributions, shared PCA projections, recorded-work progress
+curves, clone/concentration histories, and separate generation/embedding usage.
+Select a plotted range or endpoint to filter the trace browser, then pin two traces
+to compare complete text, bytes, probabilities, chunk boundaries and ancestry.
+Charts download as SVG or PNG; numeric data exports as JSON. Each trial receives
+equal weight. Paired bootstrap intervals resample trials, never cloned answers or
+distance pairs. Above 50,000 pairs per group, distance sampling is deterministic;
+sampled nearest-neighbor distances are upper bounds. Missing measurements remain
+unavailable. Likelihood uses the provider’s generation settings and is not a
+common-temperature rescore or an answer-quality grade.
+
+The **Evaluation** tab follows Benchmark and contains grading, judge charts, the
+trace browser and pinned comparisons. Chart selections in Benchmark open the
+linked traces in Evaluation. Both tabs share the source, trial filters and reports.
+Enter the shared OpenRouter session key and click **Evaluate with Gemini Flash**
+to grade missing or failed answers. Counts, request limits and available cost
+estimates are informational; no separate preview action is required.
+The default `~google/gemini-flash-latest` alias resolves through the catalog to the
+latest stable standard Flash release, then pins a compatible active provider.
+Advanced settings allow a different judge without changing generation.
+The method-blind judge uses four editable 0–4
+criteria and an optional reference; only fully assessed grades receive an overall
+0–100 score. Endpoint-level structured-output support is checked, the provider is
+pinned, and every response is validated locally. Grading uses concurrency two,
+temperature zero and a 1,024-token response cap. Pause, stop and explicit retry
+preserve valid grades. Changing model, provider, rubric or reference creates a
+separate session; judge costs are kept separate from generation.
+
+Select **Pairwise ranking** in Evaluation to compare answers in both presentation
+orders. Gemini Flash judges correctness, relevance, completeness, clarity, and an
+explicit overall rubric. A regularized Davidson model provides Elo-scale ratings,
+approximate posterior intervals, component-specific rank intervals, and predictions
+for unjudged pairs. Unobserved answers and disconnected comparisons remain unavailable.
+The default cap is 600 provider POST attempts including retries; no extra requests
+are scheduled automatically. Plans allocate 50% of pairs to adaptive ranking, 40%
+to random method audits, and 10% to held-out validation (80%/20% for Fractal-only
+recordings). Large runs use a reproducible ranking subset, while method audits sample
+the full saved populations and preserve clone weights without duplicating judge evidence.
+
+Method audits report equal-trial preference shares, assessment coverage, missing-data
+bounds, and simultaneous finite-source confidence bounds. These describe the frozen
+source and judge protocol, not factual correctness. Across-trial bootstrap intervals
+are separate and approximate. Training is frozen before held-out requests. Validation
+shows calibration, log loss, Brier score, order disagreement, cycles and prior sensitivity.
+An optional second-model or blinded human audit samples up to 20 completed pairs;
+its judgments and costs remain separate. Pause, stop, explicit retries and linked
+extensions retain earlier evidence. Version 2 `.fgllmcompare` reports include frozen
+sources and incremental ranking journals; version 1 reports still import. Offline CLI
+processing exports `ranking_*.jsonl` tables and recomputes ratings without credentials.
+Browser/CLI floating-point results are checked within `1e-8`; the independent SciPy
+optimizer reference is checked within `2e-5` in latent parameters.
+
+Run `npm --prefix fractal-gas-web run test:llm-ranking-browser` for the mocked browser
+workflow, and `uv run python fractal-gas-web/tests/llm/ranking-reference.py` for the
+independent numerical check. Paid live judging remains opt-in.
+
+Browser comparison reports retain the source snapshot, grading sessions and view
+settings. Export `.fgllmcompare` for an offline, portable report; ordinary `.fgllm`
+versions 1–3 and `.fgllmbench` remain supported. The CLI can process reports without
+credentials or network access:
+
+```sh
+npm run benchmark:llm -- process --input report.fgllmcompare --output ../outputs/comparison
+```
+
+This adds metrics, comparison traces/progress/compute, grading sessions and grades
+to the existing JSONL tables. Paid grading is a browser action in this version.
+
+Build the LLM engine with `make llm-web` from the repository root. The same runner
+also works directly in Node 22+, without a browser. From `fractal-gas-web/`:
+
+```sh
+npm run benchmark:llm -- run --config benchmark.json --output ../outputs/llm-benchmark
+npm run benchmark:llm -- resume --output ../outputs/llm-benchmark --retry-incomplete
+npm run benchmark:llm -- export --output ../outputs/llm-benchmark --file ../outputs/benchmark.fgllmbench
+npm run benchmark:llm -- process --input ../outputs/benchmark.fgllmbench --output ../outputs/benchmark-tables
+```
+
+Set `OPENROUTER_API_KEY` in the environment for generation. Export and processing
+work offline without a key or a built engine. A minimal `benchmark.json` is:
+
+```json
+{
+  "config": {
+    "prompt": "Explain why the sky is blue.",
+    "algorithm": "wave",
+    "walkers": 8,
+    "chunk_tokens": 32,
+    "sequence_tokens": 256
+  },
+  "comparison": "both",
+  "repetitions": 3
+}
+```
+
+Unspecified lab settings use the current defaults. `comparison` accepts `tokens`,
+`population`, or `both`; the benchmark defaults to `tokens` and one trial. The
+sequence cap applies to each independent answer. Only Fractal uses the lab's
+iteration limit; its accepted newly generated tokens determine the token baseline
+budget. The latter replenishes terminated independent trajectories and can end
+with partial answers. Three empty rounds stop it as incomplete. Embeddings are
+recorded for every nonempty prefix and their usage remains separate from generation.
+
+The CLI writes `events.fgllmbench` incrementally and checkpoints `manifest.json`.
+A writer lock prevents concurrent generation into the same directory. Resume
+recovers the last complete journal line, preserves completed methods, and requires
+`--retry-incomplete` to restart an interrupted method as a separate attempt.
+Browser **Retry unfinished** has the same behavior. Remote samples are not made
+reproducible by the recorded Fractal seed or by temperature zero.
+
+The version 1 archive has a manifest header followed by ordered JSONL events.
+Request starts, provider attempts/responses, accepted continuations, generation
+boundaries, and method outcomes retain stable benchmark/run/request identities.
+Uncommitted accepted responses remain in the archive. Processing emits JSONL tables
+for runs, trajectories, nodes, tokens, requests, snapshots and clone decisions,
+plus ordinary `.fgllm` files for Fractal attempts. Join tables using `benchmark_id`
+and `run_id`, with `node_id` and chunk token indices for finer detail. Likelihood/NLL
+and usage totals are direct calculations; unavailable provider measurements have
+null totals and explicit missing counts. Export/processing refuse to overwrite
+existing files. Archives include prompts and model output but exclude API keys.
+If journaled responses push a failed attempt beyond the legacy `.fgllm` size
+limit, its extracted recording explicitly omits request provenance; the complete
+requests and responses remain in `.fgllmbench` and the processed request table.
+
+Run `npm run test:llm` for runner/storage/CLI tests and
+`npm run test:llm-benchmark-browser` for mocked browser persistence and recovery.
+`npm run test:llm-comparison-browser` covers comparison sources, reports and grading.
+Live provider checks remain opt-in.
+
+
+### LLM scoring objectives
+
+New runs default to **Beam-style length normalization** (`objective: "beam"`), which divides cumulative generated-token log probability by the token count raised to `beam_alpha` (default 0.6, range 0–2). **Negative mean Xent** (`objective: "mean"`) divides by the generated-token count; equivalently, it is beam-style scoring with α = 1. These objectives need no extra requests.
+
+**Mean XED** (`objective: "xed"`) scores the same full answer twice with Together AI (`scoring_model: "Qwen/Qwen3.5-9B"`): once with the original user question and once with an empty question in the same non-thinking assistant scaffold. Their log-probability difference is divided by the scorer's answer-token count. `xed_direction` selects `"maximize"` (default) or `"minimize"`. Enter a separate Together key in Generation settings; CLI benchmarks read `TOGETHER_API_KEY`. Credentials are never exported. This measures question-conditioned likelihood contrast, not correctness.
+
+Together scoring passed live checks with one ignored output token per request; zero-token requests are rejected by the tested route. The adapter verifies echoed probabilities against the pinned Qwen tokenizer, including split Unicode tokens, and stops on incompatible responses. XED alone lazily loads the locally bundled tokenizer (~12.8 MB data); its source revision and license are in `llm/tokenizer/`. `make llm-web` bundles `@huggingface/tokenizers` 0.2.0 alongside it. Cached answers reuse both scores without merging EOS identities.
+
+The native engine receives cumulative utility explicitly, so cloning and answer ranking use the same score. Analysis defaults to **Selected objective**, with raw XED and its direction shown separately from maximizing utility. Version 3 recordings and benchmark exports retain both XED token-probability sequences, scorer identity, direction, and separate scoring usage; legacy total/mean imports keep their original interpretation. Scoring input/output tokens do not consume the generated-sequence budget.

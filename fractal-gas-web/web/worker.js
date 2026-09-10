@@ -285,6 +285,7 @@ self.onmessage = async (event) => {
         const aux = msg.aux ? new Uint8Array(msg.aux) : new Uint8Array(0);
         const ok = fg.init(new Uint8Array(msg.rom), aux, params);
         if (ok) {
+          fg.setDistanceMetric(msg.params.distance_metric ?? "l2");
           if (msg.rewardWeights) fg.setRewardWeights(msg.rewardWeights);
           // Graph mode: the effective population cap after the wasm memory
           // clamp (may be below the requested max walkers).
@@ -334,6 +335,7 @@ self.onmessage = async (event) => {
                          visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
                          ...msg.params }));
           if (ok === false) throw new Error(fg.lastError());
+          if (msg.params.distance_metric !== undefined) fg.setDistanceMetric(msg.params.distance_metric);
         }
         break;
       default:

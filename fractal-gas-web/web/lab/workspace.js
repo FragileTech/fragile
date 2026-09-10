@@ -66,6 +66,7 @@ export function mountWorkspace() {
   const physics = element("details", "", "<summary>World physics</summary>");
   physics.id = "world-physics";
   physics.append(
+    $("lethal-walls").closest("label"),
     $("flight-controls"),
     $("rock-controls"),
     $("problem-settings"),
@@ -92,7 +93,7 @@ export function mountWorkspace() {
   const modebar = element(
     "div",
     "mode-toolbar",
-    `<div role="group" aria-label="Interaction mode"><button id="mode-inspect" aria-pressed="true">Inspect</button><button id="mode-edit" aria-pressed="false">Edit</button><button id="mode-drive" aria-pressed="false">Drive</button></div><span id="playback-status">Live</span><span id="mode-hint">Click a vehicle to inspect it · Drag to pan</span><button id="toggle-inspector" aria-expanded="false">Inspector</button>`,
+    `<div role="group" aria-label="Interaction mode"><button id="mode-inspect" aria-pressed="true">Inspect</button><button id="mode-edit" aria-pressed="false">Edit</button><button id="mode-drive" aria-pressed="false">Drive</button></div><span id="playback-status">Live</span><span id="mode-hint">Click to inspect · Left-drag to pan · Right-drag to rotate</span><button id="toggle-inspector" aria-expanded="false">Inspector</button>`,
   );
   stage.prepend(modebar);
   const inspector = element(
@@ -275,7 +276,7 @@ export function mountWorkspace() {
           "Watch the rocket attach to a rock and tow it to the refinery.",
         ants: "Watch harvesters collect drops, fill their tanks, and return to unload.",
         tandem:
-          "Watch two vehicles coordinate their movement through the gates.",
+          "Watch two vehicles move together while maintaining their separation.",
         mining: "Watch vehicles cooperate to haul a rock.",
         rocket:
           "Watch the planner explore alternative routes through the arena.",

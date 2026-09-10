@@ -172,17 +172,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named fg_numeric_core
+# Target rules for targets named fg_fractal_core
 
 # Build rule for target.
-fg_numeric_core: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_numeric_core
-.PHONY : fg_numeric_core
+fg_fractal_core: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_fractal_core
+.PHONY : fg_fractal_core
 
 # fast build rule for target.
-fg_numeric_core/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/build
-.PHONY : fg_numeric_core/fast
+fg_fractal_core/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/build
+.PHONY : fg_fractal_core/fast
 
 #=============================================================================
 # Target rules for targets named fg_swarm_core
@@ -263,32 +263,6 @@ fractal_gas/fast:
 .PHONY : fractal_gas/fast
 
 #=============================================================================
-# Target rules for targets named fg_control_core
-
-# Build rule for target.
-fg_control_core: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_control_core
-.PHONY : fg_control_core
-
-# fast build rule for target.
-fg_control_core/fast:
-	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_core.dir/build.make control/CMakeFiles/fg_control_core.dir/build
-.PHONY : fg_control_core/fast
-
-#=============================================================================
-# Target rules for targets named fg_control
-
-# Build rule for target.
-fg_control: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 fg_control
-.PHONY : fg_control
-
-# fast build rule for target.
-fg_control/fast:
-	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control.dir/build.make control/CMakeFiles/fg_control.dir/build
-.PHONY : fg_control/fast
-
-#=============================================================================
 # Target rules for targets named ale
 
 # Build rule for target.
@@ -319,7 +293,7 @@ src/arcade_planner.o: src/arcade_planner.cpp.o
 
 # target to build an object file
 src/arcade_planner.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o
 .PHONY : src/arcade_planner.cpp.o
 
 src/arcade_planner.i: src/arcade_planner.cpp.i
@@ -327,7 +301,7 @@ src/arcade_planner.i: src/arcade_planner.cpp.i
 
 # target to preprocess a source file
 src/arcade_planner.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.i
 .PHONY : src/arcade_planner.cpp.i
 
 src/arcade_planner.s: src/arcade_planner.cpp.s
@@ -335,7 +309,7 @@ src/arcade_planner.s: src/arcade_planner.cpp.s
 
 # target to generate assembly for a file
 src/arcade_planner.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/arcade_planner.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.s
 .PHONY : src/arcade_planner.cpp.s
 
 src/atari_env.o: src/atari_env.cpp.o
@@ -362,53 +336,125 @@ src/atari_env.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas.dir/build.make CMakeFiles/fractal_gas.dir/src/atari_env.cpp.s
 .PHONY : src/atari_env.cpp.s
 
-src/cloning.o: src/cloning.cpp.o
-.PHONY : src/cloning.o
+src/fractal/cloning.o: src/fractal/cloning.cpp.o
+.PHONY : src/fractal/cloning.o
 
 # target to build an object file
-src/cloning.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/cloning.cpp.o
-.PHONY : src/cloning.cpp.o
+src/fractal/cloning.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o
+.PHONY : src/fractal/cloning.cpp.o
 
-src/cloning.i: src/cloning.cpp.i
-.PHONY : src/cloning.i
+src/fractal/cloning.i: src/fractal/cloning.cpp.i
+.PHONY : src/fractal/cloning.i
 
 # target to preprocess a source file
-src/cloning.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/cloning.cpp.i
-.PHONY : src/cloning.cpp.i
+src/fractal/cloning.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.i
+.PHONY : src/fractal/cloning.cpp.i
 
-src/cloning.s: src/cloning.cpp.s
-.PHONY : src/cloning.s
+src/fractal/cloning.s: src/fractal/cloning.cpp.s
+.PHONY : src/fractal/cloning.s
 
 # target to generate assembly for a file
-src/cloning.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/cloning.cpp.s
-.PHONY : src/cloning.cpp.s
+src/fractal/cloning.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.s
+.PHONY : src/fractal/cloning.cpp.s
 
-src/exploration_tree.o: src/exploration_tree.cpp.o
-.PHONY : src/exploration_tree.o
+src/fractal/distance.o: src/fractal/distance.cpp.o
+.PHONY : src/fractal/distance.o
 
 # target to build an object file
-src/exploration_tree.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/exploration_tree.cpp.o
-.PHONY : src/exploration_tree.cpp.o
+src/fractal/distance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o
+.PHONY : src/fractal/distance.cpp.o
 
-src/exploration_tree.i: src/exploration_tree.cpp.i
-.PHONY : src/exploration_tree.i
+src/fractal/distance.i: src/fractal/distance.cpp.i
+.PHONY : src/fractal/distance.i
 
 # target to preprocess a source file
-src/exploration_tree.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/exploration_tree.cpp.i
-.PHONY : src/exploration_tree.cpp.i
+src/fractal/distance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.i
+.PHONY : src/fractal/distance.cpp.i
 
-src/exploration_tree.s: src/exploration_tree.cpp.s
-.PHONY : src/exploration_tree.s
+src/fractal/distance.s: src/fractal/distance.cpp.s
+.PHONY : src/fractal/distance.s
 
 # target to generate assembly for a file
-src/exploration_tree.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/exploration_tree.cpp.s
-.PHONY : src/exploration_tree.cpp.s
+src/fractal/distance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.s
+.PHONY : src/fractal/distance.cpp.s
+
+src/fractal/exploration_tree.o: src/fractal/exploration_tree.cpp.o
+.PHONY : src/fractal/exploration_tree.o
+
+# target to build an object file
+src/fractal/exploration_tree.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o
+.PHONY : src/fractal/exploration_tree.cpp.o
+
+src/fractal/exploration_tree.i: src/fractal/exploration_tree.cpp.i
+.PHONY : src/fractal/exploration_tree.i
+
+# target to preprocess a source file
+src/fractal/exploration_tree.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.i
+.PHONY : src/fractal/exploration_tree.cpp.i
+
+src/fractal/exploration_tree.s: src/fractal/exploration_tree.cpp.s
+.PHONY : src/fractal/exploration_tree.s
+
+# target to generate assembly for a file
+src/fractal/exploration_tree.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.s
+.PHONY : src/fractal/exploration_tree.cpp.s
+
+src/fractal/tensor_ops.o: src/fractal/tensor_ops.cpp.o
+.PHONY : src/fractal/tensor_ops.o
+
+# target to build an object file
+src/fractal/tensor_ops.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o
+.PHONY : src/fractal/tensor_ops.cpp.o
+
+src/fractal/tensor_ops.i: src/fractal/tensor_ops.cpp.i
+.PHONY : src/fractal/tensor_ops.i
+
+# target to preprocess a source file
+src/fractal/tensor_ops.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.i
+.PHONY : src/fractal/tensor_ops.cpp.i
+
+src/fractal/tensor_ops.s: src/fractal/tensor_ops.cpp.s
+.PHONY : src/fractal/tensor_ops.s
+
+# target to generate assembly for a file
+src/fractal/tensor_ops.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.s
+.PHONY : src/fractal/tensor_ops.cpp.s
+
+src/fractal/visit_grid.o: src/fractal/visit_grid.cpp.o
+.PHONY : src/fractal/visit_grid.o
+
+# target to build an object file
+src/fractal/visit_grid.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o
+.PHONY : src/fractal/visit_grid.cpp.o
+
+src/fractal/visit_grid.i: src/fractal/visit_grid.cpp.i
+.PHONY : src/fractal/visit_grid.i
+
+# target to preprocess a source file
+src/fractal/visit_grid.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.i
+.PHONY : src/fractal/visit_grid.cpp.i
+
+src/fractal/visit_grid.s: src/fractal/visit_grid.cpp.s
+.PHONY : src/fractal/visit_grid.s
+
+# target to generate assembly for a file
+src/fractal/visit_grid.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.s
+.PHONY : src/fractal/visit_grid.cpp.s
 
 src/fractal_gas.o: src/fractal_gas.cpp.o
 .PHONY : src/fractal_gas.o
@@ -578,36 +624,12 @@ src/retro_shim.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/retro_shim.dir/build.make CMakeFiles/retro_shim.dir/src/retro_shim.cpp.s
 .PHONY : src/retro_shim.cpp.s
 
-src/tensor_ops.o: src/tensor_ops.cpp.o
-.PHONY : src/tensor_ops.o
-
-# target to build an object file
-src/tensor_ops.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/tensor_ops.cpp.o
-.PHONY : src/tensor_ops.cpp.o
-
-src/tensor_ops.i: src/tensor_ops.cpp.i
-.PHONY : src/tensor_ops.i
-
-# target to preprocess a source file
-src/tensor_ops.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/tensor_ops.cpp.i
-.PHONY : src/tensor_ops.cpp.i
-
-src/tensor_ops.s: src/tensor_ops.cpp.s
-.PHONY : src/tensor_ops.s
-
-# target to generate assembly for a file
-src/tensor_ops.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/tensor_ops.cpp.s
-.PHONY : src/tensor_ops.cpp.s
-
 src/thread_pool.o: src/thread_pool.cpp.o
 .PHONY : src/thread_pool.o
 
 # target to build an object file
 src/thread_pool.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/thread_pool.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o
 .PHONY : src/thread_pool.cpp.o
 
 src/thread_pool.i: src/thread_pool.cpp.i
@@ -615,7 +637,7 @@ src/thread_pool.i: src/thread_pool.cpp.i
 
 # target to preprocess a source file
 src/thread_pool.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/thread_pool.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.i
 .PHONY : src/thread_pool.cpp.i
 
 src/thread_pool.s: src/thread_pool.cpp.s
@@ -623,32 +645,8 @@ src/thread_pool.s: src/thread_pool.cpp.s
 
 # target to generate assembly for a file
 src/thread_pool.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_numeric_core.dir/build.make CMakeFiles/fg_numeric_core.dir/src/thread_pool.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.s
 .PHONY : src/thread_pool.cpp.s
-
-src/visit_grid.o: src/visit_grid.cpp.o
-.PHONY : src/visit_grid.o
-
-# target to build an object file
-src/visit_grid.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o
-.PHONY : src/visit_grid.cpp.o
-
-src/visit_grid.i: src/visit_grid.cpp.i
-.PHONY : src/visit_grid.i
-
-# target to preprocess a source file
-src/visit_grid.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.i
-.PHONY : src/visit_grid.cpp.i
-
-src/visit_grid.s: src/visit_grid.cpp.s
-.PHONY : src/visit_grid.s
-
-# target to generate assembly for a file
-src/visit_grid.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.s
-.PHONY : src/visit_grid.cpp.s
 
 src/walker_state.o: src/walker_state.cpp.o
 .PHONY : src/walker_state.o
@@ -978,9 +976,7 @@ help:
 	@echo "... gpgx_core_wasm"
 	@echo "... ale"
 	@echo "... ale-lib"
-	@echo "... fg_control"
-	@echo "... fg_control_core"
-	@echo "... fg_numeric_core"
+	@echo "... fg_fractal_core"
 	@echo "... fg_swarm_core"
 	@echo "... fractal_gas"
 	@echo "... fractal_gas_core"
@@ -992,12 +988,21 @@ help:
 	@echo "... src/atari_env.o"
 	@echo "... src/atari_env.i"
 	@echo "... src/atari_env.s"
-	@echo "... src/cloning.o"
-	@echo "... src/cloning.i"
-	@echo "... src/cloning.s"
-	@echo "... src/exploration_tree.o"
-	@echo "... src/exploration_tree.i"
-	@echo "... src/exploration_tree.s"
+	@echo "... src/fractal/cloning.o"
+	@echo "... src/fractal/cloning.i"
+	@echo "... src/fractal/cloning.s"
+	@echo "... src/fractal/distance.o"
+	@echo "... src/fractal/distance.i"
+	@echo "... src/fractal/distance.s"
+	@echo "... src/fractal/exploration_tree.o"
+	@echo "... src/fractal/exploration_tree.i"
+	@echo "... src/fractal/exploration_tree.s"
+	@echo "... src/fractal/tensor_ops.o"
+	@echo "... src/fractal/tensor_ops.i"
+	@echo "... src/fractal/tensor_ops.s"
+	@echo "... src/fractal/visit_grid.o"
+	@echo "... src/fractal/visit_grid.i"
+	@echo "... src/fractal/visit_grid.s"
 	@echo "... src/fractal_gas.o"
 	@echo "... src/fractal_gas.i"
 	@echo "... src/fractal_gas.s"
@@ -1019,15 +1024,9 @@ help:
 	@echo "... src/retro_shim.o"
 	@echo "... src/retro_shim.i"
 	@echo "... src/retro_shim.s"
-	@echo "... src/tensor_ops.o"
-	@echo "... src/tensor_ops.i"
-	@echo "... src/tensor_ops.s"
 	@echo "... src/thread_pool.o"
 	@echo "... src/thread_pool.i"
 	@echo "... src/thread_pool.s"
-	@echo "... src/visit_grid.o"
-	@echo "... src/visit_grid.i"
-	@echo "... src/visit_grid.s"
 	@echo "... src/walker_state.o"
 	@echo "... src/walker_state.i"
 	@echo "... src/walker_state.s"

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstring>
 #include <limits>
+#include <map>
 
 #include "control/agent_types.hpp"
 
@@ -17,7 +18,7 @@ Vec2 vec(const Json& j, Vec2 fallback = {}) {
     throw std::invalid_argument("Vector outside float32 range");
   return v;
 }
-float number(const Json& j, float fallback, float lo, float hi) {
+float number(const Json& j, float fallback, double lo, double hi) {
   double n = j.num(fallback);
   if (n < lo || n > hi)
     throw std::invalid_argument("Scene parameter outside supported range");
@@ -116,15 +117,18 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   const bool flight_override = environment["flight"].flag();
   s->downward_gravity = number(environment["downward_gravity"], 9.81f, 0, 1000);
   const auto& reward = root["rewards"];
+  const bool tandem = s->task == "tandem";
   s->progress_reward = number(reward["progress"], 1, 0, 1000);
   s->collision_penalty = number(reward["collision"], 2, 0, 10000);
-  s->pickup_reward = number(reward["pickup"], 10, 0, 10000);
-  s->delivery_reward = number(reward["delivery"], 100, 0, 10000);
+  s->wall_collision_penalty = number(reward["wall_collision"], 100, 0, 10000);
+  s->pickup_reward = number(reward["pickup"], tandem ? 0 : 10, 0, 10000);
+  s->delivery_reward = number(reward["delivery"], tandem ? 0 : 100, 0, 10000);
   s->gate_reward = number(reward["gate"], 30, 0, 10000);
-  s->formation_reward = number(reward["formation"], .15f, 0, 1000);
+  s->formation_reward = number(reward["formation"], tandem ? 50 : .15f, 0, 100);
   s->distance_squared_reward = number(reward["distance_squared"], 1, 0, 1000);
-  s->hooked_rock_distance_reward = number(reward["hooked_rock_distance"], 1, 0, 1000);
-  s->formation_distance = number(root["formation_distance"], 3, .1f, 1000);
+  s->hooked_rock_distance_reward = number(reward["hooked_rock_distance"], tandem ? 0 : 1, 0, 1000);
+  if (tandem) s->full_reward = 0;
+  s->formation_distance = number(root["formation_distance"], 3, .1, 1000);
   s->respawn_seconds = number(root["respawn_seconds"], 4, 0, 10000);
   if (root["boundary"].kind == Json::Null)
     s->boundaries.push_back({{0, 0}, {s->size.x, 0}, s->size, {0, s->size.y}});
@@ -220,6 +224,34 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
   }
   if (s->bodies.empty() || s->bodies.size() > 4096)
     throw std::invalid_argument("Scene requires 1–4096 bodies");
+  std::map<std::pair<int, int>, float> formation_overrides;
+  if (root.object.count("formation_pairs") && root["formation_pairs"].kind != Json::Array)
+    throw std::invalid_argument("formation_pairs must be an array");
+  for (const auto& pair : root["formation_pairs"].items()) {
+    if (pair.kind != Json::Object || pair["a"].kind != Json::Number ||
+        pair["b"].kind != Json::Number || pair["distance"].kind != Json::Number)
+      throw std::invalid_argument("Formation pairs require numeric a, b and distance");
+    int a = integer(pair["a"], -1, 0, int(s->bodies.size()) - 1);
+    int b = integer(pair["b"], -1, 0, int(s->bodies.size()) - 1);
+    if (a == b || !s->bodies[a].controlled || !s->bodies[b].controlled)
+      throw std::invalid_argument("Formation pairs must join distinct controlled bodies");
+    if (a > b) std::swap(a, b);
+    const float distance = number(pair["distance"], 0, .1, 1000);
+    if (!formation_overrides.emplace(std::make_pair(a, b), distance).second)
+      throw std::invalid_argument("Duplicate formation pair");
+  }
+  if (tandem && s->controlled.size() > 1) {
+    const size_t count = s->controlled.size();
+    s->formation_pairs.reserve(count * (count - 1) / 2);
+    for (size_t i = 0; i < count; ++i)
+      for (size_t j = i + 1; j < count; ++j) {
+        const int a = s->controlled[i], b = s->controlled[j];
+        const auto target = formation_overrides.find({a, b});
+        s->formation_pairs.push_back({a, b, target == formation_overrides.end()
+                                              ? s->formation_distance
+                                              : target->second});
+      }
+  }
   s->flight_mode = has_flight_override
                         ? flight_override
                         : std::any_of(s->bodies.begin(), s->bodies.end(),
@@ -243,7 +275,7 @@ std::shared_ptr<const Scene> Scene::compile(const std::string& source) {
       throw std::invalid_argument("cargo must be an object");
     s->cargo_capacity = float(integer(root["cargo"]["capacity"], 5, 1, 10000));
     s->unload_seconds = number(root["cargo"]["unload_seconds"], 2, .01f, 10000);
-    s->full_reward = number(root["cargo"]["full_reward"], s->pickup_reward, 0, 10000);
+    s->full_reward = number(root["cargo"]["full_reward"], tandem ? 0 : s->pickup_reward, 0, 10000);
     if (s->refineries.empty())
       throw std::invalid_argument("Cargo collection requires a refinery zone");
   }

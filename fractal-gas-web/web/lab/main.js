@@ -60,6 +60,7 @@ installActionGuideControls();
 const vehicleCounts = new Map();
 const vehicleTypes = new Map();
 const miningOptions = new Map();
+const wallOptions = new Map();
 let agentCatalog = {},
   presetRequest = 0;
 let worker,
@@ -92,7 +93,7 @@ const replay = new ReplayPanel({
   },
   show(frame, { seek = false } = {}) {
     currentState = frame.state;
-    renderer.update(frame.state, frame.action);
+    renderer.update(frame.state, frame.action, { discontinuity: seek });
     if (seek) renderer.setAnimationPlayback({ seek: true });
     const bits = new Uint32Array(
       frame.state.buffer,
@@ -111,7 +112,7 @@ const replay = new ReplayPanel({
     playbackDecision = undefined;
     if (lastLiveFrame) {
       currentState = lastLiveFrame.state;
-      renderer.update(currentState, lastLiveFrame.action);
+      renderer.update(currentState, lastLiveFrame.action, { discontinuity: true });
       updateFrame(lastLiveFrame);
       updateDiagnostics(lastDiagnostics);
       updateDecision(lastDiagnostics);
@@ -369,7 +370,9 @@ function dismissEpisodeStatus() {
   if (dismissStatusOnInteraction) status();
 }
 // Clear before replay controls handle the same click or timeline drag.
-document.addEventListener("pointerdown", dismissEpisodeStatus, { capture: true });
+document.addEventListener("pointerdown", dismissEpisodeStatus, {
+  capture: true,
+});
 document.addEventListener("click", dismissEpisodeStatus, { capture: true });
 function error(value) {
   status(value.message || String(value), true);
@@ -386,8 +389,8 @@ function updateViewControls() {
     ? "Switch between the horizontal side-on flight view and the overhead physics view."
     : "Switch between the top-down physics view and the angled three-dimensional presentation.";
   $("hint").textContent = flight
-    ? "SCROLL TO ZOOM · SIDE / OVERHEAD TO CHANGE VIEW"
-    : "SCROLL TO ZOOM · 2D / 3D TO CHANGE VIEW";
+    ? "RIGHT-DRAG TO ROTATE · SCROLL TO ZOOM · SIDE / OVERHEAD FOR PRESETS"
+    : "RIGHT-DRAG TO ROTATE · SCROLL TO ZOOM · 2D / 3D FOR PRESETS";
 }
 function updateFlightControl(scene, effective = renderer.flightMode) {
   const input = $("flight-mode"),
@@ -471,6 +474,7 @@ function commitScene(
   ++presetRequest;
   rewardChangePending = undefined;
   $("flight-mode").disabled = true;
+  $("lethal-walls").checked = scene.physics?.lethal_walls === true;
   rewardSettings.render(scene, appliedCoefficients);
   rewardSettings.setEnabled(false);
   const isCircuit = scene.environment?.kind === "circuit";
@@ -921,6 +925,13 @@ function upload(accept, callback) {
   $("file").click();
 }
 async function preset({ resetControllerDefaults = false } = {}) {
+  // Remember applied settings, not abandoned drafts. Scene names also keep
+  // imported/custom worlds from overwriting a different preset's options.
+  if (currentScene?.name && !workspace.readOnly)
+    wallOptions.set(currentScene.name, {
+      penalty: rewardValues(currentScene).wall_collision,
+      lethal: currentScene.physics?.lethal_walls === true,
+    });
   const request = ++presetRequest,
     scenario = $("scenario").value,
     sceneId = scenario === "racing" ? $("track").value || "racing" : scenario;
@@ -933,6 +944,12 @@ async function preset({ resetControllerDefaults = false } = {}) {
     if (!response.ok) throw new Error("Unable to load scenario");
     const template = await response.json();
     if (request !== presetRequest) return;
+    if (resetControllerDefaults) wallOptions.delete(template.name);
+    const walls = wallOptions.get(template.name);
+    if (walls) {
+      template.physics = { ...template.physics, lethal_walls: walls.lethal };
+      template.rewards = { ...template.rewards, wall_collision: walls.penalty };
+    }
     let scene = vehicleTypes.has(scenario)
       ? configureVehicleType(template, vehicleTypes.get(scenario), agentCatalog)
       : template;
@@ -1016,6 +1033,12 @@ $("ants-vehicle-count").onchange = () => {
     input.value = vehicleCount(currentScene);
     error(e);
   }
+};
+$("lethal-walls").onchange = () => {
+  if (!currentScene) return;
+  const scene = copy(workspace.draft.scene);
+  scene.physics = { ...scene.physics, lethal_walls: $("lethal-walls").checked };
+  stageScene(scene);
 };
 $("flight-mode").onchange = () => {
   if (!currentScene) return;
@@ -1197,7 +1220,7 @@ $("world").addEventListener("camerachange", () => {
   $("focus").textContent =
     renderer.followBody == null ? "Follow agent" : "Whole arena";
 });
-$("reset-view").onclick = () => renderer.focus(null);
+$("reset-view").onclick = () => renderer.resetView();
 $("focus").onclick = () => {
   const body =
     renderer.followBody == null
@@ -1209,8 +1232,7 @@ $("focus").onclick = () => {
   $("focus").textContent = body == null ? "Follow agent" : "Whole arena";
 };
 $("view").onclick = () => {
-  renderer.top = !renderer.top;
-  renderer.resize();
+  renderer.setViewPreset(!renderer.top);
 };
 $("timeline").oninput = () => {
   stop();
@@ -1409,6 +1431,7 @@ function readRewardDraft() {
   );
 }
 function renderSetupDraft(scene) {
+  $("lethal-walls").checked = scene.physics?.lethal_walls === true;
   $("ants-vehicle-count").value = vehicleCount(scene);
   $("ants-vehicle-type").value = vehicleType(scene) || "";
   updateFlightControl(scene);
@@ -1525,10 +1548,10 @@ function refreshMode() {
   $("run-name").disabled = workspace.readOnly;
   $("mode-hint").textContent =
     workspace.mode === "edit"
-      ? "Editing a draft · Apply and restart commits changes"
+      ? "Draft · Drag to edit · Right-drag to rotate · Alt-drag to pan"
       : workspace.mode === "drive"
-        ? "Release keys to coast · Pause stops physics"
-        : "Click a vehicle to inspect it · Drag to pan";
+        ? "Release keys to coast · Right-drag to rotate"
+        : "Click to inspect · Left-drag to pan · Right-drag to rotate";
   $("playback-status").textContent =
     replay.active || workspace.readOnly ? "Replay" : "Live";
 }

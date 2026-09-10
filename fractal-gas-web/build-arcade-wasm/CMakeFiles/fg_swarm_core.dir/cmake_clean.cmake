@@ -1,10 +1,10 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o"
+  "CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o.d"
   "CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o"
   "CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o.d"
   "CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o"
   "CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o.d"
-  "CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o"
-  "CMakeFiles/fg_swarm_core.dir/src/visit_grid.cpp.o.d"
   "CMakeFiles/fg_swarm_core.dir/src/walker_state.cpp.o"
   "CMakeFiles/fg_swarm_core.dir/src/walker_state.cpp.o.d"
   "libfg_swarm_core.a"

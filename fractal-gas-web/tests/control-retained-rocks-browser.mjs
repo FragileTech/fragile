@@ -91,9 +91,52 @@ try {
   await page.mouse.move(1000, 700);
   await page.waitForTimeout(600);
   await page.screenshot({ path: "/tmp/retained-rocks-overhead.png" });
+  console.log("Checking Collaborative mining");
+  await page.evaluate(() => {
+    window.deliveryRings = [];
+  });
+  await page.locator("#tab-setup").click();
+  await page.locator("#scenario").selectOption("mining");
+  await applyDraft(page);
+  await page.waitForFunction(() => !document.getElementById("run").disabled);
+  await page.locator("#tab-setup").click();
+  await page.locator("#world-physics").evaluate((e) => (e.open = true));
+  assert.equal(await page.locator("#keep-delivered-rocks").isChecked(), true);
+  assert.equal(
+    await page.evaluate(() => deliveryScenes.at(-1).keep_delivered_rocks),
+    true,
+  );
+  await page.waitForFunction(() => deliveryRings?.length === 2);
+  assert.deepEqual(
+    await page.evaluate(() =>
+      deliveryRings.map((r) => [r.name, r.userData.radius]),
+    ),
+    [
+      ["Delivery boundary", 1.5],
+      ["Release boundary", 3],
+    ],
+  );
+  await page.locator("#tab-setup").click();
+  await page.locator("#world-physics").evaluate((e) => (e.open = true));
+  await page.locator("#keep-delivered-rocks").uncheck();
+  await applyDraft(page);
+  assert.equal(
+    await page.evaluate(() => deliveryScenes.at(-1).keep_delivered_rocks),
+    false,
+  );
+  assert.equal(await page.evaluate(() => deliveryRings.length), 0);
+  await page.locator("#tab-setup").click();
+  await page.locator("#world-physics").evaluate((e) => (e.open = true));
+  await page.locator("#keep-delivered-rocks").check();
+  await applyDraft(page);
+  assert.equal(
+    await page.evaluate(() => deliveryScenes.at(-1).keep_delivered_rocks),
+    true,
+  );
+  await page.waitForFunction(() => deliveryRings?.length === 2);
   assert.deepEqual(errors, []);
   console.log(
-    "Retained rock toggle, restart, export configuration, and visible delivery/release boundaries passed",
+    "Retained rock toggle, restart, export configuration, and visible delivery/release boundaries passed for both mining presets",
   );
 } finally {
   await browser.close();

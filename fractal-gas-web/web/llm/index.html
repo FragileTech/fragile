@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LLM Lab · Fragile</title>
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="app-brand" href="../"
+        ><img
+          class="app-brand-logo"
+          src="../lab/branding/logo.png"
+          alt=""
+          width="48"
+          height="48"
+        /><span>fragile.tech<span class="app-brand-sub">LLM Lab</span></span></a
+      >
+      <h1 class="app-page-title">LLM Lab</h1>
+      <nav class="app-nav" aria-label="Laboratory navigation">
+        <a href="../arcade.html">Arcade</a><a href="../lab/">Control Lab</a
+        ><a href="../optimization/">Optimization Lab</a
+        ><span class="is-active" aria-current="page">LLM Lab</span
+        ><a href="../docs/lab/source/project/llm_laboratory.html">Guide ↗</a>
+      </nav>
+    </header>
+    <main id="llm-main">
+      <aside id="generation-settings" aria-label="Generation configuration">
+        <form id="config">
+          <fieldset id="settings">
+            <legend>Generate a population</legend>
+            <label
+              >Context / prompt<textarea name="prompt" rows="6"></textarea>
+            </label>
+            <label
+              >OpenRouter API key<input
+                id="api-key"
+                type="password"
+                autocomplete="off"
+                placeholder="sk-or-…"
+            /></label>
+            <p class="hint">
+              Kept in this session only. Requests go directly to OpenRouter.
+            </p>
+            <div class="model-heading">
+              <span>Models</span
+              ><button id="models" type="button">Refresh list</button>
+            </div>
+            <label
+              >Generation model<input
+                name="model"
+                list="generation-models" /></label
+            ><datalist id="generation-models"></datalist>
+            <label
+              >Embedding model<input
+                name="embedding_model"
+                list="embedding-models" /></label
+            ><datalist id="embedding-models"></datalist>
+            <div class="pair">
+              <label
+                >Algorithm<select name="algorithm">
+                  <option value="wave">Wave</option>
+                  <option value="graph">Graph</option>
+                </select></label
+              >
+              <label
+                >Distance<select name="distance_metric">
+                  <option value="cosine">Cosine</option>
+                  <option value="l2">L2</option>
+                </select></label
+              >
+            </div>
+            <label
+              >Likelihood objective<select name="objective">
+                <option value="mean">Negative mean Xent</option>
+                <option value="beam">Beam-style length normalization</option>
+                <option value="xed">Mean XED</option>
+                <option value="total" hidden>
+                  Total log probability (legacy)
+                </option>
+              </select></label
+            >
+            <label id="beam-settings" hidden
+              >Length exponent α<input
+                name="beam_alpha"
+                type="number"
+                min="0"
+                max="2"
+                step="0.1"
+            /></label>
+            <div id="xed-settings" hidden>
+              <label
+                >Optimize XED<select name="xed_direction">
+                  <option value="maximize">Maximize</option>
+                  <option value="minimize">Minimize</option>
+                </select></label
+              >
+              <label>Scoring model<input name="scoring_model" /></label>
+              <label
+                >Together API key<input
+                  id="together-key"
+                  type="password"
+                  autocomplete="off"
+              /></label>
+            </div>
+            <p id="objective-hint" class="hint"></p>
+            <p class="hint">
+              Token probabilities always include the prompt and the full
+              generated prefix.
+            </p>
+            <label
+              >Embedding input<select name="embedding_input">
+                <option value="generated">Generated sequence only</option>
+                <option value="prompt">Prompt + generated sequence</option>
+              </select></label
+            >
+            <div class="pair">
+              <label
+                >Walkers<input
+                  name="walkers"
+                  type="number"
+                  min="2"
+                  max="1024" /></label
+              ><label
+                >Tokens per step<input
+                  name="chunk_tokens"
+                  type="number"
+                  min="1"
+                  max="4096"
+              /></label>
+            </div>
+            <div class="pair">
+              <label
+                >Tokens per sequence<input
+                  name="sequence_tokens"
+                  type="number"
+                  min="1"
+                  max="32768" /></label
+              ><label
+                >Parallel requests<input
+                  name="concurrency"
+                  type="number"
+                  min="1"
+                  max="32"
+              /></label>
+            </div>
+            <div class="pair">
+              <label
+                >Iteration limit<input
+                  name="iterations"
+                  type="number"
+                  min="1"
+                  max="10000" /></label
+              ><label
+                >Temperature<input
+                  name="temperature"
+                  type="number"
+                  min="0"
+                  max="2"
+                  step="0.1"
+              /></label>
+            </div>
+            <details>
+              <summary>Algorithm settings</summary>
+              <div class="pair">
+                <label
+                  >Distance coefficient<input
+                    name="distance_coef"
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.1" /></label
+                ><label
+                  >Reward coefficient<input
+                    name="reward_coef"
+                    type="number"
+                    min="0"
+                    max="10"
+                    step="0.1"
+                /></label>
+              </div>
+              <label
+                >Graph population cap<input
+                  name="max_walkers"
+                  type="number"
+                  min="2"
+                  max="4096" /></label
+              ><label
+                >Algorithm seed<input
+                  name="seed"
+                  type="number"
+                  min="0"
+                  max="2147483647"
+              /></label>
+              <p class="hint">
+                The seed controls Fractal sampling. Replay uses recorded model
+                responses.
+              </p>
+            </details>
+          </fieldset>
+        </form>
+      </aside>
+      <section class="workspace" aria-label="Generation traces">
+        <div class="llm-tabs" role="tablist" aria-label="LLM workspace">
+          <button
+            id="tab-generation"
+            role="tab"
+            aria-selected="true"
+            aria-controls="generation-panel"
+          >
+            Generation
+          </button>
+          <button
+            id="tab-analysis"
+            role="tab"
+            aria-selected="false"
+            aria-controls="analysis-panel"
+            tabindex="-1"
+          >
+            Analysis
+          </button>
+          <button
+            id="tab-benchmark"
+            role="tab"
+            aria-selected="false"
+            aria-controls="benchmark-panel"
+            tabindex="-1"
+          >
+            Benchmark
+          </button>
+          <button
+            id="tab-evaluation"
+            role="tab"
+            aria-selected="false"
+            aria-controls="evaluation-panel"
+            tabindex="-1"
+          >
+            Evaluation
+          </button>
+        </div>
+        <div class="toolbar" id="generation-toolbar">
+          <button id="run" class="primary">Run</button
+          ><button id="step">Step</button
+          ><button id="pause" disabled>Pause</button
+          ><button id="stop" disabled>Stop</button
+          ><button id="reset">Reset</button><span class="spacer"></span
+          ><button id="export" disabled>Export</button
+          ><button id="import">Import</button
+          ><input id="import-file" type="file" accept=".fgllm,.json" hidden />
+        </div>
+        <p id="status" role="status" aria-live="polite">
+          Ready. Enter a prompt and key, then run or advance one step.
+        </p>
+        <div id="stats" class="stats">
+          Each step extends the sequences, measures their differences, and
+          selects branches to continue.
+        </div>
+        <div
+          id="generation-panel"
+          role="tabpanel"
+          aria-labelledby="tab-generation"
+        >
+          <section class="best">
+            <div class="section-title">
+              <h2 id="best-title">Best trace</h2>
+              <button id="show-best" disabled>Inspect best</button>
+            </div>
+            <p id="best-score" class="hint">
+              Finished answers are ranked by likelihood. Before completion,
+              compare the deepest prefixes.
+            </p>
+            <pre id="best-text">Your best continuation will appear here.</pre>
+          </section>
+          <div class="history">
+            <label for="iteration">Recorded step</label
+            ><input
+              id="iteration"
+              type="range"
+              min="1"
+              max="1"
+              value="1"
+              disabled
+            /><output id="iteration-label">0 / 0</output>
+          </div>
+          <div class="trace-workspace">
+            <section class="trace-list">
+              <div class="section-title">
+                <h2>Sequences</h2>
+                <select id="trace-filter" aria-label="Trace filter">
+                  <option value="all">All generated</option>
+                  <option value="population">Current population</option>
+                  <option value="finished">Finished / capped</option>
+                </select>
+              </div>
+              <p id="trace-count" class="hint">No traces yet.</p>
+              <div class="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Trace</th>
+                      <th>Tokens</th>
+                      <th>Total NLL</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  <tbody id="traces"></tbody>
+                </table>
+              </div>
+            </section>
+            <section class="inspector">
+              <div class="section-title">
+                <h2 id="trace-title">Trace inspector</h2>
+              </div>
+              <p id="trace-score" class="hint">
+                Select a sequence to inspect its ancestry and token
+                probabilities.
+              </p>
+              <div id="ancestry" class="ancestry"></div>
+              <pre id="trace-text"></pre>
+              <details open>
+                <summary>Token log probabilities</summary>
+                <div id="tokens" class="tokens"></div>
+              </details>
+              <details>
+                <summary>Population and clone decisions</summary>
+                <pre id="population"></pre>
+              </details>
+              <details>
+                <summary>Requests and errors</summary>
+                <pre id="requests"></pre>
+              </details>
+            </section>
+          </div>
+        </div>
+        <div
+          id="analysis-panel"
+          role="tabpanel"
+          aria-labelledby="tab-analysis"
+          hidden
+        ></div>
+        <div
+          id="benchmark-panel"
+          role="tabpanel"
+          aria-labelledby="tab-benchmark"
+          hidden
+        >
+          <section
+            class="benchmark-controls"
+            aria-labelledby="benchmark-heading"
+          >
+            <h2 id="benchmark-heading">Benchmark</h2>
+            <p class="hint">
+              Compare Fractal with independent trajectories and one
+              temperature-zero answer per trial. Progress saves in this browser.
+            </p>
+            <label
+              >Match independent sampling by
+              <select id="benchmark-comparison">
+                <option value="tokens">Generated-token budget</option>
+                <option value="population">Starting population</option>
+                <option value="both">Both comparisons</option>
+              </select>
+            </label>
+            <label
+              >Repeated trials<input
+                id="benchmark-repetitions"
+                type="number"
+                min="1"
+                max="10000"
+                value="1"
+            /></label>
+            <div class="toolbar">
+              <button id="benchmark-start" type="button">
+                Start benchmark
+              </button>
+              <button id="benchmark-pause" type="button" disabled>Pause</button>
+              <button id="benchmark-continue" type="button" disabled>
+                Continue
+              </button>
+              <button id="benchmark-stop" type="button" disabled>Stop</button>
+            </div>
+            <p id="benchmark-status" role="status" aria-live="polite">
+              Uses the current prompt and lab settings. Each trial makes
+              additional generation and embedding requests.
+            </p>
+            <label
+              >Comparison source<select id="benchmark-saved">
+                <option value="">Current Fractal run</option>
+              </select></label
+            >
+            <div class="toolbar">
+              <button id="benchmark-retry" type="button" disabled>
+                Retry unfinished
+              </button>
+              <button id="benchmark-export" type="button" disabled>
+                Export benchmark
+              </button>
+              <button id="benchmark-import" type="button">
+                Import benchmark
+              </button>
+              <input
+                id="benchmark-file"
+                type="file"
+                accept=".fgllmbench"
+                hidden
+              />
+            </div>
+          </section>
+          <div id="comparison-workspace"></div>
+        </div>
+        <div
+          id="evaluation-panel"
+          role="tabpanel"
+          aria-labelledby="tab-evaluation"
+          hidden
+        ></div>
+      </section>
+    </main>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fg_numeric_core.dir
+/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fg_fractal_core.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fg_swarm_core.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/nes_core.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fractal_gas_core.dir
@@ -12,15 +12,6 @@
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/install.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/install/local.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/install/strip.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/fg_control_core.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/fg_control.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/test.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/edit_cache.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/rebuild_cache.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/list_install_components.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/install.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/install/local.dir
-/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/control/CMakeFiles/install/strip.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/ale-build/CMakeFiles/test.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/ale-build/CMakeFiles/edit_cache.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/ale-build/CMakeFiles/rebuild_cache.dir

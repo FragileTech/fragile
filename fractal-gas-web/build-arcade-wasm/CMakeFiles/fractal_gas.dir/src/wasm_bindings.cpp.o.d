@@ -722,9 +722,14 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/chrono \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/forward_list \
   /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/random \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/bernoulli_distribution.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/uniform_real_distribution.h \
@@ -777,13 +782,23 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/student_t_distribution.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/uniform_random_bit_generator.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/weibull_distribution.h \
-  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/control/checkpoint_io.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
   /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp \
   /home/guillem/fragile/fractal-gas-web/src/nes_env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/mario_reward.hpp \
   /home/guillem/fragile/fractal-gas-web/src/retro_farm_env.hpp \

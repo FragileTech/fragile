@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { chromium } from "playwright";
 
 const base = process.env.VISUAL_COHESION_TEST_URL || "http://127.0.0.1:8099/";
-const routes = ["", "lab/", "optimization/"];
+const routes = ["arcade.html", "lab/", "optimization/"];
 const expected = {
   "--bg": "#15111b",
   "--panel": "#1d1825",

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "env.hpp"
+#include "fractal/distance.hpp"
 #include "fractal/metrics.hpp"
 #include "visit_grid.hpp"
 
@@ -62,6 +63,7 @@ class SwarmAlgorithm {
   virtual int32_t iteration_count() const = 0;
 
   // Live-tunable parameters. Each algorithm ignores the ones it lacks.
+  virtual void set_distance_metric(DistanceMetric) = 0;
   virtual void set_dist_coef(float v) = 0;
   virtual void set_reward_coef(float v) = 0;
   virtual void set_dt_range(int32_t lo, int32_t hi) = 0;

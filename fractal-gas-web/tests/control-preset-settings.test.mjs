@@ -28,15 +28,19 @@ test("flight mining recommendations follow fresh tasks and unchanged preset sett
   assert.deepEqual(flight, { ...standard, horizon: 32, frames: 6, elites: 4 });
   assert.deepEqual(
     presetControllerSettings(scenes.mining, flight, scenes.harvest),
-    flight,
+    { ...flight, horizon: 64 },
   );
   assert.deepEqual(
-    presetControllerSettings(scenes.racing, flight, scenes.mining),
+    presetControllerSettings(
+      scenes.racing,
+      { ...flight, horizon: 64 },
+      scenes.mining,
+    ),
     standard,
   );
   assert.deepEqual(
     presetControllerSettings(scenes.mining, standard, scenes.racing),
-    flight,
+    { ...flight, horizon: 64 },
   );
 });
 
@@ -68,7 +72,7 @@ test("scenario switches preserve explicit controller tuning and respect small po
   );
   assert.deepEqual(presetControllerSettings(scenes.mining, standard), {
     ...standard,
-    horizon: 32,
+    horizon: 64,
     frames: 6,
     elites: 4,
   });

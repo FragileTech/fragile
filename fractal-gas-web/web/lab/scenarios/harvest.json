@@ -468,6 +468,7 @@
   },
   "hook_mass": 0.25,
   "rewards": {
+    "wall_collision": 100,
     "progress": 1,
     "distance_squared": 0,
     "catch": 10,

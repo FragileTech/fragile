@@ -25,6 +25,7 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<R
   count_visits_ = params_.count_visits && env_.has_visit_key();
   owns_rng_ = !rng;
   rng_ = rng ? std::move(rng) : std::make_unique<Mt19937Rng>(params_.seed);
+  clone_op_->distance_metric = params_.distance_metric;
   clone_op_->dist_coef = params_.dist_coef;
   clone_op_->reward_coef = params_.reward_coef;
   clone_op_->use_cumulative_reward = params_.use_cumulative_reward;
@@ -134,13 +135,11 @@ std::vector<StepInfo> FractalGas::run(int32_t max_iterations, bool stop_when_all
 }
 
 std::pair<int32_t, float> FractalGas::get_best_walker() const {
-  int32_t best_idx = 0;
-  for (int32_t i = 1; i < state_.N; ++i) {
-    if (state_.rewards[static_cast<size_t>(i)] > state_.rewards[static_cast<size_t>(best_idx)]) {
-      best_idx = i;
-    }
-  }
-  return {best_idx, state_.rewards[static_cast<size_t>(best_idx)]};
+  int32_t best = -1;
+  for (int i = 0; i < state_.N; ++i)
+    if (env_.best_candidate(state_.states[i]) &&
+        (best < 0 || state_.rewards[i] > state_.rewards[best])) best = i;
+  return {best, best < 0 ? 0.f : state_.rewards[best]};
 }
 
 }  // namespace fg

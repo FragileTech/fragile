@@ -584,8 +584,10 @@ TEST_CASE(control_mining_heavy_load_and_replenishment) {
   CHECK_CLOSE(s->bodies[2].mass, .24f, 1e-6);
   CHECK(s->bodies[2].drag == .8f);
   CHECK(s->bodies[2].respawn);
+  CHECK(s->keep_delivered_rocks);
   // Keep this overload/coop stress case separate from the liftable preset.
   auto overloaded = std::make_shared<Scene>(*s);
+  overloaded->keep_delivered_rocks = false;  // Explicit legacy respawn coverage.
   overloaded->bodies[2].inertia *= 24 / overloaded->bodies[2].mass;
   overloaded->bodies[2].mass = 24;
   s = overloaded;
@@ -726,6 +728,37 @@ TEST_CASE(control_wave_common_ancestor_uses_alive_final_population) {
   CHECK(wave.common_ancestor() == a);
   word(wave.current.row(0), 7, 1);
   CHECK(wave.common_ancestor() == 0);
+}
+
+TEST_CASE(control_mining_retained_delivery_keeps_motion_and_releases_both_hooks) {
+  std::ifstream file(std::filesystem::path(__FILE__).parent_path() /
+                     "../web/lab/scenarios/mining.json");
+  CHECK(file.good());
+  std::ostringstream json;
+  json << file.rdbuf();
+  auto s = Scene::compile(json.str());
+  CHECK(s->keep_delivered_rocks);
+  Physics physics(s);
+  StateBatch a(1, *s), b(1, *s);
+  a.reset(*s, 7);
+  const auto& l = s->layout;
+  position(a.row(0), l, 2, s->bases[0].position);
+  float action[4] = {};
+  int32_t frames = 1;
+  StepResult result;
+  physics.step(a, nullptr, action, &frames, b, &result);
+  CHECK(word(b.row(0), 4) == 1);
+  CHECK(word(b.row(0), l.flags + 2) == (active_flag | delivered_flag));
+  CHECK(word(b.row(0), l.joints) == 0);
+  CHECK(word(b.row(0), l.joints + 2) == 0);
+  CHECK(word(b.row(0), l.joints + 4) != 0);
+  CHECK(word(b.row(0), l.joints + 6) != 0);
+  const float delivered_y = position(b.row(0), l, 2).y;
+  frames = 120;
+  physics.step(b, nullptr, action, &frames, a, &result);
+  CHECK(word(a.row(0), 4) == 1);
+  CHECK(word(a.row(0), l.flags + 2) == active_flag);
+  CHECK(position(a.row(0), l, 2).y < delivered_y - s->bases[0].radius);
 }
 
 TEST_CASE(control_retained_delivery_lock_clones_and_releases) {

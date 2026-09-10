@@ -21,17 +21,24 @@ using namespace fg::control;
 int main() {
   auto scene = Scene::compile(
       R"({"rewards":{"distance_squared":1},"bodies":[{"position":[10,10],"controlled":true},{"position":[13,10],"cargo":true}],"tethers":[{"a":0,"b":1}],"pickups":[{"position":[10,10]}]})");
-  for (bool resting : {false, true}) {
+  for (int scenario : {0, 1, 2}) {
+    const bool resting = scenario == 1;
     if (resting)
       scene = Scene::compile(
           R"({"environment":{"flight":true},"bodies":[{"position":[10,0.5],"controlled":true,"vertices":[[-0.5,-0.5],[0.5,-0.5],[0.5,0.5],[-0.5,0.5]]},{"position":[13,0.5],"cargo":true}]})");
+    if (scenario == 2)
+      scene = Scene::compile(
+          R"({"task":"tandem","formation_pairs":[{"a":0,"b":1,"distance":5}],
+            "gates":[{"position":[20,20],"radius":2},{"position":[30,20],"radius":2}],
+            "bodies":[{"position":[20,20],"controlled":true},
+                      {"position":[26,20],"controlled":true}]})");
     for (int threads : {1, 4}) {
       size_t small = 0;
       for (int worlds : {16, 256}) {
         Physics physics(scene, threads);
         StateBatch a(worlds, *scene), b(worlds, *scene);
         a.reset(*scene, 7);
-        std::vector<float> actions(worlds * 2, resting ? 0.f : .2f);
+        std::vector<float> actions(worlds * scene->channels.size(), resting ? 0.f : .2f);
         std::vector<int32_t> frames(worlds, 6);
         std::vector<StepResult> result(worlds);
         physics.step(a, nullptr, actions.data(), frames.data(), b, result.data());

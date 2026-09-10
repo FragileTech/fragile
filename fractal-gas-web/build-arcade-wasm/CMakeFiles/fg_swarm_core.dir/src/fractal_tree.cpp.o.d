@@ -635,8 +635,12 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__locale_dir/wbuffer_convert.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__locale_dir/wstring_convert.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/cstdarg \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/random \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/bernoulli_distribution.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__random/uniform_real_distribution.h \
@@ -731,9 +735,17 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__fwd/stack.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/print \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/unistd.h \
-  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/condition_variable \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__stop_token/stop_callback.h \

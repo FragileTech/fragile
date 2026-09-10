@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "fractal/rng.hpp"
+#include "fractal/distance.hpp"
 
 namespace fg {
 

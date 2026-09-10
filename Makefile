@@ -133,10 +133,10 @@ videogames:
 	uv run fragile videogames $(ARGS)
 
 # Serve the wasm fractal-gas swarm demo with the COOP/COEP headers wasm
-# threads need. Open http://localhost:$(WEB_PORT)/web/ once it is up.
+# threads need. Open http://localhost:$(WEB_PORT)/web/arcade.html once it is up.
 WEB_PORT ?= 8000
 web:
-	@echo "Serving fractal gas web demo at http://localhost:$(WEB_PORT)/web/"
+	@echo "Serving fractal gas web demo at http://localhost:$(WEB_PORT)/web/arcade.html"
 	cd fractal-gas-web && python3 serve.py $(WEB_PORT)
 
 robots:
@@ -164,3 +164,25 @@ latex:
 
 claude:
 	CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions
+
+.PHONY: llm-native llm-web llm-web-build llm-lab llm-test
+llm-native:
+	"$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-llm-native -DFG_LLM_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-llm-native --parallel $(CONTROL_BUILD_JOBS)
+llm-web:
+	bash fractal-gas-web/tools/with-emsdk.sh $(MAKE) llm-web-build
+llm-web-build:
+	npm --prefix fractal-gas-web ci --ignore-scripts
+	npm --prefix fractal-gas-web run build:llm
+	emcmake "$(CMAKE)" -S fractal-gas-web -B fractal-gas-web/build-llm-wasm -DFG_LLM_ONLY=ON -DCMAKE_BUILD_TYPE=Release
+	"$(CMAKE)" --build fractal-gas-web/build-llm-wasm --parallel $(CONTROL_BUILD_JOBS)
+llm-lab: llm-web
+	uv run --no-project python fractal-gas-web/tools/serve-control.py --port $(CONTROL_PORT)
+llm-test: llm-native llm-web
+	ctest --test-dir fractal-gas-web/build-llm-native --output-on-failure
+	npm --prefix fractal-gas-web run test:llm
+	npm --prefix fractal-gas-web run test:llm-browser
+	npm --prefix fractal-gas-web run test:llm-scoring-browser
+	npm --prefix fractal-gas-web run test:llm-benchmark-browser
+	npm --prefix fractal-gas-web run test:llm-comparison-browser
+	npm --prefix fractal-gas-web run test:llm-ranking-browser

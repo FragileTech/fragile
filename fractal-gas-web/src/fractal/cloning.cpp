@@ -19,10 +19,22 @@ void FractalCloningOperator::fitness_with_companions_into(
     const std::vector<float>& observations, int32_t n, int32_t obs_dim,
     const std::vector<float>& cumulative_rewards, const std::vector<float>& step_rewards,
     const std::vector<int32_t>& companions, std::vector<float>& out) const {
-  l2_norm_companions_into(observations, companions, n, obs_dim, pool, distances_);
+  companion_distances_into(observations, companions, n, obs_dim, pool, distances_, distance_metric);
+  if (diagnostics.enabled) {
+    diagnostics.decisions.assign(n, {});
+    for (int i = 0; i < n; ++i) {
+      auto& d = diagnostics.decisions[i];
+      d.slot = i; d.distance = distances_[i]; d.distance_companion = companions[i];
+    }
+  }
   asymmetric_rescale_into(distances_, distances_);
   asymmetric_rescale_into(use_cumulative_reward ? cumulative_rewards : step_rewards,
                           normalized_rewards_);
+  if (diagnostics.enabled)
+    for (int i = 0; i < n; ++i) {
+      diagnostics.decisions[i].distance_norm = distances_[i];
+      diagnostics.decisions[i].reward_norm = normalized_rewards_[i];
+    }
   out.resize(n);
   for (int i = 0; i < n; ++i)
     out[i] = std::pow(distances_[i], dist_coef) * std::pow(normalized_rewards_[i], reward_coef);
@@ -96,6 +108,12 @@ void FractalCloningOperator::decide_cloning_into(const std::vector<float>& fitne
   for (size_t i = 0; i < alive.size(); ++i) {
     float p = (fitness[companions[i]] - fitness[i]) / (fitness[i] > eps ? fitness[i] : eps);
     mask[i] = p > uniforms_[i] || !alive[i];
+    if (diagnostics.enabled && i < diagnostics.decisions.size()) {
+      auto& d = diagnostics.decisions[i];
+      d.fitness = fitness[i]; d.donor_fitness = fitness[companions[i]];
+      d.clone_donor = companions[i]; d.clone_score = p; d.draw = uniforms_[i];
+      d.alive = alive[i]; d.wanted = mask[i]; d.cloned = mask[i];
+    }
   }
 }
 std::pair<std::vector<float>, std::vector<int32_t>> FractalCloningOperator::calculate_fitness(

@@ -9,7 +9,7 @@ records what it earned, and may later be copied by another walker. The pictures
 on the screen show the current evidence produced by the search; repeated trials
 accumulate the evidence that guides the swarm.
 
-Open [Arcade in the browser](https://fragiletech.github.io/fragile/web/). The page puts Mario, Atari, Sonic, and
+Open [Arcade in the browser](https://fragiletech.github.io/fragile/arcade.html). The page puts Mario, Atari, Sonic, and
 Montezuma behind one interface. It runs the Fractal Gas machinery and emulator
 cores as WebAssembly; parallel workers let a crowd of game copies move together.
 The useful habit is to watch the swarm and the reward plots at the same time. A
@@ -36,7 +36,7 @@ WebAssembly artifacts follows the Emscripten workflow in `fractal-gas-web/README
 
 ```bash
 make web
-# open http://localhost:8000/web/
+# open http://localhost:8000/web/arcade.html
 ```
 
 :::{note}

@@ -15,7 +15,7 @@ export class WorldPlayback {
     this.active = false;
     this.cursor = 0;
   }
-  async seek(index) {
+  async seek(index, { discontinuity = true } = {}) {
     if (!this.recording?.length) return;
     this.active = true;
     this.cursor = Math.max(
@@ -30,7 +30,7 @@ export class WorldPlayback {
         ? await this.recording.getFrame(cursor)
         : this.recording.frame(cursor);
       if (this.seekGeneration === generation && this.active)
-        this.show(frame, cursor);
+        this.show(frame, cursor, { discontinuity });
     } catch (error) {
       this.pause();
       this.onError?.(error);
@@ -67,7 +67,7 @@ export class WorldPlayback {
     const frames = Math.floor(this.accumulator / this.recording.dt);
     if (frames) {
       this.accumulator -= frames * this.recording.dt;
-      this.seek(this.cursor + frames);
+      this.seek(this.cursor + frames, { discontinuity: false });
     }
     if (this.cursor >= this.recording.length - 1) {
       this.pause();

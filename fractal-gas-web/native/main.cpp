@@ -55,6 +55,13 @@ int main(int argc, char** argv) {
       threads = std::atoi(next());
     } else if (arg == "--dist-coef") {
       params.dist_coef = static_cast<float>(std::atof(next()));
+    } else if (arg == "--distance-metric") {
+      try {
+        params.distance_metric = fg::parse_distance_metric(next());
+      } catch (const std::invalid_argument& e) {
+        std::fprintf(stderr, "%s\n", e.what());
+        return 2;
+      }
     } else if (arg == "--reward-coef") {
       params.reward_coef = static_cast<float>(std::atof(next()));
     } else if (arg == "--cumulative") {
@@ -111,7 +118,7 @@ int main(int argc, char** argv) {
     std::fprintf(stderr,
                  "Usage: fg_cli --rom smb.nes [--n 64] [--iters 200] "
                  "[--seed 7] [--threads T] [--dist-coef X] [--reward-coef X] "
-                 "[--cumulative] [--dt-min 1] [--dt-max 4] [--elite K] "
+                 "[--distance-metric l2|cosine] [--cumulative] [--dt-min 1] [--dt-max 4] [--elite K] "
                  "[--obs ram|rgb|gray|coords] [--world 1-8] [--stage 1-4] "
                  "[--algo wave|graph] [--max-walkers K] [--min-leafs K] "
                  "[--erase-coef X] [--no-visits]\n");
@@ -133,6 +140,7 @@ int main(int argc, char** argv) {
       tree_params.start_walkers = params.N;
       tree_params.min_leafs = min_leafs > 0 ? min_leafs : params.N;
       tree_params.dist_coef = params.dist_coef;
+      tree_params.distance_metric = params.distance_metric;
       tree_params.reward_coef = params.reward_coef;
       tree_params.dt_min = params.dt_min;
       tree_params.dt_max = params.dt_max;

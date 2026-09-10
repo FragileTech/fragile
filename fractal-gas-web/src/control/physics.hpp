@@ -16,7 +16,7 @@ struct Contact {
   Vec2 normal, point;
   float depth = 0, impulse = 0, target_velocity = 0, tangent_impulse = 0;
   int edge = -1;
-  bool counted = false, penalized = false;
+  bool counted = false;
 };
 #ifdef FG_CONTROL_PROFILE
 struct CollisionWork {
@@ -36,7 +36,7 @@ struct Scratch {
   std::vector<Vec2> old_positions, frame_positions, frame_rock_positions;
   std::vector<float> old_angles, bounded_actions;
   std::vector<uint32_t> edge_marks, frame_tethers;
-  std::vector<uint8_t> frame_hooked_rocks;
+  std::vector<uint8_t> frame_hooked_rocks, frame_wall_contacts;
   uint32_t stamp = 0;
   explicit Scratch(const Scene& s);
 };
@@ -64,6 +64,6 @@ class Physics {
   void substep(float* row, const float* actions, float h, Scratch& scratch,
                StepResult& result);
   float potential(const float* row, const uint32_t* attachments = nullptr) const;
-  void mechanics(float* row, StepResult& result);
+  void mechanics(float* row, StepResult& result, uint32_t checkpoint_stage);
 };
 }  // namespace fg::control

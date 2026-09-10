@@ -39,6 +39,10 @@ struct TetherDef {
         hook_range = 2;
   bool automatic = false;
 };
+struct FormationPair {
+  int a, b;
+  float distance;  // Desired centre-to-centre separation in metres.
+};
 struct Layout {
   uint32_t bodies = 0, controlled = 0, tethers = 0, pickups = 0;
   uint32_t cargo = 0;
@@ -71,10 +75,11 @@ struct Scene {
   std::vector<Zone> bases, gates, pickups, refineries;
   float cargo_capacity = 0, unload_seconds = 2, full_reward = 10;
   std::vector<TetherDef> tethers;
+  std::vector<FormationPair> formation_pairs;
   Vec2 size{64, 44};
   float dt = 1.f / 60.f;
   int substeps = 4, solver_iterations = 8;
-  float collision_penalty = 2, progress_reward = 1, pickup_reward = 10,
+  float wall_collision_penalty = 100, collision_penalty = 2, progress_reward = 1, pickup_reward = 10,
         delivery_reward = 100, distance_squared_reward = 1, hooked_rock_distance_reward = 1;
   float catch_reward = 0;
   float gate_reward = 30, formation_reward = .15f, formation_distance = 3,

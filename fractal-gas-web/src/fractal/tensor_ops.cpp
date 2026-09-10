@@ -8,34 +8,6 @@
 
 namespace fg {
 
-namespace {
-
-/// Squared L2 distance between two rows. Four independent double
-/// accumulators let the compiler vectorize (f64x2 with wasm SIMD); this
-/// reassociates the previous serial sum, which perturbs results far below
-/// the 1e-5 fixture tolerance and identically on every thread count.
-double l2_squared(const float* a, const float* b, size_t d) {
-  double acc0 = 0.0, acc1 = 0.0, acc2 = 0.0, acc3 = 0.0;
-  size_t k = 0;
-  for (; k + 4 <= d; k += 4) {
-    const double d0 = static_cast<double>(a[k]) - static_cast<double>(b[k]);
-    const double d1 = static_cast<double>(a[k + 1]) - static_cast<double>(b[k + 1]);
-    const double d2 = static_cast<double>(a[k + 2]) - static_cast<double>(b[k + 2]);
-    const double d3 = static_cast<double>(a[k + 3]) - static_cast<double>(b[k + 3]);
-    acc0 += d0 * d0;
-    acc1 += d1 * d1;
-    acc2 += d2 * d2;
-    acc3 += d3 * d3;
-  }
-  for (; k < d; ++k) {
-    const double diff = static_cast<double>(a[k]) - static_cast<double>(b[k]);
-    acc0 += diff * diff;
-  }
-  return (acc0 + acc1) + (acc2 + acc3);
-}
-
-}  // namespace
-
 void relativize_with_stats_into(const std::vector<float>& x, double mean, double stdv,
                                 std::vector<float>& out) {
   out.resize(x.size());
@@ -100,33 +72,6 @@ void asymmetric_rescale_into(const std::vector<float>& x, std::vector<float>& ou
   for (size_t i = 0; i < x.size(); ++i) {
     double z = (double(x[i]) - mean) / stdv;
     out[i] = float(z > 0 ? std::log1p(z) + 1 : std::exp(z));
-  }
-}
-
-std::vector<float> l2_norm_companions(const std::vector<float>& observations,
-                                      const std::vector<int32_t>& companions, int32_t n,
-                                      int32_t obs_dim, ThreadPool* pool) {
-  std::vector<float> distances;
-  l2_norm_companions_into(observations, companions, n, obs_dim, pool, distances);
-  return distances;
-}
-void l2_norm_companions_into(const std::vector<float>& observations,
-                             const std::vector<int32_t>& companions, int32_t n, int32_t obs_dim,
-                             ThreadPool* pool, std::vector<float>& distances) {
-  distances.resize(n);
-  const auto d = static_cast<size_t>(obs_dim);
-  const float* obs = observations.data();
-  const auto row = [&](int32_t i, int /*slot*/) {
-    const auto ii = static_cast<size_t>(i);
-    const auto c = static_cast<size_t>(companions[ii]);
-    distances[ii] = static_cast<float>(std::sqrt(l2_squared(obs + ii * d, obs + c * d, d)));
-  };
-  // Waking the pool costs more than small batches (RAM obs and below stay
-  // borderline; Coords is tiny) — only fan out when there is real work.
-  if (pool != nullptr && pool->size() > 1 && static_cast<int64_t>(n) * obs_dim >= 65536) {
-    pool->parallel_for(n, row);
-  } else {
-    for (int32_t i = 0; i < n; ++i) row(i, 0);
   }
 }
 

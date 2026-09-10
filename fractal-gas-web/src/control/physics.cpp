@@ -123,6 +123,7 @@ Scratch::Scratch(const Scene& s) {
   frame_tethers.resize(s.tethers.size());
   frame_rock_positions.resize(n);
   frame_hooked_rocks.resize(n);
+  frame_wall_contacts.resize(n);
   old_angles.resize(n);
   bounded_actions.resize(s.channels.size());
   edge_marks.resize(s.edges.size());
@@ -312,25 +313,29 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
     q.wall_contacts.push_back(c);
     return q.wall_contacts.back();
   };
-  auto count_wall = [&](Contact& c, bool impact = false) {
-    if (!c.penalized && (impact || s.bodies[c.a].controlled)) {
-      result.reward -= s.collision_penalty;
-      c.penalized = true;
+  auto count_wall = [&](Contact& c) {
+    if (s.bodies[c.a].controlled) {
+      // A vehicle pays once per physics frame, including sustained contact.
+      // Corners and additional substeps must not multiply its wall penalty.
+      if (!q.frame_wall_contacts[c.a]) {
+        result.reward -= s.wall_collision_penalty;
+        q.frame_wall_contacts[c.a] = 1;
+      }
+      if (s.lethal_walls) word(r, 7, 1);
     }
     if (c.counted) return;
     c.counted = true;
     ++result.collisions;
-    // Keep harvesting rewards independent of collisions.
-    if (s.bodies[c.a].controlled) {
-      if (s.lethal_walls) word(r, 7, 1);
-    }
   };
   // Resolve low-speed contacts before integrating gravity into another impact.
   // This manifold lasts one substep only; no state is hidden from snapshots.
   for (size_t b = 0; b < s.bodies.size(); ++b) {
     if (!(word(r, l.flags + b) & active_flag)) continue;
     const Vec2 p = position(r, l, b);
-    if (length2(velocity(r, l, b)) == 0 && omega(r, l, b) == 0) continue;
+    // Stationary vehicles still touch walls: reward and death settings apply
+    // even when no movement sweep is needed. Passive bodies keep the fast path.
+    if (!s.bodies[b].controlled && length2(velocity(r, l, b)) == 0 &&
+        omega(r, l, b) == 0) continue;
     body_edges(b, swept(p, p, s.bodies[b].radius + .002f));
     if (q.edge_ids.empty()) continue;
     const Shape& moving = body_shape(b, p, angle(r, l, b));
@@ -418,7 +423,7 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
       impulse(r, s, contact, !contact.counted);
       if (contact.target_velocity > 0 || (!def.vertices.empty() && omega(r, l, b) != 0))
         position(r, l, b, position(r, l, b) - hit_n * .0002f);
-      count_wall(contact, true);
+      count_wall(contact);
       if (limited) ++result.ccd_limits;
       remaining *= 1 - best;
       if (bounce == 3) {
@@ -603,18 +608,9 @@ float Physics::potential(const float* r, const uint32_t* attachments) const {
     }
     total -= best;
   }
-  if (s.controlled.size() > 1 && s.task == "tandem") {
-    Vec2 center{};
-    for (int b : s.controlled) center += position(r, l, b);
-    center = center / float(s.controlled.size());
-    for (int b : s.controlled)
-      total -=
-          s.formation_reward * std::abs(length(position(r, l, b) - center) -
-                                        s.formation_distance * .5f);
-  }
   return total / float(std::max(size_t(1), s.controlled.size()));
 }
-void Physics::mechanics(float* r, StepResult& result) {
+void Physics::mechanics(float* r, StepResult& result, uint32_t checkpoint_stage) {
   const auto& s = *scene;
   const auto& l = s.layout;
   // Discharge only loads that were already full at the start of this frame.
@@ -684,12 +680,15 @@ void Physics::mechanics(float* r, StepResult& result) {
     if (!s.gates.empty()) {
       int b = s.controlled[c];
       uint32_t gate = word(r, l.gates + c);
+      if (s.task == "tandem" && gate != checkpoint_stage) continue;
       const auto& target = s.gates[gate % s.gates.size()];
       if (length2(position(r, l, b) - target.position) <
           target.radius * target.radius) {
         word(r, l.gates + c, gate + 1);
         word(r, 6, word(r, 6) + 1);
-        result.reward += s.gate_reward;
+        result.reward += s.task == "tandem"
+                             ? s.gate_reward / float(s.controlled.size())
+                             : s.gate_reward;
       }
     }
   for (size_t b = 0; b < s.bodies.size(); ++b) {
@@ -758,7 +757,16 @@ void Physics::step_world(float* r, const float* actions, int frames,
     bounded[i] = std::clamp(actions[i], s.channels[i].low, s.channels[i].high);
   actions = bounded.data();
   for (int frame = 0; frame < frames && !word(r, 7); ++frame) {
-    float before = potential(r);
+    auto& wall_contacts = scratch_[slot].frame_wall_contacts;
+    std::fill(wall_contacts.begin(), wall_contacts.end(), 0);
+    // Freeze the stage through movement and all crossings. Counters only change
+    // in mechanics, so eligibility and target stay fixed for this entire frame.
+    uint32_t checkpoint_stage = std::numeric_limits<uint32_t>::max();
+    const bool tandem_checkpoint = s.task == "tandem" && !s.gates.empty();
+    if (tandem_checkpoint)
+      for (size_t c = 0; c < s.controlled.size(); ++c)
+        checkpoint_stage = std::min(checkpoint_stage, word(r, s.layout.gates + c));
+    float before = tandem_checkpoint ? 0 : potential(r);
     auto& attachments = scratch_[slot].frame_tethers;
     for (size_t t = 0; t < s.tethers.size(); ++t)
       attachments[t] = word(r, s.layout.joints + 2 * t);
@@ -783,10 +791,22 @@ void Physics::step_world(float* r, const float* actions, int frames,
         starts[c] = position(r, s.layout, s.controlled[c]);
     for (int k = 0; k < s.substeps; ++k)
       substep(r, actions, s.dt / s.substeps, scratch_[slot], result);
-    // Compare movement against the same hauling target on both sides. A
-    // broken/re-hooked rope must not earn a bonus for changing target distance.
-    result.reward +=
-        s.progress_reward * (potential(r, attachments.data()) - before);
+    if (tandem_checkpoint) {
+      // Everyone remains attracted to the shared checkpoint, including agents
+      // that cleared it. Average distances before mapping to a positive score.
+      if (s.progress_reward > 0 && !s.controlled.empty()) {
+        const auto& target = s.gates[checkpoint_stage % s.gates.size()];
+        float distance = 0;
+        for (int body : s.controlled)
+          distance += length(position(r, s.layout, body) - target.position);
+        const float mean_distance = distance / float(s.controlled.size());
+        result.reward += s.progress_reward * target.radius / (target.radius + mean_distance);
+      }
+    } else {
+      // Preserve signed target progress in other tasks, keeping hauling targets
+      // fixed across broken/re-hooked ropes and evaluating before respawns.
+      result.reward += s.progress_reward * (potential(r, attachments.data()) - before);
+    }
     // Per-physics-frame displacement, averaged over vehicles. Evaluate before
     // mechanics/extension respawns, so teleportation never earns travel reward.
     if (s.distance_squared_reward > 0 && !s.controlled.empty()) {
@@ -794,6 +814,17 @@ void Physics::step_world(float* r, const float* actions, int frames,
       for (size_t c = 0; c < s.controlled.size(); ++c)
         squared_distance += length2(position(r, s.layout, s.controlled[c]) - starts[c]);
       result.reward += s.distance_squared_reward * squared_distance / float(s.controlled.size());
+    }
+    // Reward the current formation once per frame, independently of target
+    // progress. Compiled pairs contain every unordered controlled-body pair.
+    if (s.formation_reward > 0 && !s.formation_pairs.empty()) {
+      float formation = 1;
+      for (const auto& pair : s.formation_pairs) {
+        const float distance = length(position(r, s.layout, pair.a) -
+                                      position(r, s.layout, pair.b));
+        formation *= pair.distance / (pair.distance + std::abs(pair.distance - distance));
+      }
+      result.reward += s.formation_reward * formation;
     }
     // Sum actual translation of each distinct rock hooked at frame start.
     // Run before delivery/respawn mechanics so teleports never earn reward.
@@ -803,7 +834,7 @@ void Physics::step_world(float* r, const float* actions, int frames,
         if (hooked[b]) distance += length(position(r, s.layout, b) - rock_starts[b]);
       result.reward += s.hooked_rock_distance_reward * distance;
     }
-    mechanics(r, result);
+    mechanics(r, result, checkpoint_stage);
     for (const auto& extension : s.extensions) {
       const float earned = result.reward;
       if (extension.step) extension.step(s, extension, r, actions, result);

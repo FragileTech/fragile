@@ -14,8 +14,8 @@ export class ReplayPanel {
     this.animationChanged = animationChanged;
     this.$ = (id) => document.getElementById(id);
     this.playback = new WorldPlayback({
-      show: (frame, index) => {
-        show(frame, { seek: !this.playback.playing });
+      show: (frame, index, { discontinuity = true } = {}) => {
+        show(frame, { seek: discontinuity });
         decision(frame.decision);
         this.$("motion-timeline").value = index;
       },

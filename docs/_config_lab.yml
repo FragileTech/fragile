@@ -55,6 +55,7 @@ repository:
 sphinx:
   extra_extensions:
     - sphinx.ext.autosectionlabel
+    - sphinx_proof
   recursive_update          : false
   config:
     autosectionlabel_prefix_document: true

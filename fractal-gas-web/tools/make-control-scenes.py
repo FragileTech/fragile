@@ -1,5 +1,6 @@
 """Author the five original, editable control-laboratory presets."""
 
+import argparse
 import json
 import math
 from pathlib import Path
@@ -7,6 +8,9 @@ from pathlib import Path
 
 DEST = Path(__file__).resolve().parents[1] / "web/lab/scenarios"
 DEST.mkdir(parents=True, exist_ok=True)
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--scene", choices=["harvest", "ants", "tandem", "mining", "rocket"])
+selected_scene = parser.parse_args().scene
 
 
 def ship(x, y, angle=0, **kwargs):
@@ -40,7 +44,9 @@ def rock(x, y, radius=1.2, mass=3):
     }
 
 
-def save(key, name, description, task, lethal_walls=True, **data):
+def save(key, name, description, task, lethal_walls=False, **data):
+    if selected_scene and key != selected_scene:
+        return
     scene = dict(
         version=1,
         name=name,
@@ -61,8 +67,17 @@ def save(key, name, description, task, lethal_walls=True, **data):
         scene["rewards"] = dict(progress=1, distance_squared=1, catch=10,
                                 collision=0, delivery=0, pickup=0, gate=0,
                                 formation=0, hooked_rock_distance=0)
-    if key == "harvest":
+    if task == "tandem":
+        scene["rewards"] = dict(progress=1, distance_squared=1, collision=2,
+                                formation=50, pickup=0, delivery=0, gate=30,
+                                hooked_rock_distance=0, catch=0)
+    if key in {"harvest", "mining"}:
         scene["keep_delivered_rocks"] = True
+    if key == "mining":
+        scene["rewards"]["distance_squared"] = 0
+        # Two coupled rockets need a longer look-ahead for the inner drop zone.
+        scene["controller_defaults"] = dict(horizon=64, frames=6, elites=4)
+    scene.setdefault("rewards", {})["wall_collision"] = 100
     scene["agent_types"] = json.loads((DEST.parent / "agent-catalog.json").read_text())
     for body in scene["bodies"]:
         if body.get("controlled"):
@@ -138,7 +153,7 @@ save(
 save(
     "tandem",
     "Tandem flight",
-    "Guide a coordinated pair through the checkpoint loop.",
+    "Fly counterclockwise through checkpoints together, maintaining separation and avoiding collisions. Everyone must clear each checkpoint before the next unlocks.",
     "tandem",
     boundary=cave,
     holes=holes,
@@ -152,16 +167,18 @@ save(
 save(
     "mining",
     "Collaborative mining",
-    "One liftable rock at a time. Team up to haul it faster; delivery spawns the next.",
+    "Team up to haul one shared rock. Delivered rocks detach and keep moving; "
+    "turn off Keep delivered rocks to respawn them instead.",
     "harvest",
+    lethal_walls=False,
     boundary=cave,
     holes=holes,
     bodies=[
-        ship(19, 10),
-        ship(19, 15),
+        dict(ship(19, 10, math.pi / 2), thrust=24),
+        dict(ship(19, 15, math.pi / 2), thrust=24),
         dict(rock(22, 12.5, 1.4, 0.24), drag=0.8, respawn=True),
     ],
-    bases=[{"position": [12, 12], "radius": 3}],
+    bases=[{"position": [12, 32], "radius": 3}],
     gravity=[{"position": [47, 22], "strength": 18, "softening": 4}],
     tethers=[
         {

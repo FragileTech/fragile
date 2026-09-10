@@ -1,6 +1,6 @@
 // Capture the user-guide screenshots from the real Arcade browser application.
 // Build the arcade WASM first, then run serve.py and invoke:
-//   ARCADE_DOC_URL=http://127.0.0.1:8091/web/ npm run capture:arcade-docs
+//   ARCADE_DOC_URL=http://127.0.0.1:8091/web/arcade.html npm run capture:arcade-docs
 // The local plaintext ROM fixtures are used when available; encrypted ROMs are
 // never created or modified by this capture workflow.
 
@@ -11,7 +11,7 @@ import { resolve } from "node:path";
 import { chromium } from "playwright";
 
 const repo = fileURLToPath(new URL("../../", import.meta.url));
-const base = process.env.ARCADE_DOC_URL || "http://127.0.0.1:8091/web/";
+const base = process.env.ARCADE_DOC_URL || "http://127.0.0.1:8091/web/arcade.html";
 const output =
   process.env.ARCADE_SCREENSHOTS || resolve(repo, "docs/_static/arcade_lab");
 const viewport = { width: 1536, height: 1100 };

@@ -1,5 +1,18 @@
 // Defaults and limits mirror Scene::compile. Weights travel with scene JSON.
-const HARVEST_REWARDS = new Set(["progress", "distance_squared", "catch"]);
+const HARVEST_REWARDS = new Set([
+  "progress",
+  "distance_squared",
+  "catch",
+  "wall_collision",
+]);
+const TANDEM_DEFAULTS = {
+  progress: 1,
+  gate: 30,
+  distance_squared: 1,
+  wall_collision: 100,
+  collision: 2,
+  formation: 50,
+};
 export const REWARD_TERMS = Object.freeze([
   {
     key: "catch",
@@ -35,16 +48,25 @@ export const REWARD_TERMS = Object.freeze([
     max: 1000,
     slider: 10,
     step: 0.1,
-    help: "Reward for getting closer to the next gate, refinery, pickup or cargo target. In harvesting, measures hook-to-nearest-asteroid distance when empty and attached asteroid-to-discharge-center distance when towing. Moving away gives a penalty. Also scales formation shaping.",
+    help: "In formation flight, rewards proximity each physics frame: checkpoint radius / (checkpoint radius + mean distance of all agents to the shared active checkpoint), including agents that already crossed. Staying nearby earns more; moving away lowers this positive reward without a negative penalty. Default weight 1. Other tasks reward progress toward their target, with a penalty for moving away; harvesting uses hook-to-asteroid or attached asteroid-to-discharge distance.",
+  },
+  {
+    key: "wall_collision",
+    label: "Wall collision penalty",
+    def: 100,
+    max: 10000,
+    slider: 100,
+    step: 0.1,
+    help: "Penalty once per controlled vehicle per physics frame touching an arena wall or obstacle boundary. Sustained contact keeps costing reward; corners and solver substeps do not multiply it. Cargo and hooks do not count. Zero disables the penalty, independently of wall death.",
   },
   {
     key: "collision",
-    label: "Collision penalty",
+    label: "Vehicle/body collision penalty",
     def: 2,
     max: 10000,
     slider: 100,
     step: 0.1,
-    help: "Penalty per qualifying vehicle contact. Repeated contacts can cost more than one penalty.",
+    help: "Penalty per qualifying vehicle contact with another body, not walls. Repeated contacts can cost more than one penalty. Disabled in harvesting tasks.",
   },
   {
     key: "pickup",
@@ -71,16 +93,16 @@ export const REWARD_TERMS = Object.freeze([
     max: 10000,
     slider: 300,
     step: 1,
-    help: "Reward for each vehicle reaching its next ordered gate. Has no effect without gates.",
+    help: "Reward for each vehicle reaching its next ordered gate. In formation flight, defaults to 30 divided by total agent count per crossing: the whole team earns 30 per shared checkpoint. Later checkpoints stay locked until everyone clears the current one. Has no effect without gates.",
   },
   {
     key: "formation",
-    label: "Formation shaping",
+    label: "Formation reward",
     def: 0.15,
-    max: 1000,
-    slider: 5,
+    max: 100,
+    slider: 100,
     step: 0.01,
-    help: "Weight of formation improvement for tandem tasks. Multiplied by Target progress; zero progress disables formation shaping.",
+    help: "Reward each physics frame in formation flight: multiply target / (target + absolute separation error) over every vehicle pair. Perfect formation scores 1 before weighting, even while stationary. Independent of Checkpoint proximity. Defaults to weight 50 in formation flight; accepts 0 to 100, and zero disables it. Set pair distances in scene JSON.",
   },
   {
     key: "full_reward",
@@ -113,6 +135,18 @@ export const COEFFICIENTS = Object.freeze([
   },
 ]);
 const SETTINGS_TERMS = [...COEFFICIENTS, ...REWARD_TERMS];
+export function rewardDefaults(scene = {}) {
+  return Object.fromEntries(
+    REWARD_TERMS.map((term) => [
+      term.key,
+      scene.task === "harvest" && !HARVEST_REWARDS.has(term.key)
+        ? 0
+        : scene.task === "tandem"
+          ? (TANDEM_DEFAULTS[term.key] ?? 0)
+          : term.def,
+    ]),
+  );
+}
 export function coefficientValues(values = {}) {
   return Object.fromEntries(
     COEFFICIENTS.map((term) => {
@@ -124,14 +158,17 @@ export function coefficientValues(values = {}) {
   );
 }
 export function rewardValues(scene) {
+  const defaults = rewardDefaults(scene);
   return Object.fromEntries(
     REWARD_TERMS.map((t) => [
       t.key,
       scene.task === "harvest" && !HARVEST_REWARDS.has(t.key)
         ? 0
         : t.key === "full_reward"
-          ? (scene.cargo?.full_reward ?? scene.rewards?.pickup ?? t.def)
-          : (scene.rewards?.[t.key] ?? t.def),
+          ? (scene.cargo?.full_reward ??
+            (scene.task === "tandem" ? 0 : scene.rewards?.pickup) ??
+            defaults[t.key])
+          : (scene.rewards?.[t.key] ?? defaults[t.key]),
     ]),
   );
 }
@@ -214,18 +251,10 @@ export class RewardSettings {
     reset.type = "button";
     reset.textContent = "Reset defaults";
     reset.onclick = () =>
-      this.setValues(
-        Object.fromEntries(
-          SETTINGS_TERMS.map((t) => [
-            t.key,
-            this.harvest &&
-            REWARD_TERMS.includes(t) &&
-            !HARVEST_REWARDS.has(t.key)
-              ? 0
-              : t.def,
-          ]),
-        ),
-      );
+      this.setValues({
+        ...coefficientValues(),
+        ...rewardDefaults({ task: this.task }),
+      });
     container.append(this.pending, this.apply, reset);
   }
   updatePending() {
@@ -249,7 +278,13 @@ export class RewardSettings {
     this.updatePending();
   }
   render(scene, coefficients = {}) {
-    this.harvest = scene.task === "harvest";
+    this.task = scene.task;
+    const progress = this.inputs.get("progress");
+    const progressLabel =
+      scene.task === "tandem" ? "Checkpoint proximity" : progress.term.label;
+    progress.number.closest("label").firstChild.textContent = progressLabel;
+    progress.number.setAttribute("aria-label", progressLabel);
+    progress.slider.setAttribute("aria-label", `${progressLabel} slider`);
     for (const [key, { number }] of this.inputs)
       number.closest("label").hidden =
         scene.task === "harvest"
