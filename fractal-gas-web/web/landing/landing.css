@@ -255,3 +255,19 @@ footer {
     font-size: 14px;
   }
 }
+@media (max-width: 360px) {
+  .site-header {
+    gap: 8px;
+  }
+  .brand {
+    font-size: 19px;
+  }
+  .brand img {
+    width: 32px;
+    height: 32px;
+  }
+  nav {
+    gap: 10px;
+    font-size: 11px;
+  }
+}

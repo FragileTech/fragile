@@ -84,7 +84,11 @@ try {
           ),
         ["arcade.html", "lab/", "optimization/", "llm/"],
       );
-      if (javaScriptEnabled && [1440, 768, 390].includes(width))
+      if (
+        process.env.CAPTURE_LANDING_SCREENSHOTS === "1" &&
+        javaScriptEnabled &&
+        [1440, 768, 390].includes(width)
+      )
         await page.screenshot({
           path: `/tmp/fragile-landing-${width}.png`,
           fullPage: true,
