@@ -257,7 +257,11 @@ footer {
 }
 @media (max-width: 360px) {
   .site-header {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     gap: 8px;
+    padding-block: 12px;
   }
   .brand {
     font-size: 19px;
