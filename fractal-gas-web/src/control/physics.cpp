@@ -388,11 +388,29 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
             const Shape& moving = body_shape(b, start + delta * time, a0 + da * time);
             float gap = separation(moving, wall, normal);
             if (gap < .0001f) {
-              // A fixed separating axis certifies the entire remaining sweep.
-              // The rotational support bound also covers segment endpoints.
-              if (time == 0 && gap >= -.0005f &&
-                  dot(delta, normal) + (def.vertices.empty() ? 0.f : std::abs(da) * def.radius) <= 0)
-                break;
+              // Existing overlap must not block motion out of a wall. The
+              // positional solver can leave penetration slightly above its
+              // slop forever, so no penetration threshold belongs here.
+              // Certify that support along this axis cannot grow anywhere in
+              // the remaining sweep, including rotation and segment endpoints.
+              if (time == 0) {
+                float growth = dot(delta, normal);
+                if (moving.n) {
+                  const float support = geometry::project(moving, normal).second;
+                  float rotational_growth = -std::numeric_limits<float>::infinity();
+                  for (int v = 0; v < moving.n; ++v) {
+                    const Vec2 offset = moving.vertices[v] - moving.center;
+                    // Taylor's remainder bounds the whole arc by a convex
+                    // quadratic. Its maximum on [0,1] is at an endpoint.
+                    rotational_growth = std::max(rotational_growth,
+                        dot(moving.vertices[v], normal) - support +
+                        dot(perp(offset), normal) * da +
+                        .5f * length(offset) * da * da);
+                  }
+                  growth += rotational_growth;
+                }
+                if (growth <= 0) break;
+              }
               found = true;
               break;
             }

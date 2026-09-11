@@ -222,3 +222,70 @@ TEST_CASE(control_resting_rock_releases_under_tether_load) {
   CHECK(position(b.row(0),s->layout,1).y > 1);
   CHECK(word(b.row(0),s->layout.joints)==2);
 }
+
+TEST_CASE(control_overlapping_bodies_can_retreat_and_slide_along_walls) {
+  for (bool polygon : {false, true}) for (bool corner : {false, true})
+    for (float depth : {.0006f, .005f, .1f}) for (float retreat : {0.f, 1.f}) {
+      auto s = std::make_shared<Scene>(*floor_scene(polygon, 0));
+      s->flight_mode = false;
+      s->gravity = {};
+      s->dt = .1f;
+      s->substeps = 1;
+      Physics physics(s);
+      StateBatch state(1, *s);
+      state.reset(*s, 7);
+      const Vec2 start{corner ? .5f - depth : 40.f, .5f - depth};
+      position(state.row(0), s->layout, 0, start);
+      velocity(state.row(0), s->layout, 0, {1, retreat});
+      float actions[2] = {};
+      StepResult result;
+      physics.step_world(state.row(0), actions, 1, result);
+      const Vec2 end = position(state.row(0), s->layout, 0);
+      CHECK(end.x >= start.x + .099f);
+      CHECK(end.y >= start.y + .099f * retreat);
+      CHECK(result.ccd_limits == 0);
+      CHECK(s->inside(end));
+    }
+}
+
+TEST_CASE(control_vehicle_can_rotate_away_from_touching_wall) {
+  auto s = std::make_shared<Scene>(*floor_scene(true, 0));
+  s->flight_mode = false;
+  s->gravity = {};
+  s->dt = .1f;
+  s->substeps = 1;
+  Physics physics(s);
+  StateBatch state(1, *s);
+  state.reset(*s, 7);
+  angle(state.row(0), s->layout, 0) = .2f;
+  omega(state.row(0), s->layout, 0) = -1;
+  position(state.row(0), s->layout, 0, {40, .5f * (std::cos(.2f) + std::sin(.2f)) - .005f});
+  velocity(state.row(0), s->layout, 0, {1, 0});
+  float actions[2] = {};
+  StepResult result;
+  physics.step_world(state.row(0), actions, 1, result);
+  CHECK_CLOSE(position(state.row(0), s->layout, 0).x, 40.1f, 1e-6);
+  CHECK_CLOSE(angle(state.row(0), s->layout, 0), .1f, 1e-5);
+  CHECK_CLOSE(omega(state.row(0), s->layout, 0), -1, 1e-5);
+  CHECK(result.ccd_limits == 0);
+}
+
+TEST_CASE(control_physical_hook_can_be_pulled_out_of_wall_overlap) {
+  auto s = Scene::compile(R"({"task":"harvest","size":[20,20],
+    "environment":{"flight":false},"physics":{"dt":0.1,"substeps":4},
+    "bodies":[{"controlled":true,"position":[10,5],"mass":10}],
+    "tethers":[{"a":0,"b":-1,"rest_length":2,"stiffness":20,"damping":5}]})");
+  Physics physics(s);
+  StateBatch state(1, *s);
+  state.reset(*s, 7);
+  const int hook = s->tethers.back().b;
+  CHECK(hook >= 0);
+  position(state.row(0), s->layout, hook, {10, s->bodies[hook].radius - .005f});
+  velocity(state.row(0), s->layout, hook, {});
+  std::vector<float> actions(s->channels.size(), 0);
+  StepResult result;
+  physics.step_world(state.row(0), actions.data(), 10, result);
+  CHECK(position(state.row(0), s->layout, hook).y > 1);
+  CHECK(result.ccd_limits == 0);
+  CHECK(!result.dead);
+}

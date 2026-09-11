@@ -1194,7 +1194,14 @@ for (const id of [
     if (id === "algorithm") controllerSettings.render();
     stageSettings();
   };
-for (const name of ["tree", "cloud", "geometry", "tethers"]) {
+for (const name of [
+  "tree",
+  "cloud",
+  "geometry",
+  "tethers",
+  "cargo-labels",
+  "checkpoint-labels",
+]) {
   const input = $(`layer-${name}`);
   input.checked = readPreference(`layer.${name}`, input.checked);
   renderer.setLayers({ [name]: input.checked });
@@ -1212,6 +1219,8 @@ $("clean").onclick = () => {
       cloud: false,
       geometry: false,
       tethers: false,
+      "cargo-labels": false,
+      "checkpoint-labels": false,
     });
   } else renderer.setLayers(oldLayers);
   $("clean").textContent = clean ? "Show diagnostics" : "Clean view";

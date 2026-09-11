@@ -138,6 +138,8 @@ export class LabRenderer {
       cloud: true,
       geometry: false,
       tethers: true,
+      "cargo-labels": true,
+      "checkpoint-labels": true,
     };
     this.zoom = 1;
     this.top = false;
@@ -334,6 +336,10 @@ export class LabRenderer {
     this.refreshCargoReadout();
   }
   refreshCargoReadout() {
+    if (!this.layers["cargo-labels"]) {
+      this.cargoReadout.clear();
+      return;
+    }
     this.cargoReadout.update(
       this.worldDynamics?.cargo.entries,
       this.bodyLayer,
@@ -824,6 +830,11 @@ export class LabRenderer {
   }
   setLayers(layers) {
     Object.assign(this.layers, layers);
+    this.refreshCargoReadout();
+    if (this.checkpoints) {
+      this.checkpoints.labelVisible = this.layers["checkpoint-labels"];
+      this.checkpoints.project(this.camera);
+    }
     if (this.treeGroup) {
       this.treeGroup.visible = this.layers.tree;
       this.cloudGroup.visible = this.layers.cloud;

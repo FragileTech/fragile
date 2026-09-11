@@ -20,6 +20,7 @@ export class CheckpointPresentation {
     this.crossed = 0;
     this.initialized = false;
     this.enabled = true;
+    this.labelVisible = true;
     this.projected = new T.Vector3();
     this.amber = new T.Color(palette.gold);
     this.green = new T.Color(palette.green);
@@ -106,7 +107,11 @@ export class CheckpointPresentation {
     }
   }
   project(camera) {
-    if (!this.label || !this.initialized) return;
+    if (!this.label) return;
+    if (!this.labelVisible || !this.initialized) {
+      this.label.hidden = true;
+      return;
+    }
     const gate = this.gates[this.active];
     this.group.updateWorldMatrix(true, false);
     this.projected
