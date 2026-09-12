@@ -81,16 +81,54 @@ fn events<T: Real>(epoch: u64, step: u64, p: &Population<T>) -> Vec<EventRef> {
         })
         .collect()
 }
+fn position<T: Real>(p: &Population<T>, slot: usize) -> Option<[f64; 2]> {
+    let field = p
+        .observations
+        .fields
+        .get("positions")
+        .filter(|f| f.width() == 2)?;
+    let row = field.row(slot).ok()?;
+    let point = [row[0].to_f64(), row[1].to_f64()];
+    point.iter().all(|x| x.is_finite()).then_some(point)
+}
+
+/// Principal complex square root without subtracting nearly equal components.
+/// The small component is recovered from 2uv = y, preserving near-axis vectors.
+fn spin2([x, y]: [f64; 2]) -> [f64; 2] {
+    let scale = x.abs().max(y.abs());
+    if scale == 0. {
+        return [0., 0.];
+    }
+    let radius = (x / scale).hypot(y / scale);
+    let large = scale.sqrt() * ((radius + x.abs() / scale) * 0.5).sqrt();
+    if x >= 0. {
+        [large, y / (2. * large)]
+    } else {
+        let imaginary = if y < 0. { -large } else { large };
+        [y / (2. * imaginary), imaginary]
+    }
+}
+
+fn displacement(a: Option<[f64; 2]>, b: Option<[f64; 2]>) -> Option<[f64; 2]> {
+    let (a, b) = (a?, b?);
+    let delta = [b[0] - a[0], b[1] - a[1]];
+    delta.iter().all(|x| x.is_finite()).then_some(delta)
+}
+
 impl FractalSet {
     pub fn from_archive<T: Real>(archive: &RunArchive<T>) -> Self {
         let mut nodes = BTreeSet::new();
         let mut lookup = BTreeMap::new();
+        let mut positions = BTreeMap::new();
         for anchor in &archive.anchors {
             nodes.extend(events(anchor.epoch, anchor.step, &anchor.population));
         }
         for s in &archive.steps {
             for e in events(s.epoch, s.report.step - 1, &s.before) {
                 lookup.insert((e.epoch, e.step, e.slot, e.generation, e.version), e);
+                if let Some(point) = position(&s.before, e.slot as usize) {
+                    positions.insert(e, point);
+                }
                 nodes.insert(e);
             }
             nodes.extend(events(s.epoch, s.report.step, &s.final_population));
@@ -129,28 +167,9 @@ impl FractalSet {
             for i in 0..before.len() {
                 let cst_index = result.edges.len();
                 if s.report.pre_clone_eligible[i] {
-                    let displacement = s
-                        .before
-                        .observations
-                        .fields
-                        .get("positions")
-                        .zip(s.final_population.observations.fields.get("positions"))
-                        .and_then(|(x, y)| {
-                            if x.width() != 2 || y.width() != 2 {
-                                return None;
-                            }
-                            let a = x.row(i).ok()?;
-                            let b = y.row(i).ok()?;
-                            let delta =
-                                [b[0].to_f64() - a[0].to_f64(), b[1].to_f64() - a[1].to_f64()];
-                            delta.iter().all(|v| v.is_finite()).then_some(delta)
-                        });
-                    let spinor = displacement.map(|[x, y]| {
-                        let radius = x.hypot(y);
-                        let real = ((radius + x) * 0.5).max(0.).sqrt();
-                        let imaginary = ((radius - x) * 0.5).max(0.).sqrt().copysign(y);
-                        [real, imaginary]
-                    });
+                    let displacement =
+                        displacement(position(&s.before, i), position(&s.final_population, i));
+                    let spinor = displacement.map(spin2);
                     result.edges.push(Edge {
                         source: before[i],
                         target: after[i],
@@ -248,6 +267,10 @@ impl FractalSet {
                                 }),
                                 ..Default::default()
                             };
+                            let delta = displacement(
+                                position(&s.before, i),
+                                positions.get(&donor).copied(),
+                            );
                             result.edges.push(Edge {
                                 source: before[i],
                                 target: donor,
@@ -259,7 +282,11 @@ impl FractalSet {
                                     EdgeKind::HistoricalCloning
                                 },
                                 revival: false,
-                                attributes: attributes.clone(),
+                                attributes: EdgeAttributes {
+                                    position_displacement: delta,
+                                    spin2_displacement: delta.map(spin2),
+                                    ..attributes.clone()
+                                },
                             });
                             result.edges.push(Edge {
                                 source: after[i],
@@ -483,5 +510,32 @@ impl<T: Real> RunArchive<T> {
             }
         }
         Ok(result)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::spin2;
+
+    #[test]
+    fn spin2_preserves_small_transverse_components_and_large_finite_vectors() {
+        for [x, y] in [
+            [1., 1e-9],
+            [-1., 1e-9],
+            [1., -1e-9],
+            [-1., -1e-9],
+            [1e308, 1e299],
+            [-1e308, -1e299],
+            [1e-300, 1e-309],
+        ] {
+            let [u, v] = spin2([x, y]);
+            assert!(u.is_finite() && v.is_finite());
+            assert!(((u * u - v * v) / x - 1.).abs() < 1e-14);
+            assert!((2. * u * v / y - 1.).abs() < 1e-14);
+        }
+        let [u, v] = spin2([f64::MAX, f64::MAX]);
+        assert!(u.is_finite() && v.is_finite());
+        assert_eq!(spin2([0., 0.]), [0., 0.]);
+        assert_eq!(spin2([-1., -0.]), [0., 1.]);
     }
 }

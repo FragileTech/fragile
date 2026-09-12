@@ -3447,7 +3447,7 @@
     "kind": "Rust/WASM reference experiment",
     "prediction": "Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue.",
     "question": "How does fitness curvature shape the metric?",
-    "posterAlt": "Exact sampled fitness Hessian. Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue.",
+    "posterAlt": "Exact conditional teaching-profile Hessian. Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -3661,9 +3661,9 @@
     "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
     "target": "sec-hypocoercivity",
     "kind": "Rust/WASM reference experiment",
-    "prediction": "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+    "prediction": "The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate.",
     "question": "Which covariance does the anisotropic thermostat approach?",
-    "posterAlt": "Harmonic relaxation. The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+    "posterAlt": "Harmonic relaxation. The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -4011,7 +4011,7 @@
     "kind": "Rust/WASM reference experiment",
     "prediction": "With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation.",
     "question": "What changes continuously when the query point moves?",
-    "posterAlt": "Exact sampled fitness Hessian. With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation.",
+    "posterAlt": "Exact conditional teaching-profile Hessian. With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -4482,9 +4482,9 @@
     "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
     "target": "sec-cst-dimension-curvature",
     "kind": "Rust/WASM reference experiment",
-    "prediction": "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+    "prediction": "Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively.",
     "question": "How does the comparable-pair fraction encode dimension?",
-    "posterAlt": "ordering fraction replicas. Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+    "posterAlt": "ordering fraction replicas. Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [

@@ -197,7 +197,7 @@
   },
   "V-08": {
     "question": "Which covariance does the anisotropic thermostat approach?",
-    "prediction": "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference."
+    "prediction": "The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate."
   },
   "V-09": {
     "question": "Which walkers share a cell boundary?",
@@ -241,7 +241,7 @@
   },
   "V-19": {
     "question": "How does the comparable-pair fraction encode dimension?",
-    "prediction": "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35."
+    "prediction": "Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively."
   },
   "V-20": {
     "question": "How does the curvature signal compete with sampling noise?",

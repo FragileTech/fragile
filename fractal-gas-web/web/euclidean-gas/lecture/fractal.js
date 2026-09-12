@@ -1,12 +1,5 @@
 import { metadata } from "./partv-metadata.js";
-import {
-  positions,
-  velocities,
-  line,
-  scatter,
-  covariance2,
-  mean,
-} from "./math.js";
+import { positions, line, scatter, covariance2 } from "./math.js";
 const range = (key, label, value, min, max, step = 0.1) => ({
   key,
   label,
@@ -404,7 +397,26 @@ async function analysisModel(i, { params, seed, engine }) {
               group.x,
               group.y,
               ss,
-              group.log ? { xScale: "log", yScale: "log" } : {},
+              i === 16 && group.title === "Wave operator estimate"
+                ? {
+                    segments: result.series
+                      .find((s) => s.name === "operator versus bandwidth")
+                      .x.map((x, j) => {
+                        const mean = result.series.find(
+                          (s) => s.name === "operator versus bandwidth",
+                        ).y[j];
+                        const se = result.series.find(
+                          (s) => s.name === "Predicted standard error of mean",
+                        ).y[j];
+                        return [
+                          [x, mean - 1.96 * se],
+                          [x, mean + 1.96 * se],
+                        ];
+                      }),
+                  }
+                : group.log
+                  ? { xScale: "log", yScale: "log" }
+                  : {},
             ),
           );
       }
@@ -431,15 +443,45 @@ async function analysisModel(i, { params, seed, engine }) {
         if (primary.reference !== undefined)
           ss.push(
             line(
-              "Analytical / quadrature prediction",
+              i === 20
+                ? "Continuum curvature R = 2K"
+                : "Analytical / quadrature prediction",
               measured.points.map(([x]) => [x, primary.reference]),
               { dashed: true },
             ),
           );
+        if (i === 20) {
+          const finite = result.metrics.find(
+            (v) => v.name === "kernel quadrature finite-radius curvature",
+          ).value;
+          const predictedSE = result.metrics.find(
+            (v) => v.name === "kernel predicted standard error of mean",
+          ).value;
+          ss.push(
+            line(
+              "Finite-bandwidth quadrature",
+              measured.points.map(([x]) => [x, finite]),
+              { dashed: true },
+            ),
+          );
+          for (const sign of [-1, 1])
+            ss.push(
+              line(
+                sign < 0
+                  ? "Quadrature − 1.96 predicted SE"
+                  : "Quadrature + 1.96 predicted SE",
+                measured.points.map(([x]) => [
+                  x,
+                  finite + sign * 1.96 * predictedSE,
+                ]),
+                { dashed: true },
+              ),
+            );
+        }
         charts.push(
           plot(
             primary.name,
-            "Independent ensemble",
+            [3, 4, 15].includes(i) ? "Parameter step" : "Independent ensemble",
             "Measured value",
             ss,
             primary.standard_error !== undefined
@@ -466,9 +508,14 @@ async function analysisModel(i, { params, seed, engine }) {
         time: tick,
         charts,
         metrics: (result.metrics || []).map((v) => m(v.name, v.value)),
-        message: [3, 4, 15].includes(i)
-          ? "Deterministic native calculation; controls change the field or connection. Numerical values and model conventions are included in the JSON export."
-          : `${params.replicas} independent replicas, ${params.samples} target samples per replica. Error bars show 1.96 standard errors of the ensemble mean. Model details are included in the JSON export.`,
+        message:
+          i === 16
+            ? `${params.replicas} independent replicas; ${params.samples} samples each. This field has zero gradient at the query, so leading variance scales as 1/(N ε³). Deterministic variance stays positive even if every sampled support is empty. ±1.96-SE bars are pointwise scales, not guaranteed confidence intervals for sparse samples.`
+            : i === 20
+              ? `${params.replicas} independent replicas; ${params.samples} samples each. The sampling cube shrinks with ε, so leading curvature variance scales as 1/(N ε⁴). Finite-radius bias, predicted sampling uncertainty and empirical uncertainty are distinct.`
+              : [3, 4, 15].includes(i)
+                ? "Deterministic native calculation; controls change the field or connection. Numerical values and model conventions are included in the JSON export."
+                : `${params.replicas} independent replicas, ${params.samples} target samples per replica. Error bars show a pointwise ±1.96-standard-error scale; sparse or skewed samples need not give 95% coverage. Model details are included in the JSON export.`,
         table: {
           columns: ["Measurement", "Value", "Reference", "Standard error"],
           rows: (result.metrics || []).map((v) => [
@@ -479,7 +526,15 @@ async function analysisModel(i, { params, seed, engine }) {
           ]),
         },
         ...(nodes.length
-          ? { scene: { title: "Reference spacetime sample", nodes } }
+          ? {
+              scene: {
+                title:
+                  params.spacetime_dimension === 4
+                    ? "Reference spacetime sample (x₃ omitted)"
+                    : "Reference spacetime sample",
+                nodes,
+              },
+            }
           : {}),
         result,
         done: tick >= 31,
@@ -665,16 +720,25 @@ async function geometryModel(i, { params: p, seed, engine }) {
         seed: seed + tick,
       });
     } else if (i === 8) {
-      reference = await engine.geometry({
-        kind: "harmonic",
-        curvature: identity,
-        metric,
-        gamma: 1,
-        temperature: 0.4,
-        dt: 0.04,
-      });
+      if (!reference)
+        reference = await engine.geometry({
+          kind: "harmonic",
+          curvature: identity,
+          metric,
+          gamma: 1,
+          temperature: 0.4,
+          dt: 0.04,
+          initial_half_width: 1.8,
+          samples: n,
+          steps: 128,
+        });
       result = reference;
-      history.push([tick * 0.04, covariance2(positions(frame))[0][0]]);
+      // covariance2 uses the empirical-measure divisor N. Compare an unbiased
+      // sample variance with the population covariance returned by Rust.
+      history.push([
+        tick * 0.04,
+        (covariance2(positions(frame))[0][0] * n) / (n - 1),
+      ]);
     } else {
       const points = positions(frame);
       mesh = await engine.geometry({ kind: "voronoi", points, bounds, metric });
@@ -731,7 +795,11 @@ async function geometryModel(i, { params: p, seed, engine }) {
         const postStage =
           step.stages.find((s) => s.stage === "post_clone") ||
           step.stages.find((s) => s.stage.includes("post_clone"));
-        const post = postStage ? field(postStage) : pre;
+        if (!postStage)
+          throw new Error(
+            "Validated post-clone positions are unavailable; clone/kinetic interface changes cannot be separated.",
+          );
+        const post = field(postStage);
         const a = await engine.geometry({
             kind: "voronoi",
             points: pre,
@@ -780,7 +848,12 @@ async function geometryModel(i, { params: p, seed, engine }) {
         const f = result.jet || result,
           g = result.metric || {};
         if (f.hessian)
-          charts.push(tensorChart("Exact sampled fitness Hessian", f.hessian));
+          charts.push(
+            tensorChart(
+              "Exact conditional teaching-profile Hessian",
+              f.hessian,
+            ),
+          );
         if (g.metric) charts.push(tensorChart("Regularized metric", g.metric));
         charts.push(
           plot(
@@ -831,7 +904,27 @@ async function geometryModel(i, { params: p, seed, engine }) {
       } else if (i === 8) {
         charts.push(
           plot("Harmonic relaxation", "Time", "Position variance", [
-            line("Measured x₁ variance", history),
+            line("Unbiased measured x₁ variance", history),
+            line(
+              "Exact transient prediction",
+              history.map(([t], j) => [
+                t,
+                reference.transient_covariances[j][0][0],
+              ]),
+            ),
+            ...[-1, 1].map((sign) =>
+              line(
+                sign < 0 ? "Prediction − 1.96 SE" : "Prediction + 1.96 SE",
+                history.map(([t], j) => [
+                  t,
+                  reference.transient_covariances[j][0][0] +
+                    sign *
+                      1.96 *
+                      reference.transient_variance_standard_errors[j][0],
+                ]),
+                { dashed: true },
+              ),
+            ),
             line(
               "Discrete stationary prediction",
               history.map(([t]) => [t, reference.discrete_covariance[0][0]]),
@@ -841,6 +934,23 @@ async function geometryModel(i, { params: p, seed, engine }) {
               history.map(([t]) => [t, reference.continuous_covariance[0][0]]),
             ),
           ]),
+        );
+        metrics.push(
+          m("Measured unbiased x₁ variance", history.at(-1)[1]),
+          m(
+            "Transient x₁ variance",
+            reference.transient_covariances[tick][0][0],
+          ),
+          m(
+            "Sample variance standard error",
+            reference.transient_variance_standard_errors[tick][0],
+          ),
+          m(
+            "Transient discrepancy",
+            (history.at(-1)[1] - reference.transient_covariances[tick][0][0]) /
+              reference.transient_variance_standard_errors[tick][0],
+            "SE",
+          ),
         );
         for (const key of ["discrete_covariance", "continuous_covariance"])
           if (reference[key])
@@ -982,7 +1092,7 @@ async function geometryModel(i, { params: p, seed, engine }) {
         metrics,
         message: [5, 13].includes(i)
           ? result.status ||
-            "Conditional analytical field on recorded source coordinates; companion coordinates and alive membership remain frozen."
+            "Conditional teaching profile on recorded coordinates: quadratic objective, global σmin=0.1, logistic map 2/(1+exp(−z))+10⁻⁶, unit channel exponents, position-only distance. Source coordinates and alive membership remain frozen."
           : i === 6
             ? gas
               ? "The metric is recorded at the actual BAOAB O stage for slot 0. Independent innovations test its conditional covariance with the full thermostat prefactor."
@@ -994,7 +1104,7 @@ async function geometryModel(i, { params: p, seed, engine }) {
                 : i === 10
                   ? "Neighbor changes compare the recorded pre-clone, validated post-clone, and final positions."
                   : i === 8
-                    ? "Independent harmonic walkers evolve with a constant anisotropic thermostat. The reference matrices solve the continuous and discrete covariance equations."
+                    ? "Independent harmonic walkers use an unbiased sample variance. The exact transient starts from the uniform initial law; its pointwise ±1.96-SE bands include the initial fourth cumulant. Stationary limits are shown separately."
                     : i === 9 && p.geometry === "variable"
                       ? "The grid approximates geodesic distance. Refinement adds spatial samples and directions; the other plots provide a constant-metric comparison."
                       : "Cells partition the observation window. With a constant metric, geometric volume is coordinate area multiplied by the square root of the metric determinant.",

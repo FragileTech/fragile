@@ -1,7 +1,36 @@
 //! Durable observational archive. Recording never draws random numbers and commits atomically.
 use crate::{GasConfig, GasError, Population, Real, Result, StepReport, Validity, error::require};
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
+
+/// Recorded coordinates are exact storage values, including signed zero. NaN
+/// payload bits carry no geometric information, so all NaNs compare alike.
+fn same_scalar(a: f64, b: f64) -> bool {
+    a.to_bits() == b.to_bits() || (a.is_nan() && b.is_nan())
+}
+
+fn boundary_matches<T: Real>(before: &Population<T>, previous: &Population<T>) -> bool {
+    before.version >= previous.version
+        && before.generations == previous.generations
+        && (before.version != previous.version
+            || (before.states == previous.states
+                && before.observations.fields.len() == previous.observations.fields.len()
+                && before.observations.fields.iter().all(|(name, field)| {
+                    previous
+                        .observations
+                        .fields
+                        .get(name)
+                        .is_some_and(|expected| {
+                            field.item_shape() == expected.item_shape()
+                                && field.values().len() == expected.values().len()
+                                && field
+                                    .values()
+                                    .iter()
+                                    .zip(expected.values())
+                                    .all(|(a, b)| same_scalar(a.to_f64(), b.to_f64()))
+                        })
+                })))
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -44,7 +73,7 @@ impl StageSnapshot {
                         && f.values
                             .iter()
                             .zip(v.values())
-                            .all(|(&a, b)| a == b.to_f64() || (a.is_nan() && b.to_f64().is_nan()))
+                            .all(|(&a, b)| same_scalar(a, b.to_f64()))
                 })
             })
     }
@@ -301,7 +330,9 @@ impl<T: Real> RunArchive<T> {
             self.anchors.last().is_some_and(|a| a.epoch == self.epoch),
             "archive current epoch lacks anchor",
         )?;
-        let mut last = None;
+        let mut last: Option<(u64, u64)> = None;
+        let mut recorded_sources = BTreeMap::new();
+        let mut previous_endpoints = BTreeMap::new();
         for s in &self.steps {
             s.before.validate()?;
             s.final_population.validate()?;
@@ -325,13 +356,25 @@ impl<T: Real> RunArchive<T> {
                 .iter()
                 .find(|a| a.epoch == s.epoch)
                 .ok_or_else(|| GasError::Checkpoint("missing archive epoch anchor".into()))?;
+            // A pre-clone reward refresh may change reward provenance or validity.
+            // Explicit extraction/domain refresh may advance the observation version.
+            // Neither operation changes recipient incarnations; at an unchanged
+            // version the same EventRef must retain exactly the same coordinates.
+            let previous = previous_endpoints
+                .get(&s.epoch)
+                .copied()
+                .unwrap_or(&anchor.population);
+            require(
+                boundary_matches(&s.before, previous),
+                "archive boundary differs from anchor or previous endpoint",
+            )?;
             require(
                 s.report.step > anchor.step
                     && match last {
-                        None => s.report.step == anchor.step + 1,
+                        None => Some(s.report.step) == anchor.step.checked_add(1),
                         Some((epoch, step)) => {
-                            (s.epoch > epoch && s.report.step == anchor.step + 1)
-                                || (s.epoch == epoch && s.report.step == step + 1)
+                            (s.epoch > epoch && Some(s.report.step) == anchor.step.checked_add(1))
+                                || (s.epoch == epoch && Some(s.report.step) == step.checked_add(1))
                         }
                     },
                 "nonconsecutive archive steps",
@@ -344,9 +387,44 @@ impl<T: Real> RunArchive<T> {
             )?;
             require(
                 s.before.version == s.report.source_version
-                    && s.donor_fitness.len() == s.report.clone_plan.sources.len(),
+                    && s.before.eligible(self.gas_config.include_truncated)
+                        == s.report.pre_clone_eligible
+                    && s.donor_fitness.len() == s.report.clone_plan.sources.len()
+                    && s.donor_fitness
+                        .iter()
+                        .all(|f| f.is_finite() && *f > T::ZERO),
                 "archive source/fitness mismatch",
             )?;
+            recorded_sources.insert((s.epoch, s.report.step - 1), &s.before);
+            for source in s
+                .report
+                .distance_sources
+                .iter()
+                .chain(&s.report.clone_plan.sources)
+                .chain(s.influences.iter().map(|influence| &influence.source))
+            {
+                require(
+                    (source.slot as usize) < s.before.len()
+                        && source.frame < s.report.step
+                        && source.version <= s.before.version,
+                    "archive source outside causal coverage",
+                )?;
+                if let Some(population) = recorded_sources.get(&(s.epoch, source.frame)) {
+                    require(
+                        (source.slot as usize) < population.len()
+                            && source.version == population.version
+                            && source.generation == population.generations[source.slot as usize]
+                            && population.validity[source.slot as usize]
+                                .eligible(self.gas_config.include_truncated),
+                        "archive source identity differs from recorded population",
+                    )?;
+                } else {
+                    require(
+                        source.frame < anchor.step,
+                        "archive source missing inside recorded coverage",
+                    )?;
+                }
+            }
             require(
                 s.stages.first().is_some_and(|v| v.stage == "pre_clone")
                     && s.stages.last().is_some_and(|v| v.stage == "post_kinetic"),
@@ -360,6 +438,41 @@ impl<T: Real> RunArchive<T> {
                         .last()
                         .is_some_and(|v| v.matches_population(&s.final_population)),
                 "archive endpoint stage differs from population",
+            )?;
+            let mut stage_names = BTreeSet::new();
+            let required = [
+                "pre_clone",
+                "literal_clone",
+                "post_transform",
+                "post_clone",
+                "post_kinetic",
+            ];
+            let mut next_required = 0;
+            let mut previous_version = s.before.version;
+            for stage in &s.stages {
+                require(
+                    stage_names.insert(stage.stage.as_str())
+                        && stage.version >= previous_version
+                        && stage.version <= s.final_population.version
+                        && &stage.generations
+                            == if stage.stage == "pre_clone" {
+                                &s.before.generations
+                            } else {
+                                &s.final_population.generations
+                            },
+                    "archive stage identity/order mismatch",
+                )?;
+                previous_version = stage.version;
+                if required
+                    .get(next_required)
+                    .is_some_and(|name| *name == stage.stage)
+                {
+                    next_required += 1;
+                }
+            }
+            require(
+                next_required == required.len(),
+                "archive operator stage coverage incomplete",
             )?;
             for noise in &s.noise {
                 if let Some(geometry) = &noise.geometry {
@@ -444,6 +557,7 @@ impl<T: Real> RunArchive<T> {
                     )?;
                 }
             }
+            previous_endpoints.insert(s.epoch, &s.final_population);
             last = Some((s.epoch, s.report.step));
         }
         Ok(())
@@ -587,5 +701,18 @@ impl<T: Real> RunArchive<T> {
             scalar_count: encoding.components.len(),
             max_absolute_residual: residual,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::same_scalar;
+
+    #[test]
+    fn coordinate_identity_preserves_signed_zero_and_accepts_nan_payloads() {
+        assert!(!same_scalar(0., -0.));
+        assert!(same_scalar(f64::NAN, f64::from_bits(0x7ff8_0000_0000_0001)));
+        assert!(same_scalar(f64::INFINITY, f64::INFINITY));
+        assert!(!same_scalar(f64::INFINITY, f64::NEG_INFINITY));
     }
 }

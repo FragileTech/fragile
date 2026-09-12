@@ -1,5 +1,37 @@
 import { escapeXML as esc, COLORS } from "./plots.js";
 
+// Cut the actual affine geometry at a physical time, before camera projection.
+export function clipPolygonAtTime(vertices, cutoff) {
+  const out = [];
+  for (let j = 0; j < vertices.length; j++) {
+    const a = vertices[j],
+      b = vertices[(j + 1) % vertices.length];
+    const insideA = a[2] <= cutoff,
+      insideB = b[2] <= cutoff;
+    if (insideA) out.push(a);
+    if (insideA !== insideB) {
+      const fraction = (cutoff - a[2]) / (b[2] - a[2]);
+      out.push([
+        a[0] + fraction * (b[0] - a[0]),
+        a[1] + fraction * (b[1] - a[1]),
+        cutoff,
+      ]);
+    }
+  }
+  return out;
+}
+export function clipSegmentAtTime(a, b, cutoff) {
+  if (a[2] > cutoff && b[2] > cutoff) return [];
+  if (a[2] <= cutoff && b[2] <= cutoff) return [a, b];
+  const fraction = (cutoff - a[2]) / (b[2] - a[2]);
+  const intersection = [
+    a[0] + fraction * (b[0] - a[0]),
+    a[1] + fraction * (b[1] - a[1]),
+    cutoff,
+  ];
+  return a[2] <= cutoff ? [a, intersection] : [intersection, b];
+}
+
 // The scene is a view of immutable numerical output: camera, layers and selection
 // never alter the scientific configuration or advance the worker.
 export class LectureScene {
@@ -149,8 +181,10 @@ export class LectureScene {
     )?.owner;
     for (const face of faces) {
       if (selectedOwner !== undefined && face.owner !== selectedOwner) continue;
-      if (!face.vertices.every((p) => visible(face.layer, p))) continue;
-      const ps = face.vertices.map((p) => this.project(p));
+      if (this.hidden.has(face.layer || "geometry")) continue;
+      const clipped = clipPolygonAtTime(face.vertices, cutoff);
+      if (clipped.length < 3) continue;
+      const ps = clipped.map((p) => this.project(p));
       shapes.push({
         z: ps.reduce((a, p) => a + p[2], 0) / ps.length,
         html: `<polygon points="${ps.map((p) => p.slice(0, 2).join(",")).join(" ")}" fill="${esc(face.color || COLORS[(face.owner || 0) % COLORS.length])}" fill-opacity=".2" stroke="${esc(face.color || "#718bac")}" stroke-width=".5"/>`,
@@ -159,15 +193,11 @@ export class LectureScene {
     for (const edge of edges) {
       const a = byId.get(String(edge.source)),
         b = byId.get(String(edge.target));
-      if (
-        !a ||
-        !b ||
-        !visible(edge.layer, a.position) ||
-        !visible(edge.layer, b.position)
-      )
-        continue;
-      const p = this.project(a.position),
-        q = this.project(b.position),
+      if (!a || !b || this.hidden.has(edge.layer || "geometry")) continue;
+      const clipped = clipSegmentAtTime(a.position, b.position, cutoff);
+      if (!clipped.length) continue;
+      const p = this.project(clipped[0]),
+        q = this.project(clipped[1]),
         active =
           this.trace === "incident"
             ? [String(a.id), String(b.id)].includes(this.selected)

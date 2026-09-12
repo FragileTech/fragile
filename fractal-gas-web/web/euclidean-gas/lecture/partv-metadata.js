@@ -75,9 +75,9 @@ export const metadata = [
     title: "Relaxation in anisotropic geometry",
     question: "Which covariance does the anisotropic thermostat approach?",
     prediction:
-      "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+      "The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate.",
     explanation:
-      "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+      "The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate.",
   },
   {
     id: "V-09",
@@ -185,9 +185,9 @@ export const metadata = [
     title: "Estimate dimension from comparable pairs",
     question: "How does the comparable-pair fraction encode dimension?",
     prediction:
-      "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+      "Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively.",
     explanation:
-      "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+      "Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively.",
   },
   {
     id: "V-20",

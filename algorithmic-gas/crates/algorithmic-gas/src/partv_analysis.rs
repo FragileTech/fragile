@@ -476,7 +476,31 @@ fn manufactured_sampling(
     let mut se = vec![];
     let mut hits = vec![];
     let mut zero = vec![];
+    let mut predicted_variance = vec![];
+    let mut predicted_mse = vec![];
     for j in 0..hs.len() {
+        let h = hs[j];
+        let mut second_moment = 0.;
+        // Independent deterministic integration of the single-draw squared estimator.
+        // Angular trapezoidal quadrature is exact for this degree-eight polynomial.
+        quadrature(24, |t, radius, w| {
+            let k = bump(t, radius) * (c[0] + c[1] * t * t + c[2] * radius * radius);
+            let angular_f2 = (0..16)
+                .map(|a| {
+                    let angle = TAU * a as f64 / 16.;
+                    let x = h * radius * angle.cos();
+                    let y = h * radius * angle.sin();
+                    let time = h * t;
+                    (time * time + x * x + 2. * y * y + 0.2 * time.powi(4) + 0.1 * x.powi(4))
+                        .powi(2)
+                })
+                .sum::<f64>()
+                / 16.;
+            second_moment += volume * w * k * k * angular_f2 / h.powi(7);
+        });
+        let prediction = (second_moment - reference[j].powi(2)).max(0.) / r.samples as f64;
+        predicted_variance.push(prediction);
+        predicted_mse.push(prediction + (reference[j] - 4.).powi(2));
         let (mean, variance) = stats(&replicas[j]);
         means.push(mean);
         variances.push(variance);
@@ -491,8 +515,13 @@ fn manufactured_sampling(
         Some(reference[0]),
         Some(se[0]),
     );
-    out.metric("sampled operator variance", variances[0], None, None);
-    out.metric("sampled operator MSE", mse[0], None, None);
+    out.metric(
+        "sampled operator variance",
+        variances[0],
+        Some(predicted_variance[0]),
+        None,
+    );
+    out.metric("sampled operator MSE", mse[0], Some(predicted_mse[0]), None);
     out.metric(
         "mean support count",
         hits[0],
@@ -502,6 +531,24 @@ fn manufactured_sampling(
     out.series("Monte Carlo operator mean", hs.to_vec(), means);
     out.series("Monte Carlo standard error of mean", hs.to_vec(), se);
     out.series("Monte Carlo single-run variance", hs.to_vec(), variances);
+    out.series(
+        "Predicted standard error of mean",
+        hs.to_vec(),
+        predicted_variance
+            .iter()
+            .map(|v| (v / r.replicas as f64).sqrt())
+            .collect(),
+    );
+    out.series(
+        "Predicted single-run variance",
+        hs.to_vec(),
+        predicted_variance,
+    );
+    out.series(
+        "Predicted MSE against wave operator",
+        hs.to_vec(),
+        predicted_mse,
+    );
     out.series("Monte Carlo MSE against wave operator", hs.to_vec(), mse);
     out.series("mean support count", hs.to_vec(), hits);
     out.series("zero-support replica fraction", hs.to_vec(), zero);
@@ -510,6 +557,7 @@ fn manufactured_sampling(
         (0..r.replicas).map(|i| i as f64).collect(),
         replicas[0].clone(),
     );
+    out.metadata["variance_prediction"] = json!({"calculation":"(volume*eps^-7*integral_J k^2*f(eps*z)^2 - L_eps^2)/N; independent 24-point cone and 16-point angular quadrature", "actual_leading_scale":"1/(N*eps^3)", "reason":"the chosen field has zero gradient at the evaluation origin; its first nonzero Taylor term is quadratic", "general_theorem":"O(1/(N*eps^5)) is a valid upper bound in D=3, but is not the sharp rate for this field", "empty_samples":"the deterministic variance stays positive even when all observed replicas miss the support"});
     out.metadata["sampling"] = json!({"domain_half_width":half_width,"density":1./volume,"samples":r.samples,"replicas":r.replicas,"normalization":"sum K(z/eps)*(f(z)-f(0))/p(z) / (N*eps^(D+2)), D=3", "replication":"independent replicas; common points across bandwidths within each replica", "zero_support":"reported explicitly; zero observed variance from empty supports does not resolve the operator", "reference":"independent quadrature using same compact support and manufactured field"});
 }
 fn integration(r: &AnalysisRequest) -> AnalysisResponse {
@@ -613,27 +661,52 @@ fn counts(r: &AnalysisRequest) -> AnalysisResponse {
     let (mean, var) = stats(&totals);
     let (rm, rv) = stats(&region);
     let lambda = r.samples as f64;
-    out.metric("total mean", mean, Some(lambda), None);
+    let total_variance = if r.count_model == "poisson" {
+        lambda
+    } else {
+        0.
+    };
+    let region_variance = if r.count_model == "poisson" {
+        lambda / 4.
+    } else {
+        3. * lambda / 16.
+    };
+    // Exact uncertainty of the unbiased sample variance from independent replicas.
+    let variance_error = |variance: f64, fourth_cumulant: f64| {
+        let replicas = r.replicas as f64;
+        ((fourth_cumulant + 2. * replicas / (replicas - 1.) * variance.powi(2)) / replicas).sqrt()
+    };
+    out.metric(
+        "total mean",
+        mean,
+        Some(lambda),
+        Some((var / r.replicas as f64).sqrt()),
+    );
     out.metric(
         "total variance",
         var,
-        Some(if r.count_model == "poisson" {
-            lambda
-        } else {
-            0.
-        }),
-        None,
+        Some(total_variance),
+        Some(variance_error(total_variance, total_variance)),
     );
-    out.metric("region mean", rm, Some(lambda / 4.), None);
+    out.metric(
+        "region mean",
+        rm,
+        Some(lambda / 4.),
+        Some((rv / r.replicas as f64).sqrt()),
+    );
     out.metric(
         "region variance",
         rv,
-        Some(if r.count_model == "poisson" {
-            lambda / 4.
-        } else {
-            3. * lambda / 16.
-        }),
-        None,
+        Some(region_variance),
+        Some(variance_error(
+            region_variance,
+            region_variance
+                * if r.count_model == "poisson" {
+                    1.
+                } else {
+                    1. - 6. * 0.25 * 0.75
+                },
+        )),
     );
     out.metric(
         "total Fano factor",
@@ -653,6 +726,9 @@ fn counts(r: &AnalysisRequest) -> AnalysisResponse {
     );
     out.metadata["count_model"] = json!(r.count_model);
     out.metadata["region_probability"] = json!(0.25);
+    out.metadata["uncertainty"] = json!(
+        "means: independent-replica sample SEM; variances: exact standard deviation of unbiased sample variance from Poisson/binomial fourth central moments"
+    );
     out
 }
 fn diamond(random: &mut RandomStream, d: usize) -> Vec<f64> {
@@ -740,6 +816,8 @@ fn dimension(r: &AnalysisRequest) -> Result<AnalysisResponse> {
     let mut fractions = vec![];
     let mut raw_fractions = vec![];
     let mut dimensions = vec![];
+    let mut pair_replica_indices = vec![];
+    let mut inverse_replica_indices = vec![];
     let mut ess = vec![];
     let mut work = 0usize;
     for rep in 0..r.replicas {
@@ -785,10 +863,12 @@ fn dimension(r: &AnalysisRequest) -> Result<AnalysisResponse> {
             }
         }
         let fraction = weighted_count / weighted_pairs;
+        pair_replica_indices.push(rep as f64);
         fractions.push(fraction);
         raw_fractions.push(2. * count as f64 / (n * (n - 1)) as f64);
         ess.push(weights.iter().sum::<f64>().powi(2) / weights.iter().map(|w| w * w).sum::<f64>());
         if let Some(d) = infer_dimension(fraction) {
+            inverse_replica_indices.push(rep as f64);
             dimensions.push(d);
         }
         if rep == 0 {
@@ -832,17 +912,17 @@ fn dimension(r: &AnalysisRequest) -> Result<AnalysisResponse> {
     }
     out.series(
         "ordering fraction replicas",
-        (0..fractions.len()).map(|i| i as f64).collect(),
+        pair_replica_indices.clone(),
         fractions,
     );
     out.series(
         "unweighted ordering fraction replicas",
-        (0..raw_fractions.len()).map(|i| i as f64).collect(),
+        pair_replica_indices.clone(),
         raw_fractions,
     );
     out.series(
         "MM dimensions with resolved inverse",
-        (0..dimensions.len()).map(|i| i as f64).collect(),
+        inverse_replica_indices.clone(),
         dimensions,
     );
     out.metadata["normalization"] = json!(
@@ -850,6 +930,7 @@ fn dimension(r: &AnalysisRequest) -> Result<AnalysisResponse> {
     );
     out.metadata["density"] = json!({"relative_to_uniform_interval":"1+2*c*x", "contrast":r.density_contrast,"weights":"1/(1+2*c*x)","finite_sample":"self-normalized pair ratio; asymptotically targets uniform ordering fraction"});
     out.metadata["r3"] = json!(8. / 35.);
+    out.metadata["replica_coverage"] = json!({"requested":r.replicas,"with_pairs":pair_replica_indices.len(),"with_resolved_inverse":inverse_replica_indices.len(),"inverse_search_range":[1,8],"series_indices":"original replica indices; missing inverse values are not renumbered"});
     out.metadata["count_model"] = json!(r.count_model);
     Ok(out)
 }
@@ -991,10 +1072,12 @@ fn curvature_kernel(r: &AnalysisRequest, out: &mut AnalysisResponse) {
     });
     let mut expected_kernel = 0.;
     let mut volume = 0.;
+    let mut kernel_second_moment = 0.;
     quadrature(24, |t, rad, w| {
         let kernel = (1. - (t * t - rad * rad)).powi(3);
         let jacobian = sk(r.curvature, epsilon * rad) / (epsilon * rad);
         expected_kernel += w * kernel * jacobian;
+        kernel_second_moment += 8. * w * (kernel * jacobian).powi(2);
         volume += epsilon.powi(3) * w * jacobian;
     });
     let mut integrals = vec![];
@@ -1030,6 +1113,20 @@ fn curvature_kernel(r: &AnalysisRequest, out: &mut AnalysisResponse) {
     }
     let (mean, var) = stats(&estimates);
     let (im, iv) = stats(&integrals);
+    let predicted_variance = (kernel_second_moment - expected_kernel.powi(2)).max(0.)
+        / (r.samples as f64 * epsilon.powi(4) * mr.powi(2));
+    out.metric(
+        "kernel single-run curvature variance",
+        var,
+        Some(predicted_variance),
+        None,
+    );
+    out.metric(
+        "kernel predicted standard error of mean",
+        (predicted_variance / r.replicas as f64).sqrt(),
+        None,
+        None,
+    );
     out.metric(
         "kernel estimated scalar curvature",
         mean,
@@ -1083,5 +1180,6 @@ fn curvature_kernel(r: &AnalysisRequest, out: &mut AnalysisResponse) {
         (0..r.replicas).map(|i| i as f64).collect(),
         supports,
     );
+    out.metadata["kernel_variance_prediction"] = json!({"calculation":"[8*integral_J (K_R*j)^2 - (integral_J K_R*j)^2]/(N*eps^4*MR^2)", "actual_leading_scale":"1/(N*eps^4)", "sampling_domain":"the physical sampling cube shrinks with eps, keeping its support-hit probability pi/12 constant", "general_theorem":"O(1/(N*eps^7)) in D=3 describes a fixed sampling density; that is a different sampling protocol", "uniform_normalized_cube_density":0.125});
     out.metadata["kernel_curvature"] = json!({"kernel":"K_R=(1-s²)^3, s²=u²-r²", "support":"|u|<1, r<|u|", "volume_jacobian":"S_K(eps*r)/(eps*r)","calibration":"MR=-(1/12) integral_J K_R*r² dζ from independent flat16-point quadrature", "verification":"24-point curved quadrature; distinct from Monte Carlo draws", "estimator":"(mean 8*1_J*K_R*j - flat_integral)/(eps²*MR)", "samples":"uniform normalized cube [-1,1]^3 with known density 1/8; geometry enters as importance weight j", "action":"scalar curvature estimate times independently quadrature-computed physical compact volume", "comparison":"midpoint and kernel use separate addressed random streams"});
 }

@@ -69,7 +69,7 @@ npm --prefix fractal-gas-web run test:euclidean-lectures-browser
 
 The browser checks cover every demo's initialization, stepping, reset,
 alternative controls, replay/export, and narrow-screen layout. Documentation
-tests in `tests/docs/test_fragile_gas_demos.py` validate all 42 placements and
+tests in `tests/docs/test_fragile_gas_demos.py` validate all 62 placements and
 the published asset paths. `captions.json` supplies both the live captions and
 the generated manifest, so formula changes must be reflected there before
 regenerating assets.
@@ -131,3 +131,47 @@ reference. The UI does not substitute that reference for the sampled result.
 Local visual evidence is saved in `fractal-gas-web/outputs/partv-review/`
 (ignored build output). Run the scene suite with
 `node fractal-gas-web/tests/euclidean-gas/lecture-fractal-browser.mjs`.
+
+## Part V independent audit (12 September 2026)
+
+The follow-up audit compares the native calculations with independent exact
+identities, direct BAOAB ensembles, planar time-slice integration, analytic
+segment lengths, and compiled-WASM reference experiments. Confirmed fixes:
+
+- Stable metric eigenvalues and near-axis Spin(2) encoding preserve small
+  components instead of losing them to subtraction.
+- Positive-volume affine score ties have one spacetime-cell owner. Moving-cell
+  refinement is checked independently of total-volume closure.
+- Off-grid geodesic source attachments use the same midpoint quadrature as
+  ordinary graph edges. Physical time cuts clip partial faces and edges.
+- Harmonic sample variance uses N−1 and has an exact transient reference with
+  the initial uniform law's fourth-cumulant uncertainty.
+- Manufactured-operator variance, MSE and SEM have independent quadrature
+  predictions even when every observed support is empty. Curvature predictions
+  identify the shrinking sampling cube and show finite-bandwidth bias separately.
+- Dimension inversions retain their original replica indices. Count variances
+  have uncertainty computed from Poisson/binomial fourth moments.
+- IG/historical relations include available source-relative displacement data.
+  Archive validation checks operator coverage and consistent event identities
+  within and across recorded steps, including epoch anchors.
+
+No contradiction with the audited chapter statements was established. The
+zero-gradient manufactured field has leading variance 1/(N ε³), sharper than
+the general bound. The curvature cube shrinks with ε, giving 1/(N ε⁴); the
+fixed-density theorem describes a different sampling protocol.
+
+Detailed counterexamples, corrections and numerical measurements are recorded
+in Section 7 of the linked Part V experiment document.
+
+Validation: 125 Rust workspace tests, 111 lecture numerical/host tests, and
+98 documentation placement tests pass. Workspace Clippy passes with warnings
+denied, and the CPU/WASM release builds successfully. New regressions include
+an actual 32-replica engine check at both anisotropy endpoints, independent
+512-ensemble harmonic uncertainty, exact polynomial variance integrals,
+spacetime refinement, archive boundary continuity, and partial time cuts.
+
+All 62 demos pass browser initialization, stepping, reset and control changes.
+The dedicated Part V suite passes archive import/export, shared histories,
+corrected harmonic/bandwidth plots, partial time cuts and a 390-pixel layout.
+The standalone WASM contract suite passes. The incremental Sphinx build succeeds
+with four DOI-network/tooltip warnings from unavailable external DOI metadata.

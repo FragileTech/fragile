@@ -447,3 +447,256 @@ fn restitution_records_field_influence_even_for_noncloning_partner() {
         );
     });
 }
+
+#[test]
+fn archive_rejects_missing_operator_stages_and_fabricated_recorded_sources() {
+    block_on(async {
+        let model = BenchmarkModel {
+            benchmark: Benchmark::Sphere,
+            field: "positions".into(),
+            direction: algorithmic_gas::fitness::ObjectiveDirection::Minimize,
+        };
+        let mut config = GasConfig {
+            precision: Precision::F64,
+            ..Default::default()
+        };
+        config.distance_donors.history_window = 2;
+        let mut g = GasBuilder::new(population(), model)
+            .config(config)
+            .build()
+            .await
+            .unwrap();
+        g.start_recording(RecordingConfig::default()).unwrap();
+        for _ in 0..4 {
+            g.step().await.unwrap();
+        }
+        let original = g.recording().unwrap();
+        original.validate().unwrap();
+        let mut archive = original.clone();
+        archive.steps[0]
+            .stages
+            .retain(|stage| stage.stage != "post_clone");
+        assert!(archive.validate().is_err());
+        let mut archive = original.clone();
+        let duplicate = archive.steps[0].stages[0].clone();
+        archive.steps[0].stages.insert(1, duplicate);
+        assert!(archive.validate().is_err());
+        let mut archive = original.clone();
+        archive.steps[0].stages[1].generations[0] += 1;
+        assert!(archive.validate().is_err());
+        let mut archive = original.clone();
+        let source = archive.steps[3]
+            .report
+            .distance_sources
+            .iter_mut()
+            .find(|source| source.frame == 1)
+            .unwrap();
+        source.version = 0;
+        assert!(archive.validate().is_err());
+        let mut archive = original.clone();
+        archive.steps[0].donor_fitness[0] = f64::NAN;
+        assert!(archive.validate().is_err());
+    });
+}
+
+#[test]
+fn interaction_displacements_decode_the_actual_current_or_historical_source() {
+    block_on(async {
+        let model = BenchmarkModel {
+            benchmark: Benchmark::Sphere,
+            field: "positions".into(),
+            direction: algorithmic_gas::fitness::ObjectiveDirection::Minimize,
+        };
+        let mut config = GasConfig {
+            precision: Precision::F64,
+            ..Default::default()
+        };
+        config.distance_donors.history_window = 2;
+        let mut g = GasBuilder::new(population(), model)
+            .config(config)
+            .build()
+            .await
+            .unwrap();
+        g.start_recording(RecordingConfig::default()).unwrap();
+        for _ in 0..6 {
+            g.step().await.unwrap();
+        }
+        let archive = g.recording().unwrap();
+        let graph = archive.graph();
+        let mut historical = 0;
+        for edge in graph.edges.iter().filter(|edge| {
+            matches!(
+                edge.kind,
+                EdgeKind::IgDistance
+                    | EdgeKind::IgCloning
+                    | EdgeKind::HistoricalDistance
+                    | EdgeKind::HistoricalCloning
+            )
+        }) {
+            let receiver = &archive.steps[edge.source.step as usize].before;
+            let donor = &archive.steps[edge.target.step as usize].before;
+            let receiver_x = receiver
+                .observations
+                .field("positions")
+                .unwrap()
+                .row(edge.source.slot as usize)
+                .unwrap();
+            let donor_x = donor
+                .observations
+                .field("positions")
+                .unwrap()
+                .row(edge.target.slot as usize)
+                .unwrap();
+            let expected = [donor_x[0] - receiver_x[0], donor_x[1] - receiver_x[1]];
+            assert_eq!(edge.attributes.position_displacement, Some(expected));
+            let [u, v] = edge.attributes.spin2_displacement.unwrap();
+            assert!((u * u - v * v - expected[0]).abs() < 1e-12);
+            assert!((2. * u * v - expected[1]).abs() < 1e-12);
+            historical += usize::from(edge.source.step != edge.target.step);
+        }
+        assert!(historical > 0);
+        assert!(
+            graph
+                .edges
+                .iter()
+                .filter(|edge| matches!(edge.kind, EdgeKind::IaDistance | EdgeKind::IaCloning))
+                .all(|edge| edge.attributes.position_displacement.is_none())
+        );
+    });
+}
+
+#[test]
+fn archive_rejects_conflicting_anchor_and_adjacent_boundary_coordinates() {
+    block_on(async {
+        let mut g = gas().await;
+        g.start_recording(RecordingConfig::default()).unwrap();
+        for _ in 0..2 {
+            g.step().await.unwrap();
+        }
+        let original = g.recording().unwrap();
+        let mut archive = original.clone();
+        archive.anchors[0]
+            .population
+            .observations
+            .field_mut("positions")
+            .unwrap()
+            .replace_row(0, &[9., 9.])
+            .unwrap();
+        assert!(
+            archive
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("archive boundary")
+        );
+
+        let mut archive = original.clone();
+        archive.steps[0]
+            .final_population
+            .observations
+            .field_mut("positions")
+            .unwrap()
+            .replace_row(0, &[9., 9.])
+            .unwrap();
+        let last_stage = archive.steps[0].stages.last_mut().unwrap();
+        last_stage.fields.get_mut("positions").unwrap().values[..2].copy_from_slice(&[9., 9.]);
+        // The step still agrees with its own post_kinetic stage; the next
+        // pre_clone record contradicts the same event's coordinates.
+        assert!(
+            archive
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("archive boundary")
+        );
+
+        let mut archive = original.clone();
+        let field = archive.anchors[0]
+            .population
+            .observations
+            .fields
+            .remove("positions")
+            .unwrap();
+        archive.anchors[0]
+            .population
+            .observations
+            .fields
+            .insert("renamed".into(), field);
+        assert!(
+            archive
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("archive boundary")
+        );
+
+        let mut archive = original.clone();
+        archive.anchors[0].population.generations[0] += 1;
+        assert!(
+            archive
+                .validate()
+                .unwrap_err()
+                .to_string()
+                .contains("archive boundary")
+        );
+    });
+}
+
+#[test]
+fn archive_boundary_accepts_explicit_extraction_version_and_recorded_nan() {
+    block_on(async {
+        use algorithmic_gas::{
+            domain::{NamedObservationExtractor, NamedRewardExtractor},
+            extraction::ExtractionPipeline,
+        };
+        use std::collections::BTreeMap;
+        let mut g = gas().await;
+        g.start_recording(RecordingConfig::default()).unwrap();
+        g.step().await.unwrap();
+        let pipeline = ExtractionPipeline {
+            observations: Box::new(NamedObservationExtractor {
+                fields: vec![("features".into(), "positions".into())],
+            }),
+            rewards: Box::new(NamedRewardExtractor {
+                field: "objective".into(),
+            }),
+            derived: None,
+        };
+        let input = InputBatch {
+            rows: 4,
+            version: 12,
+            numerical: BTreeMap::from([
+                (
+                    "features".into(),
+                    TensorBatch::vectors(4, 2, vec![2., 2., 2., 2., 2., 2., 2., 2.]).unwrap(),
+                ),
+                (
+                    "objective".into(),
+                    TensorBatch::scalars(vec![8.; 4]).unwrap(),
+                ),
+            ]),
+            bytes: BTreeMap::new(),
+        };
+        g.step_with_extraction(&input, &pipeline).await.unwrap();
+        g.recording().unwrap().validate().unwrap();
+        let archive = g.recording().unwrap();
+        assert!(archive.steps[1].before.version > archive.steps[0].final_population.version);
+
+        let mut p = population();
+        p.observations
+            .field_mut("positions")
+            .unwrap()
+            .replace_row(0, &[f64::NAN, 0.])
+            .unwrap();
+        p.validity[0].terminated = true;
+        let model = BenchmarkModel {
+            benchmark: Benchmark::Sphere,
+            field: "positions".into(),
+            direction: algorithmic_gas::fitness::ObjectiveDirection::Minimize,
+        };
+        let mut g = GasBuilder::new(p, model).build().await.unwrap();
+        g.start_recording(RecordingConfig::default()).unwrap();
+        g.step().await.unwrap();
+        g.recording().unwrap().validate().unwrap();
+    });
+}

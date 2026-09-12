@@ -33,6 +33,12 @@ fn sample_default() -> usize {
 fn resolution_default() -> usize {
     4
 }
+fn harmonic_initial_width() -> f64 {
+    1.8
+}
+fn harmonic_count() -> usize {
+    128
+}
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum MetricPolicy {
@@ -146,6 +152,12 @@ pub enum GeometryRequest {
         gamma: f64,
         temperature: f64,
         dt: f64,
+        #[serde(default = "harmonic_initial_width")]
+        initial_half_width: f64,
+        #[serde(default = "harmonic_count")]
+        samples: usize,
+        #[serde(default = "harmonic_count")]
+        steps: usize,
     },
 }
 pub type GeometryResponse = Value;
@@ -455,16 +467,31 @@ fn validate_symmetric(g: Mat2) -> Result<()> {
     )
 }
 fn eig(g: Mat2) -> ([f64; 2], Mat2) {
-    let center = 0.5 * g[0][0] + 0.5 * g[1][1];
-    let delta = 0.5 * g[0][0] - 0.5 * g[1][1];
-    let radius = delta.hypot(g[0][1]);
-    let theta = if radius == 0. {
-        0.
+    // A Jacobi rotation computes each diagonal update separately. Forming
+    // center +/- radius would erase a small eigenvalue through cancellation
+    // even for diag(1e20, 1), and sin(pi/2) would contaminate diagonal matrices.
+    let [a, b] = g[0];
+    let d = g[1][1];
+    if b == 0. {
+        return if a >= d {
+            ([a, d], identity())
+        } else {
+            ([d, a], [[0., -1.], [1., 0.]])
+        };
+    }
+    let delta = 0.5 * a - 0.5 * d;
+    let radius = delta.hypot(b);
+    // Scale the denominator to avoid overflowing abs(delta) + radius.
+    let t = (b / radius) / (delta.abs() / radius + 1.) * if delta >= 0. { 1. } else { -1. };
+    let c = 1. / (1. + t * t).sqrt();
+    let s = t * c;
+    let first = t.mul_add(b, a);
+    let second = (-t).mul_add(b, d);
+    if first >= second {
+        ([first, second], [[c, -s], [s, c]])
     } else {
-        0.5 * (2. * g[0][1]).atan2(g[0][0] - g[1][1])
-    };
-    let (s, c) = theta.sin_cos();
-    ([center + radius, center - radius], [[c, -s], [s, c]])
+        ([second, first], [[-s, c], [c, s]])
+    }
 }
 fn spectral(q: Mat2, l: [f64; 2]) -> Mat2 {
     let mut g = [[0.; 2]; 2];
@@ -902,9 +929,14 @@ pub fn spacetime(
                             .map(|f| f.iter().map(|&k| vertices[tet[k]].clone()).collect())
                             .collect();
                         for (i, slot_volume) in volumes.iter_mut().enumerate() {
-                            if (0..i)
-                                .any(|j| a.points[i] == a.points[j] && b.points[i] == b.points[j])
-                            {
+                            // Two distinct trajectories can have identical affine
+                            // scores on a whole tetrahedron (especially just after
+                            // coincident clone sites separate). Resolve that full-
+                            // dimensional tie by slot, just like planar duplicates.
+                            if (0..i).any(|j| {
+                                tet.iter()
+                                    .all(|&k| vertices[k].scores[i] == vertices[k].scores[j])
+                            }) {
                                 continue;
                             }
                             let mut poly = base.clone();
@@ -1112,6 +1144,68 @@ pub fn harmonic(
         json!({"continuous_covariance":continuous,"discrete_covariance":discrete,"transition":transition,"innovation_covariance":q,"lyapunov_residual":residual,"coordinate_order":["x","y","vx","vy"],"reference":"constant_metric_harmonic_BAOAB"}),
     )
 }
+/// Exact finite-time covariance and uncertainty for independently initialized
+/// walkers: x coordinates uniform on [-a,a], initial velocity zero. Gaussian
+/// BAOAB innovations have zero fourth cumulant, so only A^k x_0 contributes to
+/// the non-Gaussian correction in the unbiased sample-variance uncertainty.
+#[allow(clippy::too_many_arguments)]
+pub fn harmonic_experiment(
+    curvature: Mat2,
+    metric: Mat2,
+    gamma: f64,
+    temperature: f64,
+    dt: f64,
+    initial_half_width: f64,
+    samples: usize,
+    steps: usize,
+) -> Result<Value> {
+    require(
+        initial_half_width.is_finite()
+            && initial_half_width >= 0.
+            && (2..=100_000).contains(&samples)
+            && steps <= 4096,
+        "harmonic initial law/sample/step bounds",
+    )?;
+    let mut result = harmonic(curvature, metric, gamma, temperature, dt)?;
+    let transition: Mat4 = serde_json::from_value(result["transition"].clone())
+        .map_err(|e| GasError::Numerical(e.to_string()))?;
+    let innovation: Mat4 = serde_json::from_value(result["innovation_covariance"].clone())
+        .map_err(|e| GasError::Numerical(e.to_string()))?;
+    let mut covariance = [[0.; 4]; 4];
+    covariance[0][0] = initial_half_width.powi(2) / 3.;
+    covariance[1][1] = covariance[0][0];
+    let initial_cumulant = -2. * initial_half_width.powi(4) / 15.;
+    let mut propagation = eye4();
+    let mut covariances = Vec::with_capacity(steps + 1);
+    let mut standard_errors = Vec::with_capacity(steps + 1);
+    for step in 0..=steps {
+        covariances.push(covariance);
+        let se: [f64; 4] = std::array::from_fn(|i| {
+            let variance = covariance[i][i];
+            let cumulant =
+                initial_cumulant * (propagation[i][0].powi(4) + propagation[i][1].powi(4));
+            (2. * variance.powi(2) / (samples - 1) as f64 + cumulant / samples as f64)
+                .max(0.)
+                .sqrt()
+        });
+        standard_errors.push(se);
+        if step < steps {
+            let propagated = mul4(transition, mul4(covariance, transpose4(transition)));
+            covariance = std::array::from_fn(|i| {
+                std::array::from_fn(|j| propagated[i][j] + innovation[i][j])
+            });
+            propagation = mul4(transition, propagation);
+        }
+    }
+    result["transient_covariances"] = json!(covariances);
+    result["transient_variance_standard_errors"] = json!(standard_errors);
+    result["initial_law"] = json!({"position":"independent_uniform",
+        "half_width":initial_half_width,"velocity":"zero"});
+    result["samples"] = json!(samples);
+    result["steps"] = json!(steps);
+    result["variance_estimator"] = json!("unbiased_sample_variance_divisor_N_minus_1");
+    Ok(result)
+}
 pub fn analyze(request: GeometryRequest) -> Result<GeometryResponse> {
     match request {
         GeometryRequest::Triangulation { frames, metric } => triangulation(&frames, metric),
@@ -1158,7 +1252,19 @@ pub fn analyze(request: GeometryRequest) -> Result<GeometryResponse> {
             gamma,
             temperature,
             dt,
-        } => harmonic(curvature, metric, gamma, temperature, dt),
+            initial_half_width,
+            samples,
+            steps,
+        } => harmonic_experiment(
+            curvature,
+            metric,
+            gamma,
+            temperature,
+            dt,
+            initial_half_width,
+            samples,
+            steps,
+        ),
     }
 }
 
@@ -1546,7 +1652,8 @@ pub fn graph_distance(
                 let index = y * resolution + x;
                 let q = xy(index);
                 let delta = [q[0] - p[0], q[1] - p[1]];
-                let distance = dot_metric(delta, delta, metric_grid[index]).sqrt();
+                let g = metric_at((gx + x as f64) / 2., (gy + y as f64) / 2.);
+                let distance = dot_metric(delta, delta, g).sqrt();
                 if distance < d[index] {
                     d[index] = distance;
                     queue.push(QueueNode { distance, index });
@@ -1781,6 +1888,203 @@ mod mesh_tests {
         let m = spd([[1e-20, 0.], [0., 1e-20]]).unwrap();
         assert!((m.inverse[0][0] / 1e20 - 1.).abs() < 1e-14);
         assert!(spd([[1e-320, 0.], [0., 1e-320]]).is_err());
+    }
+    #[test]
+    fn harmonic_transient_uncertainty_matches_independent_baoab_ensembles() {
+        use crate::random::{RandomStream, Stream};
+        let replicas = 512;
+        let samples = 32;
+        let steps = 24;
+        let dt = 0.04;
+        let prediction = harmonic_experiment(
+            [[2., 0.], [0., 3.]],
+            [[3., 0.], [0., 1.]],
+            1.,
+            0.4,
+            dt,
+            1.8,
+            samples,
+            steps,
+        )
+        .unwrap();
+        let expected = prediction["transient_covariances"][steps][0][0]
+            .as_f64()
+            .unwrap();
+        let expected_se = prediction["transient_variance_standard_errors"][steps][0]
+            .as_f64()
+            .unwrap();
+        let mut estimates = Vec::new();
+        for replica in 0..replicas {
+            let mut values = Vec::new();
+            for walker in 0..samples {
+                let mut rng =
+                    RandomStream::new(991 + replica, 0, Stream::Kinetic, walker as u64, 0);
+                let mut x = 1.8 * (2. * rng.uniform::<f64>() - 1.);
+                let mut v = 0.;
+                for _ in 0..steps {
+                    v -= dt * x;
+                    x += dt * v / 2.;
+                    v = (-dt).exp() * v
+                        + (0.4 / 3. * (-(-2. * dt).exp_m1())).sqrt() * rng.gaussian::<f64>();
+                    x += dt * v / 2.;
+                    v -= dt * x;
+                }
+                values.push(x);
+            }
+            let mean = values.iter().sum::<f64>() / samples as f64;
+            estimates.push(
+                values.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / (samples - 1) as f64,
+            );
+        }
+        let mean = estimates.iter().sum::<f64>() / replicas as f64;
+        let observed_se = (estimates.iter().map(|x| (x - mean).powi(2)).sum::<f64>()
+            / (replicas - 1) as f64)
+            .sqrt();
+        println!(
+            "harmonic transient: prediction={expected}, replica mean={mean}; predicted SE={expected_se}, observed SE={observed_se}"
+        );
+        assert!((mean - expected).abs() < 5. * expected_se / (replicas as f64).sqrt());
+        assert!((observed_se / expected_se - 1.).abs() < 0.15);
+    }
+    #[test]
+    fn moving_spacetime_volumes_refine_to_independent_slice_integration() {
+        let start = vec![[-0.8, -0.4], [0.7, -0.2], [0.1, 0.8]];
+        let end = vec![[-0.2, 0.1], [0.5, 0.6], [-0.3, -0.7]];
+        let mut reference = [0.; 3];
+        for k in 0..1000 {
+            let t = (k as f64 + 0.5) / 1000.;
+            let points: Vec<_> = start
+                .iter()
+                .zip(&end)
+                .map(|(a, b)| [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])])
+                .collect();
+            let m = voronoi(&points, [-1., 1., -1., 1.], identity()).unwrap();
+            for (i, value) in reference.iter_mut().enumerate() {
+                *value += m.cells[i].area / 1000.;
+            }
+        }
+        let frames = [
+            SpaceTimeFrame {
+                time: 0.,
+                points: start,
+            },
+            SpaceTimeFrame {
+                time: 1.,
+                points: end,
+            },
+        ];
+        let mut errors = Vec::new();
+        for resolution in [1, 2, 4, 8] {
+            let r = spacetime(&frames, [-1., 1., -1., 1.], resolution, identity()).unwrap();
+            assert!(r["closure_error"].as_f64().unwrap().abs() < 1e-10);
+            errors.push(
+                reference
+                    .iter()
+                    .enumerate()
+                    .map(|(i, v)| (r["slot_volumes"][i].as_f64().unwrap() - v).abs())
+                    .sum::<f64>(),
+            );
+        }
+        println!(
+            "spacetime independent slice volumes={reference:?}; refinement L1 errors={errors:?}"
+        );
+        assert!(errors[3] < errors[0] / 10.);
+        assert!(errors.windows(2).all(|e| e[1] < e[0]));
+    }
+    #[test]
+    fn splitting_duplicate_sites_have_unique_tetrahedral_owners() {
+        let frames = [
+            SpaceTimeFrame {
+                time: 0.,
+                points: vec![[0., 0.], [0., 0.]],
+            },
+            SpaceTimeFrame {
+                time: 1.,
+                points: vec![[-0.5, 0.5], [0.5, -0.5]],
+            },
+        ];
+        for resolution in [1, 2, 3] {
+            let r = spacetime(&frames, [-1., 1., -1., 1.], resolution, identity()).unwrap();
+            let total = r["total_volume"].as_f64().unwrap();
+            assert!(
+                (total - 4.).abs() < 1e-10,
+                "coincident-to-split interpolant overlaps: resolution={resolution}, volume={total}"
+            );
+        }
+    }
+    #[test]
+    fn off_grid_site_edges_use_the_declared_midpoint_metric() {
+        let r = graph_distance(
+            &[[0.5, 0.]],
+            [0., 1., 0., 1.],
+            2,
+            &[
+                [[1., 0.], [0., 1.]],
+                [[9., 0.], [0., 1.]],
+                [[1., 0.], [0., 1.]],
+                [[9., 0.], [0., 1.]],
+            ],
+        )
+        .unwrap();
+        let distance = r["nearest_distance"][1].as_f64().unwrap();
+        let expected_midpoint = 0.5 * 7_f64.sqrt();
+        let exact_integral = (27. - 5_f64.powf(1.5)) / 12.;
+        assert!((distance - expected_midpoint).abs() < 1e-14);
+        assert!((distance - exact_integral).abs() < 0.005);
+    }
+    #[test]
+    fn anisotropic_eigenvalues_keep_the_small_curvature() {
+        for g in [[[1e20, 0.], [0., 1.]], [[1., 0.], [0., 1e20]]] {
+            let m = spd(g).unwrap();
+            assert_eq!(m.metric_eigenvalues, [1e20, 1.]);
+            assert_eq!(m.metric, g);
+            for (i, row) in g.iter().enumerate() {
+                assert_eq!(m.inverse[i][i], 1. / row[i]);
+                assert_eq!(m.inverse[i][1 - i], 0.);
+            }
+            let shifted = metric_from_hessian(g, 0.25, MetricPolicy::Clipped).unwrap();
+            assert_eq!(shifted.metric_eigenvalues[1], 1.25);
+            assert_eq!(shifted.clipped, [false; 2]);
+        }
+        let (l, q) = eig([[1e20, 1e5], [1e5, 1.]]);
+        assert!((l[1] - (1. - 1e-10)).abs() < 1e-15);
+        let reconstructed = spectral(q, l);
+        assert!((reconstructed[0][1] / 1e5 - 1.).abs() < 1e-14);
+    }
+    #[test]
+    fn harmonic_transient_has_exact_uniform_start_and_stationary_limit() {
+        let result = harmonic_experiment(
+            [[2., 0.], [0., 3.]],
+            identity(),
+            1.,
+            0.7,
+            0.2,
+            1.8,
+            128,
+            256,
+        )
+        .unwrap();
+        let variance = 1.8_f64.powi(2) / 3.;
+        let fourth = 1.8_f64.powi(4) / 5.;
+        let expected_se = ((fourth - 125. / 127. * variance.powi(2)) / 128.).sqrt();
+        assert_eq!(result["transient_covariances"][0][0][0], variance);
+        assert!(
+            (result["transient_variance_standard_errors"][0][0]
+                .as_f64()
+                .unwrap()
+                - expected_se)
+                .abs()
+                < 1e-14
+        );
+        for i in 0..4 {
+            let stationary = result["discrete_covariance"][i][i].as_f64().unwrap();
+            let final_variance = result["transient_covariances"][256][i][i].as_f64().unwrap();
+            assert!((stationary - final_variance).abs() < 1e-12);
+            let se = result["transient_variance_standard_errors"][256][i]
+                .as_f64()
+                .unwrap();
+            assert!((se - (2. / 127_f64).sqrt() * stationary).abs() < 1e-12);
+        }
     }
     #[test]
     fn boundary_faces_remove_tetrahedron_interior() {

@@ -66,6 +66,25 @@ try {
     path: new URL("adaptive-noise.png", output).pathname,
     fullPage: true,
   });
+  await open("V-08");
+  await step();
+  assert.match(
+    await page.locator("#charts").textContent(),
+    /Exact transient prediction/,
+  );
+  await page.screenshot({
+    path: new URL("harmonic-transient.png", output).pathname,
+    fullPage: true,
+  });
+  await open("V-16");
+  assert.match(
+    await page.locator("#charts").textContent(),
+    /Predicted single-run variance/,
+  );
+  await page.screenshot({
+    path: new URL("bandwidth-uncertainty.png", output).pathname,
+    fullPage: true,
+  });
   await open("V-09");
   await page.locator("#control-geometry").selectOption("variable");
   await ready();
@@ -86,6 +105,11 @@ try {
   await page
     .locator(".scene")
     .screenshot({ path: new URL("spacetime-cell.png", output).pathname });
+  await page.locator('[name="time-cut"]').fill("0.5");
+  assert.ok((await page.locator(".scene polygon").count()) > 0);
+  await page
+    .locator(".scene")
+    .screenshot({ path: new URL("spacetime-time-cut.png", output).pathname });
   await open("V-17");
   await step();
   await step();
