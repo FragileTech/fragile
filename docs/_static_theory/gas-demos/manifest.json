@@ -175,9 +175,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/01_fragile_gas_framework",
     "target": "12. Standardization pipeline",
     "kind": "WASM experiment",
-    "prediction": "A walker's score depends on the eligible population around it. Follow reward and diversity through their regularized statistics and positive channels, then change the exponents to see how those two channels combine into fitness.",
+    "prediction": "A walker's score depends on the eligible population around it. The chapter's local average includes the walker itself; toggle self-inclusion to see why an isolated walker's statistics change. Follow reward and diversity through their regularized channels before changing the fitness exponents.",
     "question": "Why can fitness change while a raw reward stays fixed?",
-    "posterAlt": "Positive channels. A walker's score depends on the eligible population around it. Follow reward and diversity through their regularized statistics and positive channels, then change the exponents to see how those two channels combine into fitness.",
+    "posterAlt": "Positive channels. A walker's score depends on the eligible population around it. The chapter's local average includes the walker itself; toggle self-inclusion to see why an isolated walker's statistics change. Follow reward and diversity through their regularized channels before changing the fitness exponents.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -283,6 +283,22 @@
             "label": "local"
           }
         ]
+      },
+      {
+        "key": "self",
+        "label": "Local self weight",
+        "type": "select",
+        "value": "include",
+        "options": [
+          {
+            "value": "include",
+            "label": "include"
+          },
+          {
+            "value": "exclude",
+            "label": "exclude"
+          }
+        ]
       }
     ],
     "params": {
@@ -292,7 +308,8 @@
       "floor": 0.01,
       "outlier": 1,
       "exclude": "yes",
-      "stats": "global"
+      "stats": "global",
+      "self": "include"
     }
   },
   {
@@ -382,9 +399,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
     "target": "3.1 Euclidean Gas algorithm",
     "kind": "WASM experiment",
-    "prediction": "Track the five BAOAB stages in phase space. B changes velocity, A changes position, and O damps velocity while adding Gaussian noise; the last B evaluates the force at the position reached by the second A.",
+    "prediction": "Track the force–drift–OU–drift–force stages in phase space. The OU stage supplies the friction and innovation variance T(1 − exp(−2γh)); the two B stages supply force kicks, with the last force evaluated at the new position.",
     "question": "At which positions are the two force evaluations made?",
-    "posterAlt": "Recorded B–A–O–A–B phase path. Track the five BAOAB stages in phase space. B changes velocity, A changes position, and O damps velocity while adding Gaussian noise; the last B evaluates the force at the position reached by the second A.",
+    "posterAlt": "Recorded B–A–O–A–B phase path. Track the force–drift–OU–drift–force stages in phase space. The OU stage supplies the friction and innovation variance T(1 − exp(−2γh)); the two B stages supply force kicks, with the last force evaluated at the new position.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -439,9 +456,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
     "target": "3.4 Swarm distance",
     "kind": "WASM experiment",
-    "prediction": "Move the reward optimum relative to the confining potential and follow the population. Copying responds to reward through fitness, while the BAOAB acceleration follows the potential gradient, so the two operations can favor different places.",
+    "prediction": "Move the reward optimum relative to the confining potential and compare three seeded populations. Copying responds to reward through fitness, while acceleration follows the potential gradient; different occupied wells reveal how finite-time trapping and seed variation affect the population you see.",
     "question": "What changes when favorable reward and the force point to different places?",
-    "posterAlt": "Reward cost profile; smaller is better. Move the reward optimum relative to the confining potential and follow the population. Copying responds to reward through fitness, while the BAOAB acceleration follows the potential gradient, so the two operations can favor different places.",
+    "posterAlt": "Reward cost profile; smaller is better. Move the reward optimum relative to the confining potential and compare three seeded populations. Copying responds to reward through fitness, while acceleration follows the potential gradient; different occupied wells reveal how finite-time trapping and seed variation affect the population you see.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -467,7 +484,7 @@
       },
       {
         "key": "walkers",
-        "label": "Walkers",
+        "label": "Walkers per run",
         "type": "select",
         "value": 128,
         "options": [
@@ -626,13 +643,13 @@
   {
     "id": "I-08",
     "part": "I",
-    "title": "Resolve a cloning jump into its mixture components",
+    "title": "Resolve a cloning jump into its position components",
     "chapter": "source/2_fractal_gas/convergence_program/04_single_particle",
     "target": "6. Post-Cloning Position Distribution",
     "kind": "Mathematical model",
-    "prediction": "The persistence component keeps its mass at the old position, while clone jitter spreads accepted-copy mass around donor positions. Follow the components through the kinetic step to see how a mixture of possible copying outcomes becomes a distribution of final positions.",
-    "question": "Which part of the post-copy law remains concentrated at one point?",
-    "posterAlt": "Continuous copy density plus separate persistence mass. The persistence component keeps its mass at the old position, while clone jitter spreads accepted-copy mass around donor positions. Follow the components through the kinetic step to see how a mixture of possible copying outcomes becomes a distribution of final positions.",
+    "prediction": "Move the boundary and inspect which donors remain eligible before copying. Persistence and zero-jitter copies appear as probability atoms; positive clone jitter broadens only the donor components. The cumulative position histogram tests this conditional post-clone law, including revival, a single survivor, and extinction.",
+    "question": "How does donor eligibility change the post-clone position law?",
+    "posterAlt": "Alive-conditioned donor positions. Move the boundary and inspect which donors remain eligible before copying. Persistence and zero-jitter copies appear as probability atoms; positive clone jitter broadens only the donor components. The cumulative position histogram tests this conditional post-clone law, including revival, a single survivor, and extinction.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -647,7 +664,7 @@
       },
       {
         "key": "jitter",
-        "label": "Copy jitter σ",
+        "label": "Voluntary copy jitter σ",
         "type": "select",
         "value": 0.1,
         "options": [
@@ -670,28 +687,18 @@
         ]
       },
       {
-        "key": "temperature",
-        "label": "Thermostat T",
-        "type": "range",
-        "value": 0.4,
-        "min": 0,
-        "max": 2,
-        "step": 0.1
-      },
-      {
         "key": "boundary",
         "label": "Viable half-width",
         "type": "range",
         "value": 1.1,
         "min": 0.4,
         "max": 2,
-        "step": 0.1
+        "step": 0.01
       }
     ],
     "params": {
       "recipient": 0,
       "jitter": 0.1,
-      "temperature": 0.4,
       "boundary": 1.1
     }
   },
@@ -796,9 +803,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
     "target": "sec-cloning-keystone",
     "kind": "WASM experiment",
-    "prediction": "With the reward optimum in the main cluster, inspect whether high-error walkers also have low fitness and tend to copy inward. Move the optimum to the outliers and repeat: the linked plots show which part of that chain changes sign.",
+    "prediction": "Start with a central cluster and two outer clusters, then inspect the high and low fractions, fitness gap, and overlap before interpreting the measured inward drift. Move the reward optimum toward the outer clusters to see which conditions change. The radius ledger also separates displacement about the old center from recentered variance.",
     "question": "Does geometric error produce an inward copying signal?",
-    "posterAlt": "Conditional replacement change. With the reward optimum in the main cluster, inspect whether high-error walkers also have low fitness and tend to copy inward. Move the optimum to the outliers and repeat: the linked plots show which part of that chain changes sign.",
+    "posterAlt": "Conditional replacement change. Start with a central cluster and two outer clusters, then inspect the high and low fractions, fitness gap, and overlap before interpreting the measured inward drift. Move the reward optimum toward the outer clusters to see which conditions change. The radius ledger also separates displacement about the old center from recentered variance.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -820,7 +827,7 @@
       },
       {
         "key": "fraction",
-        "label": "Outlier fraction",
+        "label": "Requested outer-cluster fraction",
         "type": "range",
         "value": 0.15,
         "min": 0.05,
@@ -829,7 +836,7 @@
       },
       {
         "key": "separation",
-        "label": "Cluster separation",
+        "label": "Outer-cluster distance",
         "type": "range",
         "value": 2,
         "min": 1,
@@ -862,11 +869,11 @@
         "options": [
           {
             "value": "main",
-            "label": "Main cluster"
+            "label": "Central cluster"
           },
           {
             "value": "outliers",
-            "label": "Outlier cluster"
+            "label": "Right outer cluster"
           }
         ]
       },
@@ -897,9 +904,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
     "target": "10.3. Positional Variance Contraction",
     "kind": "WASM experiment",
-    "prediction": "Repeat independent updates from each frozen starting cloud. Individual changes fluctuate, but their averages reveal the drift; compare cloning, kinetics, and the full step to see how contraction competes with injected noise.",
+    "prediction": "Repeat independent updates from each frozen cloud and compare mean drift with its uncertainty. Pure Gaussian jumps have constant positive reference drift. The fitted drift crossing appears only when negative slope, positive intercept, and an in-range crossing are supported; longer runs would measure the corresponding stationary spread.",
     "question": "Which initial spreads have negative average one-step drift?",
-    "posterAlt": "One-step conditional drift. Repeat independent updates from each frozen starting cloud. Individual changes fluctuate, but their averages reveal the drift; compare cloning, kinetics, and the full step to see how contraction competes with injected noise.",
+    "posterAlt": "One-step conditional drift. Repeat independent updates from each frozen cloud and compare mean drift with its uncertainty. Pure Gaussian jumps have constant positive reference drift. The fitted drift crossing appears only when negative slope, positive intercept, and an in-range crossing are supported; longer runs would measure the corresponding stationary spread.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1060,6 +1067,10 @@
           {
             "value": "phase",
             "label": "Position + velocity"
+          },
+          {
+            "value": "oneD",
+            "label": "One coordinate: sorted matching"
           }
         ]
       },
@@ -1071,6 +1082,33 @@
         "min": 0,
         "max": 3,
         "step": 0.1
+      },
+      {
+        "key": "point",
+        "label": "Target point to edit (capped at N−1)",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      },
+      {
+        "key": "pointX",
+        "label": "Selected target x₁ offset",
+        "type": "range",
+        "value": 0,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "pointY",
+        "label": "Selected target x₂ offset",
+        "type": "range",
+        "value": 0,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
       }
     ],
     "params": {
@@ -1079,7 +1117,10 @@
       "distortion": 0,
       "coupling": "optimal",
       "cost": "position",
-      "weight": 1
+      "weight": 1,
+      "point": 0,
+      "pointX": 0,
+      "pointY": 0
     }
   },
   {
@@ -1089,9 +1130,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
     "target": "5. From Variance Contraction",
     "kind": "WASM experiment",
-    "prediction": "Follow two live clouds and compare their optimal centered matching cost with the sum of their variances. Identical broad clouds begin with zero centered transport but a positive variance proxy, showing exactly where the envelope leaves room.",
+    "prediction": "Follow two live clouds and compare centered transport with the sum of their variances. Identical broad clouds start with zero centered transport and a positive proxy; the envelope leaves room for the exact distance to rise temporarily while remaining below it.",
     "question": "How tight is the variance envelope on actual cloud distance?",
-    "posterAlt": "Exact centered transport and variance envelope. Follow two live clouds and compare their optimal centered matching cost with the sum of their variances. Identical broad clouds begin with zero centered transport but a positive variance proxy, showing exactly where the envelope leaves room.",
+    "posterAlt": "Exact centered transport and variance envelope. Follow two live clouds and compare centered transport with the sum of their variances. Identical broad clouds start with zero centered transport and a positive proxy; the envelope leaves room for the exact distance to rise temporarily while remaining below it.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1174,9 +1215,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/05_kinetic_contraction",
     "target": "5. Velocity Variance Dissipation",
     "kind": "Mathematical model",
-    "prediction": "Starting from one velocity, the sample mean follows exponential damping while noise builds the spread toward the displayed thermal variance. Give two populations the same innovations and their paired velocity differences decay exponentially even as each population fluctuates.",
+    "prediction": "Compare the sample velocity mean and variance with their finite-time OU predictions and sampling scales. Shared innovations make paired differences decay exponentially even while each population fluctuates; elapsed friction times show whether the selected run has reached the thermal regime.",
     "question": "Can the velocity mean decay while its variance increases?",
-    "posterAlt": "Memory of the initial mean. Starting from one velocity, the sample mean follows exponential damping while noise builds the spread toward the displayed thermal variance. Give two populations the same innovations and their paired velocity differences decay exponentially even as each population fluctuates.",
+    "posterAlt": "Memory of the initial mean. Compare the sample velocity mean and variance with their finite-time OU predictions and sampling scales. Shared innovations make paired differences decay exponentially even while each population fluctuates; elapsed friction times show whether the selected run has reached the thermal regime.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1377,9 +1418,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
     "target": "sec-convergence-composition",
     "kind": "Mathematical model",
-    "prediction": "Compose the cloning and kinetic matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, the resulting scalar envelope approaches a finite floor; increasing the source term raises that floor.",
+    "prediction": "Compose the reference cloning and kinetic comparison matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, this affine model approaches its calculated floor; changing the source term changes that floor.",
     "question": "Can coupled component inequalities produce a scalar contraction?",
-    "posterAlt": "Clone comparison C. Compose the cloning and kinetic matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, the resulting scalar envelope approaches a finite floor; increasing the source term raises that floor.",
+    "posterAlt": "Clone comparison C. Compose the reference cloning and kinetic comparison matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, this affine model approaches its calculated floor; changing the source term changes that floor.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1424,9 +1465,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
     "target": "4.2. A complete killed-block criterion",
     "kind": "Mathematical model",
-    "prediction": "Watch surviving mass and conditional shape on separate axes in this finite killed chain. The normalized law approaches the quasi-stationary eigenmeasure; starting from that measure keeps the shape fixed while survival follows a geometric law.",
+    "prediction": "Watch surviving mass and conditional shape on separate axes in the finite killed chain. The default run stops when observed or expected survivor counts become small; the optional longer horizon follows the exact law and marks depleted samples. Conditional-probability intervals show how much shape information remains.",
     "question": "What settles down while total surviving probability decreases?",
-    "posterAlt": "Whole-system killed kernel. Watch surviving mass and conditional shape on separate axes in this finite killed chain. The normalized law approaches the quasi-stationary eigenmeasure; starting from that measure keeps the shape fixed while survival follows a geometric law.",
+    "posterAlt": "Whole-system killed kernel. Watch surviving mass and conditional shape on separate axes in the finite killed chain. The default run stops when observed or expected survivor counts become small; the optional longer horizon follows the exact law and marks depleted samples. Conditional-probability intervals show how much shape information remains.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1494,13 +1535,30 @@
             "label": "1024"
           }
         ]
+      },
+      {
+        "key": "horizon",
+        "label": "Run horizon",
+        "type": "select",
+        "value": "empirical",
+        "options": [
+          {
+            "value": "empirical",
+            "label": "Stop when survivor sample thins"
+          },
+          {
+            "value": "exact",
+            "label": "Follow exact law through 160 blocks"
+          }
+        ]
       }
     ],
     "params": {
       "kill": 0.08,
       "initial": "A",
       "boundary": "killed",
-      "replicas": 512
+      "replicas": 512,
+      "horizon": "empirical"
     }
   },
   {
@@ -1577,9 +1635,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
     "target": "sec-mean-field-reactions",
     "kind": "Mathematical model",
-    "prediction": "Halve the timestep while keeping the observation duration fixed. A fixed event probability gives more events per unit time; using probability 1 − exp(−a h) makes the measured event rate approach the chosen rate a.",
+    "prediction": "Halve the timestep while keeping physical duration fixed. A fixed event probability increases the event rate; probability 1 − exp(−a h) approaches rate a. Compare ensemble estimates with their sampling uncertainty, keeping individual jump paths separate from their expectation.",
     "question": "Does the same per-step probability describe the same physical reaction rate?",
-    "posterAlt": "Refinement and observed reaction intensity. Halve the timestep while keeping the observation duration fixed. A fixed event probability gives more events per unit time; using probability 1 − exp(−a h) makes the measured event rate approach the chosen rate a.",
+    "posterAlt": "Refinement and observed reaction intensity. Halve the timestep while keeping physical duration fixed. A fixed event probability increases the event rate; probability 1 − exp(−a h) approaches rate a. Compare ensemble estimates with their sampling uncertainty, keeping individual jump paths separate from their expectation.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1639,9 +1697,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
     "target": "sec-chaos-population-laws",
     "kind": "WASM experiment",
-    "prediction": "Compare the same bounded observable across independently seeded WASM runs at several population sizes. Then add a shared initial displacement: a random motion of the whole cloud becomes visible in the variation between runs.",
+    "prediction": "Compare active cloning with a real no-copy ensemble at four population sizes. Whole-run uncertainty intervals and the final marginal variance help interpret mean fluctuations; permutation baselines show how much pair-histogram discrepancy appears under independence. A shared initial displacement exposes the covariance that can survive as N grows.",
     "question": "How do whole-cloud fluctuations change as the population grows?",
-    "posterAlt": "Across-run variance of empirical observable. Compare the same bounded observable across independently seeded WASM runs at several population sizes. Then add a shared initial displacement: a random motion of the whole cloud becomes visible in the variation between runs.",
+    "posterAlt": "Across-run variance of empirical observable. Compare active cloning with a real no-copy ensemble at four population sizes. Whole-run uncertainty intervals and the final marginal variance help interpret mean fluctuations; permutation baselines show how much pair-histogram discrepancy appears under independence. A shared initial displacement exposes the covariance that can survive as N grows.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1683,9 +1741,9 @@
       },
       {
         "key": "selection",
-        "label": "Reward exponent",
+        "label": "Active reward exponent",
         "type": "range",
-        "value": 0,
+        "value": 1,
         "min": 0,
         "max": 2,
         "step": 0.25
@@ -1701,21 +1759,45 @@
       },
       {
         "key": "replicas",
-        "label": "Replicas per N",
+        "label": "Replicas per N and rule",
         "type": "select",
-        "value": 24,
+        "value": 96,
         "options": [
-          {
-            "value": 12,
-            "label": "12"
-          },
-          {
-            "value": 24,
-            "label": "24"
-          },
           {
             "value": 48,
             "label": "48"
+          },
+          {
+            "value": 96,
+            "label": "96"
+          },
+          {
+            "value": 192,
+            "label": "192"
+          }
+        ]
+      },
+      {
+        "key": "jointN",
+        "label": "Inspect pair histogram at N",
+        "type": "select",
+        "value": 128,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
           }
         ]
       }
@@ -1723,9 +1805,10 @@
     "params": {
       "updates": 4,
       "initial": "independent",
-      "selection": 0,
+      "selection": 1,
       "noise": 0.05,
-      "replicas": 24
+      "replicas": 96,
+      "jointN": 128
     }
   },
   {
@@ -1735,9 +1818,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
     "target": "sec-chaos-identification",
     "kind": "Mathematical model",
-    "prediction": "Increase the population to reduce sampling scatter, then refine the timestep to reduce the Euler stationary bias. The discrete and continuous generator residuals respond differently, so the two controls expose two distinct sources of error.",
+    "prediction": "Compare each residual with its exact current-law expectation and sampling error. The paired discrete-minus-continuous residual uses the same cloud in both operators, isolating the timestep correction that raw Monte Carlo scatter can hide. Refine h and increase N to separate these two effects.",
     "question": "Does a stationary numerical law annihilate the continuous generator?",
-    "posterAlt": "Finite-step residual E[(P_hφ−φ)/h]. Increase the population to reduce sampling scatter, then refine the timestep to reduce the Euler stationary bias. The discrete and continuous generator residuals respond differently, so the two controls expose two distinct sources of error.",
+    "posterAlt": "Finite-step residual E[(P_hφ−φ)/h]. Compare each residual with its exact current-law expectation and sampling error. The paired discrete-minus-continuous residual uses the same cloud in both operators, isolating the timestep correction that raw Monte Carlo scatter can hide. Refine h and increase N to separate these two effects.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1800,9 +1883,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
     "target": "sec-equilibrium-selection",
     "kind": "Mathematical model",
-    "prediction": "Evolve the positive density under the local replicator equation. It approaches the normalized profile proportional to R raised to the power αD/β; as the density adjusts, the spatial differences in fitness flatten out.",
+    "prediction": "Evolve the positive density under the local replicator equation toward the normalized profile proportional to R raised to αD/β. Fitness flattens as the density adjusts. The relaxation comparison uses the same quadrature grid; change resolution to inspect spatial approximation separately.",
     "question": "Why does fitness become constant on the stationary support?",
-    "posterAlt": "Local equilibrium density. Evolve the positive density under the local replicator equation. It approaches the normalized profile proportional to R raised to the power αD/β; as the density adjusts, the spatial differences in fitness flatten out.",
+    "posterAlt": "Local equilibrium density. Evolve the positive density under the local replicator equation toward the normalized profile proportional to R raised to αD/β. Fitness flattens as the density adjusts. The relaxation comparison uses the same quadrature grid; change resolution to inspect spatial approximation separately.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1892,9 +1975,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
     "target": "sec-equilibrium-kinetic",
     "kind": "Mathematical model",
-    "prediction": "With no source, the surviving conditional density approaches the principal sine profile. Turn on a constant source and compare the unnormalized density: replenishment balances boundary loss in the stationary parabola s x(L − x)/(2D₀).",
+    "prediction": "Without a source, the surviving conditional density approaches the principal sine profile. With a constant source, replenishment balances boundary loss in the parabola s x(L − x)/(2D₀). Compare spectral resolutions to distinguish the finite-mode approximation from the exact stationary profile.",
     "question": "Why do killed diffusion and source-balanced diffusion approach different shapes?",
-    "posterAlt": "Source-free absorbing diffusion. With no source, the surviving conditional density approaches the principal sine profile. Turn on a constant source and compare the unnormalized density: replenishment balances boundary loss in the stationary parabola s x(L − x)/(2D₀).",
+    "posterAlt": "Source-free absorbing diffusion. Without a source, the surviving conditional density approaches the principal sine profile. With a constant source, replenishment balances boundary loss in the parabola s x(L − x)/(2D₀). Compare spectral resolutions to distinguish the finite-mode approximation from the exact stationary profile.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -1971,9 +2054,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
     "target": "sec-exchangeability-qsd",
     "kind": "Mathematical model",
-    "prediction": "Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Increase their population sizes: independent means concentrate with variance 1/N, while a shared Gaussian component leaves the variance floor ρ.",
+    "prediction": "Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Independent means concentrate with variance 1/N; a shared Gaussian component leaves the variance floor ρ. Compare measured variances at their finite-replica sampling scale.",
     "question": "Does permutation symmetry force the empirical mean to concentrate?",
-    "posterAlt": "Distribution of the empirical mean. Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Increase their population sizes: independent means concentrate with variance 1/N, while a shared Gaussian component leaves the variance floor ρ.",
+    "posterAlt": "Distribution of the empirical mean. Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Independent means concentrate with variance 1/N; a shared Gaussian component leaves the variance floor ρ. Compare measured variances at their finite-replica sampling scale.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2040,9 +2123,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
     "target": "sec-exchangeability-finite-mixtures",
     "kind": "Mathematical model",
-    "prediction": "Draw tuples with replacement and count repeated labels. The observed frequency approaches 1 − (N)ₖ/Nᵏ, whose theoretical value is bounded by k(k − 1)/(2N); increasing the tuple size makes the finite-population correction easier to see.",
+    "prediction": "Draw tuples with replacement and count repeated labels. Compare the frequency and its sampling uncertainty with 1 − (N)ₖ/Nᵏ, which is bounded by k(k − 1)/(2N). Increasing tuple size makes the finite-population correction easier to see.",
     "question": "How often does a sampled tuple repeat a population label?",
-    "posterAlt": "Tuple collision correction. Draw tuples with replacement and count repeated labels. The observed frequency approaches 1 − (N)ₖ/Nᵏ, whose theoretical value is bounded by k(k − 1)/(2N); increasing the tuple size makes the finite-population correction easier to see.",
+    "posterAlt": "Tuple collision correction. Draw tuples with replacement and count repeated labels. Compare the frequency and its sampling uncertainty with 1 − (N)ₖ/Nᵏ, which is bounded by k(k − 1)/(2N). Increasing tuple size makes the finite-population correction easier to see.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2135,9 +2218,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
     "target": "2.2. Entropy and the three Fisher terms",
     "kind": "Mathematical model",
-    "prediction": "Start the harmonic Gaussian away from the equilibrium position. Velocity Fisher information begins at zero, then the position–velocity dynamics creates it; the entropy loss tracks the exact dissipation term −γθ Iᵥ.",
+    "prediction": "Start the harmonic Gaussian away from equilibrium and watch transport create velocity information. The chapter's coefficient matrix defines a modified entropy that stays below its decay envelope; the separate alternative-matrix curve shows why positive coefficients alone do not guarantee decay. Ordinary entropy follows dH/dt = −γθ Iᵥ.",
     "question": "How does velocity noise remove a position displacement?",
-    "posterAlt": "Entropy and information transfer. Start the harmonic Gaussian away from the equilibrium position. Velocity Fisher information begins at zero, then the position–velocity dynamics creates it; the entropy loss tracks the exact dissipation term −γθ Iᵥ.",
+    "posterAlt": "Entropy and information transfer. Start the harmonic Gaussian away from equilibrium and watch transport create velocity information. The chapter's coefficient matrix defines a modified entropy that stays below its decay envelope; the separate alternative-matrix curve shows why positive coefficients alone do not guarantee decay. Ordinary entropy follows dH/dt = −γθ Iᵥ.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2192,9 +2275,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
     "target": "sec-kl-hypocoercive-full-evolution",
     "kind": "Mathematical model",
-    "prediction": "First apply the same Markov kernel to both probability laws and compare their KL divergence. An invariant reference stays fixed under that step; turning on state-dependent killing exposes the additional change caused by selecting and renormalizing survivors.",
+    "prediction": "Apply the same Markov kernel to both laws and compare their KL divergence. Select the reset kernel's invariant law or the killed kernel's quasi-stationary law to inspect the appropriate fixed reference; state-dependent killing changes both surviving mass and the normalized shape.",
     "question": "Which reference distribution makes contraction visible?",
-    "posterAlt": "Probability laws. First apply the same Markov kernel to both probability laws and compare their KL divergence. An invariant reference stays fixed under that step; turning on state-dependent killing exposes the additional change caused by selecting and renormalizing survivors.",
+    "posterAlt": "Probability laws. Apply the same Markov kernel to both laws and compare their KL divergence. Select the reset kernel's invariant law or the killed kernel's quasi-stationary law to inspect the appropriate fixed reference; state-dependent killing changes both surviving mass and the normalized shape.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2215,7 +2298,11 @@
         "options": [
           {
             "value": "invariant",
-            "label": "invariant"
+            "label": "Reset-kernel invariant"
+          },
+          {
+            "value": "qsd",
+            "label": "Killed-kernel QSD"
           },
           {
             "value": "different",
@@ -2246,9 +2333,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
     "target": "sec-hk-metrics",
     "kind": "Mathematical model",
-    "prediction": "Keep the normalized shape fixed and change only its mass, then move its center while keeping the mass fixed. The Hellinger decomposition separates the mass mismatch from the mass-weighted shape mismatch, while normalized transport follows the change in shape.",
+    "prediction": "Keep normalized shape fixed while changing mass, then move the center at fixed mass. The Hellinger identity separates mass and shape contributions. In the smoothed-atom experiment, vary bandwidth to see how the chosen smoothing changes the density comparison.",
     "question": "Can mass and shape errors move independently?",
-    "posterAlt": "Finite measures: total heights include mass. Keep the normalized shape fixed and change only its mass, then move its center while keeping the mass fixed. The Hellinger decomposition separates the mass mismatch from the mass-weighted shape mismatch, while normalized transport follows the change in shape.",
+    "posterAlt": "Finite measures: total heights include mass. Keep normalized shape fixed while changing mass, then move the center at fixed mass. The Hellinger identity separates mass and shape contributions. In the smoothed-atom experiment, vary bandwidth to see how the chosen smoothing changes the density comparison.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2292,15 +2379,29 @@
           {
             "value": "Atoms",
             "label": "Atoms"
+          },
+          {
+            "value": "Smoothed atoms",
+            "label": "Smoothed atoms"
           }
         ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Atomic smoothing bandwidth",
+        "type": "range",
+        "value": 0.2,
+        "min": 0.05,
+        "max": 0.5,
+        "step": 0.05
       }
     ],
     "params": {
       "mass": 0.6,
       "center": 1,
       "width": 0.8,
-      "representation": "Gaussian"
+      "representation": "Gaussian",
+      "bandwidth": 0.2
     }
   },
   {
@@ -2310,9 +2411,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
     "target": "sec-hk-density",
     "kind": "Mathematical model",
-    "prediction": "Widen the declared comparison region and inspect the density ratios alongside the sample coverage. Gaussian tail ratios and the vanishing density at absorbing endpoints show why a useful density comparison depends on where it is made.",
-    "question": "How does the comparison change when we widen the window?",
-    "posterAlt": "Named reference laws and KDE. Widen the declared comparison region and inspect the density ratios alongside the sample coverage. Gaussian tail ratios and the vanishing density at absorbing endpoints show why a useful density comparison depends on where it is made.",
+    "prediction": "Widen the comparison region and plot both p/q and q/p: for these Gaussians, one ratio stays bounded while the reciprocal grows in the tails. At absorbing endpoints, compare ordinary KDE boundary bias with the normalized Dirichlet estimate and inspect its retained mass.",
+    "question": "Which density ratio grows in the tails?",
+    "posterAlt": "Named reference laws and region-aware KDE. Widen the comparison region and plot both p/q and q/p: for these Gaussians, one ratio stays bounded while the reciprocal grows in the tails. At absorbing endpoints, compare ordinary KDE boundary bias with the normalized Dirichlet estimate and inspect its retained mass.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2343,7 +2444,7 @@
       },
       {
         "key": "bandwidth",
-        "label": "Gaussian KDE bandwidth",
+        "label": "KDE bandwidth",
         "type": "range",
         "value": 0.1,
         "min": 0.02,
@@ -2364,9 +2465,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
     "target": "sec-normalized-measurement-calculus",
     "kind": "Mathematical model",
-    "prediction": "Move the query coordinate through the frozen companion cloud. Differentiating both numerator and denominator keeps the localized statistics normalized; compare the resulting fitness derivatives with the curve obtained by freezing the denominator.",
+    "prediction": "Move the query through the frozen cloud and differentiate both the numerator and denominator of the local statistics. Compare with the frozen-denominator result, then inspect the finite-difference resolution table at the largest third-derivative spike to separate coefficient sensitivity from numerical differentiation error.",
     "question": "Which derivative terms come from the denominator?",
-    "posterAlt": "Self-inclusive local statistics. Move the query coordinate through the frozen companion cloud. Differentiating both numerator and denominator keeps the localized statistics normalized; compare the resulting fitness derivatives with the curve obtained by freezing the denominator.",
+    "posterAlt": "Self-inclusive local statistics. Move the query through the frozen cloud and differentiate both the numerator and denominator of the local statistics. Compare with the frozen-denominator result, then inspect the finite-difference resolution table at the largest third-derivative spike to separate coefficient sensitivity from numerical differentiation error.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2432,9 +2533,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
     "target": "sec-c3-counts-scaling",
     "kind": "Mathematical model",
-    "prediction": "Replicate a cloud and compare raw neighbor counts with normalized local averages. Counts and Gaussian row sums grow with the population, while donor probability still sums to one and an identically replicated cloud keeps the same normalized average.",
+    "prediction": "Replicate the cloud and compare raw neighbor counts with normalized averages. Donor probability still sums to one and replication preserves the average. Switch between an external query and a fixed self-atom query to see why only the latter carries the self-weight lower bound.",
     "question": "What grows when many walkers occupy one small ball?",
-    "posterAlt": "The cloud and its locality weights. Replicate a cloud and compare raw neighbor counts with normalized local averages. Counts and Gaussian row sums grow with the population, while donor probability still sums to one and an identically replicated cloud keeps the same normalized average.",
+    "posterAlt": "The cloud and its locality weights. Replicate the cloud and compare raw neighbor counts with normalized averages. Donor probability still sums to one and replication preserves the average. Switch between an external query and a fixed self-atom query to see why only the latter carries the self-weight lower bound.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2482,12 +2583,29 @@
             "label": "clustered"
           }
         ]
+      },
+      {
+        "key": "self",
+        "label": "Query convention",
+        "type": "select",
+        "value": "external",
+        "options": [
+          {
+            "value": "external",
+            "label": "External query field"
+          },
+          {
+            "value": "inclusive",
+            "label": "Add fixed self atom at query"
+          }
+        ]
       }
     ],
     "params": {
       "N": 64,
       "rho": 0.7,
-      "geometry": "clustered"
+      "geometry": "clustered",
+      "self": "external"
     }
   },
   {
@@ -2497,9 +2615,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
     "target": "sec-gg-cinf-regularity",
     "kind": "Mathematical model",
-    "prediction": "Increase the Taylor order and compare the polynomial with the exact regularized fitness slice. Higher order improves recovery in a sufficiently small neighborhood; widening that neighborhood and changing the regularizers reveals how the useful approximation radius depends on the coefficients.",
+    "prediction": "Compare the Taylor polynomial with the exact regularized fitness slice, then vary order and window radius. The tested useful radius reports where the sampled error stays within tolerance; it is a numerical local-accuracy diagnostic. The finite-order coefficient envelope helps explain why a wider window can become inaccurate even at high order.",
     "question": "How do derivative coefficients control a Taylor approximation?",
-    "posterAlt": "Taylor reconstruction of the actual regularized fitness. Increase the Taylor order and compare the polynomial with the exact regularized fitness slice. Higher order improves recovery in a sufficiently small neighborhood; widening that neighborhood and changing the regularizers reveals how the useful approximation radius depends on the coefficients.",
+    "posterAlt": "Taylor reconstruction of the actual regularized fitness. Compare the Taylor polynomial with the exact regularized fitness slice, then vary order and window radius. The tested useful radius reports where the sampled error stays within tolerance; it is a numerical local-accuracy diagnostic. The finite-order coefficient envelope helps explain why a wider window can become inaccurate even at high order.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2544,9 +2662,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
     "target": "sec-cinf-companion-laws",
     "kind": "Mathematical model",
-    "prediction": "Move one coordinate and enumerate every assignment in the selected four-walker law. The derivative of expected fitness combines changes in each assignment's fitness with changes in its probability; the two contributions add to the derivative of the averaged field.",
+    "prediction": "Move one coordinate and enumerate the selected four-walker law. Compare fixed-order greedy pairing with the shuffled-order law used by the engine; each has its own probability derivative. The assignment-fitness and assignment-probability contributions add to the derivative of the averaged field on the same cloud used in IV-05.",
     "question": "Where does the derivative of the sampling probability appear?",
-    "posterAlt": "Three different fitness fields. Move one coordinate and enumerate every assignment in the selected four-walker law. The derivative of expected fitness combines changes in each assignment's fitness with changes in its probability; the two contributions add to the derivative of the averaged field.",
+    "posterAlt": "Three different fitness fields. Move one coordinate and enumerate the selected four-walker law. Compare fixed-order greedy pairing with the shuffled-order law used by the engine; each has its own probability derivative. The assignment-fitness and assignment-probability contributions add to the derivative of the averaged field on the same cloud used in IV-05.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2576,15 +2694,19 @@
         "options": [
           {
             "value": "independent",
-            "label": "independent"
+            "label": "Independent rows"
           },
           {
             "value": "matching",
-            "label": "matching"
+            "label": "Ideal matching"
           },
           {
             "value": "greedy",
-            "label": "greedy"
+            "label": "Fixed-order greedy"
+          },
+          {
+            "value": "shuffled_greedy",
+            "label": "Shuffled greedy (engine law)"
           }
         ]
       }
@@ -2602,9 +2724,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
     "target": "2.3. Bounded perturbations",
     "kind": "Mathematical model",
-    "prediction": "Increase the cosine ripple on the quadratic potential and compare curvature, Gibbs density, and sampled relaxation. Local curvature can become negative while the Gaussian envelope still confines the law; the Metropolis ensembles reveal how barriers delay exchange between wells.",
+    "prediction": "Increase the cosine ripple and compare curvature, Gibbs density, and four independently seeded Metropolis chains. Crossing counts and separation between the two starting groups reveal delayed exchange between wells. Time here counts Metropolis transitions; the equilibrium comparison does not assign the kinetic engine's relaxation rate to that sampler.",
     "question": "What changes when a bounded ripple creates wells?",
-    "posterAlt": "Two initial ensembles and the same Gibbs target. Increase the cosine ripple on the quadratic potential and compare curvature, Gibbs density, and sampled relaxation. Local curvature can become negative while the Gaussian envelope still confines the law; the Metropolis ensembles reveal how barriers delay exchange between wells.",
+    "posterAlt": "Two initial ensembles and the same Gibbs target. Increase the cosine ripple and compare curvature, Gibbs density, and four independently seeded Metropolis chains. Crossing counts and separation between the two starting groups reveal delayed exchange between wells. Time here counts Metropolis transitions; the equilibrium comparison does not assign the kinetic engine's relaxation rate to that sampler.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2659,9 +2781,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
     "target": "sec-fg-kl-conv-discrete",
     "kind": "Mathematical model",
-    "prediction": "Follow two initial Gaussian laws toward the numerical stationary covariance. Decrease the timestep and watch its velocity variance approach the continuous value, linking the entropy relaxation curve to the equilibrium of the actual splitting step.",
+    "prediction": "Follow two Gaussian laws toward the numerical BAOAB stationary covariance over the displayed physical duration. Refinement makes the velocity-covariance bias fall as h²; the corresponding Gaussian KL bias falls as h⁴ because KL is quadratic in the small covariance error.",
     "question": "Which Gaussian law is invariant under a numerical BAOAB step?",
-    "posterAlt": "Entropy relative to the numerical invariant law. Follow two initial Gaussian laws toward the numerical stationary covariance. Decrease the timestep and watch its velocity variance approach the continuous value, linking the entropy relaxation curve to the equilibrium of the actual splitting step.",
+    "posterAlt": "Entropy relative to the numerical invariant law. Follow two Gaussian laws toward the numerical BAOAB stationary covariance over the displayed physical duration. Refinement makes the velocity-covariance bias fall as h²; the corresponding Gaussian KL bias falls as h⁴ because KL is quadratic in the small covariance error.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2706,9 +2828,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
     "target": "sec-gg-uniform-ellipticity",
     "kind": "WASM + reference",
-    "prediction": "Rotate the Hessian and vary its positive shifted eigenvalues. The smallest one gives the broadest diffusion direction; compare the predicted ellipse with kicks sampled by the Rust full-factor noise module after removing the known BAOAB scaling.",
+    "prediction": "Rotate the prescribed Hessian and vary its positive shifted eigenvalues. The smallest eigenvalue gives the broadest kick direction. Compare the predicted covariance with Rust full-factor samples after removing the known BAOAB scaling, using entrywise standard errors to judge the remaining differences.",
     "question": "Which Hessian direction gets the largest velocity kick?",
-    "posterAlt": "Normalized O-stage kicks from the Rust full factor. Rotate the Hessian and vary its positive shifted eigenvalues. The smallest one gives the broadest diffusion direction; compare the predicted ellipse with kicks sampled by the Rust full-factor noise module after removing the known BAOAB scaling.",
+    "posterAlt": "Normalized O-stage kicks from the Rust full factor. Rotate the prescribed Hessian and vary its positive shifted eigenvalues. The smallest eigenvalue gives the broadest kick direction. Compare the predicted covariance with Rust full-factor samples after removing the known BAOAB scaling, using entrywise standard errors to judge the remaining differences.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2753,9 +2875,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
     "target": "3.1. Exact component estimates",
     "kind": "Mathematical model",
-    "prediction": "Let the velocities align on the frozen weighted graph. The degree-weighted mean stays fixed as the corresponding relative energy decays; weakening connections reduces the spectral gap and slows that decay.",
+    "prediction": "Follow alignment on the frozen graph: the degree-weighted mean stays fixed and the relative-energy ledger measures dissipation. Weakening the bridge slows exchange between clusters. When the gap falls below numerical resolution, use the positive Rayleigh upper bound instead of interpreting a roundoff-scale eigenvalue as a measured rate.",
     "question": "Which mean survives row-normalized interactions?",
-    "posterAlt": "Frozen graph: node heights are current velocities. Let the velocities align on the frozen weighted graph. The degree-weighted mean stays fixed as the corresponding relative energy decays; weakening connections reduces the spectral gap and slows that decay.",
+    "posterAlt": "Frozen graph: node heights are current velocities. Follow alignment on the frozen graph: the degree-weighted mean stays fixed and the relative-energy ledger measures dissipation. Weakening the bridge slows exchange between clusters. When the gap falls below numerical resolution, use the positive Rayleigh upper bound instead of interpreting a roundoff-scale eigenvalue as a measured rate.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2800,9 +2922,9 @@
     "chapter": "source/2_fractal_gas/convergence_program/13_quantitative_error_bounds",
     "target": "sec-quantitative-total-error",
     "kind": "Mathematical model",
-    "prediction": "Compare the sampling, timestep, and transient contributions before choosing a control. More walkers reduce the sampling fluctuation; a smaller timestep changes the stationary bias, and a longer run reduces the memory of the initial law.",
+    "prediction": "Compare the chapter's stationary sampling term, timestep bias, and absolute-error mixing bound with the measured mean absolute error across replicas. More walkers reduce sampling, refinement reduces bias, and longer duration reduces the mixing term. Individual-replica coverage is a separate diagnostic from a bound on expected error.",
     "question": "Which change most improves the bounded observable cos(v)?",
-    "posterAlt": "Exact harmonic error budget. Compare the sampling, timestep, and transient contributions before choosing a control. More walkers reduce the sampling fluctuation; a smaller timestep changes the stationary bias, and a longer run reduces the memory of the initial law.",
+    "posterAlt": "Chapter expected absolute-error budget. Compare the chapter's stationary sampling term, timestep bias, and absolute-error mixing bound with the measured mean absolute error across replicas. More walkers reduce sampling, refinement reduces bias, and longer duration reduces the mixing term. Individual-replica coverage is a separate diagnostic from a bound on expected error.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -2810,7 +2932,7 @@
         "key": "N",
         "label": "Walkers",
         "type": "select",
-        "value": 128,
+        "value": 2048,
         "options": [
           {
             "value": 32,
@@ -2832,9 +2954,9 @@
       },
       {
         "key": "h",
-        "label": "Timestep h",
+        "label": "Requested timestep h",
         "type": "range",
-        "value": 0.08,
+        "value": 0.5,
         "min": 0.01,
         "max": 0.5,
         "step": 0.01
@@ -2843,16 +2965,16 @@
         "key": "T",
         "label": "Physical duration",
         "type": "range",
-        "value": 5,
+        "value": 15,
         "min": 1,
         "max": 30,
         "step": 1
       }
     ],
     "params": {
-      "N": 128,
-      "h": 0.08,
-      "T": 5
+      "N": 2048,
+      "h": 0.5,
+      "T": 15
     }
   },
   {
@@ -2923,9 +3045,9 @@
     "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
     "target": "sec-master-constraints",
     "kind": "Mathematical model",
-    "prediction": "Choose a core diameter and a normalized-measure reach target, then inspect the required Gaussian width. Increasing the alive population leaves that width unchanged while distributing probability across more individual candidates.",
+    "prediction": "Choose a core diameter and normalized-measure reach target, then inspect the sufficient Gaussian width. Pointwise feasibility allows (N − 1)p* ≤ 1, with uniform probabilities at equality. The cloning saturation denominator changes the accepted probability, whose ceiling remains one.",
     "question": "How does companion reach translate into a width?",
-    "posterAlt": "Width needed for a normalized measure target. Choose a core diameter and a normalized-measure reach target, then inspect the required Gaussian width. Increasing the alive population leaves that width unchanged while distributing probability across more individual candidates.",
+    "posterAlt": "Width needed for a normalized measure target. Choose a core diameter and normalized-measure reach target, then inspect the sufficient Gaussian width. Pointwise feasibility allows (N − 1)p* ≤ 1, with uniform probabilities at equality. The cloning saturation denominator changes the accepted probability, whose ceiling remains one.",
     "seed": 7,
     "posterTicks": 0,
     "controls": [
@@ -2986,7 +3108,7 @@
       },
       {
         "key": "cap",
-        "label": "Clone probability cap",
+        "label": "Cloning saturation denominator",
         "type": "range",
         "value": 1,
         "min": 0.1,
@@ -3009,9 +3131,9 @@
     "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
     "target": "sec-parameter-selection",
     "kind": "WASM experiment",
-    "prediction": "Choose an experiment card and compare two real WASM populations. The conservative harmonic card supplies the reference E|x|² = 2; the other cards expose copying, absorption, and population-size effects, with configurations and observables recorded for replay.",
-    "question": "Do independently seeded runs show the predicted relaxation?",
-    "posterAlt": "Raw reward under two reproducible seeds. Choose an experiment card and compare two real WASM populations. The conservative harmonic card supplies the reference E|x|² = 2; the other cards expose copying, absorption, and population-size effects, with configurations and observables recorded for replay.",
+    "prediction": "Compare independently seeded replicas within each experiment group, with mean observables and sampling intervals. The harmonic card supplies the discrete relaxation curve and equilibrium E|x|² = 2; the absorbing comparison records losses and revivals against a matched-seed unbounded control. The population card compares N with 2N at the same physical time.",
+    "question": "Do independent replicas show the predicted relaxation?",
+    "posterAlt": "Mean raw reward across independent replicas. Compare independently seeded replicas within each experiment group, with mean observables and sampling intervals. The harmonic card supplies the discrete relaxation curve and equilibrium E|x|² = 2; the absorbing comparison records losses and revivals against a matched-seed unbounded control. The population card compares N with 2N at the same physical time.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -3027,15 +3149,15 @@
           },
           {
             "value": "operators",
-            "label": "Operator intuition"
+            "label": "Kinetic versus selection"
           },
           {
             "value": "survival",
-            "label": "Absorbing full swarm"
+            "label": "Unbounded versus absorbing"
           },
           {
             "value": "population",
-            "label": "Fixed-time population comparison"
+            "label": "N versus 2N at fixed time"
           }
         ]
       },
@@ -3076,13 +3198,30 @@
         "min": 0.2,
         "max": 3,
         "step": 0.1
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas per group",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
       }
     ],
     "params": {
       "card": "kinetic",
       "N": 64,
       "h": 0.04,
-      "gamma": 1
+      "gamma": 1,
+      "replicas": 4
     }
   }
 ]

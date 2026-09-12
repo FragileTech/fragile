@@ -39,6 +39,10 @@ import {
   enumeration,
   symmetricEigenvalues,
   constraintWidth,
+  hypocoerciveCoefficients,
+  spectralGapDiagnostic,
+  dirichletKernel,
+  cosineGaussianVariance,
 } from "./entropy-math.js";
 import { alive, frameMetrics } from "../config.js";
 
@@ -129,19 +133,25 @@ const d1 = descriptor(
   ],
   async ({ params: p }) => {
     let step = 0;
-    const histories = Array.from({ length: 6 }, () => []),
-      G = [
-        [1, 0.2],
-        [0.2, 1],
-      ];
+    const histories = Array.from({ length: 8 }, () => []),
+      coefficients = hypocoerciveCoefficients(p),
+      { eta, rate, G } = coefficients;
     const update = () => {
       const state = harmonicState(step * 0.04, p),
         H = gaussianKL(state.mean, state.covariance, state.target),
         I = gaussianFisher(state.mean, state.covariance, state.target);
-      const phi = H + I[0][0] + 0.4 * I[0][1] + I[1][1];
-      [H, I[0][0], I[1][1], I[0][1], phi, -p.gamma * p.theta * I[1][1]].forEach(
-        (v, i) => pushBounded(histories[i], [step * 0.04, v]),
-      );
+      const phi = H + 2 * eta * (I[0][0] + I[0][1] + I[1][1]),
+        arbitrary = H + I[0][0] + 0.4 * I[0][1] + I[1][1];
+      [
+        H,
+        I[0][0],
+        I[1][1],
+        I[0][1],
+        phi,
+        -p.gamma * p.theta * I[1][1],
+        (histories[4][0]?.[1] ?? phi) * Math.exp(-rate * step * 0.04),
+        arbitrary,
+      ].forEach((v, i) => pushBounded(histories[i], [step * 0.04, v]));
     };
     update();
     return model(
@@ -172,10 +182,20 @@ const d1 = descriptor(
               "Physical time",
               "Information",
               [
-                ...["H", "Iₓ", "Iᵥ", "Iₓᵥ", "Φ with G = [[1,.2],[.2,1]]"].map(
-                  (n, i) => line(n, histories[i]),
+                ...["H", "Iₓ", "Iᵥ", "Iₓᵥ", "Chapter Φ_G"].map((n, i) =>
+                  line(n, histories[i]),
                 ),
               ],
+            ),
+            chart("Chapter decay bound", "Physical time", "Modified entropy", [
+              line("Chapter Φ_G", histories[4]),
+              line("Φ_G(0) exp(−rt)", histories[6], { dashed: true }),
+            ]),
+            chart(
+              "Alternative positive coefficients: measured trajectory",
+              "Physical time",
+              "Alternative Φ",
+              [line("G=[[1,.2],[.2,1]]", histories[7])],
             ),
             chart(
               "Exact ordinary entropy dissipation",
@@ -185,12 +205,18 @@ const d1 = descriptor(
             ),
           ],
           metrics: [
-            metric("G eigenvalues", "0.8, 1.2"),
-            metric("ac − b²", 0.96),
+            metric(
+              "G eigenvalues",
+              `${eta.toPrecision(4)}, ${(3 * eta).toPrecision(4)}`,
+            ),
+            metric("ac − b²", 3 * eta ** 2),
+            metric("Chapter rate r", rate),
+            metric("η", eta),
+            metric("Gaussian LSI C", coefficients.C),
             metric("Entropy H", histories[0].at(-1)[1]),
           ],
           message:
-            "The cross term transfers information between x and v. Positive G gives the displayed information functional, evaluated along the exact harmonic flow.",
+            "Chapter coefficients: G=η[[2,1],[1,2]], η=γθ/[2(1+2κ+(2κ+γ+2)²)], C=max(θ/κ,θ), r=η/(C/2+3η). The chapter functional contracts below its envelope; the alternative positive matrix illustrates why the coefficient choice matters.",
         };
       },
     );
@@ -206,17 +232,31 @@ const d2 = descriptor(
   [
     range("reset", "Reset strength", 0.3, 0.05, 0.8, 0.05),
     select("target", "Reference target", "invariant", [
-      "invariant",
+      { value: "invariant", label: "Reset-kernel invariant" },
+      { value: "qsd", label: "Killed-kernel QSD" },
       "different",
     ]),
     range("killing", "State-dependent killing", 0, 0, 0.5, 0.05),
   ],
   async ({ params: p }) => {
     const invariant = [0.2, 0.3, 0.5],
-      q = p.target === "invariant" ? invariant : [0.7, 0.2, 0.1],
       kernel = invariant.map((_, i) =>
         invariant.map((r, j) => (i === j ? 1 - p.reset : 0) + p.reset * r),
       );
+    const killed = kernel.map((row) =>
+      row.map((v, j) => v * (1 - (p.killing * j) / 2)),
+    );
+    let qsd = [...invariant];
+    for (let i = 0; i < 600; i++)
+      qsd = normalize(
+        qsd.map((_, j) => qsd.reduce((s, v, k) => s + v * killed[k][j], 0)),
+      );
+    const q =
+      p.target === "invariant"
+        ? invariant
+        : p.target === "qsd"
+          ? qsd
+          : [0.7, 0.2, 0.1];
     let state = [0.85, 0.1, 0.05],
       time = 0,
       mass = 1;
@@ -272,9 +312,20 @@ const d2 = descriptor(
             line("KL(p ∥ q)", history),
           ]),
         ],
-        metrics: [metric("Cumulative surviving mass", mass), ...ledger],
+        metrics: [
+          metric("Cumulative surviving mass", mass),
+          metric(
+            "Selected reference",
+            p.target === "qsd"
+              ? "Conditioned killed-kernel eigenmeasure"
+              : p.target === "invariant"
+                ? "Reset-kernel invariant"
+                : "Alternative fixed law",
+          ),
+          ...ledger,
+        ],
         message: `Kernel: Kᵢⱼ = (1−r)δᵢⱼ + rπⱼ. Killing survival weights: 1, ${1 - p.killing / 2}, ${1 - p.killing}.`,
-        experiment: { kernel, target: q },
+        experiment: { kernel, killedKernel: killed, qsd, target: q },
       }),
     );
   },
@@ -293,7 +344,9 @@ const d3 = descriptor(
     select("representation", "Comparison measure", "Gaussian", [
       "Gaussian",
       "Atoms",
+      "Smoothed atoms",
     ]),
+    range("bandwidth", "Atomic smoothing bandwidth", 0.2, 0.05, 0.5, 0.05),
   ],
   async ({ params: p, seed }) => {
     const h = hellinger({
@@ -308,6 +361,20 @@ const d3 = descriptor(
       { length: 64 },
       () => p.center + p.width * random.normal(),
     );
+    const smoothed = (x) =>
+      mean(atoms.map((y) => normalPDF(x, y, p.bandwidth)));
+    if (p.representation === "Smoothed atoms") {
+      const qgrid = linspace(-16, 16, 1601),
+        affinity =
+          0.02 *
+          qgrid.reduce(
+            (sum, x) => sum + Math.sqrt(normalPDF(x) * smoothed(x)),
+            0,
+          );
+      h.shape = 2 - 2 * affinity;
+      h.shapeTerm = Math.sqrt(p.mass) * h.shape;
+      h.total = h.massTerm + h.shapeTerm;
+    }
     return staticModel({
       charts: [
         chart(
@@ -328,13 +395,18 @@ const d3 = descriptor(
                   "Second measure",
                   grid.map((x) => [
                     x,
-                    p.mass * normalPDF(x, p.center, p.width),
+                    p.mass *
+                      (p.representation === "Smoothed atoms"
+                        ? smoothed(x)
+                        : normalPDF(x, p.center, p.width)),
                   ]),
                 ),
           ],
         ),
         chart(
-          "Exact squared Hellinger ledger",
+          p.representation === "Smoothed atoms"
+            ? "Squared Hellinger ledger: Gaussian-mixture quadrature"
+            : "Exact squared Hellinger ledger",
           "Contribution",
           "Squared distance",
           [
@@ -366,11 +438,18 @@ const d3 = descriptor(
                 ? [metric("Equal-mass transport path action", h.w2 * h.w2)]
                 : []),
             ]
-          : [metric("Atomic/continuous normalized H²", 2)]),
+          : [
+              metric(
+                p.representation === "Atoms"
+                  ? "Atomic/continuous normalized H²"
+                  : "Gaussian-smoothed normalized H²",
+                h.shape,
+              ),
+            ]),
         metric("Identity residual", h.total - h.massTerm - h.shapeTerm),
       ],
       message:
-        "H²(mp,nq) = (√m−√n)² + √mn H²(p,q). The atomic mode compares the finite point measure directly to a continuous Gaussian.",
+        "H²(mp,nq) = (√m−√n)² + √mn H²(p,q). The atomic mode compares a point measure directly. Smoothed atoms use the displayed Gaussian bandwidth and affinity quadrature on[−16,16], spacing.02; changing bandwidth changes the compared measure.",
     });
   },
 );
@@ -379,15 +458,15 @@ const d4 = descriptor(
   4,
   "Density estimates belong to a stated region",
   "How does the comparison change when we widen the window?",
-  "Gaussian density ratios grow in the tails; absorbing densities vanish at the endpoints.",
-  "Exact reference densities and seeded sample coverage are evaluated on the declared plotting region.",
+  "The broader Gaussian q makes q/p grow in the tails while p/q stays bounded; absorbing densities vanish at both endpoints.",
+  "Exact density ratios are separated by orientation. A Dirichlet heat-kernel density estimate respects absorbing endpoints and is normalized conditional on remaining in (0,1).",
   [
     select("reference", "Reference model", "Gaussian", [
       "Gaussian",
       "Absorbing",
     ]),
     range("window", "Tail window / interior reach", 3, 1, 6, 0.25),
-    range("bandwidth", "Gaussian KDE bandwidth", 0.1, 0.02, 0.2, 0.02),
+    range("bandwidth", "KDE bandwidth", 0.1, 0.02, 0.2, 0.02),
   ],
   async ({ params: p, seed }) => {
     const absorbed = p.reference === "Absorbing",
@@ -395,7 +474,11 @@ const d4 = descriptor(
       hi = absorbed ? 1 : p.window,
       grid = linspace(lo, hi, 121),
       f = (x) =>
-        absorbed ? (Math.PI / 2) * Math.sin(Math.PI * x) : normalPDF(x),
+        absorbed
+          ? x === 0 || x === 1
+            ? 0
+            : (Math.PI / 2) * Math.sin(Math.PI * x)
+          : normalPDF(x),
       g = (x) => (absorbed ? 6 * x * (1 - x) : normalPDF(x, 0.7, 1.3)),
       random = rng(seed),
       samples = [];
@@ -406,20 +489,30 @@ const d4 = descriptor(
         if (random() < Math.sin(Math.PI * x)) samples.push(x);
       }
     }
-    const kde = (x) => mean(samples.map((y) => normalPDF(x, y, p.bandwidth))),
-      inside = grid.filter((x) =>
-        absorbed
-          ? x > 1 / (p.window * 10) && x < 1 - 1 / (p.window * 10)
-          : true,
-      );
-    const ratios = inside.map((x) => [x, f(x) / g(x)]),
-      counts = histogram(samples, lo, hi, 32).map(([x, d]) => [
-        x,
-        (d * 512 * (hi - lo)) / 32,
-      ]);
+    const ordinary = grid.map((x) =>
+        mean(samples.map((y) => normalPDF(x, y, p.bandwidth))),
+      ),
+      killed = absorbed
+        ? grid.map((x) =>
+            mean(samples.map((y) => dirichletKernel(x, y, p.bandwidth))),
+          )
+        : ordinary;
+    const normalizer = absorbed
+      ? killed.reduce(
+          (s, v, i) => s + v * (i === 0 || i === 120 ? 0.5 : 1),
+          0,
+        ) / 120
+      : 1;
+    const estimates = killed.map((v) => v / normalizer),
+      inside = grid.filter(
+        (x) =>
+          !absorbed || (x > 1 / (p.window * 10) && x < 1 - 1 / (p.window * 10)),
+      ),
+      pq = inside.map((x) => [x, f(x) / g(x)]),
+      qp = inside.map((x) => [x, g(x) / f(x)]);
     return staticModel({
       charts: [
-        chart("Named reference laws and KDE", "x", "Density", [
+        chart("Named reference laws and region-aware KDE", "x", "Density", [
           line(
             "p exact",
             grid.map((x) => [x, f(x)]),
@@ -429,30 +522,75 @@ const d4 = descriptor(
             grid.map((x) => [x, g(x)]),
           ),
           line(
-            `KDE h=${p.bandwidth}`,
-            grid.map((x) => [x, kde(x)]),
-            { dashed: true },
+            absorbed
+              ? "Dirichlet KDE, conditionally normalized"
+              : `Gaussian KDE h=${p.bandwidth}`,
+            grid.map((x, i) => [x, estimates[i]]),
           ),
+          ...(absorbed
+            ? [
+                line(
+                  "Ordinary KDE: boundary-bias comparison",
+                  grid.map((x, i) => [x, ordinary[i]]),
+                  { dashed: true },
+                ),
+              ]
+            : []),
         ]),
-        chart("Ratio on the declared interior", "x", "p / q", [
-          line("Exact ratio", ratios),
+        chart(
+          "Both ratio orientations",
+          "x",
+          "Density ratio",
+          [
+            line(
+              absorbed
+                ? "p/q (bounded interior ratio)"
+                : "p/q (globally bounded)",
+              pq,
+            ),
+            line(
+              absorbed
+                ? "q/p (bounded interior ratio)"
+                : "q/p (grows in the tails)",
+              qp,
+            ),
+          ],
+          { yScale: "log" },
+        ),
+        chart("Log ratios on the declared region", "x", "Log density ratio", [
           line(
             "log(p/q)",
-            ratios.map(([x, r]) => [x, Math.log(r)]),
+            pq.map(([x, r]) => [x, Math.log(r)]),
+          ),
+          line(
+            "log(q/p)",
+            qp.map(([x, r]) => [x, Math.log(r)]),
           ),
         ]),
         chart("Coverage of the plotted region", "Bin center", "Sample count", [
-          { name: "Counts", style: "bars", points: counts },
+          {
+            name: "Counts",
+            style: "bars",
+            points: histogram(samples, lo, hi, 32).map(([x, d]) => [
+              x,
+              (d * 512 * (hi - lo)) / 32,
+            ]),
+          },
         ]),
-        {
-          title: "Absorbing heat reference u(t,x)=e^(−π²t) sin(πx)",
-          matrix: linspace(0.02, 0.3, 16).map((t) =>
-            linspace(0, 1, 32).map(
-              (x) => Math.exp(-(Math.PI ** 2) * t) * Math.sin(Math.PI * x),
-            ),
-          ),
-          rowLabels: linspace(0.02, 0.3, 16).map((t) => t.toFixed(2)),
-        },
+        ...(absorbed
+          ? [
+              {
+                title: "Absorbing heat reference u(t,x)=e^(−π²t)sin(πx)",
+                matrix: linspace(0.02, 0.3, 16).map((t) =>
+                  linspace(0, 1, 32).map(
+                    (x) =>
+                      Math.exp(-Math.PI * Math.PI * t) * Math.sin(Math.PI * x),
+                  ),
+                ),
+                rowLabels: linspace(0.02, 0.3, 16).map((t) => t.toFixed(2)),
+              },
+            ]
+          : []),
       ],
       metrics: [
         metric("Samples", 512),
@@ -461,11 +599,24 @@ const d4 = descriptor(
           samples.filter((x) => x >= lo && x <= hi).length,
         ),
         metric("Interior min p", Math.min(...inside.map(f))),
-        metric("Largest interior ratio", Math.max(...ratios.map((r) => r[1]))),
+        metric("Largest p/q", Math.max(...pq.map((p) => p[1]))),
+        metric("Largest q/p", Math.max(...qp.map((p) => p[1]))),
+        ...(absorbed
+          ? [
+              metric("Dirichlet KDE left endpoint", estimates[0]),
+              metric("Dirichlet KDE right endpoint", estimates.at(-1)),
+              metric("Dirichlet smoothing surviving mass", normalizer),
+            ]
+          : [
+              metric(
+                "Global analytic upper bound on p/q",
+                1.3 * Math.exp(0.49 / (2 * (1.3 ** 2 - 1))),
+              ),
+            ]),
       ],
       message: absorbed
-        ? "Absorbing reference on (0,1); both analytic curves vanish at the boundary."
-        : "Unbounded Gaussian laws. Expanding the window includes tails, while histogram mass outside the window stays unplotted.",
+        ? "Dirichlet image kernels vanish at 0 and 1. Their mass is measured before conditioning; the displayed corrected KDE integrates to 1 on the plot grid. The ordinary KDE exposes its boundary bias. Both exact density ratios remain bounded near these endpoints."
+        : "p=N(0,1), q=N(.7,1.3²). p/q has global maximum 1.8541692; q/p grows without bound. Extending the window reveals the same orientation in the ratio and log-ratio panels.",
     });
   },
 );
@@ -498,6 +649,15 @@ const d5 = descriptor(
       fdErrors = [1, 2, 3].map((n) =>
         Math.abs(fd(0.13, 0.0001, n) - exact[n] * factorial(n)),
       );
+    const peakIndex = values.reduce(
+        (best, value, i) =>
+          Math.abs(value.fitness[3]) > Math.abs(values[best].fitness[3])
+            ? i
+            : best,
+        0,
+      ),
+      peak = xs[peakIndex],
+      peakExact = values[peakIndex].fitness[3] * 6;
     return staticModel({
       charts: [
         chart(
@@ -537,9 +697,21 @@ const d5 = descriptor(
           ),
         ]),
       ],
-      metrics: fdErrors.map((v, i) =>
-        metric(`D${i + 1} finite-difference absolute error at x=.13`, v),
-      ),
+      metrics: [
+        ...fdErrors.map((v, i) =>
+          metric(`D${i + 1} finite-difference absolute error at x=.13`, v),
+        ),
+        metric("Peak |D³F| coordinate", peak),
+        metric("Peak analytic D³F", peakExact),
+      ],
+      table: {
+        columns: ["FD spacing", "D³F at peak", "Absolute error"],
+        rows: [0.001, 0.0003, 0.0001, 0.00003].map((h) => [
+          h,
+          fd(peak, h, 3),
+          Math.abs(fd(peak, h, 3) - peakExact),
+        ]),
+      },
       message:
         "Fixed alive/candidate stratum, cⱼ=(j+1) mod N. rⱼ=−xⱼ², dⱼ=√((xⱼ−x꜀)²+δ²), A=2, η=.001, α=β=1. Independent centered finite differences use h=10⁻⁴.",
     });
@@ -556,6 +728,10 @@ const d6 = descriptor(
     select("N", "Walkers", 64, [16, 64, 256]),
     range("rho", "Localization width ρ", 0.7, 0.1, 2),
     select("geometry", "Cloud geometry", "clustered", ["uniform", "clustered"]),
+    select("self", "Query convention", "external", [
+      { value: "external", label: "External query field" },
+      { value: "inclusive", label: "Add fixed self atom at query" },
+    ]),
   ],
   async ({ params: p }) => {
     const xs = Array.from({ length: p.N }, (_, i) =>
@@ -567,12 +743,20 @@ const d6 = descriptor(
       raw = xs.map((x) => Math.exp((-x * x) / (2 * p.rho ** 2))),
       w = normalize(raw),
       average = xs.reduce((s, x, i) => s + w[i] * x * x, 0);
+    if (p.self === "inclusive") {
+      xs.push(0);
+      raw.push(1);
+      const z = raw.reduce((a, b) => a + b);
+      w.splice(0, w.length, ...raw.map((v) => v / z));
+    }
     const third = (rho) => {
       const c = (v) => jet(v, 3),
-        q = jet(0.13, 3, true),
+        q = jet(0, 3, true),
         raw = xs.map((x) => {
           const d = add(c(x), scale(q, -1));
-          return exp(scale(mul(d, d), -0.5 / rho ** 2));
+          return p.self === "inclusive" && x === 0
+            ? c(1)
+            : exp(scale(mul(d, d), -0.5 / rho ** 2));
         }),
         z = raw.reduce(add, c(0));
       return Math.abs(
@@ -581,7 +765,7 @@ const d6 = descriptor(
       );
     };
     const derivativeBound = (rho) => {
-      const D = Math.max(...xs.map((x) => Math.abs(x - 0.13))),
+      const D = Math.max(...xs.map((x) => Math.abs(x))),
         L1 = D / rho ** 2,
         L2 = 1 / rho ** 2;
       return Math.max(...xs.map((x) => x * x)) * (18 * L1 * L2 + 26 * L1 ** 3);
@@ -626,11 +810,11 @@ const d6 = descriptor(
           [
             line(
               "Exact Taylor derivative",
-              linspace(0.2, 2, 41).map((r) => [r, Math.max(1e-16, third(r))]),
+              linspace(0.1, 2, 49).map((r) => [r, Math.max(1e-16, third(r))]),
             ),
             line(
               "Chapter W₃ bound × max x²",
-              linspace(0.2, 2, 41).map((r) => [r, derivativeBound(r)]),
+              linspace(0.1, 2, 49).map((r) => [r, derivativeBound(r)]),
               { dashed: true },
             ),
           ],
@@ -646,11 +830,14 @@ const d6 = descriptor(
           "Normalized row sum",
           w.reduce((a, b) => a + b, 0),
         ),
-        metric("Weighted x²", average),
+        metric(
+          "Weighted x²",
+          xs.reduce((s, x, i) => s + w[i] * x * x, 0),
+        ),
         metric(
           "Replicated cloud weighted x²",
           normalize([...raw, ...raw]).reduce(
-            (s, v, i) => s + v * xs[i % p.N] ** 2,
+            (s, v, i) => s + v * xs[i % xs.length] ** 2,
             0,
           ),
         ),
@@ -660,7 +847,7 @@ const d6 = descriptor(
         ),
       ],
       message:
-        "The fixed query is x=0. Cumulative curves use actual geometric radius, not a relabeled effective sample size. Derivative slice uses exact Taylor arithmetic at query x=.13. The bounded-distance estimate is max(x²)[18L₁L₂+26L₁³], with L₁=D/ρ², L₂=ρ⁻², D=max|xⱼ−.13|.",
+        "The query and derivative coordinate are both x=0. External queries have no self atom; the inclusive option adds a unit Gaussian self-weight that stays constant under query differentiation. Cumulative curves use actual geometric radius, not a relabeled effective sample size. Derivative slice uses exact Taylor arithmetic at query x=0. The bounded-distance estimate is max(x²)[18L₁L₂+26L₁³], with L₁=D/ρ², L₂=ρ⁻², D=max|xⱼ|.",
     });
   },
 );
@@ -690,6 +877,22 @@ const d7 = descriptor(
           fitnessJet(x, { n: 0, sigma: p.sigma }).fitness[0] -
             polynomial(x, p.order),
         ),
+      );
+    const radiusErrors = linspace(0.01, 0.5, 50).map((r) => [
+        r,
+        Math.max(
+          ...linspace(0.13 - r, 0.13 + r, 61).map((x) =>
+            Math.abs(
+              fitnessJet(x, { n: 0, sigma: p.sigma }).fitness[0] -
+                polynomial(x, p.order),
+            ),
+          ),
+        ),
+      ]),
+      useful = radiusErrors.filter(([, e]) => e <= 0.001).at(-1)?.[0] ?? 0,
+      C = 1 + Math.abs(coeff[0]),
+      B = Math.max(
+        ...coeff.slice(1).map((v, i) => (Math.abs(v) / C) ** (1 / (i + 1))),
       );
     return staticModel({
       charts: [
@@ -727,6 +930,26 @@ const d7 = descriptor(
               coeff
                 .slice(1)
                 .map((v, i) => [i + 1, Math.max(1e-20, Math.abs(v))]),
+            ),
+          ],
+          { yScale: "log" },
+        ),
+        chart(
+          "Reconstruction error across tested radii",
+          "Radius",
+          "Maximum sampled error",
+          [
+            line(
+              "Current Taylor order",
+              radiusErrors.map(([r, e]) => [r, Math.max(1e-16, e)]),
+            ),
+            line(
+              "Accuracy target 10⁻³",
+              [
+                [0.01, 0.001],
+                [0.5, 0.001],
+              ],
+              { dashed: true },
             ),
           ],
           { yScale: "log" },
@@ -773,9 +996,12 @@ const d7 = descriptor(
       metrics: [
         metric("Maximum displayed Taylor error", Math.max(...errors)),
         metric("Expansion center", 0.13),
+        metric("Largest tested radius with error ≤.001", useful),
+        metric("Finite-order coefficient envelope C", C),
+        metric("Finite-order coefficient envelope B", B),
       ],
       message:
-        "The coefficient graph displays the coefficients of this frozen fitness fixture. For n=3 the partitions are {123}, {12|3}, {13|2}, {23|1}, {1|2|3}: multiplicities 1,3,1.",
+        "The reported useful radius is checked against the exact slice at 61 points per radius. C Bⁿ bounds the computed coefficients through order 12; the error-radius plot directly tests Taylor recovery for the chosen order. For n=3 the partitions are {123}, {12|3}, {13|2}, {23|1}, {1|2|3}: multiplicities 1,3,1.",
     });
   },
 );
@@ -785,14 +1011,15 @@ const d8 = descriptor(
   "Differentiate an averaged stochastic update",
   "Where does the probability derivative appear?",
   "Expected sampled fitness differs from fitness of expected measurements; the probability term closes the derivative identity.",
-  "All 81 independent assignments or all three perfect matchings are enumerated for a fixed four-walker candidate set. Greedy pairing takes the first available row in order.",
+  "All 81 independent assignments or all three perfect matchings are enumerated for a fixed four-walker candidate set. Fixed-order greedy starts from row 0; the shuffled variant averages the engine’s random first walker.",
   [
     range("width", "Companion width", 0.7, 0.2, 2),
     range("rho", "Localization width", 0.7, 0.2, 2),
     select("law", "Joint assignment law", "independent", [
-      "independent",
-      "matching",
-      "greedy",
+      { value: "independent", label: "Independent rows" },
+      { value: "matching", label: "Ideal matching" },
+      { value: "greedy", label: "Fixed-order greedy" },
+      { value: "shuffled_greedy", label: "Shuffled greedy (engine law)" },
     ]),
   ],
   async ({ params: p }) => {
@@ -873,7 +1100,7 @@ const d8 = descriptor(
         ),
       ],
       message:
-        "Cloud = (x₀, −.4, .5, 1.2), δ=.1, σ=.15, α=β=1; self-inclusive local statistics. Matching weights are proportional to exp(−Σpaired d²/(2ε²)). Greedy ordering is 0,1,2,3.",
+        "Cloud = (x₀, −.4, .4, 1.2), δ=.1, σ=.15, α=β=1; self-inclusive local statistics. Matching weights are proportional to exp(−Σpaired d²/(2ε²)). Fixed-order greedy starts at 0; shuffled greedy averages the first walker uniformly over all four, matching the engine’s random permutation law. Both use the same frozen cloud as IV-05.",
     });
   },
 );
@@ -883,7 +1110,7 @@ const d9 = descriptor(
   "A nonconvex potential can still have a controlled Gibbs law",
   "What changes when a bounded ripple creates wells?",
   "Negative local curvature can coexist with a confining Gaussian envelope; barriers slow movement between wells.",
-  "The named potential U(x)=κx²/2 + a cos(2πx/ℓ) has bounded perturbation oscillation 2a. Two seeded random-walk Metropolis ensembles target its quadrature-normalized Gibbs law exactly.",
+  "The named potential U(x)=κx²/2 + a cos(2πx/ℓ) has bounded perturbation oscillation 2a. Four independently seeded random-walk Metropolis ensembles target its quadrature-normalized Gibbs law exactly.",
   [
     range("amplitude", "Ripple amplitude a", 0.5, 0, 2),
     thetaControl,
@@ -891,7 +1118,9 @@ const d9 = descriptor(
     range("k", "Confinement κ", 1, 0.5, 2),
   ],
   async ({ params: p, seed }) => {
-    const random = rng(seed),
+    const randoms = Array.from({ length: 4 }, (_, i) =>
+        rng((Number(seed) + 7919 * i) >>> 0),
+      ),
       L = Math.max(
         7,
         Math.sqrt(((2 * p.theta) / p.k) * (26 + (2 * p.amplitude) / p.theta)),
@@ -918,12 +1147,15 @@ const d9 = descriptor(
           ).reduce((a, b) => a + b, 0);
         }),
       );
-    let groups = [Array(128).fill(-2), Array(128).fill(2)],
+    let groups = Array.from({ length: 4 }, (_, i) =>
+        Array(128).fill(i < 2 ? -2 : 2),
+      ),
       step = 0,
       accept = 0,
       proposals = 0;
-    const histories = [[], []],
-      entropy = [[], []];
+    const histories = Array.from({ length: 4 }, () => []),
+      entropy = Array.from({ length: 4 }, () => []),
+      crossed = Array.from({ length: 4 }, () => Array(128).fill(false));
     const update = () =>
       groups.forEach((g, j) => {
         pushBounded(histories[j], [step, mean(g)]);
@@ -938,12 +1170,15 @@ const d9 = descriptor(
     return model(
       async () => {
         for (let batch = 0; batch < 8; batch++)
-          groups = groups.map((g) =>
-            g.map((x) => {
+          groups = groups.map((g, groupIndex) =>
+            g.map((x, walker) => {
+              const random = randoms[groupIndex];
               const y = x + 0.6 * Math.sqrt(p.theta) * random.normal();
               proposals++;
               if (Math.log(random()) < logw(y) - logw(x)) {
                 accept++;
+                if (Math.sign(y) !== Math.sign(groupIndex < 2 ? -1 : 1))
+                  crossed[groupIndex][walker] = true;
                 return y;
               }
               return x;
@@ -993,7 +1228,9 @@ const d9 = descriptor(
             "Observable relaxation from opposite starts",
             "Metropolis transitions / particle",
             "Mean x",
-            histories.map((v, i) => line(`Start ${i ? "right" : "left"}`, v)),
+            histories.map((v, i) =>
+              line(`${i < 2 ? "Left" : "Right"} seed ${(i % 2) + 1}`, v),
+            ),
           ),
           chart(
             "Explicit 40-bin marginal entropy diagnostic",
@@ -1017,9 +1254,27 @@ const d9 = descriptor(
           ),
           metric("Metropolis acceptance", proposals ? accept / proposals : 0),
           metric("Quadrature half-window L", L),
+          metric("Independent seeds", 4),
+          metric(
+            "Fraction ever crossing x=0",
+            mean(crossed.flat().map(Number)),
+          ),
+          metric(
+            "Left/right start mean separation",
+            Math.abs(
+              mean(groups.slice(0, 2).flat()) - mean(groups.slice(2).flat()),
+            ),
+          ),
+          metric(
+            "Full kinetic reference LSI bound",
+            Math.max(
+              p.theta,
+              (p.theta / p.k) * Math.exp((2 * p.amplitude) / p.theta),
+            ),
+          ),
         ],
         message:
-          "Metropolis Gibbs reference experiment; time axis counts Metropolis transitions. The density quadrature uses 801 nodes; Gaussian-tail envelope chooses L from exp(−κL²/(2θ)+2a/θ) ≤ e⁻²⁶. Histogram KL uses 40 bins with integrated reference masses (16 midpoint samples per bin); both distributions are normalized in [−L,L]. Finite-sample bias remains visible.",
+          "Metropolis Gibbs reference: one time unit is one proposal per particle, with four independent RNG seeds. Mean separation and the fraction crossing x=0 distinguish equilibration from barrier trapping at the displayed horizon. Kinetic entropy rates use a different generator; this clock measures Metropolis mixing. The density quadrature uses 801 nodes; Gaussian-tail envelope chooses L from exp(−κL²/(2θ)+2a/θ) ≤ e⁻²⁶. Histogram KL uses 40 bins with integrated reference masses (16 midpoint samples per bin); both distributions are normalized in [−L,L]. Finite-sample bias remains visible.",
       }),
     );
   },
@@ -1057,6 +1312,9 @@ const d10 = descriptor(
         },
       ],
       step = 0;
+    const horizon = Math.max(28, 24 / Math.min(p.gamma, 2 / p.gamma)),
+      totalSteps = Math.ceil(horizon / p.h),
+      batchSteps = Math.ceil(totalSteps / 350);
     const update = () =>
       states.forEach((s, i) =>
         pushBounded(histories[i], [
@@ -1067,14 +1325,16 @@ const d10 = descriptor(
     update();
     return model(
       async () => {
-        states = states.map((s) => gaussianStep(s, kernel));
-        step++;
+        for (let i = 0; i < batchSteps && step < totalSteps; i++) {
+          states = states.map((s) => gaussianStep(s, kernel));
+          step++;
+        }
         update();
       },
       () => ({
         step,
         time: step * p.h,
-        done: step >= 350,
+        done: step >= totalSteps,
         charts: [
           chart(
             "Entropy relative to the numerical invariant law",
@@ -1092,7 +1352,7 @@ const d10 = descriptor(
             ),
           ]),
           chart(
-            "Numerical-target discrepancy under refinement",
+            "Stationary KL discrepancy: fourth order in h",
             "h",
             "KL(Cₕ ∥ C)",
             [
@@ -1112,6 +1372,18 @@ const d10 = descriptor(
           ),
         ],
         metrics: [
+          metric("Physical horizon", totalSteps * p.h),
+          metric(
+            "Velocity variance bias (order h²)",
+            (p.theta * p.h * p.h) / 4,
+          ),
+          metric("KL leading term (order h⁴)", p.h ** 4 / 64),
+          metric(
+            "Remaining maximum KL",
+            Math.max(
+              ...states.map((s) => gaussianKL(s.mean, s.covariance, target)),
+            ),
+          ),
           metric("Stationary x variance", target[0][0]),
           metric("Stationary v variance", target[1][1]),
           metric(
@@ -1128,7 +1400,7 @@ const d10 = descriptor(
           ),
         ],
         message:
-          "Kinetic harmonic BAOAB, Gaussian innovations, no selection or killing. The displayed KL is evaluated analytically from the evolving mean/covariance.",
+          "Kinetic harmonic BAOAB, Gaussian innovations, no selection or killing. The h² velocity-variance bias and h⁴ stationary Gaussian KL are distinct observables. The physical horizon expands at weak friction; each frame advances a bounded batch of exact covariance updates.",
       }),
     );
   },
@@ -1234,6 +1506,20 @@ const d11 = descriptor(
                 [0, 0],
                 [0, 0],
               ];
+        const covarianceSE = D.map((row, i) =>
+            row.map((_, j) =>
+              samples.length
+                ? Math.sqrt((D[i][i] * D[j][j] + D[i][j] ** 2) / samples.length)
+                : 0,
+            ),
+          ),
+          maxZ = samples.length
+            ? Math.max(
+                ...observed.flatMap((row, i) =>
+                  row.map((v, j) => Math.abs(v - D[i][j]) / covarianceSE[i][j]),
+                ),
+              )
+            : 0;
         return {
           step,
           time: step,
@@ -1276,12 +1562,22 @@ const d11 = descriptor(
             metric("Smallest metric eigenvalue", Math.min(...eigen)),
             metric("Samples", samples.length),
             metric(
+              "Largest covariance-entry SE",
+              Math.max(...covarianceSE.flat()),
+            ),
+            metric("Maximum covariance discrepancy / SE", maxZ),
+            metric(
+              "Relative max covariance error",
+              Math.max(...madd(observed, mscale(D, -1)).flat().map(Math.abs)) /
+                Math.max(...D.flat().map(Math.abs)),
+            ),
+            metric(
               "Covariance max absolute error",
               Math.max(...madd(observed, mscale(D, -1)).flat().map(Math.abs)),
             ),
           ],
           message:
-            "Each sample is v_after / [(1−h²/4) √((1−e^(−2h))/2)] with h=.1, γ=1, zero initial state, U=|x|²/2. Noise factor is Σ, so these normalized kicks have covariance D.",
+            "Each sample is v_after / [(1−h²/4) √((1−e^(−2h))/2)] with h=.1, γ=1, zero initial state, U=|x|²/2. Noise factor is Σ, so these normalized kicks have covariance D. Entrywise Gaussian sampling SE = √((Dii Djj + Dij²)/n); absolute error grows with covariance scale while standardized error stays comparable.",
         };
       },
       () => gas.free(),
@@ -1314,7 +1610,7 @@ const d12 = descriptor(
       symmetric = K.map((r, i) =>
         r.map((v, j) => +(i === j) - v / Math.sqrt(degrees[i] * degrees[j])),
       ),
-      spectrum = symmetricEigenvalues(symmetric),
+      gapDiagnostic = spectralGapDiagnostic(K),
       v0 = [2, -1, 1, -2, 0.5, -0.5],
       mass = degrees.reduce((a, b) => a + b, 0),
       weighted = (v) => v.reduce((s, x, i) => s + x * degrees[i], 0) / mass,
@@ -1392,7 +1688,12 @@ const d12 = descriptor(
           { title: "Row-normalized alignment P", matrix: P },
         ],
         metrics: [
-          metric("Normalized spectral gap", spectrum[1]),
+          metric(
+            "Normalized spectral gap",
+            gapDiagnostic.value ?? "Below numerical resolution",
+          ),
+          metric("Two-cluster Rayleigh upper bound", gapDiagnostic.upperBound),
+          metric("Gap resolution threshold", gapDiagnostic.resolution),
           metric("Weighted mean", weighted(v)),
           metric("Initial weighted mean", center),
           metric(
@@ -1401,15 +1702,16 @@ const d12 = descriptor(
           ),
         ],
         message:
-          "Frozen positions, zero self-edges. The ledger checks dE/dt = −ν/2 Σᵢⱼ Kᵢⱼ(vᵢ−vⱼ)² directly against the computed ODE derivative.",
+          "Frozen positions, zero self-edges. If the gap is below resolution, the positive Rayleigh upper bound describes the weak link. The ledger checks dE/dt = −ν/2 Σᵢⱼ Kᵢⱼ(vᵢ−vⱼ)² directly against the computed ODE derivative.",
       }),
     );
   },
 );
 
-function harmonicBudget(N, h, T, gamma = 1) {
-  const kernel = baoab(h, 1, gamma, 1),
-    steps = Math.round(T / h);
+export function harmonicBudget(N, h, T, gamma = 1) {
+  const steps = Math.max(1, Math.round(T / h));
+  h = T / steps;
+  const kernel = baoab(h, 1, gamma, 1);
   let numerical = {
     mean: [2, 0],
     covariance: [
@@ -1452,102 +1754,131 @@ function harmonicBudget(N, h, T, gamma = 1) {
     target,
     mu,
     populationBias: 0,
-    sampling: Math.sqrt(Math.max(0, second - mu * mu) / N),
+    h,
+    sampling: Math.sqrt(cosineGaussianVariance(0, kernel.stationary[1][1]) / N),
+    currentSampling: Math.sqrt(Math.max(0, second - mu * mu) / N),
     discretization: Math.abs(numericalStationary - target),
-    transient: Math.abs(mu - numericalStationary),
+    transient: Math.min(
+      2,
+      Math.hypot(
+        numerical.mean[1],
+        Math.sqrt(numerical.covariance[1][1]) -
+          Math.sqrt(kernel.stationary[1][1]),
+      ),
+    ),
+    meanTransient: Math.abs(mu - numericalStationary),
   };
 }
 const d13 = descriptor(
   13,
   "Spend effort on the largest error term",
   "Which change most improves the bounded observable cos(v)?",
-  "Increasing N reduces sampling noise; timestep and transient errors respond to h and duration.",
-  "Independent harmonic BAOAB walkers have zero population-interaction bias. The numerical law and stationary target yield exact bias, transient, and sampling variance for cos(v).",
+  "Stationary sampling noise falls with N; the timestep and an absolute-error mixing bound respond to h and duration.",
+  "The chapter budget uses stationary variance and a Gaussian coupling bound for the absolute-error observable. Independent finite-time replicas measure the expected absolute error and its uncertainty.",
   [
-    select("N", "Walkers", 128, [32, 128, 512, 2048]),
-    range("h", "Timestep h", 0.08, 0.01, 0.5, 0.01),
-    range("T", "Physical duration", 5, 1, 30, 1),
+    select("N", "Walkers", 2048, [32, 128, 512, 2048]),
+    range("h", "Requested timestep h", 0.5, 0.01, 0.5, 0.01),
+    range("T", "Physical duration", 15, 1, 30, 1),
   ],
   async ({ params: p, seed }) => {
-    const budget = harmonicBudget(p.N, p.h, p.T),
-      random = rng(seed);
-    let step = 0,
-      observed = [];
-    const errorHistory = [];
+    const b = harmonicBudget(p.N, p.h, p.T),
+      random = rng(seed),
+      bound = b.sampling + b.discretization + b.transient,
+      diagnosticBand = Math.abs(b.mu - b.target) + 2 * b.currentSampling;
+    let step = 0;
+    const observed = [],
+      errors = [],
+      errorHistory = [],
+      running = [],
+      mixingDifferences = [];
     return model(
       async () => {
-        const sample = mean(
-          Array.from({ length: p.N }, () =>
-            Math.cos(
-              budget.numerical.mean[1] +
-                Math.sqrt(budget.numerical.covariance[1][1]) * random.normal(),
-            ),
-          ),
+        let current = 0,
+          stationary = 0;
+        for (let i = 0; i < p.N; i++) {
+          const z = random.normal();
+          current += Math.cos(
+            b.numerical.mean[1] + Math.sqrt(b.numerical.covariance[1][1]) * z,
+          );
+          stationary += Math.cos(Math.sqrt(b.kernel.stationary[1][1]) * z);
+        }
+        current /= p.N;
+        stationary /= p.N;
+        observed.push(current);
+        errors.push(Math.abs(current - b.target));
+        mixingDifferences.push(
+          Math.abs(current - b.target) - Math.abs(stationary - b.target),
         );
-        observed.push(sample);
         step++;
-        pushBounded(errorHistory, [step, Math.abs(sample - budget.target)]);
+        pushBounded(errorHistory, [step, errors.at(-1)]);
+        pushBounded(running, [step, mean(errors)]);
       },
       () => ({
         step,
-        time: budget.steps * p.h,
+        time: p.T,
         done: step >= 128,
         charts: [
           chart(
-            "Exact harmonic error budget",
-            "Population / sampling / timestep / transient",
+            "Chapter expected absolute-error budget",
+            "Population / stationary sampling / timestep / absolute-error mixing",
             "Magnitude",
             [
               {
-                name: "Component",
+                name: "Theorem terms",
                 style: "bars",
                 points: [
                   [0, 0],
-                  [1, budget.sampling],
-                  [2, budget.discretization],
-                  [3, budget.transient],
+                  [1, b.sampling],
+                  [2, b.discretization],
+                  [3, b.transient],
                 ],
               },
             ],
           ),
           chart(
-            "Independent complete-run estimates",
-            "Replica",
-            "Absolute observable error",
+            "Observed expected error across independent replicas",
+            "Completed replicas",
+            "Mean absolute error",
             [
-              scatter("Measured replica error", errorHistory),
+              line("Mean measured |estimate−target|", running),
               line(
-                "Bias + 2 standard errors",
+                "Chapter upper bound on expected error",
                 [
-                  [
-                    0,
-                    budget.discretization +
-                      budget.transient +
-                      2 * budget.sampling,
-                  ],
-                  [
-                    Math.max(1, step),
-                    budget.discretization +
-                      budget.transient +
-                      2 * budget.sampling,
-                  ],
+                  [0, bound],
+                  [Math.max(1, step), bound],
                 ],
                 { dashed: true },
               ),
             ],
           ),
           chart(
-            "Population tradeoff at fixed h and T",
+            "Individual replica fluctuations",
+            "Replica",
+            "Absolute observable error",
+            [
+              scatter("Measured replica error", errorHistory),
+              line(
+                "Finite-time |bias| + 2 SE diagnostic",
+                [
+                  [0, diagnosticBand],
+                  [Math.max(1, step), diagnosticBand],
+                ],
+                { dashed: true },
+              ),
+            ],
+          ),
+          chart(
+            "Population tradeoff at the same physical time",
             "N",
-            "Error budget",
+            "Theorem budget",
             [
               line(
-                "One-standard-error sampling + deterministic terms",
+                "Stationary SE + bias + mixing bound",
                 [32, 64, 128, 256, 512, 1024, 2048].map((N) => [
                   N,
                   harmonicBudget(N, p.h, p.T).sampling +
-                    budget.discretization +
-                    budget.transient,
+                    b.discretization +
+                    b.transient,
                 ]),
               ),
             ],
@@ -1555,21 +1886,40 @@ const d13 = descriptor(
           ),
         ],
         metrics: [
-          metric("Target E cos(v)", budget.target),
-          metric("Numerical E cos(v)", budget.mu),
+          metric("Target E cos(v)", b.target),
+          metric("Numerical E cos(v)", b.mu),
           metric("Population interaction bias", 0),
-          metric("Sampling standard error", budget.sampling),
-          metric("Replica mean", observed.length ? mean(observed) : 0),
+          metric("Stationary sampling standard error", b.sampling),
+          metric("Finite-time sampling standard error", b.currentSampling),
+          metric("Absolute-error mixing bound", b.transient),
+          metric(
+            "Measured coupled absolute-error difference",
+            step ? mean(mixingDifferences) : 0,
+          ),
+          metric("Mean measured absolute error", step ? mean(errors) : 0),
+          metric(
+            "SE of measured mean absolute error",
+            step > 1 ? Math.sqrt(variance(errors) / (step - 1)) : 0,
+          ),
+          metric("Replica mean", step ? mean(observed) : 0),
           metric("Whole replicas", step),
+          metric(
+            "Observed 2-SE diagnostic coverage",
+            step ? errors.filter((e) => e <= diagnosticBand).length / step : 0,
+          ),
+          metric("Effective timestep", b.h),
         ],
         message:
-          "Samples are drawn from the exact finite-time Gaussian law of the BAOAB kernel; independent particles make b_N=0. The 2-SE line is a diagnostic band, not a deterministic bound.",
+          "The stationary variance uses cos(V∞), V∞~N(0,Cₕ,vv). For F=|N⁻¹Σcos(vᵢ)−target|, synchronous Gaussian coupling gives |EμF−EπₕF|≤min(2,√(mᵥ²+(σₜ−σₕ)²)). The separate 2-SE curve is a finite-time fluctuation diagnostic; its empirical coverage is reported, while the theorem bounds expected error. h is adjusted to T/round(T/h) to preserve the exact physical duration.",
         experiment: {
           observable: "cos(v)",
-          target: "continuous Gibbs, θ=1",
+          target: "continuous Gibbs θ=1",
           N: p.N,
-          h: p.h,
-          steps: budget.steps,
+          requestedH: p.h,
+          h: b.h,
+          steps: b.steps,
+          physicalTime: p.T,
+          mixingObservable: "absolute empirical error",
         },
       }),
     );
@@ -1705,7 +2055,7 @@ const d15 = descriptor(
     select("N", "Alive count", 64, [2, 16, 64, 256, 512]),
     range("target", "Measure target m*", 0.2, 0.01, 0.9, 0.01),
     range("gap", "Fitness gap Fdonor − Fi", 0.5, 0, 3),
-    range("cap", "Clone probability cap", 1, 0.1, 4, 0.1),
+    range("cap", "Cloning saturation denominator", 1, 0.1, 4, 0.1),
   ],
   async ({ params: p }) => {
     const width = constraintWidth(p.diameter, p.target),
@@ -1777,7 +2127,7 @@ const d15 = descriptor(
         ),
       ],
       message:
-        "Reference walker is at 0; candidates span (0,D]. Fi=1 and clone ε=10⁻⁶. For a fixed pointwise target p*, feasibility requires (N−1)p*<1. The thermal formula uses diffusion factor Σ, not its covariance.",
+        "Reference walker is at 0; candidates span (0,D]. Fi=1 and clone ε=10⁻⁶. A pointwise target requires (N−1)p*≤1. Equality requires uniform donor probabilities; N=2 always has probability 1. The inverse-width formula uses strict inequality. Lowering the saturation denominator raises accepted probability, up to 1. The thermal formula uses diffusion factor Σ, not its covariance.",
     });
   },
 );
@@ -1785,175 +2135,329 @@ const d15 = descriptor(
 const d16 = descriptor(
   16,
   "Build a reproducible experiment from the lecture’s question",
-  "Do independent seeded runs show the predicted relaxation?",
-  "The harmonic reference relaxes toward E|x|²=2; selection and absorption cards reveal their effects on reward, variance, and survival.",
-  "Each card runs two real WASM populations with separate seeds. Initialization and step timings are measured independently; JSON export records the full configuration and observable definition.",
+  "Do independent seeded replicas show the predicted relaxation?",
+  "The harmonic reference approaches E|x|²=2 with fluctuations shrinking as N grows. An absorbing box produces measurable losses against an unbounded matched-seed control.",
+  "Each comparison uses independently seeded replicas within two groups. Mean observables and measured standard errors separate finite-population fluctuations from their theoretical target.",
   [
     select("card", "Experiment card", "kinetic", [
       { value: "kinetic", label: "Conservative kinetic reference" },
-      { value: "operators", label: "Operator intuition" },
-      { value: "survival", label: "Absorbing full swarm" },
-      { value: "population", label: "Fixed-time population comparison" },
+      { value: "operators", label: "Kinetic versus selection" },
+      { value: "survival", label: "Unbounded versus absorbing" },
+      { value: "population", label: "N versus 2N at fixed time" },
     ]),
     select("N", "Base walkers", 64, [64, 128, 256]),
     range("h", "Timestep h", 0.04, 0.01, 0.1, 0.01),
     gammaControl,
+    select("replicas", "Independent replicas per group", 4, [4, 8]),
   ],
   async ({ params: p, seed, engine }) => {
-    const start = performance.now(),
-      configs = [];
-    for (let i = 0; i < 2; i++) {
-      const c = await kineticConfig(
-        engine,
-        (Number(seed) + i) >>> 0,
-        p.card === "population" ? p.N * (i + 1) : p.N,
-        p.h,
-        p.gamma,
-        1,
-      );
-      if (p.card === "operators" || p.card === "survival") {
-        c.gas.fitness.reward_exponent = 1;
-        c.gas.fitness.diversity_exponent = 1;
+    const started = performance.now(),
+      R = p.replicas,
+      configs = [],
+      labels =
+        p.card === "survival"
+          ? ["Unbounded control", "Absorbing ±0.35"]
+          : p.card === "operators"
+            ? ["Kinetic only", "Selection + kinetic"]
+            : p.card === "population"
+              ? [`N=${p.N}`, `N=${2 * p.N}`]
+              : ["Independent group A", "Independent group B"];
+    for (let group = 0; group < 2; group++)
+      for (let replica = 0; replica < R; replica++) {
+        const runSeed =
+          (Number(seed) +
+            7919 * replica +
+            (p.card === "kinetic" ? 104729 * group : 0)) >>>
+          0;
+        const c = await kineticConfig(
+          engine,
+          runSeed,
+          p.card === "population" ? p.N * (group + 1) : p.N,
+          p.h,
+          p.gamma,
+          1,
+        );
+        if (p.card === "survival" || (p.card === "operators" && group === 1)) {
+          c.gas.fitness.reward_exponent = 1;
+          c.gas.fitness.diversity_exponent = 1;
+        }
+        if (p.card === "survival") {
+          c.initial_lower = -0.2;
+          c.initial_upper = 0.2;
+          if (group === 1)
+            c.gas.boundary = {
+              kind: "absorbing_box",
+              field: "positions",
+              domain: { lower: [-0.35, -0.35], upper: [0.35, 0.35] },
+            };
+        }
+        configs.push(c);
       }
-      if (p.card === "survival")
-        c.gas.boundary = {
-          kind: "absorbing_box",
-          field: "positions",
-          domain: { lower: [-1.5, -1.5], upper: [1.5, 1.5] },
-        };
-      configs.push(c);
-    }
     const runs = [];
     try {
       for (const c of configs) runs.push(await engine.create(c));
     } catch (error) {
-      runs.forEach((r) => r.free());
+      runs.forEach((run) => run.free());
       throw error;
     }
-    const initializationMs = performance.now() - start;
-    let frames = runs.map((r) => r.snapshot()),
+    const initializationMs = performance.now() - started,
+      kernel = baoab(p.h, 1, p.gamma, 1);
+    let reference = {
+        mean: [0, 0],
+        covariance: [
+          [1 / 3, 0],
+          [0, 0],
+        ],
+      },
+      frames = runs.map((run) => run.snapshot()),
       step = 0,
-      stepMs = 0,
-      firstStepMs = null;
+      firstStepMs = null,
+      warmStepsMs = 0;
     const histories = Array.from({ length: 2 }, () =>
-      Array.from({ length: 6 }, () => []),
-    );
-    const collect = () =>
-      frames.forEach((f, i) => {
-        const m = frameMetrics(f, configs[i]),
-          ps = positions(f).filter((_, j) =>
-            alive(f.population.validity[j], configs[i].gas.include_truncated),
+        Array.from({ length: 9 }, () => []),
+      ),
+      referenceHistory = [],
+      everLost = Array(2 * R).fill(false),
+      revivals = Array(2 * R).fill(0);
+    let summaries = [];
+    const summarize = () => {
+      summaries = [0, 1].map((group) => {
+        const indices = Array.from({ length: R }, (_, i) => group * R + i),
+          rows = indices.map((i) => {
+            const m = frameMetrics(frames[i], configs[i]),
+              ps = positions(frames[i]).filter((_, j) =>
+                alive(
+                  frames[i].population.validity[j],
+                  configs[i].gas.include_truncated,
+                ),
+              ),
+              observable = ps.length
+                ? mean(ps.map((x) => x.reduce((s, v) => s + v * v, 0)))
+                : null;
+            return {
+              observable,
+              alive: m.alive / configs[i].walkers,
+              meanReward: m.mean,
+              best: m.best,
+              cloud: ps.length
+                ? variance(ps.map((x) => x[0])) + variance(ps.map((x) => x[1]))
+                : null,
+              evaluations: m.evaluations,
+            };
+          }),
+          finite = rows.map((row) => row.observable).filter(Number.isFinite),
+          se =
+            finite.length > 1
+              ? Math.sqrt(variance(finite) / (finite.length - 1))
+              : null;
+        return {
+          mean: finite.length ? mean(finite) : null,
+          contributingReplicas: finite.length,
+          se,
+          alive: mean(rows.map((row) => row.alive)),
+          swarmSurvival: rows.filter((row) => row.alive > 0).length / R,
+          meanReward: mean(
+            rows.map((row) => row.meanReward).filter(Number.isFinite),
           ),
-          observable = ps.length
-            ? mean(ps.map((x) => x.reduce((s, v) => s + v * v, 0)))
-            : 0,
-          cloudVariance = ps.length
-            ? variance(ps.map((x) => x[0])) + variance(ps.map((x) => x[1]))
-            : 0;
-        [
-          m.best,
-          m.mean,
-          m.alive / configs[i].walkers,
-          cloudVariance,
-          observable,
-          m.evaluations,
-        ].forEach((v, j) => pushBounded(histories[i][j], [f.step * p.h, v]));
+          best: mean(rows.map((row) => row.best).filter(Number.isFinite)),
+          cloud: mean(rows.map((row) => row.cloud).filter(Number.isFinite)),
+          evaluations: rows.reduce((s, row) => s + row.evaluations, 0),
+          everLost: indices.filter((i) => everLost[i]).length / R,
+          revivals: indices.reduce((s, i) => s + revivals[i], 0),
+          replicaObservables: rows.map((row) => row.observable),
+        };
       });
-    collect();
+      summaries.forEach((a, i) =>
+        [
+          a.meanReward,
+          a.alive,
+          a.cloud,
+          a.mean,
+          a.se,
+          a.evaluations,
+          a.swarmSurvival,
+          a.everLost,
+          a.revivals,
+        ].forEach((value, j) =>
+          pushBounded(histories[i][j], [step * p.h, value]),
+        ),
+      );
+      pushBounded(referenceHistory, [
+        step * p.h,
+        2 * reference.covariance[0][0],
+      ]);
+    };
+    summarize();
     return {
       ...model(
         async () => {
           const start = performance.now();
-          for (let i = 0; i < runs.length; i++) {
-            const m = frameMetrics(frames[i], configs[i]);
-            if (m.alive > 0) frames[i] = await runs[i].step(1);
-          }
+          for (let i = 0; i < runs.length; i++)
+            if (frameMetrics(frames[i], configs[i]).alive > 0) {
+              frames[i] = await runs[i].step(1);
+              everLost[i] ||=
+                frameMetrics(frames[i], configs[i]).alive < configs[i].walkers;
+              revivals[i] += frames[i].report?.revivals ?? 0;
+            }
           const elapsed = performance.now() - start;
           if (firstStepMs === null) firstStepMs = elapsed;
-          else stepMs += elapsed;
+          else warmStepsMs += elapsed;
           step++;
-          collect();
+          reference = gaussianStep(reference, kernel);
+          summarize();
         },
         () => ({
           step,
           time: step * p.h,
-          done:
-            step >= 300 ||
-            frames.every((f, i) => frameMetrics(f, configs[i]).alive === 0),
+          done: step >= 300 || summaries.every((a) => a.swarmSurvival === 0),
           charts: [
             chart(
-              "Raw reward under two reproducible seeds",
+              "Mean raw reward across independent replicas",
               "Physical time",
-              "Raw reward",
-              histories.flatMap((h, i) => [
-                line(`Run ${i + 1} mean`, h[1]),
-                line(`Run ${i + 1} best`, h[0], { dashed: true }),
-              ]),
-            ),
-            chart(
-              "Survival and spread",
-              "Physical time",
-              "Alive fraction / cloud variance",
-              histories.flatMap((h, i) => [
-                line(`Run ${i + 1} alive fraction`, h[2]),
-                line(`Run ${i + 1} cloud variance`, h[3], { dashed: true }),
-              ]),
-            ),
-            chart("Observable ⟨|x|²⟩", "Physical time", "Mean squared radius", [
-              ...histories.map((h, i) => line(`Run ${i + 1}`, h[4])),
-              ...(p.card === "kinetic" || p.card === "population"
-                ? [
-                    line(
-                      "Continuous Gibbs target",
-                      [
-                        [0, 2],
-                        [Math.max(0.1, step * p.h), 2],
-                      ],
-                      { dashed: true },
-                    ),
-                  ]
-                : []),
-            ]),
-            chart(
-              "Reward evaluation budget",
-              "Submitted reward rows",
               "Mean raw reward",
+              histories.map((h, i) => line(labels[i], h[0])),
+            ),
+            chart(
+              "Absorption and revival ledger",
+              "Physical time",
+              "Fraction",
+              [
+                ...histories.map((h, i) =>
+                  line(`${labels[i]} alive-walker fraction`, h[1]),
+                ),
+                ...histories.map((h, i) =>
+                  line(`${labels[i]} replicas ever losing walkers`, h[7], {
+                    dashed: true,
+                  }),
+                ),
+                ...histories.map((h, i) =>
+                  line(`${labels[i]} full-swarm survival`, h[6], {
+                    dashed: true,
+                  }),
+                ),
+              ],
+            ),
+            chart(
+              "Observable |x|²: surviving-replica mean and two standard errors",
+              "Physical time",
+              "Mean radius² conditional on replica survival",
+              [
+                ...histories.flatMap((h, i) => [
+                  line(labels[i], h[3]),
+                  line(
+                    `${labels[i]} +2 SE`,
+                    h[3].map(([t, v], j) => [
+                      t,
+                      v === null || h[4][j][1] === null
+                        ? null
+                        : v + 2 * h[4][j][1],
+                    ]),
+                    { dashed: true },
+                  ),
+                  line(
+                    `${labels[i]} −2 SE`,
+                    h[3].map(([t, v], j) => [
+                      t,
+                      v === null || h[4][j][1] === null
+                        ? null
+                        : v - 2 * h[4][j][1],
+                    ]),
+                    { dashed: true },
+                  ),
+                ]),
+                ...(["kinetic", "population"].includes(p.card)
+                  ? [
+                      line("Exact BAOAB finite-time moment", referenceHistory),
+                      line(
+                        "Gibbs target",
+                        [
+                          [0, 2],
+                          [Math.max(0.1, step * p.h), 2],
+                        ],
+                        { dashed: true },
+                      ),
+                    ]
+                  : []),
+              ],
+            ),
+            chart(
+              "Observable under the total reward budget",
+              "Submitted reward rows across replicas",
+              "Mean radius² conditional on replica survival",
               histories.map((h, i) =>
                 line(
-                  `Run ${i + 1}`,
-                  h[1].map((point, j) => [h[5][j][1], point[1]]),
+                  labels[i],
+                  h[3].map((point, j) => [h[5][j][1], point[1]]),
                 ),
+              ),
+            ),
+            chart(
+              "Observed uncertainty under population refinement",
+              "Walkers per replica",
+              "SE conditional on replica survival",
+              summaries.map((a, i) =>
+                scatter(labels[i], [[configs[i * R].walkers, a.se]]),
               ),
             ),
           ],
           metrics: [
+            metric("Independent replicas per group", R),
+            ...summaries.flatMap((a, i) => [
+              metric(
+                `${labels[i]} surviving-replica mean radius²`,
+                a.mean ?? "Extinct",
+              ),
+              metric(
+                `${labels[i]} surviving-replica SE`,
+                a.se ?? "Requires 2 survivors",
+              ),
+              metric(
+                `${labels[i]} contributing replicas`,
+                a.contributingReplicas,
+              ),
+              metric(`${labels[i]} cumulative revivals`, a.revivals),
+              metric(`${labels[i]} total reward rows`, a.evaluations),
+            ]),
             metric("Initialization", initializationMs, "ms"),
-            metric("First step pair", firstStepMs ?? 0, "ms"),
+            metric("First full replica sweep", firstStepMs ?? 0, "ms"),
             metric(
-              "Mean subsequent step pair",
-              step > 1 ? stepMs / (step - 1) : 0,
+              "Mean subsequent replica sweep",
+              step > 1 ? warmStepsMs / (step - 1) : 0,
               "ms",
             ),
-            metric("Run 1 reward rows", frames[0].reward_evaluations),
-            metric("Run 2 reward rows", frames[1].reward_evaluations),
           ],
-          message: `${p.card} card: CPU WASM f64, U=|x|²/2, Σ=√(2γ)I, θ=1. ${p.card === "survival" ? "Alive fractions include absorbing outcomes; extinction stays in the report." : "Physical time and actual submitted reward rows are both shown."}`,
+          table: {
+            columns: ["Group", "Replica", "Seed", "N", "Current radius²"],
+            rows: configs.map((c, i) => [
+              labels[Math.floor(i / R)],
+              (i % R) + 1,
+              c.gas.seed,
+              c.walkers,
+              summaries[Math.floor(i / R)].replicaObservables[i % R] ??
+                "Extinct",
+            ]),
+          },
+          message: `${R} independent replicas per group, CPU WASM f64, U=|x|²/2, Σ=√(2γ)I. ${p.card === "survival" ? "Both groups begin uniformly in [−.2,.2]²; only the second has absorbing boundaries ±.35. Alive-walker loss, full-swarm survival and cumulative revival counts are distinct measurements." : p.card === "population" ? "Matched seeds compare N and 2N at the same physical time. Independent replicas quantify sampling error; total reward-row cost includes every replica." : "Kinetic groups begin with uniform [−1,1]² positions and zero velocity. The kinetic exact-moment reference propagates that initial covariance."} Radius means and their SE condition on nonextinct replicas; each replica radius averages its alive walkers. Contributing counts are shown. The survival ledger retains every replica. Two-SE curves describe measured replica spread and are not a calibrated small-sample confidence interval.`,
           experiment: {
             card: p.card,
             configs,
             seeds: configs.map((c) => c.gas.seed),
-            observable: "mean squared position radius among alive walkers",
+            replicasPerGroup: R,
+            contributingReplicas: summaries.map((a) => a.contributingReplicas),
+            groupLabels: labels,
+            observable:
+              "mean squared radius among alive walkers; extinct values recorded separately",
             conditioning:
               p.card === "survival"
-                ? "finite absorbing/revival swarm"
+                ? "radius mean and SE conditional on replica survival; survival ledger retains all outcomes"
                 : "all alive",
             backend: "cpu WASM f64",
             initializationMs,
             firstStepMs,
-            warmStepsMs: stepMs,
+            warmStepsMs,
           },
         }),
-        () => runs.forEach((r) => r.free()),
+        () => runs.forEach((run) => run.free()),
       ),
       checkpoint() {
         return runs[0].checkpoint();

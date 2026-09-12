@@ -36,7 +36,7 @@ This document focuses exclusively on the **geometric and analytical foundations*
 
 The Euclidean Gas bridges stochastic optimization and statistical physics by encoding the search process as a non-equilibrium thermodynamic system. The underdamped Langevin dynamics provides a second-order evolution law that couples position and momentum, allowing the swarm to accumulate directional information and exploit gradient structure in the reward landscape.
 
-The BAOAB integrator ({prf:ref}`alg-euclidean-gas`) implements a symmetric, second-order accurate splitting of the Langevin operator into deterministic drift (B-steps: position update), force application (A-steps: velocity kick), and stochastic thermostat (O-step: Ornstein-Uhlenbeck friction+noise). The deterministic substeps preserve symplectic structure, while the full stochastic integrator maintains numerical stability for finite time steps $\tau$.
+The BAOAB integrator ({prf:ref}`alg-euclidean-gas`) implements a symmetric, second-order accurate splitting of the Langevin operator into deterministic drift (A-steps: position update), force application (B-steps: velocity kick), and stochastic thermostat (O-step: Ornstein-Uhlenbeck friction+noise). The deterministic substeps preserve symplectic structure, while the full stochastic integrator maintains numerical stability for finite time steps $\tau$.
 
 The **inelastic collision model** for cloning (Definition 5.7.4 in {doc}`03_cloning`) reflects physical intuition: when walkers clone toward a fitter companion, they undergo a momentum-conserving collision that dissipates kinetic energy (via restitution coefficient $\alpha_{\text{restitution}} \in [0,1]$) while randomizing relative orientations. This mechanism prevents kinetic energy buildup during cloning events and ensures the velocity distribution remains well-behaved.
 
@@ -246,54 +246,47 @@ def psi_v(v: np.ndarray, V_alg: float) -> np.ndarray:
 
     return squashed_v
 
-# Helper function for the new BAOAB kinetic update
+# BAOAB: force (B), drift (A), exact thermostat (O), drift (A), force (B).
 def Psi_kin_BAOAB(x, v, params):
-    """
-    Executes one step of the BAOAB integrator for underdamped Langevin dynamics.
+    """Apply one BAOAB step with mass m and velocity diffusion factor sigma_v.
 
-    Args:
-        x (np.array): (N, D) array of current positions.
-        v (np.array): (N, D) array of current velocities.
-        params (dict): Dictionary of physical parameters:
-                       'tau', 'gamma_fric', 'm', 'sigma_v', 'sigma_x', 'V_alg'.
-                       Also needs access to force F(x) and flow u(x).
-
-    Returns:
-        (np.array, np.array): Next positions and velocities (x_next, v_next).
+    The velocity SDE has force F(x)/m, friction gamma_fric, and
+    diffusion sigma_v dW. For temperature Theta, sigma_v**2 =
+    2*gamma_fric*Theta/m, so the O-stage variance is
+    (Theta/m)*(1-exp(-2*gamma_fric*tau)). The flow u is frozen at
+    the O-stage position. Set sigma_x=0 and V_alg=None for uncapped
+    BAOAB with no additional position-diffusion step.
     """
     p = params
     N, D = x.shape
+    h, gamma = p['tau'], p['gamma_fric']
 
-    # B-step: Propagate positions for a half-step
-    x_mid = x + v * (p['tau'] / 2.0)
+    # B: first half force kick, evaluated at the initial position.
+    v_half = v + (h / (2.0 * p['m'])) * F(x)
 
-    # A-step: Update velocities with deterministic forces for a half-step
-    force = F(x_mid) # Assumes F is a vectorized function
-    flow = u(x_mid)   # Assumes u is a vectorized function
-    v_mid = v + (force / p['m'] - p['gamma_fric'] * (v - flow)) * (p['tau'] / 2.0)
+    # A: first half position drift.
+    x_half = x + (h / 2.0) * v_half
 
-    # O-step: Exact solution for the Ornstein-Uhlenbeck process (friction and noise)
-    c1 = np.exp(-p['gamma_fric'] * p['tau'])
-    c2 = np.sqrt(1 - c1**2) * p['sigma_v'] # sigma_v = sqrt(2*gamma*kBT/m)
-    noise_v = np.random.randn(N, D)
-    v_postO = c1 * v_mid + c2 * noise_v
+    # O: all friction and velocity noise occur in this exact substep.
+    c = np.exp(-gamma * h)
+    one_minus_c = -np.expm1(-gamma * h)
+    variance_time = h if gamma == 0 else -np.expm1(-2.0 * gamma * h) / (2.0 * gamma)
+    innovation = p['sigma_v'] * np.sqrt(variance_time) * np.random.randn(N, D)
+    v_ou = c * v_half + one_minus_c * u(x_half) + innovation
 
-    # A-step: Update velocities again with deterministic forces for a half-step
-    # Note: Forces are evaluated at the same half-step position x_mid
-    force = F(x_mid)
-    flow = u(x_mid)
-    v_almost_final = v_postO + (force / p['m'] - p['gamma_fric'] * (v_postO - flow)) * (p['tau'] / 2.0)
+    # A: second half drift, using the thermostatted velocity.
+    x_next = x_half + (h / 2.0) * v_ou
 
-    # B-step: Propagate positions for the final half-step
-    x_next = x_mid + v_almost_final * (p['tau'] / 2.0)
+    # B: recompute the force at the post-drift position.
+    v_next = v_ou + (h / (2.0 * p['m'])) * F(x_next)
 
-    # (Optional) Add positional noise, if sigma_x is non-zero
-    if p['sigma_x'] > 0:
-        noise_x = np.random.randn(N, D)
-        x_next += np.sqrt(p['tau']) * p['sigma_x'] * noise_x
+    # Optional position diffusion composed after the five BAOAB substeps.
+    if p.get('sigma_x', 0.0) > 0:
+        x_next += np.sqrt(h) * p['sigma_x'] * np.random.randn(N, D)
 
-    # Final Velocity Capping
-    v_next = psi_v(v_almost_final, p['V_alg']) # Assumes psi_v is a vectorized function
+    # Optional final cap; the lecture's pure BAOAB preset uses V_alg=None.
+    if p.get('V_alg') is not None:
+        v_next = psi_v(v_next, p['V_alg'])
 
     return x_next, v_next
 

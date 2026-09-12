@@ -1,13 +1,52 @@
 # Interactive experiments for Volume 2, Parts I–IV
 
-Authoring and implementation proposal · 12 September 2026 · inspected revision `b65cc132`
+Authoring and implementation proposal · 12 September 2026 · scientific review incorporated after the first teaching release
 
-Implementation status: all 42 experiment IDs now have working browser views,
-computed plots, controls, and chapter placements. The shared host uses a persistent
-CPU WASM worker, with exact reference models for the analytic experiments.
+Implementation status: all 42 experiment IDs have browser views, computed plots,
+controls, and chapter placements. Fourteen use the Rust/WASM engine, including two
+hybrid engine/reference views; 28 use explicitly identified mathematical reference
+models. The shared host retains a warm CPU WASM worker. The scientific review
+corrections below align the implemented observables, conditioning, reference
+formulas, and uncertainty displays with the corresponding lessons.
+
 See the [implementation guide](../../../fractal-gas-web/web/euclidean-gas/lecture/README.md)
-for commands, module ownership, validation, and the remaining optional extensions
-from this proposal. The catalog below retains the broader design specification.
+for runtime commands and the
+[validation record](../../../fractal-gas-web/web/euclidean-gas/lecture/VALIDATION.md)
+for numerical checks. **The catalog below is a broader design specification:**
+extra tabs, parameter ranges, stage traces, offline studies, and engine hooks
+remain proposals unless the implementation guide or the current view identifies
+them as available. The table records the current teaching behavior affected by
+the review; it does not promote those remaining proposals to implemented features.
+
+| Experiment | Current implementation after scientific review |
+|---|---|
+| I-03 | Local statistics include the recipient by default, matching the chapter formula; a self-inclusion control makes the alternate convention explicit. |
+| I-05 | The lecture and engine use force–drift–OU–drift–force BAOAB. Friction belongs to the OU stage, with innovation variance $T(1-e^{-2\gamma h})$. |
+| I-06 | Three seeded populations expose finite-time well occupation and reward/force disagreement. |
+| I-08 | An alive-conditioned **post-clone position law** handles persistence, revival, a single survivor, and extinction. Probability atoms and cumulative histogram counts are distinct from the latest 400 scatter samples. Kinetic propagation and a full joint position/velocity law remain extensions. |
+| I-10 | Live spreading uses a constant diffusion factor; the spatially varying metric is a prescribed mathematical comparison. |
+| II-01 | A central cluster with symmetric outer clusters gives nonempty high/low sets. The view reports the measured fitness gap, overlap, and center-shift correction before interpreting inward drift. |
+| II-02 | Independent one-step samples have uncertainty intervals. The Gaussian-jump reference has constant positive drift; an unsupported fitted crossing is not reported as a stationary floor. |
+| II-04–II-05 | The variance proxy is an upper envelope rather than a monotonicity statement about exact transport. OU comparisons use finite-time moments and sampling scales. |
+| II-07 | The displayed contraction and floor belong to an explicitly constructed affine comparison model. |
+| II-08 | The finite killed-chain view separates exact conditional shape from its survivor-limited empirical estimate and reports expected and observed survivor counts. |
+| III-02 | Event-rate estimates carry sampling uncertainty; individual jump paths remain distinct from their expectations. |
+| III-03 | Actual active-cloning and no-copy ensembles run at four population sizes. Whole-run intervals, final marginal variance, and permutation-calibrated pair histograms distinguish sampling scatter from dependence. |
+| III-04 | Current-law expectations and standard errors accompany the generator residuals. A paired operator difference isolates the timestep term. |
+| III-05–III-06 | Same-grid relaxation is distinguished from spatial approximation. Spectral resolution comparisons expose the finite-mode remainder in the source-balanced profile. |
+| III-07–III-08 | Gaussian variance and repeated-label frequency are compared with finite-replica sampling scales. |
+| IV-01 | The chapter's $G$, $\eta$, and rate define the modified entropy and decay envelope. A separate alternate-matrix curve illustrates why positive definiteness alone does not give the same dissipation inequality. |
+| IV-02–IV-03 | The reference selector distinguishes reset invariance from killed-kernel quasi-stationarity. Smoothed-atom Hellinger comparisons expose the selected bandwidth. |
+| IV-04 | Both Gaussian ratio orientations are displayed. The absorbing example compares ordinary KDE boundary bias with a normalized Dirichlet estimate and reports retained mass. |
+| IV-05–IV-06 | Derivative checks include a finite-difference resolution comparison. External queries and fixed self-atom queries have distinct row-sum interpretations. |
+| IV-07 | The tested useful Taylor radius is an error-tolerance diagnostic, accompanied by finite-order coefficient information; it is not an analytic convergence-radius certificate. |
+| IV-08 | Fixed-order and shuffled-order greedy laws are separately enumerated on the shared derivative fixture. |
+| IV-09 | Four independent Metropolis seeds, crossing counts, and start-group separation expose trapping. Metropolis transition counts are not assigned the kinetic engine's friction-dependent decay rate. |
+| IV-10–IV-11 | The harmonic comparison distinguishes $O(h^2)$ covariance bias from $O(h^4)$ Gaussian KL bias. Sampled diffusion covariances carry entrywise standard errors for a prescribed Hessian. |
+| IV-12 | The weighted-mean and energy ledgers remain direct identities. Gaps below numerical resolution are marked unresolved and accompanied by a Rayleigh upper bound. |
+| IV-13–IV-14 | The budget uses stationary sampling variance and an absolute-error coupling bound, with separate empirical-error uncertainty. Timestep comparisons end at the same physical duration. |
+| IV-15 | Pointwise feasibility allows $(N-1)p_*\le1$; equality requires uniform donor probabilities. The cloning control is named the saturation denominator, not a probability cap. |
+| IV-16 | Four or eight independent replicas per group compare mean observables and sampling intervals. A narrow absorbing box produces measurable losses against a matched-seed unbounded control; the population card compares $N$ with $2N$. |
 
 (sec-v2-demo-overview)=
 ## Purpose, scope, and reading map
@@ -143,15 +182,17 @@ All numerical ranges below are **proposed teaching presets in nondimensional coo
 
 ### I-08 — Resolve a cloning jump into its mixture components
 
-**Where and why.** [Single Walker Observables and Probability Fields](../2_fractal_gas/convergence_program/04_single_particle.md), after “6. Post-Cloning Position Distribution,” with a tab after “7.2. Death Probability Field.” This makes the delta mass and Gaussian offspring components tangible.
+**Where and why.** [Single Walker Observables and Probability Fields](../2_fractal_gas/convergence_program/04_single_particle.md), after “6. Post-Cloning Position Distribution.” The current view makes the persistence atom and donor-centered position components tangible. A later kinetic extension can also support “7.2. Death Probability Field.”
 
-**Visible display.** A one-coordinate probability plot uses a labeled stem for persistence at the old position, Gaussian curves centered on donors, and a separately colored mixture total. A phase-space scatter of repeated conditional outcomes shows velocity as well. The kinetic tab displays the final position distribution and shades probability outside the viable interval or box.
+**Implemented scope.** This view evaluates the frozen, alive-conditioned **post-clone position law**. Boundary eligibility is resolved before donor selection. An eligible recipient can persist or accept a donor; an ineligible recipient is revived from the surviving donor set. The singleton case has its own permitted choices, and zero eligible donors gives extinction. These are position outcomes immediately after cloning, before any kinetic step.
 
-**Controls and experiment.** Select one of I-07’s recipients, jitter $0,0.02,0.1,0.3$ cloud units, Gaussian thermostat strength, and an absorbing boundary placed near one donor. First choose zero jitter and inspect the atomic law. Add jitter and verify that only accepted-copy mass broadens. Apply one kinetic step from every sampled post-clone state. Move the boundary and compare estimated exit mass for persistence and each donor event; distinguish clone-stage exits from later kinetic exits under the chosen engine schedule.
+**Visible display.** Probability stems represent persistence and all zero-jitter donor atoms. With positive jitter, donor-centered Gaussian curves show continuous clone components. The histogram accumulates every sampled position; only the accompanying scatter is restricted to the most recent 400 outcomes. Eligible donor identities, component weights, and total probability connect the frozen law to the repeated samples.
 
-**Data and delivery.** **Browser-only analytic mixture + offline ensemble/live conditional sampler; P1.** Requires frozen-state repeated one-step experiments and event labels. Use the actual joint position/velocity offspring law; an engine restitution rule must match the comparison fixture. Report Monte Carlo uncertainty for final nonlinear-force distributions.
+**Controls and experiment.** Select a recipient, change clone jitter, and move the boundary across the frozen cloud. Begin with zero jitter and inspect the atomic law. Add jitter and watch only donor components broaden. Shrink the viable set through several survivors, one survivor, and none; compare the recomputed donor weights and the corresponding empirical outcomes. Position mass outside the boundary immediately after cloning is a clone-stage observation, not a prediction of later kinetic death.
 
-**Theory connection and success criterion.** The mixture formula predicts the persistence atom, donor-centered offspring weights, and event-conditioned exit probabilities. Success means integrated weights agree with repeated outcomes and the kinetic pushforward explains the final distribution. Render the persistence atom as a labeled probability stem; display smoothing only when explicitly selected.
+**Data and delivery.** **Implemented browser-only exact conditional position mixture with repeated sampling; P1.** The runtime label identifies this mathematical model. A full phase-space law, Gaussian thermostat controls, and a kinetic-pushforward tab remain **proposed extensions**. They require the actual joint position/velocity clone transformation and the engine's boundary-check schedule, including any restitution rule; literal velocity copying cannot substitute for that law.
+
+**Theory connection and success criterion.** The conditional mixture predicts the atom weights and continuous donor components for the current eligible set. Success means that the weights sum to one whenever an outcome exists, repeated position outcomes match those weights, and the view reports extinction when no donor survives. The proposed kinetic extension must additionally compare the correctly transformed phase-space law with final position and exit measurements.
 
 ### I-09 — What an inelastic collision really conserves
 
@@ -198,7 +239,7 @@ The four convergence chapters need experiments about conditional averages, geome
 
 **Where and why.** [The Keystone Principle and the Contractive Nature of Cloning](../2_fractal_gas/convergence_program/03_cloning.md), after “10.3. Positional Variance Contraction,” within `sec-cloning-variance`. This shows how noisy individual updates combine into the negative expected drift in the theorem.
 
-**Visible display.** Scatter initial variance $V_x(S)$ against one-step change $\Delta V_x$. Overlay binned conditional means with uncertainty intervals; put individual outcomes in a lighter layer. A second plot shows the proposed affine bound $-\kappa V_x+C$, its zero crossing, and the corresponding long-run noise floor. Separate clone-only, kinetic-only, and full-step tabs.
+**Visible display.** Scatter initial variance $V_x(S)$ against one-step change $\Delta V_x$. Overlay binned conditional means with uncertainty intervals; put individual outcomes in a lighter layer. A second plot compares a proposed affine drift bound $-\kappa V_x+C$ with the empirical regression and its uncertainty. A fitted zero crossing is a floor estimate only when negative drift and a physical crossing are resolved; pure additive Gaussian jumps instead have a constant positive reference drift. An independently evaluated theorem bound and long-run floor study remain separate proposed comparisons. Separate clone-only, kinetic-only, and full-step tabs.
 
 **Controls and experiment.** Use 12 frozen initial spreads, $N=64$, 100–500 independent one-step replicates per spread in offline data, and jitter $0,0.02,0.1$. Start with raw outcomes and predict the sign of the mean. Reveal averaging, then increase jitter and inspect the shifted residual floor. Compare repeated outcomes from the same state with successive steps of one run; these answer different questions. Small-$V_x$ expansion can coexist with a useful drift inequality.
 
@@ -560,7 +601,7 @@ as a stacked bar. Display normalized $W_2$, the chapter’s additive distance $D
 
 **Visible display.** A feasible-region plot compares companion width with declared core diameter for a measure-minorization target. Show pointwise donor floors separately from the normalized-measure floor. Another plot shows fitness range, maximum score, and clipped clone probability. A thermal tab relates friction, timestep, diffusion factor, and O-stage variance.
 
-**Controls and experiment.** Core diameter 0.5–5, alive count 2–512, measure target $m_*=0.01$–0.9, exponents 0–3, positive floors $10^{-4}$–0.1, and $p_{\max}=0.1$–4. Hold the measure target fixed while increasing $N$: its diameter-based width condition stays unchanged. Switch to a fixed per-candidate target and observe the feasibility limit $p_*<1/(k-1)$. Make all fitnesses equal, then introduce a gap and watch accepted clone probability emerge.
+**Controls and experiment.** Core diameter 0.5–5, alive count 2–512, measure target $m_*=0.01$–0.9, exponents 0–3, positive floors $10^{-4}$–0.1, and $p_{\max}=0.1$–4. Hold the measure target fixed while increasing $N$: its diameter-based width condition stays unchanged. Switch to a fixed per-candidate target and observe the feasibility limit $p_*\le1/(k-1)$. Equality requires uniform probabilities; the inverse-width sufficient formula uses the strict case. Make all fitnesses equal, then introduce a gap and watch accepted clone probability emerge.
 
 **Data and delivery.** **Browser-only exact constraint calculator; P0.** Implement the inverse-Gaussian-width and clipping formulas with numerical domain checks. A live snapshot can supply a measured diameter for a local comparison; an author-supplied core bound uses a separate label. Export raw settings and the meaning of each calculated quantity.
 

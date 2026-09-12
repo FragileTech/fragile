@@ -226,13 +226,16 @@ export function hellinger({
   };
 }
 export const kl = (p, q) =>
-  p.reduce((s, v, i) => s + (v > 0 ? v * Math.log(v / q[i]) : 0), 0);
+  Math.max(
+    0,
+    p.reduce((s, v, i) => s + (v > 0 ? v * Math.log(v / q[i]) : 0), 0),
+  );
 export const normalize = (a) => {
   const z = a.reduce((s, v) => s + v, 0);
   return a.map((v) => v / z);
 };
 export function enumeration(x, width = 0.7, law = "independent", rho = 0.7) {
-  const xs = [x, -0.4, 0.5, 1.2],
+  const xs = [x, -0.4, 0.4, 1.2],
     N = 4;
   const rows = xs.map((a, i) =>
     normalize(
@@ -265,7 +268,9 @@ export function enumeration(x, width = 0.7, law = "independent", rho = 0.7) {
               -xs.reduce((s, a, i) => s + (a - xs[c[i]]) ** 2, 0) /
                 (4 * width ** 2),
             )
-          : rows[0][c[0]],
+          : law === "shuffled_greedy"
+            ? rows.reduce((s, row, i) => s + row[c[i]], 0) / N
+            : rows[0][c[0]],
     }));
     const probs = normalize(assignments.map((a) => a.p));
     assignments.forEach((a, i) => (a.p = probs[i]));
@@ -330,4 +335,54 @@ export function symmetricEigenvalues(matrix) {
 }
 export function constraintWidth(diameter, target) {
   return diameter / Math.sqrt(2 * Math.log(1 / target));
+}
+
+export function hypocoerciveCoefficients({ k = 1, gamma = 1, theta = 1 } = {}) {
+  const D = gamma * theta,
+    C = Math.max(theta, theta / k),
+    eta = D / (2 * (1 + 2 * k + (2 * k + gamma + 2) ** 2));
+  return {
+    eta,
+    rate: eta / (C / 2 + 3 * eta),
+    C,
+    D,
+    G: [
+      [2 * eta, eta],
+      [eta, 2 * eta],
+    ],
+  };
+}
+export function spectralGapDiagnostic(K) {
+  const degrees = K.map((row) => row.reduce((s, v) => s + v, 0));
+  const S = K.map((row, i) =>
+    row.map((v, j) => +(i === j) - v / Math.sqrt(degrees[i] * degrees[j])),
+  );
+  const values = symmetricEigenvalues(S),
+    half = Math.floor(K.length / 2);
+  const left = degrees.slice(0, half).reduce((a, b) => a + b),
+    right = degrees.slice(half).reduce((a, b) => a + b);
+  const cut = K.slice(0, half).reduce(
+    (s, row) => s + row.slice(half).reduce((a, b) => a + b),
+    0,
+  );
+  const upperBound = cut * (1 / left + 1 / right),
+    resolution = 1e-11;
+  const resolved =
+    values[1] > resolution && values[1] <= upperBound + resolution;
+  return { value: resolved ? values[1] : null, upperBound, resolution, values };
+}
+export function dirichletKernel(x, y, h) {
+  if (x <= 0 || x >= 1) return 0;
+  const phi = (z) =>
+    Math.exp((-z * z) / (2 * h * h)) / (Math.sqrt(2 * Math.PI) * h);
+  let sum = 0;
+  for (let k = -3; k <= 3; k++) sum += phi(x - y + 2 * k) - phi(x + y + 2 * k);
+  return Math.max(0, sum);
+}
+export function cosineGaussianVariance(mean, variance) {
+  const expectation = Math.exp(-variance / 2) * Math.cos(mean);
+  return Math.max(
+    0,
+    (1 + Math.exp(-2 * variance) * Math.cos(2 * mean)) / 2 - expectation ** 2,
+  );
 }

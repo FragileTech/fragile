@@ -87,6 +87,39 @@ test("Plot rendering escapes labels and excludes nonfinite/log-invalid values", 
   });
   assert.match(matrix, /Row 1, column 2: 0.5/);
 });
+test("Published chapter figures use the current scientific controls and reviewed captions", async () => {
+  const [captions, manifest] = await Promise.all([
+    readFile(
+      new URL("../../web/euclidean-gas/lecture/captions.json", import.meta.url),
+      "utf8",
+    ).then(JSON.parse),
+    readFile(
+      new URL(
+        "../../../docs/_static_theory/gas-demos/manifest.json",
+        import.meta.url,
+      ),
+      "utf8",
+    ).then(JSON.parse),
+  ]);
+  for (const demo of demos) {
+    const published = manifest.find((entry) => entry.id === demo.id);
+    assert.ok(published, demo.id);
+    assert.deepEqual(
+      published.controls,
+      demo.controls,
+      `${demo.id}: regenerate lecture assets`,
+    );
+    assert.deepEqual(published.params, parameters(demo), demo.id);
+    assert.equal(published.prediction, captions[demo.id].prediction, demo.id);
+    assert.equal(
+      published.question,
+      captions[demo.id].question || demo.question,
+      demo.id,
+    );
+    assert.equal(published.title, demo.title, demo.id);
+    assert.equal(published.kind, demo.kind, demo.id);
+  }
+});
 test("Bounded histories, deterministic Gaussian samples, density mass and covariance", () => {
   const a = rng(7),
     b = rng(7);

@@ -68,6 +68,13 @@ replays. JSON imports are limited to 20 MB and 2000 replay steps. IV-16 also
 exports its first run's binary engine checkpoint. Each plot exports standalone
 SVG; the numerical table and JSON expose plotted values.
 
+## Theory comparison checks
+
+The [numerical validation checklist](VALIDATION.md) records the theoretical
+quantity and uncertainty diagnostic for each reviewed experiment. The regression
+suite includes a separate 64-replica real-WASM harmonic relaxation check whose
+moment prediction is derived independently of the lecture reference models.
+
 ## Scope of the first implementation
 
 All 42 IDs have working computations, controls, and plots. The proposal is a

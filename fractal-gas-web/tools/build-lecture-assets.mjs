@@ -65,18 +65,42 @@ for (const demo of demos) {
       );
     if (!chart) throw new Error("No computed poster data: " + demo.id);
     let svg = chartSVG(chart, { width: 960, height: 450 });
-    svg = svg.replace('viewBox="0 0 960 450"', 'viewBox="0 0 960 510"');
-    const legend = (chart.series || [])
+    const legendItems = (chart.series || []).map((series) => {
+      const lines = [""];
+      for (const word of String(series.name).split(/\s+/)) {
+        const last = lines.length - 1;
+        if (lines[last] && lines[last].length + word.length + 1 > 67)
+          lines.push(word);
+        else lines[last] += (lines[last] ? " " : "") + word;
+      }
+      return { series, lines };
+    });
+    const legendRows = [];
+    let legendBottom = 470;
+    for (let i = 0; i < legendItems.length; i += 2) {
+      legendRows.push(legendBottom);
+      legendBottom +=
+        14 *
+          Math.max(...legendItems.slice(i, i + 2).map((x) => x.lines.length)) +
+        8;
+    }
+    const posterHeight = Math.max(510, legendBottom + 10);
+    svg = svg.replace(
+      'viewBox="0 0 960 450"',
+      `viewBox="0 0 960 ${posterHeight}"`,
+    );
+    const legend = legendItems
       .map(
-        (series, index) =>
-          '<g transform="translate(' +
-          (24 + (index % 3) * 310) +
-          " " +
-          (470 + Math.floor(index / 3) * 17) +
-          ')"><rect width="13" height="3" y="-4" fill="' +
-          escapeXML(series.color || COLORS[index % COLORS.length]) +
-          '"/><text x="20" fill="#b7c6dc" font-family="system-ui,sans-serif" font-size="11">' +
-          escapeXML(series.name) +
+        ({ series, lines }, index) =>
+          `<g transform="translate(${24 + (index % 2) * 465} ${legendRows[Math.floor(index / 2)]})">` +
+          `<rect width="13" height="3" y="-4" fill="${escapeXML(series.color || COLORS[index % COLORS.length])}"/>` +
+          `<text fill="#b7c6dc" font-family="system-ui,sans-serif" font-size="11">` +
+          lines
+            .map(
+              (line, i) =>
+                `<tspan x="20" dy="${i ? 14 : 0}">${escapeXML(line)}</tspan>`,
+            )
+            .join("") +
           "</text></g>",
       )
       .join("");

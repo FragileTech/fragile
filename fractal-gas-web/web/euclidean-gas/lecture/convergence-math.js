@@ -217,3 +217,157 @@ export function covarianceStep(c, M, g) {
   const z = mm(M, mm(c, transpose(M)));
   return z.map((r, i) => r.map((v, j) => v + g[i] * g[j]));
 }
+
+// Conditional-ensemble fit uncertainty, using independent sample means at each x.
+export function driftRegression(groups) {
+  const rows = groups.filter((g) => g.deltas.length);
+  const x = rows.map((g) => g.v),
+    y = rows.map((g) => avg(g.deltas));
+  const xm = avg(x),
+    ym = avg(y),
+    sxx = x.reduce((s, v) => s + (v - xm) ** 2, 0);
+  const slope = sxx
+    ? x.reduce((s, v, i) => s + (v - xm) * (y[i] - ym), 0) / sxx
+    : 0;
+  const intercept = ym - slope * xm;
+  const ready =
+    rows.length >= 3 && rows.every((g) => g.deltas.length >= 8) && sxx > 0;
+  const sem2 = rows.map((g) =>
+    g.deltas.length > 1 ? varOf(g.deltas) / (g.deltas.length - 1) : 0,
+  );
+  const slopeSE = sxx
+    ? Math.sqrt(x.reduce((s, v, i) => s + (v - xm) ** 2 * sem2[i], 0)) / sxx
+    : 0;
+  const interceptSE = sxx
+    ? Math.sqrt(
+        x.reduce(
+          (s, v, i) =>
+            s + (1 / x.length - (xm * (v - xm)) / sxx) ** 2 * sem2[i],
+          0,
+        ),
+      )
+    : 0;
+  const crossing = slope < 0 ? -intercept / slope : null;
+  const supportedCrossing =
+    ready &&
+    slope + 1.96 * slopeSE < 0 &&
+    intercept - 1.96 * interceptSE > 0 &&
+    crossing >= Math.min(...x) &&
+    crossing <= Math.max(...x);
+  return {
+    slope,
+    intercept,
+    slopeSE,
+    interceptSE,
+    ready,
+    crossing: supportedCrossing ? crossing : null,
+  };
+}
+
+export const sampleVariance = (a) =>
+  a.length > 1 ? (varOf(a) * a.length) / (a.length - 1) : 0;
+export const standardError = (a) =>
+  a.length > 1 ? Math.sqrt(varOf(a) / (a.length - 1)) : 0;
+export function quantile(a, p) {
+  if (!a.length) return 0;
+  const sorted = [...a].sort((x, y) => x - y),
+    index = (sorted.length - 1) * p,
+    lower = Math.floor(index);
+  return (
+    sorted[lower] + (sorted[Math.ceil(index)] - sorted[lower]) * (index - lower)
+  );
+}
+export function varianceInterval(values, seed, repetitions = 127) {
+  if (values.length < 8) return [0, 0];
+  const r = random(seed),
+    samples = [];
+  for (let b = 0; b < repetitions; b++)
+    samples.push(
+      sampleVariance(
+        Array.from(
+          { length: values.length },
+          () => values[Math.floor(r() * values.length)],
+        ),
+      ),
+    );
+  return [quantile(samples, 0.025), quantile(samples, 0.975)];
+}
+export function jointStatistic(pairs, bins = 6) {
+  const count = pairs.length,
+    matrix = Array.from({ length: bins }, () => Array(bins).fill(0));
+  for (const [a, b] of pairs) {
+    const i = Math.min(bins - 1, Math.max(0, Math.floor(((a + 1) * bins) / 2))),
+      j = Math.min(bins - 1, Math.max(0, Math.floor(((b + 1) * bins) / 2)));
+    matrix[i][j]++;
+  }
+  const total = Math.max(1, count),
+    first = matrix.map((row) => row.reduce((s, v) => s + v, 0) / total),
+    second = matrix[0].map(
+      (_, j) => matrix.reduce((s, row) => s + row[j], 0) / total,
+    );
+  const difference = matrix.map((row, i) =>
+    row.map((v, j) => v / total - first[i] * second[j]),
+  );
+  return {
+    difference,
+    l1: difference.flat().reduce((s, v) => s + Math.abs(v), 0),
+  };
+}
+export function permutationJoint(pairs, seed, repetitions = 127) {
+  const observed = jointStatistic(pairs),
+    nullValues = [],
+    r = random(seed);
+  if (pairs.length < 8)
+    return {
+      ...observed,
+      nullValues,
+      lower: 0,
+      upper: 0,
+      pValue: 1,
+      ready: false,
+    };
+  for (let b = 0; b < repetitions; b++) {
+    const second = pairs.map((p) => p[1]);
+    for (let j = second.length - 1; j > 0; j--) {
+      const i = Math.floor(r() * (j + 1));
+      [second[i], second[j]] = [second[j], second[i]];
+    }
+    nullValues.push(jointStatistic(pairs.map((p, i) => [p[0], second[i]])).l1);
+  }
+  return {
+    ...observed,
+    nullValues,
+    lower: quantile(nullValues, 0.025),
+    upper: quantile(nullValues, 0.975),
+    pValue:
+      (1 + nullValues.filter((v) => v >= observed.l1 - 1e-12).length) /
+      (1 + repetitions),
+    ready: true,
+  };
+}
+// Deterministic Gaussian quadrature by the trapezoid rule on ±10σ.
+export function tanhGaussianVariance(variance) {
+  const dx = 0.005;
+  let total = 0;
+  for (let i = 0; i <= 4000; i++) {
+    const z = -10 + i * dx;
+    total +=
+      (i === 0 || i === 4000 ? 0.5 : 1) *
+      Math.tanh(Math.sqrt(variance) * z) ** 2 *
+      gaussian(z) *
+      dx;
+  }
+  return total;
+}
+
+export function wilsonInterval(successes, total) {
+  if (!total) return [0, 1];
+  const p = successes / total,
+    z = 1.96,
+    denominator = 1 + (z * z) / total,
+    center = (p + (z * z) / (2 * total)) / denominator,
+    half =
+      (z * Math.sqrt((p * (1 - p)) / total + (z * z) / (4 * total * total))) /
+      denominator;
+  return [Math.max(0, center - half), Math.min(1, center + half)];
+}

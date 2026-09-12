@@ -172,6 +172,7 @@ function frozenModel(run, x, v, render, onStep = () => {}) {
 // The greedy recursion averages the uniformly shuffled processing order and
 // the Gaussian choice from the remaining pool, including the odd self slot.
 export function donorProbabilities(points, width = 1, uniform = false) {
+  if (points.length === 1) return [[1]];
   return points.map((p, i) => {
     const logs = points.map((q, j) =>
       i === j
@@ -566,6 +567,7 @@ const fitness = desc(
     range("outlier", "Outlier radius", 1, 1, 4, 0.1),
     select("exclude", "Outlier eligible", "yes", ["yes", "no"]),
     select("stats", "Statistics", "global", ["global", "local"]),
+    select("self", "Local self weight", "include", ["include", "exclude"]),
   ],
   async ({ params: p, seed, engine }) => {
     const c = await config(engine, seed, 8),
@@ -590,7 +592,7 @@ const fitness = desc(
               sigma_min: p.sigma,
               distance: clone(c.gas.distance_donors.distance),
               kernel: { kind: "gaussian", width: 0.5 },
-              include_self: false,
+              include_self: p.self !== "exclude",
             };
     }
     const run = await engine.create(c);
@@ -685,8 +687,7 @@ const fitness = desc(
               f.fitness[i],
             ]),
           },
-          message:
-            "All statistics and fitness values come from the pre-clone engine report. Positive channel values are evaluated from those recorded standardized scores.",
+          message: `All statistics and fitness values come from the pre-clone engine report. ${p.stats === "local" ? `Local Gaussian weights ${p.self === "exclude" ? "exclude the selected walker" : "include the selected walker, as in the chapter sums"}.` : "Global statistics use every eligible walker."} Positive channels are evaluated from the recorded standardized scores.`,
         };
       },
       dispose() {
@@ -929,15 +930,15 @@ const microscope = desc(
 const rewardForce = desc(
   "I-06",
   "Reward attracts copies; potential accelerates motion",
-  "What changes when favorable reward and the force point to different places?",
-  "Selection follows independently evaluated reward, while the BAOAB gradient follows the confining potential.",
+  "Do independent swarms settle in the same reward well?",
+  "Selection follows reward while the force follows its own potential. Independent seeded traces show when stable clouds occupy different wells.",
   [
     select("landscape", "Reward / force preset", "aligned", [
       "aligned",
       "shifted",
       "multiwell",
     ]),
-    select("walkers", "Walkers", 128, [128, 256]),
+    select("walkers", "Walkers per run", 128, [128, 256]),
     range("alpha", "Reward exponent α", 1, 0, 2, 0.1),
     range("beta", "Diversity exponent β", 0, 0, 1, 0.1),
     range("dt", "Time step", 0.025, 0.005, 0.08, 0.005),
@@ -952,14 +953,28 @@ const rewardForce = desc(
     c.reward_shift = p.landscape === "shifted" ? [1, 0] : [];
     c.gas.fitness.reward_exponent = p.alpha;
     c.gas.fitness.diversity_exponent = p.beta;
-    const run = await engine.create(c);
-    let frame = run.snapshot();
+    const seeds = [0, 12, 36].map((offset) => (Number(seed) + offset) >>> 0),
+      runs = [];
+    try {
+      for (const runSeed of seeds) {
+        const rc = clone(c);
+        rc.gas.seed = runSeed;
+        runs.push(await engine.create(rc));
+      }
+    } catch (error) {
+      runs.forEach((run) => run.free());
+      throw error;
+    }
+    let frames = runs.map((run) => run.snapshot());
     const reward = [],
       potential = [],
       spread = [],
-      fraction = [];
+      fraction = [],
+      barycenters = seeds.map(() => []),
+      ensemble = [];
     function record() {
-      const x = positions(frame),
+      const frame = frames[0],
+        x = positions(frame),
         t = Number(frame.step) * p.dt;
       pushBounded(reward, [t, mean(frame.population.rewards.raw)]);
       pushBounded(potential, [t, mean(x.map((v) => norm2(v) / 2))]);
@@ -968,15 +983,21 @@ const rewardForce = desc(
         variance(x.map((v) => v[0])) + variance(x.map((v) => v[1])),
       ]);
       pushBounded(fraction, [t, (frame.report?.clones ?? 0) / p.walkers]);
+      frames.forEach((f, j) =>
+        pushBounded(barycenters[j], [t, mean(positions(f).map((v) => v[0]))]),
+      );
+      pushBounded(ensemble, [t, mean(barycenters.map((v) => v.at(-1)[1]))]);
     }
     record();
     return {
       async step() {
-        frame = await run.step(1);
+        frames = await Promise.all(runs.map((run) => run.step(1)));
         record();
       },
       snapshot() {
-        const x = positions(frame);
+        const frame = frames[0],
+          x = positions(frame),
+          means = barycenters.map((v) => v.at(-1)[1]);
         return {
           step: Number(frame.step),
           time: Number(frame.step) * p.dt,
@@ -1002,14 +1023,25 @@ const rewardForce = desc(
               ],
             ),
             chart(
-              "Live cloud under −∇U = −x",
+              `Live cloud: seed ${seeds[0]}`,
               "x₁",
               "x₂",
               [scatter("Walkers", x)],
               { segments: cloud(16).map((q) => [q, q.map((v) => 0.7 * v)]) },
             ),
             chart(
-              "Measured reward and confinement",
+              "Independent runs: watch which well each cloud occupies",
+              "Physical time",
+              "Mean x₁",
+              [
+                ...seeds.map((runSeed, j) =>
+                  line(`Seed ${runSeed}`, barycenters[j]),
+                ),
+                line("Three-run mean", ensemble, { dashed: true }),
+              ],
+            ),
+            chart(
+              `Reward and confinement: seed ${seeds[0]}`,
               "Physical time",
               "Population mean",
               [
@@ -1019,7 +1051,7 @@ const rewardForce = desc(
               ],
             ),
             chart(
-              "Accepted voluntary copying",
+              `Accepted copying: seed ${seeds[0]}`,
               "Physical time",
               "Fraction",
               [line("Cloned slots / N", fraction)],
@@ -1028,16 +1060,28 @@ const rewardForce = desc(
           ],
           metrics: [
             metric("Mean reward cost", mean(frame.population.rewards.raw)),
-            metric("Mean x₁", mean(x.map((v) => v[0]))),
-            metric("Reward optimum x₁", p.landscape === "shifted" ? 1 : 0),
-            metric("Potential optimum x₁", 0),
+            metric("Mean x₁", means[0]),
+            metric("Three-run mean x₁", mean(means)),
+            metric(
+              "Between-run mean range",
+              Math.max(...means) - Math.min(...means),
+            ),
+            metric("Independent runs", runs.length),
           ],
-          message:
-            "Reward minimization and a separate quadratic gradient provider are active in the same real run. Set both exponents to zero to isolate force and thermostat; reset the seed to compare trajectories.",
+          table: {
+            columns: ["Seed", "Mean x₁", "Mean reward cost", "Cloned fraction"],
+            rows: frames.map((f, j) => [
+              seeds[j],
+              means[j],
+              mean(f.population.rewards.raw),
+              (f.report?.clones ?? 0) / p.walkers,
+            ]),
+          },
+          message: `Three independent WASM runs use seeds ${seeds.join(", ")}. Each solid trace follows one cloud; the dashed trace averages the three. In a multiwell reward, different nearly flat traces reveal residence in different wells. Set both exponents to zero to isolate the force and thermostat.`,
         };
       },
       dispose() {
-        run.free();
+        runs.forEach((run) => run.free());
       },
     };
   },
@@ -1171,148 +1215,295 @@ const field = desc(
   "Mathematical model",
 );
 
+// The pre-clone alive set is part of the conditional law, including its
+// statistics. Revival uses the engine's uniform alive donor rule, without jitter.
+export function conditionalPositionLaw(points, recipient, boundary) {
+  const alive = points.map((point) =>
+    point.every((v) => Math.abs(v) <= boundary),
+  );
+  const slots = alive.flatMap((a, j) => (a ? [j] : [])),
+    joint = points.map(() => 0);
+  if (!slots.length)
+    return { alive, slots, joint, persistence: 0, mode: "extinction", mass: 0 };
+  if (!alive[recipient]) {
+    slots.forEach((j) => {
+      joint[j] = 1 / slots.length;
+    });
+    return { alive, slots, joint, persistence: 0, mode: "revival", mass: 1 };
+  }
+  const field = probabilityField(
+    slots.map((j) => points[j]),
+    { recipient: slots.indexOf(recipient) },
+  );
+  slots.forEach((j, k) => {
+    joint[j] = field.joint[k];
+  });
+  return {
+    alive,
+    slots,
+    joint,
+    persistence: field.persistence,
+    mode: "voluntary",
+    mass: field.mass,
+  };
+}
+// Abramowitz--Stegun erf approximation: absolute CDF error < 8e-8.
+function normalCDF(x) {
+  const sign = x < 0 ? -1 : 1,
+    z = Math.abs(x) / Math.SQRT2,
+    t = 1 / (1 + 0.3275911 * z);
+  const erf =
+    sign *
+    (1 -
+      ((((1.061405429 * t - 1.453152027) * t + 1.421413741) * t - 0.284496736) *
+        t +
+        0.254829592) *
+        t *
+        Math.exp(-z * z));
+  return (1 + erf) / 2;
+}
 const mixture = desc(
   "I-08",
-  "Resolve a cloning jump into its mixture components",
-  "Which part of the post-copy law remains an atom?",
-  "Persistence keeps its probability at the old position. Accepted-copy mass broadens around donors; BAOAB then transports each component.",
+  "Resolve a cloning jump into its position components",
+  "How do the alive set and Gaussian jitter determine the post-clone position law?",
+  "Alive-conditioned accepted-copy weights broaden into Gaussian position components. Persistence and revival remain atoms; zero eligible donors give extinction.",
   [
     range("recipient", "Recipient slot", 0, 0, 3, 1),
-    select("jitter", "Copy jitter σ", 0.1, [0, 0.02, 0.1, 0.3]),
-    range("temperature", "Thermostat T", 0.4, 0, 2, 0.1),
-    range("boundary", "Viable half-width", 1.1, 0.4, 2, 0.1),
+    select("jitter", "Voluntary copy jitter σ", 0.1, [0, 0.02, 0.1, 0.3]),
+    range("boundary", "Viable half-width", 1.1, 0.4, 2, 0.01),
   ],
   async ({ params: p, seed }) => {
     const x = cloud(5),
-      v = x.map(([a, b]) => [-b, a]),
-      f = probabilityField(x, { recipient: p.recipient }),
-      weights = [f.persistence, ...f.joint],
-      random = rng(seed),
-      samples = [],
-      final = [],
-      phase = [],
+      law = conditionalPositionLaw(x, p.recipient, p.boundary),
+      weights = [law.persistence, ...law.joint],
+      random = rng(seed);
+    const lo = -2,
+      hi = 2,
+      bins = 64,
+      binWidth = (hi - lo) / bins,
+      hist = Array(bins).fill(0),
+      recent = [],
       eventCounts = Array(6).fill(0),
-      cloneExit = Array(6).fill(0),
-      kineticExit = Array(6).fill(0);
-    let count = 0;
+      eventExits = Array(6).fill(0);
+    const jitter = law.mode === "voluntary" ? p.jitter : 0;
+    const centers = [x[p.recipient], ...x],
+      sigmas = [0, ...x.map(() => jitter)];
+    const conditionalExit = centers.map((center, event) =>
+      sigmas[event] > 0
+        ? 1 -
+          center.reduce(
+            (mass, mu) =>
+              mass *
+              (normalCDF((p.boundary - mu) / sigmas[event]) -
+                normalCDF((-p.boundary - mu) / sigmas[event])),
+            1,
+          )
+        : Number(center.some((v) => Math.abs(v) > p.boundary)),
+    );
+    const expectedBins = hist.map((_, bin) =>
+      sum(
+        weights.map((w, event) => {
+          const a = lo + bin * binWidth,
+            b = a + binWidth,
+            mu = centers[event][0],
+            sigma = sigmas[event];
+          return (
+            w *
+            (sigma > 0
+              ? normalCDF((b - mu) / sigma) - normalCDF((a - mu) / sigma)
+              : Number(mu >= a && (mu < b || (bin === bins - 1 && mu <= b))))
+          );
+        }),
+      ),
+    );
+    let count = 0,
+      outsideViewport = 0;
     return {
       async step() {
+        if (law.mode === "extinction") return;
         for (let k = 0; k < 128; k++) {
           const event = pick(weights, random),
-            j = event === 0 ? p.recipient : event - 1;
-          let q = x[j].map(
-              (a) => a + (event > 0 ? p.jitter * random.normal() : 0),
-            ),
-            u = v[j].slice();
+            q = centers[event].map(
+              (v) =>
+                v + (sigmas[event] > 0 ? sigmas[event] * random.normal() : 0),
+            );
           eventCounts[event]++;
-          const died = q.some((a) => Math.abs(a) > p.boundary);
-          if (died) cloneExit[event]++;
-          const q0 = q[0];
-          if (!died) {
-            u = u.map((a, d) => a - 0.02 * q[d]);
-            q = q.map((a, d) => a + 0.02 * u[d]);
-            if (q.some((a) => Math.abs(a) > p.boundary)) kineticExit[event]++;
-            else {
-              const c = Math.exp(-0.04),
-                s = Math.sqrt(p.temperature * (1 - c * c));
-              u = u.map((a) => c * a + s * random.normal());
-              q = q.map((a, d) => a + 0.02 * u[d]);
-              if (q.some((a) => Math.abs(a) > p.boundary)) kineticExit[event]++;
-              else u = u.map((a, d) => a - 0.02 * q[d]);
-            }
-          }
-          pushBounded(samples, q0, 400);
-          pushBounded(final, q[0], 400);
-          pushBounded(phase, [q[0], u[0]], 400);
+          if (q.some((v) => Math.abs(v) > p.boundary)) eventExits[event]++;
+          if (q[0] >= lo && q[0] <= hi)
+            hist[Math.min(bins - 1, Math.floor((q[0] - lo) / binWidth))]++;
+          else outsideViewport++;
+          pushBounded(recent, q, 400);
           count++;
         }
       },
       snapshot() {
-        const grid = linspace(-2, 2, 161),
-          components = f.joint.map((w, j) =>
-            line(
-              `Donor ${j}: mass ${w.toFixed(3)}`,
-              p.jitter
-                ? grid.map((q) => [q, w * normalPDF(q, x[j][0], p.jitter)])
-                : [
-                    [x[j][0], 0],
-                    [x[j][0], w],
-                  ],
-            ),
+        const grid = linspace(lo, hi, 161),
+          atomic = weights.flatMap((w, event) =>
+            w > 0 && sigmas[event] === 0
+              ? [
+                  line(
+                    event === 0
+                      ? "Persistence atom"
+                      : `Revival / zero-jitter donor ${event - 1}`,
+                    [
+                      [centers[event][0], 0],
+                      [centers[event][0], w],
+                    ],
+                  ),
+                ]
+              : [],
           );
+        const continuous = weights.flatMap((w, event) =>
+          w > 0 && sigmas[event] > 0
+            ? [
+                line(
+                  `Donor ${event - 1}: mass ${w.toFixed(3)}`,
+                  grid.map((q) => [
+                    q,
+                    w * normalPDF(q, centers[event][0], sigmas[event]),
+                  ]),
+                ),
+              ]
+            : [],
+        );
         return {
           step: count,
           time: count,
+          done: law.mode === "extinction",
           charts: [
             chart(
-              p.jitter
-                ? "Continuous copy density plus separate persistence mass"
-                : "Atomic post-copy law",
+              "Alive-conditioned donor positions",
               "x₁",
-              p.jitter ? "Density / atom mass" : "Atom probability",
+              "x₂",
               [
-                ...components,
-                line("Persistence atom (probability stem)", [
-                  [x[p.recipient][0], 0],
-                  [x[p.recipient][0], f.persistence],
-                ]),
-                ...(p.jitter
-                  ? [
-                      line(
-                        "Continuous mixture density",
-                        grid.map((q) => [
-                          q,
-                          sum(
-                            f.joint.map(
-                              (w, j) => w * normalPDF(q, x[j][0], p.jitter),
-                            ),
-                          ),
-                        ]),
-                      ),
-                    ]
-                  : []),
+                scatter(
+                  "Eligible donors",
+                  x.filter((_, j) => law.alive[j]),
+                ),
+                scatter(
+                  "Ineligible slots",
+                  x.filter((_, j) => !law.alive[j]),
+                ),
+                scatter("Selected recipient", [x[p.recipient]]),
               ],
+              {
+                segments: [
+                  [
+                    [-p.boundary, -p.boundary],
+                    [p.boundary, -p.boundary],
+                  ],
+                  [
+                    [p.boundary, -p.boundary],
+                    [p.boundary, p.boundary],
+                  ],
+                  [
+                    [p.boundary, p.boundary],
+                    [-p.boundary, p.boundary],
+                  ],
+                  [
+                    [-p.boundary, p.boundary],
+                    [-p.boundary, -p.boundary],
+                  ],
+                ],
+              },
             ),
             chart(
-              "Sampled conditional outcomes (rolling 400)",
+              "Atomic position components",
               "x₁",
-              "Density",
+              "Probability mass",
+              atomic,
+              { yDomain: [0, 1] },
+            ),
+            chart(
+              "Continuous offspring components",
+              "x₁",
+              "Probability density",
+              continuous,
+            ),
+            chart(
+              `Cumulative post-clone histogram: ${count} draws`,
+              "x₁",
+              "Probability per bin",
               [
-                density("Post-clone samples", samples, -2, 2),
-                density("After kinetic schedule", final, -2, 2),
+                {
+                  name: "All observed draws",
+                  style: "bars",
+                  points: hist.map((n, bin) => [
+                    lo + (bin + 0.5) * binWidth,
+                    n / Math.max(1, count),
+                  ]),
+                },
+                line(
+                  "Integrated conditional law",
+                  expectedBins.map((mass, bin) => [
+                    lo + (bin + 0.5) * binWidth,
+                    mass,
+                  ]),
+                ),
               ],
             ),
-            chart("Kinetic pushforward in phase space", "x₁", "v₁", [
-              scatter("Conditional outcomes", phase),
+            chart(`Recent positions: ${recent.length} displayed`, "x₁", "x₂", [
+              scatter("Post-clone positions", recent),
             ]),
             chart(
-              "Event-conditioned exit estimates",
+              "Clone-stage exit by event",
               "0: persistence; 1…5: donor",
               "Conditional exit probability",
               [
-                bar(
-                  "Clone-stage exit",
-                  cloneExit.map((n, i) => n / Math.max(1, eventCounts[i])),
-                ),
+                {
+                  name: "Measured",
+                  style: "bars",
+                  points: eventCounts.flatMap((n, event) =>
+                    n > 0 ? [[event, eventExits[event] / n]] : [],
+                  ),
+                },
                 line(
-                  "Subsequent kinetic exit",
-                  kineticExit.map((n, i) => [
-                    i,
-                    n / Math.max(1, eventCounts[i]),
-                  ]),
+                  "Gaussian / atomic prediction",
+                  weights.flatMap((w, event) =>
+                    w > 0 ? [[event, conditionalExit[event]]] : [],
+                  ),
                 ),
               ],
               { yDomain: [0, 1] },
             ),
           ],
           metrics: [
-            metric("Draws", count),
-            metric("Persistence mass", f.persistence),
-            metric("Copy mass", sum(f.joint)),
-            metric("Viable |xₖ| ≤", p.boundary),
+            metric("Eligible donors", law.slots.length),
+            metric("Recipient operation", law.mode),
+            metric("Cumulative histogram draws", count),
+            metric("Displayed recent positions", recent.length),
+            metric("Persistence mass", law.persistence),
+            metric("Donor-event mass", sum(law.joint)),
+            metric(
+              "Predicted clone-stage exit",
+              sum(weights.map((w, event) => w * conditionalExit[event])),
+            ),
+            metric(
+              "Measured clone-stage exit",
+              sum(eventExits) / Math.max(1, count),
+            ),
+            metric("Samples outside histogram viewport", outsideViewport),
           ],
+          table: {
+            columns: [
+              "Slot",
+              "Eligible before clone",
+              "Donor-event probability",
+              "Event draws",
+              "Exit draws",
+            ],
+            rows: x.map((_, j) => [
+              j,
+              law.alive[j] ? "yes" : "no",
+              law.joint[j],
+              eventCounts[j + 1],
+              eventExits[j + 1],
+            ]),
+          },
           message:
-            "Analytic conditional mixture with literal velocity copying (no restitution), Gaussian jitter, and an explicit quadratic BAOAB reference pushforward. Exit fractions are conditioned on the event label; the histogram uses only the rolling 400 outcomes. The persistence stem is probability, not a density.",
+            law.mode === "extinction"
+              ? "No eligible donor exists: the position experiment is in its extinction state. Change the viable boundary to admit a survivor."
+              : `Position-only conditional cloning experiment for Section 6.1. Eligibility is evaluated before donor draws and fitness statistics. ${law.mode === "revival" ? "The selected inactive slot revives from a uniformly selected eligible donor, with zero jitter." : law.slots.length === 1 ? "The singleton remains at its own position: voluntary-copy probability is zero." : "Persistence stays atomic; only accepted voluntary copies receive Gaussian jitter."} Histogram bins accumulate all ${count} draws; the position scatter displays the most recent ${recent.length}. Velocity collisions and kinetic transport are separate experiments.`,
         };
       },
       dispose() {},
@@ -1582,16 +1773,21 @@ const geometry = desc(
               ],
               { segments, xDomain: [-2.5, 2.5], yDomain: [-2.5, 2.5] },
             ),
-            chart("Measured position spread", "Physical time", "Variance x₁", [
-              line(
-                "Diagonal factor",
-                history.map((v) => [v[0], v[1]]),
-              ),
-              line(
-                "Isotropic",
-                history.map((v) => [v[0], v[2]]),
-              ),
-            ]),
+            chart(
+              "Spread under selection and constant anisotropic noise",
+              "Physical time",
+              "Variance x₁",
+              [
+                line(
+                  "Diagonal factor",
+                  history.map((v) => [v[0], v[1]]),
+                ),
+                line(
+                  "Isotropic",
+                  history.map((v) => [v[0], v[2]]),
+                ),
+              ],
+            ),
           ],
           metrics: [
             metric("Prescribed metric eigenvalue 1", g[0]),
@@ -1626,7 +1822,7 @@ const geometry = desc(
             ],
           },
           message:
-            "Both clouds are real engine runs. The grid panel evaluates G(x)=diag(1.25+0.75 sin x₁,1.25+0.75 cos x₁); its ellipses are a separate variable-metric illustration. Reset with another seed to compare the measured spread.",
+            "Both clouds are real engine runs. The grid panel evaluates G(x)=diag(1.25+0.75 sin x₁,1.25+0.75 cos x₁); its ellipses are a prescribed geometric field. The live spread includes fitness selection and constant diffusion; the grid panel evaluates local geometry only. Reset with another seed to compare the measured spread.",
         };
       },
       dispose() {

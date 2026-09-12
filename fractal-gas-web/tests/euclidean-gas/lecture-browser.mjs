@@ -42,6 +42,11 @@ try {
       false,
       demo.id + " step error",
     );
+    if (["I-08", "III-03", "IV-01", "IV-13", "IV-16"].includes(demo.id))
+      await page.screenshot({
+        path: new URL(`${demo.id}-revised.png`, output).pathname,
+        fullPage: true,
+      });
     await page.locator("#reset").click();
     await ready(demo.id);
     assert.equal(
@@ -97,10 +102,15 @@ try {
   const json = JSON.parse(await readFile(saved));
   assert.equal(json.id, "I-05");
   assert.ok(json.ticks >= 3);
+  // Replay must rebuild a different state. Waiting on the old tick count alone
+  // can finish before the asynchronous file read has even begun initialization.
+  await page.locator("#reset").click();
+  await ready("I-05");
   await page.locator("#load").setInputFiles(saved);
   await page.waitForFunction(
     (ticks) =>
       document.querySelector("#frame").textContent.startsWith(ticks + " ") &&
+      document.querySelector("#load").value === "" &&
       !document.querySelector("#step").disabled,
     json.ticks,
   );
@@ -119,6 +129,69 @@ try {
     ),
     "mobile overflow",
   );
+  async function setScientificControl(id, key, value) {
+    const input = page.locator(`[name="${key}"]`);
+    if (!(await input.isVisible()))
+      await page.locator(".advanced summary").click();
+    if ((await input.evaluate((el) => el.tagName)) === "SELECT")
+      await input.selectOption(String(value));
+    else {
+      await input.fill(String(value));
+      await input.dispatchEvent("change");
+    }
+    await ready(id);
+  }
+  // These configurations previously produced scientifically misleading output
+  // while still passing the generic initialization/finite-SVG checks above.
+  await page.goto(base + "/euclidean-gas/lecture.html?demo=I-08");
+  await ready("I-08");
+  await setScientificControl("I-08", "boundary", 0.4);
+  assert.match(await page.locator("#metrics").textContent(), /extinction/);
+  await page.locator("#step").click();
+  await page.waitForFunction(() => !document.querySelector("#step").disabled);
+  assert.equal(await page.locator("#error").isVisible(), false);
+  await setScientificControl("I-08", "boundary", 1.1);
+  assert.match(await page.locator("#metrics").textContent(), /voluntary/);
+
+  await page.goto(base + "/euclidean-gas/lecture.html?demo=IV-12");
+  await ready("IV-12");
+  await setScientificControl("IV-12", "width", 0.2);
+  await setScientificControl("IV-12", "gap", 3);
+  assert.match(
+    await page.locator("#metrics").textContent(),
+    /Below numerical resolution/,
+  );
+  assert.match(
+    await page.locator("#metrics").textContent(),
+    /Rayleigh upper bound/,
+  );
+  assert.ok(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth + 1,
+    ),
+    "unresolved-gap diagnostics fit a narrow screen",
+  );
+  await page.screenshot({
+    path: new URL("spectral-gap-stress.png", output).pathname,
+    fullPage: true,
+  });
+  console.log(
+    "Extinction recovery and unresolved spectral-gap browser regressions passed",
+  );
+  for (const id of ["IV-01", "IV-16"]) {
+    await page.goto(base + `/euclidean-gas/lecture.html?demo=${id}`);
+    await ready(id);
+    assert.ok(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth + 1,
+      ),
+      `${id}: numerical metrics fit a narrow screen`,
+    );
+    await page.screenshot({
+      path: new URL(`${id}-mobile.png`, output).pathname,
+      fullPage: true,
+    });
+  }
   await page.goto(
     base + "/fragile/euclidean-gas/lecture.html?demo=IV-16&embed=1",
   );

@@ -20,6 +20,14 @@ import {
   gaussian,
   linearBAOAB,
   covarianceStep,
+  driftRegression,
+  sampleVariance,
+  standardError,
+  quantile,
+  varianceInterval,
+  permutationJoint,
+  tanhGaussianVariance,
+  wilsonInterval,
 } from "./convergence-math.js";
 const range = (key, label, value, min, max, step = 0.1) => ({
   key,
@@ -126,42 +134,66 @@ const keystone = descriptor(
   "II-01",
   "The Keystone chain as linked evidence",
   "WASM experiment",
-  "Does geometric error produce an inward copying signal?",
-  "With the reward optimum in the main cluster, high-error walkers tend to copy inward; moving the optimum can reverse the signal.",
-  "Complete-linkage partition from def-unified-high-low-error-sets: diameter ≤ 2ε, minimum cluster size max(5,ceil(.05N)), and top 90% of valid between-cluster variance. Velocities are zero in this positional fixture.",
+  "Does a nonempty high-error group have lower fitness and copy inward?",
+  "Balanced outer clusters leave a central low-error population. When their fitness gap is positive, the measured overlap exceeds its quantitative lower bound.",
+  "The chapter’s complete-linkage partition uses diameter ≤2ε, minimum size max(5,ceil(.05N)), and 90% of valid between-cluster variance. Symmetric outer clusters keep the center cluster’s between-cluster contribution zero; every theorem hypothesis is checked on the sampled fitness vector.",
   [
     select("walkers", "Walkers", 64, [64, 128]),
-    range("fraction", "Outlier fraction", 0.15, 0.05, 0.4, 0.05),
-    range("separation", "Cluster separation", 2, 1, 4, 0.25),
+    range(
+      "fraction",
+      "Requested outer-cluster fraction",
+      0.15,
+      0.05,
+      0.4,
+      0.05,
+    ),
+    range("separation", "Outer-cluster distance", 2, 1, 4, 0.25),
     range("alpha", "Reward exponent", 1, 0, 3, 0.25),
     range("beta", "Diversity exponent", 0, 0, 3, 0.25),
     select("landscape", "Reward optimum", "main", [
-      { value: "main", label: "Main cluster" },
-      { value: "outliers", label: "Outlier cluster" },
+      { value: "main", label: "Central cluster" },
+      { value: "outliers", label: "Right outer cluster" },
     ]),
     range("epsilon", "Partition scale ε", 0.3, 0.1, 0.8, 0.1),
   ],
   async ({ params: p, seed, engine }) => {
     const r = random(seed),
       n = p.walkers,
-      out = Math.round(n * p.fraction),
-      peak = p.landscape === "outliers" ? p.separation : 0;
-    const positions = Array.from({ length: n }, (_, i) => [
-      (i < out ? p.separation : 0) + 0.08 * r.normal() - peak,
-      0.08 * r.normal(),
-    ]);
+      minimum = Math.max(5, Math.ceil(0.05 * n)),
+      outer = Math.max(minimum, Math.round((n * p.fraction) / 2)),
+      peak = p.landscape === "outliers" ? p.separation : 0,
+      positions = [];
+    for (let i = 0; i < outer; i++) {
+      const x = p.separation + 0.06 * (r() - 0.5),
+        y = 0.06 * (r() - 0.5);
+      positions.push([x - peak, y], [-x - peak, -y]);
+    }
+    while (positions.length < n) {
+      const x = 0.06 * (r() - 0.5),
+        y = 0.06 * (r() - 0.5);
+      positions.push([x - peak, y], [-x - peak, -y]);
+    }
     const base = await configuration(engine, seed, n);
     base.gas.fitness.reward_exponent = p.alpha;
     base.gas.fitness.diversity_exponent = p.beta;
     base.gas.kinetic.integrator.amplitude = 0;
     const partition = geometricPartition(positions, p.epsilon),
       mu = center(positions),
-      radius = positions.map((x) => norm2(x, mu));
+      radius = positions.map((x) => norm2(x, mu)),
+      high = positions.map((_, i) => partition.high.has(i)),
+      fH = partition.high.size / n,
+      fL = 1 - fH;
     let count = 0,
       frame = null,
       stage = [0, 0, 0],
       changes = [[], [], []],
-      history = [];
+      history = [],
+      balance = [],
+      gap = 0,
+      bound = 0,
+      lastOverlap = 0,
+      validCount = 0,
+      valid = false;
     return model(
       () => ({
         step: count,
@@ -174,17 +206,17 @@ const keystone = descriptor(
             [
               dots(
                 "High error",
-                positions.filter((_, i) => partition.high.has(i)),
+                positions.filter((_, i) => high[i]),
               ),
               dots(
-                "Remaining population",
-                positions.filter((_, i) => !partition.high.has(i)),
+                "Low error",
+                positions.filter((_, i) => !high[i]),
               ),
             ],
           ),
           chart(
             "Radius and sampled fitness",
-            "Squared radius about swarm center",
+            "Squared radius about initial center",
             "Fitness",
             [
               dots(
@@ -195,38 +227,42 @@ const keystone = descriptor(
                         x,
                         frame.report.pre_clone_fitness.fitness[i],
                       ])
-                      .filter((_, i) => partition.high.has(i))
+                      .filter((_, i) => high[i])
                   : [],
               ),
               dots(
-                "Remaining",
+                "Low error",
                 frame
                   ? radius
                       .map((x, i) => [
                         x,
                         frame.report.pre_clone_fitness.fitness[i],
                       ])
-                      .filter((_, i) => !partition.high.has(i))
+                      .filter((_, i) => !high[i])
                   : [],
               ),
             ],
           ),
           chart(
-            "Links averaged over frozen-state repetitions",
-            "Category (1 high-error, 2 unfit, 3 overlap)",
-            "Fraction",
+            "Overlap and theorem lower bound",
+            "Independent repetition",
+            "Fraction of all walkers",
             [
               curve(
-                "Measured fraction",
-                stage.map((v, i) => [i + 1, count ? v / count / n : 0]),
-                { style: "bars" },
+                "Measured latest overlap",
+                history.map((x) => [x[0], x[3]]),
+              ),
+              curve(
+                "f_H f_L Δfitness / fitness range",
+                history.map((x) => [x[0], x[4]]),
+                { dashed: true },
               ),
             ],
           ),
           chart(
             "Conditional replacement change",
             "Independent repetition",
-            "Mean change of squared radius",
+            "Mean Δradius² about initial center",
             [
               curve(
                 "High-error group",
@@ -238,15 +274,65 @@ const keystone = descriptor(
               ),
             ],
           ),
+          chart(
+            "Recentered variance balance",
+            "Independent repetition",
+            "Mean one-step change",
+            [
+              curve(
+                "Mean Δradius² about initial center",
+                balance.map((x) => [x[0], x[1]]),
+              ),
+              curve(
+                "Mean recentered Δvariance",
+                balance.map((x) => [x[0], x[2]]),
+              ),
+              curve(
+                "Mean squared center displacement",
+                balance.map((x) => [x[0], x[3]]),
+              ),
+            ],
+          ),
         ],
         metrics: [
           metric("Repetitions", count),
           metric("Clusters", partition.clusters.length),
+          metric("High-error fraction", fH),
+          metric("Low-error fraction", fL),
+          metric("Actual outer-cluster fraction", (2 * outer) / n),
+          metric("Latest low-minus-high fitness gap", gap),
+          metric("Latest overlap", lastOverlap),
+          metric("Latest overlap lower bound", bound),
+          metric(
+            "Theorem hypotheses",
+            count
+              ? valid
+                ? "Satisfied"
+                : "Not satisfied"
+              : "Awaiting fitness sample",
+          ),
+          metric(
+            "Fraction of repetitions satisfying hypotheses",
+            count ? validCount / count : 0,
+          ),
           metric("Mean high-error Δradius²", avg(changes[0])),
+          metric(
+            "High-error mean 95% half-width",
+            1.96 * standardError(changes[0]),
+          ),
           metric("Mean overlap Δradius²", avg(changes[2])),
+          metric(
+            "Overlap mean 95% half-width",
+            1.96 * standardError(changes[2]),
+          ),
+          metric(
+            "Variance identity residual",
+            balance.length
+              ? balance.at(-1)[1] - balance.at(-1)[2] - balance.at(-1)[3]
+              : 0,
+          ),
         ],
-        message:
-          "Each repetition restores identical positions and draws independent WASM donor/clone decisions. Negative Δradius² means inward replacement. Unfit means below the measured swarm mean fitness.",
+        message: `Each outer cluster has at least ${minimum} walkers, so its actual fraction can exceed the requested minimum. The positive overlap bound applies when H and L are both nonempty, the fitness range is positive and the displayed gap is positive. If a control breaks these hypotheses, the plotted lower bound is the trivial zero. Δvariance = Δradius² about the original center − squared center displacement. Group uncertainty uses independent repetitions.`,
         done: count >= 160,
       }),
       async () => {
@@ -258,20 +344,42 @@ const keystone = descriptor(
         );
         const fitness = frame.report.pre_clone_fitness.fitness,
           mean = avg(fitness),
-          after = pts(frame);
-        const high = positions.map((_, i) => partition.high.has(i)),
+          after = pts(frame),
           unfit = fitness.map((x) => x < mean),
-          overlap = high.map((v, i) => v && unfit[i]);
+          overlap = high.map((v, i) => v && unfit[i]),
+          delta = after.map((x, i) => norm2(x, mu) - radius[i]);
+        gap =
+          fH > 0 && fL > 0
+            ? avg(fitness.filter((_, i) => !high[i])) -
+              avg(fitness.filter((_, i) => high[i]))
+            : 0;
+        const span = Math.max(...fitness) - Math.min(...fitness);
+        valid = fH > 0 && fL > 0 && gap > 0 && span > 0;
+        bound = valid ? (fH * fL * gap) / span : 0;
+        lastOverlap = overlap.filter(Boolean).length / n;
+        if (valid) validCount++;
         [high, unfit, overlap].forEach((group, g) => {
           stage[g] += group.filter(Boolean).length;
-          group.forEach((yes, i) => {
-            if (yes) changes[g].push(norm2(after[i], mu) - radius[i]);
-          });
+          const sample = delta.filter((_, i) => group[i]);
+          if (sample.length) changes[g].push(avg(sample));
         });
         count++;
-        keep(history, [count, avg(changes[0]), avg(changes[2])]);
-        if (changes[0].length > 40000)
-          changes = changes.map((a) => a.slice(-20000));
+        keep(history, [
+          count,
+          avg(changes[0]),
+          avg(changes[2]),
+          lastOverlap,
+          bound,
+        ]);
+        const shift = norm2(center(after), mu),
+          dv = spread(after) - spread(positions),
+          old = balance.at(-1);
+        keep(balance, [
+          count,
+          ((old?.[1] ?? 0) * (count - 1) + avg(delta)) / count,
+          ((old?.[2] ?? 0) * (count - 1) + dv) / count,
+          ((old?.[3] ?? 0) * (count - 1) + shift) / count,
+        ]);
       },
     );
   },
@@ -282,7 +390,7 @@ const drift = descriptor(
   "Drift is an average over possible next steps",
   "WASM experiment",
   "Which initial spreads have negative average one-step drift?",
-  "Averaging independent frozen-state updates reveals the drift; kinetic noise raises the residual floor.",
+  "Cloning gives negative expected drift above a noise-dependent range; pure additive kinetics has constant nonnegative variance drift and no equilibrium floor.",
   "Each point is a real one-step WASM result from the same seeded shape at a selected scale. The affine line is an empirical least-squares fit, and the vertical bars are 95% normal intervals across independent updates.",
   [
     select("stage", "Operator", "clone", [
@@ -323,18 +431,7 @@ const drift = descriptor(
       }));
     groups.forEach((g) => (g.v = spread(g.points)));
     let count = 0;
-    const fit = () => {
-      const rows = groups.filter((g) => g.deltas.length),
-        x = rows.map((g) => g.v),
-        y = rows.map((g) => avg(g.deltas)),
-        xm = avg(x),
-        ym = avg(y),
-        den = x.reduce((s, v) => s + (v - xm) ** 2, 0),
-        slope = den
-          ? x.reduce((s, v, i) => s + (v - xm) * (y[i] - ym), 0) / den
-          : 0;
-      return { slope, intercept: ym - slope * xm };
-    };
+    const fit = () => driftRegression(groups);
     return model(
       () => {
         const f = fit(),
@@ -370,6 +467,18 @@ const drift = descriptor(
                   groups.map((g) => [g.v, f.slope * g.v + f.intercept]),
                   { dashed: true },
                 ),
+                ...(p.stage === "kinetic"
+                  ? [
+                      curve(
+                        "Exact random-walk drift: 2a²(1−1/N)",
+                        groups.map((g) => [
+                          g.v,
+                          2 * p.jitter ** 2 * (1 - 1 / p.walkers),
+                        ]),
+                        { dashed: true },
+                      ),
+                    ]
+                  : []),
               ],
               { segments },
             ),
@@ -389,13 +498,43 @@ const drift = descriptor(
           metrics: [
             metric("Independent updates", count),
             metric("Fitted slope", f.slope),
+            metric(
+              "Slope 95% lower",
+              f.ready ? f.slope - 1.96 * f.slopeSE : "Collecting repetitions",
+            ),
+            metric(
+              "Slope 95% upper",
+              f.ready ? f.slope + 1.96 * f.slopeSE : "Collecting repetitions",
+            ),
             metric("Fitted intercept", f.intercept),
             metric(
-              "Fitted zero crossing",
-              f.slope < 0 ? -f.intercept / f.slope : 0,
+              "Intercept 95% lower",
+              f.ready
+                ? f.intercept - 1.96 * f.interceptSE
+                : "Collecting repetitions",
             ),
+            metric(
+              "Intercept 95% upper",
+              f.ready
+                ? f.intercept + 1.96 * f.interceptSE
+                : "Collecting repetitions",
+            ),
+            metric(
+              "Supported in-range zero crossing",
+              p.stage === "kinetic"
+                ? "No equilibrium floor: additive random walk"
+                : (f.crossing ?? "Not supported by this ensemble"),
+            ),
+            ...(p.stage === "kinetic"
+              ? [
+                  metric(
+                    "Exact constant variance drift",
+                    2 * p.jitter ** 2 * (1 - 1 / p.walkers),
+                  ),
+                ]
+              : []),
           ],
-          message: `${p.stage} operator. Zero crossing is shown as 0 when the fitted slope is nonnegative. All states are alive and unbounded; variance is normalized by N.`,
+          message: `${p.stage} operator; variance is normalized by N. Normal 95% fit intervals propagate independent repetition errors. A crossing is shown only when the slope is significantly negative, the intercept significantly positive, and the crossing lies inside the measured spread range. It remains an empirical zero of drift, not a measured long-run floor. ${p.stage === "kinetic" ? "The exact additive random walk has constant nonnegative drift and no equilibrium floor, even if a noisy regression slope is slightly negative." : "Increase clone jitter to reveal positive small-spread drift and a supported in-range crossing."}`,
           done: count >= groups.length * p.replicates,
         };
       },
@@ -434,8 +573,12 @@ const matching = descriptor(
     select("cost", "Coordinates", "position", [
       { value: "position", label: "Position" },
       { value: "phase", label: "Position + velocity" },
+      { value: "oneD", label: "One coordinate: sorted matching" },
     ]),
     range("weight", "Velocity weight λ", 1, 0, 3, 0.1),
+    range("point", "Target point to edit (capped at N−1)", 0, 0, 15, 1),
+    range("pointX", "Selected target x₁ offset", 0, -2, 2, 0.1),
+    range("pointY", "Selected target x₂ offset", 0, -2, 2, 0.1),
   ],
   async ({ params: p, seed }) => {
     const r = random(seed),
@@ -449,16 +592,21 @@ const matching = descriptor(
       const angle = step * 0.035,
         b = a
           .map((_, i) => a[(i + 3) % a.length])
-          .map((x) => [
-            x[0] + p.translation,
+          .map((x, i) => [
+            x[0] +
+              p.translation +
+              (i === Math.min(p.point, a.length - 1) ? p.pointX : 0),
             p.distortion * Math.sin(x[0] * 2 + angle) +
-              x[1] * (1 + p.distortion),
+              x[1] * (1 + p.distortion) +
+              (i === Math.min(p.point, a.length - 1) ? p.pointY : 0),
             x[2],
           ]),
         cost = (x) =>
           p.cost === "phase"
             ? [x[0], x[1], Math.sqrt(p.weight) * x[2]]
-            : x.slice(0, 2),
+            : p.cost === "oneD"
+              ? [x[0]]
+              : x.slice(0, 2),
         aa = a.map(cost),
         bb = b.map(cost),
         t = transport(aa, bb),
@@ -515,9 +663,26 @@ const matching = descriptor(
               Math.abs(t.cost - t.barycenter - t.centered),
             ),
             metric("Product coupling cost", t.proxy + t.barycenter),
+            ...(p.cost === "oneD"
+              ? [
+                  metric(
+                    "Sorted one-coordinate cost",
+                    avg(
+                      a
+                        .map((x) => x[0])
+                        .sort((x, y) => x - y)
+                        .map(
+                          (x, i) =>
+                            (x - b.map((x) => x[0]).sort((x, y) => x - y)[i]) **
+                            2,
+                        ),
+                    ),
+                  ),
+                ]
+              : []),
           ],
           message:
-            "Permutation is fixed at a cyclic shift of three labels. Play changes the distortion phase while preserving the barycenter identity. Hungarian objective uses all selected coordinates.",
+            "Permutation is a cyclic shift of three labels. The selected-point controls edit individual target coordinates. Play changes distortion phase. The one-coordinate mode compares Hungarian cost with exact sorted matching; its connecting lines are displayed in the same spatial projection but only x₁ contributes to cost. Position/phase-space modes use every selected cost coordinate.",
           done: step >= 200,
         };
       },
@@ -630,9 +795,14 @@ const proxy = descriptor(
           metric("Centered optimum", t.centered),
           metric("Variance proxy", t.proxy),
           metric("Envelope gap", t.proxy - t.centered),
+          metric(
+            "Upward centered-distance increments",
+            history.slice(1).filter((row, i) => row[1] > history[i][1] + 1e-12)
+              .length,
+          ),
         ],
         message:
-          "Independent WASM random streams, sphere reward, unbounded domain. Every cloud contains N equal masses; the exact Hungarian solver uses all N points.",
+          "Independent WASM random streams, sphere reward, unbounded domain. The variance sum is an upper bound on centered optimal transport at every measured state; it does not require monotonic distance along a noisy trajectory. The slot coupling is another feasible cost and can exceed the variance-sum product coupling. Each cloud has N equal masses.",
         done: step >= 240,
       }),
       async () => {
@@ -650,8 +820,8 @@ const ou = descriptor(
   "Friction removes memory while noise restores variance",
   "Mathematical model",
   "Can the velocity mean decay while its variance increases?",
-  "Mean velocity follows 2e⁻ᵞᵗ and variance approaches T. Under shared innovations, pair separation decays exactly.",
-  "Exact discrete sampling of dV=−γVdt+L dB, with no force or cap. Fixed-temperature mode sets L=√(2γT); fixed-diffusion mode sets L=√(2T), so the thermal variance is T/γ.",
+  "The run covers eight friction times. Finite-population mean and variance fluctuate inside sampling bands while shared-noise pair separation follows the exact exponential.",
+  "Exact sampling of dV=−γVdt+L dB without force or cap. Fixed temperature sets L=√(2γT); fixed diffusion sets L=√(2T), changing equilibrium variance to T/γ. Position uses trapezoid integration with its own exact discrete covariance reference.",
   [
     range("gamma", "Friction γ", 1, 0.1, 3, 0.1),
     range("temperature", "Temperature / diffusion parameter", 0.5, 0.1, 1, 0.1),
@@ -666,22 +836,36 @@ const ou = descriptor(
     const r = random(seed),
       eq = p.mode === "temperature" ? p.temperature : p.temperature / p.gamma,
       a = Math.exp(-p.gamma * p.h),
-      s = Math.sqrt(eq * (1 - a * a));
+      s = Math.sqrt(eq * (1 - a * a)),
+      targetSteps = Math.ceil(8 / (p.gamma * p.h)),
+      stride = Math.ceil(targetSteps / 400),
+      M = [
+        [1, (p.h * (1 + a)) / 2],
+        [0, a],
+      ],
+      g = [(p.h * s) / 2, s],
+      extent = Math.max(4, 4 * Math.sqrt(eq));
     let v = Array(p.walkers).fill(2),
       w = Array(p.walkers).fill(-2),
       x = Array(p.walkers).fill(0),
       step = 0,
-      h = [];
-    const record = () => {
-      const t = step * p.h;
-      keep(h, [
-        t,
+      C = [
+        [0, 0],
+        [0, 0],
+      ],
+      history = [];
+    const theoreticalVariance = (t) => eq * -Math.expm1(-2 * p.gamma * t),
+      expectedVariance = (t) => (1 - 1 / p.walkers) * theoreticalVariance(t),
+      varianceSE = (t) => expectedVariance(t) * Math.sqrt(2 / (p.walkers - 1));
+    const record = () =>
+      keep(history, [
+        step * p.h,
         avg(v),
         varOf(v),
         varOf(x),
         avg(v.map((z, i) => Math.abs(z - w[i]))),
+        (1 - 1 / p.walkers) * C[0][0],
       ]);
-    };
     record();
     return model(
       () => {
@@ -697,49 +881,87 @@ const ou = descriptor(
               [
                 curve(
                   "Sample mean",
-                  h.map((z) => [z[0], z[1]]),
+                  history.map((z) => [z[0], z[1]]),
                 ),
                 curve(
                   "2 exp(−γt)",
-                  h.map((z) => [z[0], 2 * Math.exp(-p.gamma * z[0])]),
+                  history.map((z) => [z[0], 2 * Math.exp(-p.gamma * z[0])]),
+                  { dashed: true },
+                ),
+                ...[-1, 1].map((sign) =>
+                  curve(
+                    `Mean 95% ${sign < 0 ? "lower" : "upper"}`,
+                    history.map((z) => [
+                      z[0],
+                      2 * Math.exp(-p.gamma * z[0]) +
+                        sign *
+                          1.96 *
+                          Math.sqrt(theoreticalVariance(z[0]) / p.walkers),
+                    ]),
+                    { dashed: true },
+                  ),
+                ),
+              ],
+            ),
+            chart(
+              "Variance restored by noise",
+              "Physical time",
+              "Velocity variance",
+              [
+                curve(
+                  "Velocity variance",
+                  history.map((z) => [z[0], z[2]]),
+                ),
+                curve(
+                  "Expected empirical variance",
+                  history.map((z) => [z[0], expectedVariance(z[0])]),
+                  { dashed: true },
+                ),
+                ...[-1, 1].map((sign) =>
+                  curve(
+                    `Variance 95% ${sign < 0 ? "lower" : "upper"}`,
+                    history.map((z) => [
+                      z[0],
+                      Math.max(
+                        0,
+                        expectedVariance(z[0]) + sign * 1.96 * varianceSE(z[0]),
+                      ),
+                    ]),
+                    { dashed: true },
+                  ),
+                ),
+              ],
+            ),
+            chart(
+              "Position integration has its own reference",
+              "Physical time",
+              "Position variance",
+              [
+                curve(
+                  "Trapezoid-integrated samples",
+                  history.map((z) => [z[0], z[3]]),
+                ),
+                curve(
+                  "Exact discrete covariance recurrence",
+                  history.map((z) => [z[0], z[5]]),
                   { dashed: true },
                 ),
               ],
             ),
-            chart("Variance restored by noise", "Physical time", "Variance", [
-              curve(
-                "Velocity variance",
-                h.map((z) => [z[0], z[2]]),
-              ),
-              curve(
-                "Expected empirical variance",
-                h.map((z) => [
-                  z[0],
-                  (1 - 1 / p.walkers) *
-                    eq *
-                    (1 - Math.exp(-2 * p.gamma * z[0])),
-                ]),
-                { dashed: true },
-              ),
-              curve(
-                "Position variance (trapezoid integral)",
-                h.map((z) => [z[0], z[3]]),
-              ),
-            ]),
             chart("Velocity distribution", "v", "Density", [
-              curve("Measured", histogram(v, -5, 5)),
+              curve("Measured", histogram(v, -extent, extent)),
               curve(
                 "Current Gaussian",
-                grid(-5, 5).map((z) => [
-                  z,
-                  gaussian(
-                    z,
-                    2 * Math.exp(-p.gamma * t),
-                    Math.sqrt(
-                      Math.max(1e-6, eq * (1 - Math.exp(-2 * p.gamma * t))),
-                    ),
-                  ),
-                ]),
+                t > 0
+                  ? grid(-extent, extent, 121).map((z) => [
+                      z,
+                      gaussian(
+                        z,
+                        2 * Math.exp(-p.gamma * t),
+                        Math.sqrt(theoreticalVariance(t)),
+                      ),
+                    ])
+                  : [],
                 { dashed: true },
               ),
             ]),
@@ -750,11 +972,11 @@ const ou = descriptor(
               [
                 curve(
                   "Measured |v−w|",
-                  h.map((z) => [z[0], z[4]]),
+                  history.map((z) => [z[0], z[4]]),
                 ),
                 curve(
                   "4 exp(−γt)",
-                  h.map((z) => [z[0], 4 * Math.exp(-p.gamma * z[0])]),
+                  history.map((z) => [z[0], 4 * Math.exp(-p.gamma * z[0])]),
                   { dashed: true },
                 ),
               ],
@@ -765,21 +987,35 @@ const ou = descriptor(
             metric("Mean velocity", avg(v)),
             metric("Velocity variance", varOf(v)),
             metric("Sample size", p.walkers),
+            metric("Elapsed friction times γt", p.gamma * t),
+            metric(
+              "Expected finite-time empirical variance",
+              expectedVariance(t),
+            ),
+            metric(
+              "Mean sampling standard error",
+              Math.sqrt(theoreticalVariance(t) / p.walkers),
+            ),
+            metric("Variance sampling standard error", varianceSE(t)),
+            metric("Integration steps per displayed update", stride),
           ],
           message:
-            "Every velocity gets an independent Gaussian innovation; paired v,w reuse that same innovation at each step. Position uses the trapezoid integral of sampled velocities.",
-          done: step >= 400,
+            "The Gaussian bands describe finite-N sampling at each time, not simultaneous coverage of every plotted time. Exact OU updates are batched so every parameter setting reaches eight friction times in at most 400 display updates. Paired velocities reuse innovations. The position comparison uses the trapezoid scheme’s covariance, not continuous integrated-OU covariance.",
+          done: step >= targetSteps,
         };
       },
       async () => {
-        for (let i = 0; i < v.length; i++) {
-          const z = s * r.normal(),
-            old = v[i];
-          v[i] = a * old + z;
-          w[i] = a * w[i] + z;
-          x[i] += (p.h * (old + v[i])) / 2;
+        for (let k = 0; k < stride && step < targetSteps; k++) {
+          for (let i = 0; i < v.length; i++) {
+            const z = s * r.normal(),
+              old = v[i];
+            v[i] = a * old + z;
+            w[i] = a * w[i] + z;
+            x[i] += (p.h * (old + v[i])) / 2;
+          }
+          C = covarianceStep(C, M, g);
+          step++;
         }
-        step++;
         record();
       },
     );
@@ -875,7 +1111,18 @@ const boundary = descriptor(
                   .sort((a, b) => a[0] - b[0]),
               ),
             ],
-            { yDomain: [0, 1] },
+            {
+              yDomain: [0, 1],
+              segments: stats
+                .filter((z) => z.total)
+                .map((z) => {
+                  const ci = wilsonInterval(z.survive, z.total);
+                  return [
+                    [p.box - z.x, ci[0]],
+                    [p.box - z.x, ci[1]],
+                  ];
+                }),
+            },
           ),
           {
             title: "Unkilled phase-space covariance",
@@ -890,6 +1137,21 @@ const boundary = descriptor(
           metric("Covariance determinant", det),
           metric("Mean inward displacement", p.start * p.box - mu[0]),
           metric(
+            "Sample inward displacement",
+            samples.length
+              ? p.start * p.box - avg(samples.map((s) => s.z[0]))
+              : 0,
+          ),
+          metric(
+            "Return-mean sampling standard error",
+            standardError(samples.map((s) => s.z[0])),
+          ),
+          metric(
+            "Exact unabsorbed mean confining energy",
+            0.5 * p.stiffness * (mu[0] ** 2 + C[0][0]) +
+              0.5 * (mu[1] ** 2 + C[1][1]),
+          ),
+          metric(
             "Mean selected confining energy",
             avg(
               samples.map(
@@ -899,7 +1161,7 @@ const boundary = descriptor(
           ),
         ],
         message:
-          "The covariance matrix describes the unabsorbed linear transition. Survival is measured separately with full-step killing. Plot retains the latest 400 selected-start samples.",
+          "The covariance and expected return/energy describe the unabsorbed linear transition. Survival is measured separately with full-step killing; its bars are 95% Wilson intervals. Return-mean uncertainty and the displayed cloud use the latest 400 selected-start samples, including trajectories that crossed the boundary.",
         done: count >= 1200,
       }),
       async () => {
@@ -1027,7 +1289,7 @@ const comparison = descriptor(
         },
         message:
           r < 1
-            ? "The coordinate inequalities hold with the displayed positive weights, giving contraction for this illustrative recurrence."
+            ? "The coordinate inequalities contract the homogeneous part of this illustrative affine recurrence. The residual source sets its floor; when the initial value is below that floor, the trajectory can rise while the homogeneous factor remains below one."
             : "The current comparison matrix has r ≥ 1. Reduce coupling or kinetic diagonal damping to recover a contracting envelope.",
         done: step >= 150 || envelope > 1e8,
       }),
@@ -1060,6 +1322,10 @@ const survival = descriptor(
       { value: "conservative", label: "Conservative" },
     ]),
     select("replicas", "Replicas", 512, [128, 512, 1024]),
+    select("horizon", "Run horizon", "empirical", [
+      { value: "empirical", label: "Stop when survivor sample thins" },
+      { value: "exact", label: "Follow exact law through 160 blocks" },
+    ]),
   ],
   async ({ params: p, seed }) => {
     const r = random(seed),
@@ -1093,7 +1359,10 @@ const survival = descriptor(
     return model(
       () => {
         const last = history.at(-1),
-          alive = states.filter((x) => x >= 0).length;
+          alive = states.filter((x) => x >= 0).length,
+          expectedSurvivors = last[1] * p.replicas,
+          threshold = Math.min(30, p.replicas / 4),
+          sampleThin = alive < threshold || expectedSurvivors < threshold;
         return {
           step,
           time: step,
@@ -1142,7 +1411,18 @@ const survival = descriptor(
                   { dashed: true },
                 ),
               ],
-              { yDomain: [0, 1] },
+              {
+                yDomain: [0, 1],
+                segments: alive
+                  ? [0, 1, 2].map((i) => {
+                      const ci = wilsonInterval(last[i + 6] * alive, alive);
+                      return [
+                        [i, ci[0]],
+                        [i, ci[1]],
+                      ];
+                    })
+                  : [],
+              },
             ),
             chart(
               "Replica state / cemetery",
@@ -1158,6 +1438,14 @@ const survival = descriptor(
           ],
           metrics: [
             metric("Surviving replicas", alive),
+            metric("Expected surviving replicas", expectedSurvivors),
+            metric("Empirical stopping threshold", threshold),
+            metric(
+              "Conditional sample stage",
+              sampleThin
+                ? "Sample depleted: read exact law and wide intervals"
+                : "Empirical shape measurement",
+            ),
             metric("QSD survival eigenvalue α", q.alpha),
             metric(
               "Eigenmeasure residual",
@@ -1178,9 +1466,12 @@ const survival = descriptor(
                 (1 + 1.96 ** 2 / p.replicas),
             ),
           ],
-          message:
-            "Conditional estimates use surviving replicas only. The exact kernel continues to show the conditional law even after the finite sample reaches cemetery.",
-          done: step >= 160,
+          message: `Conditional estimates use ${alive} surviving replicas; per-state bars are 95% Wilson intervals. The empirical horizon stops once actual or expected survivors fall below ${threshold}, retaining a useful earlier shape comparison. The optional exact-law horizon continues through 160 blocks and explicitly marks sample depletion.`,
+          done:
+            step >= 160 ||
+            (p.horizon === "empirical" &&
+              p.boundary === "killed" &&
+              sampleThin),
         };
       },
       async () => {
@@ -1361,7 +1652,9 @@ const reaction = descriptor(
       rows = hs.map((h) => ({ h, fixed: [], finite: [] }));
     let step = 0,
       events = [[], []],
-      paths = [[], []];
+      paths = [[], []],
+      pathTotals = [[], []],
+      meanPaths = [[], []];
     return model(
       () => ({
         step,
@@ -1419,11 +1712,15 @@ const reaction = descriptor(
             [
               curve("Fixed p sample", paths[0]),
               curve("Finite rate sample", paths[1]),
+              curve("Fixed p ensemble mean", meanPaths[0]),
+              curve("Finite rate ensemble mean", meanPaths[1]),
               curve(
                 "Fixed p exact expectation",
                 grid(0, 5, 201).map((t) => [
                   t,
-                  0.5 * (1 - (1 - 2 * p.probability) ** Math.floor(t / p.h)),
+                  0.5 *
+                    (1 -
+                      (1 - 2 * p.probability) ** Math.floor((t + 1e-10) / p.h)),
                 ]),
                 { dashed: true },
               ),
@@ -1434,7 +1731,7 @@ const reaction = descriptor(
                   0.5 -
                     0.5 *
                       (1 - 2 * -Math.expm1(-p.rate * p.h)) **
-                        Math.floor(t / p.h),
+                        Math.floor((t + 1e-10) / p.h),
                 ]),
                 { dashed: true },
               ),
@@ -1456,7 +1753,7 @@ const reaction = descriptor(
           ]),
         },
         message:
-          "Accepted events are counted per physical time. Each row uses independent repeated Bernoulli experiments; the two plotted timelines have the same physical duration.",
+          "Accepted events are counted per physical time. The ensemble-mean observables approach their exact expectations; individual binary paths continue to jump between 0 and 1. Pointwise 95% intervals in the table occasionally miss a reference by chance across multiple comparisons.",
         done: step >= 200,
       }),
       async () => {
@@ -1479,6 +1776,12 @@ const reaction = descriptor(
           if (row.h === p.h) {
             events = e;
             paths = path;
+            meanPaths = path.map((trajectory, j) =>
+              trajectory.map(([t, value], i) => {
+                pathTotals[j][i] = (pathTotals[j][i] ?? 0) + value;
+                return [t, pathTotals[j][i] / (step + 1)];
+              }),
+            );
           }
         }
         step++;
@@ -1491,50 +1794,61 @@ const chaos = descriptor(
   "III-03",
   "Watch the empirical law fluctuate between runs",
   "WASM experiment",
-  "How do whole-cloud fluctuations change as N increases?",
-  "Independent initial populations give concentrating empirical averages; a shared random initial displacement introduces visible cloud-to-cloud fluctuations.",
-  "Independent WASM runs measure φ(x)=tanh(x₁) after a fixed number of full updates. The N⁻¹ comparison uses initial independent Monte Carlo variance; measured correlations include the actual copying dynamics.",
+  "How do cloning, marginal variance, and pair dependence contribute to cloud fluctuations?",
+  "The active-cloning ensemble can be compared with a real no-copy baseline. Sampling bands and a permutation null distinguish finite-replica noise from dependence.",
+  "Every replicate runs both the selected cloning strength and a zero-copy control from the same initial population, using independent engine seeds. Error bars resample whole runs. The final marginal variance is measured at observation time; fixed-label pair histograms are calibrated by independently permuting their second labels across runs.",
   [
     select("updates", "Observation update", 4, [1, 4, 12]),
     select("initial", "Initial population", "independent", [
       { value: "independent", label: "Independent Gaussian" },
       { value: "shared", label: "Shared random displacement" },
     ]),
-    range("selection", "Reward exponent", 0, 0, 2, 0.25),
+    range("selection", "Active reward exponent", 1, 0, 2, 0.25),
     range("noise", "Kinetic jump amplitude", 0.05, 0, 0.2, 0.01),
-    select("replicas", "Replicas per N", 24, [12, 24, 48]),
+    select("replicas", "Replicas per N and rule", 96, [48, 96, 192]),
+    select("jointN", "Inspect pair histogram at N", 128, [16, 32, 64, 128]),
   ],
   async ({ params: p, seed, engine }) => {
     const r = random(seed),
       sizes = [16, 32, 64, 128],
-      rows = sizes.map((n) => ({ n, means: [], pairs: [] })),
+      rows = sizes.map((n) => ({
+        n,
+        means: [],
+        within: [],
+        pairs: [],
+        baseline: [],
+        clones: 0,
+        slots: 0,
+        interval: [0, 0],
+        baselineInterval: [0, 0],
+        permutation: permutationJoint([], seed),
+      })),
       base = await configuration(engine, seed, 16);
-    base.gas.fitness.reward_exponent = p.selection;
     base.gas.kinetic.integrator.amplitude = p.noise;
+    const finalGaussianCoefficient = tanhGaussianVariance(
+      1 + (p.initial === "shared" ? 2.25 : 0) + p.updates * p.noise ** 2,
+    );
     let step = 0,
       cloud = [];
-    const reference = Array.from({ length: 20000 }, () =>
-        Math.tanh(r.normal()),
-      ),
-      sigma = varOf(reference);
+    const margvar = (row) => avg(row.within) + sampleVariance(row.means);
+    const offdiag = (row) =>
+      (row.n * sampleVariance(row.means) - margvar(row)) / (row.n - 1);
     return model(
       () => {
-        const last = rows.at(-1),
-          bins = 6,
-          joint = Array.from({ length: bins }, () => Array(bins).fill(0));
-        for (const [a, b] of last.pairs) {
-          const i = Math.min(bins - 1, Math.floor(((a + 1) * bins) / 2)),
-            j = Math.min(bins - 1, Math.floor(((b + 1) * bins) / 2));
-          joint[i][j]++;
-        }
-        const count = Math.max(1, last.pairs.length),
-          mx = joint.map((row) => row.reduce((a, b) => a + b, 0) / count),
-          my = joint[0].map(
-            (_, j) => joint.reduce((s, row) => s + row[j], 0) / count,
-          ),
-          difference = joint.map((row, i) =>
-            row.map((v, j) => v / count - mx[i] * my[j]),
-          );
+        const selected = rows.find((row) => row.n === p.jointN),
+          joint = selected.permutation;
+        const nullSegments = rows
+          .filter((row) => row.permutation.ready)
+          .map((row) => [
+            [row.n, row.permutation.lower],
+            [row.n, row.permutation.upper],
+          ]);
+        const varianceSegments = rows
+          .filter((row) => row.means.length >= 8)
+          .map((row) => [
+            [row.n, Math.max(1e-12, row.interval[0])],
+            [row.n, row.interval[1]],
+          ]);
         return {
           step,
           time: p.updates,
@@ -1545,72 +1859,196 @@ const chaos = descriptor(
               "Var[L_N tanh(x₁)]",
               [
                 curve(
-                  "Measured across independent runs",
+                  "Active engine: measured variance",
                   rows
-                    .filter((z) => z.means.length > 1)
-                    .map((z) => [
-                      z.n,
-                      (varOf(z.means) * z.means.length) / (z.means.length - 1),
-                    ]),
+                    .filter((row) => row.means.length > 1)
+                    .map((row) => [row.n, sampleVariance(row.means)]),
                 ),
                 curve(
-                  "Independent initial σ²/N",
-                  sizes.map((n) => [n, sigma / n]),
+                  "No-copy engine baseline",
+                  rows
+                    .filter((row) => row.baseline.length > 1)
+                    .map((row) => [row.n, sampleVariance(row.baseline)]),
+                ),
+                curve(
+                  "Active final marginal variance / N",
+                  rows
+                    .filter((row) => row.means.length > 1)
+                    .map((row) => [row.n, margvar(row) / row.n]),
+                  { dashed: true },
+                ),
+                curve(
+                  "Exact no-copy final marginal coefficient / N",
+                  sizes.map((n) => [n, finalGaussianCoefficient / n]),
                   { dashed: true },
                 ),
               ],
-              { xScale: "log", yScale: "log" },
+              { xScale: "log", yScale: "log", segments: varianceSegments },
+            ),
+            chart(
+              "Pair histogram calibrated against independence",
+              "N",
+              "Joint-product L¹",
+              [
+                curve(
+                  "Observed fixed-label statistic",
+                  rows
+                    .filter((row) => row.pairs.length)
+                    .map((row) => [row.n, row.permutation.l1]),
+                ),
+                curve(
+                  "Permutation-null mean",
+                  rows
+                    .filter((row) => row.permutation.ready)
+                    .map((row) => [row.n, avg(row.permutation.nullValues)]),
+                  { dashed: true },
+                ),
+              ],
+              { segments: nullSegments },
+            ),
+            {
+              title: `N=${p.jointN} joint minus marginal product`,
+              matrix: joint.difference,
+              rowLabels: grid(-1, 1, 6).map((x) => x.toFixed(1)),
+              columnLabels: grid(-1, 1, 6).map((x) => x.toFixed(1)),
+            },
+            chart(
+              "Independence-null distribution at selected N",
+              "Joint-product L¹",
+              "Null density",
+              [
+                curve(
+                  "127 permutations of second labels",
+                  histogram(joint.nullValues, 0, 2, 24),
+                ),
+                dots("Observed statistic", joint.ready ? [[joint.l1, 0]] : []),
+              ],
             ),
             chart(
               "Distribution of whole-cloud averages",
               "L_N φ",
               "Density",
-              rows.map((z) => curve(`N=${z.n}`, histogram(z.means, -1, 1, 16))),
+              rows.map((row) =>
+                curve(`N=${row.n}`, histogram(row.means, -1, 1, 16)),
+              ),
             ),
             chart("Latest real engine cloud", "x₁", "x₂", [
-              dots("Walkers", cloud),
+              dots("Active-rule walkers", cloud),
             ]),
-            {
-              title: "N=128 two-label joint minus marginal product",
-              matrix: difference,
-              rowLabels: grid(-1, 1, bins).map((x) => x.toFixed(1)),
-              columnLabels: grid(-1, 1, bins).map((x) => x.toFixed(1)),
-            },
           ],
           metrics: [
-            metric("Independent completed runs", step),
-            metric("N=128 replicas", last.means.length),
+            metric("Independent completed runs", 2 * step),
+            metric(`N=${p.jointN} replicas per rule`, selected.means.length),
             metric(
-              "N=128 joint-product L¹",
-              difference.flat().reduce((s, v) => s + Math.abs(v), 0),
+              "Active accepted clone fraction",
+              rows.reduce((s, row) => s + row.clones, 0) /
+                Math.max(
+                  1,
+                  rows.reduce((s, row) => s + row.slots, 0),
+                ),
+            ),
+            metric("Selected joint-product L¹", joint.l1),
+            metric(
+              "Permutation-null 2.5% quantile",
+              joint.ready ? joint.lower : "Collecting replicas",
+            ),
+            metric(
+              "Permutation-null 97.5% quantile",
+              joint.ready ? joint.upper : "Collecting replicas",
+            ),
+            metric(
+              "Permutation p-value",
+              joint.ready ? joint.pValue : "Collecting replicas",
+            ),
+            metric(
+              "Exact no-copy evolved marginal coefficient",
+              finalGaussianCoefficient,
+            ),
+            metric(
+              "Active all-label covariance contribution",
+              selected.means.length > 1
+                ? (1 - 1 / selected.n) * offdiag(selected)
+                : 0,
             ),
           ],
-          message:
-            "Uncertainty is across entire runs. Two labels are fixed slots 0 and 1; sparse joint histograms improve as more independent replicas finish. Observation time is in discrete full updates.",
+          table: {
+            columns: [
+              "N",
+              "Replicas",
+              "Active variance",
+              "95% bootstrap lower",
+              "95% bootstrap upper",
+              "No-copy variance",
+              "No-copy 95% lower",
+              "No-copy 95% upper",
+              "Final marginal / N",
+              "Average off-diagonal covariance",
+              "Permutation p-value",
+            ],
+            rows: rows.map((row) => [
+              row.n,
+              row.means.length,
+              sampleVariance(row.means),
+              ...row.interval,
+              sampleVariance(row.baseline),
+              ...row.baselineInterval,
+              margvar(row) / row.n,
+              offdiag(row),
+              row.permutation.ready ? row.permutation.pValue : "Collecting",
+            ]),
+          },
+          message: `${p.selection === 0 ? "The selected rule also has copying disabled, providing a second independent engine baseline." : "The selected rule performs active cloning; its accepted fraction is measured at every full update."} Intervals resample entire runs, not walker slots. The pair null preserves sampled marginals and destroys across-label dependence; a large raw histogram L¹ is ordinary at small replica counts. The covariance identity uses all labels: Var(mean)=marginal variance/N+(1−1/N)average off-diagonal covariance. For shared initial displacement, the marginal/N curve excludes the persistent covariance term.`,
           done: step >= sizes.length * p.replicas,
         };
       },
       async () => {
         if (step >= sizes.length * p.replicas) return;
         const row = rows[step % rows.length],
-          config = structuredClone(base);
-        config.walkers = row.n;
-        config.gas.seed = (seed + 104729 * (step + 1)) >>> 0;
-        const shared = p.initial === "shared" ? 1.5 * r.normal() : 0,
+          shared = p.initial === "shared" ? 1.5 * r.normal() : 0,
           positions = Array.from({ length: row.n }, () => [
             r.normal() + shared,
             r.normal(),
           ]);
-        const gas = await engine.create(config);
-        try {
-          await gas.set_population(JSON.stringify({ positions }));
-          cloud = pts(await gas.step(p.updates));
-          const values = cloud.map((x) => Math.tanh(x[0]));
-          row.means.push(avg(values));
-          row.pairs.push(values.slice(0, 2));
-        } finally {
-          gas.free();
+        for (let rule = 0; rule < 2; rule++) {
+          const config = structuredClone(base);
+          config.walkers = row.n;
+          config.gas.seed = (seed + 104729 * (2 * step + rule + 1)) >>> 0;
+          config.gas.fitness.reward_exponent = rule === 0 ? p.selection : 0;
+          const gas = await engine.create(config);
+          try {
+            await gas.set_population(JSON.stringify({ positions }));
+            let frame;
+            for (let update = 0; update < p.updates; update++) {
+              frame = await gas.step(1);
+              if (rule === 0) {
+                row.clones += frame.report.clones;
+                row.slots += row.n;
+              }
+            }
+            const points = pts(frame),
+              values = points.map((x) => Math.tanh(x[0]));
+            if (rule === 0) {
+              cloud = points;
+              row.means.push(avg(values));
+              row.within.push(varOf(values));
+              row.pairs.push(values.slice(0, 2));
+            } else row.baseline.push(avg(values));
+          } finally {
+            gas.free();
+          }
         }
+        row.interval = varianceInterval(
+          row.means,
+          seed + row.n * 7919 + row.means.length,
+        );
+        row.baselineInterval = varianceInterval(
+          row.baseline,
+          seed + row.n * 7907 + row.means.length,
+        );
+        row.permutation = permutationJoint(
+          row.pairs,
+          seed + row.n * 104729 + row.means.length,
+        );
         step++;
       },
     );
@@ -1622,8 +2060,8 @@ const limits = descriptor(
   "Two limits and a stationary residual",
   "Mathematical model",
   "Does a stationary numerical law annihilate the continuous generator?",
-  "Population growth reduces sampling noise. Timestep refinement reduces the Euler stationary bias; the exact discrete and continuous residuals differ by an O(h) term.",
-  "Matched independent OU reference dX=−Xdt+√(2T)dB, Euler X′=(1−h)X+√(2Th)Z. For φ=x², (P_hφ−φ)/h=(−2+h)x²+2T while Lφ=−2x²+2T.",
+  "The paired operator difference isolates timestep bias. Single-cloud residuals fluctuate at their sampling scale; their analytic expectations and intervals explain those fluctuations.",
+  "Independent Euler OU: X′=(1−h)X+√(2Th)Z. For φ=x², discrete residual=(−2+h)mean(x²)+2T and continuous residual=−2mean(x²)+2T. Their paired difference h·mean(x²) removes the shared leading fluctuation.",
   [
     range("temperature", "OU temperature T", 1, 0.2, 2, 0.2),
     select("initial", "Initial law", "stationary", [
@@ -1660,83 +2098,197 @@ const limits = descriptor(
           ? -avg(c.x)
           : (-2 + (continuous ? 0 : c.h)) * avg(c.x.map((x) => x * x)) +
             2 * p.temperature;
-    const observe = (c) =>
-      p.test === "constant"
-        ? 1
-        : p.test === "linear"
-          ? avg(c.x)
-          : avg(c.x.map((x) => x * x));
+    const stats = (c) => {
+      const iterations = Math.round((step * 0.2) / c.h),
+        decay = (1 - c.h) ** iterations,
+        mu = p.initial === "point" ? 2 * decay : 0,
+        variance =
+          p.initial === "point"
+            ? (p.temperature / (1 - c.h / 2)) * (1 - decay ** 2)
+            : p.temperature / (1 - c.h / 2),
+        second = mu * mu + variance;
+      const expectedDiscrete =
+          p.test === "constant"
+            ? 0
+            : p.test === "linear"
+              ? -mu
+              : (-2 + c.h) * second + 2 * p.temperature,
+        expectedContinuous =
+          p.test === "constant"
+            ? 0
+            : p.test === "linear"
+              ? -mu
+              : -2 * second + 2 * p.temperature;
+      const momentSE =
+          p.test === "constant"
+            ? 0
+            : p.test === "linear"
+              ? Math.sqrt(variance / c.n)
+              : Math.sqrt((2 * variance ** 2 + 4 * mu * mu * variance) / c.n),
+        discreteSE = p.test === "square" ? (2 - c.h) * momentSE : momentSE,
+        continuousSE = p.test === "square" ? 2 * momentSE : momentSE,
+        pairedSE = p.test === "square" ? c.h * momentSE : 0;
+      return {
+        expectedDiscrete,
+        expectedContinuous,
+        discreteSE,
+        continuousSE,
+        paired: residual(c, false) - residual(c, true),
+        expectedPaired: expectedDiscrete - expectedContinuous,
+        pairedSE,
+      };
+    };
     const record = () =>
       keep(history, [
         step * 0.2,
-        ...cells.at(-1).flatMap((c) => [residual(c, false), residual(c, true)]),
+        ...cells
+          .at(-1)
+          .flatMap((c) => [
+            residual(c, false),
+            residual(c, true),
+            stats(c).paired,
+            stats(c).expectedPaired,
+          ]),
       ]);
     record();
     return model(
-      () => ({
-        step,
-        time: step * 0.2,
-        charts: [
-          {
-            title: "Finite-step residual E[(P_hφ−φ)/h]",
-            matrix: cells.map((row) => row.map((c) => residual(c, false))),
-            rowLabels: sizes.map((n) => `N=${n}`),
-            columnLabels: hs.map((h) => `h=${h}`),
-          },
-          {
-            title: "Continuous generator residual E[Lφ]",
-            matrix: cells.map((row) => row.map((c) => residual(c, true))),
-            rowLabels: sizes.map((n) => `N=${n}`),
-            columnLabels: hs.map((h) => `h=${h}`),
-          },
-          chart(
-            "N=256 residuals across time",
-            "Physical time",
-            "Weak residual",
-            hs.flatMap((h, j) => [
-              curve(
-                `Discrete h=${h}`,
-                history.map((z) => [z[0], z[1 + 2 * j]]),
+      () => {
+        const selected = cells.at(-1);
+        return {
+          step,
+          time: step * 0.2,
+          charts: [
+            {
+              title: "Finite-step residual E[(P_hφ−φ)/h]",
+              matrix: cells.map((row) => row.map((c) => residual(c, false))),
+              rowLabels: sizes.map((n) => `N=${n}`),
+              columnLabels: hs.map((h) => `h=${h}`),
+            },
+            {
+              title: "Continuous generator residual E[Lφ]",
+              matrix: cells.map((row) => row.map((c) => residual(c, true))),
+              rowLabels: sizes.map((n) => `N=${n}`),
+              columnLabels: hs.map((h) => `h=${h}`),
+            },
+            chart(
+              "Paired generator difference isolates timestep bias",
+              "h",
+              "Discrete minus continuous residual",
+              [
+                curve(
+                  "Measured paired difference, N=256",
+                  selected.map((c) => [c.h, stats(c).paired]),
+                ),
+                curve(
+                  "Exact current-law expectation",
+                  selected.map((c) => [c.h, stats(c).expectedPaired]),
+                  { dashed: true },
+                ),
+              ],
+              {
+                segments: selected.map((c) => {
+                  const s = stats(c);
+                  return [
+                    [c.h, s.expectedPaired - 1.96 * s.pairedSE],
+                    [c.h, s.expectedPaired + 1.96 * s.pairedSE],
+                  ];
+                }),
+              },
+            ),
+            {
+              title:
+                "Continuous residual standardized by its exact sampling error",
+              matrix: cells.map((row) =>
+                row.map((c) => {
+                  const s = stats(c);
+                  return s.continuousSE
+                    ? (residual(c, true) - s.expectedContinuous) /
+                        s.continuousSE
+                    : 0;
+                }),
               ),
-              curve(
-                `Continuous h=${h}`,
-                history.map((z) => [z[0], z[2 + 2 * j]]),
-                { dashed: true },
-              ),
-            ]),
-          ),
-        ],
-        metrics: [
-          metric("Physical time", step * 0.2),
-          metric("Conservative survival", 1),
-          metric("Analytic discrete stationary residual", 0),
-          metric(
-            "Continuum stationary bias at h=.2",
-            p.test === "square" ? (-p.temperature * 0.2) / (1 - 0.2 / 2) : 0,
-          ),
-        ],
-        table: {
-          columns: [
-            "N",
-            "h",
-            "Empirical φ",
-            "Discrete residual",
-            "Continuous residual",
+              rowLabels: sizes.map((n) => `N=${n}`),
+              columnLabels: hs.map((h) => `h=${h}`),
+              colorDomain: [-3, 3],
+            },
+            chart(
+              "Paired residuals across time, N=256",
+              "Physical time",
+              "Discrete minus continuous",
+              hs.flatMap((h, j) => [
+                curve(
+                  `Paired h=${h}`,
+                  history.map((z) => [z[0], z[3 + 4 * j]]),
+                ),
+                curve(
+                  `Expected h=${h}`,
+                  history.map((z) => [z[0], z[4 + 4 * j]]),
+                  { dashed: true },
+                ),
+              ]),
+            ),
           ],
-          rows: cells
-            .flat()
-            .map((c) => [
-              c.n,
-              c.h,
-              observe(c),
-              residual(c, false),
-              residual(c, true),
-            ]),
-        },
-        message:
-          "All cells advance the same physical duration. Matrix rows change N and columns change h. Residuals use exact conditional expectations of the selected operator, averaged over the simulated population.",
-        done: step >= 150,
-      }),
+          metrics: [
+            metric("Physical time", step * 0.2),
+            metric("Conservative survival", 1),
+            metric("Analytic discrete stationary residual", 0),
+            metric(
+              "Continuum stationary bias at h=.2",
+              p.test === "square" ? (-p.temperature * 0.2) / (1 - 0.2 / 2) : 0,
+            ),
+            metric(
+              "N=256 paired identity residual",
+              Math.max(
+                ...selected.map((c) =>
+                  Math.abs(
+                    stats(c).paired -
+                      (p.test === "square"
+                        ? c.h * avg(c.x.map((x) => x * x))
+                        : 0),
+                  ),
+                ),
+              ),
+            ),
+            metric(
+              "N=256 discrete sampling SE at h=.05",
+              stats(selected[2]).discreteSE,
+            ),
+          ],
+          table: {
+            columns: [
+              "N",
+              "h",
+              "Discrete sample",
+              "Exact discrete expectation",
+              "Discrete 95% half-width",
+              "Continuous sample",
+              "Exact continuous expectation",
+              "Continuous 95% half-width",
+              "Paired difference",
+              "Exact paired expectation",
+              "Paired 95% half-width",
+            ],
+            rows: cells.flat().map((c) => {
+              const s = stats(c);
+              return [
+                c.n,
+                c.h,
+                residual(c, false),
+                s.expectedDiscrete,
+                1.96 * s.discreteSE,
+                residual(c, true),
+                s.expectedContinuous,
+                1.96 * s.continuousSE,
+                s.paired,
+                s.expectedPaired,
+                1.96 * s.pairedSE,
+              ];
+            }),
+          },
+          message: `${p.initial === "stationary" ? "Each cell begins in its own Euler stationary Gaussian law." : "Point initialization reveals time relaxation before stationary comparisons."} All cells advance equal physical time. Standardized residuals measure sampling deviations in standard-error units; a finer grid can have a larger raw fluctuation. The paired difference uses the same cloud in both operators and isolates the O(h) term. Gaussian moment formulas provide exact current-law expectations and pointwise sampling errors.`,
+          done: step >= 150,
+        };
+      },
       async () => {
         for (const c of cells.flat())
           for (let k = 0; k < Math.round(0.2 / c.h); k++)
@@ -1780,6 +2332,21 @@ const equilibrium = descriptor(
         return a.map((v) => v / sum);
       },
       target = normalize(R.map((v) => v ** (p.ratio * p.dimension)));
+    const fineN = 3072,
+      fineDx = (2 * Math.PI) / fineN,
+      fineX = Array.from(
+        { length: fineN },
+        (_, i) => -Math.PI + (i + 0.5) * fineDx,
+      ),
+      fineWeights = fineX.map((z) =>
+        Math.exp(
+          ((Math.log(p.contrast) * (1 + Math.cos(z))) / 2) *
+            p.ratio *
+            p.dimension,
+        ),
+      ),
+      fineNormalization = fineWeights.reduce((s, v) => s + v, 0) * fineDx,
+      fineTarget = fineWeights.map((v) => v / fineNormalization);
     let rho = normalize(
         x.map((z) => (p.initial === "uniform" ? 1 : Math.exp(-Math.cos(z)))),
       ),
@@ -1793,7 +2360,12 @@ const equilibrium = descriptor(
         m = F.reduce((s, v, i) => s + v * rho[i] * dx, 0),
         res = rho.map((v, i) => v * (F[i] - m)),
         error = rho.reduce((s, v, i) => s + Math.abs(v - target[i]) * dx, 0);
-      return { F, m, res, error };
+      const reconstructionError = fineTarget.reduce(
+        (s, v, i) =>
+          s + Math.abs(rho[Math.floor((i * n) / fineN)] - v) * fineDx,
+        0,
+      );
+      return { F, m, res, error, reconstructionError };
     };
     const record = () => {
       const m = measures();
@@ -1801,6 +2373,7 @@ const equilibrium = descriptor(
         time,
         m.error,
         Math.sqrt(m.res.reduce((s, v) => s + v * v * dx, 0)),
+        m.reconstructionError,
       ]);
     };
     record();
@@ -1856,6 +2429,11 @@ const equilibrium = descriptor(
                   "Residual L² norm",
                   history.map((z) => [z[0], z[2]]),
                 ),
+                curve(
+                  "Piecewise-constant spatial reconstruction error",
+                  history.map((z) => [z[0], z[3]]),
+                  { dashed: true },
+                ),
               ],
             ),
           ],
@@ -1865,11 +2443,15 @@ const equilibrium = descriptor(
               rho.reduce((s, v) => s + v * dx, 0),
             ),
             metric("L¹ profile error", m.error),
+            metric(
+              "L¹ reconstruction error against 3072-cell reference",
+              m.reconstructionError,
+            ),
             metric("Fitness range", Math.max(...m.F) - Math.min(...m.F)),
             metric("Grid cells", n),
           ],
           message:
-            "β=1; α is the selected ratio. This is the local replicator reference, with no transport. Change grid resolution to inspect quadrature sensitivity.",
+            "β=1; α is the selected ratio. The same-grid profile error measures equilibration; the separate piecewise-constant reconstruction error against 3072 reference cells measures spatial resolution and need not vanish in time. Changing grid resolution reduces that remaining error. This reference evolves the local replicator equation without transport.",
           done: step >= 300,
         };
       },
@@ -1927,6 +2509,20 @@ const diffusion = descriptor(
         (s, v, j) => s + ((j + 1) % 2 ? (2 * L * v) / ((j + 1) * Math.PI) : 0),
         0,
       );
+    const spectralMass = (modeCount, stationary = false) => {
+      let total = 0;
+      for (let k = 1; k <= modeCount; k += 2) {
+        const steady = (8 * p.source * L ** 3) / (D * Math.PI ** 4 * k ** 4);
+        total += stationary
+          ? steady
+          : (2 * L * initial(k) * Math.exp(-rate(k) * time)) / (k * Math.PI) +
+            steady * -Math.expm1(-rate(k) * time);
+      }
+      return total;
+    };
+    const parabolaMass = (p.source * L ** 3) / (12 * D),
+      tailBound = (modeCount) =>
+        (8 * p.source * L ** 3) / (3 * D * Math.PI ** 4 * modeCount ** 3);
     const state = () => {
       const a = coefficients(0),
         b = coefficients(p.source),
@@ -2014,6 +2610,34 @@ const diffusion = descriptor(
                 ),
               ],
             ),
+            chart(
+              "Spectral truncation separated from relaxation",
+              "Retained sine modes",
+              "Absolute source-mass error",
+              [
+                curve(
+                  "Current truncation error vs 2047 modes",
+                  [15, 31, 63, 127].map((m) => [
+                    m,
+                    Math.abs(spectralMass(m) - spectralMass(2047)),
+                  ]),
+                ),
+                curve(
+                  "Stationary mass truncation error",
+                  [15, 31, 63, 127].map((m) => [
+                    m,
+                    Math.abs(spectralMass(m, true) - parabolaMass),
+                  ]),
+                  { dashed: true },
+                ),
+                curve(
+                  "M⁻³ tail upper bound",
+                  [15, 31, 63, 127].map((m) => [m, tailBound(m)]),
+                  { dashed: true },
+                ),
+              ],
+              { xScale: "log", yScale: p.source > 0 ? "log" : "linear" },
+            ),
           ],
           metrics: [
             metric("Principal decay rate Dπ²/L²", rate(1)),
@@ -2021,8 +2645,18 @@ const diffusion = descriptor(
             metric("Source-fed mass", z.fedMass),
             metric("Parabola mass sL³/(12D)", (p.source * L ** 3) / (12 * D)),
             metric("Conditional L¹ error", z.error),
+            metric(
+              "Source-mass truncation error vs 2047 modes",
+              Math.abs(z.fedMass - spectralMass(2047)),
+            ),
+            metric(
+              "Stationary source-mass truncation error",
+              Math.abs(spectralMass(n, true) - parabolaMass),
+            ),
+            metric("Source-mass spectral tail bound", tailBound(n)),
+            metric("2047-mode reference tail bound", tailBound(2047)),
           ],
-          message: `Exactly evolved ${n}-mode Dirichlet heat reference. Initial modes are represented exactly; changing mode count refines the constant-source expansion.`,
+          message: `Exactly evolved ${n}-mode Dirichlet heat reference. The initial three modes are represented exactly. The resolution chart isolates source truncation from time relaxation using a 2047-mode reference with its own displayed tail bound. The integrated odd-mode tail is O(M⁻³), explaining the persistent small difference from parabola mass.`,
           done: step >= 240,
         };
       },
@@ -2113,8 +2747,20 @@ const exchangeability = descriptor(
         ],
         metrics: [
           metric("Whole-population repetitions", step),
-          metric("Independent mean variance", varOf(independent)),
-          metric("Shared mean variance", varOf(shared)),
+          metric("Independent mean variance", sampleVariance(independent)),
+          metric("Shared mean variance", sampleVariance(shared)),
+          metric(
+            "Independent variance 95% half-width",
+            step > 1 ? (1.96 * Math.sqrt(2 / (step - 1))) / p.walkers : 0,
+          ),
+          metric(
+            "Shared variance 95% half-width",
+            step > 1
+              ? 1.96 *
+                  Math.sqrt(2 / (step - 1)) *
+                  (p.correlation + (1 - p.correlation) / p.walkers)
+              : 0,
+          ),
           metric(
             "Predicted shared variance",
             p.correlation + (1 - p.correlation) / p.walkers,
@@ -2122,7 +2768,7 @@ const exchangeability = descriptor(
           metric("Relabeling mean error", permutationError),
         ],
         message:
-          "Histories retain 400 independent population draws. ρ=1 assigns the same random value to every walker; increasing N then leaves empirical-mean fluctuations intact.",
+          "Histories retain 400 independent population draws. Variance estimates use the unbiased sample divisor; approximate pointwise Gaussian 95% half-widths explain finite-replica offsets from the exact predictions. At ρ=1, every walker has the same random value, so increasing N does not remove empirical-mean fluctuations.",
         done: step >= 400,
       }),
       async () => {
@@ -2287,7 +2933,7 @@ const finiteCorrection = descriptor(
           metric("Effective tuple size", k),
         ],
         message:
-          "Labels stay distinct even if walker coordinates agree. The covariance identity and entropy-budget bound are separately specified reference families; the selected entropy budget is not assigned to the shared-state model.",
+          "Labels stay distinct even if walker coordinates agree. The covariance and entropy curves are separately specified reference families. If H_N=N, the entropy bound stays above the trivial variance bound 1; that accurately displays the weakness of a nonvanishing per-particle entropy budget. The selected entropy budget is not assigned to the shared-state mixture.",
         done: step >= 4000,
       }),
       async () => {

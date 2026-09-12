@@ -286,3 +286,331 @@ test("Finite-label correction vanishes for k=1 and respects union bound", async 
     m.dispose();
   }
 });
+
+// Regression cases from the full-horizon teaching audit.
+async function finish(m, maxTicks = 1000) {
+  let ticks = 0;
+  while (!m.snapshot().done && ticks < maxTicks) {
+    await m.step();
+    ticks++;
+  }
+  assert.equal(
+    m.snapshot().done,
+    true,
+    "experiment reaches its declared horizon",
+  );
+  finite(m.snapshot());
+  return m.snapshot();
+}
+
+test("Keystone fixture has nonempty H/L and satisfies the displayed overlap theorem", async () => {
+  for (const fraction of [0.05, 0.15, 0.4]) {
+    const m = await make("II-01", { fraction });
+    try {
+      for (let k = 0; k < 8; k++) {
+        await m.step();
+        const s = m.snapshot();
+        assert.ok(
+          value(s, "High-error fraction") > 0 &&
+            value(s, "Low-error fraction") > 0,
+        );
+        assert.equal(value(s, "Theorem hypotheses"), "Satisfied");
+        assert.ok(value(s, "Latest low-minus-high fitness gap") > 0);
+        assert.ok(value(s, "Latest overlap lower bound") > 0);
+        assert.ok(
+          value(s, "Latest overlap") + 1e-12 >=
+            value(s, "Latest overlap lower bound"),
+        );
+        near(value(s, "Variance identity residual"), 0, 1e-11);
+      }
+    } finally {
+      m.dispose();
+    }
+  }
+  const neutral = await make("II-01", { alpha: 0, beta: 0 });
+  try {
+    await neutral.step();
+    assert.equal(
+      value(neutral.snapshot(), "Theorem hypotheses"),
+      "Not satisfied",
+    );
+    near(value(neutral.snapshot(), "Latest overlap lower bound"), 0);
+  } finally {
+    neutral.dispose();
+  }
+});
+
+test("Additive kinetics shows exact positive drift and cannot report a false equilibrium floor", async () => {
+  const m = await make("II-02", {
+    stage: "kinetic",
+    jitter: 0.3,
+    replicates: 48,
+  });
+  try {
+    const s = await finish(m);
+    near(value(s, "Exact constant variance drift"), 0.174375, 1e-12);
+    assert.match(
+      value(s, "Supported in-range zero crossing"),
+      /No equilibrium floor/,
+    );
+    assert.ok(
+      value(s, "Slope 95% lower") < 0 && value(s, "Slope 95% upper") > 0,
+    );
+    const c = s.charts.find((c) => c.title === "One-step conditional drift");
+    const exact = c.series.find((s) => s.name.startsWith("Exact random-walk"));
+    assert.ok(exact.points.every((p) => Math.abs(p[1] - 0.174375) < 1e-12));
+    assert.ok(
+      c.segments.every(([lo, hi]) => lo[1] <= 0.174375 && hi[1] >= 0.174375),
+    );
+  } finally {
+    m.dispose();
+  }
+  const noNoise = await make("II-02", { jitter: 0 }),
+    jitter = await make("II-02", { jitter: 0.3 });
+  try {
+    const a = await finish(noNoise),
+      b = await finish(jitter);
+    assert.equal(typeof value(a, "Supported in-range zero crossing"), "string");
+    assert.equal(typeof value(b, "Supported in-range zero crossing"), "number");
+    assert.ok(value(b, "Supported in-range zero crossing") > 0.02);
+    assert.ok(value(b, "Intercept 95% lower") > 0);
+  } finally {
+    noNoise.dispose();
+    jitter.dispose();
+  }
+});
+
+test("Sorted one-coordinate transport matches optimal assignment after an individual point edit", async () => {
+  const m = await make("II-03", {
+    cost: "oneD",
+    point: 3,
+    pointX: 1.2,
+    translation: 0.7,
+  });
+  try {
+    await m.step();
+    const s = m.snapshot();
+    near(
+      value(s, "Sorted one-coordinate cost"),
+      value(s, "Optimal W₂²"),
+      1e-11,
+    );
+    near(value(s, "Decomposition error"), 0, 1e-11);
+  } finally {
+    m.dispose();
+  }
+});
+
+test("Slow-friction OU reaches eight relaxation times in bounded display updates", async () => {
+  const m = await make("II-05", { gamma: 0.1, h: 0.005 });
+  try {
+    const s = await finish(m, 400);
+    near(value(s, "Elapsed friction times γt"), 8, 1e-10);
+    assert.equal(s.step, 16000);
+    const c = s.charts.find((c) => c.title === "Shared-innovation coupling");
+    near(c.series[0].points.at(-1)[1], c.series[1].points.at(-1)[1], 1e-10);
+    const mean = s.charts.find((c) => c.title === "Memory of the initial mean");
+    assert.ok(mean.series.some((c) => c.name === "Mean 95% upper"));
+    const position = s.charts.find(
+      (c) => c.title === "Position integration has its own reference",
+    );
+    assert.ok(position.series[1].points.at(-1)[1] > 0);
+    assert.ok(
+      s.charts.every((c) =>
+        (c.series ?? []).every((series) => series.points.length <= 400),
+      ),
+    );
+  } finally {
+    m.dispose();
+  }
+});
+
+test("Empirical QSD horizon retains survivors while full exact-law mode exposes depletion", async () => {
+  const empirical = await make("II-08"),
+    full = await make("II-08", { horizon: "exact" });
+  try {
+    const a = await finish(empirical),
+      b = await finish(full);
+    assert.ok(a.step < 60);
+    assert.ok(value(a, "Surviving replicas") > 0);
+    assert.ok(
+      Math.min(
+        value(a, "Expected surviving replicas"),
+        value(a, "Surviving replicas"),
+      ) <= value(a, "Empirical stopping threshold"),
+    );
+    const shape = a.charts.find(
+      (c) => c.title === "Conditional shape among survivors",
+    );
+    assert.equal(shape.segments.length, 3);
+    assert.equal(b.step, 160);
+    assert.equal(value(b, "Surviving replicas"), 0);
+    assert.match(value(b, "Conditional sample stage"), /depleted/);
+  } finally {
+    empirical.dispose();
+    full.dispose();
+  }
+});
+
+test("Pair histogram permutation null distinguishes sampling roughness from shared labels", async () => {
+  const { random, permutationJoint, tanhGaussianVariance } = await import(
+    "../../web/euclidean-gas/lecture/convergence-math.js"
+  );
+  const r = random(7),
+    pairs = Array.from({ length: 96 }, () => [
+      Math.tanh(r.normal()),
+      Math.tanh(r.normal()),
+    ]);
+  const independent = permutationJoint(pairs, 7),
+    shared = permutationJoint(
+      pairs.map(([x]) => [x, x]),
+      7,
+    );
+  assert.ok(
+    independent.l1 > 0.3,
+    "independent finite histogram still looks rough",
+  );
+  assert.ok(
+    independent.lower < independent.l1 && independent.upper > independent.l1,
+  );
+  assert.ok(independent.pValue > 0.05);
+  assert.ok(shared.pValue < 0.01);
+  near(tanhGaussianVariance(1.48), 0.4658473000951703, 1e-10);
+});
+
+test("Empirical-law engine runs active copying and a measured no-copy comparison", async () => {
+  const m = await make("III-03", { replicas: 48 });
+  try {
+    const s = await finish(m);
+    assert.ok(value(s, "Active accepted clone fraction") > 0.1);
+    assert.ok(value(s, "Active accepted clone fraction") < 0.5);
+    assert.equal(value(s, "Independent completed runs"), 384);
+    for (const row of s.table.rows) {
+      const [n, , variance, , , , , , marginal, covariance] = row;
+      near(variance, marginal + (1 - 1 / n) * covariance, 1e-12);
+      assert.ok(row[3] <= row[4]);
+      assert.ok(row[6] <= row[7]);
+    }
+    assert.ok(
+      s.charts.find(
+        (c) => c.title === "Pair histogram calibrated against independence",
+      ).segments.length === 4,
+    );
+    const stat = value(s, "Selected joint-product L¹"),
+      upper = value(s, "Permutation-null 97.5% quantile");
+    assert.ok(stat >= 0 && upper > 0);
+  } finally {
+    m.dispose();
+  }
+  const noisy = await make("III-03", {
+    selection: 0,
+    noise: 0.2,
+    updates: 12,
+    replicas: 48,
+  });
+  try {
+    const s = await finish(noisy);
+    near(value(s, "Active accepted clone fraction"), 0);
+    near(
+      value(s, "Exact no-copy evolved marginal coefficient"),
+      0.4658473000951703,
+      1e-10,
+    );
+  } finally {
+    noisy.dispose();
+  }
+});
+
+test("Paired stationary residual exposes O(h) bias and quantifies noisy raw cells", async () => {
+  const m = await make("III-04");
+  try {
+    const s = await finish(m);
+    near(value(s, "N=256 paired identity residual"), 0, 1e-12);
+    near(
+      value(s, "N=256 discrete sampling SE at h=.05"),
+      Math.sqrt(8 / 256),
+      1e-12,
+    );
+    for (const row of s.table.rows) {
+      const [
+        n,
+        h,
+        discrete,
+        expectedDiscrete,
+        discreteCI,
+        continuous,
+        expectedContinuous,
+        continuousCI,
+        paired,
+        expectedPaired,
+        pairedCI,
+      ] = row;
+      near(expectedDiscrete, 0, 1e-12);
+      near(expectedContinuous, -h / (1 - h / 2), 1e-12);
+      near(discreteCI, 1.96 * Math.sqrt(8 / n), 1e-12);
+      near(expectedPaired, h / (1 - h / 2), 1e-12);
+      near(paired, discrete - continuous, 1e-12);
+      assert.ok(pairedCI < continuousCI);
+    }
+    const fine64 = s.table.rows.find((r) => r[0] === 64 && r[1] === 0.05);
+    assert.ok(fine64[5] > 0, "audit setting has positive noisy raw residual");
+    assert.ok(
+      Math.abs(fine64[5] - fine64[6]) < fine64[7],
+      "sampling interval explains its sign",
+    );
+  } finally {
+    m.dispose();
+  }
+});
+
+test("Equilibrium relaxation and spatial reconstruction error are measured separately", async () => {
+  const low = await make("III-05", { resolution: 48 }),
+    high = await make("III-05", { resolution: 192 });
+  try {
+    const a = await finish(low),
+      b = await finish(high);
+    assert.ok(
+      value(a, "L¹ profile error") < 1e-10 &&
+        value(b, "L¹ profile error") < 1e-10,
+    );
+    assert.ok(
+      value(a, "L¹ reconstruction error against 3072-cell reference") > 0.005,
+    );
+    assert.ok(
+      value(b, "L¹ reconstruction error against 3072-cell reference") <
+        value(a, "L¹ reconstruction error against 3072-cell reference") / 3,
+    );
+  } finally {
+    low.dispose();
+    high.dispose();
+  }
+});
+
+test("Spectral source error decreases at the predicted cubic tail rate", async () => {
+  const errors = [];
+  for (const modes of [15, 31, 63]) {
+    const m = await make("III-06", { modes });
+    try {
+      const s = await finish(m);
+      const error = value(s, "Stationary source-mass truncation error");
+      errors.push(error);
+      assert.ok(
+        error > 0 && error < value(s, "Source-mass spectral tail bound"),
+      );
+      assert.ok(
+        value(s, "Source-mass truncation error vs 2047 modes") <=
+          value(s, "Source-mass spectral tail bound"),
+      );
+    } finally {
+      m.dispose();
+    }
+  }
+  assert.ok(errors[0] / errors[1] > 7 && errors[1] / errors[2] > 7);
+  const zero = await make("III-06", { source: 0 });
+  try {
+    const s = await finish(zero);
+    near(value(s, "Source-mass truncation error vs 2047 modes"), 0);
+  } finally {
+    zero.dispose();
+  }
+});

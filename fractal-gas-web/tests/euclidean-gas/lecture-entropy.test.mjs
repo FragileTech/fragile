@@ -5,7 +5,10 @@ import init, {
   BrowserGas,
   default_config,
 } from "../../web/euclidean-gas/engine/cpu/gas.js";
-import { demos } from "../../web/euclidean-gas/lecture/entropy.js";
+import {
+  demos,
+  harmonicBudget,
+} from "../../web/euclidean-gas/lecture/entropy.js";
 import {
   factorial,
   fitnessJet,
@@ -20,6 +23,10 @@ import {
   symmetricEigenvalues,
   kl,
   constraintWidth,
+  hypocoerciveCoefficients,
+  spectralGapDiagnostic,
+  dirichletKernel,
+  cosineGaussianVariance,
 } from "../../web/euclidean-gas/lecture/entropy-math.js";
 await init({
   module_or_path: await readFile(
@@ -121,7 +128,7 @@ test("Taylor fitness derivatives agree with independent finite differences and n
   close(taylor, fitnessJet(x + dx, { n: 0 }).fitness[0], 1e-12);
 });
 test("Enumerated companion laws normalize and probability derivative closes the expectation identity", () => {
-  for (const law of ["independent", "matching", "greedy"]) {
+  for (const law of ["independent", "matching", "greedy", "shuffled_greedy"]) {
     const x = 0.12,
       h = 1e-5,
       a = enumeration(x - h, 0.7, law),
@@ -229,10 +236,10 @@ test("Real WASM capstone records both populations, deterministic replay and a re
       await b.step();
     }
     const s = a.snapshot();
-    assert.equal(s.experiment.configs.length, 2);
+    assert.equal(s.experiment.configs.length, 8);
     assert.equal(s.step, 6);
     assert.deepEqual(s.charts, b.snapshot().charts);
-    assert.ok(value(s, "Run 1 reward rows") > 64);
+    assert.ok(value(s, "Independent group A total reward rows") > 64);
     const restored = await engine.restore(a.checkpoint());
     try {
       assert.equal(restored.snapshot().step, 6);
@@ -285,14 +292,14 @@ test("Every capstone card runs the declared populations and finite measured outp
       finiteCharts(s);
       assert.equal(s.experiment.card, card);
       assert.equal(
-        s.experiment.configs[1].walkers,
+        s.experiment.configs[4].walkers,
         card === "population" ? 128 : 64,
       );
       assert.ok(s.experiment.initializationMs > 0);
       assert.ok(s.experiment.warmStepsMs > 0);
       if (card === "survival")
         assert.equal(
-          s.experiment.configs[0].gas.boundary.kind,
+          s.experiment.configs[4].gas.boundary.kind,
           "absorbing_box",
         );
     } finally {
@@ -333,4 +340,268 @@ test("Rejected WASM fixture reward evaluation preserves the entire checkpoint", 
     engine.create(config),
     /translated reward coordinate overflowed/,
   );
+});
+
+test("Chapter hypocoercive coefficients contract under the audited low-friction stress", async () => {
+  const m = await create("IV-01", { k: 2, gamma: 0.2, theta: 0.2 });
+  try {
+    for (let i = 0; i < 350; i++) await m.step();
+    const s = m.snapshot(),
+      c = s.charts.find((c) => c.title === "Chapter decay bound"),
+      phi = c.series[0].points,
+      envelope = c.series[1].points;
+    assert.ok(phi.every((p, i) => p[1] <= envelope[i][1] + 1e-12));
+    assert.ok(phi.slice(1).every((p, i) => p[1] <= phi[i][1] + 1e-12));
+    close(value(s, "η"), 0.00046040515653775324);
+    assert.ok(
+      s.charts
+        .find((c) => c.title.startsWith("Alternative positive"))
+        .series[0].points.some((p, i, a) => i && p[1] > a[i - 1][1]),
+    );
+  } finally {
+    m.dispose();
+  }
+});
+test("The killed-kernel eigenmeasure is the selected entropy target and KL stays nonnegative", async () => {
+  const m = await create("IV-02", { target: "qsd", killing: 0.5 });
+  try {
+    for (let i = 0; i < 150; i++) await m.step();
+    const s = m.snapshot(),
+      points = s.charts.at(-1).series[0].points;
+    assert.ok(points.every(([, v]) => v >= 0));
+    assert.ok(points.at(-1)[1] < 1e-12);
+    assert.ok(value(s, "Cumulative surviving mass") < 1e-10);
+  } finally {
+    m.dispose();
+  }
+});
+test("Reciprocal Gaussian ratios grow and the conditioned Dirichlet KDE has zero endpoints and unit mass", async () => {
+  const a = await create("IV-04", { window: 3 }),
+    b = await create("IV-04", { window: 6 }),
+    c = await create("IV-04", { reference: "Absorbing" });
+  try {
+    assert.ok(
+      value(b.snapshot(), "Largest q/p") >
+        value(a.snapshot(), "Largest q/p") * 100,
+    );
+    close(
+      value(b.snapshot(), "Largest p/q"),
+      value(a.snapshot(), "Largest p/q"),
+    );
+    const s = c.snapshot(),
+      points = s.charts[0].series[2].points;
+    close(points[0][1], 0);
+    close(points.at(-1)[1], 0);
+    close(
+      points.reduce(
+        (sum, p, i) => sum + p[1] * (i === 0 || i === 120 ? 0.5 : 1),
+        0,
+      ) / 120,
+      1,
+      1e-12,
+    );
+    assert.ok(value(s, "Dirichlet smoothing surviving mass") < 1);
+  } finally {
+    a.dispose();
+    b.dispose();
+    c.dispose();
+  }
+});
+test("Smoothed atoms and the self-inclusive normalization option preserve their declared mass identities", async () => {
+  const m = await create("IV-03", { representation: "Smoothed atoms" }),
+    a = await create("IV-06", { N: 256, rho: 0.1, self: "inclusive" });
+  try {
+    const s = m.snapshot();
+    assert.ok(value(s, "Gaussian-smoothed normalized H²") < 2);
+    close(value(s, "Identity residual"), 0);
+    const t = a.snapshot();
+    assert.ok(value(t, "Raw row sum") >= 1);
+    close(value(t, "Normalized row sum"), 1);
+    close(
+      value(t, "Weighted x²"),
+      value(t, "Replicated cloud weighted x²"),
+      1e-12,
+    );
+  } finally {
+    m.dispose();
+    a.dispose();
+  }
+});
+test("Taylor useful-radius diagnostic identifies the observed small-floor divergence", async () => {
+  const m = await create("IV-07", { order: 12, radius: 0.5, sigma: 0.02 });
+  try {
+    const s = m.snapshot();
+    assert.ok(value(s, "Maximum displayed Taylor error") > 100);
+    assert.ok(value(s, "Largest tested radius with error ≤.001") < 0.3);
+    assert.ok(value(s, "Largest tested radius with error ≤.001") >= 0.01);
+  } finally {
+    m.dispose();
+  }
+});
+test("Shuffled greedy enumeration averages every possible first walker and shares the fixed fitness slice", () => {
+  const e = enumeration(0.13, 0.7, "shuffled_greedy");
+  for (const a of e.assignments)
+    close(a.p, e.rows.reduce((sum, row, i) => sum + row[a.c[i]], 0) / 4);
+  close(e.frozen, fitnessJet(0.13, { n: 0 }).fitness[0]);
+  assert.ok(
+    Math.abs(e.expected - enumeration(0.13, 0.7, "greedy").expected) > 1e-5,
+  );
+});
+test("Weak graph links are reported below resolution with a rigorous cut upper bound", async () => {
+  const m = await create("IV-12", { width: 0.2, gap: 3, viscosity: 0.1 });
+  try {
+    const s = m.snapshot();
+    assert.equal(
+      value(s, "Normalized spectral gap"),
+      "Below numerical resolution",
+    );
+    assert.ok(value(s, "Two-cluster Rayleigh upper bound") < 4e-43);
+    for (let i = 0; i < 100; i++) await m.step();
+    close(
+      value(m.snapshot(), "Weighted mean"),
+      value(s, "Initial weighted mean"),
+    );
+  } finally {
+    m.dispose();
+  }
+});
+test("Stationary variance and a Lipschitz coupling bound match the absolute-error theorem at exact physical duration", () => {
+  const b = harmonicBudget(32, 0.5, 1);
+  close(b.sampling, (1 - Math.exp(-(1 - 0.5 ** 2 / 4))) / Math.sqrt(64));
+  assert.ok(b.currentSampling > b.sampling);
+  assert.ok(b.transient >= b.meanTransient);
+  const a = harmonicBudget(128, 0.08, 5);
+  close(a.steps * a.h, 5);
+  assert.equal(a.steps, 63);
+});
+test("Discrete harmonic horizon scales with friction and covariance versus KL orders stay distinct", async () => {
+  const m = await create("IV-10", { h: 0.01, gamma: 0.2, theta: 0.2 });
+  try {
+    for (let i = 0; i < 350; i++) await m.step();
+    const s = m.snapshot();
+    assert.ok(s.done);
+    assert.ok(s.time >= 120);
+    assert.ok(value(s, "Remaining maximum KL") < 1e-8);
+    close(value(s, "Velocity variance bias (order h²)"), 0.000005);
+  } finally {
+    m.dispose();
+  }
+});
+test("Full-factor covariance discrepancy is scaled by its actual covariance sampling uncertainty", async () => {
+  const m = await create("IV-11", { lambda: -2, shift: 2.1, angle: 85 });
+  try {
+    for (let i = 0; i < 32; i++) await m.step();
+    const s = m.snapshot();
+    assert.ok(value(s, "Largest covariance-entry SE") > 0.1);
+    assert.ok(value(s, "Maximum covariance discrepancy / SE") < 4);
+  } finally {
+    m.dispose();
+  }
+});
+test("Metropolis independent seeds distinguish low-temperature trapping from transition-clock convergence", async () => {
+  const m = await create("IV-09", {
+    theta: 0.2,
+    amplitude: 2,
+    k: 0.5,
+    wavelength: 2,
+  });
+  try {
+    for (let i = 0; i < 250; i++) await m.step();
+    const s = m.snapshot();
+    assert.equal(value(s, "Independent seeds"), 4);
+    assert.ok(value(s, "Left/right start mean separation") > 3);
+    assert.ok(value(s, "Fraction ever crossing x=0") < 0.1);
+    close(s.time, 2000);
+  } finally {
+    m.dispose();
+  }
+});
+test("The absorbing capstone produces actual losses and replica uncertainty with a matched unbounded control", async () => {
+  const m = await create("IV-16", { card: "survival", h: 0.04 });
+  try {
+    for (let i = 0; i < 150; i++) await m.step();
+    const s = m.snapshot(),
+      ledger = s.charts[1].series;
+    assert.ok(
+      ledger
+        .find((l) => l.name === "Absorbing ±0.35 alive-walker fraction")
+        .points.some(([, v]) => v < 1),
+    );
+    assert.ok(
+      ledger
+        .find((l) => l.name === "Unbounded control alive-walker fraction")
+        .points.every(([, v]) => v === 1),
+    );
+    assert.ok(value(s, "Absorbing ±0.35 cumulative revivals") > 0);
+    assert.equal(s.experiment.replicasPerGroup, 4);
+    assert.ok(value(s, "Unbounded control surviving-replica SE") > 0);
+  } finally {
+    m.dispose();
+  }
+});
+
+test("Capstone extinction excludes missing observables and exposes survivor counts without a false zero SE", async () => {
+  for (const survivors of [0, 1]) {
+    let bounded = 0;
+    const fixtureEngine = {
+      ...engine,
+      create: async (c) => {
+        const run = await engine.create(c);
+        if (c.gas.boundary.kind === "absorbing_box" && bounded++ >= survivors)
+          await run.set_population(
+            JSON.stringify({
+              positions: Array.from({ length: c.walkers }, () => [0, 0]),
+              alive: Array(c.walkers).fill(false),
+            }),
+          );
+        return run;
+      },
+    };
+    const m = await demos
+      .find((d) => d.id === "IV-16")
+      .create({
+        params: { card: "survival" },
+        seed: 73,
+        engine: fixtureEngine,
+      });
+    try {
+      const s = m.snapshot();
+      assert.equal(
+        value(s, "Absorbing ±0.35 contributing replicas"),
+        survivors,
+      );
+      assert.equal(
+        value(s, "Absorbing ±0.35 surviving-replica SE"),
+        "Requires 2 survivors",
+      );
+      assert.equal(s.experiment.contributingReplicas[1], survivors);
+      assert.match(
+        s.experiment.conditioning,
+        /conditional on replica survival/,
+      );
+      close(
+        s.charts[1].series.find(
+          (l) => l.name === "Absorbing ±0.35 full-swarm survival",
+        ).points[0][1],
+        survivors / 4,
+      );
+      if (!survivors)
+        assert.equal(
+          value(s, "Absorbing ±0.35 surviving-replica mean radius²"),
+          "Extinct",
+        );
+      finiteCharts(s);
+    } finally {
+      m.dispose();
+    }
+  }
+});
+
+test("Chapter G eigenvalue metric remains compact at parameter corners", async () => {
+  const m = await create("IV-01", { k: 2, gamma: 0.2, theta: 0.2 });
+  try {
+    assert.ok(value(m.snapshot(), "G eigenvalues").length <= 24);
+  } finally {
+    m.dispose();
+  }
 });
