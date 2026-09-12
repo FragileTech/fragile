@@ -100,3 +100,34 @@ regenerating assets.
 The full default-run snapshots from this verification are local generated
 artifacts under `outputs/lecture-theory-fixes/`; the committed regression tests
 provide the reproducible checks independently of those artifacts.
+
+## Part V validation (12 September 2026)
+
+- Rust workspace: **106 tests passed**, including 17 geometry, 14 independent
+  analysis, 10 tracking and 5 adaptive-provider checks. Full workspace Clippy
+  passes with warnings denied. The WASM WebGPU feature configuration compiles;
+  the adaptive teaching profile explicitly requires CPU/WASM f64.
+- Lecture numerical/host checks: **108 passed** (84 existing and 24 Part V).
+  Part V checks include all declared scientific-control endpoints, exact metric
+  identities, covariance sampling uncertainty, the dimension reference, and
+  batch-16 versus sixteen single-step archive/checkpoint parity.
+- Documentation: **98 placement/extension checks passed**. Sphinx builds all
+  chapter pages with 62 figures; the build reports 116 asset-copy/reference
+  warnings. Twenty new posters are generated from native calculations.
+- All **62 browser demos** initialize, advance, reset and change controls. The
+  dedicated Part V browser test verifies shared recording across graph views,
+  archive import/export, view-only camera/layer/selection controls, adaptive O
+  noise, variable geometry, spacetime cells, physical causal orders, and a
+  390-pixel viewport without horizontal overflow.
+- Published embeds pass lazy loading, one-live-iframe behavior, hidden-view
+  pause, Expert Mode, close/reopen, no-JavaScript posters and project-prefix URLs.
+
+The detailed per-demo prediction and observed statistical comparisons are in
+[the Part V experiment document](../../../../docs/source/project/volume2_partv_interactive_experiments.md).
+The default curvature and narrow-bandwidth experiments expose large measured
+uncertainty; independent quadrature supplies the separate finite-resolution
+reference. The UI does not substitute that reference for the sampled result.
+
+Local visual evidence is saved in `fractal-gas-web/outputs/partv-review/`
+(ignored build output). Run the scene suite with
+`node fractal-gas-web/tests/euclidean-gas/lecture-fractal-browser.mjs`.

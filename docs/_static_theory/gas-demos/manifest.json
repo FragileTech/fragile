@@ -8,7 +8,7 @@
     "kind": "WASM experiment",
     "prediction": "Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw.",
     "question": "Which operation moved this walker?",
-    "posterAlt": "Recorded post_transform population. Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw.",
+    "posterAlt": "Recorded literal_clone population. Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw.",
     "seed": 7,
     "posterTicks": 12,
     "controls": [
@@ -3222,6 +3222,1446 @@
       "h": 0.04,
       "gamma": 1,
       "replicas": 4
+    }
+  },
+  {
+    "id": "V-01",
+    "part": "V",
+    "title": "A slot is not an ancestor",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-nodes",
+    "kind": "WASM recording + geometry",
+    "prediction": "Accepted copies follow the donor ancestry; slot continuity follows the recipient. Rejected copies preserve ancestry.",
+    "question": "Which history did this walker inherit?",
+    "posterAlt": "Recorded walker positions. Accepted copies follow the donor ancestry; slot continuity follows the recipient. Rejected copies preserve ancestry.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "history",
+        "label": "Donor history",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "scenario",
+        "label": "Initial population",
+        "type": "select",
+        "value": "ordinary",
+        "options": [
+          {
+            "value": "ordinary",
+            "label": "ordinary"
+          },
+          {
+            "value": "revival",
+            "label": "revival"
+          },
+          {
+            "value": "singleton",
+            "label": "singleton"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "history": 0,
+      "scenario": "ordinary"
+    }
+  },
+  {
+    "id": "V-02",
+    "part": "V",
+    "title": "Build the three-edge interaction",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-fractal-set",
+    "kind": "WASM recording + geometry",
+    "prediction": "The oriented CST + IA − IG boundary closes for eligible same-frame interactions.",
+    "question": "How do CST, IG and IA close a triangle?",
+    "posterAlt": "Recorded walker positions. The oriented CST + IA − IG boundary closes for eligible same-frame interactions.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "history",
+        "label": "Donor history",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "scenario",
+        "label": "Initial population",
+        "type": "select",
+        "value": "ordinary",
+        "options": [
+          {
+            "value": "ordinary",
+            "label": "ordinary"
+          },
+          {
+            "value": "revival",
+            "label": "revival"
+          },
+          {
+            "value": "singleton",
+            "label": "singleton"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "history": 0,
+      "scenario": "ordinary"
+    }
+  },
+  {
+    "id": "V-03",
+    "part": "V",
+    "title": "Reconstruct the run from its record",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-reconstruction",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Absolute anchors reconstruct the recorded coordinates; a continuous spinor rotation changes sign at 2π and returns at 4π.",
+    "question": "Can the archived stages reproduce the visible trajectory?",
+    "posterAlt": "Coordinates reconstructed from scalar addresses. Absolute anchors reconstruct the recorded coordinates; a continuous spinor rotation changes sign at 2π and returns at 4π.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "phase",
+        "label": "Rotation / connection angle",
+        "type": "range",
+        "value": 0.7,
+        "min": 0,
+        "max": 12.566370614359172,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "phase": 0.7
+    }
+  },
+  {
+    "id": "V-04",
+    "part": "V",
+    "title": "Triangles, plaquettes, and transport",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-guarantees",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Supplied connection holonomy transforms by conjugation; its trace is invariant, with rebasing required between triangles.",
+    "question": "What survives a change of local frame?",
+    "posterAlt": "U1 edge phase. Supplied connection holonomy transforms by conjugation; its trace is invariant, with rebasing required between triangles.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "phase",
+        "label": "Rotation / connection angle",
+        "type": "range",
+        "value": 0.7,
+        "min": 0,
+        "max": 12.566370614359172,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "phase": 0.7
+    }
+  },
+  {
+    "id": "V-05",
+    "part": "V",
+    "title": "From fitness curvature to a metric",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-adaptive-diffusion-tensor",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue.",
+    "question": "How does fitness curvature shape the metric?",
+    "posterAlt": "Exact sampled fitness Hessian. Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "query",
+        "label": "Query x₁",
+        "type": "range",
+        "value": 0.3,
+        "min": -2,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      },
+      {
+        "key": "distance_floor",
+        "label": "Distance regularization",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.05,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "policy",
+        "label": "Metric policy",
+        "type": "select",
+        "value": "clipped",
+        "options": [
+          {
+            "value": "clipped",
+            "label": "clipped"
+          },
+          {
+            "value": "strict",
+            "label": "strict"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "query": 0.3,
+      "epsilon": 1,
+      "distance_floor": 0.15,
+      "policy": "clipped"
+    }
+  },
+  {
+    "id": "V-06",
+    "part": "V",
+    "title": "Predict the next noise cloud",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-equivalence-principle",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Conditional covariance is T(1 − exp(−2γh))g⁻¹; sampling error decreases with independent innovations.",
+    "question": "Can the metric predict one O-step innovation cloud?",
+    "posterAlt": "O-stage innovation cloud. Conditional covariance is T(1 − exp(−2γh))g⁻¹; sampling error decreases with independent innovations.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Metric source",
+        "type": "select",
+        "value": "sampled_fitness",
+        "options": [
+          {
+            "value": "sampled_fitness",
+            "label": "sampled_fitness"
+          },
+          {
+            "value": "constant_metric",
+            "label": "constant_metric"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Constant-metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      },
+      {
+        "key": "samples",
+        "label": "Independent innovations",
+        "type": "select",
+        "value": 1024,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          },
+          {
+            "value": 4096,
+            "label": "4096"
+          }
+        ]
+      },
+      {
+        "key": "dt",
+        "label": "O-step duration",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "source": "sampled_fitness",
+      "anisotropy": 2,
+      "samples": 1024,
+      "dt": 0.04
+    }
+  },
+  {
+    "id": "V-07",
+    "part": "V",
+    "title": "Coordinate area versus geometric volume",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-riemannian-volume",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "For constant metric g, geometric volume equals coordinate area times √det(g); the cells sum to the clipped region.",
+    "question": "How much geometric volume does each cell hold?",
+    "posterAlt": "Metric Voronoi cells. For constant metric g, geometric volume equals coordinate area times √det(g); the cells sum to the clipped region.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "anisotropy": 2
+    }
+  },
+  {
+    "id": "V-08",
+    "part": "V",
+    "title": "Relaxation in anisotropic geometry",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-hypocoercivity",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+    "question": "Which covariance does the anisotropic thermostat approach?",
+    "posterAlt": "Harmonic relaxation. The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Independent walkers",
+        "type": "select",
+        "value": 128,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      }
+    ],
+    "params": {
+      "walkers": 128,
+      "anisotropy": 2
+    }
+  },
+  {
+    "id": "V-09",
+    "part": "V",
+    "title": "Cells and their dual graph",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-time-varying-voronoi",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Metric Voronoi cells partition the observation window; coincident sites share a geometric cell while keeping distinct identities.",
+    "question": "Which walkers share a cell boundary?",
+    "posterAlt": "Metric Voronoi cells. Metric Voronoi cells partition the observation window; coincident sites share a geometric cell while keeping distinct identities.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      },
+      {
+        "key": "geometry",
+        "label": "Distance geometry",
+        "type": "select",
+        "value": "constant",
+        "options": [
+          {
+            "value": "constant",
+            "label": "constant"
+          },
+          {
+            "value": "variable",
+            "label": "variable"
+          }
+        ]
+      },
+      {
+        "key": "resolution",
+        "label": "Geodesic grid refinement",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 24,
+            "label": "24"
+          }
+        ]
+      },
+      {
+        "key": "site_x",
+        "label": "Slot 0 x₁",
+        "type": "range",
+        "value": 0.5,
+        "min": -2.5,
+        "max": 2.5,
+        "step": 0.05
+      },
+      {
+        "key": "site_y",
+        "label": "Slot 0 x₂",
+        "type": "range",
+        "value": 0.5,
+        "min": -2.5,
+        "max": 2.5,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "anisotropy": 2,
+      "geometry": "constant",
+      "resolution": 16,
+      "site_x": 0.5,
+      "site_y": 0.5
+    }
+  },
+  {
+    "id": "V-10",
+    "part": "V",
+    "title": "Which operation changed the neighbors?",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-cloning-topological-transitions",
+    "kind": "WASM recording + geometry",
+    "prediction": "Comparing recorded pre-clone, post-clone and final sites locates neighbor changes by operation.",
+    "question": "Did copying or kinetic motion change this interface?",
+    "posterAlt": "Metric Voronoi cells. Comparing recorded pre-clone, post-clone and final sites locates neighbor changes by operation.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      },
+      {
+        "key": "copying",
+        "label": "Copying",
+        "type": "select",
+        "value": "active",
+        "options": [
+          {
+            "value": "active",
+            "label": "active"
+          },
+          {
+            "value": "off",
+            "label": "off"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "anisotropy": 2,
+      "copying": "active"
+    }
+  },
+  {
+    "id": "V-11",
+    "part": "V",
+    "title": "Sweep the cells through time",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-scutoid-cell-definition",
+    "kind": "WASM recording + geometry",
+    "prediction": "A shared spacetime partition closes the observation slab; refinement resolves moving interfaces and clone jumps use one-sided caps.",
+    "question": "What volume does a moving cell occupy?",
+    "posterAlt": "Spacetime cell volumes. A shared spacetime partition closes the observation slab; refinement resolves moving interfaces and clone jumps use one-sided caps.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      },
+      {
+        "key": "resolution",
+        "label": "Spacetime refinement",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 16,
+      "anisotropy": 2,
+      "resolution": 4
+    }
+  },
+  {
+    "id": "V-12",
+    "part": "V",
+    "title": "Maintain the mesh and count its activity",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-dynamic-delaunay-algorithm",
+    "kind": "WASM recording + geometry",
+    "prediction": "Changed unique interfaces and incident cell counts differ; reconstruction work depends on the realized configuration.",
+    "question": "How much geometric work accompanies each update?",
+    "posterAlt": "Delaunay maintenance work. Changed unique interfaces and incident cell counts differ; reconstruction work depends on the realized configuration.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "anisotropy",
+        "label": "Metric anisotropy",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 0.25
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "anisotropy": 2
+    }
+  },
+  {
+    "id": "V-13",
+    "part": "V",
+    "title": "Smooth fields within a fixed stratum",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-regularity",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation.",
+    "question": "What changes continuously when the query point moves?",
+    "posterAlt": "Exact sampled fitness Hessian. With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "query",
+        "label": "Query x₁",
+        "type": "range",
+        "value": 0.3,
+        "min": -2,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      },
+      {
+        "key": "distance_floor",
+        "label": "Distance regularization",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.05,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "policy",
+        "label": "Metric policy",
+        "type": "select",
+        "value": "clipped",
+        "options": [
+          {
+            "value": "clipped",
+            "label": "clipped"
+          },
+          {
+            "value": "strict",
+            "label": "strict"
+          }
+        ]
+      },
+      {
+        "key": "stratum",
+        "label": "Frozen stratum",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "recorded",
+            "label": "recorded"
+          },
+          {
+            "value": "new_companions",
+            "label": "new_companions"
+          },
+          {
+            "value": "half_alive",
+            "label": "half_alive"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "query": 0.3,
+      "epsilon": 1,
+      "distance_floor": 0.15,
+      "policy": "clipped",
+      "stratum": "recorded"
+    }
+  },
+  {
+    "id": "V-14",
+    "part": "V",
+    "title": "Normalize the sampled geometry",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-sampling",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Inverse sampling-density weights recover the known integral; effective sample size reveals weight concentration.",
+    "question": "Can a biased cloud integrate volume correctly?",
+    "posterAlt": "corrected replicas. Inverse sampling-density weights recover the known integral; effective sample size reveals weight concentration.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          },
+          {
+            "value": 4096,
+            "label": "4096"
+          },
+          {
+            "value": 16384,
+            "label": "16384"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "density_contrast",
+        "label": "Density contrast",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "samples": 256,
+      "replicas": 32,
+      "density_contrast": 0.5
+    }
+  },
+  {
+    "id": "V-15",
+    "part": "V",
+    "title": "Build a signed wave-operator kernel",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-kernels",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "The signed kernel must satisfy its actual cutoff-domain moment equations, including the temporal sign.",
+    "question": "Which moments make the kernel a wave operator?",
+    "posterAlt": "operator versus bandwidth. The signed kernel must satisfy its actual cutoff-domain moment equations, including the temporal sign.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "bandwidth",
+        "label": "Manufactured-field bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "bandwidth": 0.4
+    }
+  },
+  {
+    "id": "V-16",
+    "part": "V",
+    "title": "Find the useful bandwidth",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-variance",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Bias falls with bandwidth while sampling variance grows; the useful bandwidth balances the two.",
+    "question": "When does a smaller bandwidth improve the estimate?",
+    "posterAlt": "Wave operator estimate. Bias falls with bandwidth while sampling variance grows; the useful bandwidth balances the two.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          },
+          {
+            "value": 4096,
+            "label": "4096"
+          },
+          {
+            "value": 16384,
+            "label": "16384"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "samples": 256,
+      "replicas": 32,
+      "bandwidth": 0.4
+    }
+  },
+  {
+    "id": "V-17",
+    "part": "V",
+    "title": "Recorded order and geometric light cones",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-cst-geometric-comparison",
+    "kind": "WASM recording + geometry",
+    "prediction": "Recorded CST reachability and geometric light-cone comparability are distinct relations that can be inspected on the same events.",
+    "question": "Which events are related by each order?",
+    "posterAlt": "Comparable event pairs. Recorded CST reachability and geometric light-cone comparability are distinct relations that can be inspected on the same events.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "history",
+        "label": "Donor history",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "scenario",
+        "label": "Initial population",
+        "type": "select",
+        "value": "ordinary",
+        "options": [
+          {
+            "value": "ordinary",
+            "label": "ordinary"
+          },
+          {
+            "value": "revival",
+            "label": "revival"
+          },
+          {
+            "value": "singleton",
+            "label": "singleton"
+          }
+        ]
+      },
+      {
+        "key": "speed",
+        "label": "Light-cone speed",
+        "type": "range",
+        "value": 1,
+        "min": 0.25,
+        "max": 4,
+        "step": 0.25
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "history": 0,
+      "scenario": "ordinary",
+      "speed": 1
+    }
+  },
+  {
+    "id": "V-18",
+    "part": "V",
+    "title": "Count events to measure volume",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-faithful-discretization",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Poisson and fixed-count sampling have different count variances; weighting depends on the specified density.",
+    "question": "What count law belongs to this sampling experiment?",
+    "posterAlt": "total counts. Poisson and fixed-count sampling have different count variances; weighting depends on the specified density.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "count_model",
+        "label": "Sampling law",
+        "type": "select",
+        "value": "poisson",
+        "options": [
+          {
+            "value": "poisson",
+            "label": "poisson"
+          },
+          {
+            "value": "fixed",
+            "label": "fixed"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "samples": 256,
+      "replicas": 32,
+      "count_model": "poisson"
+    }
+  },
+  {
+    "id": "V-19",
+    "part": "V",
+    "title": "Estimate dimension from comparable pairs",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-cst-dimension-curvature",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+    "question": "How does the comparable-pair fraction encode dimension?",
+    "posterAlt": "ordering fraction replicas. Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "spacetime_dimension",
+        "label": "Spacetime dimension",
+        "type": "select",
+        "value": 3,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "density_contrast",
+        "label": "Density contrast",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "samples": 256,
+      "replicas": 32,
+      "spacetime_dimension": 3,
+      "density_contrast": 0
+    }
+  },
+  {
+    "id": "V-20",
+    "part": "V",
+    "title": "Curvature, calibration, and amplified noise",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-physical-consequences",
+    "kind": "Rust/WASM reference experiment",
+    "prediction": "Independent kernel-moment calibration recovers R = 2K for the chosen product family as resolution and sample size improve.",
+    "question": "How does the curvature signal compete with sampling noise?",
+    "posterAlt": "curvature replicas. Independent kernel-moment calibration recovers R = 2K for the chosen product family as resolution and sample size improve.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          },
+          {
+            "value": 4096,
+            "label": "4096"
+          },
+          {
+            "value": 16384,
+            "label": "16384"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "curvature",
+        "label": "Spatial curvature K",
+        "type": "range",
+        "value": 0.2,
+        "min": -0.5,
+        "max": 0.5,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "samples": 256,
+      "replicas": 32,
+      "bandwidth": 0.4,
+      "curvature": 0.2
     }
   }
 ]

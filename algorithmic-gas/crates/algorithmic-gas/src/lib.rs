@@ -15,6 +15,7 @@ pub mod kinetic;
 pub mod memory;
 pub mod noise;
 pub mod operators;
+pub mod partv_geometry;
 pub mod random;
 pub mod scalar;
 pub use batch::*;
@@ -26,3 +27,9 @@ pub use engine::{
 pub use error::{GasError, Result};
 pub use operators::GasOperators;
 pub use scalar::{Precision, Real};
+
+pub mod fractal_set;
+pub mod tracking;
+pub use tracking::{RecordingConfig, RunArchive};
+
+pub mod partv_analysis;

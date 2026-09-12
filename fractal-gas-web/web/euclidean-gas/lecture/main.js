@@ -1,6 +1,22 @@
 import { chartSVG, legendHTML, escapeXML as esc, format } from "./plots.js";
+import { LectureScene } from "./scene.js";
 
 const $ = (selector) => document.querySelector(selector);
+const sceneHost = document.createElement("section");
+sceneHost.className = "chart scene";
+sceneHost.hidden = true;
+document.querySelector("#charts").before(sceneHost);
+const sceneView = new LectureScene(sceneHost);
+const archiveButton = document.createElement("button");
+archiveButton.id = "archive";
+archiveButton.textContent = "Save trajectory archive";
+archiveButton.hidden = true;
+document.querySelector(".exports").append(archiveButton);
+const archiveImport = document.createElement("label");
+archiveImport.className = "file-button";
+archiveImport.innerHTML =
+  'Open trajectory archive<input id="archive-import" type="file" accept="application/json,.json">';
+document.querySelector(".exports").append(archiveImport);
 const worker = new Worker(new URL("./worker.js", import.meta.url), {
   type: "module",
 });
@@ -144,6 +160,7 @@ function controls() {
   }
 }
 async function initialize(id, overrides, replaySeed) {
+  const reuse = Boolean(demo && demo.id !== id && !overrides);
   pause();
   const token = ++generation;
   lock(true);
@@ -179,11 +196,18 @@ async function initialize(id, overrides, replaySeed) {
       ),
     );
   try {
-    const result = await request("initialize", { id: demo.id, params, seed });
+    const result = await request("initialize", {
+      id: demo.id,
+      params,
+      seed,
+      reuse,
+    });
     if (token !== generation) return;
     params = result.params;
     $("#checkpoint").hidden = !result.checkpoint;
-    ticks = 0;
+    archiveButton.hidden = !result.archive;
+    ticks = result.initialTick || 0;
+    $("#save").disabled = false;
     frames = [];
     selected = 0;
     record(result.snapshot);
@@ -198,7 +222,8 @@ async function initialize(id, overrides, replaySeed) {
 function record(snapshot) {
   frames.push({ snapshot, tick: ticks });
   // Keep a bounded window; full scalar histories live in the model snapshot.
-  if (frames.length > 80) frames.shift();
+  const frameLimit = snapshot.scene?.faces?.length > 500 ? 8 : 80;
+  while (frames.length > frameLimit) frames.shift();
   selected = frames.length - 1;
   render();
 }
@@ -242,6 +267,7 @@ function render() {
     )
     .join("");
   $("#message").textContent = snapshot.message || "";
+  sceneView.update(snapshot.scene);
   $("#scrub").max = Math.max(0, frames.length - 1);
   $("#scrub").value = selected;
   $("#frame").textContent =
@@ -385,6 +411,43 @@ $("#save").onclick = () => {
     "application/json",
   );
 };
+archiveButton.onclick = async () => {
+  try {
+    download(
+      demo.id + "-archive.json",
+      JSON.stringify(await request("archive")),
+      "application/json",
+    );
+  } catch (error) {
+    fail(error);
+  }
+};
+$("#archive-import").onchange = async (event) => {
+  pause();
+  lock(true);
+  try {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 128 * 1024 * 1024)
+      throw new Error("Archive must be smaller than 128 MiB.");
+    const archive = JSON.parse(await file.text());
+    const snapshot = await request("archive_import", archive);
+    frames = [];
+    ticks = snapshot.step;
+    selected = 0;
+    record(snapshot);
+    $("#title").textContent = "Imported Fractal Set archive";
+    $("#status").textContent = "Archive validated";
+    $("#checkpoint").hidden = true;
+    archiveButton.hidden = false;
+    $("#save").disabled = true;
+  } catch (error) {
+    fail(error);
+  } finally {
+    event.target.value = "";
+    lock(false);
+  }
+};
 $("#load").onchange = async (event) => {
   pause();
   try {
@@ -456,6 +519,7 @@ try {
     II: "Convergence",
     III: "Mean-field limits",
     IV: "Entropy & regularity",
+    V: "Fractal Set & continuum",
   };
   $("#catalog").innerHTML = Object.entries(names)
     .map(

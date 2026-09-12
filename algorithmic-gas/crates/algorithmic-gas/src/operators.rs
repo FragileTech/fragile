@@ -41,6 +41,18 @@ pub struct TransformRequest<'a, T: Real> {
     pub step: u64,
 }
 
+/// Immutable selection-stage data carried transactionally to O-stage providers.
+/// Query observations are supplied separately at the actual noise evaluation.
+#[derive(Clone, Copy)]
+pub struct FrozenFitnessContext<'a, T: Real> {
+    pub population: &'a Population<T>,
+    pub pool: &'a DonorPool<T>,
+    pub companions: &'a CompanionBatch,
+    pub alive: &'a [bool],
+    pub config: &'a crate::GasConfig,
+    pub clone_plan: &'a ClonePlan,
+}
+
 /// Own the identifiers and parameters of any custom implementation. `id` must
 /// change when its semantics/parameters change; checkpoints verify it. Numerical
 /// loops belong inside concrete operators, not per-walker dynamic dispatch.
@@ -146,6 +158,17 @@ pub trait GasOperators<T: Real> {
     ) -> OperatorFuture<'a, TensorBatch<T>> {
         Box::pin(async move { noise.sample(observations, request, cx).await })
     }
+    fn conditioned_noise<'a>(
+        &'a self,
+        noise: &'a Noise,
+        observations: &'a ObservationBatch<T>,
+        request: NoiseRequest,
+        _frozen: Option<&'a FrozenFitnessContext<'a, T>>,
+        _eligible: Option<&'a [bool]>,
+        cx: &'a mut ExecutionContext,
+    ) -> OperatorFuture<'a, TensorBatch<T>> {
+        self.noise(noise, observations, request, cx)
+    }
     fn kinetic<'a>(
         &'a self,
         operator: &'a KineticOperator,
@@ -167,6 +190,7 @@ impl<T: Real> GasOperators<T> for BuiltinOperators {
 pub(crate) struct HookNoise<'a, T: Real> {
     pub operators: &'a dyn GasOperators<T>,
     pub config: &'a Noise,
+    pub frozen: Option<FrozenFitnessContext<'a, T>>,
 }
 impl<T: Real> NoiseSource<T> for HookNoise<'_, T> {
     async fn sample(
@@ -175,6 +199,26 @@ impl<T: Real> NoiseSource<T> for HookNoise<'_, T> {
         request: NoiseRequest,
         cx: &mut ExecutionContext,
     ) -> Result<TensorBatch<T>> {
-        self.operators.noise(self.config, obs, request, cx).await
+        self.operators
+            .conditioned_noise(self.config, obs, request, self.frozen.as_ref(), None, cx)
+            .await
+    }
+    async fn sample_masked(
+        &self,
+        obs: &ObservationBatch<T>,
+        request: NoiseRequest,
+        eligible: &[bool],
+        cx: &mut ExecutionContext,
+    ) -> Result<TensorBatch<T>> {
+        self.operators
+            .conditioned_noise(
+                self.config,
+                obs,
+                request,
+                self.frozen.as_ref(),
+                Some(eligible),
+                cx,
+            )
+            .await
     }
 }

@@ -233,6 +233,10 @@ enum Device {
 pub struct ExecutionContext {
     /// Opt-in, bounded lecture diagnostics; never consumes random draws.
     pub(crate) stage_trace: Option<Vec<serde_json::Value>>,
+    pub(crate) recorded_stages: Option<Vec<crate::tracking::StageSnapshot>>,
+    pub(crate) recorded_noise: Option<Vec<crate::tracking::NoiseSnapshot>>,
+    pub(crate) recorded_fields: Option<Vec<crate::tracking::FieldEvaluation>>,
+    pub(crate) recorded_influences: Option<Vec<crate::tracking::InfluenceRecord>>,
     kind: BackendKind,
     precision: Precision,
     device: Device,
@@ -242,7 +246,85 @@ pub struct ExecutionContext {
     pub max_memory_bytes: usize,
 }
 impl ExecutionContext {
+    pub fn record_influence(
+        &mut self,
+        stage: &str,
+        field: &str,
+        recipient: u32,
+        source: crate::donor::SourceRef,
+        weight: f64,
+    ) {
+        if let Some(records) = &mut self.recorded_influences {
+            records.push(crate::tracking::InfluenceRecord {
+                stage: stage.into(),
+                field: field.into(),
+                recipient,
+                source,
+                weight,
+            });
+        }
+    }
+
+    pub fn record_field<T: Real>(
+        &mut self,
+        stage: &str,
+        field: &str,
+        version: u64,
+        value: &crate::TensorBatch<T>,
+    ) {
+        self.record_field_with_coverage(stage, field, version, value, &[]);
+    }
+    pub fn record_field_with_coverage<T: Real>(
+        &mut self,
+        stage: &str,
+        field: &str,
+        version: u64,
+        value: &crate::TensorBatch<T>,
+        available: &[bool],
+    ) {
+        if let Some(records) = &mut self.recorded_fields {
+            records.push(crate::tracking::FieldEvaluation {
+                stage: stage.into(),
+                field: field.into(),
+                version,
+                rows: value.rows(),
+                item_shape: value.item_shape().to_vec(),
+                values: value.values().iter().map(|x| x.to_f64()).collect(),
+                available: if available.is_empty() {
+                    vec![true; value.rows()]
+                } else {
+                    available.to_vec()
+                },
+            });
+        }
+    }
+    pub fn record_noise<T: Real>(
+        &mut self,
+        stage: &str,
+        request: crate::noise::NoiseRequest,
+        innovation: &crate::TensorBatch<T>,
+        factor: Option<Vec<f64>>,
+    ) {
+        if let Some(records) = &mut self.recorded_noise {
+            records.push(crate::tracking::NoiseSnapshot {
+                stage: stage.into(),
+                step: request.step,
+                stream: request.stream,
+                substep: request.substep,
+                rows: request.rows,
+                dimension: request.dimension,
+                sample: innovation.values().iter().map(|x| x.to_f64()).collect(),
+                raw_innovation: None,
+                factor,
+                geometry: None,
+            });
+        }
+    }
+
     pub(crate) fn trace_population<T: Real>(&mut self, stage: &str, p: &crate::Population<T>) {
+        if let Some(stages) = &mut self.recorded_stages {
+            stages.push(crate::tracking::StageSnapshot::capture(stage, p));
+        }
         if let Some(trace) = &mut self.stage_trace
             && trace.len() < 16
         {
@@ -296,6 +378,10 @@ impl ExecutionContext {
             device,
             stats: ExecutionStats::default(),
             stage_trace: None,
+            recorded_stages: None,
+            recorded_noise: None,
+            recorded_fields: None,
+            recorded_influences: None,
             max_batch_elements: 16_777_216,
             max_memory_bytes: crate::memory::DEFAULT_MEMORY_BYTES,
         };

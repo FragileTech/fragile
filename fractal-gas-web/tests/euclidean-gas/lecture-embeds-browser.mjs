@@ -23,7 +23,7 @@ for (const chapter of new Set(manifest.map((entry) => entry.chapter))) {
   );
   assert.equal(
     (html.match(/<figure class="gas-demo feynman-added"/g) || []).length,
-    2,
+    manifest.filter((entry) => entry.chapter === chapter).length,
     chapter,
   );
   for (const entry of manifest.filter((entry) => entry.chapter === chapter)) {
@@ -109,7 +109,7 @@ try {
   );
   assert.deepEqual(localErrors, []);
   console.log(
-    "42 built figures; lazy loading, project prefix, hidden pause, one iframe, Expert Mode, close/reopen and no-JS fallback passed",
+    `${manifest.length} built figures; lazy loading, project prefix, hidden pause, one iframe, Expert Mode, close/reopen and no-JS fallback passed`,
   );
 } finally {
   await browser.close();

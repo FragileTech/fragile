@@ -169,7 +169,7 @@ step number and seed. It supports a zero-survivor fixture so the next step can d
 engine's explicit extinction event.
 
 Call `run.set_trace(true)` before stepping to populate `snapshot().trace` with
-`{stage, population}` records. Stages include `pre_clone`, `literal_clone`, `post_transform`,
+`{stage, population}` records. Stages include `pre_clone`, `literal_clone`, `post_transform`, validated `post_clone`,
 the five BAOAB substages `B1`, `A1`, `O`, `A2`, `B2`, and `post_kinetic`.
 Substages follow the actual boundary checks; extinction can shorten the trace. Traces are
 limited to 16 states and enabled only for populations with at most 8192 observation scalars.
@@ -207,3 +207,33 @@ Contract tests cover shapes, scalar precision, matching laws, separate streams, 
 Remaining architecture targets include device-resident population/fitness/cloning and reusable scratch buffers, device-only permutation, index-only hybrid shuffle transfers, local/historical input alignment, true multi-donor recombination, cached dependency graphs, capability-restricted numerical views, declarative units/component descriptors, persistent custom-operator serialization, Student/stateful/correlated noise, AD adapters, matrix friction and production simulator adapters. Device loss can terminate a worker; the last explicit checkpoint is the recovery boundary.
 
 No convergence or equilibrium result follows merely from choosing modules with familiar names. Apply the book's theory only after checking the exact configuration and hypotheses.
+
+### Durable Part V archives and computations
+
+Call `start_recording(RecordingConfig::default())` before stepping. The archive
+retains every committed microstep, typed boundary/BAOAB stages, actual clone
+probabilities, source identities, force evaluations, innovations and factors.
+`recording().graph()` separates CST, IG, IA, material ancestry and restitution
+influence. `reconstruct(epoch, step, stage)` validates indexed scalar coverage;
+`compare_orders(speed, dt, max_nodes)` compares CST closure with physical light
+cones. Population replacement creates an epoch barrier. Recording is bounded
+by both its own budget and the engine working-memory limit.
+
+Checkpoint v3 preserves the archive. Version-two byte imports migrate through a
+current-state anchor, keeping prior recording coverage unavailable. Standalone
+`RunArchive::to_bytes/from_bytes` uses CBOR with validation. JSON is useful for
+finite lecture data; CBOR preserves nonfinite invalid observations.
+
+`partv_geometry::analyze` supplies exact 2D conditional fitness derivatives,
+spectral metric functions, constant-metric clipped Voronoi cells, Spade 2.15.1
+Delaunay maintenance, refining variable-metric distances, and shared tetrahedral
+spacetime partitions. `partv_analysis::analyze` supplies seeded independent
+transport, sampling, operator and curvature reference experiments.
+
+The benchmark `RunConfig.adaptive_metric` option accepts
+`{epsilon, temperature, policy}`. It evaluates the frozen conditional fitness
+field at the actual O-stage position, keeping the force potential separate.
+The supported launch profile is CPU/WASM f64 with two spatial coordinates,
+BAOAB, global smooth normalization, logistic maps, and one same-frame companion.
+Already-dead rows have unavailable field coverage; revived rows explicitly use
+their donor's frozen field. Unsupported configurations return capability errors.

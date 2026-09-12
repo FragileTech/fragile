@@ -166,5 +166,85 @@
   "IV-16": {
     "question": "Do independent replicas show the predicted relaxation?",
     "prediction": "Compare independently seeded replicas within each experiment group, with mean observables and sampling intervals. The harmonic card supplies the discrete relaxation curve and equilibrium E|x|² = 2; the absorbing comparison records losses and revivals against a matched-seed unbounded control. The population card compares N with 2N at the same physical time."
+  },
+  "V-01": {
+    "question": "Which history did this walker inherit?",
+    "prediction": "Accepted copies follow the donor ancestry; slot continuity follows the recipient. Rejected copies preserve ancestry."
+  },
+  "V-02": {
+    "question": "How do CST, IG and IA close a triangle?",
+    "prediction": "The oriented CST + IA − IG boundary closes for eligible same-frame interactions."
+  },
+  "V-03": {
+    "question": "Can the archived stages reproduce the visible trajectory?",
+    "prediction": "Absolute anchors reconstruct the recorded coordinates; a continuous spinor rotation changes sign at 2π and returns at 4π."
+  },
+  "V-04": {
+    "question": "What survives a change of local frame?",
+    "prediction": "Supplied connection holonomy transforms by conjugation; its trace is invariant, with rebasing required between triangles."
+  },
+  "V-05": {
+    "question": "How does fitness curvature shape the metric?",
+    "prediction": "Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue."
+  },
+  "V-06": {
+    "question": "Can the metric predict one O-step innovation cloud?",
+    "prediction": "Conditional covariance is T(1 − exp(−2γh))g⁻¹; sampling error decreases with independent innovations."
+  },
+  "V-07": {
+    "question": "How much geometric volume does each cell hold?",
+    "prediction": "For constant metric g, geometric volume equals coordinate area times √det(g); the cells sum to the clipped region."
+  },
+  "V-08": {
+    "question": "Which covariance does the anisotropic thermostat approach?",
+    "prediction": "The harmonic BAOAB covariance follows its discrete Lyapunov equation; finite step size changes the stationary reference."
+  },
+  "V-09": {
+    "question": "Which walkers share a cell boundary?",
+    "prediction": "Metric Voronoi cells partition the observation window; coincident sites share a geometric cell while keeping distinct identities."
+  },
+  "V-10": {
+    "question": "Did copying or kinetic motion change this interface?",
+    "prediction": "Comparing recorded pre-clone, post-clone and final sites locates neighbor changes by operation."
+  },
+  "V-11": {
+    "question": "What volume does a moving cell occupy?",
+    "prediction": "A shared spacetime partition closes the observation slab; refinement resolves moving interfaces and clone jumps use one-sided caps."
+  },
+  "V-12": {
+    "question": "How much geometric work accompanies each update?",
+    "prediction": "Changed unique interfaces and incident cell counts differ; reconstruction work depends on the realized configuration."
+  },
+  "V-13": {
+    "question": "What changes continuously when the query point moves?",
+    "prediction": "With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation."
+  },
+  "V-14": {
+    "question": "Can a biased cloud integrate volume correctly?",
+    "prediction": "Inverse sampling-density weights recover the known integral; effective sample size reveals weight concentration."
+  },
+  "V-15": {
+    "question": "Which moments make the kernel a wave operator?",
+    "prediction": "The signed kernel must satisfy its actual cutoff-domain moment equations, including the temporal sign."
+  },
+  "V-16": {
+    "question": "When does a smaller bandwidth improve the estimate?",
+    "prediction": "Bias falls with bandwidth while sampling variance grows; the useful bandwidth balances the two."
+  },
+  "V-17": {
+    "question": "Which events are related by each order?",
+    "prediction": "Recorded CST reachability and geometric light-cone comparability are distinct relations that can be inspected on the same events."
+  },
+  "V-18": {
+    "question": "What count law belongs to this sampling experiment?",
+    "prediction": "Poisson and fixed-count sampling have different count variances; weighting depends on the specified density."
+  },
+  "V-19": {
+    "question": "How does the comparable-pair fraction encode dimension?",
+    "prediction": "Uniform samples in a 2+1 Minkowski Alexandrov interval approach the comparable-pair fraction 8/35."
+  },
+  "V-20": {
+    "question": "How does the curvature signal compete with sampling noise?",
+    "prediction": "Independent kernel-moment calibration recovers R = 2K for the chosen product family as resolution and sample size improve."
   }
 }

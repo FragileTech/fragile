@@ -195,6 +195,7 @@ test("BAOAB trace does not change the committed run and final force uses post-A 
         "pre_clone",
         "literal_clone",
         "post_transform",
+        "post_clone",
         "B1",
         "A1",
         "O",

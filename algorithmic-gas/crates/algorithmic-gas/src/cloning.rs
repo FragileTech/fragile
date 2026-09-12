@@ -17,6 +17,9 @@ pub struct CloneChoice {
     pub donors: Vec<WeightedDonor>,
     pub accepted: bool,
     pub revival: bool,
+    /// Actual decision probability; custom providers may leave this unavailable.
+    #[serde(default)]
+    pub probability: Option<f64>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct ClonePlan {
@@ -93,11 +96,13 @@ impl CloneDecision {
                     }],
                     accepted: true,
                     revival: true,
+                    probability: Some(1.),
                 });
                 continue;
             }
             let donor = companions.row(i).next();
             let mut accepted = false;
+            let mut acceptance_probability = T::ZERO;
             if let Some(j) = donor {
                 let f = fitness[i];
                 let d = donor_fitness[j as usize];
@@ -110,6 +115,7 @@ impl CloneDecision {
                     ((d - f) / (f + T::from_f64(self.epsilon)) / T::from_f64(self.saturation))
                         .max(T::ZERO)
                         .min(T::ONE);
+                acceptance_probability = probability;
                 let mut rng = RandomStream::new(seed, step, Stream::Accept, i as u64, 0);
                 accepted = rng.uniform::<T>() < probability;
             }
@@ -123,6 +129,7 @@ impl CloneDecision {
                     .collect(),
                 accepted,
                 revival: false,
+                probability: Some(acceptance_probability.to_f64()),
             });
         }
         Ok(ClonePlan {
@@ -316,6 +323,23 @@ impl CloneTransform {
                 )?;
                 if !plan.choices[i].accepted && !plan.choices[j].accepted {
                     continue;
+                }
+                let own = ((T::ONE + T::from_f64(a)) * T::from_f64(0.5)).to_f64();
+                let partner = ((T::ONE - T::from_f64(a)) * T::from_f64(0.5)).to_f64();
+                let source_i = pool.sources[reverse as usize];
+                for (recipient, donor, weight) in [
+                    (i, source_i, own),
+                    (i, source, partner),
+                    (j, source, own),
+                    (j, source_i, partner),
+                ] {
+                    cx.record_influence(
+                        "velocity_restitution",
+                        field,
+                        recipient as u32,
+                        donor,
+                        weight,
+                    );
                 }
                 let mut vi = vec![];
                 let mut vj = vec![];

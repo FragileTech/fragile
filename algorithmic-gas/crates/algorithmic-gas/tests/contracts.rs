@@ -531,6 +531,7 @@ fn simultaneous_cloning_copies_observations_rewards_and_state() {
                 }],
                 accepted: true,
                 revival: false,
+                probability: None,
             })
             .collect(),
         mutual: false,

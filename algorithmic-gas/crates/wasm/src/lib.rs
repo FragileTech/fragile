@@ -26,12 +26,25 @@ fn decode_checkpoint(bytes: &[u8]) -> Result<BrowserCheckpoint, JsValue> {
         return Err(error("checkpoint exceeds 256 MiB decode limit"));
     }
     let mut remaining = bytes;
-    let saved: BrowserCheckpoint =
+    let mut saved: BrowserCheckpoint =
         ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64).map_err(error)?;
-    if !remaining.is_empty() || saved.version != CHECKPOINT_VERSION {
+    if !remaining.is_empty() || ![2, CHECKPOINT_VERSION].contains(&saved.version) {
         return Err(error(
             "unsupported browser checkpoint version or trailing data",
         ));
+    }
+    if saved.version == 2 {
+        // Use the core migration so browser/native imports have identical coverage.
+        fn migrate<T: Real>(state: &Checkpoint<T>) -> Result<Checkpoint<T>, JsValue> {
+            let mut bytes = Vec::new();
+            ciborium::ser::into_writer(state, &mut bytes).map_err(error)?;
+            Checkpoint::from_bytes(&bytes).map_err(error)
+        }
+        saved.state = match &saved.state {
+            SavedRun::F32(state) => SavedRun::F32(migrate(state)?),
+            SavedRun::F64(state) => SavedRun::F64(migrate(state)?),
+        };
+        saved.version = CHECKPOINT_VERSION;
     }
     saved.config.validate().map_err(error)?;
     match &saved.state {
@@ -75,6 +88,36 @@ fn js(value: &impl Serialize) -> Result<JsValue, JsValue> {
 #[wasm_bindgen]
 pub fn default_config() -> String {
     serde_json::to_string(&RunConfig::default()).unwrap()
+}
+/// Bounded native geometry queries. Run in a Worker so rendering stays responsive.
+#[wasm_bindgen]
+pub fn partv_geometry(request_json: String) -> Result<JsValue, JsValue> {
+    if request_json.len() > 8 * 1024 * 1024 {
+        return Err(error("geometry request exceeds 8 MiB"));
+    }
+    let request = serde_json::from_str(&request_json).map_err(error)?;
+    js(&algorithmic_gas::partv_geometry::analyze(request).map_err(error)?)
+}
+#[wasm_bindgen]
+pub fn partv_analysis(request_json: String) -> Result<JsValue, JsValue> {
+    if request_json.len() > 8 * 1024 * 1024 {
+        return Err(error("analysis request exceeds 8 MiB"));
+    }
+    let request = serde_json::from_str(&request_json).map_err(error)?;
+    js(&algorithmic_gas::partv_analysis::analyze(request).map_err(error)?)
+}
+/// Validate a standalone archive before exposing its topology to the viewer.
+#[wasm_bindgen]
+pub fn partv_archive(archive_json: String) -> Result<JsValue, JsValue> {
+    if archive_json.len() > 128 * 1024 * 1024 {
+        return Err(error("archive JSON exceeds 128 MiB"));
+    }
+    let archive: algorithmic_gas::RunArchive<f64> =
+        serde_json::from_str(&archive_json).map_err(error)?;
+    archive.validate().map_err(error)?;
+    js(
+        &serde_json::json!({"graph":archive.graph(),"orders":archive.compare_orders(1.,0.04,200).map_err(error)?}),
+    )
 }
 #[wasm_bindgen]
 pub fn checkpoint_config(bytes: Vec<u8>) -> Result<String, JsValue> {
@@ -142,6 +185,69 @@ impl BrowserGas {
             Run::F64(g) => g.set_trace(enabled),
         }
         .map_err(error)
+    }
+    pub fn start_recording(&mut self, config_json: String) -> Result<(), JsValue> {
+        let config = serde_json::from_str(&config_json).map_err(error)?;
+        match &mut self.run {
+            Run::F32(g) => g.start_recording(config),
+            Run::F64(g) => g.start_recording(config),
+        }
+        .map_err(error)
+    }
+    pub fn archive(&self) -> Result<JsValue, JsValue> {
+        match &self.run {
+            Run::F32(g) => js(g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?),
+            Run::F64(g) => js(g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?),
+        }
+    }
+    pub fn fractal_set(&self) -> Result<JsValue, JsValue> {
+        match &self.run {
+            Run::F32(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .graph()),
+            Run::F64(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .graph()),
+        }
+    }
+    pub fn reconstruct(&self, epoch: u32, step: u32, stage: String) -> Result<JsValue, JsValue> {
+        match &self.run {
+            Run::F32(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .reconstruct(epoch as u64, step as u64, &stage)
+                .map_err(error)?),
+            Run::F64(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .reconstruct(epoch as u64, step as u64, &stage)
+                .map_err(error)?),
+        }
+    }
+    pub fn compare_orders(
+        &self,
+        speed: f64,
+        dt: f64,
+        max_nodes: usize,
+    ) -> Result<JsValue, JsValue> {
+        match &self.run {
+            Run::F32(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .compare_orders(speed, dt, max_nodes)
+                .map_err(error)?),
+            Run::F64(g) => js(&g
+                .recording()
+                .ok_or_else(|| error("recording is not enabled"))?
+                .compare_orders(speed, dt, max_nodes)
+                .map_err(error)?),
+        }
     }
     pub fn config_json(&self) -> String {
         serde_json::to_string_pretty(&self.config).unwrap()

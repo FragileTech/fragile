@@ -1,7 +1,8 @@
 # Volume II lecture experiments
 
-This directory implements the 42 experiment IDs in
-[the visualization plan](../../../../docs/source/project/volume2_interactive_visualization_plan.md).
+This directory implements the 42 experiments in
+[the original visualization plan](../../../../docs/source/project/volume2_interactive_visualization_plan.md)
+and 20 in [the Part V document](../../../../docs/source/project/volume2_partv_interactive_experiments.md).
 Open `euclidean-gas/lecture.html?demo=I-01` through the local Lab server.
 Append `&embed=1` for the compact lecture view.
 
@@ -17,13 +18,14 @@ From the repository root:
 
 The Rust build requires the pinned Rust toolchain and wasm-bindgen documented in
 `algorithmic-gas/README.md`. Generated CPU/WebGPU bundles remain build artifacts.
-The build also regenerates the 42 SVG posters and chapter manifest.
+The build also regenerates the 62 SVG posters and chapter manifest.
 To refresh only those assets using an existing compiled CPU bundle:
 
     npm --prefix fractal-gas-web run build:euclidean-lectures
 
 Build the book with `make docs`. Its Sphinx extension inserts two experiments in
-each of the first 21 Volume II chapters according to `placements.json`. Captions
+each of the first 21 Volume II chapters and four in each of the five Part V chapters
+according to `placements.json`. Captions
 are reviewed in `captions.json`; posters and the generated manifest are committed
 under `docs/_static_theory/gas-demos/`, so a documentation-only build needs no Rust.
 Section placements are validated against actual Markdown blocks; changing a
@@ -37,6 +39,7 @@ target heading without updating the placement fails the documentation build.
 | Convergence            | II-01–II-08   | `convergence.js` |
 | Mean-field limits      | III-01–III-08 | `convergence.js` |
 | Entropy and regularity | IV-01–IV-16   | `entropy.js`     |
+| Fractal Set and continuum | V-01–V-20 | `fractal.js` |
 
 Every descriptor implements the interface in `CONTRACT.md`. The interface
 separates scientific computation from DOM rendering. Exact reference models run
@@ -90,3 +93,27 @@ defaults and control endpoints, deterministic reset, finite outputs, section
 placement, published URL paths, desktop/mobile interaction, export/replay,
 and the one-iframe lifecycle. Production deployment uses the existing Euclidean
 Gas artifact and Theory build; no separate hosting service is required.
+
+## Part V
+
+The [detailed Part V document](../../../../docs/source/project/volume2_partv_interactive_experiments.md)
+records each placement, experiment, controls, prediction and numerical comparison.
+The native implementation is in `tracking`, `fractal_set`, `partv_geometry` and
+`partv_analysis`, with actual O-stage adaptive diffusion in the benchmark provider.
+
+`V-01`, `V-02` and `V-17` reuse their recorded run when seed, population size,
+history and initial scenario agree. Reset creates a fresh run. Scene selection,
+layers, camera and vertical display scale preserve the data. The light-cone
+comparison always uses physical time; vertical exaggeration affects drawing only.
+Trajectory JSON has a separate validated import/export workflow. Native archives
+also support CBOR, preserving nonfinite invalid observations. Checkpoint v3
+preserves the archive; v2 imports begin coverage at the restored state.
+
+Run the dedicated scene regression with:
+
+    node fractal-gas-web/tests/euclidean-gas/lecture-fractal-browser.mjs
+
+Spacetime reconstruction uses a shared tetrahedral partition with one-sided clone
+jump caps, not polygon vertex matching. Planar constant metrics use clipped cells
+and pinned Spade predicates. Variable metrics use a refining graph-distance
+approximation, with its grid and directional resolution stated in the result.

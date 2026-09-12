@@ -289,8 +289,148 @@
   {
     "id": "IV-16",
     "part": "IV",
-    "title": "Build a reproducible experiment from the lecture\u2019s question",
+    "title": "Build a reproducible experiment from the lecture’s question",
     "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
     "target": "sec-parameter-selection"
+  },
+  {
+    "id": "V-01",
+    "part": "V",
+    "title": "A slot is not an ancestor",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-nodes"
+  },
+  {
+    "id": "V-02",
+    "part": "V",
+    "title": "Build the three-edge interaction",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-fractal-set"
+  },
+  {
+    "id": "V-03",
+    "part": "V",
+    "title": "Reconstruct the run from its record",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-reconstruction"
+  },
+  {
+    "id": "V-04",
+    "part": "V",
+    "title": "Triangles, plaquettes, and transport",
+    "chapter": "source/2_fractal_gas/2_fractal_set/01_fractal_set",
+    "target": "sec-guarantees"
+  },
+  {
+    "id": "V-05",
+    "part": "V",
+    "title": "From fitness curvature to a metric",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-adaptive-diffusion-tensor"
+  },
+  {
+    "id": "V-06",
+    "part": "V",
+    "title": "Predict the next noise cloud",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-equivalence-principle"
+  },
+  {
+    "id": "V-07",
+    "part": "V",
+    "title": "Coordinate area versus geometric volume",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-riemannian-volume"
+  },
+  {
+    "id": "V-08",
+    "part": "V",
+    "title": "Relaxation in anisotropic geometry",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry",
+    "target": "sec-hypocoercivity"
+  },
+  {
+    "id": "V-09",
+    "part": "V",
+    "title": "Cells and their dual graph",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-time-varying-voronoi"
+  },
+  {
+    "id": "V-10",
+    "part": "V",
+    "title": "Which operation changed the neighbors?",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-cloning-topological-transitions"
+  },
+  {
+    "id": "V-11",
+    "part": "V",
+    "title": "Sweep the cells through time",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-scutoid-cell-definition"
+  },
+  {
+    "id": "V-12",
+    "part": "V",
+    "title": "Maintain the mesh and count its activity",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime",
+    "target": "sec-dynamic-delaunay-algorithm"
+  },
+  {
+    "id": "V-13",
+    "part": "V",
+    "title": "Smooth fields within a fixed stratum",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-regularity"
+  },
+  {
+    "id": "V-14",
+    "part": "V",
+    "title": "Normalize the sampled geometry",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-sampling"
+  },
+  {
+    "id": "V-15",
+    "part": "V",
+    "title": "Build a signed wave-operator kernel",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-kernels"
+  },
+  {
+    "id": "V-16",
+    "part": "V",
+    "title": "Find the useful bandwidth",
+    "chapter": "source/2_fractal_gas/convergence_program/16_continuum_discharge",
+    "target": "sec-continuum-variance"
+  },
+  {
+    "id": "V-17",
+    "part": "V",
+    "title": "Recorded order and geometric light cones",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-cst-geometric-comparison"
+  },
+  {
+    "id": "V-18",
+    "part": "V",
+    "title": "Count events to measure volume",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-faithful-discretization"
+  },
+  {
+    "id": "V-19",
+    "part": "V",
+    "title": "Estimate dimension from comparable pairs",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-cst-dimension-curvature"
+  },
+  {
+    "id": "V-20",
+    "part": "V",
+    "title": "Curvature, calibration, and amplified noise",
+    "chapter": "source/2_fractal_gas/2_fractal_set/02_causal_set_theory",
+    "target": "sec-physical-consequences"
   }
 ]

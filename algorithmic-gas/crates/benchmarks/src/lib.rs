@@ -1,4 +1,5 @@
 //! Analytic objectives shared by the native runner and browser bindings.
+pub mod adaptive;
 use algorithmic_gas::{
     AlgorithmicGas, ComputeBackend, ExecutionContext, GasBuilder, GasConfig, GasError, InputBatch,
     ObservationBatch, Population, Provenance, Real, Result, RewardBatch, TensorBatch,
@@ -262,6 +263,8 @@ pub struct RunConfig {
     pub benchmark: Benchmark,
     /// Optional independent force potential (reward objective remains benchmark).
     pub potential: Option<Benchmark>,
+    /// Frozen conditional-fitness diffusion at the actual BAOAB O stage.
+    pub adaptive_metric: Option<adaptive::AdaptiveMetricConfig>,
     /// Translate the reward optimum; empty means zero in every coordinate.
     pub reward_shift: Vec<f64>,
     pub walkers: usize,
@@ -285,6 +288,7 @@ impl Default for RunConfig {
         Self {
             benchmark: Benchmark::Rastrigin,
             potential: None,
+            adaptive_metric: None,
             reward_shift: vec![],
             walkers: 256,
             dimensions: 2,
@@ -387,7 +391,7 @@ impl RunConfig {
             },
             ..model.clone()
         };
-        GasBuilder::new(
+        let builder = GasBuilder::new(
             self.initial_population()?,
             ShiftedReward {
                 model,
@@ -395,9 +399,17 @@ impl RunConfig {
             },
         )
         .config(self.gas.clone())
-        .gradient(gradient)
-        .build()
-        .await
+        .gradient(gradient);
+        let builder = if let Some(config) = &self.adaptive_metric {
+            builder.operators(adaptive::AdaptiveMetricOperators {
+                config: config.clone(),
+                benchmark: self.benchmark,
+                reward_shift: self.reward_shift.clone(),
+            })
+        } else {
+            builder
+        };
+        builder.build().await
     }
 }
 

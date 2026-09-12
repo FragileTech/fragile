@@ -117,10 +117,10 @@ def test_every_demo_is_a_top_level_raw_block_with_working_published_paths(chapte
         assert (DOCS / f"_static_theory/gas-demos/{entry['id']}.svg").is_file()
 
 
-def test_manifest_covers_all_42_unique_demos_in_21_chapters():
-    assert len(ENTRIES) == len({entry["id"] for entry in ENTRIES}) == 42
-    assert len(CHAPTERS) == 21
-    assert {entry["part"] for entry in ENTRIES} == {"I", "II", "III", "IV"}
+def test_manifest_covers_all_62_unique_demos_in_26_chapters():
+    assert len(ENTRIES) == len({entry["id"] for entry in ENTRIES}) == 62
+    assert len(CHAPTERS) == 26
+    assert {entry["part"] for entry in ENTRIES} == {"I", "II", "III", "IV", "V"}
 
 
 @pytest.mark.parametrize("entry", ENTRIES, ids=itemgetter("id"))

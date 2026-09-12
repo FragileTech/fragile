@@ -112,6 +112,7 @@ pub struct KineticContext<'a, T: Real> {
     pub seed: u64,
     pub step: u64,
     pub operators: Option<&'a dyn crate::operators::GasOperators<T>>,
+    pub frozen_fitness: Option<crate::operators::FrozenFitnessContext<'a, T>>,
 }
 impl<T: Real> KineticContext<'_, T> {
     fn has_eligible(&self, p: &Population<T>) -> bool {
@@ -180,6 +181,7 @@ impl KineticOperator {
             let noise = crate::operators::HookNoise {
                 operators,
                 config: &self.noise,
+                frozen: k.frozen_fitness,
             };
             self.advance_with_noise(p, k, &noise, cx).await
         } else {
@@ -250,6 +252,7 @@ impl KineticOperator {
                     .gradient
                     .ok_or_else(|| GasError::Capability("missing gradient provider".into()))?;
                 let grad = gradient.gradient(p, cx).await?;
+                cx.record_field("B1", "potential_gradient", p.version, &grad);
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
@@ -266,8 +269,9 @@ impl KineticOperator {
                     return Ok(());
                 }
                 let d = p.observations.field(velocities)?.width();
+                let noise_eligible = p.eligible(k.include_truncated);
                 let eta = noise
-                    .sample(
+                    .sample_masked(
                         &p.observations,
                         NoiseRequest {
                             rows: p.len(),
@@ -277,6 +281,7 @@ impl KineticOperator {
                             stream: Stream::Kinetic,
                             substep: 2,
                         },
+                        &noise_eligible,
                         cx,
                     )
                     .await?;
@@ -304,6 +309,7 @@ impl KineticOperator {
                 }
                 // Deliberately recompute at the post-A positions; no stale cache.
                 let grad = gradient.gradient(p, cx).await?;
+                cx.record_field("B2", "potential_gradient", p.version, &grad);
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;

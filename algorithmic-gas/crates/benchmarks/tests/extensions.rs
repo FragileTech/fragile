@@ -282,6 +282,7 @@ fn isolated_gaussian_thermostat_scaling_including_zero_friction() {
                         seed: 7,
                         step: 1,
                         operators: None,
+                        frozen_fitness: None,
                     },
                     &mut cx,
                 )

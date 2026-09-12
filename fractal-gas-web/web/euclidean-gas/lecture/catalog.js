@@ -1,8 +1,9 @@
 import { demos as foundations } from "./foundations.js";
 import { demos as convergence } from "./convergence.js";
 import { demos as entropy } from "./entropy.js";
+import { demos as fractal } from "./fractal.js";
 
-export const demos = [...foundations, ...convergence, ...entropy];
+export const demos = [...foundations, ...convergence, ...entropy, ...fractal];
 export const metadata = demos.map(({ create, ...descriptor }) => descriptor);
 
 export function parameters(demo, input = {}) {

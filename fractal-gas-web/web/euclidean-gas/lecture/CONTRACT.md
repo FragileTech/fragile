@@ -70,3 +70,24 @@ Owners: foundations.js (Part I and Rust/WASM diagnostic exposure),
 convergence.js (Parts II–III), entropy.js (Part IV), and parent (shared host,
 math/plots/worker, integration and document embedding). Keep changes in owned
 files and coordinate any shared API extension before editing another file.
+
+## Part V extensions
+
+The engine adapter supplies `geometry(request)` and `analysis(request)`, calling
+the compiled native serde interfaces. BrowserGas adds `start_recording(config)`,
+`archive()`, `fractal_set()`, `reconstruct(epoch, step, stage)` and
+`compare_orders(speed, dt, maximumNodes)`. Tracking captures each microstep even
+inside `step(16)`. `inspectArchive(archive)` validates imported standalone data.
+
+A snapshot can contain `scene: {title, nodes, edges, faces, verticalScale, message}`.
+Nodes use stable string IDs and `[x,y,time]` positions, with optional owner/layer.
+Edges use source/target IDs and named layers. Faces contain ordered 3D vertices.
+The SVG viewer supports rotation, clipping by time, layer selection, cell
+selection, lineage tracing, keyboard controls and SVG export. VerticalScale is
+a display factor only. Complex scene snapshots retain eight frames; numerical
+archives preserve every committed step up to their explicit recording budget.
+
+Models may expose `archive()` and `reuse({id, params, seed})`. Reuse is requested
+only when navigating between compatible views; reset always constructs a fresh
+model. Reference models use explicit replica and work limits. Missing field
+evaluations and uncertainty stay absent, never substituted by measured zero.

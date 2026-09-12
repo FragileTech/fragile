@@ -8,6 +8,8 @@ import {
 import init, {
   BrowserGas,
   default_config,
+  partv_geometry,
+  partv_analysis,
 } from "../web/euclidean-gas/engine/cpu/gas.js";
 
 await init({
@@ -16,6 +18,8 @@ await init({
   ),
 });
 const engine = {
+  geometry: async (request) => partv_geometry(JSON.stringify(request)),
+  analysis: async (request) => partv_analysis(JSON.stringify(request)),
   defaults: async () => JSON.parse(default_config()),
   create: (config) => BrowserGas.create(JSON.stringify(config)),
   restore: (bytes) => BrowserGas.restore(bytes),
@@ -33,11 +37,12 @@ const captions = JSON.parse(
   ),
 );
 if (
-  demos.length !== 42 ||
   placements.length !== demos.length ||
-  new Set(demos.map((d) => d.id)).size !== 42
+  new Set(demos.map((d) => d.id)).size !== demos.length
 )
-  throw new Error("Expected 42 distinct lecture experiments and placements");
+  throw new Error(
+    "Expected distinct lecture experiments with one placement each",
+  );
 const manifest = [];
 for (const demo of demos) {
   const placement = placements.find((entry) => entry.id === demo.id);
@@ -55,7 +60,13 @@ for (const demo of demos) {
     for (; posterTicks < 12 && !model.snapshot().done; posterTicks++)
       await model.step();
     const snapshot = model.snapshot();
-    const preferred = { "II-01": 3, "IV-01": 1, "IV-09": 1 };
+    const preferred = {
+      "II-01": 3,
+      "IV-01": 1,
+      "IV-09": 1,
+      "V-11": 2,
+      "V-12": 1,
+    };
     const chart =
       snapshot.charts[preferred[demo.id]] ||
       snapshot.charts.find(

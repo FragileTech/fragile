@@ -221,6 +221,8 @@ pub struct Checkpoint<T: Real> {
     pub execution: ExecutionStats,
     pub history: Vec<(u64, Population<T>)>,
     pub last_report: Option<StepReport<T>>,
+    #[serde(default)]
+    pub recording: Option<crate::tracking::RunArchive<T>>,
     pub reward_provider: String,
     pub gradient_provider: Option<String>,
     pub domain_provider: String,
@@ -243,9 +245,36 @@ impl<T: Real> Checkpoint<T> {
             ));
         }
         let mut remaining = bytes;
-        let checkpoint: Self = ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64)
-            .map_err(|e| GasError::Checkpoint(e.to_string()))?;
+        let mut checkpoint: Self =
+            ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64)
+                .map_err(|e| GasError::Checkpoint(e.to_string()))?;
         require(remaining.is_empty(), "trailing checkpoint data")?;
+        if checkpoint.schema_version == 2 {
+            checkpoint.schema_version = crate::checkpoint::CHECKPOINT_VERSION;
+            checkpoint.recording = Some(crate::tracking::RunArchive::new(
+                Default::default(),
+                checkpoint.config.clone(),
+                checkpoint.step,
+                &checkpoint.population,
+                "checkpoint_v2_migration",
+            )?);
+            if let Some(archive) = &mut checkpoint.recording {
+                archive
+                    .providers
+                    .insert("reward".into(), checkpoint.reward_provider.clone());
+                archive
+                    .providers
+                    .insert("domain".into(), checkpoint.domain_provider.clone());
+                archive
+                    .providers
+                    .insert("operators".into(), checkpoint.operator_set.clone());
+                if let Some(gradient) = &checkpoint.gradient_provider {
+                    archive
+                        .providers
+                        .insert("gradient".into(), gradient.clone());
+                }
+            }
+        }
         checkpoint.validate()?;
         Ok(checkpoint)
     }
@@ -309,6 +338,7 @@ impl<T: Real> GasBuilder<T> {
             reward_evaluations: 0,
             history: vec![],
             last_report: None,
+            recording: None,
             cancellation: CancellationToken::default(),
         };
         gas.domain.refresh_observations(&mut gas.population)?;
@@ -348,6 +378,7 @@ pub struct AlgorithmicGas<T: Real> {
     reward_evaluations: u64,
     history: Vec<(u64, Population<T>)>,
     last_report: Option<StepReport<T>>,
+    recording: Option<crate::tracking::RunArchive<T>>,
     cancellation: CancellationToken,
 }
 fn validate_rewards<T: Real>(p: &mut Population<T>, config: &GasConfig) -> Result<()> {
@@ -372,6 +403,67 @@ fn validate_rewards<T: Real>(p: &mut Population<T>, config: &GasConfig) -> Resul
     p.validate()
 }
 impl<T: Real> AlgorithmicGas<T> {
+    fn execution_allowance(
+        &self,
+        p: &Population<T>,
+        input: Option<&InputBatch<T>>,
+    ) -> Result<usize> {
+        use crate::memory::{checked_add, checked_mul, enforce};
+        let mut reserved = self.config.working_set_bytes(p, &self.history, input)?;
+        if let Some(archive) = &self.recording {
+            // Retained archive plus typed per-stage copies and a transactional candidate.
+            reserved = checked_add(reserved, archive.buffer_bytes()?)?;
+            reserved = checked_add(reserved, checked_mul(p.buffer_bytes()?, 24)?)?;
+        }
+        enforce(reserved, self.config.max_memory_bytes)?;
+        Ok(self.config.max_memory_bytes - reserved)
+    }
+    /// Begin a new archive at the current state. Export the old archive before restarting.
+    pub fn start_recording(&mut self, config: crate::tracking::RecordingConfig) -> Result<()> {
+        let mut archive = crate::tracking::RunArchive::new(
+            config,
+            self.config.clone(),
+            self.step,
+            &self.population,
+            if self.step == 0 {
+                "initial"
+            } else {
+                "recording_started"
+            },
+        )?;
+        archive.providers.insert("reward".into(), self.reward.id());
+        archive.providers.insert("domain".into(), self.domain.id());
+        archive
+            .providers
+            .insert("operators".into(), self.operators.id());
+        if let Some(gradient) = &self.gradient {
+            archive.providers.insert("gradient".into(), gradient.id());
+        }
+        crate::memory::enforce(
+            crate::memory::checked_add(
+                archive.buffer_bytes()?,
+                self.config
+                    .working_set_bytes(&self.population, &self.history, None)?,
+            )?,
+            self.config.max_memory_bytes,
+        )?;
+        self.recording = Some(archive);
+        self.cx.recorded_stages = Some(Vec::new());
+        self.cx.recorded_noise = Some(Vec::new());
+        self.cx.recorded_fields = Some(Vec::new());
+        self.cx.recorded_influences = Some(Vec::new());
+        Ok(())
+    }
+    pub fn recording(&self) -> Option<&crate::tracking::RunArchive<T>> {
+        self.recording.as_ref()
+    }
+    pub fn stop_recording(&mut self) -> Option<crate::tracking::RunArchive<T>> {
+        self.cx.recorded_stages = None;
+        self.cx.recorded_noise = None;
+        self.cx.recorded_fields = None;
+        self.cx.recorded_influences = None;
+        self.recording.take()
+    }
     /// Enable a last-step replay for small teaching populations. Disabled by default.
     pub fn set_trace(&mut self, enabled: bool) -> Result<()> {
         require(
@@ -453,9 +545,21 @@ impl<T: Real> AlgorithmicGas<T> {
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
         let previous_trace = self.cx.stage_trace.clone();
+        let previous_stages = self.cx.recorded_stages.clone();
+        let previous_noise = self.cx.recorded_noise.clone();
+        let previous_fields = self.cx.recorded_fields.clone();
+        let previous_influences = self.cx.recorded_influences.clone();
+        let previous_stats = self.cx.stats.clone();
+        let previous_allowance = self.cx.max_memory_bytes;
         let result = self.execute_transaction(input, extracted).await;
         if result.is_err() {
             self.cx.stage_trace = previous_trace;
+            self.cx.recorded_stages = previous_stages;
+            self.cx.recorded_noise = previous_noise;
+            self.cx.recorded_fields = previous_fields;
+            self.cx.recorded_influences = previous_influences;
+            self.cx.stats = previous_stats;
+            self.cx.max_memory_bytes = previous_allowance;
         }
         result
     }
@@ -465,13 +569,28 @@ impl<T: Real> AlgorithmicGas<T> {
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
         self.cancellation.check()?;
+        if let Some(archive) = &self.recording {
+            require(
+                archive.steps.len() < archive.config.max_steps,
+                "recording horizon reached; export archive and start a new recording",
+            )?;
+        }
+        if let Some(stages) = &mut self.cx.recorded_stages {
+            stages.clear();
+        }
+        if let Some(noise) = &mut self.cx.recorded_noise {
+            noise.clear();
+        }
+        if let Some(fields) = &mut self.cx.recorded_fields {
+            fields.clear();
+        }
+        if let Some(influences) = &mut self.cx.recorded_influences {
+            influences.clear();
+        }
         if let Some(trace) = &mut self.cx.stage_trace {
             trace.clear();
         }
-        self.cx.max_memory_bytes = self.config.max_memory_bytes
-            - self
-                .config
-                .working_set_bytes(&self.population, &self.history, input)?;
+        self.cx.max_memory_bytes = self.execution_allowance(&self.population, input)?;
         if let Some(input) = input {
             require(
                 self.config.cloning_donors.history_window == 0,
@@ -493,8 +612,7 @@ impl<T: Real> AlgorithmicGas<T> {
         self.domain.refresh_observations(&mut p)?;
         self.operators
             .boundary(&self.config.boundary, &mut p, self.domain.as_ref())?;
-        self.cx.max_memory_bytes = self.config.max_memory_bytes
-            - self.config.working_set_bytes(&p, &self.history, input)?;
+        self.cx.max_memory_bytes = self.execution_allowance(&p, input)?;
         p.observations.provenance.population_version = p.version;
         p.observations.provenance.stage = "pre_clone".into();
         if extracted_version != Some(p.version) {
@@ -749,10 +867,7 @@ impl<T: Real> AlgorithmicGas<T> {
         self.cx.trace_population("post_transform", &destination);
         self.domain.reconcile(&mut destination, &changed)?;
         self.domain.refresh_observations(&mut destination)?;
-        self.cx.max_memory_bytes = self.config.max_memory_bytes
-            - self
-                .config
-                .working_set_bytes(&destination, &self.history, input)?;
+        self.cx.max_memory_bytes = self.execution_allowance(&destination, input)?;
         // Classify/repair newly transformed coordinates before a bounded
         // reward provider sees them and before applying invalid-reward policy.
         self.operators.boundary(
@@ -771,6 +886,7 @@ impl<T: Real> AlgorithmicGas<T> {
             &mut destination,
             self.domain.as_ref(),
         )?;
+        self.cx.trace_population("post_clone", &destination);
         self.cancellation.check()?;
         if destination
             .validity
@@ -789,6 +905,14 @@ impl<T: Real> AlgorithmicGas<T> {
                         seed: self.config.seed,
                         step: next,
                         operators: Some(self.operators.as_ref()),
+                        frozen_fitness: Some(crate::operators::FrozenFitnessContext {
+                            population: &p,
+                            pool: &distance_pool,
+                            companions: &distance_companions,
+                            alive: &alive,
+                            config: &self.config,
+                            clone_plan: &plan,
+                        }),
                     },
                     &mut self.cx,
                 )
@@ -838,6 +962,34 @@ impl<T: Real> AlgorithmicGas<T> {
         };
         report.validate(&self.config, &destination, next, evals)?;
         self.cancellation.check()?;
+        if let Some(archive) = &mut self.recording {
+            let record = crate::tracking::RecordedStep {
+                epoch: archive.epoch,
+                before: p.clone(),
+                final_population: destination.clone(),
+                stages: self.cx.recorded_stages.clone().unwrap_or_default(),
+                noise: self.cx.recorded_noise.clone().unwrap_or_default(),
+                field_evaluations: self.cx.recorded_fields.clone().unwrap_or_default(),
+                influences: self.cx.recorded_influences.clone().unwrap_or_default(),
+                report: report.clone(),
+                donor_fitness,
+            };
+            archive.append(record)?;
+            let admission = (|| {
+                crate::memory::enforce(
+                    crate::memory::checked_add(
+                        archive.buffer_bytes()?,
+                        self.config
+                            .working_set_bytes(&destination, &self.history, input)?,
+                    )?,
+                    self.config.max_memory_bytes,
+                )
+            })();
+            if let Err(error) = admission {
+                archive.steps.pop();
+                return Err(error);
+            }
+        }
         let window = self
             .config
             .distance_donors
@@ -877,10 +1029,7 @@ impl<T: Real> AlgorithmicGas<T> {
             .checked_add(1)
             .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
         self.config.validate(&population, self.gradient.is_some())?;
-        self.cx.max_memory_bytes = self.config.max_memory_bytes
-            - self
-                .config
-                .working_set_bytes(&population, &self.history, None)?;
+        self.cx.max_memory_bytes = self.execution_allowance(&population, None)?;
         let fields = population
             .observations
             .fields
@@ -898,10 +1047,29 @@ impl<T: Real> AlgorithmicGas<T> {
         validate_rewards(&mut population, &self.config)?;
         population.observations.provenance.population_version = population.version;
         population.observations.provenance.stage = "external_replace".into();
-        self.reward_evaluations = self
+        let reward_evaluations = self
             .reward_evaluations
             .checked_add(population.len() as u64)
             .ok_or_else(|| GasError::Numerical("reward counter overflow".into()))?;
+        if let Some(archive) = &mut self.recording {
+            let previous_epoch = archive.epoch;
+            archive.anchor(self.step, &population)?;
+            let admission = (|| {
+                crate::memory::enforce(
+                    crate::memory::checked_add(
+                        archive.buffer_bytes()?,
+                        self.config.working_set_bytes(&population, &[], None)?,
+                    )?,
+                    self.config.max_memory_bytes,
+                )
+            })();
+            if let Err(error) = admission {
+                archive.anchors.pop();
+                archive.epoch = previous_epoch;
+                return Err(error);
+            }
+        }
+        self.reward_evaluations = reward_evaluations;
         self.population = population;
         self.history.clear();
         self.last_report = None;
@@ -921,6 +1089,7 @@ impl<T: Real> AlgorithmicGas<T> {
             execution: self.cx.stats.clone(),
             history: self.history.clone(),
             last_report: self.last_report.clone(),
+            recording: self.recording.clone(),
             reward_provider: self.reward.id(),
             gradient_provider: self.gradient.as_ref().map(|g| g.id()),
             domain_provider: self.domain.id(),
@@ -972,6 +1141,11 @@ impl<T: Real> AlgorithmicGas<T> {
         self.reward_evaluations = checkpoint.reward_evaluations;
         self.history = checkpoint.history;
         self.last_report = checkpoint.last_report;
+        self.recording = checkpoint.recording;
+        self.cx.recorded_stages = self.recording.as_ref().map(|_| Vec::new());
+        self.cx.recorded_noise = self.recording.as_ref().map(|_| Vec::new());
+        self.cx.recorded_fields = self.recording.as_ref().map(|_| Vec::new());
+        self.cx.recorded_influences = self.recording.as_ref().map(|_| Vec::new());
         self.cx.stats = checkpoint.execution;
         self.cancellation.reset();
         if let Some(trace) = &mut self.cx.stage_trace {

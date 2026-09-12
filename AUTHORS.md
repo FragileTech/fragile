@@ -1,5 +1,5 @@
 # Authors
 
 * Guillem Duran Ballester - fragile.tech
-* OpenAI - Algorithmic Gas Rust workspace, Euclidean Gas Lab, and Volume II interactive lecture experiments.
+* OpenAI - Algorithmic Gas Rust workspace, Euclidean Gas Lab, and Volume II interactive lecture experiments, including Part V tracking and geometry.
 * OpenAI - openai.com (including the four-lab landing page, pairwise LLM ranking and independent validation, LLM Xent, beam-style and XED scoring, LLM benchmark comparisons, grading and portable reports, LLM benchmark generation and storage, Control Lab camera rotation, the LLM Lab and configurable distance API, shared native Fractal engines, libcmaes native/WASM integration, adaptive local covariance perturbations, GAS (2017) integration, Optimization Lab, the continuous-control engine, laboratory UX, weighted harvesting hooks, collision geometry, resting-contact optimizations, and dynamic physics scheduling, continuous driving, replay workflows, Wave Jump, and arcade FMC/Jump Wave planners)

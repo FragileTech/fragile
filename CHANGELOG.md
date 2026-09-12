@@ -1,5 +1,7 @@
 # Changelog
 
+- Add 20 Part V lecture experiments with durable Rust walker archives, stage and lineage provenance, scalar reconstruction, adaptive O-stage geometry, Voronoi and spacetime cells, causal-order comparisons, and independently calibrated continuum statistics. Include checkpoint v3 migration, archive import/export, interactive scene controls, and 20 computed chapter posters.
+
 - Align Volume II lecture experiments with their theoretical predictions: correct BAOAB pseudocode and alive-conditioned mixtures, use theorem-specific entropy and drift diagnostics, calibrate sampling uncertainty, resolve misleading spectral and density-ratio displays, and exercise survival and population comparisons with independent replicas.
 
 - Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.

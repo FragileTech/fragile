@@ -39,6 +39,7 @@ fn trace_records_real_stages_without_changing_checkpoint() {
                 "pre_clone",
                 "literal_clone",
                 "post_transform",
+                "post_clone",
                 "B1",
                 "A1",
                 "O",

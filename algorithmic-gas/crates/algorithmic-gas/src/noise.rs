@@ -58,6 +58,17 @@ pub trait NoiseSource<T: Real> {
         request: NoiseRequest,
         cx: &mut ExecutionContext,
     ) -> Result<TensorBatch<T>>;
+    /// Actual stage eligibility for providers whose field is defined only on
+    /// surviving rows. Existing sources retain the same addressed RNG behavior.
+    async fn sample_masked(
+        &self,
+        observations: &ObservationBatch<T>,
+        request: NoiseRequest,
+        _eligible: &[bool],
+        cx: &mut ExecutionContext,
+    ) -> Result<TensorBatch<T>> {
+        self.sample(observations, request, cx).await
+    }
 }
 impl FactorValues {
     fn validate<T: Real>(&self, obs: &ObservationBatch<T>, n: usize, width: usize) -> Result<()> {
@@ -182,6 +193,10 @@ impl<T: Real> NoiseSource<T> for Noise {
                 };
             }
         }
+        let raw_innovation = cx
+            .recorded_noise
+            .as_ref()
+            .map(|_| xi.iter().map(|x| x.to_f64()).collect::<Vec<_>>());
         // Temporal scaling is deliberately absent. The integrator owns it.
         match &self.geometry {
             NoiseGeometry::Isotropic { scale } | NoiseGeometry::Diagonal { factor: scale } => {
@@ -191,21 +206,39 @@ impl<T: Real> NoiseSource<T> for Noise {
                     d
                 };
                 let factors = scale.resolve(obs, n, width)?;
+                let recorded_factor = cx
+                    .recorded_noise
+                    .as_ref()
+                    .map(|_| factors.iter().map(|x| x.to_f64()).collect::<Vec<_>>());
                 let mut e = Expression::default();
                 let x = e.input(0);
                 let l = e.input(1);
                 e.binary(Binary::Multiply, x, l);
-                cx.evaluate(
-                    &e,
-                    &[
-                        TensorBatch::vectors(n, d, xi)?,
-                        TensorBatch::vectors(n, width, factors)?,
-                    ],
-                )
-                .await
+                let output = cx
+                    .evaluate(
+                        &e,
+                        &[
+                            TensorBatch::vectors(n, d, xi)?,
+                            TensorBatch::vectors(n, width, factors)?,
+                        ],
+                    )
+                    .await?;
+                record_builtin(
+                    cx,
+                    r,
+                    &output,
+                    raw_innovation,
+                    recorded_factor,
+                    &self.geometry,
+                );
+                Ok(output)
             }
             NoiseGeometry::Full { factor } | NoiseGeometry::LowRank { factor, .. } => {
                 let factors = factor.resolve(obs, n, d * rank)?;
+                let recorded_factor = cx
+                    .recorded_noise
+                    .as_ref()
+                    .map(|_| factors.iter().map(|x| x.to_f64()).collect::<Vec<_>>());
                 let expanded = (0..n)
                     .flat_map(|i| (0..d).flat_map(move |_| i * rank..(i + 1) * rank))
                     .map(|a| xi[a])
@@ -224,8 +257,41 @@ impl<T: Real> NoiseSource<T> for Noise {
                         ],
                     )
                     .await?;
-                TensorBatch::vectors(n, d, output.values().to_vec())
+                let sample = TensorBatch::vectors(n, d, output.values().to_vec())?;
+                record_builtin(
+                    cx,
+                    r,
+                    &sample,
+                    raw_innovation,
+                    recorded_factor,
+                    &self.geometry,
+                );
+                Ok(sample)
             }
         }
+    }
+}
+
+fn record_builtin<T: Real>(
+    cx: &mut ExecutionContext,
+    r: NoiseRequest,
+    sample: &TensorBatch<T>,
+    raw_innovation: Option<Vec<f64>>,
+    factor: Option<Vec<f64>>,
+    geometry: &NoiseGeometry,
+) {
+    if let Some(records) = &mut cx.recorded_noise {
+        records.push(crate::tracking::NoiseSnapshot {
+            stage: "raw_noise".into(),
+            step: r.step,
+            stream: r.stream,
+            substep: r.substep,
+            rows: r.rows,
+            dimension: r.dimension,
+            sample: sample.values().iter().map(|x| x.to_f64()).collect(),
+            raw_innovation,
+            factor,
+            geometry: Some(geometry.clone()),
+        });
     }
 }

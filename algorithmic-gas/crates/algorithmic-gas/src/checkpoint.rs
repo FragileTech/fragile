@@ -7,9 +7,9 @@ use crate::{
 };
 use std::collections::BTreeSet;
 
-/// Version 2 adds explicit pre-clone eligibility and statistics fallback masks,
-/// and accompanies corrected sampler/measurement semantics. No implicit v1 replay.
-pub const CHECKPOINT_VERSION: u32 = 2;
+/// Version 3 preserves durable observational archives. Version 2 bytes migrate
+/// at decoding with a current-state anchor; prior stage coverage is unavailable.
+pub const CHECKPOINT_VERSION: u32 = 3;
 
 fn rewards<T: Real>(r: &RewardBatch<T>, n: usize, version: u64) -> Result<()> {
     r.validate(n)?;
@@ -217,6 +217,15 @@ impl<T: Real> StepReport<T> {
         }
         for (i, choice) in self.clone_plan.choices.iter().enumerate() {
             require(
+                choice.probability.is_none_or(|p| {
+                    p.is_finite()
+                        && (0. ..=1.).contains(&p)
+                        && (!choice.revival || p == 1.)
+                        && (!choice.accepted || p > 0.)
+                }),
+                "invalid recorded clone probability",
+            )?;
+            require(
                 choice.donors.len() <= 1
                     && (!choice.accepted || choice.donors.len() == 1)
                     && (!choice.revival || (choice.accepted && !alive[i])),
@@ -266,6 +275,46 @@ impl<T: Real> Checkpoint<T> {
             self.schema_version == CHECKPOINT_VERSION && self.rng_version == RNG_VERSION,
             "unsupported checkpoint/RNG version",
         )?;
+        if let Some(archive) = &self.recording {
+            archive.validate()?;
+            let (step, terminal) = archive.terminal();
+            require(
+                step == self.step
+                    && terminal.version == self.population.version
+                    && terminal.generations == self.population.generations
+                    && terminal.validity == self.population.validity,
+                "archive terminal identity mismatch",
+            )?;
+            require(
+                terminal.observations.fields.len() == self.population.observations.fields.len(),
+                "archive terminal field count",
+            )?;
+            for (name, field) in &terminal.observations.fields {
+                let actual = self.population.observations.field(name)?;
+                require(
+                    field.item_shape() == actual.item_shape()
+                        && field.values().len() == actual.values().len()
+                        && field
+                            .values()
+                            .iter()
+                            .zip(actual.values())
+                            .all(|(a, b)| a == b || (a.to_f64().is_nan() && b.to_f64().is_nan())),
+                    "archive terminal coordinates mismatch",
+                )?;
+            }
+            require(
+                archive.gas_config == self.config,
+                "archive configuration mismatch",
+            )?;
+            crate::memory::enforce(
+                crate::memory::checked_add(
+                    archive.buffer_bytes()?,
+                    self.config
+                        .working_set_bytes(&self.population, &self.history, None)?,
+                )?,
+                self.config.max_memory_bytes,
+            )?;
+        }
         self.config
             .validate(&self.population, self.gradient_provider.is_some())?;
         self.config
