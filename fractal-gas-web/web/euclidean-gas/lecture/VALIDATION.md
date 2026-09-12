@@ -160,8 +160,8 @@ zero-gradient manufactured field has leading variance 1/(N ε³), sharper than
 the general bound. The curvature cube shrinks with ε, giving 1/(N ε⁴); the
 fixed-density theorem describes a different sampling protocol.
 
-Detailed counterexamples, corrections and numerical measurements are recorded
-in Section 7 of the linked Part V experiment document.
+Numerical consistency checks and independent measurements are recorded in
+Section 7 of the linked Part V experiment document.
 
 Validation: 125 Rust workspace tests, 111 lecture numerical/host tests, and
 98 documentation placement tests pass. Workspace Clippy passes with warnings
