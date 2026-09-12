@@ -20,7 +20,7 @@ document.querySelector(".exports").append(archiveImport);
 const nativeImport = document.createElement("label");
 nativeImport.className = "file-button";
 nativeImport.innerHTML =
-  'Open native sweep<input id="native-results" type="file" accept="application/json,.json">';
+  'Open experiment evidence<input id="native-results" type="file" accept="application/json,.json">';
 document.querySelector(".exports").append(nativeImport);
 const calculationDetails = document.createElement("details");
 calculationDetails.className = "calculation-details";
@@ -311,22 +311,27 @@ function render() {
       executed_algorithm_archive: "Recorded algorithm measurements",
       independent_algorithm_continuations:
         "Independent complete-state continuations",
-      constructed_finite_model: "Specified finite-model calculation",
     };
     $("#kind").textContent =
-      "PART VI / VI-" +
-      String(snapshot.result.experiment).padStart(2, "0") +
+      "PART " +
+      (snapshot.result.details.lecture_id || demo.id).split("-")[0] +
+      " / " +
+      (snapshot.result.details.lecture_id || demo.id) +
       " · Rust/WASM · " +
       sources[snapshot.result.details.calculation_origin];
   }
   if (snapshot.imported && snapshot.result)
     $("#title").textContent =
-      "Imported native sweep · " + snapshot.result.title;
+      "Imported experiment evidence · " + snapshot.result.title;
   calculationDetails.hidden = !snapshot.result;
   if (snapshot.result)
     calculationDetails.querySelector("pre").textContent = JSON.stringify(
       snapshot.result,
-      null,
+      (key, value) =>
+        ["frozen_checkpoint_cbor", "archive_cbor"].includes(key) &&
+        Array.isArray(value)
+          ? { bytes: value.length, download: "Included in experiment evidence" }
+          : value,
       2,
     );
   const columns = getComputedStyle($("#charts")).gridTemplateColumns.split(
@@ -425,7 +430,9 @@ async function advance() {
     ticks++;
     record(snapshot);
     $("#status").textContent =
-      (snapshot.done ? "Complete" : "Step " + ticks) +
+      (snapshot.done
+        ? "Complete at step " + snapshot.step
+        : "Step " + snapshot.step) +
       " · " +
       format(performance.now() - start) +
       " ms including transfer";
@@ -494,9 +501,7 @@ $("#save").onclick = () => {
     demo.id + "-seed-" + seed + ".json",
     JSON.stringify(
       {
-        schema: view.snapshot.result
-          ? "fragile-partvi-results-v1"
-          : "fragile-lecture-experiment-v1",
+        schema: "fragile-lecture-experiment",
         ...(view.snapshot.result
           ? {
               results: [view.snapshot.result],
@@ -528,6 +533,30 @@ archiveButton.onclick = async () => {
     fail(error);
   }
 };
+function useImportedContext(bundle) {
+  const request = (bundle.evidence || bundle).request;
+  demo = catalog.find((item) => item.id === request.id);
+  if (!demo) throw new Error("Imported experiment is not registered");
+  params = {
+    ...Object.fromEntries(demo.controls.map((c) => [c.key, c.value])),
+    ...request.parameters,
+  };
+  seed = request.seed;
+  $("#seed").value = seed;
+  controls();
+  for (const key of ["question", "prediction", "explanation"])
+    $("#" + key).textContent = demo[key];
+  formulaIndex.hidden = demo.part !== "VI";
+  for (const link of document.querySelectorAll("[data-demo]"))
+    link.setAttribute(
+      "aria-current",
+      link.dataset.demo === demo.id ? "page" : "false",
+    );
+  const url = new URL(location.href);
+  url.searchParams.set("demo", demo.id);
+  history.replaceState(null, "", url);
+  document.title = demo.id + " · " + demo.title;
+}
 $("#archive-import").onchange = async (event) => {
   pause();
   lock(true);
@@ -542,13 +571,14 @@ $("#archive-import").onchange = async (event) => {
       qft ? "qft_archive_import" : "archive_import",
       qft ? { archive, id: demo.id, params, seed } : archive,
     );
+    useImportedContext(archive);
     frames = [];
     ticks = snapshot.step;
     selected = 0;
     record(snapshot);
     $("#title").textContent = qft
       ? demo.title + " · imported archive"
-      : "Imported Fractal Set archive";
+      : "Imported experiment evidence";
     $("#status").textContent = "Archive validated";
     $("#checkpoint").hidden = true;
     archiveButton.hidden = false;
@@ -562,16 +592,17 @@ $("#archive-import").onchange = async (event) => {
 };
 async function showNativeResults(data) {
   const snapshot = await request("qft_results_import", data);
+  useImportedContext(data);
   frames = [];
   ticks = 0;
   selected = 0;
   record(snapshot);
-  $("#title").textContent = "Imported native sweep · " + snapshot.result.title;
-  $("#status").textContent =
-    data.results.length + " native calculations loaded. Step through results.";
+  $("#title").textContent =
+    "Imported experiment evidence · " + snapshot.result.title;
+  $("#status").textContent = "Experiment evidence recomputed in Rust";
   $("#checkpoint").hidden = true;
-  archiveButton.hidden = true;
-  $("#save").disabled = false;
+  archiveButton.hidden = false;
+  $("#save").disabled = true;
 }
 $("#native-results").onchange = async (event) => {
   pause();
@@ -579,8 +610,8 @@ $("#native-results").onchange = async (event) => {
   try {
     const file = event.target.files[0];
     if (!file) return;
-    if (file.size > 32 * 1024 * 1024)
-      throw new Error("Native results must be smaller than 32 MiB.");
+    if (file.size > 128 * 1024 * 1024)
+      throw new Error("Experiment evidence must be smaller than 128 MiB.");
     const data = JSON.parse(await file.text());
     await showNativeResults(data);
   } catch (error) {
@@ -598,22 +629,7 @@ $("#load").onchange = async (event) => {
     if (file.size > 20 * 1024 * 1024)
       throw new Error("Replay JSON must be smaller than 20 MB");
     const data = JSON.parse(await file.text());
-    if (
-      data.schema === "fragile-partvi-results-v1" &&
-      data.replayable !== true
-    ) {
-      lock(true);
-      try {
-        await showNativeResults(data);
-      } finally {
-        lock(false);
-      }
-      event.target.value = "";
-      return;
-    }
-    const expectedSchema = data.id?.startsWith("VI-")
-      ? "fragile-partvi-results-v1"
-      : "fragile-lecture-experiment-v1";
+    const expectedSchema = "fragile-lecture-experiment";
     if (
       data.schema !== expectedSchema ||
       !catalog.some((d) => d.id === data.id) ||

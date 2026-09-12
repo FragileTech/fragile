@@ -1,11 +1,12 @@
 //! Compiled calculations for lattice QFT, direct fields, Yang–Mills and twistors.
 //!
-//! Every reference model is declared in its output. Archive-backed calculations
-//! use actual recorded stages; reference data is never presented as an engine run.
+//! Lecture measurements consume actual recorded stages. Analytic model oracles
+//! are exercised by unit tests independently of the experiment interface.
 mod algorithm_channels;
 pub mod channel;
 pub mod math;
 mod native;
+mod run_observables;
 use super::partvi::{ExperimentRequest, ExperimentResult, Series};
 use crate::{GasError, Result, RunArchive};
 use math::*;
@@ -112,6 +113,28 @@ pub fn analyze(
     r: &ExperimentRequest,
     archive: Option<&RunArchive<f64>>,
 ) -> Result<ExperimentResult> {
+    if archive.is_none() {
+        return Err(GasError::Capability(
+            "QFT experiments require an executed gas archive or complete-checkpoint protocol"
+                .into(),
+        ));
+    }
+    analyze_dispatch(r, archive)
+}
+#[cfg(test)]
+mod reference_tests;
+fn analyze_dispatch(
+    r: &ExperimentRequest,
+    archive: Option<&RunArchive<f64>>,
+) -> Result<ExperimentResult> {
+    if let Some(a) = archive
+        && matches!(
+            r.experiment,
+            1 | 7 | 11 | 15 | 20 | 23 | 24 | 25 | 26 | 27 | 28 | 29 | 30 | 31 | 33
+        )
+    {
+        return run_observables::analyze(r, a);
+    }
     if let Some(a) = archive
         && matches!(r.experiment, 3 | 4 | 5 | 6 | 12 | 13 | 32 | 36)
     {

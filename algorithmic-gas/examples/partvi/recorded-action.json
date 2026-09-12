@@ -1,6 +1,6 @@
 {
-  "experiment": 17,
-  "parameters": {
-    "seed": 7
-  }
+  "id": "VI-17",
+  "seed": 7,
+  "steps": 96,
+  "parameters": {}
 }

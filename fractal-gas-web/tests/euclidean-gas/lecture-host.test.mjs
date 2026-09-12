@@ -6,13 +6,8 @@ import {
   metadata,
   parameters,
 } from "../../web/euclidean-gas/lecture/catalog.js";
+import { renderSnapshot } from "../../web/euclidean-gas/lecture/run-model.js";
 import { chartSVG } from "../../web/euclidean-gas/lecture/plots.js";
-import {
-  rng,
-  histogram,
-  covariance2,
-  pushBounded,
-} from "../../web/euclidean-gas/lecture/math.js";
 
 test("All 128 descriptors have distinct IDs, controls, and chapter placements", async () => {
   const placements = JSON.parse(
@@ -120,30 +115,19 @@ test("Published chapter figures use the current scientific controls and reviewed
     assert.equal(published.kind, demo.kind, demo.id);
   }
 });
-test("Bounded histories, deterministic Gaussian samples, density mass and covariance", () => {
-  const a = rng(7),
-    b = rng(7);
-  assert.deepEqual(
-    Array.from({ length: 100 }, () => a.normal()),
-    Array.from({ length: 100 }, () => b.normal()),
-  );
-  const history = [];
-  for (let i = 0; i < 1000; i++) pushBounded(history, i, 80);
-  assert.equal(history.length, 80);
-  assert.equal(history[0], 920);
-  const bins = histogram([0.1, 0.2, 0.8, 2], 0, 1, 10);
-  assert.ok(
-    Math.abs(bins.reduce((sum, [, density]) => sum + density / 10, 0) - 0.75) <
-      1e-12,
-  );
-  assert.deepEqual(
-    covariance2([
-      [1, 2],
-      [-1, -2],
-    ]),
-    [
-      [1, 2],
-      [2, 4],
+
+test("A recorded swarm is rendered as separate walkers without artificial connecting trajectories", () => {
+  const snapshot = renderSnapshot({
+    step: 1,
+    positions: [
+      [0, 1],
+      [2, 3],
+      [4, 5],
     ],
-  );
+    run_steps: [1],
+    budgets: [8],
+  });
+  const svg = chartSVG(snapshot.charts[0]);
+  assert.equal((svg.match(/<circle /g) || []).length, 3);
+  assert.equal((svg.match(/<polyline /g) || []).length, 0);
 });

@@ -1,0 +1,11774 @@
+// Generated from the Rust lecture experiment registry.
+export const metadata = [
+  {
+    "id": "I-01",
+    "part": "I",
+    "title": "Follow one walker through a complete step",
+    "question": "Which operation moved this walker?",
+    "prediction": "Recorded donor choices, copying, and kinetic motion explain every displacement. Replay advances through one committed trace without new random draws.",
+    "explanation": "Recorded donor choices, copying, and kinetic motion explain every displacement. Replay advances through one committed trace without new random draws.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "benchmark",
+        "label": "Objective",
+        "type": "select",
+        "value": "sphere",
+        "options": [
+          {
+            "value": "sphere",
+            "label": "sphere"
+          },
+          {
+            "value": "rastrigin",
+            "label": "rastrigin"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Selected slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-02",
+    "part": "I",
+    "title": "Two donor networks, two different questions",
+    "question": "Does the walker measuring diversity have to be the one copied?",
+    "prediction": "Distance and cloning draws have separate streams. Mutual rounds give reciprocal edges; an odd leftover uses the configured self-companion rule.",
+    "explanation": "Distance and cloning draws have separate streams. Mutual rounds give reciprocal edges; an odd leftover uses the configured self-companion rule.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 6,
+        "options": [
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      },
+      {
+        "key": "law",
+        "label": "Distance donor law",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "independent"
+          },
+          {
+            "value": "uniform",
+            "label": "uniform"
+          },
+          {
+            "value": "mutual",
+            "label": "mutual"
+          },
+          {
+            "value": "greedy",
+            "label": "greedy"
+          }
+        ]
+      },
+      {
+        "key": "width",
+        "label": "Distance Gaussian width",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "cloneWidth",
+        "label": "Cloning Gaussian width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "count",
+        "label": "Distance rounds / donors",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-03",
+    "part": "I",
+    "title": "The fitness calculation as an instrument panel",
+    "question": "Why can fitness change while a raw reward stays fixed?",
+    "prediction": "Alive-only regularized statistics determine both positive channels, then exponents determine their product.",
+    "explanation": "Alive-only regularized statistics determine both positive channels, then exponents determine their product.",
+    "controls": [
+      {
+        "key": "alpha",
+        "label": "Reward exponent α",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent β",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "sigma",
+        "label": "Standard deviation floor",
+        "type": "select",
+        "value": 0.01,
+        "options": [
+          {
+            "value": 0.001,
+            "label": "0.001"
+          },
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          }
+        ]
+      },
+      {
+        "key": "floor",
+        "label": "Positive-map floor",
+        "type": "select",
+        "value": 0.01,
+        "options": [
+          {
+            "value": 0.0001,
+            "label": "0.0001"
+          },
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "outlier",
+        "label": "Outlier radius",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 4,
+        "step": 0.1
+      },
+      {
+        "key": "exclude",
+        "label": "Outlier eligible",
+        "type": "select",
+        "value": "yes",
+        "options": [
+          {
+            "value": "yes",
+            "label": "yes"
+          },
+          {
+            "value": "no",
+            "label": "no"
+          }
+        ]
+      },
+      {
+        "key": "stats",
+        "label": "Statistics",
+        "type": "select",
+        "value": "global",
+        "options": [
+          {
+            "value": "global",
+            "label": "global"
+          },
+          {
+            "value": "local",
+            "label": "local"
+          }
+        ]
+      },
+      {
+        "key": "self",
+        "label": "Local self weight",
+        "type": "select",
+        "value": "include",
+        "options": [
+          {
+            "value": "include",
+            "label": "include"
+          },
+          {
+            "value": "exclude",
+            "label": "exclude"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-04",
+    "part": "I",
+    "title": "Revival, singleton continuation, and extinction",
+    "question": "What does fixed population mean when slots lose eligibility?",
+    "prediction": "Four survivors can repopulate sixteen slots; one survivor supplies every revival. With zero survivors the engine emits its extinction event.",
+    "explanation": "Four survivors can repopulate sixteen slots; one survivor supplies every revival. With zero survivors the engine emits its extinction event.",
+    "controls": [
+      {
+        "key": "survivors",
+        "label": "Initial eligible slots",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 0,
+            "label": "0"
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "label": "Boundary",
+        "type": "select",
+        "value": "absorbing",
+        "options": [
+          {
+            "value": "absorbing",
+            "label": "absorbing"
+          },
+          {
+            "value": "periodic",
+            "label": "periodic"
+          }
+        ]
+      },
+      {
+        "key": "jitter",
+        "label": "Copy jitter",
+        "type": "select",
+        "value": 0.05,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.2,
+            "label": "0.2"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-05",
+    "part": "I",
+    "title": "BAOAB under a microscope",
+    "question": "At which positions are the two force evaluations made?",
+    "prediction": "B changes velocity, A changes position, and O damps velocity while adding Gaussian innovation. The final B uses the post-A position.",
+    "explanation": "B changes velocity, A changes position, and O damps velocity while adding Gaussian innovation. The final B uses the post-A position.",
+    "controls": [
+      {
+        "key": "dt",
+        "label": "Time step h",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.005,
+        "max": 0.1,
+        "step": 0.005
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1
+      },
+      {
+        "key": "temperature",
+        "label": "Thermal parameter T",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "walker",
+        "label": "Selected slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-06",
+    "part": "I",
+    "title": "Compare reward and mechanical motion",
+    "question": "How do separate reward and force choices affect independent gas runs?",
+    "prediction": "Each replica executes the chosen reward and force configuration; endpoint means and recorded reward traces measure their combined effect.",
+    "explanation": "Compare actual position, velocity and reward traces with independent seeded endpoint means. Distinct finite-time outcomes do not establish a unique equilibrium well.",
+    "controls": [
+      {
+        "key": "landscape",
+        "label": "Reward / force preset",
+        "type": "select",
+        "value": "aligned",
+        "options": [
+          {
+            "value": "aligned",
+            "label": "aligned"
+          },
+          {
+            "value": "shifted",
+            "label": "shifted"
+          },
+          {
+            "value": "multiwell",
+            "label": "multiwell"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Walkers per run",
+        "type": "select",
+        "value": 128,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "alpha",
+        "label": "Reward exponent α",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent β",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "dt",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.025,
+        "min": 0.005,
+        "max": 0.08,
+        "step": 0.005
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-07",
+    "part": "I",
+    "title": "Conditional copy probabilities and realized events",
+    "question": "How do recorded acceptance probabilities compare with actual copy decisions?",
+    "prediction": "The executed acceptance minus its conditional probability is a martingale difference; its accumulated residual fluctuates around zero.",
+    "explanation": "The executed acceptance minus its conditional probability is a martingale difference; its accumulated residual fluctuates around zero.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Frozen population N",
+        "type": "select",
+        "value": 5,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "key": "law",
+        "label": "Diversity assignment law",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "independent"
+          },
+          {
+            "value": "greedy",
+            "label": "greedy"
+          }
+        ]
+      },
+      {
+        "key": "width",
+        "label": "Diversity width",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      },
+      {
+        "key": "cloneWidth",
+        "label": "Cloning width",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      },
+      {
+        "key": "saturation",
+        "label": "Acceptance saturation scale",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0.25,
+            "label": "0.25"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-08",
+    "part": "I",
+    "title": "Track the actual cloning displacement",
+    "question": "How do copy and jitter operations move the selected walker?",
+    "prediction": "The recorded stage positions expose each actual replacement and displacement.",
+    "explanation": "The recorded stage positions expose each actual replacement and displacement.",
+    "controls": [
+      {
+        "key": "jitter",
+        "label": "Voluntary copy jitter σ",
+        "type": "select",
+        "value": 0.1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.3,
+            "label": "0.3"
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "label": "Viable half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.4,
+        "max": 2,
+        "step": 0.01
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-09",
+    "part": "I",
+    "title": "What an inelastic collision really conserves",
+    "question": "How can relative motion shrink while pair momentum stays fixed?",
+    "prediction": "On each accepted mutual pair, coordinate momentum is unchanged and relative kinetic energy is multiplied by a².",
+    "explanation": "On each accepted mutual pair, coordinate momentum is unchanged and relative kinetic energy is multiplied by a².",
+    "controls": [
+      {
+        "key": "restitution",
+        "label": "Restitution a",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "vx",
+        "label": "First velocity x₁",
+        "type": "range",
+        "value": 1.5,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "vy",
+        "label": "First velocity x₂",
+        "type": "range",
+        "value": 0.5,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "I-10",
+    "part": "I",
+    "title": "Fitness geometry and executed anisotropic noise",
+    "question": "Do the recorded noise factors predict the coordinate second moments?",
+    "prediction": "Eligible innovation second moments are compared with the diagonal of the recorded factor product.",
+    "explanation": "Eligible innovation second moments are compared with the diagonal of the recorded factor product.",
+    "controls": [],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "II-01",
+    "part": "II",
+    "title": "Fitness and copying in a displaced population",
+    "kind": "Rust engine experiment",
+    "question": "How does displacing part of the population change its fitness and copying?",
+    "prediction": "Recorded fitness and selected-donor acceptance probabilities determine the observed copy decisions.",
+    "explanation": "Displace a selected fraction of the initialized population and inspect actual fitness, acceptance and their accumulated residual. This readout does not estimate the complete Keystone overlap bound.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "fraction",
+        "label": "Requested outer-cluster fraction",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.05,
+        "max": 0.4,
+        "step": 0.05
+      },
+      {
+        "key": "separation",
+        "label": "Outer-cluster distance",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 4,
+        "step": 0.25
+      },
+      {
+        "key": "alpha",
+        "label": "Reward exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.25
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 0.25
+      }
+    ]
+  },
+  {
+    "id": "II-02",
+    "part": "II",
+    "title": "Conditional drift across independent gas continuations",
+    "kind": "Rust engine experiment",
+    "question": "How much does one population change under independent future random choices?",
+    "prediction": "Replicas start from the same explicit population and use independent execution seeds.",
+    "explanation": "Replicas start from the same explicit population and use independent execution seeds.",
+    "controls": [
+      {
+        "key": "jitter",
+        "label": "Clone jitter / kinetic noise amplitude",
+        "type": "range",
+        "value": 0.05,
+        "min": 0,
+        "max": 0.3,
+        "step": 0.01
+      },
+      {
+        "key": "replicas",
+        "label": "Replicates per spread",
+        "type": "select",
+        "value": 24,
+        "options": [
+          {
+            "value": 12,
+            "label": "12"
+          },
+          {
+            "value": 24,
+            "label": "24"
+          },
+          {
+            "value": 48,
+            "label": "48"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "II-03",
+    "part": "II",
+    "title": "Optimal transport of observed coordinate marginals",
+    "kind": "Rust engine experiment",
+    "question": "How far apart are the coordinate distributions of two executed gas runs?",
+    "prediction": "Sorted matching gives the exact equal-mass one-dimensional quadratic transport cost.",
+    "explanation": "Sorted matching gives the exact equal-mass one-dimensional quadratic transport cost.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Equal masses",
+        "type": "select",
+        "value": 8,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      },
+      {
+        "key": "translation",
+        "label": "Cloud translation",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "II-04",
+    "part": "II",
+    "title": "Compare measured transport with an independent coupling",
+    "kind": "Rust engine experiment",
+    "question": "How loose is the independent coupling cost for two measured clouds?",
+    "prediction": "The independent coupling cost bounds the one-dimensional optimal transport cost.",
+    "explanation": "The independent coupling cost bounds the one-dimensional optimal transport cost.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "translation",
+        "label": "Initial translation",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "II-05",
+    "part": "II",
+    "title": "Friction and noise in executed BAOAB",
+    "kind": "Rust engine experiment",
+    "question": "Does the exact finite-step law predict the measured velocity observable?",
+    "prediction": "The configured BAOAB matrix propagates the recorded initial population to an exact Gaussian-convolution prediction for mean cos(v).",
+    "explanation": "Compare velocity mean, empirical variance, cos(v), and O-stage energy with their recorded conditional calculations. Constant fitness disables copying in this component experiment.",
+    "controls": [
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "temperature",
+        "label": "Temperature / diffusion parameter",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "h",
+        "label": "Timestep",
+        "type": "select",
+        "value": 0.02,
+        "options": [
+          {
+            "value": 0.005,
+            "label": "0.005"
+          },
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Independent velocities",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "II-06",
+    "part": "II",
+    "title": "Confinement and absorption in the gas",
+    "kind": "Rust engine experiment",
+    "question": "How does a displaced population respond to a confining force and absorbing boundary?",
+    "prediction": "Before-clone eligibility, revivals and final eligibility account for the measured surviving population.",
+    "explanation": "Inspect the executed eligibility ledger and final coordinate histogram. The chosen boundary acts during the actual kinetic updates.",
+    "controls": [
+      {
+        "key": "box",
+        "label": "Absorbing half-width b",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "start",
+        "label": "Start as fraction of b",
+        "type": "range",
+        "value": 0.8,
+        "min": 0,
+        "max": 0.98,
+        "step": 0.02
+      },
+      {
+        "key": "h",
+        "label": "BAOAB step",
+        "type": "select",
+        "value": 0.1,
+        "options": [
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.2,
+            "label": "0.2"
+          }
+        ]
+      },
+      {
+        "key": "temperature",
+        "label": "Temperature",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "steps",
+        "label": "Transition block",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "II-07",
+    "part": "II",
+    "title": "Measure the finite-step moment generator",
+    "kind": "Rust engine experiment",
+    "question": "What drift does the complete update produce in the squared position?",
+    "prediction": "The generator readout is the executed moment increment divided by the actual step duration.",
+    "explanation": "The generator readout is the executed moment increment divided by the actual step duration.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      }
+    ]
+  },
+  {
+    "id": "II-08",
+    "part": "II",
+    "title": "Survival and conditional shape in a killed gas",
+    "kind": "Rust engine experiment",
+    "question": "How do viable population size and its spatial shape evolve together?",
+    "prediction": "Cloning, revival and absorbing exits all enter the measured population ledger.",
+    "explanation": "Cloning, revival and absorbing exits all enter the measured population ledger.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "box",
+        "label": "Absorbing half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-01",
+    "part": "III",
+    "title": "The executed population eligibility ledger",
+    "kind": "Rust engine experiment",
+    "question": "How many walkers are eligible before cloning and after the full update?",
+    "prediction": "Recorded eligibility and revival counts distinguish population replacement from survival.",
+    "explanation": "Recorded eligibility and revival counts distinguish population replacement from survival.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "box",
+        "label": "Absorbing half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "survivors",
+        "label": "Initially eligible walkers",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "III-02",
+    "part": "III",
+    "title": "Measure cloning frequency at a finite timestep",
+    "kind": "Rust engine experiment",
+    "question": "How does the observed number of copies compare with the sum of their probabilities?",
+    "prediction": "Conditional copy probabilities predict event counts for each executed update.",
+    "explanation": "Conditional copy probabilities predict event counts for each executed update.",
+    "controls": [
+      {
+        "key": "h",
+        "label": "Timeline timestep",
+        "type": "select",
+        "value": 0.025,
+        "options": [
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.025,
+            "label": "0.025"
+          },
+          {
+            "value": 0.0125,
+            "label": "0.0125"
+          }
+        ]
+      },
+      {
+        "key": "saturation",
+        "label": "Acceptance saturation",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-03",
+    "part": "III",
+    "title": "Collective fluctuations across executed runs",
+    "kind": "Rust engine experiment",
+    "question": "How do independently seeded population means fluctuate under selection?",
+    "prediction": "Within-population spread and across-run endpoint variance measure different sources of variation.",
+    "explanation": "Execute the selected initialization and selection settings on independent seeds. Compare population traces and endpoint means; the experiment does not assume independent walkers or display a permutation-calibrated pair test.",
+    "controls": [
+      {
+        "key": "updates",
+        "label": "Observation update",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 12,
+            "label": "12"
+          }
+        ]
+      },
+      {
+        "key": "initial",
+        "label": "Initial population",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "Independent Gaussian"
+          },
+          {
+            "value": "shared",
+            "label": "Shared random displacement"
+          }
+        ]
+      },
+      {
+        "key": "selection",
+        "label": "Active reward exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 2,
+        "step": 0.25
+      },
+      {
+        "key": "replicas",
+        "label": "Replicas per N and rule",
+        "type": "select",
+        "value": 8,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "III-04",
+    "part": "III",
+    "title": "Finite-step generator and moment evolution",
+    "kind": "Rust engine experiment",
+    "question": "Does the actual numerical process have stationary position moments?",
+    "prediction": "Measured increments divided by h identify the finite-step generator without substituting a continuous process.",
+    "explanation": "Measured increments divided by h identify the finite-step generator without substituting a continuous process.",
+    "controls": [
+      {
+        "key": "temperature",
+        "label": "OU temperature T",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      }
+    ]
+  },
+  {
+    "id": "III-05",
+    "part": "III",
+    "title": "Measure fitness variation in the evolving support",
+    "kind": "Rust engine experiment",
+    "question": "Does the measured population settle into a narrow fitness range?",
+    "prediction": "The actual reward and diversity channels determine the observed fitness variation.",
+    "explanation": "The actual reward and diversity channels determine the observed fitness variation.",
+    "controls": [
+      {
+        "key": "ratio",
+        "label": "α / β",
+        "type": "range",
+        "value": 1,
+        "min": 0.25,
+        "max": 2,
+        "step": 0.25
+      }
+    ]
+  },
+  {
+    "id": "III-06",
+    "part": "III",
+    "title": "Surviving shape of the Brownian gas",
+    "kind": "Rust engine experiment",
+    "question": "How does the spatial distribution change under diffusion, selection and absorption?",
+    "prediction": "The plotted conditional distribution consists of the eligible walkers after executed updates.",
+    "explanation": "The plotted conditional distribution consists of the eligible walkers after executed updates.",
+    "controls": [
+      {
+        "key": "length",
+        "label": "Interval length L",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "diffusivity",
+        "label": "Diffusivity D₀",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-07",
+    "part": "III",
+    "title": "Collective fluctuations with correlated initial states",
+    "kind": "Rust engine experiment",
+    "question": "How does shared initial information affect independent runs of the interacting gas?",
+    "prediction": "Across-run population means and within-run spread measure different fluctuations.",
+    "explanation": "Across-run population means and within-run spread measure different fluctuations.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "correlation",
+        "label": "Shared-state strength ρ",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "replicas",
+        "label": "Independent runs",
+        "type": "select",
+        "value": 8,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "III-08",
+    "part": "III",
+    "title": "Repeated labels in the actual donor sampler",
+    "kind": "Rust engine experiment",
+    "question": "How often do executed donor selections point to the same source?",
+    "prediction": "The collision statistic follows the actual donor law and its eligible source set.",
+    "explanation": "The collision statistic follows the actual donor law and its eligible source set.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Population labels N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "tuple",
+        "label": "Tuple length k (capped at N)",
+        "type": "range",
+        "value": 8,
+        "min": 1,
+        "max": 32,
+        "step": 1
+      }
+    ]
+  },
+  {
+    "id": "IV-01",
+    "part": "IV",
+    "title": "Transport of a displaced population",
+    "question": "How does a position displacement affect the later velocity law?",
+    "prediction": "The exact configured BAOAB evolution predicts mean cos(v) from the recorded displaced initial population.",
+    "explanation": "Run the constant-fitness harmonic component experiment and compare measured velocity moments, cos(v), and conditional thermostat energy. The card measures these observables directly rather than substituting an entropy curve.",
+    "controls": [
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "displacement",
+        "label": "Initial displacement",
+        "type": "range",
+        "value": 2,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-02",
+    "part": "IV",
+    "title": "Measure entropy along an executed trajectory",
+    "question": "How does a declared spatial histogram change as the gas evolves?",
+    "prediction": "Entropy is computed from recorded walkers with a fixed window and bin definition.",
+    "explanation": "Entropy is computed from recorded walkers with a fixed window and bin definition.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "window",
+        "label": "Histogram half-width",
+        "type": "range",
+        "value": 4,
+        "min": 1,
+        "max": 6,
+        "step": 0.25
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-03",
+    "part": "IV",
+    "title": "Surviving mass and measured conditional shape",
+    "question": "How do eligibility and position distribution respond to a displaced population?",
+    "prediction": "Mass is the eligible fraction; the conditional shape is normalized over those eligible walkers.",
+    "explanation": "Mass is the eligible fraction; the conditional shape is normalized over those eligible walkers.",
+    "controls": [
+      {
+        "key": "center",
+        "label": "Second center",
+        "type": "range",
+        "value": 1,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "box",
+        "label": "Absorbing half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-04",
+    "part": "IV",
+    "title": "Density estimates in a declared region",
+    "question": "How does the observation window affect the mass represented by the density?",
+    "prediction": "The density window and its retained mass are explicit parts of the measurement.",
+    "explanation": "The density window and its retained mass are explicit parts of the measurement.",
+    "controls": [
+      {
+        "key": "boundary",
+        "label": "Boundary",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "Unbounded"
+          },
+          {
+            "value": "absorbing",
+            "label": "Absorbing"
+          }
+        ]
+      },
+      {
+        "key": "window",
+        "label": "Tail window / interior reach",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 6,
+        "step": 0.25
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-05",
+    "part": "IV",
+    "title": "Differentiate the recorded normalized fitness",
+    "question": "Which conditional derivative comes from the executed normalization?",
+    "prediction": "Analytic derivatives and scalar finite differences evaluate the same frozen recorded fitness context.",
+    "explanation": "Perturb the selected coordinate while holding the sampled donors and other measured rows fixed. Compare the direct conditional field, its Taylor polynomial, and first-derivative residual.",
+    "controls": [
+      {
+        "key": "rho",
+        "label": "Localization width ρ",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.15,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "sigma",
+        "label": "Standard-deviation floor",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.02,
+        "max": 0.5,
+        "step": 0.02
+      },
+      {
+        "key": "delta",
+        "label": "Distance floor δ",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.02,
+        "max": 0.3,
+        "step": 0.02
+      },
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-06",
+    "part": "IV",
+    "title": "Local normalization in dense and sparse gas populations",
+    "question": "How many effective neighbors enter the local normalization?",
+    "prediction": "The inverse sum of squared normalized weights defines the effective neighbor count on the recorded population.",
+    "explanation": "Inspect actual reward, separation and fitness with local effective sample sizes. Clustering and kernel width change the measured weights.",
+    "controls": [
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "rho",
+        "label": "Localization width ρ",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "geometry",
+        "label": "Cloud geometry",
+        "type": "select",
+        "value": "clustered",
+        "options": [
+          {
+            "value": "uniform",
+            "label": "uniform"
+          },
+          {
+            "value": "clustered",
+            "label": "clustered"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-07",
+    "part": "IV",
+    "title": "Taylor coefficients of a recorded fitness field",
+    "question": "How accurately do conditional fitness derivatives predict a local displacement?",
+    "prediction": "The polynomial and direct field evaluation share the same recorded donor realization and normalization.",
+    "explanation": "The polynomial and direct field evaluation share the same recorded donor realization and normalization.",
+    "controls": [
+      {
+        "key": "order",
+        "label": "Taylor order",
+        "type": "range",
+        "value": 6,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      },
+      {
+        "key": "radius",
+        "label": "Expansion radius",
+        "type": "range",
+        "value": 0.2,
+        "min": 0.01,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "sigma",
+        "label": "Standard-deviation floor",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.02,
+        "max": 0.5,
+        "step": 0.02
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-08",
+    "part": "IV",
+    "title": "Conditional acceptance in a localized gas",
+    "question": "How do local fitness and donor width affect actual copying?",
+    "prediction": "The acceptance probability is computed by the executed engine from its selected donor and normalized fitness.",
+    "explanation": "The acceptance probability is computed by the executed engine from its selected donor and normalized fitness.",
+    "controls": [
+      {
+        "key": "width",
+        "label": "Companion width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "rho",
+        "label": "Localization width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-09",
+    "part": "IV",
+    "title": "Empirical density in a nonconvex reward landscape",
+    "question": "What spatial distribution does the actual Rastrigin gas produce?",
+    "prediction": "The measured histogram includes cloning and kinetic effects; it is not supplied as a Gibbs distribution.",
+    "explanation": "The measured histogram includes cloning and kinetic effects; it is not supplied as a Gibbs distribution.",
+    "controls": [
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-10",
+    "part": "IV",
+    "title": "Compare the numerical BAOAB velocity law",
+    "question": "Does the finite-step harmonic prediction match an executed run?",
+    "prediction": "The Gaussian-convolution expectation follows the actual BAOAB matrix and recorded initial positions and velocities.",
+    "explanation": "Compare measured mean cos(v), velocity moments and conditional energy increments. This is a finite-step observable comparison, not a measured Gaussian relative-entropy curve.",
+    "controls": [
+      {
+        "key": "h",
+        "label": "Timestep h",
+        "type": "range",
+        "value": 0.08,
+        "min": 0.01,
+        "max": 0.3,
+        "step": 0.01
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-11",
+    "part": "IV",
+    "title": "Fitness Hessian and adaptive innovation covariance",
+    "question": "Which directions receive the largest innovation variance?",
+    "prediction": "The executed spectral metric supplies a factor whose product predicts conditional noise covariance.",
+    "explanation": "The executed spectral metric supplies a factor whose product predicts conditional noise covariance.",
+    "controls": [
+      {
+        "key": "shift",
+        "label": "Spectral shift ε",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-12",
+    "part": "IV",
+    "title": "Inspect viscous alignment inside the full update",
+    "question": "Which recorded stages change velocity when row-normalized viscosity acts?",
+    "prediction": "The mechanical ledger records energy and momentum changes for the actual stages, including the configured viscous force.",
+    "explanation": "Start separated groups with opposing velocities and inspect executed stage coordinates and mechanical budgets. Other forces and cloning remain part of the run; a conserved weighted mean of an isolated frozen graph is not imposed.",
+    "controls": [
+      {
+        "key": "width",
+        "label": "Neighbor width",
+        "type": "range",
+        "value": 0.8,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "viscosity",
+        "label": "Viscosity ν",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "gap",
+        "label": "Gap between clusters",
+        "type": "range",
+        "value": 1.5,
+        "min": 0.3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-13",
+    "part": "IV",
+    "title": "Measure bounded observables at a fixed physical duration",
+    "question": "How does cos(v) behave in the actual finite-step gas?",
+    "prediction": "Recorded moments and thermostat increments separate realized trajectories from conditional predictions.",
+    "explanation": "Recorded moments and thermostat increments separate realized trajectories from conditional predictions.",
+    "controls": [
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Requested timestep h",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.01,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "T",
+        "label": "Physical duration",
+        "type": "range",
+        "value": 15,
+        "min": 1,
+        "max": 30,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-14",
+    "part": "IV",
+    "title": "Compare actual timestep refinements",
+    "question": "How does the endpoint observable change under matched-duration timestep refinement?",
+    "prediction": "Each timestep has its own exact finite-step expectation at the same physical duration.",
+    "explanation": "Compare executed endpoint mean cos(v) with the corresponding predictions. Runs share seeds but are not Brownian-bridge coupled, so endpoint differences retain sampling fluctuations.",
+    "controls": [
+      {
+        "key": "T",
+        "label": "Fixed physical duration",
+        "type": "select",
+        "value": 5,
+        "options": [
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 10,
+            "label": "10"
+          }
+        ]
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-15",
+    "part": "IV",
+    "title": "Companion reach and cloning saturation in an executed gas",
+    "question": "How do population size and saturation change the conditional copy decisions?",
+    "prediction": "Recorded probabilities and realized events expose the actual clipping law.",
+    "explanation": "Recorded probabilities and realized events expose the actual clipping law.",
+    "controls": [
+      {
+        "key": "N",
+        "label": "Alive count",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "cap",
+        "label": "Cloning saturation denominator",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "IV-16",
+    "part": "IV",
+    "title": "Independent seeded gas experiments",
+    "question": "How do endpoint population means vary across complete seeded runs?",
+    "prediction": "Each replica has an executed configuration and seed; their endpoint means define the reported across-run variance.",
+    "explanation": "Inspect the first run’s coordinate histogram and binned entropy together with all run endpoint means. This card does not report an independent-replica confidence interval.",
+    "controls": [
+      {
+        "key": "N",
+        "label": "Base walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Timestep h",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "replicas",
+        "label": "Independent replicas per group",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "V-01",
+    "part": "V",
+    "title": "A slot is not an ancestor",
+    "question": "Which events inherit this walker’s material, and which follow its numerical slot?",
+    "prediction": "Recorded donor identities determine ancestry; causal-slot reachability and material descendants can differ.",
+    "explanation": "Follow an event through the executed graph. Cloning replaces a recipient’s material while preserving its numerical slot, so the two reachability curves answer different questions.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Selected slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-02",
+    "part": "V",
+    "title": "Build the three-edge interaction",
+    "question": "Do the recorded interaction triangles close?",
+    "prediction": "The oriented triangle boundary has zero vertex boundary; recorded displacement vectors close to numerical precision.",
+    "explanation": "Read CST, IG and IA directly from the archive. Closing a triangle checks that its events, orientations and recorded displacements describe the same interaction.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-03",
+    "part": "V",
+    "title": "Reconstruct the run from its record",
+    "question": "Can scalar addresses and spinor coordinates recover the executed stages and edges?",
+    "prediction": "Decoding archived scalar components and encoded edge displacements reproduces their recorded values.",
+    "explanation": "Reconstruction uses every recorded stage and actual edge displacement. The scalar and Spin(2) residuals test two distinct representations of the same executed run.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-04",
+    "part": "V",
+    "title": "Turn along recorded edge tangents",
+    "question": "How much does the direction turn around an actual interaction triangle?",
+    "prediction": "For supported nondegenerate closed planar triangles, the product of tangent-turning phases is one.",
+    "explanation": "Compute oriented angles between successive nonzero recorded displacements. This is a connection defined from planar tangents; its closure does not identify an independent gauge field.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-05",
+    "part": "V",
+    "title": "From fitness curvature to a metric",
+    "question": "Does the executed Hessian agree with differences of the same conditional fitness?",
+    "prediction": "Recorded O-stage Hessians agree with independent scalar finite differences as the difference step is refined within numerical resolution.",
+    "explanation": "Freeze the actual donor and population context, perturb the recorded O input, and compare scalar differences with the analytic Hessian used by the metric provider.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "difference_step",
+        "label": "Difference step",
+        "type": "range",
+        "value": 0.001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.0001
+      },
+      {
+        "key": "walker",
+        "label": "Walker",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-06",
+    "part": "V",
+    "title": "Predict the executed thermostat increment",
+    "question": "Does the actual O-stage noise factor predict the energy change?",
+    "prediction": "Conditional energy and momentum covariance follow from the recorded damping, input velocity, innovation law and noise factor.",
+    "explanation": "Each update supplies its own conditional prediction. Compare realized energy increments with that prediction without treating changing walker covariances as identical samples.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-07",
+    "part": "V",
+    "title": "Coordinate area versus geometric area",
+    "question": "How does a recorded metric change cell areas?",
+    "prediction": "Cell coordinate areas close over the observation window; geometric areas multiply by the square root of the frozen metric determinant.",
+    "explanation": "Partition actual walker sites using the first available recorded O-stage metric as a constant local chart. Compare coordinate and geometric cell areas.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-08",
+    "part": "V",
+    "title": "Measure interacting relaxation",
+    "question": "How does population spread evolve while cloning and the thermostat act?",
+    "prediction": "The O-stage conditional energy identity remains applicable; the full interacting position variance is measured directly.",
+    "explanation": "Follow empirical position variances with denominator N and compare thermostat increments with their conditional predictions. Cloning, donor memory and viscosity remain active.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-09",
+    "part": "V",
+    "title": "Cells and their dual graph",
+    "question": "Which recorded walkers share a positive-length cell interface?",
+    "prediction": "The clipped metric cells form a partition; their shared interfaces define the displayed neighbor graph.",
+    "explanation": "Construct cells from eligible recorded sites and an executed metric. Preserve slot identities when eligibility changes and inspect how geometry creates the neighbor graph.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-10",
+    "part": "V",
+    "title": "Which operation changed the neighbors?",
+    "question": "Did the clone stage or subsequent kinetics alter these interfaces?",
+    "prediction": "Symmetric differences of slot-labeled edge sets isolate interface changes between recorded stages.",
+    "explanation": "Compare before, post-clone and final meshes with one common chart per step. A changed edge is counted once, including when eligibility changes.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-11",
+    "part": "V",
+    "title": "Sweep the cells through time",
+    "question": "What volume belongs to cells following the recorded numerical slots?",
+    "prediction": "A shared slab partition closes over its observation region; cloning replacement occupies zero elapsed time.",
+    "explanation": "Use common eligible slots at before, post-clone and final stages. Reconstruct a finite-resolution slab from these endpoints and retain clone jumps at one physical time.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "resolution",
+        "label": "Slab refinement",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-12",
+    "part": "V",
+    "title": "Maintain the mesh and count its activity",
+    "question": "Does maintaining a mesh agree with rebuilding it from the same recorded sites?",
+    "prediction": "Maintained triangulation and independent reconstruction should agree under the same duplicate and degeneracy conventions.",
+    "explanation": "Measure geometry operations on up to eight recorded frames with a fixed common-slot set. Keep interface counts separate from maintenance diagnostics.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-13",
+    "part": "V",
+    "title": "Differentiate the executed conditional field",
+    "question": "Which changes belong to a frozen field and which come from the next algorithm step?",
+    "prediction": "Within each recorded conditional context, scalar differences check its Hessian; between-step displacement also includes changes of context.",
+    "explanation": "Keep the O-stage inputs and donor references fixed for differentiation. Then compare with actual slot motion across updates, where cloning and new companions can change the stratum.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "difference_step",
+        "label": "Difference step",
+        "type": "range",
+        "value": 0.001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.0001
+      },
+      {
+        "key": "walker",
+        "label": "Walker",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "V-14",
+    "part": "V",
+    "title": "Normalize a kernel on the recorded population",
+    "question": "Does the spatial averaging operator preserve a constant field?",
+    "prediction": "Every normalized Gaussian kernel row sums to one, so applying it to a constant returns that constant.",
+    "explanation": "Build weights from actual pre-clone positions. Row normalization defines an empirical smoother; it does not by itself turn the sampling law into geometric volume.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Kernel bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-15",
+    "part": "V",
+    "title": "Measure temporal and spatial fitness differences",
+    "question": "How do slot-time changes compare with spatially averaged fitness differences?",
+    "prediction": "Both discrete terms are computed from recorded fitness and positions; their equality or continuum wave interpretation is not assumed.",
+    "explanation": "Compare a three-frame second slot-time difference with a row-normalized spatial kernel generator. Cloning jumps remain in the temporal term.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Kernel bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-16",
+    "part": "V",
+    "title": "Predict held-out fitness across bandwidths",
+    "question": "Which spatial bandwidth predicts later recorded fitness most accurately?",
+    "prediction": "The displayed RMSE is the direct error on later frames excluded from fitting, evaluated at half, equal and double bandwidth.",
+    "explanation": "Train a spatial kernel predictor on the first half of the trajectory and score the second half. Dependence and changing donor context remain part of the prediction problem.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bandwidth",
+        "label": "Kernel bandwidth",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "V-17",
+    "part": "V",
+    "title": "Recorded order and chart light cones",
+    "question": "How often do causal-slot reachability and a chosen chart cone agree?",
+    "prediction": "The comparison counts pairs in both orders and in either order alone; changing cone speed changes the chart relation.",
+    "explanation": "Apply both relations to the same recorded events. The cone speed defines the comparison geometry and does not modify the gas transition.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "speed",
+        "label": "Chart cone speed",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.2
+      }
+    ]
+  },
+  {
+    "id": "V-18",
+    "part": "V",
+    "title": "Count walkers in an observation region",
+    "question": "How does regional occupancy change during the executed run?",
+    "prediction": "Regional density equals the eligible count divided by the square’s coordinate area.",
+    "explanation": "Count actual final-stage walkers inside a centered square at each step. Shared ancestry and temporal dependence remain in the counts; no Poisson count law is imposed.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "region",
+        "label": "Observation half-width",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "V-19",
+    "part": "V",
+    "title": "Measure correlation dimension across scales",
+    "question": "How does the fraction of nearby recorded event pairs change with radius?",
+    "prediction": "The correlation integral is nondecreasing and bounded by one; its logarithmic slope measures scale-dependent clustering in the selected chart.",
+    "explanation": "Measure Euclidean pair distances in (x, y, c t). The result is a correlation slope of recorded events, with time scaling, shared ancestry and saturation visible in its interpretation.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "speed",
+        "label": "Chart time scale",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.2
+      }
+    ]
+  },
+  {
+    "id": "V-20",
+    "part": "V",
+    "title": "Read curvature from the executed metric",
+    "question": "Does recorded scalar curvature agree with contracting the recorded Ricci tensor?",
+    "prediction": "At available smooth metric evaluations, scalar curvature equals the inverse-metric contraction of Ricci.",
+    "explanation": "Read the metric, Ricci tensor and scalar curvature from executed O stages. The summary plots mean absolute scalar curvature; signed values and coverage remain in the result details.",
+    "kind": "Rust engine experiment",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Metric regularization",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ]
+  },
+  {
+    "id": "VI-01",
+    "experiment": 1,
+    "part": "VI",
+    "title": "Oriented transport on recorded triangles",
+    "question": "What changes when we traverse an interaction loop backwards?",
+    "prediction": "Normalize the recorded phase-space rays x+i v at Fractal Set events, form unit Hermitian-overlap phases, and multiply them around resolved interaction triangles. Compare reversed traversal with complex conjugation and local rephasing with the unchanged loop.",
+    "explanation": "Change the local frame angle while watching the loop residual. This U(1) connection is constructed from actual event data; near-orthogonal overlaps have explicitly missing support. The experiment tests its orientation and basis identities.",
+    "validation": "Graph traversal versus indexed products.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-fg-lqft-wilson-loops",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Frame rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-02",
+    "experiment": 2,
+    "part": "VI",
+    "title": "Executed clone gates and their innovations",
+    "question": "Do the actual clone decisions follow their conditional probabilities?",
+    "prediction": "Reconstruct each ordinary gate probability from the consumed source fitness, donor fitness, saturation, and clipping. Compare recorded probability and realized acceptance, and accumulate the centered gate innovation with predictable variance p(1-p).",
+    "explanation": "Change donor memory or the timestep and follow the resulting decisions. Deterministic revivals have separate counts. The residual distinguishes an incorrect probability reconstruction from the random variation of correctly sampled gates.",
+    "validation": "Evaluate weighted scores independently before clipping.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-fermions",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-03",
+    "experiment": 3,
+    "part": "VI",
+    "title": "Exterior algebra of measured frame observables",
+    "question": "How many independent modes does the measured covariance support?",
+    "prediction": "Center complete-frame phase-space means, diagonalize their empirical Gram matrix, and construct creation and annihilation matrices on its retained positive eigenspace. Compare their anticommutator with the retained Gram matrix and report discarded covariance.",
+    "explanation": "Increase the retained mode count and inspect the covariance rank. A null direction supplies no occupation mode; the Fock dimension is 2 to the retained rank. The empirical law samples whole recorded frames, preserving within-swarm dependence.",
+    "validation": "Dense operators versus bitset signs and determinant identities.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-lqft-recorded-fermionic-reconstruction",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Fermionic modes",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 6,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-04",
+    "experiment": 4,
+    "part": "VI",
+    "title": "Measured transitions and CAR channels",
+    "question": "Does a two-time field description predict later cross moments?",
+    "prediction": "Estimate source, target, and cross covariances from a training prefix, whitening the two marginals separately. Construct the fermionic channel associated with the measured contraction and check its algebra independently of later cross-moment errors.",
+    "explanation": "Change the lag and retained mode count. A channel can satisfy its exact matrix identities while describing later data poorly. Separate marginal whitening makes transient changes of the swarm distribution visible.",
+    "validation": "Finite path enumeration versus transition and exterior powers.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-record-car-channel",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Fermionic channel modes",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Recorded lag",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 32,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-05",
+    "experiment": 5,
+    "part": "VI",
+    "title": "Regional covariance and locality",
+    "question": "How strongly do the two measured regions fluctuate together?",
+    "prediction": "Use paired pre-clone frames containing eligible walkers on both sides of the spatial split. Their regional velocity means determine a normalized cross-covariance, which is compared with an explicit two-mode mixed CAR anticommutator.",
+    "explanation": "Inspect regional counts alongside covariance. Shared cloning histories can correlate distant regions, and nearly empty regions supply little information. The locality measurement belongs to these regional observables and their measured covariance.",
+    "validation": "Direct covariance versus operator contractions.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-record-locality-defect",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-06",
+    "experiment": 6,
+    "part": "VI",
+    "title": "Products and empirical replica wedges",
+    "question": "When does an antisymmetrized product vanish?",
+    "prediction": "Evaluate centered whole-frame observables on all pairs of draws from their finite empirical record law. Compare the normalized squared two-record determinant sum with the corresponding Gram determinant, alongside the ordinary same-frame product.",
+    "explanation": "Vary the retained Gram modes and distinguish linear dependence from a small same-frame product. Independent draws from the empirical law are a mathematical construction over recorded states; they do not turn successive gas frames into independent dynamical runs.",
+    "validation": "Enumerated moments versus determinant expansion.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-product-obstruction",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Measured Gram modes",
+        "type": "range",
+        "value": 6,
+        "min": 1,
+        "max": 6,
+        "step": 1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-07",
+    "experiment": 7,
+    "part": "VI",
+    "title": "Finite-step weak-generator samples",
+    "question": "Where does quadratic variation enter a complete gas update?",
+    "prediction": "Measure linear and quadratic position increments on slots eligible at both endpoints. Compare the direct quadratic increment with the sum of 2 x times the displacement and the squared displacement, divided by the executed timestep.",
+    "explanation": "Change the timestep and inspect the finite-step remainder that a first-derivative approximation would omit. Cloning displacements remain in the measurement. These realized increments become conditional generator estimates only after averaging the appropriate continuation law.",
+    "validation": "Independent quadrature and sampled kernel sums.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-scalar-fields",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-08",
+    "experiment": 8,
+    "part": "VI",
+    "title": "Force-based colors from executed stages",
+    "question": "Which walker records supply a valid color?",
+    "prediction": "Build normalized color observables from recorded force and velocity at their designated kinetic stage. Export their validity masks, norms, and associated event identities.",
+    "explanation": "Change viscosity or the innovation law and observe how the input vectors and valid colors change. A threshold defines the observable's support; excluded records must remain visible in the counts.",
+    "validation": "Threshold fixtures and recorded force/velocity stage inspection.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-direct-observables",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-09",
+    "experiment": 9,
+    "part": "VI",
+    "title": "Invariant coordinates of measured colors",
+    "question": "Which color coordinates survive a common basis change?",
+    "prediction": "Compute inner products, determinant-based quantities, and invariant coordinates from recorded colors. Apply the configured unitary basis transformation and compare the resulting invariant residuals.",
+    "explanation": "Change the basis angle while keeping the archived fields fixed. This separates coordinate changes from changes of the algorithm. The algebra characterizes the recorded color vectors without asserting a dynamical SU(3) transport law.",
+    "validation": "Direct contractions and transformed/reconstructed coordinates.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-direct-orbit-isomorphism",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "rotation",
+        "label": "Common SU(3) rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-10",
+    "experiment": 10,
+    "part": "VI",
+    "title": "Companion doublets with immutable sources",
+    "question": "Which donor actually enters a companion observable?",
+    "prediction": "Resolve each recorded companion reference to its immutable source and construct the associated color doublet and overlap measurements. Keep source validity and historical provenance with the result.",
+    "explanation": "Increase donor memory and inspect how many observables use retained source records. A present slot and a historical donor at that slot can have different colors; the measured doublet must use the donor consumed by the update.",
+    "validation": "Complete finite assignment enumeration versus repeated draws.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "def-sm-direct-companion-doublet",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-11",
+    "experiment": 11,
+    "part": "VI",
+    "title": "Phase-space ray holonomy",
+    "question": "What geometric phase is carried by recorded interactions?",
+    "prediction": "Construct normalized phase-space rays at event vertices and multiply their overlap phases around actual interaction triangles. Report loop phases, reversal residuals, and local rephasing residuals.",
+    "explanation": "Inspect which triangles have resolved nonzero overlaps. The measured object is the ray-induced U(1) connection. Its holonomy is an explicit coordinate construction on the executed interaction graph.",
+    "validation": "Ordered matrix products versus mismatch identities.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "prop-sm-attribution-holonomy-defect",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Frame rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-12",
+    "experiment": 12,
+    "part": "VI",
+    "title": "Compressed channels and memory",
+    "question": "Does a compressed predictor retain enough state to predict multiple steps?",
+    "prediction": "Partition the chosen frame descriptor using training data, estimate transition laws, and compare compressed evolution with retained-channel predictions and chronological holdout scores.",
+    "explanation": "Change the number of bins, descriptor, and lag. Donor memory and omitted fields can return information to the observable. A multi-step defect measures the cost of discarding that information.",
+    "validation": "Full transition powers versus compressed recurrence.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-direct-channel-memory",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-13",
+    "experiment": 13,
+    "part": "VI",
+    "title": "Predictive partition refinement",
+    "question": "Does a finer descriptor partition improve prediction?",
+    "prediction": "Fit partitions and transition estimates using the training prefix, then evaluate prediction losses on later recorded frames. Report support and temporal prediction discrepancies as the partition changes.",
+    "explanation": "Increase the bin count gradually. More bins retain detail but also leave fewer observations in each cell. The useful resolution is decided by prediction on held-out data, rather than by a visually finer histogram.",
+    "validation": "Exact transitions and independently held-out predictions.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-predictive-partition-convergence",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-14",
+    "experiment": 14,
+    "part": "VI",
+    "title": "Literal clone writes and population balances",
+    "question": "Which operations change the measured population totals?",
+    "prediction": "Reconstruct accepted copying and subsequent recorded transformations using their actual donors and stages. Compare measured increments with the complete write ledger and identify conditions under which paired contributions cancel.",
+    "explanation": "Follow a recipient and donor through a gate. Literal copying need not give the donor an opposite impulse. Keep copying, restitution, and kinetic contributions separate when testing a proposed conservation law.",
+    "validation": "Before/after sums versus explicit accepted donor transfers.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "prop-sm-implemented-collision-increments",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-15",
+    "experiment": 15,
+    "part": "VI",
+    "title": "Complete-engine parity and color conjugation",
+    "question": "Does the full algorithm obey the configured parity transformation?",
+    "prediction": "Execute independently seeded baseline/transformed pairs with matched random addresses. Reflect positions, velocities, and symmetric innovations; compare positions, velocities, clone decisions, donor sets, and eligibility after complete updates.",
+    "explanation": "The even default objective predicts parity covariance. Pair counts control across-pair uncertainty; shared addresses reduce within-pair variation. Force-based colors transform with the associated conjugation convention. A nonzero loop phase alone is not a test of complete-algorithm CP violation.",
+    "validation": "Group identities and symmetric/asymmetric ensemble comparisons.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-coupling-matching",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent pairs",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-16",
+    "experiment": 16,
+    "part": "VI",
+    "title": "Generating functions of recorded observables",
+    "question": "How does a source weight the observed trajectory sample?",
+    "prediction": "Form a finite empirical generating function from bounded terminal-position descriptors of recorded steps. Compare direct source derivatives with finite differences and check normalization at zero source; retain execution-action components separately.",
+    "explanation": "The source weights the retained observations. It does not alter subsequent clone decisions or the transition law. Compare this statistical construction with the dynamical intervention in VI-19.",
+    "validation": "History enumeration versus partition-function differentiation.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-wilson-loops",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-17",
+    "experiment": 17,
+    "part": "VI",
+    "title": "Executed path-action accounting",
+    "question": "Which random choices contribute to an execution likelihood?",
+    "prediction": "Evaluate recorded companion outcomes, clone gates, revivals, and innovations under their executed conditional laws. Plot additive negative-log contributions, with the probability carrier and coverage stated for each component.",
+    "explanation": "Change the innovation law and inspect the resulting action terms. Low-rank Gaussian and uniform innovations require their latent-coordinate carrier. Deterministic copying is a state map, so its output must not be assigned an invented full-dimensional Gaussian density.",
+    "validation": "Finite branching and Gaussian likelihood calculations.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-first-principles",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-18",
+    "experiment": 18,
+    "part": "VI",
+    "title": "Noise moments from actual factors",
+    "question": "Does the executed innovation law have the predicted moments?",
+    "prediction": "Read each eligible recorded diffusion factor and raw innovation. Compute second and fourth moments using the factor rank, source mean, and Gaussian or standardized-uniform fourth cumulant, and compare with executed samples.",
+    "explanation": "Switch between Gaussian and uniform innovations. Their covariance can agree while fourth moments differ. Raw innovation moments precede the thermostat's physical damping and timestep scale, which VI-48 measures.",
+    "validation": "Independent innovations versus recorded covariance factors.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-kinetic-metric-correspondence",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-19",
+    "experiment": 19,
+    "part": "VI",
+    "title": "Gaussian source response through complete updates",
+    "question": "Does likelihood reweighting predict a real source intervention?",
+    "prediction": "Fork a complete checkpoint into independent continuation groups. Shift one addressed Gaussian innovation in direct reruns and compare their final observable with likelihood-weighted baseline reruns, retaining all subsequent selection and kinetic operations.",
+    "explanation": "Increase replicas and vary source strength or horizon. Each continuation is one sampling unit. Threshold crossings and changed clone decisions contribute to the physical response; the likelihood identity must include their downstream consequences.",
+    "validation": "Direct interventions versus independently averaged weights.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-native-source-response",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "replicas",
+        "label": "Independent continuations",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "theta",
+        "label": "Engine source shift",
+        "type": "range",
+        "value": 0.25,
+        "min": 0.01,
+        "max": 1.5,
+        "step": 0.01
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-20",
+    "experiment": 20,
+    "part": "VI",
+    "title": "Recorded transition information",
+    "question": "How much time asymmetry appears in a measured descriptor?",
+    "prediction": "Bin whole-frame mean position using a training-only interval, count actual consecutive transitions, and compare the joint table with its transpose using an explicit pseudocount. Report held-out prediction and supported-row contraction diagnostics.",
+    "explanation": "Change the number of bins and examine occupied rows. This KL measures a coarse empirical time asymmetry. Complete-path entropy production requires a separately specified forward and reverse path law.",
+    "validation": "Exact Gaussian laws and coarse-grained score covariance.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-metric-force-sources",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Descriptor bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 12,
+            "label": "12"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-21",
+    "experiment": 21,
+    "part": "VI",
+    "title": "Empirical geometry-fiber disintegration",
+    "question": "How does a joint recorded law split into marginal and conditional laws?",
+    "prediction": "Build a joint histogram of bounded mean-position and accepted-clone-fraction descriptors. Compute marginal and conditional distributions from the same counts and check normalization and action decomposition on supported cells.",
+    "explanation": "Inspect an empty marginal bin: it has no conditional empirical law. The decomposition is exact for the recorded histogram, while the histogram's ability to characterize future behavior requires a separate prediction test.",
+    "validation": "Exact contingency-table normalization.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-native-geometry-fiber-action",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-22",
+    "experiment": 22,
+    "part": "VI",
+    "title": "Conditional stochastic balance",
+    "question": "Do complete continuations obey the predicted thermostat moments?",
+    "prediction": "Compare independent continuation groups for the full observable increment. At each actual thermostat input, also compute analytic conditional momentum and energy moments from the configured damping, diffusion factor, innovation law, and source.",
+    "explanation": "Accumulate centered thermostat increments and their predictable variance within each continuation, then compare across independent continuations. This retains the dependence of stages and walkers while testing the stochastic balance under the complete algorithm.",
+    "validation": "Independent continuations from a frozen state.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-noether",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "replicas",
+        "label": "Independent continuations",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-23",
+    "experiment": 23,
+    "part": "VI",
+    "title": "Local phase Ward identity on recorded loops",
+    "question": "Why do local phase choices cancel around an executed loop?",
+    "prediction": "Rephase the measured event rays independently and compare the product of transformed overlap links with the measured loop value. Report the local phase-covariance residual.",
+    "explanation": "Change the angle control and watch individual links change while the loop remains invariant. This is the Ward identity of the explicitly constructed U(1) ray connection; the gas path action must be examined separately.",
+    "validation": "Analytic matrix variation versus symmetric finite differences.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "lem-ym-discrete-ward",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Frame rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-24",
+    "experiment": 24,
+    "part": "VI",
+    "title": "Measured loop action and phase variation",
+    "question": "Does the derivative of a measured loop action match its direct variation?",
+    "prediction": "Evaluate 1 minus the real part of the holonomy on actual recorded triangles. Perturb one edge phase and compare a centered finite difference with the imaginary part of the measured loop.",
+    "explanation": "The loop data come from the executed gas, and the action is a stated observable of those data. Agreement checks its variation formula; matching that observable to a Yang-Mills transition density is a further hypothesis.",
+    "validation": "Path integration versus a supplied smooth connection.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-continuum",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Frame rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-25",
+    "experiment": 25,
+    "part": "VI",
+    "title": "Empirical descriptor contraction",
+    "question": "How distinguishable are the supported transition rows?",
+    "prediction": "Estimate the mean-position descriptor channel from training transitions and compute its supported-row Dobrushin coefficient. Evaluate later transitions with a held-out Brier score.",
+    "explanation": "Vary the bins and inspect row support. A contraction of this finite empirical channel describes this descriptor and sample; it is not automatically the spectral gap of the full gas with donor memory.",
+    "validation": "Exact reversible-chain eigenvalues and logarithmic conversion.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-constants",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Descriptor bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 12,
+            "label": "12"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-26",
+    "experiment": 26,
+    "part": "VI",
+    "title": "Cloning and restitution mechanical ledger",
+    "question": "Where do momentum and energy enter during copying?",
+    "prediction": "Measure all-slot unit-mass momentum and kinetic energy at the recorded cloning and restitution stages. Compare direct changes with their stage reconstruction.",
+    "explanation": "Vary memory and inspect donors whose values are copied into recipients. A nonzero total increment can be an accurately accounted algorithmic transfer. The experiment tests the ledger before assigning a conservation interpretation.",
+    "validation": "Exact joint-event enumeration and stage increments.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-complete-fluctuation-equations",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-27",
+    "experiment": 27,
+    "part": "VI",
+    "title": "Eligibility and conditional population moments",
+    "question": "How do population support and conditional radius evolve together?",
+    "prediction": "Plot actual eligible fraction, its net increments, and the mean squared radius conditioned on eligible walkers in each recorded frame.",
+    "explanation": "Watch the two curves together when eligibility changes. The fraction of eligible slots is distinct from the survival probability of independent killed trajectories. Quasi-stationarity requires a stability comparison for the relevant conditional ensemble.",
+    "validation": "Killed-chain path enumeration versus spectral evolution.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-qsd-window-relaxation",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-28",
+    "experiment": 28,
+    "part": "VI",
+    "title": "Empirical temporal reflection spectrum",
+    "question": "Is the measured temporal reflection form positive?",
+    "prediction": "Build a centered past/future bilinear matrix from consecutive same-epoch frame windows, symmetrize it explicitly, and display its eigenvalues and window count.",
+    "explanation": "Change the number of modes and repeat seeds. A negative empirical eigenvalue identifies a quantity needing independent-run uncertainty; ordinary covariance positivity does not impose positivity on this different bilinear form.",
+    "validation": "Direct word quadratic form versus the explicit negative formula.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-native-labeled-color-reflection-sign",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Reflection modes",
+        "type": "select",
+        "value": 3,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-29",
+    "experiment": 29,
+    "part": "VI",
+    "title": "Oriented boundaries of recorded interaction faces",
+    "question": "Do event identities and orientations give a consistent face observable?",
+    "prediction": "Use actual Fractal Set triangles and their boundary-edge references to form oriented phase-space-ray products. Check orientation reversal and local phase covariance on resolved faces.",
+    "explanation": "Inspect the triangle vertices, including historical sources. The loop is tied to the recorded face, and unresolved source or overlap counts describe exactly which faces contribute.",
+    "validation": "Independent oriented link products.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-native-scalar-face-evaluation",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Frame rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-30",
+    "experiment": 30,
+    "part": "VI",
+    "title": "Complete-engine translation covariance and response",
+    "question": "What must move with the population for translation to be a symmetry?",
+    "prediction": "Run baseline/transformed pairs. In translated-system mode shift the population, reward optimum, force potential, and box boundaries together; in fixed-objective mode shift only initial positions.",
+    "explanation": "Compare full-trajectory residuals, gates, donor choices, and eligibility. The first protocol tests coordinate covariance. The second measures a real displacement response under the unchanged objective. Independent pairs supply the reported uncertainty.",
+    "validation": "Translated inputs with fixed and transported regulator.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-anchored-regulator-translation-test",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Translation",
+        "type": "range",
+        "value": 0.5,
+        "min": -1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "replicas",
+        "label": "Independent pairs",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "translation_mode",
+        "label": "Translation experiment",
+        "type": "select",
+        "value": "translated_system",
+        "options": [
+          {
+            "value": "translated_system",
+            "label": "translated system"
+          },
+          {
+            "value": "fixed_objective",
+            "label": "fixed objective"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-31",
+    "experiment": 31,
+    "part": "VI",
+    "title": "Propagation of a local intervention",
+    "question": "How does changing one walker affect the subsequent swarm?",
+    "prediction": "Perturb one initial slot coordinate in one member of each independently seeded pair, then execute all donor choices, cloning, history, force, and noise operations. Measure mean response, RMS difference, and the fraction of affected slots.",
+    "explanation": "Change the source slot, intervention size, and replica count. The footprint includes changes in the selection decisions themselves. It tests influence in the actual algorithm rather than influence through a frozen interaction network.",
+    "validation": "Direct commutators and covariance bounds.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-qft-axioms-verification",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "source_slot",
+        "label": "Perturbed slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Perturbation",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.01,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "replicas",
+        "label": "Independent pairs",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-32",
+    "experiment": 32,
+    "part": "VI",
+    "title": "Predictive algorithmic field channels",
+    "question": "Which recorded descriptors support a useful dynamical reduction?",
+    "prediction": "Fit channels for measured whole-frame descriptors, evaluate later predictions, and compare compressed multi-step evolution with the retained description. Keep training partitions and lag conventions explicit.",
+    "explanation": "Vary the descriptor, bins, and lag. A field theory earns its predictive interpretation by carrying enough information through these tests. Exact channel algebra alone cannot settle the temporal closure question.",
+    "validation": "Independent computational routes through one finite model or archive.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-algorithmic-qft-synthesis",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-33",
+    "experiment": 33,
+    "part": "VI",
+    "title": "Velocity-derived null bispinors",
+    "question": "What does the spinor determinant identity measure here?",
+    "prediction": "Embed three recorded velocity components as the explicitly null four-vector (norm of v, v), form its two-by-two Hermitian bispinor, and compare its determinant with zero.",
+    "explanation": "Follow the velocity norm and determinant across actual walker records. Nullness is part of this readout definition. A particle mass or dispersion law requires a separate dynamical measurement, so this construction does not estimate a mass.",
+    "validation": "Matrix determinants versus Lorentz contractions.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-twistor-spinor-conventions",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-34",
+    "experiment": 34,
+    "part": "VI",
+    "title": "Twistor observables from recorded triplets",
+    "question": "Which event triplets define the twistor field?",
+    "prediction": "Resolve actual companion triplets, construct their twistor operators, and retain validity, source identities, and their geometric invariants with the measurements.",
+    "explanation": "Increase donor memory and inspect the triplet support. The same algebra can be evaluated on different triplets, but the algorithm chooses which source records are present in each field value.",
+    "validation": "Independent operator fixtures and exact validity masks.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-fractal-set-twistorization",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-35",
+    "experiment": 35,
+    "part": "VI",
+    "title": "Source-frozen twistor lag tracking",
+    "question": "Does a correlation follow the intended source identity across time?",
+    "prediction": "Freeze each source triplet, resolve its sink readout at the requested lag, and retain validity counts and event identities for the source-frozen correlation.",
+    "explanation": "Watch how valid-pair counts change with lag. Recomputing an unrelated donor triplet at the sink answers a different question. This measurement uses the source-frozen convention explicitly.",
+    "validation": "Explicit source indices and valid-pair denominators.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-twistor-vs-euclidean",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-36",
+    "experiment": 36,
+    "part": "VI",
+    "title": "Signed correlations and spectral fit diagnostics",
+    "question": "Does a stable damped-mode model predict the measured correlations?",
+    "prediction": "Compute complex phase-space or twistor correlations with the selected frame or source-pair aggregation. Fit complex exponentials and damped-oscillation candidates on training lags; report trimmed-window stability, held-out complex errors, and a zero-predictor comparison.",
+    "explanation": "Move both ends of the fit window. A dip and rebound in correlation magnitude can accompany a sign change without exponential growth. Inconclusive candidates retain their diagnostic curves but do not supply an identified growth rate or mass; chronological holdout alone supplies no independent-run confidence interval.",
+    "validation": "Manufactured mixtures and rank-aware spectral extraction.",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "thm-effective-twistor-spectral-meaning",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "readout",
+        "label": "Recorded observable",
+        "type": "select",
+        "value": "twistor",
+        "options": [
+          {
+            "value": "twistor",
+            "label": "twistor"
+          },
+          {
+            "value": "phase_space",
+            "label": "phase_space"
+          }
+        ]
+      },
+      {
+        "key": "aggregation",
+        "label": "Correlation",
+        "type": "select",
+        "value": "frame_mean",
+        "options": [
+          {
+            "value": "frame_mean",
+            "label": "frame_mean"
+          },
+          {
+            "value": "source_pairs",
+            "label": "source_pairs"
+          }
+        ]
+      },
+      {
+        "key": "channels",
+        "label": "Channels",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "max_lag",
+        "label": "Maximum lag",
+        "type": "select",
+        "value": 6,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-37",
+    "experiment": 37,
+    "part": "VI",
+    "title": "Metric transport along executed displacements",
+    "question": "Does numerical transport preserve the measured metric norm?",
+    "prediction": "Reconstruct the selected conditional fitness metric from its executed donor context. Integrate its Levi-Civita transport along segments joining recorded positions and compare coarse and refined transport and metric-norm residuals.",
+    "explanation": "Increase transport resolution while holding the recorded path and conditional context fixed. This measures spatial transport in a frozen conditional field. Moving the walker and changing the field are separate operations, combined explicitly in VI-45.",
+    "validation": "Integrated transport and metric-compatibility residual.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-tessellation-to-curvature",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Metric target slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "record",
+        "label": "Recorded context",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "transport_steps",
+        "label": "Transport refinement",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-38",
+    "experiment": 38,
+    "part": "VI",
+    "title": "Holonomy along a recorded-point loop",
+    "question": "What happens when metric transport returns to its starting point?",
+    "prediction": "Construct a closed path from the selected recorded displacement and a neighboring recorded point. Integrate conditional-metric transport at two resolutions and measure loop departure from the identity and norm preservation.",
+    "explanation": "Refine the integration and inspect both errors. The loop endpoints come from the gas; the joining segments define the geometric probe. Holonomy is measured directly without imposing a constant-curvature loop-area formula.",
+    "validation": "Independent path integration and tensor contraction.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-riemann-scutoid-dictionary",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Metric target slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "record",
+        "label": "Recorded context",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "transport_steps",
+        "label": "Transport refinement",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-39",
+    "experiment": 39,
+    "part": "VI",
+    "title": "Curvature of the executed fitness metric",
+    "question": "How does fitness normalization and clipping shape curvature?",
+    "prediction": "Reconstruct conditional fitness derivatives using the actual donor and normalization context, then compute the configured metric, connection, and curvature tensors. Independently refine spatial finite differences until successive numerical scalar and Ricci estimates stabilize, and display their discrepancy with the analytic jet.",
+    "explanation": "The probe spacing is selected from successive numerical estimates. Inspect the refinement curve, chosen spacing, and convergence status. A spectral clipping threshold can invalidate the curvature stencil; the experiment retries smaller stencils and retains unresolved support explicitly.",
+    "validation": "Packed versus expanded tensors and finite differences.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-algorithmic-curvature-computation",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 3,
+        "min": 0.1,
+        "max": 10,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-40",
+    "experiment": 40,
+    "part": "VI",
+    "title": "Connection of a measured conditional metric",
+    "question": "Are the connection coefficients numerically resolved?",
+    "prediction": "Compute centered metric derivatives at two finite-difference scales in the executed conditional context. Form Christoffel coefficients and compare metric-compatibility and derivative-refinement residuals.",
+    "explanation": "Reduce the difference step gradually. A small algebraic compatibility residual alone does not establish an accurate derivative; the refinement discrepancy exposes cancellation and clipping-threshold crossings.",
+    "validation": "Least squares versus a supplied connection and singular values.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-discrete-connection",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Metric target slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "record",
+        "label": "Recorded context",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "difference_step",
+        "label": "Difference step",
+        "type": "range",
+        "value": 0.0001,
+        "min": 1e-7,
+        "max": 0.01,
+        "step": 0.0001
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-41",
+    "experiment": 41,
+    "part": "VI",
+    "title": "Finite-step cloud expansion balance",
+    "question": "Which executed stages change the cloud volume?",
+    "prediction": "Define volume by the square root of the determinant of regularized eligible-position covariance. Compare its endpoint log-volume increment with the sum of recorded stage increments.",
+    "explanation": "Vary the covariance ridge and follow cloning and kinetic contributions separately. The telescope is a finite-step identity for this measured cloud volume; its agreement does not impose a Lorentzian Raychaudhuri equation.",
+    "validation": "Congruence differentiation versus the geometric identity.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-raychaudhuri",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "covariance_ridge",
+        "label": "Covariance regularization",
+        "type": "range",
+        "value": 0.000001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.000001
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-42",
+    "experiment": 42,
+    "part": "VI",
+    "title": "Population volume and its stage budget",
+    "question": "Does a change in population spread come from transport or copying?",
+    "prediction": "Plot the regularized covariance length scale together with direct log-volume increments and their executed-stage reconstruction. Keep eligible counts in the budget.",
+    "explanation": "A copied population can become narrow without the trajectories defining an invertible material flow. Inspect stage contributions before identifying population covariance volume with the volume of a transported material element.",
+    "validation": "Independent volume derivatives and material Jacobian.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-discrete-raychaudhuri",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "covariance_ridge",
+        "label": "Covariance regularization",
+        "type": "range",
+        "value": 0.000001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.000001
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-43",
+    "experiment": 43,
+    "part": "VI",
+    "title": "Measured cloud focusing",
+    "question": "Does a proposed focusing balance describe observed expansion?",
+    "prediction": "Measure theta as the finite-step log-volume increment divided by timestep, then display its finite difference plus theta squared divided by dimension.",
+    "explanation": "Inspect this residual instead of imposing a Riccati equation on the plot. Cloning, boundaries, and finite-step effects remain in the measured expansion. The covariance ridge sets a finite floor when the cloud degenerates.",
+    "validation": "Numerical evolution versus comparison solution.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-focusing-theorem",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "covariance_ridge",
+        "label": "Covariance regularization",
+        "type": "range",
+        "value": 0.000001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.000001
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-44",
+    "experiment": 44,
+    "part": "VI",
+    "title": "Topology of the recorded Fractal Set",
+    "question": "Do the recorded event and edge counts satisfy their graph identity?",
+    "prediction": "Build the Fractal Set from executed events and edges, count connected components and graph cycle rank, and compare V minus E with components minus cycle rank. Report resolved edges and interaction triangles.",
+    "explanation": "Inspect historical source coverage and event identity. This is an exact graph calculation on the recorded structure. A spacetime triangulation or curvature-integral relation requires additional geometric data beyond these graph counts.",
+    "validation": "Triangulation bookkeeping and independent angle sums.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-curvature-topology",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-45",
+    "experiment": 45,
+    "part": "VI",
+    "title": "Conditional material metric drift and covariance",
+    "question": "Can independent continuations predict the metric seen by a moving slot?",
+    "prediction": "Fork a complete checkpoint into calibration and validation groups. Measure the six packed metric components at the material or fixed probe, and decompose increments into conditional-field change, clone-induced probe displacement, and subsequent motion.",
+    "explanation": "Compare group means and the full covariance, including cross terms between contributions. Every continuation executes the complete law. The recorded support convention, unavailable outcomes, and extinction counts define the field whose conditional statistics are being tested.",
+    "validation": "Independent predictor/test ensembles and exact finite laws.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-algorithmic-metric-evolution",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "readout",
+        "label": "Metric observable",
+        "type": "select",
+        "value": "material",
+        "options": [
+          {
+            "value": "material",
+            "label": "material"
+          },
+          {
+            "value": "fixed_probe",
+            "label": "fixed_probe"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Independent continuations",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-46",
+    "experiment": 46,
+    "part": "VI",
+    "title": "Executed virial and dilation work",
+    "question": "How do impulse and transport combine in the virial increment?",
+    "prediction": "For each recorded stage transition, compare the direct change in the eligible zero-extended x dot v sum with x dot delta-v plus delta-x dot the final velocity.",
+    "explanation": "Inspect the ledger while changing timestep or viscosity. This discrete product rule retains finite increments and eligibility changes. Interpreting its terms as deformation pressure needs a specified deformation protocol and volume convention.",
+    "validation": "Energy finite differences versus analytic derivatives.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-elastic-pressure",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-47",
+    "experiment": 47,
+    "part": "VI",
+    "title": "Density modes of the executed population",
+    "question": "Does an observed density mode oscillate, decay, or change support?",
+    "prediction": "Compute the real part, imaginary part, and magnitude of the empirical Fourier mode from actual positions at the selected wavenumber. Export fixed-capacity finite-step increments with their eligibility convention.",
+    "explanation": "Change wavenumber and timestep and inspect phase as well as magnitude. The displayed mode uses the eligible count, while the increment ledger uses fixed capacity and zero extension; the two normalizations answer different questions when eligibility changes.",
+    "validation": "Sampled increments or grid evolution versus exact dispersion.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-linearized-dynamics",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "wave_number",
+        "label": "Density wavenumber",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-48",
+    "experiment": 48,
+    "part": "VI",
+    "title": "Conditional BAOAB diffusion and heating",
+    "question": "Does the thermostat produce its predicted finite-step moments?",
+    "prediction": "Use the actual A1 input, O-stage damping, diffusion factor, and innovation law to predict conditional momentum and kinetic-energy increments. Compare with recorded O-stage realizations and their stage coverage.",
+    "explanation": "Switch innovation law or timestep and inspect the predicted scale. This measurement includes physical integration factors, complementing the raw-noise moment comparison in VI-18.",
+    "validation": "Independent noise ensembles versus conditional moments.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-algorithmic-balance-laws",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-49",
+    "experiment": 49,
+    "part": "VI",
+    "title": "Velocity-mode energy and Parseval balance",
+    "question": "Does the measured mode decomposition account for all kinetic energy?",
+    "prediction": "Apply an orthonormal Fourier transform over the explicitly ordered eligible walker slots. Compare summed mode energies with direct unit-mass kinetic energy at each frame.",
+    "explanation": "Inspect the slot order in the exported result. This basis gives a complete energy decomposition but is not a spatial wavenumber basis, so its mode index alone does not define a dispersion relation.",
+    "validation": "Sampled Gaussian modes and partition derivatives.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-radiation-pressure",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-50",
+    "experiment": 50,
+    "part": "VI",
+    "title": "Measured cloud and kinetic scales",
+    "question": "How do cloud size and velocity fluctuations evolve together?",
+    "prediction": "Measure position covariance radius, RMS speed, centered velocity variance, and the corresponding crossing-time diagnostic from eligible records.",
+    "explanation": "Compare their changes under viscosity and noise controls. These empirical scales characterize the actual run. An equation of state or pressure crossover must make an additional prediction for these measurements.",
+    "validation": "Root finding versus the explicit crossover expression.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-pressure-regimes",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-51",
+    "experiment": 51,
+    "part": "VI",
+    "title": "Complete mechanical balances and stress ingredients",
+    "question": "Which operations supply the measured mechanical increments?",
+    "prediction": "Resolve cloning, restitution, jitter, total-force work, thermostat, transport, boundary, and eligibility contributions using recorded stages. Compare exact balance ledgers with direct changes and retain the quantities needed for stress diagnostics.",
+    "explanation": "Use the complete force, including viscosity, in kick work. Compare these mechanical measurements with VI-45 metric evolution before proposing a stress relation. A fitted spatial curvature relation must predict independent data as well as the complete balances permit.",
+    "validation": "Stage budgets and independent Lorentz tensor contractions.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-stress-energy-tensor",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-52",
+    "experiment": 52,
+    "part": "VI",
+    "title": "Cuts by executed interaction channel",
+    "question": "Which actual interactions cross a chosen slot partition?",
+    "prediction": "Count selected directed edges crossing nested slot partitions, separating distance, cloning, and their historical channels. Project retained event edges to slot labels with unit capacity per executed selection.",
+    "explanation": "Move the partition and inspect each channel. Slot projection is part of the observable definition; its edge count is not a spatial area. Historical identity remains available in the underlying Fractal Set.",
+    "validation": "Enumeration versus native minimum cut.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ig-entropy",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "partition_fraction",
+        "label": "Slot partition fraction",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-53",
+    "experiment": 53,
+    "part": "VI",
+    "title": "Empirical transition time asymmetry",
+    "question": "How asymmetric is the measured forward transition table?",
+    "prediction": "Build a training-prefix whole-frame descriptor table with explicit symmetric pseudocounts and compare it with its transpose through KL contributions.",
+    "explanation": "Change the pseudocount and bin count to inspect sensitivity to sparse cells. This is an empirical descriptor statistic. The complete execution likelihood in VI-17 supplies different information and cannot be inferred from this coarse table alone.",
+    "validation": "Independent matrix entropy and finite path enumeration.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-algorithmic-thermodynamic-response",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Empirical state bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "pseudocount",
+        "label": "Pseudocount",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.0001,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-54",
+    "experiment": 54,
+    "part": "VI",
+    "title": "Recorded interaction perimeter scan",
+    "question": "How does the actual selected-edge cut change with region size?",
+    "prediction": "Scan nested slot regions and count directed executed interactions crossing each partition. Compare cut differences with the incident-edge first variation.",
+    "explanation": "Change population and donor memory and retain both run configurations. The cut depends on actual selected edges and the chosen slot regions. A continuum spatial perimeter law is a hypothesis requiring a corresponding geometric comparison.",
+    "validation": "Periodized quadrature versus independent boundary integral.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-gamma-convergence",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "partition_fraction",
+        "label": "Slot partition fraction",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-55",
+    "experiment": 55,
+    "part": "VI",
+    "title": "Observed companion diversity and support",
+    "question": "How much of the observed donor support is used?",
+    "prediction": "Count selected target slots for each source slot, form empirical target frequencies, and compare their entropy with the logarithm of observed support.",
+    "explanation": "Increase the recording budget or memory and inspect support growth. Entropy is bounded by log support for the empirical distribution. Dependent selection frequencies are not the exact conditional probabilities of the sampler.",
+    "validation": "Independent point ensembles and U-statistic moments.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-area-law",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-56",
+    "experiment": 56,
+    "part": "VI",
+    "title": "First variation of an executed graph cut",
+    "question": "Can the next cut increment be predicted from incident edges?",
+    "prediction": "Add one slot to a nested partition and compare its measured directed-cut increment with the signed count of incident selected edges.",
+    "explanation": "Inspect a slot with many historical interactions. Each entering or leaving edge contributes explicitly, making the discrete variation a check of the graph representation and its orientation conventions.",
+    "validation": "Symmetric finite differences versus each analytic derivative.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-first-law",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "partition_fraction",
+        "label": "Slot partition fraction",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-57",
+    "experiment": 57,
+    "part": "VI",
+    "title": "Measured energy distribution and an exponential hypothesis",
+    "question": "Does a simple fitted energy law predict later records?",
+    "prediction": "Fit an exponential energy-bin hypothesis using the training mean kinetic energy. Compare it with the chronological held-out energy histogram, assigning the complete upper tail to the final bin.",
+    "explanation": "Change bins, noise, and viscosity and inspect total variation. The exponential is a proposed distribution fitted to actual data; it is not automatically the configured gas's Gibbs or quasi-stationary law.",
+    "validation": "Exact eigenmeasure versus normalized candidate and residual bound.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-qsd-thermal",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Empirical state bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-58",
+    "experiment": 58,
+    "part": "VI",
+    "title": "Empirical source susceptibility",
+    "question": "How does reweighting recorded field observations change their mean?",
+    "prediction": "Exponentially tilt retained whole-frame mean-position observations, compute the tilted mean and variance, and compare the derivative of the mean with that variance by finite differences.",
+    "explanation": "Change the source and inspect which observations gain weight. This exact finite-empirical-law identity changes statistical weights. Use VI-19 when the question concerns a source that changes the subsequent algorithm itself.",
+    "validation": "Independent tilted laws, Poisson solve, and finite differences.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-algorithmic-thermodynamic-response",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "source",
+        "label": "Source",
+        "type": "range",
+        "value": 0.3,
+        "min": -4,
+        "max": 4,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-59",
+    "experiment": 59,
+    "part": "VI",
+    "title": "Recorded ancestry depth",
+    "question": "How deep is the retained causal history of an event?",
+    "prediction": "Follow actual ancestry and persistence edges and plot event counts by maximum retained ancestral depth. Report the deepest recorded chain.",
+    "explanation": "Increase the run length and donor memory and inspect the resulting genealogy. Depth starts at the retained history boundary; it measures ancestry coverage without assigning a spacetime horizon or AdS radius.",
+    "validation": "Geometric circumference and direct curvature contractions.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ads-cft",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-60",
+    "experiment": 60,
+    "part": "VI",
+    "title": "Maximum flow and minimum cut of selected interactions",
+    "question": "What is the narrowest directed connection between two slot regions?",
+    "prediction": "Project executed selected-edge counts to a directed capacity graph. Compute maximum flow between the selected source and sink slots, recover the minimum partition, and compare its crossing capacity with the flow.",
+    "explanation": "Change source and sink and inspect the edges supplying capacity. Max-flow/min-cut is an exact finite graph identity here. Equating this capacity to quantum entropy requires an independently defined quantum state and entropy measurement.",
+    "validation": "Minimum cut versus independently evaluated competitors.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ads-cft",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "source_slot",
+        "label": "Source slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "sink_slot",
+        "label": "Sink slot",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 7,
+            "label": "7"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-61",
+    "experiment": 61,
+    "part": "VI",
+    "title": "Recorded distribution stationarity",
+    "question": "Does the measured distribution settle over the available run?",
+    "prediction": "Fix position histogram bins using the training prefix, then plot frame entropy, distance to the pooled training distribution, and successive-frame distance. Retain eligible counts.",
+    "explanation": "Extend the trajectory and compare separate seeds. Slow drift or small frame differences are observations to quantify; the experiment does not insert a stationary distribution or substitute eligible-slot fraction for trajectory survival probability.",
+    "validation": "Killed-chain evolution and normalized observables.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-three-vacuum-energies",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Empirical state bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-62",
+    "experiment": 62,
+    "part": "VI",
+    "title": "Measured fitness curvature scale",
+    "question": "Does the local Ricci tensor resemble constant curvature?",
+    "prediction": "Reconstruct actual conditional fitness curvature, report scalar curvature and its absolute scalar-derived radius, and compare Ricci with scalar curvature times the metric divided by dimension.",
+    "explanation": "Inspect the Ricci isotropy residual alongside the radius. A scalar radius compresses one tensor contraction; it does not establish constant curvature, an AdS geometry, or a cosmological constant.",
+    "validation": "Exact geometric quantities versus local expansions.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-uv-regime",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Metric target slot",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      },
+      {
+        "key": "record",
+        "label": "Recorded context",
+        "type": "select",
+        "value": 0,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 3,
+            "label": "3"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-63",
+    "experiment": 63,
+    "part": "VI",
+    "title": "Scale evolution of the executed cloud",
+    "question": "What expansion history does the actual population produce?",
+    "prediction": "Measure the covariance volume scale and its finite-step log-volume expansion from recorded eligible positions, with the covariance ridge and stage budget exported.",
+    "explanation": "Change viscosity or memory and compare the resulting histories. The scale is computed from the swarm at each time. Its evolution is measured rather than generated by an imposed cosmological expansion equation.",
+    "validation": "Scale-factor differentiation and Raychaudhuri terms.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-raychaudhuri-expansion",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "covariance_ridge",
+        "label": "Covariance regularization",
+        "type": "range",
+        "value": 0.000001,
+        "min": 0.000001,
+        "max": 0.01,
+        "step": 0.000001
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-64",
+    "experiment": 64,
+    "part": "VI",
+    "title": "Information in executed region-to-region interactions",
+    "question": "How informative is an interaction source region about its target?",
+    "prediction": "Form the joint distribution of source and target region labels using actual selected-edge counts. Compute marginal and joint entropies, conditional target entropy, mutual information, and the information chain-rule residual.",
+    "explanation": "Move the partition and inspect the four joint frequencies. This classical empirical edge statistic characterizes the selected interaction pattern; predictive information across time needs a time-indexed observable comparison.",
+    "validation": "Exact joint-law enumeration and conditional entropy.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-closure-theory",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "partition_fraction",
+        "label": "Slot partition fraction",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 0.9,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-65",
+    "experiment": 65,
+    "part": "VI",
+    "title": "Held-out empirical field closure",
+    "question": "Does iterating a measured descriptor channel predict later states?",
+    "prediction": "Fit a pseudocount-regularized transition matrix for whole-frame mean position on the training prefix. Compare one-step and iterated two-step predictions with a training-marginal baseline on the chronological suffix.",
+    "explanation": "Change bins and pseudocount and compare the losses. A successful one-step fit need not retain the donor history or unresolved fields needed for two-step prediction. Empty held-out support remains an explicit coverage outcome.",
+    "validation": "Full semigroup versus reduced semigroup evolution.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-closure-theory",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "bins",
+        "label": "Empirical state bins",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "pseudocount",
+        "label": "Pseudocount",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.0001,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "kind": "Rust engine experiment"
+  },
+  {
+    "id": "VI-66",
+    "experiment": 66,
+    "part": "VI",
+    "title": "Dimensionless scales measured from the gas",
+    "question": "How large is one algorithmic step in the run's own units?",
+    "prediction": "Measure an RMS covariance length and speed, form their crossing time, and report timestep times speed divided by length alongside eligible fraction. Export scale degeneracy when a required denominator vanishes.",
+    "explanation": "Compare configurations in these measured units while retaining their raw quantities. These are empirical gas scales; no external particle-mass anchor or physical cosmological scale enters their construction.",
+    "validation": "Dimensional conversion and stress reconstruction.",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-cosmological-observations",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Algorithm timestep",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "engine_memory",
+        "label": "Donor memory",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Viscosity",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "Uniform"
+          }
+        ]
+      }
+    ],
+    "kind": "Rust engine experiment"
+  }
+];

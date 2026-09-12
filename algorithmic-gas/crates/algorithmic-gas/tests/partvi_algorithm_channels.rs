@@ -161,16 +161,3 @@ fn measured_channel_insufficient_and_zero_rank_are_unavailable() {
             .any(|m| m.label == "Vacuum multiplicative defect")
     );
 }
-#[test]
-fn finite_reference_fock_space_quotients_dependent_readouts() {
-    let out = qft::analyze(
-        &ExperimentRequest {
-            experiment: 3,
-            parameters: json!({"modes":6}),
-        },
-        None,
-    )
-    .unwrap();
-    assert_eq!(metric(&out, "Gram rank"), 2.);
-    assert_eq!(metric(&out, "Fock dimension"), 4.);
-}

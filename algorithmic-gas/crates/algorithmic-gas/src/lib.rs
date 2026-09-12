@@ -12,6 +12,7 @@ pub mod extraction;
 pub mod fitness;
 pub mod geometry;
 pub mod kinetic;
+pub mod lecture;
 pub mod memory;
 pub mod noise;
 pub mod operators;

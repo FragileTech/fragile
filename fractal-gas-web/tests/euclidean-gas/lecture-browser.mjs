@@ -141,43 +141,15 @@ try {
     }
     await ready(id);
   }
-  // These configurations previously produced scientifically misleading output
-  // while still passing the generic initialization/finite-SVG checks above.
-  await page.goto(base + "/euclidean-gas/lecture.html?demo=I-08");
-  await ready("I-08");
-  await setScientificControl("I-08", "boundary", 0.4);
-  assert.match(await page.locator("#metrics").textContent(), /extinction/);
+  await page.goto(base + "/euclidean-gas/lecture.html?demo=I-04");
+  await ready("I-04");
+  await setScientificControl("I-04", "survivors", 0);
+  assert.match(await page.locator("#message").textContent(), /extinc/i);
+  assert.equal(await page.locator("#error").isVisible(), false);
+  await setScientificControl("I-04", "survivors", 4);
   await page.locator("#step").click();
   await page.waitForFunction(() => !document.querySelector("#step").disabled);
   assert.equal(await page.locator("#error").isVisible(), false);
-  await setScientificControl("I-08", "boundary", 1.1);
-  assert.match(await page.locator("#metrics").textContent(), /voluntary/);
-
-  await page.goto(base + "/euclidean-gas/lecture.html?demo=IV-12");
-  await ready("IV-12");
-  await setScientificControl("IV-12", "width", 0.2);
-  await setScientificControl("IV-12", "gap", 3);
-  assert.match(
-    await page.locator("#metrics").textContent(),
-    /Below numerical resolution/,
-  );
-  assert.match(
-    await page.locator("#metrics").textContent(),
-    /Rayleigh upper bound/,
-  );
-  assert.ok(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= innerWidth + 1,
-    ),
-    "unresolved-gap diagnostics fit a narrow screen",
-  );
-  await page.screenshot({
-    path: new URL("spectral-gap-stress.png", output).pathname,
-    fullPage: true,
-  });
-  console.log(
-    "Extinction recovery and unresolved spectral-gap browser regressions passed",
-  );
   for (const id of ["IV-01", "IV-16"]) {
     await page.goto(base + `/euclidean-gas/lecture.html?demo=${id}`);
     await ready(id);

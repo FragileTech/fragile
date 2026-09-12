@@ -147,31 +147,7 @@ impl ExperimentResult {
 }
 /// Experiments with an implementation that consumes an executed trajectory.
 pub fn supports_archive(experiment: u32) -> bool {
-    matches!(
-        experiment,
-        2 | 3
-            | 4
-            | 5
-            | 6
-            | 8
-            | 9
-            | 10
-            | 12
-            | 13
-            | 14
-            | 16
-            | 17
-            | 18
-            | 21
-            | 32
-            | 34
-            | 35
-            | 36
-            | 39
-            | 48
-            | 51
-            | 52
-    )
+    (1..=66).contains(&experiment) && !matches!(experiment, 19 | 22 | 45)
 }
 
 /// Derivation and measurement contract for each compiled workbench.
@@ -232,7 +208,7 @@ pub fn analyze_archive(
     if let Some(a) = archive {
         if !supports_archive(request.experiment) {
             return Err(GasError::Capability(format!(
-                "VI-{:02} has no single-archive calculation; use its declared finite model or complete-checkpoint replica runner",
+                "VI-{:02} requires complete-checkpoint replica execution",
                 request.experiment
             )));
         }

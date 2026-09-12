@@ -63,7 +63,7 @@ try {
   const firstFrame = first.frameLocator("iframe");
   await firstFrame.locator("#status").filter({ hasText: "Ready" }).waitFor();
   await firstFrame.locator("#step").click();
-  await firstFrame.locator("#status").filter({ hasText: "Step 1" }).waitFor();
+  await firstFrame.locator("#status").filter({ hasText: "Step 16" }).waitFor();
   assert.equal(await firstFrame.locator("#error").isVisible(), false);
   await firstFrame.locator("#run").click();
   await firstFrame.locator("#run").filter({ hasText: "Pause" }).waitFor();

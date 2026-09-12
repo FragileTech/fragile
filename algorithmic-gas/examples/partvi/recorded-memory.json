@@ -1,9 +1,9 @@
 {
-  "experiment": 32,
+  "id": "VI-32",
+  "seed": 7,
+  "steps": 96,
   "parameters": {
-    "seed": 7,
     "bins": 4,
-    "lag": 2,
-    "train_fraction": 0.6
+    "lag": 2
   }
 }

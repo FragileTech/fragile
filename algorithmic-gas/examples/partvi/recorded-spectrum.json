@@ -1,11 +1,9 @@
 {
-  "experiment": 36,
+  "id": "VI-36",
+  "seed": 7,
+  "steps": 96,
   "parameters": {
-    "seed": 7,
     "readout": "phase_space",
-    "channels": 3,
-    "max_lag": 12,
-    "fit_start": 1,
-    "fit_end": 6
+    "channels": 3
   }
 }

@@ -1,9 +1,9 @@
 {
-  "experiment": 45,
+  "id": "VI-45",
+  "seed": 7,
+  "steps": 96,
   "parameters": {
-    "seed": 7,
     "replicas": 16,
-    "horizon": 1,
-    "warmup": 1
+    "horizon": 1
   }
 }

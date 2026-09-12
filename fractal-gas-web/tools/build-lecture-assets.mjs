@@ -1,4 +1,5 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
+import assert from "node:assert/strict";
 await import("./build-partvi-index.mjs");
 const { demos, parameters } = await import(
   "../web/euclidean-gas/lecture/catalog.js"
@@ -9,14 +10,8 @@ import {
   COLORS,
 } from "../web/euclidean-gas/lecture/plots.js";
 import init, {
-  BrowserGas,
-  default_config,
-  partv_geometry,
-  partv_analysis,
-  partvi_analysis,
-  partvi_archive,
-  partvi_run,
-  physics_curvature_batch,
+  LectureExperiment,
+  lecture_catalog,
 } from "../web/euclidean-gas/engine/cpu/gas.js";
 
 await init({
@@ -25,19 +20,13 @@ await init({
   ),
 });
 const engine = {
-  curvatureBatch: (request) => physics_curvature_batch(JSON.stringify(request)),
-  qftRun: async (request, config) =>
-    partvi_run(JSON.stringify(request), JSON.stringify(config)),
-  qft: async (request, archive) =>
-    archive
-      ? partvi_archive(JSON.stringify(request), JSON.stringify(archive))
-      : partvi_analysis(JSON.stringify(request)),
-  geometry: async (request) => partv_geometry(JSON.stringify(request)),
-  analysis: async (request) => partv_analysis(JSON.stringify(request)),
-  defaults: async () => JSON.parse(default_config()),
-  create: (config) => BrowserGas.create(JSON.stringify(config)),
-  restore: (bytes) => BrowserGas.restore(bytes),
+  lectureCreate: (request) => LectureExperiment.create(JSON.stringify(request)),
 };
+assert.deepEqual(
+  lecture_catalog(),
+  demos.map(({ create, ...meta }) => meta),
+  "Compiled and browser lecture registries differ; rebuild WASM and metadata together.",
+);
 const output = new URL("../../docs/_static_theory/gas-demos/", import.meta.url);
 await mkdir(output, { recursive: true });
 const placements = JSON.parse(
@@ -71,9 +60,11 @@ for (const demo of demos) {
   });
   try {
     let posterTicks = 0;
-    for (; posterTicks < 12 && !model.snapshot().done; posterTicks++)
+    for (; posterTicks < 1024 && !model.snapshot().done; posterTicks++)
       await model.step();
     const snapshot = model.snapshot();
+    if (!snapshot.done || !snapshot.result)
+      throw new Error("Incomplete experiment: " + demo.id);
     const preferred = {
       "II-01": 3,
       "IV-01": 1,
@@ -131,6 +122,32 @@ for (const demo of demos) {
       .join("");
     svg = svg.replace(/<\/svg>$/, legend + "</svg>");
     await writeFile(new URL(demo.id + ".svg", output), svg);
+    await writeFile(
+      new URL(demo.id + ".result.json", output),
+      JSON.stringify(snapshot.result, (key, value) => {
+        if (
+          ["frozen_checkpoint_cbor", "archive_cbor"].includes(key) &&
+          Array.isArray(value)
+        )
+          return {
+            bytes: value.length,
+            evidence:
+              "Download complete evidence from the interactive experiment",
+          };
+        if (["graph", "scene"].includes(key) && Array.isArray(value?.nodes))
+          return {
+            title: value.title,
+            message: value.message,
+            node_count: value.nodes.length,
+            edge_count: value.edges?.length,
+            face_count: value.faces?.length,
+            triangle_count: value.triangles?.length,
+            evidence:
+              "Geometry is available in the interactive experiment and reconstructed from its complete exported archive",
+          };
+        return value;
+      }),
+    );
     manifest.push({
       ...placement,
       title: demo.title,
@@ -142,6 +159,8 @@ for (const demo of demos) {
       posterTicks,
       controls: demo.controls,
       params: parameters(demo),
+      calculationOrigin: snapshot.result.details.calculation_origin,
+      runSteps: snapshot.result.details.run_steps,
     });
     console.log(demo.id + ": " + posterTicks + " computed steps → poster");
   } finally {

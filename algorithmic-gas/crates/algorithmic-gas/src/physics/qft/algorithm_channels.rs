@@ -83,9 +83,26 @@ pub(super) fn analyze(r: &ExperimentRequest, a: &RunArchive<f64>) -> Result<Expe
     }
     out.metric("Valid colors", cs.len() as f64, "walkers")
         .metric("Valid triples", triples.len() as f64, "triples")
-        .metric("Common SU(3) and ray-phase residual", residual, "")
-        .metric("Projector trace residual", projectors, "")
-        .metric("Baryon Gram determinant residual", gram, "");
+        .metric(
+            "Common SU(3) and ray-phase residual",
+            if triples.is_empty() {
+                f64::NAN
+            } else {
+                residual
+            },
+            "",
+        )
+        .metric(
+            "Projector trace residual",
+            if cs.is_empty() { f64::NAN } else { projectors },
+            "",
+        )
+        .metric(
+            "Baryon Gram determinant residual",
+            if triples.is_empty() { f64::NAN } else { gram },
+            "",
+        );
+    out.plots.extend(read.plots.clone());
     out.plot(
         "Recorded triangle phase readout",
         "consecutive valid triple",

@@ -120,18 +120,68 @@ impl FractalSet {
         let mut nodes = BTreeSet::new();
         let mut lookup = BTreeMap::new();
         let mut positions = BTreeMap::new();
+        // Index every immutable population represented in the archive. A source
+        // may be an anchor, a completed frame, or a recorded operator stage.
+        let mut insert = |event: EventRef, point: Option<[f64; 2]>| {
+            lookup.insert(
+                (
+                    event.epoch,
+                    event.step,
+                    event.slot,
+                    event.generation,
+                    event.version,
+                ),
+                event,
+            );
+            if let Some(point) = point {
+                positions.insert(event, point);
+            }
+            nodes.insert(event);
+        };
         for anchor in &archive.anchors {
-            nodes.extend(events(anchor.epoch, anchor.step, &anchor.population));
+            for event in events(anchor.epoch, anchor.step, &anchor.population) {
+                insert(event, position(&anchor.population, event.slot as usize));
+            }
         }
         for s in &archive.steps {
-            for e in events(s.epoch, s.report.step - 1, &s.before) {
-                lookup.insert((e.epoch, e.step, e.slot, e.generation, e.version), e);
-                if let Some(point) = position(&s.before, e.slot as usize) {
-                    positions.insert(e, point);
+            for (step, population) in [
+                (s.report.step - 1, &s.before),
+                (s.report.step, &s.final_population),
+            ] {
+                for event in events(s.epoch, step, population) {
+                    insert(event, position(population, event.slot as usize));
                 }
-                nodes.insert(e);
             }
-            nodes.extend(events(s.epoch, s.report.step, &s.final_population));
+            // Transform influences refer to the actual state at the operation,
+            // not necessarily either endpoint of the complete update. Introduce
+            // only referenced stage events, retaining their exact version.
+            for influence in &s.influences {
+                let source = influence.source;
+                if source.frame != s.report.step {
+                    continue;
+                }
+                let slot = source.slot as usize;
+                if let Some(stage) = s.stages.iter().find(|stage| {
+                    stage.version == source.version
+                        && stage.generations.get(slot) == Some(&source.generation)
+                }) {
+                    let event = EventRef {
+                        epoch: s.epoch,
+                        step: source.frame,
+                        slot: source.slot,
+                        generation: source.generation,
+                        version: source.version,
+                    };
+                    let point = stage
+                        .fields
+                        .get("positions")
+                        .filter(|f| f.item_shape == [2])
+                        .and_then(|f| f.values.get(slot * 2..slot * 2 + 2))
+                        .map(|x| [x[0], x[1]])
+                        .filter(|p| p.iter().all(|x| x.is_finite()));
+                    insert(event, point);
+                }
+            }
         }
         let mut result = Self {
             nodes: nodes.into_iter().collect(),

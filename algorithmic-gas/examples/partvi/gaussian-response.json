@@ -1,7 +1,8 @@
 {
-  "experiment": 19,
+  "id": "VI-19",
+  "seed": 7,
+  "steps": 96,
   "parameters": {
-    "seed": 7,
     "replicas": 32,
     "horizon": 4,
     "theta": 0.25

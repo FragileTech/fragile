@@ -3,13 +3,18 @@
 use super::partvi::{ExperimentRequest, ExperimentResult, Metric, Plot, Series};
 use crate::{GasError, Result, tracking::RunArchive};
 use serde_json::{Value, json};
+#[cfg(test)]
 mod boundary;
+#[cfg(test)]
 mod cosmology;
 mod gravity;
 pub use gravity::{archive_fitness_jet, archive_fitness_jet_with_history};
 mod models;
 mod numerics;
 mod observed;
+#[cfg(test)]
+mod reference_tests;
+mod run_observables;
 use numerics::*;
 
 pub fn analyze(
@@ -28,11 +33,16 @@ pub fn analyze(
             ));
         }
     }
+    let archive = archive.ok_or_else(|| {
+        GasError::Capability("field experiments require an executed Euclidean Gas archive".into())
+    })?;
     match req.experiment {
-        37..=44 => gravity::run(req, archive),
-        45..=51 => models::run(req, archive),
-        52..=60 => boundary::run(req, archive),
-        _ => cosmology::run(req, archive),
+        39 => gravity::run(req, Some(archive)),
+        45 => Err(GasError::Capability(
+            "metric continuation experiment requires complete-checkpoint independent reruns".into(),
+        )),
+        48 | 51 => models::run(req, Some(archive)),
+        _ => run_observables::run(req, archive),
     }
 }
 fn result(r: &ExperimentRequest, title: &str, model: &str) -> ExperimentResult {

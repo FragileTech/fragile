@@ -294,104 +294,142 @@ fn curvature(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result
         Ok(c) => c,
         Err(e) => return Ok(unavailable(e.to_string())),
     };
-    let d = 3;
-    let step = p(r, "difference_step", 0.002, 0.0002, 0.02);
+    let initial_step = p(r, "difference_step", 0.002, 0.0002, 0.02);
     let center = c.spectrum.metric.clone();
-    let mut first = vec![0.; 27];
-    let mut second = vec![0.; 81];
+    let positive_count = raw.iter().filter(|&&v| v > 0.).count();
     let evaluate = |z: &[f64]| -> Result<Vec<f64>> {
-        Ok(
-            fitness_curvature(&make_jet(z)?, epsilon, policy, threshold, false)?
-                .spectrum
-                .metric,
+        let jet = make_jet(z)?;
+        if policy == MetricPolicy::Clipped {
+            let eigenvalues =
+                crate::physics::geometry::symmetric_eigen(&jet.dense_hessian()?, 3)?.0;
+            if eigenvalues.iter().filter(|&&v| v > 0.).count() != positive_count {
+                return Err(GasError::Capability(
+                    "finite-difference stencil crosses a spectral clipping surface".into(),
+                ));
+            }
+        }
+        Ok(fitness_curvature(&jet, epsilon, policy, threshold, false)?
+            .spectrum
+            .metric)
+    };
+    let estimate = |step: f64| -> Result<crate::physics::geometry::CurvatureBatch<f64>> {
+        let mut first = vec![0.; 27];
+        let mut second = vec![0.; 81];
+        for a in 0..3 {
+            let mut xp = x;
+            let mut xm = x;
+            xp[a] += step;
+            xm[a] -= step;
+            let plus = evaluate(&xp)?;
+            let minus = evaluate(&xm)?;
+            for k in 0..9 {
+                first[a * 9 + k] = (plus[k] - minus[k]) / (2. * step);
+                second[(a * 3 + a) * 9 + k] = (plus[k] - 2. * center[k] + minus[k]) / step.powi(2);
+            }
+            for b in 0..a {
+                let mut pp = x;
+                let mut pm = x;
+                let mut mp = x;
+                let mut mm = x;
+                pp[a] += step;
+                pp[b] += step;
+                pm[a] += step;
+                pm[b] -= step;
+                mp[a] -= step;
+                mp[b] += step;
+                mm[a] -= step;
+                mm[b] -= step;
+                let pp = evaluate(&pp)?;
+                let pm = evaluate(&pm)?;
+                let mp = evaluate(&mp)?;
+                let mm = evaluate(&mm)?;
+                for k in 0..9 {
+                    let v = (pp[k] - pm[k] - mp[k] + mm[k]) / (4. * step * step);
+                    second[(a * 3 + b) * 9 + k] = v;
+                    second[(b * 3 + a) * 9 + k] = v;
+                }
+            }
+        }
+        metric_curvature(
+            &MetricJet {
+                dimension: 3,
+                metric: center.clone(),
+                first,
+                second,
+            },
+            true,
         )
     };
-    for a in 0..d {
-        let mut xp = x;
-        let mut xm = x;
-        xp[a] += step;
-        xm[a] -= step;
-        let plus = match evaluate(&xp) {
-            Ok(x) => x,
-            Err(e) => {
-                return Ok(unavailable(format!(
-                    "Finite-difference neighborhood leaves the curvature domain: {e}"
-                )));
+    // Select resolution using only successive numerical scalar/Ricci estimates.
+    // The packed curvature is never used in the stopping criterion.
+    let relative_tolerance = 1e-5;
+    let absolute_tolerance = 1e-6;
+    let mut sequence = Vec::new();
+    let mut previous: Option<crate::physics::geometry::CurvatureBatch<f64>> = None;
+    let mut selected_step = initial_step;
+    let mut consecutive_stable = 0;
+    let mut converged = false;
+    let mut refinement_curve = Vec::new();
+    for level in 0..=12 {
+        let step = initial_step * 0.5_f64.powi(level);
+        let estimate = match estimate(step) {
+            Ok(value) => value,
+            Err(error) => {
+                sequence.push(
+                    json!({"step":step,"status":"unsupported_stencil","reason":error.to_string()}),
+                );
+                previous = None;
+                consecutive_stable = 0;
+                continue;
             }
         };
-        let minus = match evaluate(&xm) {
-            Ok(x) => x,
-            Err(e) => {
-                return Ok(unavailable(format!(
-                    "Finite-difference neighborhood leaves the curvature domain: {e}"
-                )));
-            }
-        };
-        for k in 0..9 {
-            first[a * 9 + k] = (plus[k] - minus[k]) / (2. * step);
-            second[(a * 3 + a) * 9 + k] = (plus[k] - 2. * center[k] + minus[k]) / step.powi(2);
+        let mut scaled_change = None;
+        let mut scalar_change = None;
+        let mut ricci_change = None;
+        if let Some(coarse) = &previous {
+            let ds = (estimate.scalar - coarse.scalar).abs();
+            let dr = estimate
+                .ricci
+                .iter()
+                .zip(&coarse.ricci)
+                .map(|(a, b)| (a - b).abs())
+                .fold(0., f64::max);
+            let ricci_scale = estimate
+                .ricci
+                .iter()
+                .chain(&coarse.ricci)
+                .map(|v| v.abs())
+                .fold(0., f64::max);
+            let scalar_scale = estimate.scalar.abs().max(coarse.scalar.abs());
+            let change = (ds / (absolute_tolerance + relative_tolerance * scalar_scale))
+                .max(dr / (absolute_tolerance + relative_tolerance * ricci_scale));
+            scaled_change = Some(change);
+            scalar_change = Some(ds);
+            ricci_change = Some(dr);
+            consecutive_stable = if change <= 1. {
+                consecutive_stable + 1
+            } else {
+                0
+            };
         }
-        for b in 0..a {
-            let mut pp = x;
-            let mut pm = x;
-            let mut mp = x;
-            let mut mm = x;
-            pp[a] += step;
-            pp[b] += step;
-            pm[a] += step;
-            pm[b] -= step;
-            mp[a] -= step;
-            mp[b] += step;
-            mm[a] -= step;
-            mm[b] -= step;
-            let pp = match evaluate(&pp) {
-                Ok(x) => x,
-                Err(e) => {
-                    return Ok(unavailable(format!(
-                        "Finite-difference neighborhood leaves the curvature domain: {e}"
-                    )));
-                }
-            };
-            let pm = match evaluate(&pm) {
-                Ok(x) => x,
-                Err(e) => {
-                    return Ok(unavailable(format!(
-                        "Finite-difference neighborhood leaves the curvature domain: {e}"
-                    )));
-                }
-            };
-            let mp = match evaluate(&mp) {
-                Ok(x) => x,
-                Err(e) => {
-                    return Ok(unavailable(format!(
-                        "Finite-difference neighborhood leaves the curvature domain: {e}"
-                    )));
-                }
-            };
-            let mm = match evaluate(&mm) {
-                Ok(x) => x,
-                Err(e) => {
-                    return Ok(unavailable(format!(
-                        "Finite-difference neighborhood leaves the curvature domain: {e}"
-                    )));
-                }
-            };
-            for k in 0..9 {
-                let v = (pp[k] - pm[k] - mp[k] + mm[k]) / (4. * step * step);
-                second[(a * 3 + b) * 9 + k] = v;
-                second[(b * 3 + a) * 9 + k] = v;
-            }
+        refinement_curve.push([step, estimate.scalar]);
+        sequence.push(json!({"step":step,"status":"available","scalar":estimate.scalar,"successive_scalar_change":scalar_change,"successive_ricci_max_change":ricci_change,"scaled_change":scaled_change}));
+        selected_step = step;
+        previous = Some(estimate);
+        if consecutive_stable >= 2 {
+            converged = true;
+            break;
         }
     }
-    let reference = metric_curvature(
-        &MetricJet {
-            dimension: 3,
-            metric: center,
-            first,
-            second,
-        },
-        true,
-    )?;
+    let Some(reference) = previous else {
+        let mut out = unavailable(
+            "No finite-difference stencil remained inside the curvature domain during refinement"
+                .into(),
+        );
+        out.details["finite_difference_refinement"] =
+            json!({"status":"unsupported","sequence":sequence});
+        return Ok(out);
+    };
     let mut out = result(
         r,
         "Three-dimensional fitness curvature",
@@ -440,7 +478,24 @@ fn curvature(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result
             ),
         ],
     );
+    plot(
+        &mut out,
+        "Finite-difference refinement",
+        "difference step",
+        "scalar curvature",
+        vec![line("Numerical metric curvature", refinement_curve)],
+    );
+    metric(
+        &mut out,
+        "Selected difference step",
+        selected_step,
+        "position",
+    );
     out.details = json!({"epsilon":epsilon,"policy":policy,"clipping_threshold":threshold,"fitness_jet":j,"curvature":c,"numerical_metric_curvature":reference,"query":x,"mode":mode,"derivative_convention":"target query varies; fixed donor source; global moments differentiated","third_packed_count":10,"hessian_packed_count":6});
+    out.details["finite_difference_refinement"] = json!({"status":if converged {"converged"} else {"underresolved"},"selected_step":selected_step,"relative_tolerance":relative_tolerance,"absolute_tolerance":absolute_tolerance,"maximum_halvings":12,"required_consecutive_stable":2,"criterion":"Successive numerical scalar and Ricci infinity-norm changes; independent of the packed analytic curvature","sequence":sequence});
+    if !converged {
+        out.notes.push("Finite-difference curvature remains underresolved within the probe budget; the displayed analytic comparison is inconclusive.".into());
+    }
     if let Some(a) = archive {
         out.details["archive_field"] = archive_fitness_jet(a, record_index, target, &x, 4)?.1;
         out.model="Actual recorded three-dimensional pre-clone conditional field; independent metric finite differences".into();

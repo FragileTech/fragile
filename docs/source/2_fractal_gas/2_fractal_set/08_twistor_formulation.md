@@ -1011,13 +1011,16 @@ Combining the two equalities yields the claim. $\square$
 :::
 
 :::{prf:remark}
-This proposition is the correct division of labor.
+The implemented twistor companion channels define observables and measure their correlations
+along actual algorithm runs. The spectral experiment fits signed or complex exponential and
+damped-oscillation candidates, checks their stability across lag windows, and tests their
+predictions on held-out frames. These diagnostics characterize the measured correlations;
+they do not establish the positive transfer representation assumed in
+{prf:ref}`cor-effective-twistor-positive-transfer`. Inconclusive fits remain inconclusive, and
+the experiment reports no particle mass.
 
-- The implemented twistor companion channels define new operator families and extract masses from
-  their Euclidean correlators.
-- The exact twistor mass formula computes a Lorentzian invariant only after a channel has been
-  reconstructed on shell as a momentum bispinor.
-
-They are compatible, but they are not the same procedure. The current code implements the first,
-not the second.
+A mass interpretation requires the additional reconstruction hypotheses in this proposition
+and {doc}`09_qft_calibration`. Once an on-shell Lorentzian momentum bispinor is available,
+the exact twistor mass formula computes its invariant. Measuring a companion correlation
+alone does not supply that reconstruction.
 :::

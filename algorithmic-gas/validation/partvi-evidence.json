@@ -163,13 +163,18 @@
         "frame_gram_direct": 0.8500623473105489,
         "frame_gram_measured": 0.8500623473105489,
         "fit": {
-          "decay_rate": -1.7862384364191546,
-          "frequency": -18.089762813984343,
+          "readout": "phase_space",
+          "observable": "fixed-normalization frame mean x+i v",
+          "status": "inconclusive",
+          "candidate_decay_rate": -1.7862384364191546,
+          "candidate_frequency": -18.089762813984343,
+          "decay_rate": null,
+          "frequency": null,
           "log_fit_rmse": 0.6110975403956461,
           "phase_fit_rmse": 0.5911784247409881,
           "heldout_complex_rmse": 0.3924447584217878,
           "mass": null,
-          "interpretation": "This measured finite-window mode is complex and grows in magnitude over the fit window; it does not supply a positive particle-mass estimate."
+          "interpretation": "A phase-space correlation cancellation and rebound produces a window-sensitive exponential candidate. Lag windows 1–3, 1–6 and 4–9 give candidate rates +22.83, −1.79 and +6.53. This does not identify an unstable growing mode or a particle mass, and it is not the twistor readout."
         }
       },
       "limitations": [

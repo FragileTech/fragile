@@ -1,4 +1,8 @@
 //! Analytic objectives shared by the native runner and browser bindings.
+pub mod lecture;
+pub mod lecture_early;
+pub mod lecture_fractal;
+pub mod lecture_qft_protocols;
 pub mod physics_metric;
 use algorithmic_gas::{
     AlgorithmicGas, ComputeBackend, ExecutionContext, GasBuilder, GasConfig, GasError, InputBatch,

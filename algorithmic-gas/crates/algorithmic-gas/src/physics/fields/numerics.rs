@@ -14,6 +14,7 @@ pub(super) fn stats(xs: &[f64]) -> (f64, f64, f64) {
     };
     (mean, var, (var / xs.len() as f64).sqrt())
 }
+#[cfg(test)]
 pub(super) fn integral(f: impl Fn(f64) -> f64, a: f64, b: f64, n: usize) -> f64 {
     (0..n)
         .map(|i| f(a + (i as f64 + 0.5) * (b - a) / n as f64))
@@ -64,6 +65,7 @@ pub(super) fn solve(mut a: Vec<Vec<f64>>, mut b: Vec<f64>) -> Result<Vec<f64>> {
     }
     Ok(b)
 }
+#[cfg(test)]
 pub(super) fn stationary(k: &[Vec<f64>]) -> Result<Vec<f64>> {
     let n = k.len();
     let mut a = vec![vec![0.; n]; n];

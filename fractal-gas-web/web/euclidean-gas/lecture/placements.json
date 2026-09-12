@@ -436,28 +436,28 @@
   {
     "id": "VI-01",
     "part": "VI",
-    "title": "Oriented diagrams and transport",
+    "title": "Oriented transport on recorded triangles",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "sec-fg-lqft-wilson-loops"
   },
   {
     "id": "VI-02",
     "part": "VI",
-    "title": "Cloning antisymmetry and exclusion",
+    "title": "Executed clone gates and their innovations",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "sec-fermions"
   },
   {
     "id": "VI-03",
     "part": "VI",
-    "title": "Exterior algebra from recorded observables",
+    "title": "Exterior algebra of measured frame observables",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "sec-lqft-recorded-fermionic-reconstruction"
   },
   {
     "id": "VI-04",
     "part": "VI",
-    "title": "Recorded transitions and CAR evolution",
+    "title": "Measured transitions and CAR channels",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "thm-lqft-record-car-channel"
   },
@@ -471,49 +471,49 @@
   {
     "id": "VI-06",
     "part": "VI",
-    "title": "Products and replica wedges",
+    "title": "Products and empirical replica wedges",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "thm-lqft-product-obstruction"
   },
   {
     "id": "VI-07",
     "part": "VI",
-    "title": "Density-aware continuum operators",
+    "title": "Finite-step weak-generator samples",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
     "target": "sec-scalar-fields"
   },
   {
     "id": "VI-08",
     "part": "VI",
-    "title": "Recorded color states",
+    "title": "Force-based colors from executed stages",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "sec-sm-direct-observables"
   },
   {
     "id": "VI-09",
     "part": "VI",
-    "title": "SU(3) invariant coordinates",
+    "title": "Invariant coordinates of measured colors",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "thm-sm-direct-orbit-isomorphism"
   },
   {
     "id": "VI-10",
     "part": "VI",
-    "title": "Companion doublets",
+    "title": "Companion doublets with immutable sources",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "def-sm-direct-companion-doublet"
   },
   {
     "id": "VI-11",
     "part": "VI",
-    "title": "Attribution holonomy",
+    "title": "Phase-space ray holonomy",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "prop-sm-attribution-holonomy-defect"
   },
   {
     "id": "VI-12",
     "part": "VI",
-    "title": "Channel compression and memory",
+    "title": "Compressed channels and memory",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "thm-sm-direct-channel-memory"
   },
@@ -527,21 +527,21 @@
   {
     "id": "VI-14",
     "part": "VI",
-    "title": "Complete updates and pair cancellation",
+    "title": "Literal clone writes and population balances",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "prop-sm-implemented-collision-increments"
   },
   {
     "id": "VI-15",
     "part": "VI",
-    "title": "Coupling statistics and CP",
+    "title": "Complete-engine parity and color conjugation",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "sec-sm-coupling-matching"
   },
   {
     "id": "VI-16",
     "part": "VI",
-    "title": "Effective action and generating functions",
+    "title": "Generating functions of recorded observables",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
     "target": "sec-sm-wilson-loops"
   },
@@ -555,343 +555,343 @@
   {
     "id": "VI-18",
     "part": "VI",
-    "title": "Kinetic metric from one record",
+    "title": "Noise moments from actual factors",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "thm-ym-kinetic-metric-correspondence"
   },
   {
     "id": "VI-19",
     "part": "VI",
-    "title": "Gaussian source response",
+    "title": "Gaussian source response through complete updates",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "thm-ym-native-source-response"
   },
   {
     "id": "VI-20",
     "part": "VI",
-    "title": "Force sources and information",
+    "title": "Recorded transition information",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "thm-ym-metric-force-sources"
   },
   {
     "id": "VI-21",
     "part": "VI",
-    "title": "Geometry-fiber disintegration",
+    "title": "Empirical geometry-fiber disintegration",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "thm-ym-native-geometry-fiber-action"
   },
   {
     "id": "VI-22",
     "part": "VI",
-    "title": "Stochastic Noether balance",
+    "title": "Conditional stochastic balance",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "sec-ym-noether"
   },
   {
     "id": "VI-23",
     "part": "VI",
-    "title": "Wilson variation and Ward identity",
+    "title": "Local phase Ward identity on recorded loops",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "lem-ym-discrete-ward"
   },
   {
     "id": "VI-24",
     "part": "VI",
-    "title": "Continuum Yang-Mills consistency",
+    "title": "Measured loop action and phase variation",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "sec-ym-continuum"
   },
   {
     "id": "VI-25",
     "part": "VI",
-    "title": "Units, discrete time, and gaps",
+    "title": "Empirical descriptor contraction",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "sec-ym-constants"
   },
   {
     "id": "VI-26",
     "part": "VI",
-    "title": "Fluctuation and collision budgets",
+    "title": "Cloning and restitution mechanical ledger",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "prop-ym-complete-fluctuation-equations"
   },
   {
     "id": "VI-27",
     "part": "VI",
-    "title": "QSD windows and burn-in",
+    "title": "Eligibility and conditional population moments",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "thm-ym-qsd-window-relaxation"
   },
   {
     "id": "VI-28",
     "part": "VI",
-    "title": "Reflection matrices",
+    "title": "Empirical temporal reflection spectrum",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "prop-ym-native-labeled-color-reflection-sign"
   },
   {
     "id": "VI-29",
     "part": "VI",
-    "title": "Scalar triangles and outer plaquettes",
+    "title": "Oriented boundaries of recorded interaction faces",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "prop-ym-native-scalar-face-evaluation"
   },
   {
     "id": "VI-30",
     "part": "VI",
-    "title": "Translation and localization",
+    "title": "Complete-engine translation covariance and response",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "prop-ym-anchored-regulator-translation-test"
   },
   {
     "id": "VI-31",
     "part": "VI",
-    "title": "Regional algebras and interventions",
+    "title": "Propagation of a local intervention",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "sec-qft-axioms-verification"
   },
   {
     "id": "VI-32",
     "part": "VI",
-    "title": "Connected algorithmic QFT",
+    "title": "Predictive algorithmic field channels",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
     "target": "sec-ym-algorithmic-qft-synthesis"
   },
   {
     "id": "VI-33",
     "part": "VI",
-    "title": "Spinor and mass identities",
+    "title": "Velocity-derived null bispinors",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
     "target": "sec-twistor-spinor-conventions"
   },
   {
     "id": "VI-34",
     "part": "VI",
-    "title": "Recorded triplet twistor operators",
+    "title": "Twistor observables from recorded triplets",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
     "target": "sec-fractal-set-twistorization"
   },
   {
     "id": "VI-35",
     "part": "VI",
-    "title": "Source-frozen lag tracking",
+    "title": "Source-frozen twistor lag tracking",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
     "target": "sec-twistor-vs-euclidean"
   },
   {
     "id": "VI-36",
     "part": "VI",
-    "title": "Spectral decay and twistor amplitudes",
+    "title": "Signed correlations and spectral fit diagnostics",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
     "target": "thm-effective-twistor-spectral-meaning"
   },
   {
     "id": "VI-37",
     "part": "VI",
-    "title": "Transport in a changing geometry",
+    "title": "Metric transport along executed displacements",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-tessellation-to-curvature"
   },
   {
     "id": "VI-38",
     "part": "VI",
-    "title": "Curvature per loop area",
+    "title": "Holonomy along a recorded-point loop",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-riemann-scutoid-dictionary"
   },
   {
     "id": "VI-39",
     "part": "VI",
-    "title": "Conditional fitness curvature",
+    "title": "Curvature of the executed fitness metric",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-algorithmic-curvature-computation"
   },
   {
     "id": "VI-40",
     "part": "VI",
-    "title": "Connection identifiability",
+    "title": "Connection of a measured conditional metric",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-discrete-connection"
   },
   {
     "id": "VI-41",
     "part": "VI",
-    "title": "Raychaudhuri term balance",
+    "title": "Finite-step cloud expansion balance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-raychaudhuri"
   },
   {
     "id": "VI-42",
     "part": "VI",
-    "title": "Material and reconstructed volumes",
+    "title": "Population volume and its stage budget",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-discrete-raychaudhuri"
   },
   {
     "id": "VI-43",
     "part": "VI",
-    "title": "Focusing and caustics",
+    "title": "Measured cloud focusing",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-focusing-theorem"
   },
   {
     "id": "VI-44",
     "part": "VI",
-    "title": "Curvature and topology",
+    "title": "Topology of the recorded Fractal Set",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
     "target": "sec-curvature-topology"
   },
   {
     "id": "VI-45",
     "part": "VI",
-    "title": "Fluctuation energy and metric evolution",
+    "title": "Conditional material metric drift and covariance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-algorithmic-metric-evolution"
   },
   {
     "id": "VI-46",
     "part": "VI",
-    "title": "Pressure and deformation",
+    "title": "Executed virial and dilation work",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-elastic-pressure"
   },
   {
     "id": "VI-47",
     "part": "VI",
-    "title": "Density-wave dispersion",
+    "title": "Density modes of the executed population",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-linearized-dynamics"
   },
   {
     "id": "VI-48",
     "part": "VI",
-    "title": "BAOAB diffusion and thermostat heating",
+    "title": "Conditional BAOAB diffusion and heating",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-algorithmic-balance-laws"
   },
   {
     "id": "VI-49",
     "part": "VI",
-    "title": "Gaussian mode thermodynamics",
+    "title": "Velocity-mode energy and Parseval balance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-radiation-pressure"
   },
   {
     "id": "VI-50",
     "part": "VI",
-    "title": "Pressure crossover",
+    "title": "Measured cloud and kinetic scales",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-pressure-regimes"
   },
   {
     "id": "VI-51",
     "part": "VI",
-    "title": "Mechanical balances and gravitational stress",
+    "title": "Complete mechanical balances and stress ingredients",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-stress-energy-tensor"
   },
   {
     "id": "VI-52",
     "part": "VI",
-    "title": "Genealogical separators and cuts",
+    "title": "Cuts by executed interaction channel",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-ig-entropy"
   },
   {
     "id": "VI-53",
     "part": "VI",
-    "title": "Jump, modular, and path entropy",
+    "title": "Empirical transition time asymmetry",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-algorithmic-thermodynamic-response"
   },
   {
     "id": "VI-54",
     "part": "VI",
-    "title": "Gaussian cuts and perimeter",
+    "title": "Recorded interaction perimeter scan",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-gamma-convergence"
   },
   {
     "id": "VI-55",
     "part": "VI",
-    "title": "Finite-population area scaling",
+    "title": "Observed companion diversity and support",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-area-law"
   },
   {
     "id": "VI-56",
     "part": "VI",
-    "title": "Three first variations",
+    "title": "First variation of an executed graph cut",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-first-law"
   },
   {
     "id": "VI-57",
     "part": "VI",
-    "title": "Gibbs QSD candidates",
+    "title": "Measured energy distribution and an exponential hypothesis",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-qsd-thermal"
   },
   {
     "id": "VI-58",
     "part": "VI",
-    "title": "Response and Fisher information",
+    "title": "Empirical source susceptibility",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-algorithmic-thermodynamic-response"
   },
   {
     "id": "VI-59",
     "part": "VI",
-    "title": "Euclidean horizons and AdS",
+    "title": "Recorded ancestry depth",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-ads-cft"
   },
   {
     "id": "VI-60",
     "part": "VI",
-    "title": "Minimum cuts and limiting surfaces",
+    "title": "Maximum flow and minimum cut of selected interactions",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
     "target": "sec-holography-ads-cft"
   },
   {
     "id": "VI-61",
     "part": "VI",
-    "title": "Conditional stationarity and survival",
+    "title": "Recorded distribution stationarity",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-three-vacuum-energies"
   },
   {
     "id": "VI-62",
     "part": "VI",
-    "title": "Interaction range and curvature scale",
+    "title": "Measured fitness curvature scale",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-uv-regime"
   },
   {
     "id": "VI-63",
     "part": "VI",
-    "title": "Expansion histories",
+    "title": "Scale evolution of the executed cloud",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-raychaudhuri-expansion"
   },
   {
     "id": "VI-64",
     "part": "VI",
-    "title": "Predictive information",
+    "title": "Information in executed region-to-region interactions",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-closure-theory"
   },
   {
     "id": "VI-65",
     "part": "VI",
-    "title": "Dynamical closure",
+    "title": "Held-out empirical field closure",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-closure-theory"
   },
   {
     "id": "VI-66",
     "part": "VI",
-    "title": "Vacuum units and observables",
+    "title": "Dimensionless scales measured from the gas",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
     "target": "sec-cosmological-observations"
   }

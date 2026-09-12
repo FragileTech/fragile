@@ -1,4 +1,4 @@
-//! Packed multivariate Taylor algebra through order four.
+//! Packed multivariate Taylor algebra through order twelve.
 //!
 //! Coefficients are derivatives divided by multi-index factorials. In three
 //! dimensions order three needs 20 coefficients; order four needs 35. Products
@@ -17,9 +17,19 @@ pub struct JetSpace {
 impl JetSpace {
     pub fn new(dimension: usize, order: usize) -> Result<Arc<Self>> {
         require(
-            (1..=16).contains(&dimension) && (0..=4).contains(&order),
-            "jets support dimensions 1..16 and orders 0..4",
+            (1..=16).contains(&dimension) && (0..=12).contains(&order),
+            "jets support dimensions 1..16 and orders 0..12",
         )?;
+        // Bound the complete coefficient count before enumerating multi-indices.
+        // Degree <= order in d variables has binomial(d + order, order) terms.
+        let mut coefficients = 1usize;
+        for k in 1..=order {
+            coefficients = coefficients * (dimension + k) / k;
+            require(
+                coefficients <= 1024,
+                "jet coefficient capacity (1024) exceeded",
+            )?;
+        }
         fn enumerate(d: usize, remaining: usize, a: &mut Vec<usize>, out: &mut Vec<Vec<usize>>) {
             if d == 1 {
                 a.push(remaining);
@@ -224,5 +234,44 @@ impl<T: Real> Jet<T> {
             self.coefficients.iter().all(|v| v.is_finite()),
             "nonfinite jet; nonsmooth/overflowed query",
         )
+    }
+}
+
+#[cfg(test)]
+mod high_order_tests {
+    use super::*;
+    #[test]
+    fn twelfth_order_coefficients_match_the_exponential_and_resource_bound() {
+        let space = JetSpace::new(2, 12).unwrap();
+        let x = space.variable::<f64>(0.3, 0).unwrap();
+        let y = x.exp();
+        let mut factorial = 1.;
+        for order in 0..=12 {
+            if order > 0 {
+                factorial *= order as f64;
+            }
+            let i = space
+                .indices
+                .iter()
+                .position(|a| a == &vec![order, 0])
+                .unwrap();
+            assert!((y.coefficients[i] - 0.3f64.exp() / factorial).abs() < 1e-12);
+        }
+        let unit = space.variable::<f64>(1., 0).unwrap();
+        let inverse_root = unit.pow(-0.5);
+        let mut coefficient = 1.;
+        for order in 0..=12 {
+            if order > 0 {
+                coefficient *= (-0.5 - (order - 1) as f64) / order as f64;
+            }
+            let i = space
+                .indices
+                .iter()
+                .position(|a| a == &vec![order, 0])
+                .unwrap();
+            assert!((inverse_root.coefficients[i] - coefficient).abs() < 1e-12);
+        }
+        assert!(JetSpace::new(16, 12).is_err());
+        assert!(JetSpace::new(2, 13).is_err());
     }
 }

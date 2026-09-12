@@ -1,514 +1,514 @@
 {
   "I-01": {
     "question": "Which operation moved this walker?",
-    "prediction": "Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw."
+    "prediction": "Recorded donor choices, copying, and kinetic motion explain every displacement. Replay advances through one committed trace without new random draws."
   },
   "I-02": {
     "question": "Does the walker measuring diversity have to be the one copied?",
-    "prediction": "Compare the two networks on the same cloud: distance donors supply measurements, while cloning donors supply possible replacements. Change the sampling law and watch directed choices become reciprocal pairs; an odd leftover follows the self-companion rule."
+    "prediction": "Distance and cloning draws have separate streams. Mutual rounds give reciprocal edges; an odd leftover uses the configured self-companion rule."
   },
   "I-03": {
     "question": "Why can fitness change while a raw reward stays fixed?",
-    "prediction": "A walker's score depends on the eligible population around it. The chapter's local average includes the walker itself; toggle self-inclusion to see why an isolated walker's statistics change. Follow reward and diversity through their regularized channels before changing the fitness exponents."
+    "prediction": "Alive-only regularized statistics determine both positive channels, then exponents determine their product."
   },
   "I-04": {
     "question": "What does fixed population mean when slots lose eligibility?",
-    "prediction": "Start with four survivors, then one, then none. Revival can fill sixteen slots from the surviving states; with one survivor every revival uses that same source, while zero survivors produces the engine's extinction event."
+    "prediction": "Four survivors can repopulate sixteen slots; one survivor supplies every revival. With zero survivors the engine emits its extinction event."
   },
   "I-05": {
     "question": "At which positions are the two force evaluations made?",
-    "prediction": "Track the force–drift–OU–drift–force stages in phase space. The OU stage supplies the friction and innovation variance T(1 − exp(−2γh)); the two B stages supply force kicks, with the last force evaluated at the new position."
+    "prediction": "B changes velocity, A changes position, and O damps velocity while adding Gaussian innovation. The final B uses the post-A position."
   },
   "I-06": {
-    "question": "What changes when favorable reward and the force point to different places?",
-    "prediction": "Move the reward optimum relative to the confining potential and compare three seeded populations. Copying responds to reward through fitness, while acceleration follows the potential gradient; different occupied wells reveal how finite-time trapping and seed variation affect the population you see."
+    "question": "How do separate reward and force choices affect independent gas runs?",
+    "prediction": "Each replica executes the chosen reward and force configuration; endpoint means and recorded reward traces measure their combined effect."
   },
   "I-07": {
-    "question": "Before drawing randomness, how much probability belongs to each accepted copy?",
-    "prediction": "For each possible donor, average the complete clipped fitness comparison over the distance assignments. The resulting accepted-copy weights, together with the probability of staying put, account for the selected walker's whole next copying decision."
+    "question": "How do recorded acceptance probabilities compare with actual copy decisions?",
+    "prediction": "The executed acceptance minus its conditional probability is a martingale difference; its accumulated residual fluctuates around zero."
   },
   "I-08": {
-    "question": "How does donor eligibility change the post-clone position law?",
-    "prediction": "Move the boundary and inspect which donors remain eligible before copying. Persistence and zero-jitter copies appear as probability atoms; positive clone jitter broadens only the donor components. The cumulative position histogram tests this conditional post-clone law, including revival, a single survivor, and extinction."
+    "question": "How do copy and jitter operations move the selected walker?",
+    "prediction": "The recorded stage positions expose each actual replacement and displacement."
   },
   "I-09": {
     "question": "How can relative motion shrink while pair momentum stays fixed?",
-    "prediction": "Reduce the restitution parameter and compare each accepted mutual pair before and after collision. Its coordinate momentum stays fixed, while its relative kinetic energy is multiplied by the square of the restitution parameter."
+    "prediction": "On each accepted mutual pair, coordinate momentum is unchanged and relative kinetic energy is multiplied by a²."
   },
   "I-10": {
-    "question": "Which object changed: donor distance, noise covariance, or the metric?",
-    "prediction": "Change the diagonal noise factor and observe the direction of spreading in the live population. Then compare the prescribed variable metric: its ellipses change from place to place, making the distinction between a constant diffusion matrix and spatial geometry visible."
+    "question": "Do the recorded noise factors predict the coordinate second moments?",
+    "prediction": "Eligible innovation second moments are compared with the diagonal of the recorded factor product."
   },
   "II-01": {
-    "question": "Does geometric error produce an inward copying signal?",
-    "prediction": "Start with a central cluster and two outer clusters, then inspect the high and low fractions, fitness gap, and overlap before interpreting the measured inward drift. Move the reward optimum toward the outer clusters to see which conditions change. The radius ledger also separates displacement about the old center from recentered variance."
+    "question": "How does displacing part of the population change its fitness and copying?",
+    "prediction": "Recorded fitness and selected-donor acceptance probabilities determine the observed copy decisions."
   },
   "II-02": {
-    "question": "Which initial spreads have negative average one-step drift?",
-    "prediction": "Repeat independent updates from each frozen cloud and compare mean drift with its uncertainty. Pure Gaussian jumps have constant positive reference drift. The fitted drift crossing appears only when negative slope, positive intercept, and an in-range crossing are supported; longer runs would measure the corresponding stationary spread."
+    "question": "How much does one population change under independent future random choices?",
+    "prediction": "Replicas start from the same explicit population and use independent execution seeds."
   },
   "II-03": {
-    "question": "Can relabeling an identical cloud change its transport distance?",
-    "prediction": "Shuffle the slot labels and compare label pairing with optimal assignment. The identical clouds still have zero transport cost; translating one cloud adds the squared separation of their centers to the centered matching cost."
+    "question": "How far apart are the coordinate distributions of two executed gas runs?",
+    "prediction": "Sorted matching gives the exact equal-mass one-dimensional quadratic transport cost."
   },
   "II-04": {
-    "question": "How tight is the variance envelope on actual cloud distance?",
-    "prediction": "Follow two live clouds and compare centered transport with the sum of their variances. Identical broad clouds start with zero centered transport and a positive proxy; the envelope leaves room for the exact distance to rise temporarily while remaining below it."
+    "question": "How loose is the independent coupling cost for two measured clouds?",
+    "prediction": "The independent coupling cost bounds the one-dimensional optimal transport cost."
   },
   "II-05": {
-    "question": "Can the velocity mean decay while its variance increases?",
-    "prediction": "Compare the sample velocity mean and variance with their finite-time OU predictions and sampling scales. Shared innovations make paired differences decay exponentially even while each population fluctuates; elapsed friction times show whether the selected run has reached the thermal regime."
+    "question": "Does the exact finite-step law predict the measured velocity observable?",
+    "prediction": "The configured BAOAB matrix propagates the recorded initial population to an exact Gaussian-convolution prediction for mean cos(v)."
   },
   "II-06": {
-    "question": "How do return, survival, and phase-space spreading change near a boundary?",
-    "prediction": "Increase the harmonic stiffness and compare the inward mean motion with the measured survival fraction. One BAOAB noise kick spreads a fixed state along one phase-space direction; composing kicks usually fills both position and velocity directions."
+    "question": "How does a displaced population respond to a confining force and absorbing boundary?",
+    "prediction": "Before-clone eligibility, revivals and final eligibility account for the measured surviving population."
   },
   "II-07": {
-    "question": "Can coupled component inequalities produce a scalar contraction?",
-    "prediction": "Compose the reference cloning and kinetic comparison matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, this affine model approaches its calculated floor; changing the source term changes that floor."
+    "question": "What drift does the complete update produce in the squared position?",
+    "prediction": "The generator readout is the executed moment increment divided by the actual step duration."
   },
   "II-08": {
-    "question": "What settles down while total surviving probability decreases?",
-    "prediction": "Watch surviving mass and conditional shape on separate axes in the finite killed chain. The default run stops when observed or expected survivor counts become small; the optional longer horizon follows the exact law and marks depleted samples. Conditional-probability intervals show how much shape information remains."
+    "question": "How do viable population size and its spatial shape evolve together?",
+    "prediction": "Cloning, revival and absorbing exits all enter the measured population ledger."
   },
   "III-01": {
-    "question": "Where does alive mass go during killing, revival, and copying?",
-    "prediction": "Follow the fluxes between the alive and dead reservoirs. Internal copying cancels from the total alive-mass balance; killing and escaping offspring transfer mass out, while revival brings it back, leaving the combined mass unchanged."
+    "question": "How many walkers are eligible before cloning and after the full update?",
+    "prediction": "Recorded eligibility and revival counts distinguish population replacement from survival."
   },
   "III-02": {
-    "question": "Does the same per-step probability describe the same physical reaction rate?",
-    "prediction": "Halve the timestep while keeping physical duration fixed. A fixed event probability increases the event rate; probability 1 − exp(−a h) approaches rate a. Compare ensemble estimates with their sampling uncertainty, keeping individual jump paths separate from their expectation."
+    "question": "How does the observed number of copies compare with the sum of their probabilities?",
+    "prediction": "Conditional copy probabilities predict event counts for each executed update."
   },
   "III-03": {
-    "question": "How do whole-cloud fluctuations change as the population grows?",
-    "prediction": "Compare active cloning with a real no-copy ensemble at four population sizes. Whole-run uncertainty intervals and the final marginal variance help interpret mean fluctuations; permutation baselines show how much pair-histogram discrepancy appears under independence. A shared initial displacement exposes the covariance that can survive as N grows."
+    "question": "How do independently seeded population means fluctuate under selection?",
+    "prediction": "Within-population spread and across-run endpoint variance measure different sources of variation."
   },
   "III-04": {
-    "question": "Does a stationary numerical law annihilate the continuous generator?",
-    "prediction": "Compare each residual with its exact current-law expectation and sampling error. The paired discrete-minus-continuous residual uses the same cloud in both operators, isolating the timestep correction that raw Monte Carlo scatter can hide. Refine h and increase N to separate these two effects."
+    "question": "Does the actual numerical process have stationary position moments?",
+    "prediction": "Measured increments divided by h identify the finite-step generator without substituting a continuous process."
   },
   "III-05": {
-    "question": "Why does fitness become constant on the stationary support?",
-    "prediction": "Evolve the positive density under the local replicator equation toward the normalized profile proportional to R raised to αD/β. Fitness flattens as the density adjusts. The relaxation comparison uses the same quadrature grid; change resolution to inspect spatial approximation separately."
+    "question": "Does the measured population settle into a narrow fitness range?",
+    "prediction": "The actual reward and diversity channels determine the observed fitness variation."
   },
   "III-06": {
-    "question": "Why do killed diffusion and source-balanced diffusion approach different shapes?",
-    "prediction": "Without a source, the surviving conditional density approaches the principal sine profile. With a constant source, replenishment balances boundary loss in the parabola s x(L − x)/(2D₀). Compare spectral resolutions to distinguish the finite-mode approximation from the exact stationary profile."
+    "question": "How does the spatial distribution change under diffusion, selection and absorption?",
+    "prediction": "The plotted conditional distribution consists of the eligible walkers after executed updates."
   },
   "III-07": {
-    "question": "Does permutation symmetry force the empirical mean to concentrate?",
-    "prediction": "Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Independent means concentrate with variance 1/N; a shared Gaussian component leaves the variance floor ρ. Compare measured variances at their finite-replica sampling scale."
+    "question": "How does shared initial information affect independent runs of the interacting gas?",
+    "prediction": "Across-run population means and within-run spread measure different fluctuations."
   },
   "III-08": {
-    "question": "How often does a sampled tuple repeat a population label?",
-    "prediction": "Draw tuples with replacement and count repeated labels. Compare the frequency and its sampling uncertainty with 1 − (N)ₖ/Nᵏ, which is bounded by k(k − 1)/(2N). Increasing tuple size makes the finite-population correction easier to see."
+    "question": "How often do executed donor selections point to the same source?",
+    "prediction": "The collision statistic follows the actual donor law and its eligible source set."
   },
   "IV-01": {
-    "question": "How does velocity noise remove a position displacement?",
-    "prediction": "Start the harmonic Gaussian away from equilibrium and watch transport create velocity information. The chapter's coefficient matrix defines a modified entropy that stays below its decay envelope; the separate alternative-matrix curve shows why positive coefficients alone do not guarantee decay. Ordinary entropy follows dH/dt = −γθ Iᵥ."
+    "question": "How does a position displacement affect the later velocity law?",
+    "prediction": "The exact configured BAOAB evolution predicts mean cos(v) from the recorded displaced initial population."
   },
   "IV-02": {
-    "question": "Which reference distribution makes contraction visible?",
-    "prediction": "Apply the same Markov kernel to both laws and compare their KL divergence. Select the reset kernel's invariant law or the killed kernel's quasi-stationary law to inspect the appropriate fixed reference; state-dependent killing changes both surviving mass and the normalized shape."
+    "question": "How does a declared spatial histogram change as the gas evolves?",
+    "prediction": "Entropy is computed from recorded walkers with a fixed window and bin definition."
   },
   "IV-03": {
-    "question": "Can mass and shape errors move independently?",
-    "prediction": "Keep normalized shape fixed while changing mass, then move the center at fixed mass. The Hellinger identity separates mass and shape contributions. In the smoothed-atom experiment, vary bandwidth to see how the chosen smoothing changes the density comparison."
+    "question": "How do eligibility and position distribution respond to a displaced population?",
+    "prediction": "Mass is the eligible fraction; the conditional shape is normalized over those eligible walkers."
   },
   "IV-04": {
-    "question": "Which density ratio grows in the tails?",
-    "prediction": "Widen the comparison region and plot both p/q and q/p: for these Gaussians, one ratio stays bounded while the reciprocal grows in the tails. At absorbing endpoints, compare ordinary KDE boundary bias with the normalized Dirichlet estimate and inspect its retained mass."
+    "question": "How does the observation window affect the mass represented by the density?",
+    "prediction": "The density window and its retained mass are explicit parts of the measurement."
   },
   "IV-05": {
-    "question": "Which derivative terms come from the denominator?",
-    "prediction": "Move the query through the frozen cloud and differentiate both the numerator and denominator of the local statistics. Compare with the frozen-denominator result, then inspect the finite-difference resolution table at the largest third-derivative spike to separate coefficient sensitivity from numerical differentiation error."
+    "question": "Which conditional derivative comes from the executed normalization?",
+    "prediction": "Analytic derivatives and scalar finite differences evaluate the same frozen recorded fitness context."
   },
   "IV-06": {
-    "question": "What grows when many walkers occupy one small ball?",
-    "prediction": "Replicate the cloud and compare raw neighbor counts with normalized averages. Donor probability still sums to one and replication preserves the average. Switch between an external query and a fixed self-atom query to see why only the latter carries the self-weight lower bound."
+    "question": "How many effective neighbors enter the local normalization?",
+    "prediction": "The inverse sum of squared normalized weights defines the effective neighbor count on the recorded population."
   },
   "IV-07": {
-    "question": "How do derivative coefficients control a Taylor approximation?",
-    "prediction": "Compare the Taylor polynomial with the exact regularized fitness slice, then vary order and window radius. The tested useful radius reports where the sampled error stays within tolerance; it is a numerical local-accuracy diagnostic. The finite-order coefficient envelope helps explain why a wider window can become inaccurate even at high order."
+    "question": "How accurately do conditional fitness derivatives predict a local displacement?",
+    "prediction": "The polynomial and direct field evaluation share the same recorded donor realization and normalization."
   },
   "IV-08": {
-    "question": "Where does the derivative of the sampling probability appear?",
-    "prediction": "Move one coordinate and enumerate the selected four-walker law. Compare fixed-order greedy pairing with the shuffled-order law used by the engine; each has its own probability derivative. The assignment-fitness and assignment-probability contributions add to the derivative of the averaged field on the same cloud used in IV-05."
+    "question": "How do local fitness and donor width affect actual copying?",
+    "prediction": "The acceptance probability is computed by the executed engine from its selected donor and normalized fitness."
   },
   "IV-09": {
-    "question": "What changes when a bounded ripple creates wells?",
-    "prediction": "Increase the cosine ripple and compare curvature, Gibbs density, and four independently seeded Metropolis chains. Crossing counts and separation between the two starting groups reveal delayed exchange between wells. Time here counts Metropolis transitions; the equilibrium comparison does not assign the kinetic engine's relaxation rate to that sampler."
+    "question": "What spatial distribution does the actual Rastrigin gas produce?",
+    "prediction": "The measured histogram includes cloning and kinetic effects; it is not supplied as a Gibbs distribution."
   },
   "IV-10": {
-    "question": "Which Gaussian law is invariant under a numerical BAOAB step?",
-    "prediction": "Follow two Gaussian laws toward the numerical BAOAB stationary covariance over the displayed physical duration. Refinement makes the velocity-covariance bias fall as h²; the corresponding Gaussian KL bias falls as h⁴ because KL is quadratic in the small covariance error."
+    "question": "Does the finite-step harmonic prediction match an executed run?",
+    "prediction": "The Gaussian-convolution expectation follows the actual BAOAB matrix and recorded initial positions and velocities."
   },
   "IV-11": {
-    "question": "Which Hessian direction gets the largest velocity kick?",
-    "prediction": "Rotate the prescribed Hessian and vary its positive shifted eigenvalues. The smallest eigenvalue gives the broadest kick direction. Compare the predicted covariance with Rust full-factor samples after removing the known BAOAB scaling, using entrywise standard errors to judge the remaining differences."
+    "question": "Which directions receive the largest innovation variance?",
+    "prediction": "The executed spectral metric supplies a factor whose product predicts conditional noise covariance."
   },
   "IV-12": {
-    "question": "Which mean survives row-normalized interactions?",
-    "prediction": "Follow alignment on the frozen graph: the degree-weighted mean stays fixed and the relative-energy ledger measures dissipation. Weakening the bridge slows exchange between clusters. When the gap falls below numerical resolution, use the positive Rayleigh upper bound instead of interpreting a roundoff-scale eigenvalue as a measured rate."
+    "question": "Which recorded stages change velocity when row-normalized viscosity acts?",
+    "prediction": "The mechanical ledger records energy and momentum changes for the actual stages, including the configured viscous force."
   },
   "IV-13": {
-    "question": "Which change most improves the bounded observable cos(v)?",
-    "prediction": "Compare the chapter's stationary sampling term, timestep bias, and absolute-error mixing bound with the measured mean absolute error across replicas. More walkers reduce sampling, refinement reduces bias, and longer duration reduces the mixing term. Individual-replica coverage is a separate diagnostic from a bound on expected error."
+    "question": "How does cos(v) behave in the actual finite-step gas?",
+    "prediction": "Recorded moments and thermostat increments separate realized trajectories from conditional predictions."
   },
   "IV-14": {
-    "question": "What remains when sampling error is removed from refinement?",
-    "prediction": "Compare exact harmonic moments at a fixed physical duration as the BAOAB timestep shrinks. In the resolved range, the finite-time weak error and stationary velocity bias fall quadratically, making the convergence slope visible without Monte Carlo scatter."
+    "question": "How does the endpoint observable change under matched-duration timestep refinement?",
+    "prediction": "Each timestep has its own exact finite-step expectation at the same physical duration."
   },
   "IV-15": {
-    "question": "How does companion reach translate into a width?",
-    "prediction": "Choose a core diameter and normalized-measure reach target, then inspect the sufficient Gaussian width. Pointwise feasibility allows (N − 1)p* ≤ 1, with uniform probabilities at equality. The cloning saturation denominator changes the accepted probability, whose ceiling remains one."
+    "question": "How do population size and saturation change the conditional copy decisions?",
+    "prediction": "Recorded probabilities and realized events expose the actual clipping law."
   },
   "IV-16": {
-    "question": "Do independent replicas show the predicted relaxation?",
-    "prediction": "Compare independently seeded replicas within each experiment group, with mean observables and sampling intervals. The harmonic card supplies the discrete relaxation curve and equilibrium E|x|² = 2; the absorbing comparison records losses and revivals against a matched-seed unbounded control. The population card compares N with 2N at the same physical time."
+    "question": "How do endpoint population means vary across complete seeded runs?",
+    "prediction": "Each replica has an executed configuration and seed; their endpoint means define the reported across-run variance."
   },
   "V-01": {
-    "question": "Which history did this walker inherit?",
-    "prediction": "Accepted copies follow the donor ancestry; slot continuity follows the recipient. Rejected copies preserve ancestry."
+    "question": "Which events inherit this walker’s material, and which follow its numerical slot?",
+    "prediction": "Recorded donor identities determine ancestry; causal-slot reachability and material descendants can differ."
   },
   "V-02": {
-    "question": "How do CST, IG and IA close a triangle?",
-    "prediction": "The oriented CST + IA − IG boundary closes for eligible same-frame interactions."
+    "question": "Do the recorded interaction triangles close?",
+    "prediction": "The oriented triangle boundary has zero vertex boundary; recorded displacement vectors close to numerical precision."
   },
   "V-03": {
-    "question": "Can the archived stages reproduce the visible trajectory?",
-    "prediction": "Absolute anchors reconstruct the recorded coordinates; a continuous spinor rotation changes sign at 2π and returns at 4π."
+    "question": "Can scalar addresses and spinor coordinates recover the executed stages and edges?",
+    "prediction": "Decoding archived scalar components and encoded edge displacements reproduces their recorded values."
   },
   "V-04": {
-    "question": "What survives a change of local frame?",
-    "prediction": "Supplied connection holonomy transforms by conjugation; its trace is invariant, with rebasing required between triangles."
+    "question": "How much does the direction turn around an actual interaction triangle?",
+    "prediction": "For supported nondegenerate closed planar triangles, the product of tangent-turning phases is one."
   },
   "V-05": {
-    "question": "How does fitness curvature shape the metric?",
-    "prediction": "Exact conditional derivatives include population normalization; regularization controls the smallest metric eigenvalue."
+    "question": "Does the executed Hessian agree with differences of the same conditional fitness?",
+    "prediction": "Recorded O-stage Hessians agree with independent scalar finite differences as the difference step is refined within numerical resolution."
   },
   "V-06": {
-    "question": "Can the metric predict one O-step innovation cloud?",
-    "prediction": "Conditional covariance is T(1 − exp(−2γh))g⁻¹; sampling error decreases with independent innovations."
+    "question": "Does the actual O-stage noise factor predict the energy change?",
+    "prediction": "Conditional energy and momentum covariance follow from the recorded damping, input velocity, innovation law and noise factor."
   },
   "V-07": {
-    "question": "How much geometric volume does each cell hold?",
-    "prediction": "For constant metric g, geometric volume equals coordinate area times √det(g); the cells sum to the clipped region."
+    "question": "How does a recorded metric change cell areas?",
+    "prediction": "Cell coordinate areas close over the observation window; geometric areas multiply by the square root of the frozen metric determinant."
   },
   "V-08": {
-    "question": "Which covariance does the anisotropic thermostat approach?",
-    "prediction": "The harmonic BAOAB covariance follows an exact transient recurrence and a discrete Lyapunov equation. Sampling uncertainty and stationary timestep bias are separate."
+    "question": "How does population spread evolve while cloning and the thermostat act?",
+    "prediction": "The O-stage conditional energy identity remains applicable; the full interacting position variance is measured directly."
   },
   "V-09": {
-    "question": "Which walkers share a cell boundary?",
-    "prediction": "Metric Voronoi cells partition the observation window; coincident sites share a geometric cell while keeping distinct identities."
+    "question": "Which recorded walkers share a positive-length cell interface?",
+    "prediction": "The clipped metric cells form a partition; their shared interfaces define the displayed neighbor graph."
   },
   "V-10": {
-    "question": "Did copying or kinetic motion change this interface?",
-    "prediction": "Comparing recorded pre-clone, post-clone and final sites locates neighbor changes by operation."
+    "question": "Did the clone stage or subsequent kinetics alter these interfaces?",
+    "prediction": "Symmetric differences of slot-labeled edge sets isolate interface changes between recorded stages."
   },
   "V-11": {
-    "question": "What volume does a moving cell occupy?",
-    "prediction": "A shared spacetime partition closes the observation slab; refinement resolves moving interfaces and clone jumps use one-sided caps."
+    "question": "What volume belongs to cells following the recorded numerical slots?",
+    "prediction": "A shared slab partition closes over its observation region; cloning replacement occupies zero elapsed time."
   },
   "V-12": {
-    "question": "How much geometric work accompanies each update?",
-    "prediction": "Changed unique interfaces and incident cell counts differ; reconstruction work depends on the realized configuration."
+    "question": "Does maintaining a mesh agree with rebuilding it from the same recorded sites?",
+    "prediction": "Maintained triangulation and independent reconstruction should agree under the same duplicate and degeneracy conventions."
   },
   "V-13": {
-    "question": "What changes continuously when the query point moves?",
-    "prediction": "With alive status and sampled companions frozen, regularized fitness has smooth exact derivatives; changing the stratum is a separate operation."
+    "question": "Which changes belong to a frozen field and which come from the next algorithm step?",
+    "prediction": "Within each recorded conditional context, scalar differences check its Hessian; between-step displacement also includes changes of context."
   },
   "V-14": {
-    "question": "Can a biased cloud integrate volume correctly?",
-    "prediction": "Inverse sampling-density weights recover the known integral; effective sample size reveals weight concentration."
+    "question": "Does the spatial averaging operator preserve a constant field?",
+    "prediction": "Every normalized Gaussian kernel row sums to one, so applying it to a constant returns that constant."
   },
   "V-15": {
-    "question": "Which moments make the kernel a wave operator?",
-    "prediction": "The signed kernel must satisfy its actual cutoff-domain moment equations, including the temporal sign."
+    "question": "How do slot-time changes compare with spatially averaged fitness differences?",
+    "prediction": "Both discrete terms are computed from recorded fitness and positions; their equality or continuum wave interpretation is not assumed."
   },
   "V-16": {
-    "question": "When does a smaller bandwidth improve the estimate?",
-    "prediction": "Bias falls with bandwidth while sampling variance grows; the useful bandwidth balances the two."
+    "question": "Which spatial bandwidth predicts later recorded fitness most accurately?",
+    "prediction": "The displayed RMSE is the direct error on later frames excluded from fitting, evaluated at half, equal and double bandwidth."
   },
   "V-17": {
-    "question": "Which events are related by each order?",
-    "prediction": "Recorded CST reachability and geometric light-cone comparability are distinct relations that can be inspected on the same events."
+    "question": "How often do causal-slot reachability and a chosen chart cone agree?",
+    "prediction": "The comparison counts pairs in both orders and in either order alone; changing cone speed changes the chart relation."
   },
   "V-18": {
-    "question": "What count law belongs to this sampling experiment?",
-    "prediction": "Poisson and fixed-count sampling have different count variances; weighting depends on the specified density."
+    "question": "How does regional occupancy change during the executed run?",
+    "prediction": "Regional density equals the eligible count divided by the square’s coordinate area."
   },
   "V-19": {
-    "question": "How does the comparable-pair fraction encode dimension?",
-    "prediction": "Uniform Alexandrov samples approach comparable-pair fractions 1/2, 8/35 and 1/10 in spacetime dimensions 2, 3 and 4, respectively."
+    "question": "How does the fraction of nearby recorded event pairs change with radius?",
+    "prediction": "The correlation integral is nondecreasing and bounded by one; its logarithmic slope measures scale-dependent clustering in the selected chart."
   },
   "V-20": {
-    "question": "How does the curvature signal compete with sampling noise?",
-    "prediction": "Independent kernel-moment calibration recovers R = 2K for the chosen product family as resolution and sample size improve."
+    "question": "Does recorded scalar curvature agree with contracting the recorded Ricci tensor?",
+    "prediction": "At available smooth metric evaluations, scalar curvature equals the inverse-metric contraction of Ricci."
   },
   "VI-01": {
-    "question": "What happens to a loop trace when you reverse its traversal or rotate its frame?",
-    "prediction": "Closed contractions survive changes of frame; reversing orientation conjugates a unitary loop trace."
+    "question": "What changes when we traverse an interaction loop backwards?",
+    "prediction": "Normalize the recorded phase-space rays x+i v at Fractal Set events, form unit Hermitian-overlap phases, and multiply them around resolved interaction triangles. Compare reversed traversal with complex conjugation and local rephasing with the unchanged loop."
   },
   "VI-02": {
-    "question": "How does changing partner fitness change the two opposing cloning scores?",
-    "prediction": "Weighted opposing cloning scores cancel; accepted positive-score directions exclude each other."
+    "question": "Do the actual clone decisions follow their conditional probabilities?",
+    "prediction": "Reconstruct each ordinary gate probability from the consumed source fitness, donor fitness, saturation, and clipping. Compare recorded probability and realized acceptance, and accumulate the centered gate innovation with predictable variance p(1-p)."
   },
   "VI-03": {
-    "question": "Which measured field combinations survive the Gram quotient, and how do fermionic creation operators act on occupation states?",
-    "prediction": "The positive Gram quotient generates CAR operators and determinant inner products."
+    "question": "How many independent modes does the measured covariance support?",
+    "prediction": "Center complete-frame phase-space means, diagonalize their empirical Gram matrix, and construct creation and annihilation matrices on its retained positive eigenspace. Compare their anticommutator with the retained Gram matrix and report discarded covariance."
   },
   "VI-04": {
-    "question": "How does increasing the contraction rate change the channel's mode and exterior-product defects?",
-    "prediction": "The lifted contraction preserves the vacuum and has a computable multiplicative defect."
+    "question": "Does a two-time field description predict later cross moments?",
+    "prediction": "Estimate source, target, and cross covariances from a training prefix, whitening the two marginals separately. Construct the fermionic channel associated with the measured contraction and check its algebra independently of later cross-moment errors."
   },
   "VI-05": {
-    "question": "How does regional covariance determine the mixed fermionic anticommutator?",
-    "prediction": "Regional anticommutators are controlled by whitened cross-covariance."
+    "question": "How strongly do the two measured regions fluctuate together?",
+    "prediction": "Use paired pre-clone frames containing eligible walkers on both sides of the spatial split. Their regional velocity means determine a normalized cross-covariance, which is compared with an explicit two-mode mixed CAR anticommutator."
   },
   "VI-06": {
-    "question": "What happens to an exterior product when its two observables are proportional?",
-    "prediction": "Independent replica wedges give determinant correlations; repeating a wedge vector gives zero."
+    "question": "When does an antisymmetrized product vanish?",
+    "prediction": "Evaluate centered whole-frame observables on all pairs of draws from their finite empirical record law. Compare the normalized squared two-record determinant sum with the corresponding Gram determinant, alongside the ordinary same-frame product."
   },
   "VI-07": {
-    "question": "How do sampling density, bandwidth, and sample count change a kernel estimate of the continuum operator?",
-    "prediction": "Bandwidth refinement exposes the density and density-gradient terms in the continuum operator."
+    "question": "Where does quadratic variation enter a complete gas update?",
+    "prediction": "Measure linear and quadratic position increments on slots eligible at both endpoints. Compare the direct quadratic increment with the sum of 2 x times the displacement and the squared displacement, divided by the executed timestep."
   },
   "VI-08": {
-    "question": "How do the force threshold and velocity phase change a recorded color's validity and normalization?",
-    "prediction": "Valid three-component colors have unit norm; subthreshold forces are zero-extended by their mask."
+    "question": "Which walker records supply a valid color?",
+    "prediction": "Build normalized color observables from recorded force and velocity at their designated kinetic stage. Export their validity masks, norms, and associated event identities."
   },
   "VI-09": {
-    "question": "Which color coordinates stay fixed under a common SU(3) frame transformation?",
-    "prediction": "Common SU(3) transformations preserve Gram and determinant coordinates."
+    "question": "Which color coordinates survive a common basis change?",
+    "prediction": "Compute inner products, determinant-based quantities, and invariant coordinates from recorded colors. Apply the configured unitary basis transformation and compare the resulting invariant residuals."
   },
   "VI-10": {
-    "question": "How does the joint companion law change two-hop assignment probabilities and their fluctuations?",
-    "prediction": "Two-hop assignments and fluctuations follow the actual joint companion law."
+    "question": "Which donor actually enters a companion observable?",
+    "prediction": "Resolve each recorded companion reference to its immutable source and construct the associated color doublet and overlap measurements. Keep source validity and historical provenance with the result."
   },
   "VI-11": {
-    "question": "When does a mismatch between attribution and transport produce nonzero holonomy?",
-    "prediction": "Coherent frames are flat while attribution mismatch can produce nonzero holonomy."
+    "question": "What geometric phase is carried by recorded interactions?",
+    "prediction": "Construct normalized phase-space rays at event vertices and multiply their overlap phases around actual interaction triangles. Report loop phases, reversal residuals, and local rephasing residuals."
   },
   "VI-12": {
-    "question": "How much predictive information returns after a channel has discarded part of the state?",
-    "prediction": "The two-step memory defect equals BC and vanishes for the lumpable fixture."
+    "question": "Does a compressed predictor retain enough state to predict multiple steps?",
+    "prediction": "Partition the chosen frame descriptor using training data, estimate transition laws, and compare compressed evolution with retained-channel predictions and chronological holdout scores."
   },
   "VI-13": {
-    "question": "Does a finer descriptor partition improve prediction on observations held out from training?",
-    "prediction": "Refining descriptors recovers multitime predictions of the full finite law."
+    "question": "Does a finer descriptor partition improve prediction?",
+    "prediction": "Fit partitions and transition estimates using the training prefix, then evaluate prediction losses on later recorded frames. Report support and temporal prediction discrepancies as the partition changes."
   },
   "VI-14": {
-    "question": "Which increments cancel when you account for every write in a complete pair update?",
-    "prediction": "Full group writes determine increments; paired cancellation requires the stated pairing."
+    "question": "Which operations change the measured population totals?",
+    "prediction": "Reconstruct accepted copying and subsequent recorded transformations using their actual donors and stages. Compare measured increments with the complete write ledger and identify conditions under which paired contributions cancel."
   },
   "VI-15": {
-    "question": "How do generator normalization and a symmetric phase law affect coupling and CP-odd statistics?",
-    "prediction": "Casimir factors obey their normalization and CP-odd averages vanish under a symmetric law."
+    "question": "Does the full algorithm obey the configured parity transformation?",
+    "prediction": "Execute independently seeded baseline/transformed pairs with matched random addresses. Reflect positions, velocities, and symmetric innovations; compare positions, velocities, clone decisions, donor sets, and eligibility after complete updates."
   },
   "VI-16": {
-    "question": "How does changing a source recover descriptor moments from a normalized generating function?",
-    "prediction": "Marginalized history weights normalize and source derivatives recover moments."
+    "question": "How does a source weight the observed trajectory sample?",
+    "prediction": "Form a finite empirical generating function from bounded terminal-position descriptors of recorded steps. Compare direct source derivatives with finite differences and check normalization at zero source; retain execution-action components separately."
   },
   "VI-17": {
-    "question": "How do companion choices, clone gates, and Gaussian factors add to the action of an executed trace?",
-    "prediction": "Executed-law factors reconstruct path weights including state-dependent Gaussian determinants."
+    "question": "Which random choices contribute to an execution likelihood?",
+    "prediction": "Evaluate recorded companion outcomes, clone gates, revivals, and innovations under their executed conditional laws. Plot additive negative-log contributions, with the probability carrier and coverage stated for each component."
   },
   "VI-18": {
-    "question": "Do recorded kinetic increments match the covariance and fourth moments of their Gaussian factors?",
-    "prediction": "Actual O-stage increments follow their conditional covariance and fourth-moment prediction."
+    "question": "Does the executed innovation law have the predicted moments?",
+    "prediction": "Read each eligible recorded diffusion factor and raw innovation. Compute second and fourth moments using the factor rank, source mean, and Gaussian or standardized-uniform fourth cumulant, and compare with executed samples."
   },
   "VI-19": {
-    "question": "Does directly shifting future Gaussian noise agree with likelihood reweighting of independent continuations?",
-    "prediction": "Shifted-noise reruns agree with Gaussian reweighting and Hermite response."
+    "question": "Does likelihood reweighting predict a real source intervention?",
+    "prediction": "Fork a complete checkpoint into independent continuation groups. Shift one addressed Gaussian innovation in direct reruns and compare their final observable with likelihood-weighted baseline reruns, retaining all subsequent selection and kinetic operations."
   },
   "VI-20": {
-    "question": "How much source information remains after the Gaussian outcome is compressed to a descriptor?",
-    "prediction": "Gaussian source energy gives KL; conditioning on a descriptor reduces score information."
+    "question": "How much time asymmetry appears in a measured descriptor?",
+    "prediction": "Bin whole-frame mean position using a training-only interval, count actual consecutive transitions, and compare the joint table with its transpose using an explicit pseudocount. Report held-out prediction and supported-row contraction diagnostics."
   },
   "VI-21": {
-    "question": "How does a joint descriptor law split into its geometry marginal and conditional fiber law?",
-    "prediction": "Joint action splits into marginal geometry and conditional fiber contributions."
+    "question": "How does a joint recorded law split into marginal and conditional laws?",
+    "prediction": "Build a joint histogram of bounded mean-position and accepted-clone-fraction descriptors. Compute marginal and conditional distributions from the same counts and check normalization and action decomposition on supported cells."
   },
   "VI-22": {
-    "question": "Do independent continuation groups agree on an observable's conditional drift?",
-    "prediction": "Observable increments split into conditional drift and a centered martingale increment."
+    "question": "Do complete continuations obey the predicted thermostat moments?",
+    "prediction": "Compare independent continuation groups for the full observable increment. At each actual thermostat input, also compute analytic conditional momentum and energy moments from the configured damping, diffusion factor, innovation law, and source."
   },
   "VI-23": {
-    "question": "How does a node gauge variation cancel against the discrete Wilson-action divergence?",
-    "prediction": "Gauge-orbit action variation and node divergence cancel."
+    "question": "Why do local phase choices cancel around an executed loop?",
+    "prediction": "Rephase the measured event rays independently and compare the product of transformed overlap links with the measured loop value. Report the local phase-covariance residual."
   },
   "VI-24": {
-    "question": "How does a shrinking plaquette recover the curvature of a noncommuting connection?",
-    "prediction": "Small-loop transport approaches curvature with the stated refinement error."
+    "question": "Does the derivative of a measured loop action match its direct variation?",
+    "prediction": "Evaluate 1 minus the real part of the holonomy on actual recorded triangles. Perturb one edge phase and compare a centered finite difference with the imaginary part of the measured loop."
   },
   "VI-25": {
-    "question": "How does timestep refinement change the decay rate inferred from a transition eigenvalue?",
-    "prediction": "Finite-step decay rates approach generator rates under timestep refinement."
+    "question": "How distinguishable are the supported transition rows?",
+    "prediction": "Estimate the mean-position descriptor channel from training transitions and compute its supported-row Dobrushin coefficient. Evaluate later transitions with a held-out Brier score."
   },
   "VI-26": {
-    "question": "Which covariance and product-increment terms are needed to balance a cloning collision?",
-    "prediction": "Joint collision covariance and finite-step product terms complete the balance."
+    "question": "Where do momentum and energy enter during copying?",
+    "prediction": "Measure all-slot unit-mass momentum and kinetic energy at the recorded cloning and restitution stages. Compare direct changes with their stage reconstruction."
   },
   "VI-27": {
-    "question": "How do burn-in and survival normalization affect a finite killed chain's conditional law?",
-    "prediction": "Survival-conditioned windows normalize by the QSD survival factor."
+    "question": "How do population support and conditional radius evolve together?",
+    "prediction": "Plot actual eligible fraction, its net increments, and the mean squared radius conditioned on eligible walkers in each recorded frame."
   },
   "VI-28": {
-    "question": "What sign does the specified reflected word have in the finite reflection calculation?",
-    "prediction": "The labeled reflected word has the predicted negative value."
+    "question": "Is the measured temporal reflection form positive?",
+    "prediction": "Build a centered past/future bilinear matrix from consecutive same-epoch frame windows, symmetrize it explicitly, and display its eigenvalues and window count."
   },
   "VI-29": {
-    "question": "How can a triangle have a phase defect while its scalar outer plaquette cancels?",
-    "prediction": "Triangle defects can be nonzero while the scalar outer plaquette cancels exactly."
+    "question": "Do event identities and orientations give a consistent face observable?",
+    "prediction": "Use actual Fractal Set triangles and their boundary-edge references to form oriented phase-space-ray products. Check orientation reversal and local phase covariance on resolved faces."
   },
   "VI-30": {
-    "question": "How does translating a configuration change a readout tied to a fixed spatial regulator?",
-    "prediction": "A fixed anchored regulator changes translated readouts; co-transformation restores its geometric relation."
+    "question": "What must move with the population for translation to be a symmetry?",
+    "prediction": "Run baseline/transformed pairs. In translated-system mode shift the population, reward optimum, force potential, and box boundaries together; in fixed-objective mode shift only initial positions."
   },
   "VI-31": {
-    "question": "Why can multiplication readouts commute while regional fermionic operators retain a covariance-dependent defect?",
-    "prediction": "Multiplication readouts commute while CAR locality depends on covariance."
+    "question": "How does changing one walker affect the subsequent swarm?",
+    "prediction": "Perturb one initial slot coordinate in one member of each independently seeded pair, then execute all donor choices, cloning, history, force, and noise operations. Measure mean response, RMS difference, and the fraction of affected slots."
   },
   "VI-32": {
-    "question": "How do descriptor choice and compression affect the full pipeline from recorded observations to temporal predictions?",
-    "prediction": "The same selected law connects descriptors, transitions, CAR words and source response."
+    "question": "Which recorded descriptors support a useful dynamical reduction?",
+    "prediction": "Fit channels for measured whole-frame descriptors, evaluate later predictions, and compare compressed multi-step evolution with the retained description. Keep training partitions and lag conventions explicit."
   },
   "VI-33": {
-    "question": "How do spinor determinants distinguish null vectors from vectors with nonzero Lorentz norm?",
-    "prediction": "The sigma-map determinant equals the Lorentz norm and null data factorize."
+    "question": "What does the spinor determinant identity measure here?",
+    "prediction": "Embed three recorded velocity components as the explicitly null four-vector (norm of v, v), form its two-by-two Hermitian bispinor, and compare its determinant with zero."
   },
   "VI-34": {
-    "question": "How do a recorded source triplet and its velocity scale determine effective twistor readouts?",
-    "prediction": "Source triplets determine the effective spinors and scalar/vector/tensor channels."
+    "question": "Which event triplets define the twistor field?",
+    "prediction": "Resolve actual companion triplets, construct their twistor operators, and retain validity, source identities, and their geometric invariants with the measurements."
   },
   "VI-35": {
-    "question": "How do lag correlations change when companion identities are frozen at the source or selected again at the sink?",
-    "prediction": "Fixed source companion slots and sink-reselected companions give distinct lag readouts."
+    "question": "Does a correlation follow the intended source identity across time?",
+    "prediction": "Freeze each source triplet, resolve its sink readout at the requested lag, and retain validity counts and event identities for the source-frozen correlation."
   },
   "VI-36": {
-    "question": "Which complex temporal modes support a stable decay fit and predict a later block of observations?",
-    "prediction": "Known finite transfer modes produce their predicted lag decay rates."
+    "question": "Does a stable damped-mode model predict the measured correlations?",
+    "prediction": "Compute complex phase-space or twistor correlations with the selected frame or source-pair aggregation. Fit complex exponentials and damped-oscillation candidates on training lags; report trimmed-window stability, held-out complex errors, and a zero-predictor comparison."
   },
   "VI-37": {
-    "question": "How does ambient transport acquire a time component in an expanding geometry?",
-    "prediction": "Ambient transport includes time-space connection terms when the spatial metric changes."
+    "question": "Does numerical transport preserve the measured metric norm?",
+    "prediction": "Reconstruct the selected conditional fitness metric from its executed donor context. Integrate its Levi-Civita transport along segments joining recorded positions and compare coarse and refined transport and metric-norm residuals."
   },
   "VI-38": {
-    "question": "How does dividing loop holonomy by its enclosed area recover curvature?",
-    "prediction": "Normalized small-loop holonomy approaches the curvature action."
+    "question": "What happens when metric transport returns to its starting point?",
+    "prediction": "Construct a closed path from the selected recorded displacement and a neighboring recorded point. Integrate conditional-metric transport at two resolutions and measure loop departure from the identity and norm preservation."
   },
   "VI-39": {
-    "question": "How do the query point and metric regularizer change conditional fitness curvature across differentiation methods and arithmetic backends?",
-    "prediction": "Whitened cubic contractions recover Ricci/scalar curvature of a smooth Hessian metric."
+    "question": "How does fitness normalization and clipping shape curvature?",
+    "prediction": "Reconstruct conditional fitness derivatives using the actual donor and normalization context, then compute the configured metric, connection, and curvature tensors. Independently refine spatial finite differences until successive numerical scalar and Ricci estimates stabilize, and display their discrepancy with the analytic jet."
   },
   "VI-40": {
-    "question": "Which transport directions are needed to identify every connection coefficient?",
-    "prediction": "Independent transport directions determine the connection; deficient designs lose rank."
+    "question": "Are the connection coefficients numerically resolved?",
+    "prediction": "Compute centered metric derivatives at two finite-difference scales in the executed conditional context. Form Christoffel coefficients and compare metric-compatibility and derivative-refinement residuals."
   },
   "VI-41": {
-    "question": "How do expansion, shear, vorticity, curvature, and acceleration balance in expanding and rotating congruences?",
-    "prediction": "Expansion evolution equals the sum of shear, vorticity, Ricci and acceleration terms."
+    "question": "Which executed stages change the cloud volume?",
+    "prediction": "Define volume by the square root of the determinant of regularized eligible-position covariance. Compare its endpoint log-volume increment with the sum of recorded stage increments."
   },
   "VI-42": {
-    "question": "How does boundary flux separate material expansion from a reconstructed cell's volume change?",
-    "prediction": "Material and reconstructed-cell expansion differ by a measurable boundary flux."
+    "question": "Does a change in population spread come from transport or copying?",
+    "prediction": "Plot the regularized covariance length scale together with direct log-volume increments and their executed-stage reconstruction. Keep eligible counts in the budget."
   },
   "VI-43": {
-    "question": "How do initial contraction, Ricci curvature, and shear change the focusing time?",
-    "prediction": "Contracting irrotational congruences obey the Riccati bound and focusing time."
+    "question": "Does a proposed focusing balance describe observed expansion?",
+    "prediction": "Measure theta as the finite-step log-volume increment divided by timestep, then display its finite difference plus theta squared divided by dimension."
   },
   "VI-44": {
-    "question": "How do angle deficits and boundary turning recover the topology of a disk or a closed sphere?",
-    "prediction": "Angle deficits plus boundary turning recover Euler characteristic."
+    "question": "Do the recorded event and edge counts satisfy their graph identity?",
+    "prediction": "Build the Fractal Set from executed events and edges, count connected components and graph cycle rank, and compare V minus E with components minus cycle rank. Report resolved edges and interaction triangles."
   },
   "VI-45": {
-    "question": "Do independent gas continuations agree on the mean and covariance of a metric increment at a fixed probe?",
-    "prediction": "Conditional drift and all cross-stage covariance terms predict independent replica differences."
+    "question": "Can independent continuations predict the metric seen by a moving slot?",
+    "prediction": "Fork a complete checkpoint into calibration and validation groups. Measure the six packed metric components at the material or fixed probe, and decompose increments into conditional-field change, clone-induced probe displacement, and subsequent motion."
   },
   "VI-46": {
-    "question": "How does changing interaction range or deformation change pressure and affine stiffness?",
-    "prediction": "Dilation pressure and affine jump stiffness have their own normalization-dependent scaling."
+    "question": "How do impulse and transport combine in the virial increment?",
+    "prediction": "For each recorded stage transition, compare the direct change in the eligible zero-extended x dot v sum with x dot delta-v plus delta-x dot the final velocity."
   },
   "VI-47": {
-    "question": "How do wavelength, diffusion, and jump rate determine a density wave's decay?",
-    "prediction": "Fourier amplitudes decay with the exact diffusion-plus-jump multiplier."
+    "question": "Does an observed density mode oscillate, decay, or change support?",
+    "prediction": "Compute the real part, imaginary part, and magnitude of the empirical Fourier mode from actual positions at the selected wavenumber. Export fixed-capacity finite-step increments with their eligibility convention."
   },
   "VI-48": {
-    "question": "How do timestep and friction change thermostat covariance, energy injection, and fourth moments?",
-    "prediction": "Actual thermostat scaling determines covariance, energy injection and fourth-moment fluctuations."
+    "question": "Does the thermostat produce its predicted finite-step moments?",
+    "prediction": "Use the actual A1 input, O-stage damping, diffusion factor, and innovation law to predict conditional momentum and kinetic-energy increments. Compare with recorded O-stage realizations and their stage coverage."
   },
   "VI-49": {
-    "question": "How do temperature, stiffness, volume, and mobility affect Gaussian mode fluctuations and relaxation?",
-    "prediction": "Mode variance is temperature divided by stiffness and relaxation also depends on mobility."
+    "question": "Does the measured mode decomposition account for all kinetic energy?",
+    "prediction": "Apply an orthonormal Fourier transform over the explicitly ordered eligible walker slots. Compare summed mode energies with direct unit-mass kinetic energy at each frame."
   },
   "VI-50": {
-    "question": "How does the ratio of attractive and mode-pressure coefficients move the pressure zero?",
-    "prediction": "The pressure zero follows the dimension-dependent coefficient ratio."
+    "question": "How do cloud size and velocity fluctuations evolve together?",
+    "prediction": "Measure position covariance radius, RMS speed, centered velocity variance, and the corresponding crossing-time diagnostic from eligible records."
   },
   "VI-51": {
-    "question": "How do recorded stage transfers balance mechanical energy, and how does a supplied stress tensor determine the Einstein trace?",
-    "prediction": "Executed stage transfers telescope and the Einstein trace gives the stated Ricci contraction."
+    "question": "Which operations supply the measured mechanical increments?",
+    "prediction": "Resolve cloning, restitution, jitter, total-force work, thermostat, transport, boundary, and eligibility contributions using recorded stages. Compare exact balance ledgers with direct changes and retain the quantities needed for stress diagnostics."
   },
   "VI-52": {
-    "question": "Does a chosen episode set meet every terminal ancestry chain, and does a spatial cut equal its crossing capacity?",
-    "prediction": "Valid separators cover terminal chains and nonnegative cuts satisfy their graph identities."
+    "question": "Which actual interactions cross a chosen slot partition?",
+    "prediction": "Count selected directed edges crossing nested slot partitions, separating distance, cloning, and their historical channels. Project retained event edges to slot labels with unit capacity per executed selection."
   },
   "VI-53": {
-    "question": "How do state perturbations and forward/reverse path probabilities determine their respective relative entropies?",
-    "prediction": "Relative entropy satisfies modular and path-likelihood identities with declared support."
+    "question": "How asymmetric is the measured forward transition table?",
+    "prediction": "Build a training-prefix whole-frame descriptor table with explicit symmetric pseudocounts and compare it with its transpose through KL contributions."
   },
   "VI-54": {
-    "question": "How does a rescaled Gaussian cut approach density-weighted perimeter as its range shrinks?",
-    "prediction": "Rescaled Gaussian cut energy approaches density-squared weighted perimeter."
+    "question": "How does the actual selected-edge cut change with region size?",
+    "prediction": "Scan nested slot regions and count directed executed interactions crossing each partition. Compare cut differences with the incident-edge first variation."
   },
   "VI-55": {
-    "question": "How do population size and interaction range change the mean and uncertainty of a random spatial cut?",
-    "prediction": "Exact pair counting and shared-index covariance determine finite-population scaling."
+    "question": "How much of the observed donor support is used?",
+    "prediction": "Count selected target slots for each source slot, form empirical target frequencies, and compare their entropy with the logarithm of observed support."
   },
   "VI-56": {
-    "question": "What changes when you vary a boundary shape, a spatial density, or a quantum state while fixing the other inputs?",
-    "prediction": "Density, boundary, and state perturbations have distinct first variations."
+    "question": "Can the next cut increment be predicted from incident edges?",
+    "prediction": "Add one slot to a nested partition and compare its measured directed-cut increment with the signed count of incident selected edges."
   },
   "VI-57": {
-    "question": "How closely does a Gibbs candidate satisfy the killed kernel's eigenmeasure equation?",
-    "prediction": "The killed-kernel eigenmeasure residual controls candidate QSD error."
+    "question": "Does a simple fitted energy law predict later records?",
+    "prediction": "Fit an exponential energy-bin hypothesis using the training mean kinetic energy. Compare it with the chronological held-out energy histogram, assigning the complete upper tail to the final bin."
   },
   "VI-58": {
-    "question": "How do static tilts and transition perturbations produce their respective response and Fisher-information formulas?",
-    "prediction": "Static covariance and Poisson response follow their respective perturbation laws."
+    "question": "How does reweighting recorded field observations change their mean?",
+    "prediction": "Exponentially tilt retained whole-frame mean-position observations, compute the tilted mean and variance, and compare the derivative of the mean with that variance by finite differences."
   },
   "VI-59": {
-    "question": "Which Euclidean period removes a horizon's cone defect, and which curvature radius matches the chosen AdS constant?",
-    "prediction": "Cone regularity fixes the Euclidean period and AdS curvature fixes the cosmological constant."
+    "question": "How deep is the retained causal history of an event?",
+    "prediction": "Follow actual ancestry and persistence edges and plot event counts by maximum retained ancestral depth. Report the deepest recorded chain."
   },
   "VI-60": {
-    "question": "How does a minimum-cut interface move when the density valley changes and the grid is refined?",
-    "prediction": "Constrained graph cuts approach the weighted surface minimization problem."
+    "question": "What is the narrowest directed connection between two slot regions?",
+    "prediction": "Project executed selected-edge counts to a directed capacity graph. Compute maximum flow between the selected source and sink slots, recover the minimum partition, and compare its crossing capacity with the flow."
   },
   "VI-61": {
-    "question": "How can a conditional law remain stationary while its surviving probability mass decreases?",
-    "prediction": "A QSD preserves the conditional law while survival decays."
+    "question": "Does the measured distribution settle over the available run?",
+    "prediction": "Fix position histogram bins using the training prefix, then plot frame entropy, distance to the pooled training distribution, and successive-frame distance. Retain eligible counts."
   },
   "VI-62": {
-    "question": "How does reducing interaction range relative to curvature radius improve a local flat approximation?",
-    "prediction": "Local geometric approximations improve as interaction range decreases relative to curvature radius."
+    "question": "Does the local Ricci tensor resemble constant curvature?",
+    "prediction": "Reconstruct actual conditional fitness curvature, report scalar curvature and its absolute scalar-derived radius, and compare Ricci with scalar curvature times the metric divided by dimension."
   },
   "VI-63": {
-    "question": "How do de Sitter, Milne, and forced expansion histories satisfy their respective evolution equations?",
-    "prediction": "De Sitter and Milne expansion satisfy different complete curvature balances."
+    "question": "What expansion history does the actual population produce?",
+    "prediction": "Measure the covariance volume scale and its finite-step log-volume expansion from recorded eligible positions, with the covariance ridge and stage budget exported."
   },
   "VI-64": {
-    "question": "How does revealing a predictive bit change retained information and predictive-state complexity?",
-    "prediction": "The finite-bit example separates retained information from predictive-state complexity."
+    "question": "How informative is an interaction source region about its target?",
+    "prediction": "Form the joint distribution of source and target region labels using actual selected-edge counts. Compute marginal and joint entropies, conditional target entropy, mutual information, and the information chain-rule residual."
   },
   "VI-65": {
-    "question": "How does perturbing a lumpable generator change the error of its closed evolution?",
-    "prediction": "Lumpable generators give closed evolution and perturbed closure has a bounded residual."
+    "question": "Does iterating a measured descriptor channel predict later states?",
+    "prediction": "Fit a pseudocount-regularized transition matrix for whole-frame mean position on the training prefix. Compare one-step and iterated two-step predictions with a training-marginal baseline on the chronological suffix."
   },
   "VI-66": {
-    "question": "What cosmological constant, energy density, mass density, and pressure follow from the chosen Hubble and density inputs?",
-    "prediction": "Declared Hubble and density inputs determine Lambda, energy, mass density and pressure."
+    "question": "How large is one algorithmic step in the run's own units?",
+    "prediction": "Measure an RMS covariance length and speed, form their crossing time, and report timestep times speed divided by length alongside eligible fraction. Export scale degeneracy when a required denominator vanishes."
   }
 }

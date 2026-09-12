@@ -1,7 +1,8 @@
 {
-  "experiment": 22,
+  "id": "VI-22",
+  "seed": 7,
+  "steps": 96,
   "parameters": {
-    "seed": 7,
     "replicas": 32,
     "horizon": 4
   }

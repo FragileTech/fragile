@@ -1,0 +1,808 @@
+{
+  "description": "Measured comparisons from completed Rust lecture sessions. Default chapter results use seed 7 and 96 baseline steps. Continuation follow-ups use 32 independent continuations per calibration/validation group and horizon 4.",
+  "continuation_followups": [
+    {
+      "request": {
+        "id": "VI-22",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 4,
+          "replicas": 32,
+          "walkers": 32
+        },
+        "seed": 7,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Calibrated conditional increment",
+          "unit": "momentum",
+          "value": -2.628153928421889
+        },
+        {
+          "label": "Calibration standard error",
+          "unit": "momentum",
+          "value": 0.39797998826764225
+        },
+        {
+          "label": "Validation increment",
+          "unit": "momentum",
+          "value": -2.9626348550315873
+        },
+        {
+          "label": "Validation drift residual",
+          "unit": "momentum",
+          "value": -0.3344809266096984
+        },
+        {
+          "label": "Independent residual standard error",
+          "unit": "momentum",
+          "value": 0.5102707665310806
+        },
+        {
+          "label": "Analytic O momentum martingale mean",
+          "unit": "momentum",
+          "value": 0.2936444097471385
+        },
+        {
+          "label": "Analytic O momentum mean standard error",
+          "unit": "momentum",
+          "value": 0.22182321409751743
+        },
+        {
+          "label": "Analytic O energy martingale mean",
+          "unit": "energy",
+          "value": -0.10517911376478631
+        },
+        {
+          "label": "Analytic O energy mean standard error",
+          "unit": "energy",
+          "value": 0.12696307377263144
+        }
+      ],
+      "analytic_o_prediction": {
+        "covered_o_stages": 256,
+        "energy_mean": -0.10517911376478631,
+        "energy_oracle_standard_error": 0.12696307377263144,
+        "energy_replica_sem": 0.11916142152459257,
+        "momentum_mean": 0.2936444097471385,
+        "momentum_oracle_standard_error": 0.22182321409751743,
+        "momentum_replica_sem": 0.2335284144091139,
+        "prediction": "Conditional BAOAB moments from each actual A1 state and recorded factor before its O innovation; all earlier clone, donor, force and boundary effects remain in that state.",
+        "sampling_unit": "A full independently seeded continuation; predictable quadratic variations sum over its O stages. Independent replicas supply the comparison of realized second moments with predicted variation.",
+        "status": "available"
+      }
+    },
+    {
+      "request": {
+        "id": "VI-22",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 4,
+          "replicas": 32,
+          "walkers": 32
+        },
+        "seed": 0,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Calibrated conditional increment",
+          "unit": "momentum",
+          "value": 1.7320796142130817
+        },
+        {
+          "label": "Calibration standard error",
+          "unit": "momentum",
+          "value": 0.4527369649424859
+        },
+        {
+          "label": "Validation increment",
+          "unit": "momentum",
+          "value": 1.0481767206775356
+        },
+        {
+          "label": "Validation drift residual",
+          "unit": "momentum",
+          "value": -0.683902893535546
+        },
+        {
+          "label": "Independent residual standard error",
+          "unit": "momentum",
+          "value": 0.5646621366488003
+        },
+        {
+          "label": "Analytic O momentum martingale mean",
+          "unit": "momentum",
+          "value": 0.24117964660087193
+        },
+        {
+          "label": "Analytic O momentum mean standard error",
+          "unit": "momentum",
+          "value": 0.22182321409751743
+        },
+        {
+          "label": "Analytic O energy martingale mean",
+          "unit": "energy",
+          "value": -0.0590748238065226
+        },
+        {
+          "label": "Analytic O energy mean standard error",
+          "unit": "energy",
+          "value": 0.13747609442020395
+        }
+      ],
+      "analytic_o_prediction": {
+        "covered_o_stages": 256,
+        "energy_mean": -0.0590748238065226,
+        "energy_oracle_standard_error": 0.13747609442020395,
+        "energy_replica_sem": 0.14987634239100223,
+        "momentum_mean": 0.24117964660087193,
+        "momentum_oracle_standard_error": 0.22182321409751743,
+        "momentum_replica_sem": 0.23242331492054208,
+        "prediction": "Conditional BAOAB moments from each actual A1 state and recorded factor before its O innovation; all earlier clone, donor, force and boundary effects remain in that state.",
+        "sampling_unit": "A full independently seeded continuation; predictable quadratic variations sum over its O stages. Independent replicas supply the comparison of realized second moments with predicted variation.",
+        "status": "available"
+      }
+    },
+    {
+      "request": {
+        "id": "VI-22",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 4,
+          "replicas": 32,
+          "walkers": 32
+        },
+        "seed": 516,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Calibrated conditional increment",
+          "unit": "momentum",
+          "value": 0.8878375559676968
+        },
+        {
+          "label": "Calibration standard error",
+          "unit": "momentum",
+          "value": 0.4114675852256608
+        },
+        {
+          "label": "Validation increment",
+          "unit": "momentum",
+          "value": 0.5148443731283122
+        },
+        {
+          "label": "Validation drift residual",
+          "unit": "momentum",
+          "value": -0.37299318283938454
+        },
+        {
+          "label": "Independent residual standard error",
+          "unit": "momentum",
+          "value": 0.591303899553412
+        },
+        {
+          "label": "Analytic O momentum martingale mean",
+          "unit": "momentum",
+          "value": -0.07387320706316798
+        },
+        {
+          "label": "Analytic O momentum mean standard error",
+          "unit": "momentum",
+          "value": 0.22182321409751743
+        },
+        {
+          "label": "Analytic O energy martingale mean",
+          "unit": "energy",
+          "value": 0.0361456485371008
+        },
+        {
+          "label": "Analytic O energy mean standard error",
+          "unit": "energy",
+          "value": 0.1420170492904249
+        }
+      ],
+      "analytic_o_prediction": {
+        "covered_o_stages": 256,
+        "energy_mean": 0.0361456485371008,
+        "energy_oracle_standard_error": 0.1420170492904249,
+        "energy_replica_sem": 0.12144708805022841,
+        "momentum_mean": -0.07387320706316798,
+        "momentum_oracle_standard_error": 0.22182321409751743,
+        "momentum_replica_sem": 0.19824654294318217,
+        "prediction": "Conditional BAOAB moments from each actual A1 state and recorded factor before its O innovation; all earlier clone, donor, force and boundary effects remain in that state.",
+        "sampling_unit": "A full independently seeded continuation; predictable quadratic variations sum over its O stages. Independent replicas supply the comparison of realized second moments with predicted variation.",
+        "status": "available"
+      }
+    }
+  ],
+  "curvature_refinement": {
+    "request": {
+      "id": "VI-39",
+      "seed": 7,
+      "steps": 96,
+      "parameters": {}
+    },
+    "context": "Same final archived conditional query, immutable donor source and differentiated normalization; no source change across spatial probes.",
+    "packed_scalar": -2564.9309574800877,
+    "refinements": [
+      {
+        "difference_step": 0.008,
+        "finite_difference_scalar": -1791.533713569673,
+        "absolute_error": 773.397243910415,
+        "relative_error": 0.30152751
+      },
+      {
+        "difference_step": 0.004,
+        "finite_difference_scalar": -3900.80066203947,
+        "absolute_error": 1335.869704559383,
+        "relative_error": 0.520820921
+      },
+      {
+        "difference_step": 0.002,
+        "finite_difference_scalar": -3573.082250115192,
+        "absolute_error": 1008.151292635105,
+        "relative_error": 0.393052019
+      },
+      {
+        "difference_step": 0.001,
+        "finite_difference_scalar": -2895.936227976229,
+        "absolute_error": 331.005270496141,
+        "relative_error": 0.129050363
+      },
+      {
+        "difference_step": 0.0005,
+        "finite_difference_scalar": -2649.973203494429,
+        "absolute_error": 85.042246014341,
+        "relative_error": 0.033155764
+      },
+      {
+        "difference_step": 0.0002,
+        "finite_difference_scalar": -2578.642938669224,
+        "absolute_error": 13.711981189137,
+        "relative_error": 0.005345946
+      },
+      {
+        "difference_step": 0.0001,
+        "finite_difference_scalar": -2568.362734125249,
+        "absolute_error": 3.431776645161,
+        "relative_error": 0.001337961
+      },
+      {
+        "difference_step": 5e-05,
+        "finite_difference_scalar": -2565.789137861647,
+        "absolute_error": 0.85818038156,
+        "relative_error": 0.000334582
+      },
+      {
+        "difference_step": 2e-05,
+        "finite_difference_scalar": -2565.068274834063,
+        "absolute_error": 0.137317353976,
+        "relative_error": 5.3536e-05
+      },
+      {
+        "difference_step": 1e-05,
+        "finite_difference_scalar": -2564.965282709952,
+        "absolute_error": 0.034325229864,
+        "relative_error": 1.3383e-05
+      },
+      {
+        "difference_step": 5e-06,
+        "finite_difference_scalar": -2564.939487871861,
+        "absolute_error": 0.008530391773,
+        "relative_error": 3.326e-06
+      },
+      {
+        "difference_step": 2e-06,
+        "finite_difference_scalar": -2564.932221331104,
+        "absolute_error": 0.001263851016,
+        "relative_error": 4.93e-07
+      },
+      {
+        "difference_step": 1e-06,
+        "finite_difference_scalar": -2564.930584820732,
+        "absolute_error": 0.000372659355,
+        "relative_error": 1.45e-07
+      }
+    ],
+    "interpretation": "Second-order finite-difference convergence; the default 0.002 spacing is under-resolved on this strongly varying metric.",
+    "adaptive_result": {
+      "status": "converged",
+      "selected_step": 1.953125e-06,
+      "packed_scalar": -2564.930957480088,
+      "numerical_scalar": -2564.93196367017,
+      "relative_discrepancy": 3.9228739420491876e-07,
+      "initial_stencil_status": "unsupported_stencil",
+      "initial_stencil_reason": "crosses a spectral clipping surface",
+      "selection_criterion": "Two successive numerical scalar/Ricci differences within rel 1e-5 plus abs 1e-6; analytic packed value excluded from stopping criterion."
+    }
+  },
+  "default_continuations": [
+    {
+      "request": {
+        "id": "VI-19",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 4,
+          "replicas": 32,
+          "theta": 0.25,
+          "walkers": 32
+        },
+        "seed": 7,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Direct shifted mean",
+          "unit": "tagged_velocity",
+          "value": -0.04963364730060038
+        },
+        {
+          "label": "Reweighted mean",
+          "unit": "tagged_velocity",
+          "value": 0.02654870348726359
+        },
+        {
+          "label": "Direct minus reweighted",
+          "unit": "tagged_velocity",
+          "value": -0.07618235078786398
+        },
+        {
+          "label": "Independent comparison standard error",
+          "unit": "tagged_velocity",
+          "value": 0.06935238396974913
+        },
+        {
+          "label": "Common-random source change",
+          "unit": "tagged_velocity",
+          "value": 0.018499452464444625
+        },
+        {
+          "label": "Source-change standard error",
+          "unit": "tagged_velocity",
+          "value": 0.0027646041652096354
+        },
+        {
+          "label": "Importance effective sample size",
+          "unit": "replicas",
+          "value": 29.783059991173335
+        }
+      ],
+      "evidence_bundle_bytes": 45243894
+    },
+    {
+      "request": {
+        "id": "VI-22",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 4,
+          "replicas": 32,
+          "walkers": 32
+        },
+        "seed": 7,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Calibrated conditional increment",
+          "unit": "momentum",
+          "value": -2.628153928421889
+        },
+        {
+          "label": "Calibration standard error",
+          "unit": "momentum",
+          "value": 0.39797998826764225
+        },
+        {
+          "label": "Validation increment",
+          "unit": "momentum",
+          "value": -2.9626348550315873
+        },
+        {
+          "label": "Validation drift residual",
+          "unit": "momentum",
+          "value": -0.3344809266096984
+        },
+        {
+          "label": "Independent residual standard error",
+          "unit": "momentum",
+          "value": 0.5102707665310806
+        },
+        {
+          "label": "Analytic O momentum martingale mean",
+          "unit": "momentum",
+          "value": 0.2936444097471385
+        },
+        {
+          "label": "Analytic O momentum mean standard error",
+          "unit": "momentum",
+          "value": 0.22182321409751743
+        },
+        {
+          "label": "Analytic O energy martingale mean",
+          "unit": "energy",
+          "value": -0.10517911376478631
+        },
+        {
+          "label": "Analytic O energy mean standard error",
+          "unit": "energy",
+          "value": 0.12696307377263144
+        }
+      ],
+      "evidence_bundle_bytes": 45269497
+    },
+    {
+      "request": {
+        "id": "VI-45",
+        "parameters": {
+          "engine_dt": 0.04,
+          "engine_memory": 2,
+          "engine_viscosity": 0.15,
+          "horizon": 1,
+          "readout": "material",
+          "replicas": 32,
+          "walkers": 32
+        },
+        "seed": 7,
+        "steps": 96
+      },
+      "run_steps": [
+        96
+      ],
+      "frozen_step": 96,
+      "metrics": [
+        {
+          "label": "Calibration metric availability",
+          "unit": "probability",
+          "value": 1.0
+        },
+        {
+          "label": "Validation metric availability",
+          "unit": "probability",
+          "value": 1.0
+        },
+        {
+          "label": "Conditional g11 increment",
+          "unit": "metric",
+          "value": -2.329495870702582
+        },
+        {
+          "label": "Independent g11 increment",
+          "unit": "metric",
+          "value": -2.875501638468932
+        },
+        {
+          "label": "Independent g11 residual standard error",
+          "unit": "metric",
+          "value": 1.714136674873937
+        },
+        {
+          "label": "Validation extinction probability",
+          "unit": "probability",
+          "value": 0.0
+        },
+        {
+          "label": "Component covariance telescoping residual",
+          "unit": "metric squared",
+          "value": 1.4210854715202004e-14
+        }
+      ],
+      "evidence_bundle_bytes": 66128538
+    }
+  ],
+  "compiled_browser_default_checks": [
+    {
+      "id": "VI-19",
+      "metrics": [
+        {
+          "label": "Direct shifted mean",
+          "unit": "tagged_velocity",
+          "value": -0.04963364730060037
+        },
+        {
+          "label": "Reweighted mean",
+          "unit": "tagged_velocity",
+          "value": 0.02654870348726361
+        },
+        {
+          "label": "Direct minus reweighted",
+          "unit": "tagged_velocity",
+          "value": -0.07618235078786398
+        },
+        {
+          "label": "Independent comparison standard error",
+          "unit": "tagged_velocity",
+          "value": 0.06935238396974913
+        },
+        {
+          "label": "Common-random source change",
+          "unit": "tagged_velocity",
+          "value": 0.01849945246444463
+        },
+        {
+          "label": "Source-change standard error",
+          "unit": "tagged_velocity",
+          "value": 0.002764604165209637
+        },
+        {
+          "label": "Importance effective sample size",
+          "unit": "replicas",
+          "value": 29.783059991173342
+        }
+      ]
+    },
+    {
+      "id": "VI-22",
+      "metrics": [
+        {
+          "label": "Calibrated conditional increment",
+          "unit": "momentum",
+          "value": -2.628153928421888
+        },
+        {
+          "label": "Calibration standard error",
+          "unit": "momentum",
+          "value": 0.39797998826764225
+        },
+        {
+          "label": "Validation increment",
+          "unit": "momentum",
+          "value": -2.962634855031587
+        },
+        {
+          "label": "Validation drift residual",
+          "unit": "momentum",
+          "value": -0.33448092660969886
+        },
+        {
+          "label": "Independent residual standard error",
+          "unit": "momentum",
+          "value": 0.5102707665310806
+        },
+        {
+          "label": "Analytic O momentum martingale mean",
+          "unit": "momentum",
+          "value": 0.29364440974713873
+        },
+        {
+          "label": "Analytic O momentum mean standard error",
+          "unit": "momentum",
+          "value": 0.22182321409751743
+        },
+        {
+          "label": "Analytic O energy martingale mean",
+          "unit": "energy",
+          "value": -0.10517911376478625
+        },
+        {
+          "label": "Analytic O energy mean standard error",
+          "unit": "energy",
+          "value": 0.12696307377263144
+        }
+      ]
+    },
+    {
+      "id": "VI-45",
+      "metrics": [
+        {
+          "label": "Calibration metric availability",
+          "unit": "probability",
+          "value": 1
+        },
+        {
+          "label": "Validation metric availability",
+          "unit": "probability",
+          "value": 1
+        },
+        {
+          "label": "Conditional g11 increment",
+          "unit": "metric",
+          "value": -2.3294958707405407
+        },
+        {
+          "label": "Independent g11 increment",
+          "unit": "metric",
+          "value": -2.8755016385149803
+        },
+        {
+          "label": "Independent g11 residual standard error",
+          "unit": "metric",
+          "value": 1.7141366748753053
+        },
+        {
+          "label": "Validation extinction probability",
+          "unit": "probability",
+          "value": 0
+        },
+        {
+          "label": "Component covariance telescoping residual",
+          "unit": "metric squared",
+          "value": 1.4210854715202004e-14
+        }
+      ]
+    },
+    {
+      "id": "VI-39",
+      "metrics": [
+        {
+          "label": "Packed scalar curvature",
+          "unit": "inverse fitness",
+          "value": -2564.9309574230183
+        },
+        {
+          "label": "Finite-difference scalar",
+          "unit": "inverse fitness",
+          "value": -2564.932231516396
+        },
+        {
+          "label": "Independent residual",
+          "unit": "",
+          "value": 0.001274093377560348
+        },
+        {
+          "label": "Selected difference step",
+          "unit": "position",
+          "value": 1.953125e-06
+        }
+      ],
+      "refinement": {
+        "absolute_tolerance": 1e-06,
+        "criterion": "Successive numerical scalar and Ricci infinity-norm changes; independent of the packed analytic curvature",
+        "maximum_halvings": 12,
+        "relative_tolerance": 1e-05,
+        "required_consecutive_stable": 2,
+        "selected_step": 1.953125e-06,
+        "sequence": [
+          {
+            "reason": "unsupported capability: finite-difference stencil crosses a spectral clipping surface",
+            "status": "unsupported_stencil",
+            "step": 0.002
+          },
+          {
+            "scalar": -2895.9362279200086,
+            "scaled_change": null,
+            "status": "available",
+            "step": 0.001,
+            "successive_ricci_max_change": null,
+            "successive_scalar_change": null
+          },
+          {
+            "scalar": -2649.9732034348403,
+            "scaled_change": 8493.09211376212,
+            "status": "available",
+            "step": 0.0005,
+            "successive_ricci_max_change": 7812.124699128064,
+            "successive_scalar_change": 245.96302448516826
+          },
+          {
+            "scalar": -2586.3382266296167,
+            "scaled_change": 2401.2535473640673,
+            "status": "available",
+            "step": 0.00025,
+            "successive_ricci_max_change": 2004.6728473140101,
+            "successive_scalar_change": 63.63497680522369
+          },
+          {
+            "scalar": -2570.292000082544,
+            "scaled_change": 620.3985999689862,
+            "status": "available",
+            "step": 0.000125,
+            "successive_ricci_max_change": 504.46104740793817,
+            "successive_scalar_change": 16.04622654707282
+          },
+          {
+            "scalar": -2566.271795465861,
+            "scaled_change": 156.4043389706201,
+            "status": "available",
+            "step": 6.25e-05,
+            "successive_ricci_max_change": 126.3221007969405,
+            "successive_scalar_change": 4.020204616682804
+          },
+          {
+            "scalar": -2565.26620280995,
+            "scaled_change": 39.18343623039413,
+            "status": "available",
+            "step": 3.125e-05,
+            "successive_ricci_max_change": 31.59347306151176,
+            "successive_scalar_change": 1.0055926559111867
+          },
+          {
+            "scalar": -2565.014772206181,
+            "scaled_change": 9.800963445038189,
+            "status": "available",
+            "step": 1.5625e-05,
+            "successive_ricci_max_change": 7.8991271874983795,
+            "successive_scalar_change": 0.25143060376876747
+          },
+          {
+            "scalar": -2564.9519081274357,
+            "scaled_change": 2.450731617413689,
+            "status": "available",
+            "step": 7.8125e-06,
+            "successive_ricci_max_change": 1.975023371836869,
+            "successive_scalar_change": 0.062864078745406
+          },
+          {
+            "scalar": -2564.936160878097,
+            "scaled_change": 0.6139154256062326,
+            "status": "available",
+            "step": 3.90625e-06,
+            "successive_ricci_max_change": 0.4946219124540221,
+            "successive_scalar_change": 0.01574724933880134
+          },
+          {
+            "scalar": -2564.932231516396,
+            "scaled_change": 0.15318932968440127,
+            "status": "available",
+            "step": 1.953125e-06,
+            "successive_ricci_max_change": 0.12497694243211299,
+            "successive_scalar_change": 0.003929361701011658
+          }
+        ],
+        "status": "converged"
+      }
+    },
+    {
+      "id": "VI-51",
+      "metrics": [
+        {
+          "label": "Recorded stage transitions",
+          "unit": "",
+          "value": 16
+        },
+        {
+          "label": "Kinetic telescoping residual",
+          "unit": "energy",
+          "value": 0
+        },
+        {
+          "label": "Momentum telescoping residual",
+          "unit": "momentum",
+          "value": 4.440892098500626e-16
+        },
+        {
+          "label": "Recorded O-stage energy change",
+          "unit": "",
+          "value": 4.413486254727404
+        },
+        {
+          "label": "Conditional O-stage energy prediction",
+          "unit": "",
+          "value": 8.020972511542778
+        }
+      ]
+    }
+  ]
+}

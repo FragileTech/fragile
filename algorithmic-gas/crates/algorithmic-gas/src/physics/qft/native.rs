@@ -5,15 +5,15 @@ use crate::{
     physics::partvi::{ExperimentRequest, ExperimentResult, Series},
 };
 use serde_json::json;
-struct Frame {
-    step: u64,
-    epoch: u64,
-    version: u64,
-    x: Vec<Vec<f64>>,
-    v: Vec<Vec<f64>>,
-    eligible: Vec<bool>,
+pub(super) struct Frame {
+    pub(super) step: u64,
+    pub(super) epoch: u64,
+    pub(super) version: u64,
+    pub(super) x: Vec<Vec<f64>>,
+    pub(super) v: Vec<Vec<f64>>,
+    pub(super) eligible: Vec<bool>,
 }
-fn frames(a: &RunArchive<f64>) -> Result<Vec<Frame>> {
+pub(super) fn frames(a: &RunArchive<f64>) -> Result<Vec<Frame>> {
     let (pos, vel) = match &a.gas_config.kinetic.integrator {
         crate::kinetic::KineticKind::Baoab {
             positions,
@@ -949,6 +949,71 @@ fn regression(points: &[[f64; 2]]) -> Option<(f64, f64, f64)> {
         / points.len() as f64;
     Some((intercept, slope, mse.sqrt()))
 }
+/// Real-time damped oscillation with independent complex sine/cosine amplitudes.
+/// All coefficients are fitted from signed complex training correlations.
+#[derive(Clone)]
+struct OscillationFit {
+    decay: f64,
+    frequency: f64,
+    cosine: C,
+    sine: C,
+    mse: f64,
+}
+impl OscillationFit {
+    fn value(&self, t: f64) -> C {
+        (self.cosine * (self.frequency * t).cos() + self.sine * (self.frequency * t).sin())
+            * (-self.decay * t).exp()
+    }
+}
+fn damped_oscillation(points: &[(f64, C)], dt: f64) -> Option<OscillationFit> {
+    if points.len() < 5 {
+        return None;
+    }
+    let span = (points.last()?.0 - points[0].0).max(dt);
+    let mut best: Option<OscillationFit> = None;
+    // A deterministic grid keeps native/WASM selection reproducible. Growth is
+    // allowed as a candidate; acceptance remains a separate predictive check.
+    for gi in 0..=48 {
+        let decay = (-2. + 10. * gi as f64 / 48.) / span;
+        for wi in 1..=96 {
+            let frequency = std::f64::consts::PI * wi as f64 / (96. * dt);
+            let (mut aa, mut ab, mut bb) = (0., 0., 0.);
+            let (mut ya, mut yb) = (C::ZERO, C::ZERO);
+            for &(t, y) in points {
+                let envelope = (-decay * t).exp();
+                let a = envelope * (frequency * t).cos();
+                let b = envelope * (frequency * t).sin();
+                aa += a * a;
+                ab += a * b;
+                bb += b * b;
+                ya = ya + y * a;
+                yb = yb + y * b;
+            }
+            let determinant = aa * bb - ab * ab;
+            if determinant <= 1e-12 * (aa * bb).max(1e-30) {
+                continue;
+            }
+            let cosine = (ya * bb - yb * ab) / determinant;
+            let sine = (yb * aa - ya * ab) / determinant;
+            let mut fit = OscillationFit {
+                decay,
+                frequency,
+                cosine,
+                sine,
+                mse: 0.,
+            };
+            fit.mse = points
+                .iter()
+                .map(|&(t, y)| (fit.value(t) - y).abs2())
+                .sum::<f64>()
+                / points.len() as f64;
+            if best.as_ref().is_none_or(|b| fit.mse < b.mse) {
+                best = Some(fit);
+            }
+        }
+    }
+    best
+}
 fn spectrum(
     r: &ExperimentRequest,
     frames: &[Frame],
@@ -956,8 +1021,13 @@ fn spectrum(
 ) -> Result<ExperimentResult> {
     let channels = r.usize("channels", 2).clamp(1, 3);
     let maxlag = r.usize("max_lag", 12).clamp(2, 24);
-    let fit_start = r.usize("fit_start", 1).clamp(1, 8);
-    let fit_end = r.usize("fit_end", 6).clamp(2, 16).min(maxlag);
+    let fit_start = r.usize("fit_start", 1);
+    let fit_end = r.usize("fit_end", maxlag);
+    if fit_start < 1 || fit_end > maxlag || fit_end < fit_start + 2 {
+        return Err(GasError::Configuration(
+            "Spectral fit interval requires at least three lags".into(),
+        ));
+    }
     let t = frames.len();
     let cut = (0.6 * t as f64).floor() as usize;
     let held_start = cut + maxlag;
@@ -1165,9 +1235,38 @@ fn spectrum(
                 .map(|lag| (test_modes[lag][j] - predicted[lag]).abs2())
                 .sum::<f64>()
                 / (maxlag - fit_start + 1) as f64;
-            fits.push(json!({"mode":j,"status":"available","decay_rate":-slope,"frequency":frequency,"log_fit_rmse":rmse,"phase_fit_rmse":phase_rmse,"heldout_complex_rmse":held_error.sqrt(),"complex_or_signed_mode":complex,"mass":null,"positive_real_decay_rate":if frame_mean&&!complex&&slope<0.{Some(-slope)}else{None},"fit_lags":[fit_start,fit_end],"fit_points":log_points.len()}));
+            let baseline = (fit_start..=maxlag)
+                .map(|lag| test_modes[lag][j].abs2())
+                .sum::<f64>()
+                / (maxlag - fit_start + 1) as f64;
+            let window_rates: Vec<f64> = [0usize, 1, 2]
+                .into_iter()
+                .filter_map(|drop| regression(log_points.get(drop..)?).map(|(_, s, _)| -s))
+                .collect();
+            let rate_spread = window_rates
+                .iter()
+                .copied()
+                .fold(f64::NEG_INFINITY, f64::max)
+                - window_rates.iter().copied().fold(f64::INFINITY, f64::min);
+            let span = ((fit_end - fit_start) as f64 * dt).max(dt);
+            let stable = window_rates.len() >= 2 && rate_spread * span < 0.5;
+            let acceptable =
+                stable && rmse < 0.15 && phase_rmse < 0.2 && held_error < 0.8 * baseline;
+            let points: Vec<_> = (fit_start..=fit_end)
+                .map(|lag| (lag as f64 * dt, train_modes[lag][j]))
+                .collect();
+            let oscillation = damped_oscillation(&points, dt);
+            let oscillation_details=oscillation.as_ref().map(|fit| {
+                let test_mse=(fit_start..=maxlag).map(|lag|(fit.value(lag as f64*dt)-test_modes[lag][j]).abs2()).sum::<f64>()/(maxlag-fit_start+1) as f64;
+                let leave_one=damped_oscillation(&points[1..],dt);
+                let stable=leave_one.as_ref().is_some_and(|other|(fit.decay-other.decay).abs()*span<0.5 && (fit.frequency-other.frequency).abs()*span<0.5);
+                let training_power=points.iter().map(|(_,y)|y.abs2()).sum::<f64>()/points.len() as f64;
+                let accepted=stable && fit.mse<0.04*training_power && test_mse<0.8*baseline;
+                json!({"model":"exp(-gamma t) [a cos(omega t) + b sin(omega t)]","status":if accepted{"empirical_fit"}else{"inconclusive"},"candidate_decay_rate":fit.decay,"candidate_frequency":fit.frequency,"cosine_amplitude":[fit.cosine.re,fit.cosine.im],"sine_amplitude":[fit.sine.re,fit.sine.im],"training_complex_rmse":fit.mse.sqrt(),"heldout_complex_rmse":test_mse.sqrt(),"leave_first_lag_stable":stable,"mass":null})
+            });
+            fits.push(json!({"mode":j,"readout":mode,"status":if acceptable{"empirical_fit"}else{"inconclusive"},"candidate_decay_rate":-slope,"candidate_frequency":frequency,"decay_rate":if acceptable{Some(-slope)}else{None},"frequency":if acceptable{Some(frequency)}else{None},"log_fit_rmse":rmse,"phase_fit_rmse":phase_rmse,"heldout_complex_rmse":held_error.sqrt(),"heldout_zero_baseline_rmse":baseline.sqrt(),"window_candidate_decay_rates":window_rates,"window_stable":stable,"complex_or_signed_mode":complex,"mass":null,"positive_real_decay_rate":null,"damped_oscillation_candidate":oscillation_details,"fit_lags":[fit_start,fit_end],"fit_points":log_points.len(),"acceptance":"Single exponential: log RMSE < .15, phase RMSE < .2, trimmed-window decay spread times span < .5, held-out MSE < .8 times zero baseline. Damped oscillation: training MSE < .04 power, same held-out criterion, leave-first-lag rate and frequency changes times span < .5. These are finite-sample diagnostics, not confidence intervals."}));
             series.push(Series::line(
-                format!("Mode {} training fit magnitude", j + 1),
+                format!("Mode {} candidate exponential magnitude", j + 1),
                 predicted
                     .iter()
                     .enumerate()
@@ -1242,7 +1341,7 @@ fn spectrum(
             Series::line("Hermitian defect", hermitian),
         ],
     );
-    o.details = json!({"status":"available","stage":"pre_clone","readout":mode,"aggregation":aggregation,"channel_definition":if mode=="twistor"{if frame_mean{"Fixed 1/N sum of tau, Pauli W_x, Pauli W_y from each record's own immutable donor triplets"}else{"tau, Pauli W_x, Pauli W_y from source-frozen triplets"}}else{if frame_mean{"Fixed 1/N sum of eligible x[j] + i v[j] per frame"}else{"x[j] + i v[j], numerical walker slot frozen across lag"}},"training_frames":[frames[0].step,frames[cut-1].step],"guard_frames":[frames[cut].step,frames[held_start-1].step],"heldout_frames":[frames[held_start].step,frames[t-1].step],"training_channel_means_real":center.iter().map(|z|z.re).collect::<Vec<_>>(),"training_channel_means_imaginary":center.iter().map(|z|z.im).collect::<Vec<_>>(),"covariance_eigenvalues":e,"rank_threshold":threshold,"lag_counts":counts,"complex_correlations":matrices,"fits":fits,"normalization":if frame_mean{"Each local observable is zero-extended and summed with fixed 1/N weight; each lag averages same-epoch consecutive frame pairs. Training alone selects centering, whitening and fits."}else{"Source-frozen pair diagnostic divides by its lag-specific valid pair count. Training alone selects centering, whitening and fits."},"interpretation":"The measured finite-window decay and frequency characterize this recorded observable. A particle mass requires an identified positive transfer representation and asymptotic spectral control; mass is not inferred from a positive fitted decay alone."});
+    o.details = json!({"status":"available","stage":"pre_clone","readout":mode,"aggregation":aggregation,"channel_definition":if mode=="twistor"{if frame_mean{"Fixed 1/N sum of tau, Pauli W_x, Pauli W_y from each record's own immutable donor triplets"}else{"tau, Pauli W_x, Pauli W_y from source-frozen triplets"}}else{if frame_mean{"Fixed 1/N sum of eligible x[j] + i v[j] per frame"}else{"x[j] + i v[j], numerical walker slot frozen across lag"}},"training_frames":[frames[0].step,frames[cut-1].step],"guard_frames":[frames[cut].step,frames[held_start-1].step],"heldout_frames":[frames[held_start].step,frames[t-1].step],"training_channel_means_real":center.iter().map(|z|z.re).collect::<Vec<_>>(),"training_channel_means_imaginary":center.iter().map(|z|z.im).collect::<Vec<_>>(),"covariance_eigenvalues":e,"rank_threshold":threshold,"lag_counts":counts,"complex_correlations":matrices,"fits":fits,"normalization":if frame_mean{"Each local observable is zero-extended and summed with fixed 1/N weight; each lag averages same-epoch consecutive frame pairs. Training alone selects centering, whitening and fits."}else{"Source-frozen pair diagnostic divides by its lag-specific valid pair count. Training alone selects centering, whitening and fits."},"interpretation":"Lag-correlation eigenvalues are diagnostic curves, not automatically powers of transition eigenvalues. Signed complex exponential and damped-oscillation candidates require explicit window stability and held-out error checks. Inconclusive candidates do not identify growth, decay or mass. Chronological held-out frames remain dependent; independent runs are required for statistical uncertainty."});
     Ok(o)
 }
 
@@ -1256,6 +1355,20 @@ mod tests {
             .unwrap()
             .value
             .unwrap()
+    }
+    #[test]
+    fn signed_damped_oscillation_is_not_mistaken_for_rebound_growth() {
+        let dt = 0.04;
+        let points: Vec<_> = (1..=16)
+            .map(|i| {
+                let t = i as f64 * dt;
+                (t, C::from((-1.5 * t).exp() * (12. * t).cos()))
+            })
+            .collect();
+        let fit = damped_oscillation(&points, dt).unwrap();
+        assert!(fit.decay > 0.);
+        assert!((fit.frequency - 12.).abs() < 1.);
+        assert!(fit.mse < 0.01);
     }
     #[test]
     fn exact_region_readouts_give_the_predicted_covariance() {

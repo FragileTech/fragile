@@ -95,6 +95,7 @@ pub(crate) fn check_boundary<T: Real>(
             .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
         domain.reconcile(p, &changed)?;
         domain.refresh_observations(p)?;
+        p.observations.provenance.population_version = p.version;
     }
     Ok(())
 }
@@ -138,6 +139,7 @@ async fn update<T: Real>(
         .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
     domain.reconcile(p, &[target.into()])?;
     domain.refresh_observations(p)?;
+    p.observations.provenance.population_version = p.version;
     Ok(())
 }
 pub struct KineticContext<'a, T: Real> {
@@ -332,6 +334,9 @@ impl KineticOperator {
         k: KineticContext<'_, T>,
         cx: &mut ExecutionContext,
     ) -> Result<()> {
+        // Sampling hooks receive ObservationBatch rather than Population. Its
+        // provenance must identify the actual post-clone/substep state.
+        p.observations.provenance.population_version = p.version;
         if let Some(operators) = k.operators {
             let noise = crate::operators::HookNoise {
                 operators,
@@ -503,6 +508,7 @@ impl KineticOperator {
                     .checked_add(1)
                     .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
                 k.domain.refresh_observations(p)?;
+                p.observations.provenance.population_version = p.version;
                 cx.record_boundary_input("environment_before_boundary", p);
                 k.boundary(p)?;
             }

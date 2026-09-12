@@ -574,6 +574,7 @@ fn budgets(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result<E
             }
         }
         out.notes.push("Stage budgets are computed from recorded eligibility and velocities; the source stage names identify any combined boundary operation.".into());
+        return Ok(out);
     }
     let v = [p(r, "velocity", 1., -3., 3.), -0.6];
     let alpha = p(r, "restitution", 0.5, 0., 1.);

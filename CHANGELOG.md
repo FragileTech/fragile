@@ -1,5 +1,7 @@
 # Changelog
 
+- Execute all 128 Volume II demos through shared native/WASM Rust sessions, with recorded algorithm measurements, configured predictions, validated evidence replay, tracked geometry, continuation protocols, and control stress tests.
+
 - Derive transient field drift/covariance from complete algorithm states; measure historical-source fields, material metric increments, source-aware noise moments and stage balances, with explicit per-experiment provenance and independent validation.
 - Add 66 compiled Part VI workbenches with Rust/WASM calculation APIs, native `gas-physics` runs and sweeps, source-aware archive readouts, conditional trace likelihoods, held-out predictions, independent response and metric replicas, formula lookup, and a detailed lecture experiment guide.
 

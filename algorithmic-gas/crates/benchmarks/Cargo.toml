@@ -18,6 +18,7 @@ cuda = ["algorithmic-gas/cuda"]
 algorithmic-gas = { path = "../algorithmic-gas", default-features = false }
 serde.workspace = true
 serde_json.workspace = true
+ciborium.workspace = true
 futures-lite.workspace = true
 
 [dev-dependencies]

@@ -11,7 +11,8 @@ use algorithmic_gas::{
     random::{RandomStream, Stream},
     tracking::{MechanicalStageBudget, RecordingConfig},
 };
-use serde_json::json;
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
 
 fn configuration(message: &str) -> GasError {
     GasError::Configuration(message.into())
@@ -127,6 +128,158 @@ async fn continuation(
         gas,
     })
 }
+/// Replay material is bounded independently of the simulation budget. Every
+/// continuation retains its complete random schedule and archive fingerprint;
+/// the first archives fitting this byte budget are additionally embedded.
+const ARCHIVE_EVIDENCE_BUDGET: usize = 1024 * 1024;
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct ReplayEvidence {
+    run_config: RunConfig,
+    request: ExperimentRequest,
+    frozen_checkpoint_cbor: Vec<u8>,
+    runs: Vec<Value>,
+}
+#[derive(Default)]
+struct EvidenceCollector {
+    runs: Vec<Value>,
+    retained_bytes: usize,
+}
+fn fingerprint(bytes: &[u8]) -> String {
+    format!(
+        "{:016x}",
+        bytes
+            .iter()
+            .fold(0xcbf29ce484222325u64, |h, &b| (h ^ b as u64)
+                .wrapping_mul(0x100000001b3))
+    )
+}
+impl EvidenceCollector {
+    fn record(
+        &mut self,
+        c: &Continuation,
+        group: &str,
+        replica: usize,
+        horizon: usize,
+    ) -> Result<()> {
+        let archive = c
+            .gas
+            .recording()
+            .ok_or_else(|| configuration("Continuation recording unavailable"))?;
+        let bytes = archive.to_bytes()?;
+        let hash = fingerprint(&bytes);
+        let embedded = self
+            .retained_bytes
+            .checked_add(bytes.len())
+            .is_some_and(|n| n <= ARCHIVE_EVIDENCE_BUDGET);
+        let payload = if embedded {
+            self.retained_bytes += bytes.len();
+            Some(bytes)
+        } else {
+            None
+        };
+        self.runs.push(json!({"group":group,"replica":replica,"future_seed":c.gas.config().seed,"horizon":horizon,"recorded_steps":archive.steps.len(),"innovation_shifts":c.gas.config().qft.innovation_shifts,"survived":c.survived,"terminal_readout":c.value,"archive_fingerprint_fnv1a64":hash,"archive_cbor":payload}));
+        Ok(())
+    }
+    fn attach(
+        self,
+        result: &mut ExperimentResult,
+        config: &RunConfig,
+        request: &ExperimentRequest,
+        checkpoint: &Checkpoint<f64>,
+    ) -> Result<()> {
+        let executed_steps: usize = self
+            .runs
+            .iter()
+            .filter_map(|r| r["recorded_steps"].as_u64())
+            .map(|n| n as usize)
+            .sum();
+        let evidence = ReplayEvidence {
+            run_config: config.clone(),
+            request: request.clone(),
+            frozen_checkpoint_cbor: checkpoint.to_bytes()?,
+            runs: self.runs,
+        };
+        result.details["continuation_executed_steps"] = json!(executed_steps);
+        result.details["continuation_embedded_archive_bytes"] = json!(self.retained_bytes);
+        result.details["replay_evidence"] =
+            serde_json::to_value(evidence).map_err(|e| configuration(&e.to_string()))?;
+        Ok(())
+    }
+}
+/// Recompute results from the exported complete checkpoint and exact future
+/// schedules. Embedded archives and every regenerated fingerprint are checked.
+pub async fn replay_evidence(value: &Value) -> Result<ExperimentResult> {
+    let evidence: ReplayEvidence =
+        serde_json::from_value(value.clone()).map_err(|e| configuration(&e.to_string()))?;
+    evidence.request.validate()?;
+    evidence.run_config.validate()?;
+    if evidence.frozen_checkpoint_cbor.len() > 128 * 1024 * 1024 || evidence.runs.len() > 512 {
+        return Err(configuration("Continuation replay evidence exceeds limits"));
+    }
+    let checkpoint = Checkpoint::from_bytes(&evidence.frozen_checkpoint_cbor)?;
+    if checkpoint.config != evidence.run_config.gas {
+        return Err(configuration(
+            "Frozen checkpoint configuration differs from replay configuration",
+        ));
+    }
+    let mut retained_bytes = 0usize;
+    for entry in &evidence.runs {
+        if !entry["archive_cbor"].is_null() {
+            let bytes: Vec<u8> = serde_json::from_value(entry["archive_cbor"].clone())
+                .map_err(|e| configuration(&e.to_string()))?;
+            retained_bytes = retained_bytes
+                .checked_add(bytes.len())
+                .ok_or_else(|| configuration("Replay archive byte overflow"))?;
+            if retained_bytes > ARCHIVE_EVIDENCE_BUDGET {
+                return Err(configuration(
+                    "Replay archive payload exceeds evidence budget",
+                ));
+            }
+            let archive = algorithmic_gas::RunArchive::<f64>::from_bytes(&bytes)?;
+            if entry["archive_fingerprint_fnv1a64"] != fingerprint(&bytes)
+                || entry["future_seed"] != archive.gas_config.seed
+            {
+                return Err(configuration(
+                    "Embedded continuation archive does not match its manifest",
+                ));
+            }
+        }
+    }
+    let result = run_internal(&evidence.run_config, &evidence.request, Some(&checkpoint)).await?;
+    let regenerated: ReplayEvidence =
+        serde_json::from_value(result.details["replay_evidence"].clone())
+            .map_err(|e| configuration(&e.to_string()))?;
+    if !json_numeric_equal(&json!(regenerated.runs), &json!(evidence.runs)) {
+        return Err(configuration(
+            "Regenerated continuation records differ from exported evidence",
+        ));
+    }
+    Ok(result)
+}
+// JavaScript JSON encodes integral floating-point readouts as integers.
+// Compare their numeric values while retaining exact integer identities.
+fn json_numeric_equal(a: &Value, b: &Value) -> bool {
+    match (a, b) {
+        (Value::Number(x), Value::Number(y)) => {
+            match (x.as_u64(), y.as_u64(), x.as_i64(), y.as_i64()) {
+                (Some(x), Some(y), _, _) => x == y,
+                (_, _, Some(x), Some(y)) => x == y,
+                _ => x.as_f64() == y.as_f64(),
+            }
+        }
+        (Value::Array(x), Value::Array(y)) => {
+            x.len() == y.len() && x.iter().zip(y).all(|(x, y)| json_numeric_equal(x, y))
+        }
+        (Value::Object(x), Value::Object(y)) => {
+            x.len() == y.len()
+                && x.iter()
+                    .all(|(k, v)| y.get(k).is_some_and(|w| json_numeric_equal(v, w)))
+        }
+        _ => a == b,
+    }
+}
+
 fn seed(checkpoint: &Checkpoint<f64>, group: u64, index: usize) -> u64 {
     checkpoint
         .config
@@ -143,9 +296,59 @@ fn innovation(seed: u64, step: u64, walker: usize, coordinate: usize) -> f64 {
 }
 /// Run actual native gas continuations. Browser bindings invoke this same function.
 pub async fn run(config: &RunConfig, request: &ExperimentRequest) -> Result<ExperimentResult> {
+    run_internal(config, request, None).await
+}
+/// Measure continuations from the exact completed state displayed by a session.
+pub async fn run_from_checkpoint(
+    config: &RunConfig,
+    request: &ExperimentRequest,
+    checkpoint: &Checkpoint<f64>,
+) -> Result<ExperimentResult> {
+    if config.gas != checkpoint.config {
+        return Err(configuration(
+            "Continuation checkpoint differs from the executed configuration",
+        ));
+    }
+    // Recording is audit data, not the Markov state. The complete baseline
+    // archive is exported by the session; avoid duplicating it in each replica.
+    let mut conditioning = checkpoint.clone();
+    if request.experiment == 45 {
+        let archive = conditioning.recording.as_mut().ok_or_else(|| {
+            configuration("Metric conditioning requires its final recorded update")
+        })?;
+        let keep = conditioning
+            .config
+            .distance_donors
+            .history_window
+            .max(conditioning.config.cloning_donors.history_window)
+            + 2;
+        let start = archive.steps.len().saturating_sub(keep);
+        archive.steps = archive.steps.split_off(start);
+        let first = archive
+            .steps
+            .first()
+            .ok_or_else(|| configuration("Metric conditioning has no recorded update"))?;
+        archive.epoch = first.epoch;
+        archive.anchors = vec![algorithmic_gas::tracking::ArchiveAnchor {
+            epoch: first.epoch,
+            step: first.report.step - 1,
+            reason: "conditioning_window".into(),
+            population: first.before.clone(),
+        }];
+    } else {
+        conditioning.recording = None;
+    }
+    conditioning.validate()?;
+    run_internal(config, request, Some(&conditioning)).await
+}
+async fn run_internal(
+    config: &RunConfig,
+    request: &ExperimentRequest,
+    frozen: Option<&Checkpoint<f64>>,
+) -> Result<ExperimentResult> {
     request.validate()?;
     if request.experiment == 45 {
-        let mut result = metric_prediction(config, request).await?;
+        let mut result = metric_prediction(config, request, frozen).await?;
         algorithmic_gas::physics::partvi::annotate_result(
             request,
             &mut result,
@@ -198,8 +401,12 @@ pub async fn run(config: &RunConfig, request: &ExperimentRequest) -> Result<Expe
         ));
     }
     let mut gas = config.build::<f64>().await?;
-    for _ in 0..warmup {
-        gas.step().await?;
+    if let Some(checkpoint) = frozen {
+        gas.restore(checkpoint.clone())?;
+    } else {
+        for _ in 0..warmup {
+            gas.step().await?;
+        }
     }
     let checkpoint = gas.checkpoint();
     let observable = request.text(
@@ -226,6 +433,7 @@ pub async fn run(config: &RunConfig, request: &ExperimentRequest) -> Result<Expe
         noether(
             &config,
             &checkpoint,
+            request,
             replicas,
             horizon,
             walker,
@@ -277,6 +485,7 @@ async fn source_response(
     let mut paired_delta = vec![];
     let mut rows = vec![];
     let mut survived = [0usize; 4];
+    let mut evidence = EvidenceCollector::default();
     for k in 0..replicas {
         let aseed = seed(checkpoint, 0, k);
         let bseed = seed(checkpoint, 1, k);
@@ -320,6 +529,14 @@ async fn source_response(
             coordinate,
         )
         .await?;
+        for (name, c) in [
+            ("weight_baseline", &a),
+            ("direct_baseline", &b),
+            ("direct_plus", &plus),
+            ("direct_minus", &minus),
+        ] {
+            evidence.record(c, name, k, horizon)?;
+        }
         let xi = innovation(aseed, source_step, walker, coordinate);
         let weight = (theta * xi - 0.5 * theta * theta).exp();
         weighted.push(a.value * weight);
@@ -381,6 +598,7 @@ async fn source_response(
     out.note("The exponential identity compares the finite source exactly. Hermite means are derivatives at zero; symmetric finite differences retain finite-theta bias and can cross cloning or validity thresholds.");
     out.note("Killed continuations have zero terminal readout. Reserved Gaussian addresses are evaluated even when that innovation is unused, so survival selection remains part of the observable.");
     out.note("tagged_velocity means tanh of the selected slot's velocity component; slot identity is fixed and cloning remains active.");
+    evidence.attach(&mut out, config, request, checkpoint)?;
     Ok(out)
 }
 fn running(name: &str, values: &[f64]) -> Series {
@@ -401,6 +619,7 @@ fn running(name: &str, values: &[f64]) -> Series {
 async fn noether(
     config: &RunConfig,
     checkpoint: &Checkpoint<f64>,
+    request: &ExperimentRequest,
     replicas: usize,
     horizon: usize,
     walker: usize,
@@ -419,6 +638,7 @@ async fn noether(
     let mut ledgers: Vec<Vec<MechanicalStageBudget>> = vec![];
     let mut survives = [0usize; 2];
     let mut oracle_samples = vec![];
+    let mut evidence = EvidenceCollector::default();
     let mut momentum_residuals = vec![];
     let mut momentum_variations = vec![];
     let mut energy_residuals = vec![];
@@ -434,6 +654,16 @@ async fn noether(
                 config, checkpoint, key, horizon, None, observable, walker, coordinate,
             )
             .await?;
+            evidence.record(
+                &c,
+                if group == 0 {
+                    "calibration"
+                } else {
+                    "validation"
+                },
+                k,
+                horizon,
+            )?;
             survives[group as usize] += usize::from(c.survived);
             let mut mr = 0.;
             let mut mv = 0.;
@@ -622,6 +852,7 @@ async fn noether(
     }
     out.note("A symmetry does not require the raw increment to vanish: the independently calibrated conditional drift is subtracted to form the martingale residual. The displayed horizon is a discrete conditional transition.");
     out.note("The recorded sample ledgers separate changes of persistent active rows from eligibility changes at every raw kinetic and boundary stage; cloning is included in the executed histories.");
+    evidence.attach(&mut out, config, request, checkpoint)?;
     Ok(out)
 }
 
@@ -686,6 +917,7 @@ fn conditional_metric_readout(
 async fn metric_prediction(
     config: &RunConfig,
     request: &ExperimentRequest,
+    frozen: Option<&Checkpoint<f64>>,
 ) -> Result<ExperimentResult> {
     let replicas = request.usize("replicas", 16);
     let material = match request.text("readout", "material") {
@@ -731,12 +963,16 @@ async fn metric_prediction(
         ));
     }
     let mut gas = config.build::<f64>().await?;
-    gas.start_recording(RecordingConfig {
-        max_steps: warmup,
-        max_bytes: config.gas.max_memory_bytes.min(128 * 1024 * 1024),
-    })?;
-    for _ in 0..warmup {
-        gas.step().await?;
+    if let Some(checkpoint) = frozen {
+        gas.restore(checkpoint.clone())?;
+    } else {
+        gas.start_recording(RecordingConfig {
+            max_steps: warmup,
+            max_bytes: config.gas.max_memory_bytes.min(128 * 1024 * 1024),
+        })?;
+        for _ in 0..warmup {
+            gas.step().await?;
+        }
     }
     let mut probe = gas
         .population()
@@ -766,6 +1002,7 @@ async fn metric_prediction(
     let mut available = [0usize; 2];
     let mut survived = [0usize; 2];
     let mut rows = vec![];
+    let mut evidence = EvidenceCollector::default();
     for k in 0..replicas {
         for group in 0..2 {
             let key = seed(&checkpoint, group, k);
@@ -780,6 +1017,16 @@ async fn metric_prediction(
                 0,
             )
             .await?;
+            evidence.record(
+                &continuation,
+                if group == 0 {
+                    "calibration"
+                } else {
+                    "validation"
+                },
+                k,
+                horizon,
+            )?;
             survived[group as usize] += usize::from(continuation.survived);
             let mut future_probe = probe.clone();
             let mut literal_probe = probe.clone();
@@ -1050,9 +1297,10 @@ async fn metric_prediction(
             ),
         ],
     );
-    out.details = json!({"readout":if material {"material"} else {"fixed_probe"},"component_report":component_report,"component_covariance_sum":cross_covariance_sum,"component_covariance_residual":covariance_residual,"decomposition":"new field at old probe minus old field; new field at last literal-clone probe minus new field at old probe; new field at final probe minus new field at last literal-clone probe. At horizon1 the middle term is literal-clone probe replacement; longer horizons also include earlier motion. Cross covariances are retained.","request":request,"run_config":config,"replicas_per_group":replicas,"horizon":horizon,"warmup":warmup,"probe":probe,"target_slot":walker,"baseline_metric":initial,"baseline_metric_available":initial_available,"baseline_context":baseline_context,"report":report,"samples":rows,"available_counts":available,"survived_counts":survived,"source":"native_checkpoint_continuations","frozen_step":checkpoint.step,"historical_frames":checkpoint.history.len(),"cemetery_extension":"Every unavailable metric or extinct outcome has the full packed zero metric; all replicas remain in both mean and covariance.","probe_convention":if material {"fixed slot, final population position plus constant first-coordinate offset; last completed pre-clone conditional context"} else {"last completed step pre-clone population and its sampled immutable donor context, evaluated at one unchanged chart point"}});
+    out.details = json!({"readout":if material {"material"} else {"fixed_probe"},"component_report":component_report,"component_covariance_sum":cross_covariance_sum,"component_covariance_residual":covariance_residual,"decomposition":"new field at old probe minus old field; new field at last literal-clone probe minus new field at old probe; new field at final probe minus new field at last literal-clone probe. At horizon1 the middle term is literal-clone probe replacement; longer horizons also include earlier motion. Cross covariances are retained.","request":request,"run_config":config,"replicas_per_group":replicas,"horizon":horizon,"conditioning_steps":checkpoint.step,"probe":probe,"target_slot":walker,"baseline_metric":initial,"baseline_metric_available":initial_available,"baseline_context":baseline_context,"report":report,"samples":rows,"available_counts":available,"survived_counts":survived,"source":"native_checkpoint_continuations","frozen_step":checkpoint.step,"historical_frames":checkpoint.history.len(),"cemetery_extension":"Every unavailable metric or extinct outcome has the full packed zero metric; all replicas remain in both mean and covariance.","probe_convention":if material {"fixed slot, final population position plus constant first-coordinate offset; last completed pre-clone conditional context"} else {"last completed step pre-clone population and its sampled immutable donor context, evaluated at one unchanged chart point"}});
     out.note("The complete extended checkpoint, including donor memory and provider configuration, is fixed before resampling future seeds. Warmup supplies the baseline recorded companion context.");
     out.note("The material readout retains same-step clone replacement, clone transforms, kinetics and boundary motion through the final slot position. Its field-versus-probe decomposition is an exact component evaluation identity in one chart, without assuming a differentiable clone pullback. The fixed-probe alternative is a lagged selection-context observable.");
     out.note("Metric availability and extinction probabilities are measured explicitly. The displayed observable uses a zero metric on undefined outcomes; no replica is discarded or survivor-renormalized.");
+    evidence.attach(&mut out, &config, request, &checkpoint)?;
     Ok(out)
 }

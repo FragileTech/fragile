@@ -1,119 +1,130 @@
 # Volume II lecture experiments
 
-This directory implements the 42 experiments in
-[the original visualization plan](../../../../docs/source/project/volume2_interactive_visualization_plan.md)
-and 20 in [the Part V document](../../../../docs/source/project/volume2_partv_interactive_experiments.md).
-Open `euclidean-gas/lecture.html?demo=I-01` through the local Lab server.
-Append `&embed=1` for the compact lecture view.
+All 128 lecture experiments execute the Rust Euclidean Gas and compute their
+scientific results in Rust. The shared registry covers 42 experiments in
+[Parts I–IV](../../../../docs/source/project/volume2_interactive_visualization_plan.md),
+20 in [Part V](../../../../docs/source/project/volume2_partv_interactive_experiments.md),
+and 66 in [Part VI](../../../../docs/source/2_fractal_gas/partvi_experiments.md).
 
-## Run and verify
+Open `euclidean-gas/lecture.html?demo=I-01` through the local Lab server. Append
+`&embed=1` for the compact view. Preserve the deployment prefix in published URLs.
+
+## Build and run
 
 From the repository root:
 
-    npm --prefix fractal-gas-web run build:euclidean-gas
-    npm --prefix fractal-gas-web run test:euclidean-gas
-    npm --prefix fractal-gas-web run test:euclidean-lectures
-    uv run --no-project python fractal-gas-web/tools/serve-control.py --port 8770
-    npm --prefix fractal-gas-web run test:euclidean-lectures-browser
+```bash
+npm --prefix fractal-gas-web run build:euclidean-gas
+npm --prefix fractal-gas-web run build:euclidean-lectures
+uv run --no-project python fractal-gas-web/tools/serve-control.py --port 8770
+```
 
-The Rust build requires the pinned Rust toolchain and wasm-bindgen documented in
-`algorithmic-gas/README.md`. Generated CPU/WebGPU bundles remain build artifacts.
-The build also regenerates the 62 SVG posters and chapter manifest.
-To refresh only those assets using an existing compiled CPU bundle:
+The Rust toolchain and wasm-bindgen requirements are documented in
+[algorithmic-gas/README.md](../../../../algorithmic-gas/README.md). The lecture
+baseline uses CPU/WASM with f64 scientific calculations. Generated WASM bundles
+are build artifacts. Poster generation executes the shared sessions and creates
+the 128 SVG posters, catalog and chapter manifest. `make docs` assembles the book
+with the committed generated assets; it does not require executing a simulation
+inside a notebook.
 
-    npm --prefix fractal-gas-web run build:euclidean-lectures
+`placements.json` identifies each chapter and target section. The documentation
+extension validates these placements. Scientific titles and controls come from
+the shared Rust registry. Captions, formula references and posters must describe
+the same observable as the native result.
 
-Build the book with `make docs`. Its Sphinx extension inserts two experiments in
-each of the first 21 Volume II chapters and four in each of the five Part V chapters
-according to `placements.json`. Captions
-are reviewed in `captions.json`; posters and the generated manifest are committed
-under `docs/_static_theory/gas-demos/`, so a documentation-only build needs no Rust.
-Section placements are validated against actual Markdown blocks; changing a
-target heading without updating the placement fails the documentation build.
+## One scientific implementation
 
-## Implementation map
+The core registry is
+`algorithmic-gas/crates/algorithmic-gas/src/lecture_experiments.json`.
+`algorithmic_gas_benchmarks::lecture::LectureSession` resolves requests, constructs
+the configured runs, records updates and computes results. Its analyzers cover
+early-part observables, Fractal Set geometry, QFT archive measurements and
+complete-checkpoint continuations.
 
-| Family                 | IDs           | Module           |
-| ---------------------- | ------------- | ---------------- |
-| Foundations            | I-01–I-10     | `foundations.js` |
-| Convergence            | II-01–II-08   | `convergence.js` |
-| Mean-field limits      | III-01–III-08 | `convergence.js` |
-| Entropy and regularity | IV-01–IV-16   | `entropy.js`     |
-| Fractal Set and continuum | V-01–V-20 | `fractal.js` |
+The compiled interface is:
 
-Every descriptor implements the interface in `CONTRACT.md`. The interface
-separates scientific computation from DOM rendering. Exact reference models run
-in the same worker as WASM experiments and name their method in the displayed
-caption. The WASM views use the compiled Rust engine, including validated
-population fixtures and opt-in authentic cloning/BAOAB traces.
+```javascript
+const session = await wasm.LectureExperiment.create(JSON.stringify({
+  id: "I-01", seed: 7, parameters: {}, steps: 96,
+}));
+try {
+  const frame = await session.advance(8);
+  const evidence = session.evidence();
+  const checkpoint = session.checkpoint();
+  // Render frame.result.plots and retain evidence for reproducible analysis.
+} finally {
+  session.free();
+}
+```
 
-`worker.js` serializes commands, imports and initializes the CPU WASM module once
-per view, and retains it across parameter resets. Initialization does not perform
-an unreported scientific step. Each model frees its owned runs on replacement;
-the worker also tracks and frees them on disposal or failed initialization.
-The baseline is CPU WASM, with no WebGPU requirement.
+`LectureExperiment.restore(checkpoint)` restores a resumable session.
+`lecture_analyze(JSON.stringify(evidence))` validates the evidence and recomputes
+its scientific results. These interfaces share the native implementation. Browser
+family modules select registry entries and adapt the returned arrays; they do not
+supply probability samplers, dynamics, geometry, fitting or moment calculations.
 
-`main.js` starts paused and maintains at most 80 display frames. Family models
-bound their own scalar histories and experiment horizons. Run pauses when the
-tab or embedded figure becomes hidden. The lecture page keeps one loaded iframe
-at a time and removes its worker when closed or hidden by Expert Mode.
+The worker initializes the CPU module once and retains it across resets. It
+serializes requests. The browser adapter advances eight updates during initial
+construction and during each bounded work request. Completed and required steps
+are displayed per run; protocol-specific update or physical-duration controls
+can determine the actual horizon. Closing or replacing a live model frees its
+owned session.
 
-Scientific controls reset the seed experiment; Step advances one bounded work
-unit defined by the selected model. A step can mean one engine update, one
-independent frozen-population repetition, or a reference-model time increment.
-The displayed message and axes identify that unit. Some algebraic experiments
-are complete immediately and respond to parameter changes.
+## Evidence, replay and display
 
-JSON export includes the selected display frame, its replay tick, seed,
-parameters, and model-provided experiment metadata. Import recreates that seed
-and runs the same number of steps. Hardware timing fields naturally vary between
-replays. JSON imports are limited to 20 MB and 2000 replay steps. IV-16 also
-exports its first run's binary engine checkpoint. Each plot exports standalone
-SVG; the numerical table and JSON expose plotted values.
+A session evidence bundle includes the request, all executed configurations and
+run archives, plus continuation evidence when required. Imports must contain
+that evidence; a plot-only result cannot be substituted for an executed run.
+Archive import recomputes measurements in Rust. An imported evidence view is a
+completed analysis view; it does not contain a resumable session checkpoint.
 
-## Theory comparison checks
+The separate view JSON export records display state and a replay tick. Complete
+evidence is available from the trajectory-archive export. Checkpoint export
+retains the native session state. These artifacts serve different purposes and
+must not be confused.
 
-The [numerical validation checklist](VALIDATION.md) records the theoretical
-quantity and uncertainty diagnostic for each reviewed experiment. The regression
-suite includes a separate 64-replica real-WASM harmonic relaxation check whose
-moment prediction is derived independently of the lecture reference models.
+Rust returns scenes built from recorded event positions, slot identities and
+reconstructed geometry. Scene projection, layers, selection and camera controls
+change rendering. A chart metric or time-scale measurement control changes the
+explicitly defined observable. Their units and normalization remain in the
+result. Scientific arrays are not regenerated by JavaScript.
 
-## Scope of the first implementation
+For V-01–V-04, the scientific analyzers use the full archive graph. Their result
+contains full graph counts in a compact summary. The scene payload selects the
+last eight recorded transitions and their edges, including incoming historical
+endpoints at their actual recorded coordinates. Window bounds and displayed or
+omitted counts describe that display selection. The result does not duplicate
+the entire graph as JSON; complete exported archives support its reconstruction.
 
-All 42 IDs have working computations, controls, and plots. The proposal is a
-broader design catalog: this implementation uses compact views rather than every
-proposed tab, drag gesture, parameter sweep, and overlay. It does not yet include
-cross-demo checkpoint import, a browser archive of long ensembles, live WebGPU
-selection within the lecture host, or a general continuum/PDE solver. Exact
-Gaussian, finite-state, graph, and analytic reference calculations provide the
-corresponding lecture experiments. They are identified in their views.
+Recorded steps remain in the bounded native archive even when rendering keeps
+only a short history. `main.js` retains up to 80 display frames, or eight for
+large surface scenes. The scrubber revisits earlier scene windows retained in that display history. Scene history is not recording coverage. Hidden views
+pause playback; the lecture embedding manages its active iframe lifecycle.
 
-The tests check mathematical identities and real WASM behavior, all descriptor
-defaults and control endpoints, deterministic reset, finite outputs, section
-placement, published URL paths, desktop/mobile interaction, export/replay,
-and the one-iframe lifecycle. Production deployment uses the existing Euclidean
-Gas artifact and Theory build; no separate hosting service is required.
+## Run native experiments and checks
 
-## Part V
+From `algorithmic-gas/`:
 
-The [detailed Part V document](../../../../docs/source/project/volume2_partv_interactive_experiments.md)
-records each placement, experiment, controls, prediction and numerical comparison.
-The native implementation is in `tracking`, `fractal_set`, `partv_geometry` and
-`partv_analysis`, with actual O-stage adaptive diffusion in the benchmark provider.
+```bash
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- catalog
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- V-05 7 96 --output /tmp/V-05.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- analyze /tmp/V-05.json --output /tmp/V-05-analysis.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- stress V-05 0 10 --output /tmp/V-05-stress.json
+```
 
-`V-01`, `V-02` and `V-17` reuse their recorded run when seed, population size,
-history and initial scenario agree. Reset creates a fresh run. Scene selection,
-layers, camera and vertical display scale preserve the data. The light-cone
-comparison always uses physical time; vertical exaggeration affects drawing only.
-Trajectory JSON has a separate validated import/export workflow. Native archives
-also support CBOR, preserving nonfinite invalid observations. Checkpoint v3
-preserves the archive; v2 imports begin coverage at the restored state.
+The native stress command reports every attempted case and exits unsuccessfully
+if any selected case errors. A completed calculation can still report a failed
+scientific prediction or an inconclusive estimate; inspect its measured result.
 
-Run the dedicated scene regression with:
+From the repository root:
 
-    node fractal-gas-web/tests/euclidean-gas/lecture-fractal-browser.mjs
+```bash
+npm --prefix fractal-gas-web run test:euclidean-gas
+npm --prefix fractal-gas-web run test:euclidean-lectures
+npm --prefix fractal-gas-web run test:euclidean-lectures-browser
+npm --prefix fractal-gas-web run test:euclidean-lecture-embeds-browser
+```
 
-Spacetime reconstruction uses a shared tetrahedral partition with one-sided clone
-jump caps, not polygon vertex matching. Planar constant metrics use clipped cells
-and pinned Spade predicates. Variable metrics use a refining graph-distance
-approximation, with its grid and directional resolution stated in the result.
+See [VALIDATION.md](VALIDATION.md) for the numerical contracts and limits of these
+checks. Native test success, compiled parity, browser behavior and scientific
+prediction acceptance are separate pieces of evidence.

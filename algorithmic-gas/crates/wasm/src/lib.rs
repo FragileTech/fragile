@@ -7,6 +7,66 @@ use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 mod physics_bindings;
 
+/// Complete Volume II catalog; controls and native stress cases share this source.
+#[wasm_bindgen]
+pub fn lecture_catalog() -> Result<JsValue, JsValue> {
+    js(&algorithmic_gas::lecture::catalog())
+}
+
+#[wasm_bindgen]
+pub struct LectureExperiment {
+    session: algorithmic_gas_benchmarks::lecture::LectureSession,
+}
+#[wasm_bindgen]
+impl LectureExperiment {
+    #[wasm_bindgen(js_name=create)]
+    pub async fn create(request: String) -> Result<LectureExperiment, JsValue> {
+        if request.len() > 1024 * 1024 {
+            return Err(error("Lecture request too large"));
+        }
+        let request = serde_json::from_str(&request).map_err(error)?;
+        Ok(Self {
+            session: algorithmic_gas_benchmarks::lecture::LectureSession::create(request)
+                .await
+                .map_err(error)?,
+        })
+    }
+    pub async fn advance(&mut self, steps: u32) -> Result<JsValue, JsValue> {
+        js(&self.session.advance(steps as usize).await.map_err(error)?)
+    }
+    pub fn snapshot(&self) -> Result<JsValue, JsValue> {
+        js(&self.session.snapshot().map_err(error)?)
+    }
+    pub fn evidence(&self) -> Result<JsValue, JsValue> {
+        js(&self.session.evidence())
+    }
+    pub fn checkpoint(&self) -> Result<Vec<u8>, JsValue> {
+        self.session.checkpoint().map_err(error)
+    }
+    #[wasm_bindgen(js_name=restore)]
+    pub async fn restore(bytes: Vec<u8>) -> Result<LectureExperiment, JsValue> {
+        Ok(Self {
+            session: algorithmic_gas_benchmarks::lecture::LectureSession::restore(&bytes)
+                .await
+                .map_err(error)?,
+        })
+    }
+}
+
+/// Recompute a lecture result from matching configurations and complete run archives.
+#[wasm_bindgen]
+pub async fn lecture_analyze(evidence: String) -> Result<JsValue, JsValue> {
+    if evidence.len() > 256 * 1024 * 1024 {
+        return Err(error("Lecture evidence too large"));
+    }
+    let evidence = serde_json::from_str(&evidence).map_err(error)?;
+    js(
+        &algorithmic_gas_benchmarks::lecture::analyze_evidence(&evidence)
+            .await
+            .map_err(error)?,
+    )
+}
+
 enum Run {
     F32(AlgorithmicGas<f32>),
     F64(AlgorithmicGas<f64>),
@@ -85,23 +145,6 @@ pub fn partv_geometry(request_json: String) -> Result<JsValue, JsValue> {
     }
     let request = serde_json::from_str(&request_json).map_err(error)?;
     js(&algorithmic_gas::partv_geometry::analyze(request).map_err(error)?)
-}
-#[wasm_bindgen]
-pub fn partv_analysis(request_json: String) -> Result<JsValue, JsValue> {
-    if request_json.len() > 8 * 1024 * 1024 {
-        return Err(error("analysis request exceeds 8 MiB"));
-    }
-    let request = serde_json::from_str(&request_json).map_err(error)?;
-    js(&algorithmic_gas::partv_analysis::analyze(request).map_err(error)?)
-}
-/// Part VI reference calculations. The browser worker owns scheduling and cancellation.
-#[wasm_bindgen]
-pub fn partvi_analysis(request_json: String) -> Result<JsValue, JsValue> {
-    if request_json.len() > 8 * 1024 * 1024 {
-        return Err(error("Part VI request exceeds 8 MiB"));
-    }
-    let request = serde_json::from_str(&request_json).map_err(error)?;
-    js(&algorithmic_gas::physics::partvi::analyze(&request).map_err(error)?)
 }
 /// Independent complete-engine continuations for native source/Noether experiments.
 #[wasm_bindgen]

@@ -1,11 +1,7 @@
-import { demos as foundations } from "./foundations.js";
-import { demos as convergence } from "./convergence.js";
-import { demos as entropy } from "./entropy.js";
-import { demos as fractal } from "./fractal.js";
-import { demos as qft } from "./partvi.js";
-
-export const demos = [...foundations, ...convergence, ...entropy, ...fractal, ...qft];
-export const metadata = demos.map(({ create, ...descriptor }) => descriptor);
+import { metadata } from "./registry.js";
+import { createRunModel } from "./run-model.js";
+export { metadata };
+export const demos = metadata.map(meta => ({...meta, create:args=>createRunModel({...args,id:meta.id})}));
 
 export function parameters(demo, input = {}) {
   return Object.fromEntries(

@@ -11,14 +11,14 @@ Requirements: Rust 1.95.0 (pinned in `rust-toolchain.toml`), and Node 22 for the
 ```sh
 cargo test --workspace --locked
 cargo clippy --workspace --all-targets --locked -- -D warnings
-cargo run --release -p algorithmic-gas-benchmarks -- --precision f64 --walkers 256 --steps 100
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --precision f64 --walkers 256 --steps 100
 ```
 
 The runner accepts `--benchmark sphere|rastrigin|rosenbrock|styblinski_tang`, `--dimensions`, `--seed`, `--backend`, and `--config FILE`. Arguments apply in order; place `--config` before overrides. Explicit file boundary settings are preserved. Output is JSON with resolved configuration, initialization and step timings, raw reward summaries, submitted reward-row count, synchronization count and transfer bytes. Initialization/compilation must be reported separately from steady-state performance.
 
 ```sh
-cargo run --release -p algorithmic-gas-benchmarks --features wgpu -- --backend wgpu --precision f32
-cargo run --release -p algorithmic-gas-benchmarks --features cuda -- --backend cuda --precision f64
+cargo run --release -p algorithmic-gas-benchmarks --features wgpu --bin gas-benchmark -- --backend wgpu --precision f32
+cargo run --release -p algorithmic-gas-benchmarks --features cuda --bin gas-benchmark -- --backend cuda --precision f64
 ```
 
 These profiles require a compatible adapter/driver. Compilation alone does not verify GPU execution. The WGPU adapter rejects software CPU adapters. CUDA `f64` must pass the device's dtype and primitive-operation checks; it is not promised to be fast.
@@ -26,7 +26,7 @@ These profiles require a compatible adapter/driver. Compilation alone does not v
 ## Numerical algorithmic physics
 
 `physics::jet::JetSpace` provides packed multivariate Taylor algebra through order
-four. In 3D, order three uses 20 coefficients (value, three gradients, six Hessian
+twelve, with a 1,024-coefficient admission limit checked before allocation. In 3D, order three uses 20 coefficients (value, three gradients, six Hessian
 and ten third-derivative components). `FitnessJet::from_jet` exports ordinary
 derivatives in lexicographic nondecreasing-axis order. Global conditional fitness
 uses prefix/suffix Welford summaries: O(N) preparation and O(1) work in population
@@ -66,9 +66,9 @@ a fresh recording boundary. Identical checkpoint replay remains deterministic.
 
 `physics::evolution` checks disjoint calibration/validation replica keys;
 `physics::closure` reports held-out constitutive errors against a constant
-baseline. `physics::thermodynamics::FiniteKernel` supplies exact stationary,
-Poisson-response, controlled-Fisher and path-KL reference calculations. These
-quantities and the fitness Hessian have separate APIs and definitions.
+baseline. Empirical transition matrices, their fitted response diagnostics and the fitness
+Hessian are separate numerical objects. Their measurement contracts state the
+observable, normalization and applicable mathematical identity.
 
 Run the reproducible smoke simulation or the full research preset:
 
@@ -193,7 +193,7 @@ A non-Gaussian O-stage innovation changes the transition law; Gaussian thermosta
 
 `AlgorithmicDistance`, `InteractionKernel`, `CompanionSampler`, `NoiseSource`, `RewardSource`, `ObservationExtractor`, `RewardExtractor`, `DerivedFieldProvider` and `DomainAdapter` are reusable interfaces. `KineticOperator::advance_with_noise` also accepts a custom noise source directly. `GradientProvider`, `HessianProvider`, `DriftProvider` and `DiffusionProvider` define derivative/dynamics contracts; only gradients are consumed by a built-in derivative-dependent integrator today. Other providers are consumed through custom kinetic/noise hooks. Automatic differentiation is not required and no AD adapter is implemented yet.
 
-The spec's signatures are architecture sketches, not copy-paste declarations of this initial API. Generate the implemented API reference with `cargo doc --workspace --no-deps`. Custom providers/operators must have stable, parameter-sensitive IDs and be stateless for replay, or place all persistent per-walker state in the supplied domain snapshots. Generic serialization of custom operator state is not implemented.
+Generate implementation examples from the public Rust API and its checked tests. Generate the implemented API reference with `cargo doc --workspace --no-deps`. Custom providers/operators must have stable, parameter-sensitive IDs and be stateless for replay, or place all persistent per-walker state in the supplied domain snapshots. Generic serialization of custom operator state is not implemented.
 
 ## Step, recording and replay
 
@@ -229,25 +229,27 @@ Configuration/results export as JSON. Checkpoints export as binary `.agc` files 
 
 Both CPU and WebGPU bundles are generated under ignored `engine/` directories; third-party rendering files under ignored `vendor/`. `WASM_BINDGEN=/path/to/wasm-bindgen` overrides the pinned CLI location. `node fractal-gas-web/tools/build-euclidean-gas.mjs --cpu-only` builds only the CPU profile. CI builds both; deployment assembly publishes this lab separately from existing labs.
 
-### Lecture fixtures and recorded stages
+### Lecture sessions and recorded stages
 
-The lecture worker uses `await run.set_population(JSON.stringify({positions, velocities, alive}))`
-to install controlled examples. `positions` is a finite `N × d` array with the run's configured
-shape; optional `velocities` requires the existing BAOAB velocity field, and optional `alive`
-is an `N`-entry Boolean mask. Omitted `alive` makes every row eligible before boundary checks.
-False entries are represented by the external-termination signal. Replacement validates the
-fixture, recomputes rewards, clears donor history and the previous report, and preserves the
-step number and seed. It supports a zero-survivor fixture so the next step can display the
-engine's explicit extinction event.
+All 128 Volume II demos use the Rust experiment registry and the same resumable
+session as the native runner. Rust initializes populations, executes configured
+interventions, records the gas and computes every scientific series. JavaScript
+schedules bounded advances and renders the returned values. The worker reuses its
+initialized WASM module between experiments.
 
-Call `run.set_trace(true)` before stepping to populate `snapshot().trace` with
-`{stage, population}` records. Stages include `pre_clone`, `literal_clone`, `post_transform`, validated `post_clone`,
-the five BAOAB substages `B1`, `A1`, `O`, `A2`, `B2`, and `post_kinetic`.
-Substages follow the actual boundary checks; extinction can shorten the trace. Traces are
-limited to 16 states and enabled only for populations with at most 8192 observation scalars.
-They consume no random draws, preserve normal step outcomes, are omitted from checkpoints,
-and retain the previous completed trace after a failed transaction. Replacement and restore
-clear the replay. This capture is off by default.
+`LectureExperiment.create(request)` creates a session; `advance(count)` executes
+bounded batches; `snapshot()` reads completed measurements. `evidence()` exports
+the request, resolved configurations and actual archives. `checkpoint()` and
+`LectureExperiment.restore(bytes)` preserve every member of an ensemble and its
+recording. `await lecture_analyze(evidence)` recomputes archive measurements and,
+where required, the complete-checkpoint continuation protocol.
+
+Recordings retain `pre_clone`, `literal_clone`, `post_transform`, `post_clone`,
+BAOAB substages and boundary inputs. Tracing does not draw additional randomness.
+Donor and transform sources retain frame, version, slot and generation; intermediate
+viscous-force sources resolve to their actual recorded operator-stage events.
+An all-ineligible initial population produces an explicit terminal extinction
+outcome without fabricating a committed update.
 
 `RunConfig.potential` optionally selects an independent analytic force potential, while
 `RunConfig.reward_shift` translates the reward objective by a finite `d`-vector (empty means
@@ -278,7 +280,7 @@ Contract tests cover shapes, scalar precision, matching laws, separate streams, 
 
 Remaining architecture targets include device-resident population/fitness/cloning and reusable scratch buffers, device-only permutation, index-only hybrid shuffle transfers, local/historical input alignment, true multi-donor recombination, cached dependency graphs, capability-restricted numerical views, declarative units/component descriptors, persistent custom-operator serialization, Student/stateful/correlated noise, AD adapters, matrix friction and production simulator adapters. Device loss can terminate a worker; the last explicit checkpoint is the recovery boundary.
 
-No convergence or equilibrium result follows merely from choosing modules with familiar names. Apply the book's theory only after checking the exact configuration and hypotheses.
+Experiment contracts record the configured update, observable and applicable hypotheses alongside the measurements.
 
 ### Durable Part V archives and computations
 
@@ -298,64 +300,86 @@ finite lecture data; CBOR preserves nonfinite invalid observations.
 `partv_geometry::analyze` supplies exact 2D conditional fitness derivatives,
 spectral metric functions, constant-metric clipped Voronoi cells, Spade 2.15.1
 Delaunay maintenance, refining variable-metric distances, and shared tetrahedral
-spacetime partitions. `partv_analysis::analyze` supplies seeded independent
-transport, sampling, operator and curvature reference experiments.
+spacetime partitions. The registered Part V session constructs geometry from recorded walkers, donor
+relations and events; its transport and curvature calculations use that recorded
+context.
 
 The benchmark `RunConfig.physics_metric` option accepts
 `{epsilon, temperature, policy, curvature, clipping_threshold}`. It evaluates the frozen conditional fitness
 field at the actual O-stage position, keeping the force potential separate.
 The provider supports general-dimensional BAOAB, smooth global or local
-normalization, logistic maps, and one same-frame companion.
+normalization, logistic maps, and one distance companion. Covered historical
+distance donors resolve by immutable source identity. Historical cloning requires
+the supported global standardization configuration.
 Already-dead rows have unavailable field coverage; revived rows explicitly use
 their donor's frozen field. Unsupported configurations return capability errors.
 
 
-## Part VI calculations and interactive lectures
+## Registered lecture experiments
 
-`physics::partvi::analyze(&ExperimentRequest)` runs the 66 finite reference
-calculations. `analyze_archive` uses validated walker archives for empirical
-covariance, path likelihoods, predictions, color/twistor readouts, geometry,
-and mechanical budgets across 23 supported archive experiments. Unsupported archive
-requests return an error. Every result contains its derivation contract, executed
-configuration, model, controls, computed
-curves, metrics, and numerical provenance. Independent engine continuations
-for experiments 19, 22 and 45 use `algorithmic_gas_benchmarks::qft_experiments::run`.
+The single catalog is `crates/algorithmic-gas/src/lecture_experiments.json`:
+10 Part I, eight Part II, eight Part III, 16 Part IV, 20 Part V and 66 Part VI
+experiments. `algorithmic_gas_benchmarks::lecture::LectureSession` is their shared
+execution path. Each configured run supplies its observations; standalone model
+simulations are not lecture data sources.
 
-From this directory:
+Part VI uses three execution patterns:
+
+- Archive measurements compute fields, correlations, geometry, path carriers,
+  graph quantities and mechanical ledgers from executed transitions.
+- VI-15, VI-30 and VI-31 use complete paired runs for parity, translation and
+  local intervention. Random addresses are shared within each pair; different
+  pairs use independent seeds.
+- VI-19, VI-22 and VI-45 execute independent continuations of complete checkpoints,
+  retaining donor memory, provider context and the future schedule.
+
+Use the common CLI from this directory:
 
 ```sh
-cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
-  sweep examples/partvi/all-reference.json --output /tmp/partvi-reference.json
-cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
-  run examples/partvi/recorded-color.json --steps 32 \
-  --save-archive /tmp/partvi-archive.json --output /tmp/partvi-color.json
-cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
-  analyze examples/partvi/recorded-action.json --archive /tmp/partvi-archive.json
-cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
-  run examples/partvi/metric-replicas.json --output /tmp/partvi-metric.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- catalog
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- \
+  VI-18 7 96 --output /tmp/gas-noise-evidence.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- \
+  analyze /tmp/gas-noise-evidence.json --output /tmp/gas-noise-analysis.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- \
+  stress IV-07 0 8 --output /tmp/gas-derivative-stress.json
 ```
 
-`algorithmic-gas-qft` exposes the same CLI. `run --config RUN.json` accepts an
-explicit gas profile; calculations use CPU f64. Temporal prediction and spectral
-readouts need a long enough archive for separate training and validation windows;
-the supplied memory and spectrum requests can use `run --steps 96`. Ensemble runs
-export replica estimates and identities in their result bundle. `--save-archive`
-applies to single-trajectory runs. All imports validate the current schema.
+For an explicit request, save this JSON as `/tmp/gas-request.json`:
 
-Build the browser bundles from the repository root with
-`npm --prefix fractal-gas-web run build:euclidean-gas`. Open
-`euclidean-gas/lecture.html?demo=VI-01` in the laboratory server. The Part VI
-viewer supports recorded gas runs, finite reference calculations, native result
-imports, archive exports, formula search, and downloadable SVG/JSON. Scientific
-calculations run in the compiled worker. The curvature workbench also exposes
-CPU f64/f32 and WebGPU f32 batch contractions with explicit backend results.
+```json
+{
+  "id": "VI-18",
+  "seed": 7,
+  "steps": 96,
+  "parameters": {"engine_memory": 2}
+}
+```
 
-The [experiment guide](../docs/source/2_fractal_gas/partvi_experiments.md)
-describes every placement, control, numerical comparison, and interpretation.
-The generated formula index links chapter statements and displayed equations
-to workbench families.
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-lecture -- \
+  run /tmp/gas-request.json --output /tmp/gas-evidence.json
+```
 
-The [QFT validation report](QFT_VALIDATION.md) traces all 66 workbenches to their
-algorithmic objects, exact identities, independent comparisons, and coverage. It
-includes measured source-response and noise agreement, historical-source checks,
-and the observed failure of the tested spatial constitutive closure.
+`run` and `analyze` also accept `-` to read JSON from standard input. A run result
+contains a rendered snapshot and its evidence; `analyze` accepts that complete
+bundle or the evidence object. Required protocol durations can determine per-run
+step budgets, including matched-physical-time refinement. The result records the
+actual counts. `gas-physics` and `algorithmic-gas-qft` expose this same CLI.
+
+`stress ID START COUNT` executes a reproducible slice of the registry's generated
+control cases and reports every completed or failed case. The process fails if
+any selected case fails. Scientific fits can instead return an explicit
+inconclusive outcome with their measurements and diagnostics intact.
+
+The browser route is `/euclidean-gas/lecture/?demo=VI-18`. Native and browser
+results share the same Rust calculations, result schema and derivation contracts.
+Imported evidence is validated and analyzed again. Analytical comparisons are
+identified as predictions of the stated observable; a fitted physical hypothesis
+retains its measured residual and interpretation limits.
+
+[QFT_VALIDATION.md](QFT_VALIDATION.md) records the validated identities, measured
+prediction failures and current test coverage. The
+[Part VI contracts](crates/algorithmic-gas/src/physics/partvi_contracts.json) state
+what each experiment measures. The [lecture guide](../docs/source/2_fractal_gas/partvi_experiments.md)
+provides the chapter context.

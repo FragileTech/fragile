@@ -1,2 +1,2 @@
-// Both command names expose the same native Part VI runner and result contract.
-include!("algorithmic-gas-qft.rs");
+// All native lecture entry points use the same registry and experiment session.
+include!("gas-lecture.rs");

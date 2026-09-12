@@ -236,16 +236,7 @@ fn archive_thermostat_rejects_an_unidentified_change_to_the_noise() {
     })
 }
 #[test]
-fn fastest_advertised_density_mode_preserves_positive_decay() {
-    let r=fields::analyze(&ExperimentRequest{experiment:47,parameters:json!({"wave_number":6,"length":0.5,"diffusion":0.2,"rate":2.,"resolution":256})},None).unwrap();
-    let points = &r.plots[0].series[0].points;
-    assert!(points.iter().all(|p| p[1] >= 0. && p[1] <= 1.));
-    assert!(points.windows(2).all(|p| p[1][1] <= p[0][1]));
-    assert!(r.details["explicit_euler_multiplier"].as_f64().unwrap() >= 0.5 - 1e-12);
-}
-
-#[test]
-fn recorded_selected_graph_is_separate_from_the_reconstructed_gaussian_graph() {
+fn selected_graph_measurements_contain_only_actual_recorded_edges() {
     block_on(async {
         let gas = executed(3, InnovationLaw::Gaussian).await;
         let a = gas.recording().unwrap();
@@ -274,6 +265,7 @@ fn recorded_selected_graph_is_separate_from_the_reconstructed_gaussian_graph() {
                 graph.edges.iter().filter(|e| e.kind == *kind).count()
             );
         }
-        assert_eq!(r.details["gaussian_reference_graph"], true);
+        assert!(r.details.get("gaussian_reference_graph").is_none());
+        assert_eq!(r.details["source"], "recorded_engine_fields");
     })
 }

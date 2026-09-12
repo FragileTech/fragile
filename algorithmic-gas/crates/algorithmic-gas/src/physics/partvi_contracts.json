@@ -1,18 +1,20 @@
 [
   {
     "experiment": 1,
-    "algorithm_object": "Oriented transport words supplied as unitary links",
-    "exact_identity": "Word reversal is adjoint; rebasing conjugates a closed word and preserves its trace.",
-    "measurement": "Finite supplied SU(2) links; no executed gas connection is available.",
-    "validation": "Independent matrix products check adjoint and trace identities.",
-    "limitations": "Native archive route unsupported: an actual transport connection must be constructed and recorded before this characterizes gas holonomy. Color rank-one projectors are not substitute SU(3) links.",
+    "algorithm_object": "Normalized complex phase-space rays at recorded interaction triangle vertices",
+    "exact_identity": "U_uv=<z_u,z_v>/|<z_u,z_v>|; loop reversal conjugates U_uv U_vw U_wu",
+    "measurement": "Resolve immutable event rays, oriented loop phases and reversal residuals",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The connection is a declared U(1) readout of x+i v; it is not an SU(3) transporter or the algorithm transition density.",
     "theory_labels": [
       "thm-lqft-oriented-word-algebra"
     ],
-    "corrections": "No formula error found; root strict dispatch prevents synthetic links being presented as archive measurements.",
-    "title": "Oriented diagrams and transport",
+    "title": "Oriented transport on recorded triangles",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-01",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 2,
@@ -24,10 +26,12 @@
     "theory_labels": [
       "thm-cloning-antisymmetry-lqft"
     ],
-    "corrections": "Implemented actual archive calculation: attaching recorded metadata to an unrelated fitness sweep did not measure the algorithm. Retained clipping and revival terms explicitly.",
-    "title": "Cloning antisymmetry and exclusion",
+    "title": "Executed clone gates and their innovations",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-02",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 3,
@@ -41,10 +45,12 @@
       "thm-lqft-record-fock-reconstruction",
       "prop-lqft-finite-record-transfer"
     ],
-    "corrections": "Replaced pooled walker rows with whole-record functions, connected actual Gram eigenvectors to CAR matrices, and capped reference Fock modes at its actual rank-two quotient rather than inventing null modes.",
-    "title": "Exterior algebra from recorded observables",
+    "title": "Exterior algebra of measured frame observables",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-03",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 4,
@@ -57,10 +63,12 @@
       "prop-lqft-finite-record-transfer",
       "thm-lqft-record-car-channel"
     ],
-    "corrections": "Implemented archive-derived contraction. Removed repeated-power time curve from this archive result because repeated powers were not measured Markov evolution. Source and target marginal whitening avoids an unjustified equilibrium assumption.",
-    "title": "Recorded transitions and CAR evolution",
+    "title": "Measured transitions and CAR channels",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-04",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 5,
@@ -72,10 +80,12 @@
     "theory_labels": [
       "thm-lqft-record-locality-defect"
     ],
-    "corrections": "Verified separate centering and both-region masks; unknown feature names now error instead of silently selecting velocity.",
     "title": "Regional covariance and locality",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-05",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 6,
@@ -87,25 +97,29 @@
     "theory_labels": [
       "thm-lqft-replica-isomorphism"
     ],
-    "corrections": "Added actual archive route sharing the corrected whole-record observable law; did not interpret interacting walkers as independent replica samples.",
-    "title": "Products and replica wedges",
+    "title": "Products and empirical replica wedges",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-06",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 7,
-    "algorithm_object": "Finite point-cloud quadrature of the declared continuum density-weighted integral operator",
-    "exact_identity": "Sample mean approximates the density-weighted kernel integral with the declared normalization.",
-    "measurement": "Independent generated point cloud and deterministic quadrature under a supplied density.",
-    "validation": "Existing regression uses independent Monte Carlo points versus quadrature and tests seed variation and sample-size error.",
-    "limitations": "Native archive route unsupported: this is a declared continuum reference sampling law, not a fitted density/operator derived from the full interacting gas.",
+    "algorithm_object": "Recorded position changes on slots eligible at both endpoints",
+    "exact_identity": "y²-x²=2x(y-x)+(y-x)² at every retained coordinate",
+    "measurement": "Whole-swarm normalized linear and quadratic finite-step increments divided by actual dt, including cloning jumps",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "These are realized weak-generator samples, not a conditional drift estimate or a continuum generator; changes of eligibility are outside this common-support readout.",
     "theory_labels": [
       "thm-lqft-record-locality-defect"
     ],
-    "corrections": "Independent quadrature and Monte Carlo use the same specified density, normalization and continuum target.",
-    "title": "Density-aware continuum operators",
+    "title": "Finite-step weak-generator samples",
     "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-07",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 8,
@@ -113,30 +127,34 @@
     "exact_identity": "c_a=Fvisc_a exp(i kappa v_a)/max(||Fvisc||,delta), mask=1[||Fvisc||>delta].",
     "measurement": "Latest executed B1 viscous force with exact B1 input velocity/version, per-slot availability, raw normalized vector and separate valid mask.",
     "validation": "Independent raw norm, masked norm and strict stage/version validation; existing archive tests tamper viscous source generation/version.",
-    "limitations": "This explicitly declared matched-B1 convention differs from the book Python preceding-force/current-preclone pairing; it must be named as its own observable map. Zero viscous support yields invalid colors, not normalized physical states.",
+    "limitations": "The readout uses matched B1 input velocity and executed B1 viscous force. Zero viscous support yields an invalid color with explicit coverage.",
     "theory_labels": [
       "def-sm-direct-observable-law"
     ],
-    "corrections": "Confirmed actual recorded force use and explicit matched-stage provenance. Do not silently substitute copied surrogate force or a different time pairing.",
-    "title": "Recorded color states",
+    "title": "Force-based colors from executed stages",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-08",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 9,
     "algorithm_object": "Pair, baryon, triangle and rank-one projector contractions of actual valid color states",
     "exact_identity": "Common SU(3) preserves q,b,triangle; independent ray phases preserve triangle; triangle=Tr(PiPjPk); |b|²=det Gram.",
-    "measurement": "Consecutive valid triples from actual B1 color records, with complex values, masks and original source-slot mapping.",
+    "measurement": "Consecutive valid triples from actual B1 color records, with complex values, masks and immutable source-slot mapping.",
     "validation": "Independent dense projector matrix multiplication and Gram determinant, plus non-diagonal common SU(3) rotation and independent slot phases.",
     "limitations": "Triple selection is explicit and finite; no actual transport connection is inferred from projectors. Fewer than three valid colors gives unavailable triple result.",
     "theory_labels": [
       "thm-sm-direct-color-invariants",
       "prop-sm-direct-triangle-projectors"
     ],
-    "corrections": "Implemented archive path instead of fixture colors, retained complex observables and valid-slot provenance, and used a genuinely mixing SU(3) transform rather than only a diagonal phase.",
-    "title": "SU(3) invariant coordinates",
+    "title": "Invariant coordinates of measured colors",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-09",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 10,
@@ -149,25 +167,29 @@
       "def-sm-direct-companion-doublet",
       "thm-sm-native-doublet-fluctuations"
     ],
-    "corrections": "Implemented actual directed-map readout, configured distance and fitness scaling. Second component follows the companion’s own selected edge rather than assuming reciprocal pairing; covered history is resolved explicitly.",
-    "title": "Companion doublets",
+    "title": "Companion doublets with immutable sources",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-10",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 11,
-    "algorithm_object": "Holonomy from supplied unitary transport links",
-    "exact_identity": "Closed word transforms by basepoint conjugation; trace is invariant.",
-    "measurement": "Finite explicit SU(2) transport fixture.",
-    "validation": "Independent ordered matrix products versus gauge transformed products.",
-    "limitations": "Native archive route unsupported: executable transport must be defined from actual records. Scalar phases or rank-one color projectors do not establish the supplied SU(2)/SU(3) bundle connection.",
+    "algorithm_object": "Recorded phase-space ray connection around actual interaction triangles",
+    "exact_identity": "Products of overlap phases transform covariantly at endpoints; closed products are invariant",
+    "measurement": "Recorded triangle holonomy, support coverage and local phase transformation residuals",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Only nonzero rays and nonorthogonal overlaps define this connection; excluded support is counted.",
     "theory_labels": [
       "thm-lqft-oriented-word-algebra"
     ],
-    "corrections": "Root strict native dispatch keeps reference algebra from being labeled an actual connection measurement.",
-    "title": "Attribution holonomy",
+    "title": "Phase-space ray holonomy",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-11",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 12,
@@ -180,10 +202,12 @@
       "thm-sm-direct-channel-memory",
       "thm-sm-prediction-complete-descriptors"
     ],
-    "corrections": "Added measured occupancy stationarity defect and explicit partition scope; unknown descriptors error. Actual copying, noise, clipping and historical dependence remain in observed endpoints, rather than being removed from evolution.",
-    "title": "Channel compression and memory",
+    "title": "Compressed channels and memory",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-12",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 13,
@@ -195,10 +219,12 @@
     "theory_labels": [
       "thm-sm-predictive-partition-convergence"
     ],
-    "corrections": "Added occupancy stationarity diagnostics and explicit scope separating empirical closure assessment from the theorem’s nested/refined prediction-completion hypotheses.",
     "title": "Predictive partition refinement",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-13",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 14,
@@ -211,26 +237,30 @@
       "prop-sm-implemented-collision-increments",
       "cor-sm-physics-paired-cloning"
     ],
-    "corrections": "Implemented actual engine write accounting; did not assume balanced copying, omit overwritten recipients, or force ordinary directed cloning to satisfy paired collision conservation.",
-    "title": "Complete updates and pair cancellation",
+    "title": "Literal clone writes and population balances",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-14",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 15,
-    "algorithm_object": "Declared charge-conjugation orbit fixture and symmetry-breaking proxy",
-    "exact_identity": "An invariant ensemble with a declared odd observable has zero mean under its full involution.",
-    "measurement": "Finite conjugate-color orbit fixture; no full algorithmic CP action or invariant ensemble has been measured.",
-    "validation": "Fixture symmetry and a biased two-orbit mean are checked algebraically.",
-    "limitations": "Native route explicitly unsupported. Conjugating a color or a zero empirical mean does not establish full CP invariance of positions, velocities, companion law, noise, clipping and history. No complete actual CP involution has been derived here.",
+    "algorithm_object": "Paired complete gas runs with parity-transformed initial positions and velocities and antithetic innovation factors",
+    "exact_identity": "For a parity-covariant configured transition, transformed states follow the parity image under matched random addresses",
+    "measurement": "Independent pairs measure position/velocity parity residuals, donor/gate/eligibility differences and declared color-conjugation readouts",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The test covers the configured parity transformation and symmetric innovation law; it does not establish arbitrary CP symmetry or identify a nonzero loop phase as CP violation.",
     "theory_labels": [
       "def-sm-cp-transformation",
       "thm-sm-cp-violation"
     ],
-    "corrections": "The complete algorithmic CP involution and its transformed transition law remain to be characterized.",
-    "title": "Coupling statistics and CP",
+    "title": "Complete-engine parity and color conjugation",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "finite_model"
+    "available_measurement": "paired_complete_engine_runs",
+    "calculation_origin": "paired_complete_engine_runs",
+    "lecture_id": "VI-15",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 16,
@@ -242,10 +272,12 @@
     "theory_labels": [
       "def-sm-direct-observable-law"
     ],
-    "corrections": "The empirical descriptor law, primitive path carriers, and full-path source response have distinct named outputs.",
-    "title": "Effective action and generating functions",
+    "title": "Generating functions of recorded observables",
     "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-16",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 17,
@@ -276,14 +308,12 @@
       "thm-action-from-path-integral",
       "thm-ym-recorded-action-emergence"
     ],
-    "corrections": [
-      "Added an explicit carrier to every component.",
-      "Retain latent Gaussian/uniform coordinate laws for singular maps rather than discarding all path likelihood.",
-      "Recognize the implemented conditional-fitness provider as sharing the built-in categorical/gate law."
-    ],
     "title": "Executed path-action accounting",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-17",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 18,
@@ -308,19 +338,14 @@
       "These are raw B xi moments before thermostat scaling; the exact physical O-stage moments are separately evaluated in VI22/48."
     ],
     "theory_labels": [
-      "thm-ym-kinetic-metric-correspondence",
       "thm-ym-kinetic-metric-correspondence"
     ],
-    "corrections": [
-      "Exclude ineligible zero-filled rows.",
-      "Use d by rank factors, preventing low-rank indexing failure.",
-      "Use actual innovation fourth cumulant, including -6/5 for standardized uniform, and retain shifted means.",
-      "Recorded mode now displays only executed data rather than an unrelated reference sampling curve.",
-      "Factor covariance excludes the squared source mean; the uncentered second moment is reported separately."
-    ],
-    "title": "Kinetic metric from one record",
+    "title": "Noise moments from actual factors",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-18",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 19,
@@ -360,37 +385,34 @@
     "limitations": [
       "Hermite estimates are derivatives at zero; finite-theta finite differences can cross clone/mask thresholds and retain finite-shift bias.",
       "Survival-selected normalized response is not the displayed unselected cemetery-extended law.",
-      "Physical force-source KL and reduced descriptor scores in VI20 are a separate calculation."
+      "VI20 measures smoothed descriptor transition information, not this Gaussian source likelihood."
     ],
     "theory_labels": [
-      "thm-ym-native-source-response",
       "thm-ym-native-source-response"
     ],
-    "corrections": [],
-    "title": "Gaussian source response",
+    "title": "Gaussian source response through complete updates",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "independent_continuations"
+    "available_measurement": "complete_checkpoint_continuations",
+    "calculation_origin": "complete_checkpoint_continuations",
+    "lecture_id": "VI-19",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 20,
-    "algorithm_object": "Finite scalar Gaussian source fixture; no native archive source-score projection",
-    "exact_identity": "Gaussian mean shift KL equals theta^2/2 and conditional score projection reduces Fisher information.",
-    "measurement": "Gaussian samples and exact conditional descriptor probabilities.",
-    "validation": {
-      "suite": "partvi_qft: scalar source/quadrature and finite serialization tests pass"
-    },
-    "limitations": [
-      "This reference experiment does not reconstruct the actual metric force-source score from gas archives.",
-      "The actual Gaussian innovation-source engine identity is tested in VI19."
-    ],
+    "algorithm_object": "Chronological whole-frame mean-position descriptor transitions",
+    "exact_identity": "P_ij=n_ij/sum_j n_ij on supported training rows",
+    "measurement": "Training-bin transition counts, separately held-out counts/Brier score, supported-row Dobrushin coefficient and smoothed forward/reverse joint KL",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Descriptor KL uses explicit Jeffreys smoothing; it is not full path-space entropy production or a force-source likelihood.",
     "theory_labels": [
-      "thm-ym-metric-force-sources",
       "thm-ym-metric-force-sources"
     ],
-    "corrections": [],
-    "title": "Force sources and information",
+    "title": "Recorded transition information",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-20",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 21,
@@ -406,15 +428,14 @@
       "Temporal dependence remains in the retained sample."
     ],
     "theory_labels": [
-      "thm-ym-native-geometry-fiber-action",
       "thm-ym-native-geometry-fiber-action"
     ],
-    "corrections": [
-      "Explicit primitive density carrier clarifies the separately exported likelihood."
-    ],
-    "title": "Geometry-fiber disintegration",
+    "title": "Empirical geometry-fiber disintegration",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-21",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 22,
@@ -446,187 +467,165 @@
       "thm-u1-noether-current",
       "thm-ym-kinetic-metric-correspondence"
     ],
-    "corrections": [
-      "Added a falsifiable analytic O-stage oracle rather than relying only on agreement between empirical drift estimates.",
-      "Analytic predictions use each actual A1 state, so prior clone/donor/viscosity/boundary effects remain.",
-      "One entire continuation is the independent sampling unit; stage predictable variances are summed.",
-      "Zero covered O stages are reported as unexercised, without zero-residual validation metrics."
-    ],
-    "title": "Stochastic Noether balance",
+    "title": "Conditional stochastic balance",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "independent_continuations"
+    "available_measurement": "complete_checkpoint_continuations",
+    "calculation_origin": "complete_checkpoint_continuations",
+    "lecture_id": "VI-22",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 23,
-    "algorithm_object": "Finite supplied noncommuting SU(2) loop",
-    "exact_identity": "Trace is invariant under conjugation; direct Wilson action derivative equals analytic sine/cosine expression.",
-    "measurement": "Finite-difference action derivative and basepoint conjugation residual.",
-    "validation": {
-      "suite": "partvi_qft finite reference endpoint/serialization checks"
-    },
-    "limitations": [
-      "No archive gauge-link variation or node-by-node Ward divergence is measured."
-    ],
+    "algorithm_object": "Local phase changes of recorded phase-space ray frames",
+    "exact_identity": "Independent vertex rephasings cancel in each closed loop product",
+    "measurement": "Loop phases and local basis invariance residual computed on the actual selected graph",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is an exact Ward-type identity of the chosen observable, not a derived symmetry of an asserted Yang–Mills path measure.",
     "theory_labels": [
       "lem-ym-discrete-ward"
     ],
-    "corrections": [],
-    "title": "Wilson variation and Ward identity",
+    "title": "Local phase Ward identity on recorded loops",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-23",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 24,
-    "algorithm_object": "Finite constant noncommuting connection",
-    "exact_identity": "(U_square-I)/h^2 approaches the matrix commutator.",
-    "measurement": "Direct ordered products versus commutator and matrix-valued refinement residual.",
-    "validation": {
-      "suite": "partvi_qft reference checks"
-    },
-    "limitations": [
-      "The connection is supplied by the reference controls, rather than derived from actual gas transport."
-    ],
+    "algorithm_object": "Loop action readout 1-Re(U_loop) on recorded triangles",
+    "exact_identity": "d[1-Re(e^{it}U)]/dt at zero = Im(U)",
+    "measurement": "Measured loop actions, analytic phase derivatives and centered finite-difference residuals",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Identifying this geometric action with the gas path action remains a separate hypothesis; no continuum Yang–Mills limit is inferred.",
     "theory_labels": [
       "sec-ym-continuum"
     ],
-    "corrections": [],
-    "title": "Continuum Yang-Mills consistency",
+    "title": "Measured loop action and phase variation",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-24",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 25,
-    "algorithm_object": "Exact sampled two-state semigroup and Euler discretization",
-    "exact_identity": "Exact lambda=exp(-2qh) gives -log(lambda)/h=2q; Euler lambda=1-2qh converges under refinement.",
-    "measurement": "Repeated transition powers, decay curves and recovered-rate refinement.",
-    "validation": {
-      "test": "euler_gap_bias_refines_while_exact_semigroup_rate_is_fixed: passes"
-    },
-    "limitations": [
-      "These are supplied finite generators, not a native gas spectral-gap estimate."
-    ],
+    "algorithm_object": "Finite training-bin transition channel of the measured swarm descriptor",
+    "exact_identity": "The supported-row Dobrushin coefficient is half the maximum row L1 distance",
+    "measurement": "Transition row support, contraction coefficient, chronological held-out Brier score and counts",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "An empirical descriptor contraction coefficient is not a spectral gap of the complete gas kernel.",
     "theory_labels": [
       "sec-ym-constants"
     ],
-    "corrections": [],
-    "title": "Units, discrete time, and gaps",
+    "title": "Empirical descriptor contraction",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-25",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 26,
-    "algorithm_object": "Finite joint two-walker swap/collision fixture",
-    "exact_identity": "Delta(XY)=X DeltaY+Y DeltaX+DeltaX DeltaY; joint cross-covariance is -p(1-p)(y-x)^2.",
-    "measurement": "Exact enumeration of coupled outcomes and finite-step product terms.",
-    "validation": {
-      "test": "joint_collision_covariance_and_product_terms_survive: passes"
-    },
-    "limitations": [
-      "The reference correlated swap law is not the complete configured native clone/restitution law. Native full-write measurements belong to VI14/51."
-    ],
+    "algorithm_object": "Recorded clone, transform and kinetic velocity stages",
+    "exact_identity": "Energy and momentum changes telescope when all stage and eligibility transfers are included",
+    "measurement": "Actual stage mechanical budgets and clone/restitution contributions",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Literal directed copying need not conserve momentum; pair conservation is tested only for the configured reciprocal collision transform.",
     "theory_labels": [
       "prop-ym-complete-fluctuation-equations"
     ],
-    "corrections": [],
-    "title": "Fluctuation and collision budgets",
+    "title": "Cloning and restitution mechanical ledger",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-26",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 27,
-    "algorithm_object": "Exactly solved two-state killed chain",
-    "exact_identity": "QSD left eigenmeasure and survival-conditioned two-step path window use the same survival eigenvalue.",
-    "measurement": "Enumerated path TV against QSD-window bound under burn-in.",
-    "validation": {
-      "test": "qsd_window_comparison_enumerates_the_conditioned_path_law: passes"
-    },
-    "limitations": [
-      "No empirical QSD identification or quantitative mixing bound for the configured gas is inferred from this fixture."
-    ],
+    "algorithm_object": "Eligible population fraction and conditional squared radius along executed frames",
+    "exact_identity": "Fixed-N sum divided by the eligible fraction gives the eligible conditional mean when nonempty",
+    "measurement": "Frame eligibility, conditional population radius and net eligibility increments",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Eligible fraction within an interacting swarm is not an independently estimated killed-trajectory survival probability; no QSD is supplied.",
     "theory_labels": [
       "thm-ym-qsd-window-relaxation"
     ],
-    "corrections": [],
-    "title": "QSD windows and burn-in",
+    "title": "Eligibility and conditional population moments",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-27",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 28,
-    "algorithm_object": "Finite labeled-word reflection matrix with specified off-diagonal moments",
-    "exact_identity": "For c=-(u+v)/2, (c,1)Q(c,1)^T=-(u+v)^2/4.",
-    "measurement": "Direct matrix contraction, Hermitian defect and Hermitian-part eigenvalues.",
-    "validation": {
-      "test": "reflection_counterexample_has_the_predicted_negative_sign: passes"
-    },
-    "limitations": [
-      "Moments u and v are supplied reference values; they are not estimated from the native reflected geometry/color law.",
-      "This reflected pairing is distinct from the ordinary covariance pairing used in VI36."
-    ],
+    "algorithm_object": "Centered temporal reflection matrix of recorded frame observables",
+    "exact_identity": "Symmetrized empirical reflected products define the displayed matrix and its eigenvalues",
+    "measurement": "Temporal reflection matrix, eigenvalues, negative directions and frame-pair coverage",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Finite empirical positivity or negativity does not establish reflection positivity of the complete path law; observations are temporally dependent.",
     "theory_labels": [
       "prop-ym-native-labeled-color-reflection-sign"
     ],
-    "corrections": [],
-    "title": "Reflection matrices",
+    "title": "Empirical temporal reflection spectrum",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-28",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 29,
-    "algorithm_object": "Finite scalar potential-difference links",
-    "exact_identity": "Closed outer edge potential differences telescope; the defined triangle readout retains its phase difference.",
-    "measurement": "Direct complex products and scalar defects.",
-    "validation": {
-      "test": "scalar_outer_faces_telescope_while_triangles_do_not: passes"
-    },
-    "limitations": [
-      "This experiment evaluates supplied scalar links rather than recording full native geometric/gauge face construction."
-    ],
+    "algorithm_object": "Oriented boundaries of actual Fractal Set interaction faces",
+    "exact_identity": "Reversing boundary orientation conjugates the measured loop product",
+    "measurement": "Actual face vertices/edges and overlap-phase products with orientation residual",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A scalar ray connection is explicitly constructed; it does not replace matrix gauge transport.",
     "theory_labels": [
       "prop-ym-native-scalar-face-evaluation"
     ],
-    "corrections": [],
-    "title": "Scalar triangles and outer plaquettes",
+    "title": "Oriented boundaries of recorded interaction faces",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-29",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 30,
-    "algorithm_object": "Finite point cloud with anchored Gaussian regulator",
-    "exact_identity": "Co-translating coordinates and the regulator preserves its readout; moving only coordinates changes the anchored measurement.",
-    "measurement": "Direct sums and translated difference curve.",
-    "validation": {
-      "suite": "partvi_qft reference checks"
-    },
-    "limitations": [
-      "No native law-level translated QSD or boundary-domain comparison is estimated."
-    ],
+    "algorithm_object": "Paired complete gas runs with translated initial population; translated-system and fixed-objective protocols",
+    "exact_identity": "When objective, force and boundary are translated together, a translation-covariant update preserves the translated pairing",
+    "measurement": "Matched-address pairs measure position residuals and donor/gate/eligibility changes; independent pairs supply uncertainty",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Translating only the population in a fixed confining objective is a physical intervention, not an invariance test. Boundary and providers are part of the transformation.",
     "theory_labels": [
       "prop-ym-anchored-regulator-translation-test"
     ],
-    "corrections": [],
-    "title": "Translation and localization",
+    "title": "Complete-engine translation covariance and response",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "paired_complete_engine_runs",
+    "calculation_origin": "paired_complete_engine_runs",
+    "lecture_id": "VI-30",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 31,
-    "algorithm_object": "Finite multiplication operators and CAR covariance fixture",
-    "exact_identity": "Multiplication operators commute; covariance overlap controls the CAR regional anticommutator.",
-    "measurement": "Explicit matrix commutators and local/nonlocal kernel fixture.",
-    "validation": {
-      "suite": "partvi_qft CAR/operator checks"
-    },
-    "limitations": [
-      "Actual intervention-recomputed regional transition kernels are not reconstructed here."
-    ],
+    "algorithm_object": "Paired full-engine runs differing by a local initial position intervention",
+    "exact_identity": "Response is the difference between the executed intervened and baseline maps with matched future random addresses",
+    "measurement": "Independent paired runs measure regional footprint, mean response, state differences and changed donor/gate/eligibility events",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A finite intervention can cross thresholds; a measured footprint is not automatically a continuum causal cone or an infinitesimal derivative.",
     "theory_labels": [
       "sec-qft-axioms-verification"
     ],
-    "corrections": [],
-    "title": "Regional algebras and interventions",
+    "title": "Propagation of a local intervention",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "finite_model"
+    "available_measurement": "paired_complete_engine_runs",
+    "calculation_origin": "paired_complete_engine_runs",
+    "lecture_id": "VI-31",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 32,
@@ -643,32 +642,29 @@
     "theory_labels": [
       "sec-ym-algorithmic-qft-synthesis"
     ],
-    "corrections": [],
-    "title": "Connected algorithmic QFT",
+    "title": "Predictive algorithmic field channels",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-32",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 33,
-    "algorithm_object": "Finite real Lorentz vector and complex two-spinor algebra",
-    "exact_identity": "Determinant of sigma map equals Lorentz norm; null and two-spinor factorization identities.",
-    "measurement": "Independent determinant and epsilon-bracket calculations.",
-    "validation": {
-      "tests": [
-        "spinor_tie_rule_and_null_mass_identity passes",
-        "effective_twistor_incidence_matches_sigma_matrix_action passes"
-      ]
-    },
-    "limitations": [
-      "This verifies the algebra of supplied vectors; it does not reconstruct a physical on-shell particle momentum from the algorithm."
-    ],
+    "algorithm_object": "Recorded three-component velocities embedded as null four-vectors (|v|,v)",
+    "exact_identity": "det(|v|I+v·sigma)=0",
+    "measurement": "Velocity norms and relative null-bispinor determinant residuals across eligible records",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Null embedding is the observable definition, not an extracted mass shell or a measured dispersion relation; mass remains null.",
     "theory_labels": [
       "sec-twistor-spinor-conventions"
     ],
-    "corrections": [],
-    "title": "Spinor and mass identities",
+    "title": "Velocity-derived null bispinors",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-33",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 34,
@@ -694,14 +690,12 @@
       "def-effective-twistor-edge-data",
       "def-effective-edge-twistor"
     ],
-    "corrections": [
-      "Resolve historical donors by epoch/frame/version/slot/generation instead of dropping them.",
-      "Export source ages and coverage per donor.",
-      "Extend formal effective-triplet definition to actual immutable historical sources."
-    ],
-    "title": "Recorded triplet twistor operators",
+    "title": "Twistor observables from recorded triplets",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-34",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 35,
@@ -722,19 +716,18 @@
       "sec-twistor-vs-euclidean",
       "def-effective-twistor-correlators"
     ],
-    "corrections": [
-      "Historical immutable donor snapshots participate in sink evaluation.",
-      "Epoch crossings and nonconsecutive intervals remain excluded and documented."
-    ],
-    "title": "Source-frozen lag tracking",
+    "title": "Source-frozen twistor lag tracking",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-35",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 36,
     "algorithm_object": "Actual complete-record fixed-normalization frame observable; optional separately named source-pair diagnostic",
     "exact_identity": "C_frame_ab(n,l)=mu K^n[conj(f_a)K^l f_b]-conj(mu K^n f_a)mu K^(n+l)f_b, with actual K retaining memory, clone, kinetics, clipping, boundaries and killing.",
-    "measurement": "Training-only means/whitening, general complex roots, phase/decay fits and held-out error; fixed 1/N zero extension by default.",
+    "measurement": "Training-only centering/whitening and fixed-normalization frame correlations; signed/complex exponential and damped-oscillation candidates, trimmed-window stability and chronological held-out errors. Source-pair mode retains its distinct denominator.",
     "validation": {
       "seed": 516,
       "history_window": 2,
@@ -742,74 +735,77 @@
       "frame_gram_direct": 0.8500623473105489,
       "frame_gram_measured": 0.8500623473105489,
       "fit": {
-        "decay_rate": -1.7862384364191546,
-        "frequency": -18.089762813984343,
         "log_fit_rmse": 0.6110975403956461,
         "phase_fit_rmse": 0.5911784247409881,
         "heldout_complex_rmse": 0.3924447584217878,
         "mass": null,
-        "interpretation": "This measured finite-window mode is complex and grows in magnitude over the fit window; it does not supply a positive particle-mass estimate."
-      }
+        "interpretation": "This phase-space correlation changes sign near a cancellation and rebounds below its lag-zero magnitude. The candidate rate changes sign with the fit window; no growing mode or particle mass is identified.",
+        "candidate_decay_rate": -1.7862384364191546,
+        "candidate_frequency": -18.089762813984343,
+        "status": "inconclusive",
+        "window_candidate_decay_rates": {
+          "lags_1_3": 22.82631,
+          "lags_1_6": -1.78624,
+          "lags_4_9": 6.52729
+        }
+      },
+      "readout": "phase_space",
+      "aggregation": "frame_mean"
     },
-    "limitations": [
-      "General complex finite-window fits characterize the retained observable; they do not certify a positive transfer representation.",
-      "Stationarity is not assumed in the exact actual-K identity; a single trajectory can exhibit nonstationary finite-window behavior.",
-      "Chronological held-out data retain temporal dependence."
-    ],
+    "limitations": "Lag-correlation eigenvalues are diagnostic curves, not established powers of the full transition operator. Inconclusive fits do not identify growth, decay or mass. Temporal held-out data are dependent; independent runs are needed for statistical uncertainty.",
     "theory_labels": [
       "thm-effective-twistor-spectral-meaning",
       "def-effective-twistor-correlators",
-      "thm-effective-twistor-spectral-meaning",
       "cor-effective-twistor-positive-transfer"
     ],
-    "corrections": [
-      "Default to actual fixed-normalization zero-extended frame means.",
-      "Keep source-pair diagnostic explicitly separate.",
-      "Return unavailable for zero-pair lags instead of a zero transfer matrix.",
-      "Remove automatic particle mass assignment based only on positive fitted real decay.",
-      "Replace the conflated frame/pair spectral theorem with the exact actual-K finite-step identity and separately labeled conditional positive-transfer corollary."
-    ],
-    "title": "Spectral decay and twistor amplitudes",
+    "title": "Signed correlations and spectral fit diagnostics",
     "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-36",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 37,
-    "algorithm_object": "Specified time-dependent metric slab, not an executed walker transport",
-    "exact_identity": "Slice and ambient Levi-Civita connections differ by time variation; Lorentzian parallel transport preserves norm.",
-    "measurement": "RK4 transports a vector along the slab spatial path; compares with hyperbolic-function solution.",
-    "validation": "Norm and refinement tests.",
-    "limitations": "Reference-only: the engine does not supply a Lorentzian slab or a differentiable material map.",
+    "algorithm_object": "Conditional fitness metric reconstructed at the selected recorded donor context",
+    "exact_identity": "Levi-Civita transport preserves metric norm along a smooth path",
+    "measurement": "Implicit-midpoint transport along segments joining recorded positions, with coarse/refined integration and metric norm residuals",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The path is a spatial recorded-point interpolation in a frozen conditional metric; no Lorentzian flow is assumed and clipping kinks affect differentiability.",
     "theory_labels": [
       "assump-curvature-geometric-setting",
       "lem-curvature-slab-connection",
       "def-parallel-transport"
     ],
-    "corrections": [],
-    "title": "Transport in a changing geometry",
+    "title": "Metric transport along executed displacements",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-37",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 38,
-    "algorithm_object": "Specified unit-sphere connection",
-    "exact_identity": "Small-loop holonomy divided by controlled area tends to Gaussian curvature.",
-    "measurement": "Integrates transport around four sides and computes loop angle and area independently.",
-    "validation": "Integrated sphere holonomy converges to K=1.",
-    "limitations": "Reference-only; no recorded scutoid connection is inferred from edge displacements.",
+    "algorithm_object": "Conditional metric connection integrated around a recorded-point loop",
+    "exact_identity": "Holonomy is the ordered product of segment transports; numerical refinement tests the integration",
+    "measurement": "Closed recorded-point path, integrated transport matrices and coarse/refined errors",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is spatial metric holonomy; a prescribed constant-curvature surface is not inserted and loop area alone does not identify all curvature components.",
     "theory_labels": [
       "lem-holonomy-small-loops",
       "lem-regge-holonomy-approx",
       "thm-riemann-scutoid"
     ],
-    "corrections": [],
-    "title": "Curvature per loop area",
+    "title": "Holonomy along a recorded-point loop",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-38",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 39,
-    "algorithm_object": "Actual recorded conditional fitness query, immutable donor source and global/local normalizer; fixture alternatives",
+    "algorithm_object": "Actual recorded conditional fitness query, immutable donor source and global/local normalizer",
     "exact_identity": "g=epsilon I+H in strict domain, or epsilon I+H_positive for clipped provider; differentiate the configured query field through fourth order and contract curvature.",
     "measurement": "Archive reconstruction matches recorded O-stage Hessian at the identical query. Analytic packed curvature is checked against finite differences of the metric.",
     "validation": {
@@ -838,104 +834,105 @@
       "lem-curvature-query-moment-cache",
       "rem-curvature-clipped-computation"
     ],
-    "corrections": [
-      "Effective epsilon, policy, clipping_threshold exposed for both available and unavailable domains; no fabricated curvature for an indefinite strict metric.",
-      "PhysicsMetricOperators now resolves companion indices to immutable donor-pool rows (including historical position and velocity), rather than substituting the current row with the same slot number. Exact current-frame revival source identity is validated; its conditional field may retain a historical distance source."
-    ],
-    "title": "Conditional fitness curvature",
+    "title": "Curvature of the executed fitness metric",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-39",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 40,
-    "algorithm_object": "Specified symmetric connection identification experiment",
-    "exact_identity": "Integrated transport contraction determines coefficients only for a full-rank design.",
-    "measurement": "Independent integrated transports feed least squares; measured Gram eigenvalues expose missing directions.",
-    "validation": "Rank-deficient fixture retains a zero eigenvalue and unavailable coefficients; full design converges.",
-    "limitations": "Reference-only transport data; no claim that a single walker velocity identifies a connection.",
+    "algorithm_object": "Metric derivatives at an actual recorded query with its frozen donor context",
+    "exact_identity": "Gamma^k_ij=1/2 g^kl(partial_i g_lj+partial_j g_li-partial_l g_ij)",
+    "measurement": "Centered finite differences at h and h/2, Christoffel coefficients and metric-compatibility residuals",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Derivatives require a supported metric neighborhood; a changing spectral-clipping branch can make the classical connection unavailable.",
     "theory_labels": [
       "def-edge-deformation",
       "prop-connection-least-squares"
     ],
-    "corrections": [
-      "Rank-deficient mode displays its measured Gram spectrum instead of an empty convergence chart."
-    ],
-    "title": "Connection identifiability",
+    "title": "Connection of a measured conditional metric",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-40",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 41,
-    "algorithm_object": "Bianchi-I and rotating Minkowski congruences",
-    "exact_identity": "Raychaudhuri includes expansion, shear, twist, Ricci contraction and acceleration divergence.",
-    "measurement": "Bianchi expansion from volume differentiation; rotating velocity gradients are finite-differenced and acceleration divergence independently differentiated.",
-    "validation": "Dimensions2/3; speeds0,.4,.8; zero expansion/shear and twist/acceleration cancellation.",
-    "limitations": "Reference-only explicitly specified congruences. No congruence is extracted automatically from cloning.",
+    "algorithm_object": "Regularized covariance volume of actual eligible position clouds",
+    "exact_identity": "Finite-step log-volume change equals the measured interval expansion times dt",
+    "measurement": "Position covariance, volume, logarithmic expansion and finite-step balance",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is a measured spatial cloud-volume identity, not a Lorentzian Raychaudhuri equation.",
     "theory_labels": [
       "def-kinematic-decomposition",
       "thm-raychaudhuri"
     ],
-    "corrections": [
-      "Rotating accelerated fixture now retains the terms absent in geodesic irrotational examples."
-    ],
-    "title": "Raychaudhuri term balance",
+    "title": "Finite-step cloud expansion balance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-41",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 42,
-    "algorithm_object": "Explicit nonlinear one-dimensional flow with transverse product",
-    "exact_identity": "Derivative of material log-volume tends to point expansion; reconstructed-cell flux is separate.",
-    "measurement": "Finite material-cell widths and redrawn Voronoi intervals are differentiated.",
-    "validation": "Cell refinement reduces error quadratically.",
-    "limitations": "Reference-only; a reconstructed Voronoi volume is not automatically a material cell.",
+    "algorithm_object": "Regularized cloud volumes at recorded operator stages",
+    "exact_identity": "Log volume changes telescope over the recorded stages",
+    "measurement": "Full-step and per-stage volume changes, selected material/population readouts and covariance ridge",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Covariance volume is an explicit observable; it is not an exact transported material-cell volume or an assumed continuum volume form.",
     "theory_labels": [
       "def-regularity-conditions",
       "thm-discrete-raychaudhuri",
       "cor-discrete-relaxation"
     ],
-    "corrections": [],
-    "title": "Material and reconstructed volumes",
+    "title": "Population volume and its stage budget",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-42",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 43,
-    "algorithm_object": "Contracting Raychaudhuri comparison ODE",
-    "exact_identity": "theta_prime=-theta_squared/d-shear_squared-Ricci; nonnegative focusing terms imply focusing no later than d/abs(theta0).",
-    "measurement": "RK4 solution and Jacobian compared with exact constant-forcing solution and zero-forcing bound.",
-    "validation": "Nonzero shear shortens exact focusing time; integrated curve stays below comparison.",
-    "limitations": "Prescribed constant invariants are an ODE comparison, not a metric reconstructed from the run.",
+    "algorithm_object": "Measured cloud expansion and focusing along a gas trajectory",
+    "exact_identity": "Focusing diagnostics are differences of measured log-volume rates",
+    "measurement": "Volume, expansion, finite differences and shrinking intervals from actual states",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A decreasing cloud volume is not an identified spacetime caustic; no imposed focusing differential equation is simulated.",
     "theory_labels": [
       "def-sec",
       "thm-focusing"
     ],
-    "corrections": [
-      "Added explicit shear control and shortened integration horizon before the actual constant-forcing caustic."
-    ],
-    "title": "Focusing and caustics",
+    "title": "Measured cloud focusing",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-43",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 44,
-    "algorithm_object": "Triangulated disk, closed polyhedral sphere and independent three-dimensional hinge",
-    "exact_identity": "2D Gauss-Bonnet sums deficits plus boundary turning to2pi chi; 3D integrated hinge curvature scales with edge length.",
-    "measurement": "Triangle angles and mesh incidences computed directly at each sphere refinement.",
-    "validation": "Sphere chi2, no boundary, total4pi at refinements0..3 and scales.1,4; 3D linear scaling.",
-    "limitations": "Reference meshes; arbitrary recorded cloning does not specify a piecewise-flat manifold.",
+    "algorithm_object": "Actual Fractal Set vertices, selected edges and recorded interaction triangles",
+    "exact_identity": "Euler characteristic V-E+F and boundary-of-boundary cancellation on the recorded complex",
+    "measurement": "Counts, connected components and topology computed from actual immutable events",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This complex is not an assumed smooth closed manifold; Gauss–Bonnet or spacetime topology requires additional geometric structure.",
     "theory_labels": [
       "def-regge-curvature",
       "thm-curvature-topology",
       "prop-curvature-change-2d",
       "rem-higher-dim-curvature"
     ],
-    "corrections": [
-      "Added closed-sphere topology rather than extrapolating disk turning to closed surfaces."
-    ],
-    "title": "Curvature and topology",
+    "title": "Topology of the recorded Fractal Set",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-44",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 45,
@@ -951,7 +948,7 @@
       },
       "memory_replica_test": "history_window2, warmup2, horizon2, four replicas per independent group; both groups have four defined metrics and historical sources are retained before continuation recording"
     },
-    "limitations": "The metric is programmed; conditional drift/covariance characterize its actual evolution. Same-state replica calibration does not establish a metric-only closed equation. At horizons>1 the middle probe term includes earlier motion. Free-energy plots in reference mode are separate comparison models. Built-in revival selects an eligible current-frame donor; historical accepted cloning is retained. The revived source field can itself depend on a historical distance donor. This source convention follows cloning.rs, rather than introducing a different revival law.",
+    "limitations": "The metric is programmed; conditional drift/covariance characterize its actual evolution. Same-state replica calibration does not establish a metric-only closed equation. At horizons>1 the middle probe term includes earlier motion. Built-in revival selects an eligible current-frame donor; historical accepted cloning is retained. The revived source field can itself depend on a historical distance donor. This source convention follows cloning.rs, rather than introducing a different revival law.",
     "theory_labels": [
       "def-algorithmic-transition-state",
       "thm-algorithmic-observable-increment",
@@ -961,39 +958,39 @@
       "lem-ig-rate-function",
       "def-ig-free-energy"
     ],
-    "corrections": [
-      "Critical time-index correction: default material readout retains same-step clone/kinetic/boundary motion; lagged pre-clone fixed-probe readout no longer stands for that experiment.",
-      "Unsupported provider/history failures propagate; only declared spectral/ineligible metric outcomes receive zero extension.",
-      "Continuation metric reconstruction can read immutable checkpoint history with exact frame/version/generation, without clearing donor memory or fabricating archive snapshots."
-    ],
-    "title": "Fluctuation energy and metric evolution",
+    "title": "Conditional material metric drift and covariance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "independent_continuations"
+    "available_measurement": "complete_checkpoint_continuations",
+    "calculation_origin": "complete_checkpoint_continuations",
+    "lecture_id": "VI-45",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 46,
-    "algorithm_object": "Declared Gaussian pair-energy functional",
-    "exact_identity": "Dilation derivative gives pressure; sign and stiffness depend on energy sign and kernel normalization.",
-    "measurement": "Finite-difference dilation pressure compared with pair-integral derivative and scaling curves.",
-    "validation": "Signed and nonnegative density fixtures, attractive/repulsive signs.",
-    "limitations": "Reference-only: pair energy is not inferred from the actual cloning law.",
+    "algorithm_object": "Recorded position-velocity virial through every stage",
+    "exact_identity": "Delta(x·v)=x·Delta v+v·Delta x+Delta x·Delta v with stated zero extensions",
+    "measurement": "Stage virial changes, cross terms, forces and eligibility contributions",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A virial ledger is not a measured deformation pressure without a specified deformation protocol and normalization.",
     "theory_labels": [
       "def-boost-perturbation",
       "thm-elastic-pressure",
       "rem-elastic-interpretation"
     ],
-    "corrections": [],
-    "title": "Pressure and deformation",
+    "title": "Executed virial and dilation work",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-46",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 47,
-    "algorithm_object": "Specified homogeneous Gaussian redistribution closure",
-    "exact_identity": "Fourier decay D k²+lambda(1-exp(-epsilon² k²/2)); constant mode conserved.",
-    "measurement": "Grid convolution/Laplacian multiplier measured separately from analytic Fourier multiplier; explicit Euler mode evolution.",
-    "validation": "Refinement and fastest combined control endpoint maintain positive monotone decay.",
-    "limitations": "Reference closure, not the interacting donor/acceptance kernel. Negative high-frequency truncated rates diagnose breakdown of the long-wave truncation.",
+    "algorithm_object": "Fourier density modes evaluated on eligible recorded positions",
+    "exact_identity": "rho_k=N^-1 sum_i eligible_i exp(i k·x_i)",
+    "measurement": "Complex density amplitudes, phases and their changes at actual time steps",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A measured oscillation or decay does not by itself identify a dispersion relation, particle mass or hydrodynamic closure.",
     "theory_labels": [
       "def-mckean-vlasov",
       "def-uniform-qsd-linearization",
@@ -1001,18 +998,18 @@
       "thm-qsd-stability",
       "cor-exponential-relaxation"
     ],
-    "corrections": [
-      "Fixed timestep could produce negative oscillating amplitude for combined high-frequency controls; adaptive positive Euler multiplier now respects the stated decay regime."
-    ],
-    "title": "Density-wave dispersion",
+    "title": "Density modes of the executed population",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-47",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 48,
     "algorithm_object": "Executed raw BAOAB O stages, actual diffusion factors, Gaussian/uniform laws and addressed innovation shifts",
     "exact_identity": "Conditional kinetic mean and variance follow from v_plus=c v+s B(xi+shift); uniform fourth moment9/5 changes energy variance. Predictable variances add for sequential martingale differences.",
-    "measurement": "Archive mode measures raw velocity increments and computes source-aware conditional moments from recorded B and law. Cumulative centered energy compared with square-root predictable variation. Scalar reference separately samples the native innovation generator.",
+    "measurement": "Measures raw velocity increments and computes source-aware conditional moments from recorded B and law. Cumulative centered energy compared with square-root predictable variation.",
     "validation": {
       "independent_runs_per_law": 64,
       "raw_O_stages_per_run": 2,
@@ -1041,54 +1038,57 @@
       "cor-algorithmic-geometric-heating",
       "lem-field-discrete-ou-diffusion"
     ],
-    "corrections": [
-      "Added actual archive analysis instead of only a scalar frozen-factor sampler. Preserves source shift, uniform fourth moment and raw-before-boundary convention.",
-      "Metric provider permits zero friction, for which sqrt(2 gamma T) makes the programmed thermal noise zero while the metric remains defined; tested explicitly."
-    ],
-    "title": "BAOAB diffusion and thermostat heating",
+    "title": "Conditional BAOAB diffusion and heating",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-48",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 49,
-    "algorithm_object": "Specified independent Gaussian mode state",
-    "exact_identity": "Gaussian variance and fixed-mode-set partition derivative give the declared mode pressure; mobility controls relaxation separately.",
-    "measurement": "Sampled variance, partition pressure derivative and OU relaxation comparison.",
-    "validation": "Mode-pressure finite differences and variance tests.",
-    "limitations": "Reference-only specified mode state; no interacting QSD Gibbs law is inferred.",
+    "algorithm_object": "Orthonormal discrete Fourier transform of actual eligible velocity rows",
+    "exact_identity": "Parseval: sum of modal squared amplitudes equals total squared velocity",
+    "measurement": "Measured mode energies, total kinetic energy and Parseval residual",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The transform uses eligible slot order; its index is not automatically a physical spatial wave number.",
     "theory_labels": [
       "ass-thermal-equilibrium",
       "prop-radiation-pressure",
       "rem-pressure-comparison"
     ],
-    "corrections": [],
-    "title": "Gaussian mode thermodynamics",
+    "title": "Velocity-mode energy and Parseval balance",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-49",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 50,
-    "algorithm_object": "Declared thermal/correlation pressure comparison",
-    "exact_identity": "Crossover solves equality of the two explicitly supplied pressure scales.",
-    "measurement": "Independent bisection compared with analytic crossover.",
-    "validation": "Root residual test.",
-    "limitations": "Reference-only parameters require common normalization; no actual algorithm equation of state estimated here.",
+    "algorithm_object": "Measured position covariance and kinetic velocity scales",
+    "exact_identity": "Cloud and kinetic scales follow the stated empirical moment definitions",
+    "measurement": "RMS spatial/velocity scales and their ratio over recorded time",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "No ideal-gas equation of state, pressure crossover or cosmological closure is assumed.",
     "theory_labels": [
       "def-thermal-correlation-length",
       "thm-pressure-regimes"
     ],
-    "corrections": [],
-    "title": "Pressure crossover",
+    "title": "Measured cloud and kinetic scales",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-50",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 51,
-    "algorithm_object": "Recorded clone, transform, raw kinetic, boundary and eligibility stages; separate constitutive algebra",
+    "algorithm_object": "Recorded clone, transform, raw kinetic, boundary and eligibility stages",
     "exact_identity": "Exact kinetic/momentum differences telescope. Kick work=v dot delta-v+norm(delta-v)²/2. Weak local momentum splits impulse/transport/eligibility. Restitution overwrites pre-clone pairs and must subtract literal-clone increment.",
     "measurement": "Archive source-aware heating, full stage budgets, centered kinetic moment, raw total-force kick work, and local test-function momentum measured directly.",
     "validation": "Executed viscosity/source-shift tests check two kicks, weak identity and telescoping; no potential inferred from reward.",
-    "limitations": "Centered kinetic moment requires volume normalization and additional contributions before serving as stress. Constitutive reference assumes a Lorentzian Einstein equation. Reported local96 closure Ebar=kappa centered_kinetic+lambda gbar failed: held-out RMSE51363 versus constant31599 and shuffled32372; this particular fitted spatial relation is rejected by that data, not repaired by fitting.",
+    "limitations": "The centered kinetic moment needs volume normalization and further contributions before it is a complete stress. The tested common spatial closure Ebar=kappa centered_kinetic+lambda gbar fails held-out prediction: local RMSE 51363 versus constant 31600 and shuffled 32372. Algebraic consequences of an assumed Lorentzian Einstein equation do not derive that closure from the gas.",
     "theory_labels": [
       "def-algorithmic-mechanical-observables",
       "prop-algorithmic-stage-telescoping",
@@ -1098,21 +1098,20 @@
       "thm-structural-correspondence",
       "rem-correspondence-meaning"
     ],
-    "corrections": [
-      "Corrected formal kick statement to executed total acceleration including viscosity; the gradient-only formula is its zero-viscosity specialization.",
-      "Added exact weak momentum and total-force work readouts; constitutive reference remains separately identified and supplies no empirical Einstein agreement."
-    ],
-    "title": "Mechanical balances and gravitational stress",
+    "title": "Complete mechanical balances and stress ingredients",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-51",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 52,
-    "algorithm_object": "Actual recorded episode ancestry and selected directed interactions; separately reconstructed complete Gaussian graph",
-    "exact_identity": "Separator must be an antichain intersecting every chosen ancestral chain once. Cut capacities use actual edges/weights; auxiliary symmetric Gaussian graph obeys max-flow/min-cut.",
-    "measurement": "Episode parent forest resolved by epoch/slot/generation. Actual selected channels counted across fixed slot partition, missing weights retained as unavailable. Gaussian mincut on explicitly projected archived points computed separately.",
-    "validation": "Recorded channel counts compared directly with FractalSet; network-flow/partition identity; living ancestor fixture rejects terminal episodes as antichain.",
-    "limitations": "Missing historical sources yield partial ancestry coverage. Gaussian reconstruction is not the actual sparse/directed IG. Slot-partition cuts are structural observables, not geometric area.",
+    "algorithm_object": "Edges of the executed interaction and genealogy graph by channel",
+    "exact_identity": "A region cut counts only recorded selected edges crossing its boundary",
+    "measurement": "Channel-separated cut counts and actual graph endpoints",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Projected Gaussian proximity graphs, geometric surface area and entanglement entropy are distinct observables.",
     "theory_labels": [
       "def-cst-structure",
       "def-ig-structure",
@@ -1120,72 +1119,78 @@
       "def-ig-entanglement-entropy",
       "prop-holo-cut-identities"
     ],
-    "corrections": [
-      "Added actual selected-interaction cut counts and recorded-weight availability rather than displaying only auxiliary Gaussian cuts."
-    ],
-    "title": "Genealogical separators and cuts",
+    "title": "Cuts by executed interaction channel",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "archive"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-52",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 53,
-    "algorithm_object": "Specified qubit state and exact finite Markov path reference",
-    "exact_identity": "Density-matrix relative entropy controls modular difference; exact path KL and exponential identity depend on normalized reverse law and support.",
-    "measurement": "Eigenvalue entropy and enumerated finite paths with endpoint likelihoods; explicit support failure.",
-    "validation": "Noncommuting state and finite path identities.",
-    "limitations": "Reference-only. Recorded walker covariance does not specify a quantum state or exact reverse path likelihood.",
+    "algorithm_object": "Chronological binned frame transitions and their reversed empirical joint counts",
+    "exact_identity": "KL of normalized smoothed joint counts is nonnegative",
+    "measurement": "Training/held-out transition counts and empirical time-asymmetry diagnostic",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is not a complete path-law likelihood ratio, a quantum relative entropy, or proof of a modular-flow law.",
     "theory_labels": [
       "prop-modular-connection",
       "def-algorithmic-path-irreversibility",
       "prop-algorithmic-path-kl-identities"
     ],
-    "corrections": [],
-    "title": "Jump, modular, and path entropy",
+    "title": "Empirical transition time asymmetry",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-53",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 54,
-    "algorithm_object": "Declared density on torus with periodized Gaussian cut kernel",
-    "exact_identity": "Scaled nonlocal cut approaches constant times integral of rho² over both boundary components.",
-    "measurement": "Direct pair quadrature compared with short-range perimeter constant.",
-    "validation": "Range refinement and density contrast tests.",
-    "limitations": "Reference-only geometric sampling hypotheses; no automatic actual IG perimeter limit.",
+    "algorithm_object": "Spatial region thresholds applied to recorded selected interaction edges",
+    "exact_identity": "Cut size is the number of retained edges whose endpoints lie on opposite sides",
+    "measurement": "Measured cut/perimeter scan across region thresholds",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "A graph cut is not geometric perimeter without an independently tested scaling and normalization.",
     "theory_labels": [
       "def-nonlocal-perimeter",
       "lem-holo-bv-differences",
       "thm-gamma-convergence"
     ],
-    "corrections": [],
-    "title": "Gaussian cuts and perimeter",
+    "title": "Recorded interaction perimeter scan",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-54",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 55,
-    "algorithm_object": "Independent uniform reference populations",
-    "exact_identity": "Mean pair cut=N(N-1) times one-sided cross integral; sampling unit is an independent population.",
-    "measurement": "Complete torus pair graph sampled in independent groups; mean and population-level SE compared with quadrature expectation.",
-    "validation": "Independent-population expectation test.",
-    "limitations": "Finite quadrature error remains; these independent samples are not interacting walkers from one gas population.",
+    "algorithm_object": "Distinct selected donors in actual recorded companion rows",
+    "exact_identity": "Observed occupancy and support counts are computed from immutable source identities",
+    "measurement": "Donor diversity, support and finite-population counts",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "No universal area scaling or iid occupancy law is supplied for dependent sampling.",
     "theory_labels": [
       "thm-ig-cut-scaling",
       "cor-holo-dependent-cut-limit",
       "thm-antichain-surface",
       "thm-informational-area-law"
     ],
-    "corrections": [],
-    "title": "Finite-population area scaling",
+    "title": "Observed companion diversity and support",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-55",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 56,
-    "algorithm_object": "Declared density, shape and density-matrix perturbations",
-    "exact_identity": "Cut functional density derivative, geometric shape variation and quantum-state first variation are separate directional derivatives.",
-    "measurement": "Finite differences compared with analytic expressions in each state space.",
-    "validation": "All three variations implemented, including noncommuting matrix-state variation.",
-    "limitations": "Reference-only variation protocols; no universal first-law identification among the three state spaces.",
+    "algorithm_object": "One-vertex membership changes in an actual selected-edge cut",
+    "exact_identity": "Cut change equals added crossing incidences minus removed crossing incidences",
+    "measurement": "Direct recomputation compared with the incidence-based first variation",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is a discrete graph variation, not a continuum area or matrix-state entropy variation.",
     "theory_labels": [
       "def-swarm-energy-variation",
       "def-ig-entropy-variation",
@@ -1193,173 +1198,195 @@
       "thm-first-law-entanglement",
       "thm-holographic-pressure"
     ],
-    "corrections": [],
-    "title": "Three first variations",
+    "title": "First variation of an executed graph cut",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-56",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 57,
-    "algorithm_object": "Exact killed two-state comparison kernel",
-    "exact_identity": "Gibbs candidate and QSD are distinct; residual and contraction bound control their discrepancy.",
-    "measurement": "Numerical eigenmeasure compared with chosen Gibbs law and bound.",
-    "validation": "TV residual bound test.",
-    "limitations": "Reference-only killed kernel; not an invariant Gibbs claim for actual cloning.",
+    "algorithm_object": "Recorded kinetic-energy histograms with a training-fitted exponential comparison",
+    "exact_identity": "The displayed exponential-bin hypothesis is normalized including the final upper-tail bin",
+    "measurement": "Fit energy scale on the chronological prefix; display held-out measured histogram and discrepancy",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The exponential energy hypothesis is tested, not derived as the gas Gibbs or QSD law.",
     "theory_labels": [
       "thm-qsd-gibbs"
     ],
-    "corrections": [],
-    "title": "Gibbs QSD candidates",
+    "title": "Measured energy distribution and an exponential hypothesis",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-57",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 58,
-    "algorithm_object": "Interior two-state controlled Markov reference",
-    "exact_identity": "Stationary response pi D (I-K)_centered_inverse A; stationary, transition and path Fisher are distinct.",
-    "measurement": "Poisson solve compared with independently differentiated stationary law and exact formulas; static exponential tilt comparison.",
-    "validation": "Response finite differences and Fisher formulas.",
-    "limitations": "Reference-only. Actual stationary response requires the actual transition derivative, mixing and common-support hypotheses; actual source finite-horizon response lives in native19/22.",
+    "algorithm_object": "Exponential tilt of the finite empirical law of recorded frame means",
+    "exact_identity": "Derivative of the tilted mean equals the tilted variance",
+    "measurement": "Finite empirical source-weighted moments, analytic susceptibility and finite-difference check",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Tilting retained observations is not a physical intervention on the gas kernel; actual addressed-source reruns are VI-19.",
     "theory_labels": [
       "prop-fluctuation-dissipation",
       "thm-algorithmic-stationary-response",
       "prop-algorithmic-controlled-fisher",
       "rem-algorithmic-three-geometries"
     ],
-    "corrections": [],
-    "title": "Response and Fisher information",
+    "title": "Empirical source susceptibility",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-58",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 59,
-    "algorithm_object": "Specified Euclidean cone and constant-curvature AdS metric",
-    "exact_identity": "Smooth cone requires kappa beta=2pi; AdS curvature solves assumed vacuum Einstein equation.",
-    "measurement": "Circumference/periodicity and algebraic curvature comparison.",
-    "validation": "Cone smoothness and AdS contraction identities.",
-    "limitations": "Reference-only spacetime/thermal state. No gas temperature or AdS radius is inferred from a graph cut.",
+    "algorithm_object": "Actual material ancestry/persistence edges and selected interaction boundaries",
+    "exact_identity": "Graph traversal determines recorded ancestry depth",
+    "measurement": "Depth distributions and interaction boundaries resolved by immutable event identity",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Genealogical depth is not an AdS radial coordinate or a supplied spacetime cone.",
     "theory_labels": [
       "prop-unruh-hawking-connection",
       "thm-ads-uv-regime",
       "rem-holo-cosmological-sign"
     ],
-    "corrections": [],
-    "title": "Euclidean horizons and AdS",
+    "title": "Recorded ancestry depth",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-59",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 60,
-    "algorithm_object": "Nearest-neighbor weighted perimeter reference network",
-    "exact_identity": "Terminal mincut equals the minimum of a specified local discrete surface functional.",
-    "measurement": "Max-flow partition compared with independently enumerated straight interfaces.",
-    "validation": "Constrained minimum versus exact candidates.",
-    "limitations": "Reference-only local network, distinct from the complete Gaussian graph and actual recorded IG.",
+    "algorithm_object": "Capacity network built from actual selected graph edges",
+    "exact_identity": "Maximum flow equals minimum source-sink cut for the declared finite capacities",
+    "measurement": "Residual-network flow, direct cut capacity and partition on the executed graph",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Flow-cut equality is combinatorial; identifying the cut with entropy requires a separate measured relation.",
     "theory_labels": [
       "thm-ryu-takayanagi"
     ],
-    "corrections": [],
-    "title": "Minimum cuts and limiting surfaces",
+    "title": "Maximum flow and minimum cut of selected interactions",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-60",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 61,
-    "algorithm_object": "Two-state QSD reference with independent constant killing",
-    "exact_identity": "Conditioned stationary expectations are constant; unnormalized survival decays, and an energy offset does not affect increment.",
-    "measurement": "Matrix evolution and survival curve.",
-    "validation": "Stationary/QSD distinction and shift-invariance tests.",
-    "limitations": "Reference-only; actual full-state conditional increments are characterized by native45 and22, not a claimed observed QSD.",
+    "algorithm_object": "Actual frame position histograms and training pooled distribution",
+    "exact_identity": "Total variation and entropy follow normalized histogram definitions",
+    "measurement": "Distance to the training histogram, successive-frame distance and frame entropy",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "Temporal stability over a finite run does not establish an invariant or quasi-stationary law.",
     "theory_labels": [
       "def-bulk-qsd-vacuum",
       "thm-vanishing-bulk-vacuum",
       "prop-geometric-distinction"
     ],
-    "corrections": [],
-    "title": "Conditional stationarity and survival",
+    "title": "Recorded distribution stationarity",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-61",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 62,
-    "algorithm_object": "Circle chord-distance Gaussian integral and separately declared AdS radius",
-    "exact_identity": "Local chord integral has leading relative epsilon²/(8R²); AdS radius relation assumes constant-curvature vacuum equation.",
-    "measurement": "Independent scaled-variable quadrature checks locality series.",
-    "validation": "Small-range quadrature converges without under-resolving narrow kernels.",
-    "limitations": "The positive-curvature circle reference is explicitly independent from the negative-curvature AdS algebra. Kernel range alone does not determine actual curvature.",
+    "algorithm_object": "Conditional fitness Ricci/scalar curvature at a recorded query",
+    "exact_identity": "Ricci isotropy can be tested against R g/d",
+    "measurement": "Scalar-derived curvature length and Ricci isotropy residual from the executed metric",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The derived length is a diagnostic, not an assumed AdS radius or a measured cosmological constant.",
     "theory_labels": [
       "def-uv-regime",
       "thm-ads-boundary-uv"
     ],
-    "corrections": [],
-    "title": "Interaction range and curvature scale",
+    "title": "Measured fitness curvature scale",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-62",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 63,
-    "algorithm_object": "Specified Riccati comparison and de Sitter/Milne geometries",
-    "exact_identity": "Complete forcing lower bound gives tanh expansion bound; positive expansion alone does not determine curvature.",
-    "measurement": "RK4 comparison plus distinct exact de Sitter and flat Milne expansion.",
-    "validation": "Lower-bound comparison tests.",
-    "limitations": "Reference-only. No freely fitted Ricci forcing is advertised as an actual metric evolution equation.",
+    "algorithm_object": "Scale factor defined from the regularized covariance volume of recorded clouds",
+    "exact_identity": "Log-scale increments are computed from the measured volume ratios",
+    "measurement": "Scale-factor evolution, volume and finite-step expansion",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "No Friedmann or Riccati evolution law is imposed; the scale factor is a declared population observable.",
     "theory_labels": [
       "thm-exploration-expansion",
       "thm-bulk-can-be-ds"
     ],
-    "corrections": [],
-    "title": "Expansion histories",
+    "title": "Scale evolution of the executed cloud",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-63",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 64,
-    "algorithm_object": "Declared future-bit reveal channel",
-    "exact_identity": "Discarded predictive information equals conditional mutual information; reveal probability gives p log2.",
-    "measurement": "Independent samples estimate entropy/information against exact reference.",
-    "validation": "Information endpoints and sample agreement.",
-    "limitations": "Reference-only controlled information process; actual donor memory may carry predictive information but is not measured by this bit fixture.",
+    "algorithm_object": "Empirical region-to-region counts on actually selected interaction edges",
+    "exact_identity": "Mutual information is computed from the normalized joint edge-count distribution",
+    "measurement": "Region marginals, joint counts, entropy and mutual information",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "This is information of selected classical interactions, not quantum entanglement entropy or an imposed bit process.",
     "theory_labels": [
       "def-information-closure-cosmo",
       "def-computational-closure-cosmo",
       "def-causal-closure-cosmo",
       "thm-closure-equivalence-cosmo"
     ],
-    "corrections": [],
-    "title": "Predictive information",
+    "title": "Information in executed region-to-region interactions",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-64",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 65,
-    "algorithm_object": "Exact four-state CTMC projection reference",
-    "exact_identity": "Dynkin generator closure error accumulated over time is bounded by t times uniform generator residual.",
-    "measurement": "Microscopic semigroup evolution compared with projected macro model and residual.",
-    "validation": "Lumpable case zero residual; nonlumpable error bounded.",
-    "limitations": "Reference-only. No Markov closure is inferred from a histogram of actual walkers.",
+    "algorithm_object": "Chronological empirical field descriptor transition and memory",
+    "exact_identity": "A fitted one-step channel predicts later transitions only to its measured held-out accuracy",
+    "measurement": "Training/held-out transition matrices, prediction errors and closure diagnostics",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "The descriptor can omit donor and population memory; a finite fit is not an autonomous field semigroup.",
     "theory_labels": [
       "prop-cosmo-generator-closure"
     ],
-    "corrections": [],
-    "title": "Dynamical closure",
+    "title": "Held-out empirical field closure",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-65",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   },
   {
     "experiment": 66,
-    "algorithm_object": "Explicit physical-unit conversion and specified cosmic parameters",
-    "exact_identity": "Lambda=3 Omega_Lambda H0²/c² and stated pressure conventions.",
-    "measurement": "Numerical unit conversion retains c² and length/time factors.",
-    "validation": "SI conversion regression.",
-    "limitations": "Parameter calculator, not an estimate of physical cosmology from the gas.",
+    "algorithm_object": "RMS length and speed computed from executed gas populations",
+    "exact_identity": "Dimensionless ratios use the declared measured length and velocity scales",
+    "measurement": "Recorded spatial/kinetic scales and derived dimensionless combinations",
+    "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
+    "limitations": "No external particle-mass anchor, SI calibration or cosmological scale is inserted.",
     "theory_labels": [
       "prop-observed-lambda",
       "prop-dark-energy-exploration",
       "thm-de-sitter-resolution"
     ],
-    "corrections": [],
-    "title": "Vacuum units and observables",
+    "title": "Dimensionless scales measured from the gas",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
-    "available_measurement": "finite_model"
+    "available_measurement": "executed_algorithm_archive",
+    "calculation_origin": "executed_algorithm_archive",
+    "lecture_id": "VI-66",
+    "execution_contract": "Run through the shared Rust LectureSession; preserve full configuration, seed, trajectory evidence, observable normalization and required continuation checkpoints. No standalone supplied dynamics generates lecture observations."
   }
 ]
