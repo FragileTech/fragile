@@ -1,5 +1,13 @@
 # Changelog
 
+- Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.
+
+- Make GAS (2017) with adaptive local Gaussian proposals the Optimization Lab default, and fix narrow landing-page navigation so the full Pages bundle can deploy.
+
+- Correct Algorithmic Gas distance reduction, local statistics, linear uniform sampling, donor availability, boundary timing, extinction handling and provenance. Validate tensor/checkpoint imports, introduce checkpoint format 2, enforce safe-Rust lints and add resource guards, regression tests, dependency audits and fuzz/Miri checks.
+
+- Add the independent Algorithmic Gas Rust workspace and Euclidean Gas Lab, with modular observations/rewards, separate donor roles, CPU/WASM f32/f64, explicit hybrid GPU adapters, stochastic and Langevin kinetics, anisotropic noise, transactional cloning, and replay checkpoints. Existing Python and C++ engines are unchanged.
+
 - Make beam-style length normalization with α = 0.6 the default LLM generation reward while preserving explicit objectives and legacy recording imports.
 
 - Add a visual FragileTech home page introducing Arcade, Control, Optimization, and LLM labs; preserve Arcade at `arcade.html` and update lab navigation.
@@ -37,6 +45,18 @@
 - Increase the default Control Lab wall-collision penalty to 100 per touching vehicle per physics frame; explicit custom penalties and wall-death settings remain unchanged.
 
 - Add an OpenRouter LLM Lab with shared native Wave/Graph token environments, conditional token likelihood objectives, selectable embedding context, and portable trace recordings. Introduce a shared configurable L2/cosine observation-distance API, retaining L2 defaults for existing labs.
+
+- Unify Arcade, Control Lab, and Optimization Lab navigation as compact controls
+  with shared spacing, hover, focus, and current-page states.
+
+- Tighten the Control Lab's default whole-arena camera to the collision boundary,
+  with a centered 5% margin that adapts to the viewport and flight projection.
+
+- Make solo and collaborative flight mining playable with upright 24 N rockets, recoverable wall contacts, catch/target-focused rewards, and a 32-action, 6-frame, 4-elite planner preset. Preserve explicit controller tuning when switching scenes.
+
+- Consolidate native Wave, Graph, FMC, Jump Wave, and Euclidean Gas in the application-independent `fractal-gas-web/src/fractal/` library. Arcade, Control Lab, and optimization retain their batch storage and action policies; Lab Jump Wave decisions now run in C++. Reuse numerical scratch and preserve direct packed donor-to-output physics stepping. Standard comparison algorithms and Python/Torch research implementations remain separate.
+- Introduce Control Lab checkpoint version 2 with shared population, elite, RNG, history, and incremental planner state; reject previous checkpoints without migration. Advance the optimization replay engine identifier to `fgopt-4`. Stable cumulative-reward elite ties, complete elite metadata, common lifecycle ordering, and terminal bookkeeping can change historical seeded trajectories; replay remains deterministic within the new backend/build.
+- Keep Arcade WASM builds from overwriting Lab's standalone module, and allow fractional benchmark targets so the default target does not block applying controller settings.
 
 - Dynamically distribute Control Lab physics futures in small batches across worker threads, reducing idle time when collision workloads differ while preserving planner settings and deterministic results. Keep static scheduling for other backends.
 
@@ -99,6 +119,10 @@ Unreleased
 
 * Refine Lab world props and both refineries with shaped structural housings, clearer capture hardware, fractured mineral surfaces, worn industrial finishes and refreshed Blender sources, within the preceding per-asset rendering budgets.
 
+* Explain gravity-mode rock lifting with a thrust-versus-weight readout and a lighter-flight-load control that respects staged thrust settings; verify floor takeoff and heavy-load limits in the physics engine.
+
+* Redesign the Lab with a persistent simulation workspace, guided task selection, staged settings, continuous manual driving, automatic run preservation, replay branches, contextual inspection, and structured controller comparisons.
+
 * Refine both Lab vehicle collections with stronger canopy, armor, seating and cab profiles, plus aged metal and clearer panel finishes using existing geometry and texture budgets.
 
 * Apply Lab rewards mid-run without resetting the world, camera, or recording, and retain reward-change boundaries for replay and saved runs.
@@ -157,9 +181,29 @@ Unreleased
 
 * Fix Lab native-control help markup and label targeting in Firefox; add Firefox and Chromium dropdown, checkbox, button, and tooltip regression coverage.
 
-* Default Ants & Drops to five vehicles and add five-drop cargo tanks to harvesters and drones, full-load bonuses, gradual rewarded refinery unloading, replayable cargo state, and concept-based steampunk/futuristic Blender refineries.
+* Fix Lab builds by exporting the geometry helpers used by mining controls; default to 8 worker threads, 12 action frames, and horizon 32.
+
+* Add mining rock-size controls and a 1–20 rock count for asteroid harvesting, with clear placement and replenishment after delivery.
+
+* Add adjustable Lab reward terms and an optional per-frame squared-distance vehicle reward; applying weights preserves the live world, replans, and starts a new recording.
+
+* Set Lab defaults to 8 worker threads, 12 action frames, and horizon 32.
+
+* Allow choosing 1–128 vehicles in every Lab environment, with clear spawn positions and preserved cargo, obstacles, and automatic tow hooks.
+
+* Refine all eight Lab vehicle designs with concept-inspired armor panels, baked fasteners and wear, aged metals, darker glazing, and adjusted drone and hopper shapes; enforce their previous geometry, draw-batch, texture-memory and download budgets.
+
+* Lighten the Lab's playable arena floors and racing tracks with matte slate and warm stone colors, improving agent and planning-trace visibility against dark out-of-bounds areas in both styles.
+
+* Respawn delivered mining rocks at seeded random clear positions throughout the playable map, avoiding walls, holes, active bodies, and delivery bases while preserving exact replay.
+
+* Give each control-browser suite its own CI timeout and preview-server lifecycle, retain server diagnostics, and avoid repeating racing physics and every screenshot on tablet.
+
+* Restore missing racing-guide screenshots and fix the Pages smoke test for the five-vehicle Ants default; use smaller planning budgets and retain large-fleet coverage in native tests.
 
 * Refine vehicle silhouettes against the concept sheets with rounded pressure hulls, integrated drone armor, detailed cockpit and intake assemblies, corrected outward normals, and shared brushed-metal maps within the existing LOD budgets.
+
+* Default Ants & Drops to five vehicles and add five-drop cargo tanks to harvesters and drones, full-load bonuses, gradual rewarded refinery unloading, replayable cargo state, and concept-based steampunk/futuristic Blender refineries.
 
 * Add illustrated tutorials for all six Lab tasks and six racing circuits, a complete scene-editor course and JSON reference, downloadable workshop scenes, and reproducible screenshot and example checks. Let editor pointer actions pass through the status overlay so tether placement can reach the second body.
 
@@ -167,11 +211,15 @@ Unreleased
 
 * Give Collaborative mining one high-mass, high-drag rock that a solo rocket can move slowly and two can haul faster; immediately replenish it after every delivery.
 
+* Fix Pages deployment by isolating documentation route tests from package-wide fixtures, so the docs-only build does not require installing the simulation package.
+
 * Build 42 world asset types in both futuristic and steampunk styles with shared collision envelopes, distinct machinery, packed Blender/GLB sources, instanced scenery and pickups, replayable effects, and an expanded asset workshop.
 
 * Add five video-traced historical kart circuits alongside Violet Circuit, under one Racing task with a difficulty-ordered track selector, geometry previews, source references, validated obstacles and checkpoints, and two-lap driving and replay regression tests.
 
 * Add sixteen futuristic and steampunk world-asset concept sheets, a paired visual library with original downloads and generation prompts, and narrow-screen style-control checks.
+
+* Add configurable Ants & Drops fleets of 1–128 harvesters or drones, with clear starting positions and verified continuous seeded drop replenishment and replay.
 
 * Add eight concept-based Blender vehicle models with detailed and crowd LODs, matching scene props, a persistent futuristic/steampunk lab selector, and a model workshop with Blender/GLB downloads; preserve live state and replay while switching styles.
 
@@ -198,6 +246,12 @@ Unreleased
 * Add reusable agent archetypes, distinct kart/rocket/drone models, declarative visual kits, mixed crowd instancing, and complete world-motion recording with playback, exact seeking and continuation in the control laboratory.
 
 * Add a custom C++ continuous-control engine with parallel world batches, compact complete-state snapshots, native Python bindings, Wave/FMC planning, optional cloning-aware exploration trees, and a browser laboratory with five editable cyberpunk scenarios and original 3D assets.
+
+* Make the full `make physics` workflow run end to end on the default configuration: per-group Bayesian fits, exact origin statistics for FFT correlators, float64 weighted AIC window fits with a signal-to-noise cut, working prior seeding and data-scaled amplitude priors, electroweak lag units and frame alignment, geodesic edge lengths for multiscale scale selection, deterministic curl estimation, and dashboard fixes (frame-restricted geodesic cache, chunked distance statistics, consistent AIC time units, stale-output clearing). See reviews/physics_fixes.md (second round).
+
+* Retain twistor triplet lag statistics for measured mass-fit covariance and exclude unselected channels from covariance preparation.
+
+* Correct physics integration, cloning records, duplicate-particle geometry, analysis timing, parity observables, multiscale fitting, measured covariance, and dashboard invalidation. See reviews/physics_fixes.md for numerical compatibility notes.
 
 * Reorganize Fractal Gas as Volume 2, promote analytical proofs to main chapters, and remove the retired framework volume.
 * Restrict mathematical downloads to published chapters and preserve migrated Fractal Gas URLs.

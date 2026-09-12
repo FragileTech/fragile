@@ -157,6 +157,34 @@ Configuration/results export as JSON. Checkpoints export as binary `.agc` files 
 
 Both CPU and WebGPU bundles are generated under ignored `engine/` directories; third-party rendering files under ignored `vendor/`. `WASM_BINDGEN=/path/to/wasm-bindgen` overrides the pinned CLI location. `node fractal-gas-web/tools/build-euclidean-gas.mjs --cpu-only` builds only the CPU profile. CI builds both; deployment assembly publishes this lab separately from existing labs.
 
+### Lecture fixtures and recorded stages
+
+The lecture worker uses `await run.set_population(JSON.stringify({positions, velocities, alive}))`
+to install controlled examples. `positions` is a finite `N × d` array with the run's configured
+shape; optional `velocities` requires the existing BAOAB velocity field, and optional `alive`
+is an `N`-entry Boolean mask. Omitted `alive` makes every row eligible before boundary checks.
+False entries are represented by the external-termination signal. Replacement validates the
+fixture, recomputes rewards, clears donor history and the previous report, and preserves the
+step number and seed. It supports a zero-survivor fixture so the next step can display the
+engine's explicit extinction event.
+
+Call `run.set_trace(true)` before stepping to populate `snapshot().trace` with
+`{stage, population}` records. Stages include `pre_clone`, `literal_clone`, `post_transform`,
+the five BAOAB substages `B1`, `A1`, `O`, `A2`, `B2`, and `post_kinetic`.
+Substages follow the actual boundary checks; extinction can shorten the trace. Traces are
+limited to 16 states and enabled only for populations with at most 8192 observation scalars.
+They consume no random draws, preserve normal step outcomes, are omitted from checkpoints,
+and retain the previous completed trace after a failed transaction. Replacement and restore
+clear the replay. This capture is off by default.
+
+`RunConfig.potential` optionally selects an independent analytic force potential, while
+`RunConfig.reward_shift` translates the reward objective by a finite `d`-vector (empty means
+zero). An explicit potential supplies force `−∇U` for either reward direction; omitting it
+preserves the benchmark's existing objective-direction convention.
+For example, `benchmark: "quadratic", potential: "quadratic", reward_shift: [1, 0]`
+places the favorable reward at `(1, 0)` while the force remains `−x`. Provider identities
+include these choices so checkpoint restoration verifies the experiment configuration.
+
 ## Verification and remaining work
 
 ```sh

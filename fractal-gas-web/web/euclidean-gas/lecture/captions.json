@@ -1,0 +1,170 @@
+{
+  "I-01": {
+    "question": "Which operation moved this walker?",
+    "prediction": "Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw."
+  },
+  "I-02": {
+    "question": "Does the walker measuring diversity have to be the one copied?",
+    "prediction": "Compare the two networks on the same cloud: distance donors supply measurements, while cloning donors supply possible replacements. Change the sampling law and watch directed choices become reciprocal pairs; an odd leftover follows the self-companion rule."
+  },
+  "I-03": {
+    "question": "Why can fitness change while a raw reward stays fixed?",
+    "prediction": "A walker's score depends on the eligible population around it. Follow reward and diversity through their regularized statistics and positive channels, then change the exponents to see how those two channels combine into fitness."
+  },
+  "I-04": {
+    "question": "What does fixed population mean when slots lose eligibility?",
+    "prediction": "Start with four survivors, then one, then none. Revival can fill sixteen slots from the surviving states; with one survivor every revival uses that same source, while zero survivors produces the engine's extinction event."
+  },
+  "I-05": {
+    "question": "At which positions are the two force evaluations made?",
+    "prediction": "Track the five BAOAB stages in phase space. B changes velocity, A changes position, and O damps velocity while adding Gaussian noise; the last B evaluates the force at the position reached by the second A."
+  },
+  "I-06": {
+    "question": "What changes when favorable reward and the force point to different places?",
+    "prediction": "Move the reward optimum relative to the confining potential and follow the population. Copying responds to reward through fitness, while the BAOAB acceleration follows the potential gradient, so the two operations can favor different places."
+  },
+  "I-07": {
+    "question": "Before drawing randomness, how much probability belongs to each accepted copy?",
+    "prediction": "For each possible donor, average the complete clipped fitness comparison over the distance assignments. The resulting accepted-copy weights, together with the probability of staying put, account for the selected walker's whole next copying decision."
+  },
+  "I-08": {
+    "question": "Which part of the post-copy law remains concentrated at one point?",
+    "prediction": "The persistence component keeps its mass at the old position, while clone jitter spreads accepted-copy mass around donor positions. Follow the components through the kinetic step to see how a mixture of possible copying outcomes becomes a distribution of final positions."
+  },
+  "I-09": {
+    "question": "How can relative motion shrink while pair momentum stays fixed?",
+    "prediction": "Reduce the restitution parameter and compare each accepted mutual pair before and after collision. Its coordinate momentum stays fixed, while its relative kinetic energy is multiplied by the square of the restitution parameter."
+  },
+  "I-10": {
+    "question": "Which object changed: donor distance, noise covariance, or the metric?",
+    "prediction": "Change the diagonal noise factor and observe the direction of spreading in the live population. Then compare the prescribed variable metric: its ellipses change from place to place, making the distinction between a constant diffusion matrix and spatial geometry visible."
+  },
+  "II-01": {
+    "question": "Does geometric error produce an inward copying signal?",
+    "prediction": "With the reward optimum in the main cluster, inspect whether high-error walkers also have low fitness and tend to copy inward. Move the optimum to the outliers and repeat: the linked plots show which part of that chain changes sign."
+  },
+  "II-02": {
+    "question": "Which initial spreads have negative average one-step drift?",
+    "prediction": "Repeat independent updates from each frozen starting cloud. Individual changes fluctuate, but their averages reveal the drift; compare cloning, kinetics, and the full step to see how contraction competes with injected noise."
+  },
+  "II-03": {
+    "question": "Can relabeling an identical cloud change its transport distance?",
+    "prediction": "Shuffle the slot labels and compare label pairing with optimal assignment. The identical clouds still have zero transport cost; translating one cloud adds the squared separation of their centers to the centered matching cost."
+  },
+  "II-04": {
+    "question": "How tight is the variance envelope on actual cloud distance?",
+    "prediction": "Follow two live clouds and compare their optimal centered matching cost with the sum of their variances. Identical broad clouds begin with zero centered transport but a positive variance proxy, showing exactly where the envelope leaves room."
+  },
+  "II-05": {
+    "question": "Can the velocity mean decay while its variance increases?",
+    "prediction": "Starting from one velocity, the sample mean follows exponential damping while noise builds the spread toward the displayed thermal variance. Give two populations the same innovations and their paired velocity differences decay exponentially even as each population fluctuates."
+  },
+  "II-06": {
+    "question": "How do return, survival, and phase-space spreading change near a boundary?",
+    "prediction": "Increase the harmonic stiffness and compare the inward mean motion with the measured survival fraction. One BAOAB noise kick spreads a fixed state along one phase-space direction; composing kicks usually fills both position and velocity directions."
+  },
+  "II-07": {
+    "question": "Can coupled component inequalities produce a scalar contraction?",
+    "prediction": "Compose the cloning and kinetic matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, the resulting scalar envelope approaches a finite floor; increasing the source term raises that floor."
+  },
+  "II-08": {
+    "question": "What settles down while total surviving probability decreases?",
+    "prediction": "Watch surviving mass and conditional shape on separate axes in this finite killed chain. The normalized law approaches the quasi-stationary eigenmeasure; starting from that measure keeps the shape fixed while survival follows a geometric law."
+  },
+  "III-01": {
+    "question": "Where does alive mass go during killing, revival, and copying?",
+    "prediction": "Follow the fluxes between the alive and dead reservoirs. Internal copying cancels from the total alive-mass balance; killing and escaping offspring transfer mass out, while revival brings it back, leaving the combined mass unchanged."
+  },
+  "III-02": {
+    "question": "Does the same per-step probability describe the same physical reaction rate?",
+    "prediction": "Halve the timestep while keeping the observation duration fixed. A fixed event probability gives more events per unit time; using probability 1 − exp(−a h) makes the measured event rate approach the chosen rate a."
+  },
+  "III-03": {
+    "question": "How do whole-cloud fluctuations change as the population grows?",
+    "prediction": "Compare the same bounded observable across independently seeded WASM runs at several population sizes. Then add a shared initial displacement: a random motion of the whole cloud becomes visible in the variation between runs."
+  },
+  "III-04": {
+    "question": "Does a stationary numerical law annihilate the continuous generator?",
+    "prediction": "Increase the population to reduce sampling scatter, then refine the timestep to reduce the Euler stationary bias. The discrete and continuous generator residuals respond differently, so the two controls expose two distinct sources of error."
+  },
+  "III-05": {
+    "question": "Why does fitness become constant on the stationary support?",
+    "prediction": "Evolve the positive density under the local replicator equation. It approaches the normalized profile proportional to R raised to the power αD/β; as the density adjusts, the spatial differences in fitness flatten out."
+  },
+  "III-06": {
+    "question": "Why do killed diffusion and source-balanced diffusion approach different shapes?",
+    "prediction": "With no source, the surviving conditional density approaches the principal sine profile. Turn on a constant source and compare the unnormalized density: replenishment balances boundary loss in the stationary parabola s x(L − x)/(2D₀)."
+  },
+  "III-07": {
+    "question": "Does permutation symmetry force the empirical mean to concentrate?",
+    "prediction": "Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Increase their population sizes: independent means concentrate with variance 1/N, while a shared Gaussian component leaves the variance floor ρ."
+  },
+  "III-08": {
+    "question": "How often does a sampled tuple repeat a population label?",
+    "prediction": "Draw tuples with replacement and count repeated labels. The observed frequency approaches 1 − (N)ₖ/Nᵏ, whose theoretical value is bounded by k(k − 1)/(2N); increasing the tuple size makes the finite-population correction easier to see."
+  },
+  "IV-01": {
+    "question": "How does velocity noise remove a position displacement?",
+    "prediction": "Start the harmonic Gaussian away from the equilibrium position. Velocity Fisher information begins at zero, then the position–velocity dynamics creates it; the entropy loss tracks the exact dissipation term −γθ Iᵥ."
+  },
+  "IV-02": {
+    "question": "Which reference distribution makes contraction visible?",
+    "prediction": "First apply the same Markov kernel to both probability laws and compare their KL divergence. An invariant reference stays fixed under that step; turning on state-dependent killing exposes the additional change caused by selecting and renormalizing survivors."
+  },
+  "IV-03": {
+    "question": "Can mass and shape errors move independently?",
+    "prediction": "Keep the normalized shape fixed and change only its mass, then move its center while keeping the mass fixed. The Hellinger decomposition separates the mass mismatch from the mass-weighted shape mismatch, while normalized transport follows the change in shape."
+  },
+  "IV-04": {
+    "question": "How does the comparison change when we widen the window?",
+    "prediction": "Widen the declared comparison region and inspect the density ratios alongside the sample coverage. Gaussian tail ratios and the vanishing density at absorbing endpoints show why a useful density comparison depends on where it is made."
+  },
+  "IV-05": {
+    "question": "Which derivative terms come from the denominator?",
+    "prediction": "Move the query coordinate through the frozen companion cloud. Differentiating both numerator and denominator keeps the localized statistics normalized; compare the resulting fitness derivatives with the curve obtained by freezing the denominator."
+  },
+  "IV-06": {
+    "question": "What grows when many walkers occupy one small ball?",
+    "prediction": "Replicate a cloud and compare raw neighbor counts with normalized local averages. Counts and Gaussian row sums grow with the population, while donor probability still sums to one and an identically replicated cloud keeps the same normalized average."
+  },
+  "IV-07": {
+    "question": "How do derivative coefficients control a Taylor approximation?",
+    "prediction": "Increase the Taylor order and compare the polynomial with the exact regularized fitness slice. Higher order improves recovery in a sufficiently small neighborhood; widening that neighborhood and changing the regularizers reveals how the useful approximation radius depends on the coefficients."
+  },
+  "IV-08": {
+    "question": "Where does the derivative of the sampling probability appear?",
+    "prediction": "Move one coordinate and enumerate every assignment in the selected four-walker law. The derivative of expected fitness combines changes in each assignment's fitness with changes in its probability; the two contributions add to the derivative of the averaged field."
+  },
+  "IV-09": {
+    "question": "What changes when a bounded ripple creates wells?",
+    "prediction": "Increase the cosine ripple on the quadratic potential and compare curvature, Gibbs density, and sampled relaxation. Local curvature can become negative while the Gaussian envelope still confines the law; the Metropolis ensembles reveal how barriers delay exchange between wells."
+  },
+  "IV-10": {
+    "question": "Which Gaussian law is invariant under a numerical BAOAB step?",
+    "prediction": "Follow two initial Gaussian laws toward the numerical stationary covariance. Decrease the timestep and watch its velocity variance approach the continuous value, linking the entropy relaxation curve to the equilibrium of the actual splitting step."
+  },
+  "IV-11": {
+    "question": "Which Hessian direction gets the largest velocity kick?",
+    "prediction": "Rotate the Hessian and vary its positive shifted eigenvalues. The smallest one gives the broadest diffusion direction; compare the predicted ellipse with kicks sampled by the Rust full-factor noise module after removing the known BAOAB scaling."
+  },
+  "IV-12": {
+    "question": "Which mean survives row-normalized interactions?",
+    "prediction": "Let the velocities align on the frozen weighted graph. The degree-weighted mean stays fixed as the corresponding relative energy decays; weakening connections reduces the spectral gap and slows that decay."
+  },
+  "IV-13": {
+    "question": "Which change most improves the bounded observable cos(v)?",
+    "prediction": "Compare the sampling, timestep, and transient contributions before choosing a control. More walkers reduce the sampling fluctuation; a smaller timestep changes the stationary bias, and a longer run reduces the memory of the initial law."
+  },
+  "IV-14": {
+    "question": "What remains when sampling error is removed from refinement?",
+    "prediction": "Compare exact harmonic moments at a fixed physical duration as the BAOAB timestep shrinks. In the resolved range, the finite-time weak error and stationary velocity bias fall quadratically, making the convergence slope visible without Monte Carlo scatter."
+  },
+  "IV-15": {
+    "question": "How does companion reach translate into a width?",
+    "prediction": "Choose a core diameter and a normalized-measure reach target, then inspect the required Gaussian width. Increasing the alive population leaves that width unchanged while distributing probability across more individual candidates."
+  },
+  "IV-16": {
+    "question": "Do independently seeded runs show the predicted relaxation?",
+    "prediction": "Choose an experiment card and compare two real WASM populations. The conservative harmonic card supplies the reference E|x|² = 2; the other cards expose copying, absorption, and population-size effects, with configurations and observables recorded for replay."
+  }
+}

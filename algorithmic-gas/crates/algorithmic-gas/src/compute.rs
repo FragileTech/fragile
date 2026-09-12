@@ -231,6 +231,8 @@ enum Device {
 }
 #[derive(Clone, Debug)]
 pub struct ExecutionContext {
+    /// Opt-in, bounded lecture diagnostics; never consumes random draws.
+    pub(crate) stage_trace: Option<Vec<serde_json::Value>>,
     kind: BackendKind,
     precision: Precision,
     device: Device,
@@ -240,6 +242,13 @@ pub struct ExecutionContext {
     pub max_memory_bytes: usize,
 }
 impl ExecutionContext {
+    pub(crate) fn trace_population<T: Real>(&mut self, stage: &str, p: &crate::Population<T>) {
+        if let Some(trace) = &mut self.stage_trace
+            && trace.len() < 16
+        {
+            trace.push(serde_json::json!({"stage":stage,"population":p}));
+        }
+    }
     pub async fn new(kind: BackendKind, precision: Precision) -> Result<Self> {
         if kind == BackendKind::Wgpu && precision != Precision::F32 {
             return Err(GasError::Capability(
@@ -286,6 +295,7 @@ impl ExecutionContext {
             precision,
             device,
             stats: ExecutionStats::default(),
+            stage_trace: None,
             max_batch_elements: 16_777_216,
             max_memory_bytes: crate::memory::DEFAULT_MEMORY_BYTES,
         };

@@ -1,0 +1,3088 @@
+[
+  {
+    "id": "I-01",
+    "part": "I",
+    "title": "Follow one walker through a complete step",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition",
+    "target": "Minimal Pseudocode",
+    "kind": "WASM experiment",
+    "prediction": "Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw.",
+    "question": "Which operation moved this walker?",
+    "posterAlt": "Recorded post_transform population. Follow one slot through the recorded step. Donor selection decides what can happen, copying changes which state occupies the slot, and kinetics moves that state; replay lets you inspect each change using the same random draw.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "benchmark",
+        "label": "Objective",
+        "type": "select",
+        "value": "sphere",
+        "options": [
+          {
+            "value": "sphere",
+            "label": "sphere"
+          },
+          {
+            "value": "rastrigin",
+            "label": "rastrigin"
+          }
+        ]
+      },
+      {
+        "key": "walker",
+        "label": "Selected slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      }
+    ],
+    "params": {
+      "walkers": 32,
+      "benchmark": "sphere",
+      "walker": 0
+    }
+  },
+  {
+    "id": "I-02",
+    "part": "I",
+    "title": "Two donor networks, two different questions",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition",
+    "target": "sec-companion-selection",
+    "kind": "WASM experiment",
+    "prediction": "Compare the two networks on the same cloud: distance donors supply measurements, while cloning donors supply possible replacements. Change the sampling law and watch directed choices become reciprocal pairs; an odd leftover follows the self-companion rule.",
+    "question": "Does the walker measuring diversity have to be the one copied?",
+    "posterAlt": "Diversity measurement network. Compare the two networks on the same cloud: distance donors supply measurements, while cloning donors supply possible replacements. Change the sampling law and watch directed choices become reciprocal pairs; an odd leftover follows the self-companion rule.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 6,
+        "options": [
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      },
+      {
+        "key": "law",
+        "label": "Distance donor law",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "independent"
+          },
+          {
+            "value": "uniform",
+            "label": "uniform"
+          },
+          {
+            "value": "mutual",
+            "label": "mutual"
+          },
+          {
+            "value": "greedy",
+            "label": "greedy"
+          }
+        ]
+      },
+      {
+        "key": "width",
+        "label": "Distance Gaussian width",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "cloneWidth",
+        "label": "Cloning Gaussian width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "count",
+        "label": "Distance rounds / donors",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 6,
+      "law": "independent",
+      "width": 1,
+      "cloneWidth": 0.7,
+      "count": 1
+    }
+  },
+  {
+    "id": "I-03",
+    "part": "I",
+    "title": "The fitness calculation as an instrument panel",
+    "chapter": "source/2_fractal_gas/convergence_program/01_fragile_gas_framework",
+    "target": "12. Standardization pipeline",
+    "kind": "WASM experiment",
+    "prediction": "A walker's score depends on the eligible population around it. Follow reward and diversity through their regularized statistics and positive channels, then change the exponents to see how those two channels combine into fitness.",
+    "question": "Why can fitness change while a raw reward stays fixed?",
+    "posterAlt": "Positive channels. A walker's score depends on the eligible population around it. Follow reward and diversity through their regularized statistics and positive channels, then change the exponents to see how those two channels combine into fitness.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "alpha",
+        "label": "Reward exponent α",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent β",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "sigma",
+        "label": "Standard deviation floor",
+        "type": "select",
+        "value": 0.01,
+        "options": [
+          {
+            "value": 0.001,
+            "label": "0.001"
+          },
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          }
+        ]
+      },
+      {
+        "key": "floor",
+        "label": "Positive-map floor",
+        "type": "select",
+        "value": 0.01,
+        "options": [
+          {
+            "value": 0.0001,
+            "label": "0.0001"
+          },
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "outlier",
+        "label": "Outlier radius",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 4,
+        "step": 0.1
+      },
+      {
+        "key": "exclude",
+        "label": "Outlier eligible",
+        "type": "select",
+        "value": "yes",
+        "options": [
+          {
+            "value": "yes",
+            "label": "yes"
+          },
+          {
+            "value": "no",
+            "label": "no"
+          }
+        ]
+      },
+      {
+        "key": "stats",
+        "label": "Statistics",
+        "type": "select",
+        "value": "global",
+        "options": [
+          {
+            "value": "global",
+            "label": "global"
+          },
+          {
+            "value": "local",
+            "label": "local"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "alpha": 1,
+      "beta": 1,
+      "sigma": 0.01,
+      "floor": 0.01,
+      "outlier": 1,
+      "exclude": "yes",
+      "stats": "global"
+    }
+  },
+  {
+    "id": "I-04",
+    "part": "I",
+    "title": "Revival, singleton continuation, and extinction",
+    "chapter": "source/2_fractal_gas/convergence_program/01_fragile_gas_framework",
+    "target": "17. The Revival State",
+    "kind": "WASM experiment",
+    "prediction": "Start with four survivors, then one, then none. Revival can fill sixteen slots from the surviving states; with one survivor every revival uses that same source, while zero survivors produces the engine's extinction event.",
+    "question": "What does fixed population mean when slots lose eligibility?",
+    "posterAlt": "Persistent slot ledger. Start with four survivors, then one, then none. Revival can fill sixteen slots from the surviving states; with one survivor every revival uses that same source, while zero survivors produces the engine's extinction event.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "survivors",
+        "label": "Initial eligible slots",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 0,
+            "label": "0"
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "label": "Boundary",
+        "type": "select",
+        "value": "absorbing",
+        "options": [
+          {
+            "value": "absorbing",
+            "label": "absorbing"
+          },
+          {
+            "value": "periodic",
+            "label": "periodic"
+          }
+        ]
+      },
+      {
+        "key": "jitter",
+        "label": "Copy jitter",
+        "type": "select",
+        "value": 0.05,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.2,
+            "label": "0.2"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "survivors": 4,
+      "boundary": "absorbing",
+      "jitter": 0.05
+    }
+  },
+  {
+    "id": "I-05",
+    "part": "I",
+    "title": "BAOAB under a microscope",
+    "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
+    "target": "3.1 Euclidean Gas algorithm",
+    "kind": "WASM experiment",
+    "prediction": "Track the five BAOAB stages in phase space. B changes velocity, A changes position, and O damps velocity while adding Gaussian noise; the last B evaluates the force at the position reached by the second A.",
+    "question": "At which positions are the two force evaluations made?",
+    "posterAlt": "Recorded B–A–O–A–B phase path. Track the five BAOAB stages in phase space. B changes velocity, A changes position, and O damps velocity while adding Gaussian noise; the last B evaluates the force at the position reached by the second A.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "dt",
+        "label": "Time step h",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.005,
+        "max": 0.1,
+        "step": 0.005
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1
+      },
+      {
+        "key": "temperature",
+        "label": "Thermal parameter T",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "walker",
+        "label": "Selected slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 15,
+        "step": 1
+      }
+    ],
+    "params": {
+      "dt": 0.04,
+      "gamma": 1,
+      "temperature": 0.4,
+      "walker": 0
+    }
+  },
+  {
+    "id": "I-06",
+    "part": "I",
+    "title": "Reward attracts copies; potential accelerates motion",
+    "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
+    "target": "3.4 Swarm distance",
+    "kind": "WASM experiment",
+    "prediction": "Move the reward optimum relative to the confining potential and follow the population. Copying responds to reward through fitness, while the BAOAB acceleration follows the potential gradient, so the two operations can favor different places.",
+    "question": "What changes when favorable reward and the force point to different places?",
+    "posterAlt": "Reward cost profile; smaller is better. Move the reward optimum relative to the confining potential and follow the population. Copying responds to reward through fitness, while the BAOAB acceleration follows the potential gradient, so the two operations can favor different places.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "landscape",
+        "label": "Reward / force preset",
+        "type": "select",
+        "value": "aligned",
+        "options": [
+          {
+            "value": "aligned",
+            "label": "aligned"
+          },
+          {
+            "value": "shifted",
+            "label": "shifted"
+          },
+          {
+            "value": "multiwell",
+            "label": "multiwell"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 128,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "alpha",
+        "label": "Reward exponent α",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent β",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "dt",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.025,
+        "min": 0.005,
+        "max": 0.08,
+        "step": 0.005
+      }
+    ],
+    "params": {
+      "landscape": "aligned",
+      "walkers": 128,
+      "alpha": 1,
+      "beta": 0,
+      "dt": 0.025
+    }
+  },
+  {
+    "id": "I-07",
+    "part": "I",
+    "title": "A probability field for one selected walker",
+    "chapter": "source/2_fractal_gas/convergence_program/04_single_particle",
+    "target": "5. Conditional Cloning Probability Field",
+    "kind": "Mathematical model",
+    "prediction": "For each possible donor, average the complete clipped fitness comparison over the distance assignments. The resulting accepted-copy weights, together with the probability of staying put, account for the selected walker's whole next copying decision.",
+    "question": "Before drawing randomness, how much probability belongs to each accepted copy?",
+    "posterAlt": "Frozen conditioning population. For each possible donor, average the complete clipped fitness comparison over the distance assignments. The resulting accepted-copy weights, together with the probability of staying put, account for the selected walker's whole next copying decision.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Frozen population N",
+        "type": "select",
+        "value": 5,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 6,
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "key": "law",
+        "label": "Diversity assignment law",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "independent"
+          },
+          {
+            "value": "greedy",
+            "label": "greedy"
+          }
+        ]
+      },
+      {
+        "key": "width",
+        "label": "Diversity width",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      },
+      {
+        "key": "cloneWidth",
+        "label": "Cloning width",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      },
+      {
+        "key": "saturation",
+        "label": "Acceptance saturation scale",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0.25,
+            "label": "0.25"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "recipient",
+        "label": "Recipient slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 1
+      }
+    ],
+    "params": {
+      "walkers": 5,
+      "law": "independent",
+      "width": 1,
+      "cloneWidth": 1,
+      "saturation": 1,
+      "recipient": 0
+    }
+  },
+  {
+    "id": "I-08",
+    "part": "I",
+    "title": "Resolve a cloning jump into its mixture components",
+    "chapter": "source/2_fractal_gas/convergence_program/04_single_particle",
+    "target": "6. Post-Cloning Position Distribution",
+    "kind": "Mathematical model",
+    "prediction": "The persistence component keeps its mass at the old position, while clone jitter spreads accepted-copy mass around donor positions. Follow the components through the kinetic step to see how a mixture of possible copying outcomes becomes a distribution of final positions.",
+    "question": "Which part of the post-copy law remains concentrated at one point?",
+    "posterAlt": "Continuous copy density plus separate persistence mass. The persistence component keeps its mass at the old position, while clone jitter spreads accepted-copy mass around donor positions. Follow the components through the kinetic step to see how a mixture of possible copying outcomes becomes a distribution of final positions.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "recipient",
+        "label": "Recipient slot",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "jitter",
+        "label": "Copy jitter σ",
+        "type": "select",
+        "value": 0.1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.3,
+            "label": "0.3"
+          }
+        ]
+      },
+      {
+        "key": "temperature",
+        "label": "Thermostat T",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "boundary",
+        "label": "Viable half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.4,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "recipient": 0,
+      "jitter": 0.1,
+      "temperature": 0.4,
+      "boundary": 1.1
+    }
+  },
+  {
+    "id": "I-09",
+    "part": "I",
+    "title": "What an inelastic collision really conserves",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent",
+    "target": "2.2. What the collision conserves",
+    "kind": "WASM experiment",
+    "prediction": "Reduce the restitution parameter and compare each accepted mutual pair before and after collision. Its coordinate momentum stays fixed, while its relative kinetic energy is multiplied by the square of the restitution parameter.",
+    "question": "How can relative motion shrink while pair momentum stays fixed?",
+    "posterAlt": "Actual disjoint-pair velocity transform. Reduce the restitution parameter and compare each accepted mutual pair before and after collision. Its coordinate momentum stays fixed, while its relative kinetic energy is multiplied by the square of the restitution parameter.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "restitution",
+        "label": "Restitution a",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "vx",
+        "label": "First velocity x₁",
+        "type": "range",
+        "value": 1.5,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "vy",
+        "label": "First velocity x₂",
+        "type": "range",
+        "value": 0.5,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "restitution": 0.5,
+      "vx": 1.5,
+      "vy": 0.5
+    }
+  },
+  {
+    "id": "I-10",
+    "part": "I",
+    "title": "A flat chart is only one latent geometry",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent",
+    "target": "sec-latent-fractal-gas-kinetics",
+    "kind": "WASM + reference",
+    "prediction": "Change the diagonal noise factor and observe the direction of spreading in the live population. Then compare the prescribed variable metric: its ellipses change from place to place, making the distinction between a constant diffusion matrix and spatial geometry visible.",
+    "question": "Which object changed: donor distance, noise covariance, or the metric?",
+    "posterAlt": "Live constant anisotropy. Change the diagonal noise factor and observe the direction of spreading in the live population. Then compare the prescribed variable metric: its ellipses change from place to place, making the distinction between a constant diffusion matrix and spatial geometry visible.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "anisotropy",
+        "label": "Constant diffusion ratio",
+        "type": "range",
+        "value": 2,
+        "min": 0.5,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "position",
+        "label": "Selected chart coordinate",
+        "type": "range",
+        "value": 0,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "velocityWeight",
+        "label": "Donor velocity weight",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "anisotropy": 2,
+      "position": 0,
+      "velocityWeight": 1
+    }
+  },
+  {
+    "id": "II-01",
+    "part": "II",
+    "title": "The Keystone chain as linked evidence",
+    "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
+    "target": "sec-cloning-keystone",
+    "kind": "WASM experiment",
+    "prediction": "With the reward optimum in the main cluster, inspect whether high-error walkers also have low fitness and tend to copy inward. Move the optimum to the outliers and repeat: the linked plots show which part of that chain changes sign.",
+    "question": "Does geometric error produce an inward copying signal?",
+    "posterAlt": "Conditional replacement change. With the reward optimum in the main cluster, inspect whether high-error walkers also have low fitness and tend to copy inward. Move the optimum to the outliers and repeat: the linked plots show which part of that chain changes sign.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          }
+        ]
+      },
+      {
+        "key": "fraction",
+        "label": "Outlier fraction",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.05,
+        "max": 0.4,
+        "step": 0.05
+      },
+      {
+        "key": "separation",
+        "label": "Cluster separation",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 4,
+        "step": 0.25
+      },
+      {
+        "key": "alpha",
+        "label": "Reward exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.25
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 0.25
+      },
+      {
+        "key": "landscape",
+        "label": "Reward optimum",
+        "type": "select",
+        "value": "main",
+        "options": [
+          {
+            "value": "main",
+            "label": "Main cluster"
+          },
+          {
+            "value": "outliers",
+            "label": "Outlier cluster"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Partition scale ε",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "fraction": 0.15,
+      "separation": 2,
+      "alpha": 1,
+      "beta": 0,
+      "landscape": "main",
+      "epsilon": 0.3
+    }
+  },
+  {
+    "id": "II-02",
+    "part": "II",
+    "title": "Drift is an average over possible next steps",
+    "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
+    "target": "10.3. Positional Variance Contraction",
+    "kind": "WASM experiment",
+    "prediction": "Repeat independent updates from each frozen starting cloud. Individual changes fluctuate, but their averages reveal the drift; compare cloning, kinetics, and the full step to see how contraction competes with injected noise.",
+    "question": "Which initial spreads have negative average one-step drift?",
+    "posterAlt": "One-step conditional drift. Repeat independent updates from each frozen starting cloud. Individual changes fluctuate, but their averages reveal the drift; compare cloning, kinetics, and the full step to see how contraction competes with injected noise.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "stage",
+        "label": "Operator",
+        "type": "select",
+        "value": "clone",
+        "options": [
+          {
+            "value": "clone",
+            "label": "Cloning only"
+          },
+          {
+            "value": "kinetic",
+            "label": "Kinetic only"
+          },
+          {
+            "value": "full",
+            "label": "Full update"
+          }
+        ]
+      },
+      {
+        "key": "jitter",
+        "label": "Clone jitter / kinetic noise amplitude",
+        "type": "range",
+        "value": 0.05,
+        "min": 0,
+        "max": 0.3,
+        "step": 0.01
+      },
+      {
+        "key": "replicates",
+        "label": "Replicates per spread",
+        "type": "select",
+        "value": 24,
+        "options": [
+          {
+            "value": 12,
+            "label": "12"
+          },
+          {
+            "value": 24,
+            "label": "24"
+          },
+          {
+            "value": 48,
+            "label": "48"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "stage": "clone",
+      "jitter": 0.05,
+      "replicates": 24,
+      "walkers": 32
+    }
+  },
+  {
+    "id": "II-03",
+    "part": "II",
+    "title": "Matching clouds is an optimization problem",
+    "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
+    "target": "3.2. Centered Positional Wasserstein Bound",
+    "kind": "Mathematical model",
+    "prediction": "Shuffle the slot labels and compare label pairing with optimal assignment. The identical clouds still have zero transport cost; translating one cloud adds the squared separation of their centers to the centered matching cost.",
+    "question": "Can relabeling an identical cloud change its transport distance?",
+    "posterAlt": "Clouds and chosen coupling. Shuffle the slot labels and compare label pairing with optimal assignment. The identical clouds still have zero transport cost; translating one cloud adds the squared separation of their centers to the centered matching cost.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Equal masses",
+        "type": "select",
+        "value": 8,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      },
+      {
+        "key": "translation",
+        "label": "Cloud translation",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "distortion",
+        "label": "Shape distortion",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "coupling",
+        "label": "Display coupling",
+        "type": "select",
+        "value": "optimal",
+        "options": [
+          {
+            "value": "optimal",
+            "label": "Optimal assignment"
+          },
+          {
+            "value": "labels",
+            "label": "Slot labels"
+          },
+          {
+            "value": "product",
+            "label": "Independent product"
+          }
+        ]
+      },
+      {
+        "key": "cost",
+        "label": "Coordinates",
+        "type": "select",
+        "value": "position",
+        "options": [
+          {
+            "value": "position",
+            "label": "Position"
+          },
+          {
+            "value": "phase",
+            "label": "Position + velocity"
+          }
+        ]
+      },
+      {
+        "key": "weight",
+        "label": "Velocity weight λ",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "walkers": 8,
+      "translation": 0,
+      "distortion": 0,
+      "coupling": "optimal",
+      "cost": "position",
+      "weight": 1
+    }
+  },
+  {
+    "id": "II-04",
+    "part": "II",
+    "title": "Compare the variance proxy with transport cost",
+    "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
+    "target": "5. From Variance Contraction",
+    "kind": "WASM experiment",
+    "prediction": "Follow two live clouds and compare their optimal centered matching cost with the sum of their variances. Identical broad clouds begin with zero centered transport but a positive variance proxy, showing exactly where the envelope leaves room.",
+    "question": "How tight is the variance envelope on actual cloud distance?",
+    "posterAlt": "Exact centered transport and variance envelope. Follow two live clouds and compare their optimal centered matching cost with the sum of their variances. Identical broad clouds begin with zero centered transport but a positive variance proxy, showing exactly where the envelope leaves room.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "spread",
+        "label": "Initial spread",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "translation",
+        "label": "Initial translation",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "fixture",
+        "label": "Second cloud",
+        "type": "select",
+        "value": "translated",
+        "options": [
+          {
+            "value": "translated",
+            "label": "Translated copy"
+          },
+          {
+            "value": "independent",
+            "label": "Independent shape"
+          }
+        ]
+      },
+      {
+        "key": "noise",
+        "label": "Kinetic jump",
+        "type": "range",
+        "value": 0.02,
+        "min": 0,
+        "max": 0.2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "walkers": 16,
+      "spread": 1,
+      "translation": 1,
+      "fixture": "translated",
+      "noise": 0.02
+    }
+  },
+  {
+    "id": "II-05",
+    "part": "II",
+    "title": "Friction removes memory while noise restores variance",
+    "chapter": "source/2_fractal_gas/convergence_program/05_kinetic_contraction",
+    "target": "5. Velocity Variance Dissipation",
+    "kind": "Mathematical model",
+    "prediction": "Starting from one velocity, the sample mean follows exponential damping while noise builds the spread toward the displayed thermal variance. Give two populations the same innovations and their paired velocity differences decay exponentially even as each population fluctuates.",
+    "question": "Can the velocity mean decay while its variance increases?",
+    "posterAlt": "Memory of the initial mean. Starting from one velocity, the sample mean follows exponential damping while noise builds the spread toward the displayed thermal variance. Give two populations the same innovations and their paired velocity differences decay exponentially even as each population fluctuates.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "temperature",
+        "label": "Temperature / diffusion parameter",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "h",
+        "label": "Timestep",
+        "type": "select",
+        "value": 0.02,
+        "options": [
+          {
+            "value": 0.005,
+            "label": "0.005"
+          },
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Independent velocities",
+        "type": "select",
+        "value": 256,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "mode",
+        "label": "Noise convention",
+        "type": "select",
+        "value": "temperature",
+        "options": [
+          {
+            "value": "temperature",
+            "label": "Fixed temperature"
+          },
+          {
+            "value": "diffusion",
+            "label": "Fixed diffusion L"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "gamma": 1,
+      "temperature": 0.5,
+      "h": 0.02,
+      "walkers": 256,
+      "mode": "temperature"
+    }
+  },
+  {
+    "id": "II-06",
+    "part": "II",
+    "title": "Confinement and absorption act differently",
+    "chapter": "source/2_fractal_gas/convergence_program/05_kinetic_contraction",
+    "target": "7. Boundary Potential Contraction",
+    "kind": "Mathematical model",
+    "prediction": "Increase the harmonic stiffness and compare the inward mean motion with the measured survival fraction. One BAOAB noise kick spreads a fixed state along one phase-space direction; composing kicks usually fills both position and velocity directions.",
+    "question": "How do return, survival, and phase-space spreading change near a boundary?",
+    "posterAlt": "Transition support from selected start. Increase the harmonic stiffness and compare the inward mean motion with the measured survival fraction. One BAOAB noise kick spreads a fixed state along one phase-space direction; composing kicks usually fills both position and velocity directions.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "stiffness",
+        "label": "Confinement κ",
+        "type": "range",
+        "value": 2,
+        "min": 0,
+        "max": 5,
+        "step": 0.25
+      },
+      {
+        "key": "box",
+        "label": "Absorbing half-width b",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "start",
+        "label": "Start as fraction of b",
+        "type": "range",
+        "value": 0.8,
+        "min": 0,
+        "max": 0.98,
+        "step": 0.02
+      },
+      {
+        "key": "h",
+        "label": "BAOAB step",
+        "type": "select",
+        "value": 0.1,
+        "options": [
+          {
+            "value": 0.02,
+            "label": "0.02"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.2,
+            "label": "0.2"
+          }
+        ]
+      },
+      {
+        "key": "temperature",
+        "label": "Temperature",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "steps",
+        "label": "Transition block",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "stiffness": 2,
+      "box": 1,
+      "start": 0.8,
+      "h": 0.1,
+      "temperature": 1,
+      "steps": 2
+    }
+  },
+  {
+    "id": "II-07",
+    "part": "II",
+    "title": "Assemble component bounds in a comparison matrix",
+    "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
+    "target": "sec-convergence-composition",
+    "kind": "Mathematical model",
+    "prediction": "Compose the cloning and kinetic matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, the resulting scalar envelope approaches a finite floor; increasing the source term raises that floor.",
+    "question": "Can coupled component inequalities produce a scalar contraction?",
+    "posterAlt": "Clone comparison C. Compose the cloning and kinetic matrices, then weight the components with the positive left eigenvector. When the spectral radius is below one, the resulting scalar envelope approaches a finite floor; increasing the source term raises that floor.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "transfer",
+        "label": "Clone x←v coupling",
+        "type": "range",
+        "value": 0.12,
+        "min": 0,
+        "max": 1.5,
+        "step": 0.03
+      },
+      {
+        "key": "damping",
+        "label": "Kinetic diagonal damping",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.3,
+        "max": 0.95,
+        "step": 0.05
+      },
+      {
+        "key": "source",
+        "label": "Source per component",
+        "type": "range",
+        "value": 0.03,
+        "min": 0,
+        "max": 0.2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "transfer": 0.12,
+      "damping": 0.6,
+      "source": 0.03
+    }
+  },
+  {
+    "id": "II-08",
+    "part": "II",
+    "title": "Survival and conditional equilibrium on separate axes",
+    "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
+    "target": "4.2. A complete killed-block criterion",
+    "kind": "Mathematical model",
+    "prediction": "Watch surviving mass and conditional shape on separate axes in this finite killed chain. The normalized law approaches the quasi-stationary eigenmeasure; starting from that measure keeps the shape fixed while survival follows a geometric law.",
+    "question": "What settles down while total surviving probability decreases?",
+    "posterAlt": "Whole-system killed kernel. Watch surviving mass and conditional shape on separate axes in this finite killed chain. The normalized law approaches the quasi-stationary eigenmeasure; starting from that measure keeps the shape fixed while survival follows a geometric law.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "kill",
+        "label": "Killing strength",
+        "type": "range",
+        "value": 0.08,
+        "min": 0.01,
+        "max": 0.3,
+        "step": 0.01
+      },
+      {
+        "key": "initial",
+        "label": "Initial law",
+        "type": "select",
+        "value": "A",
+        "options": [
+          {
+            "value": "A",
+            "label": "State A"
+          },
+          {
+            "value": "C",
+            "label": "State C"
+          },
+          {
+            "value": "qsd",
+            "label": "Exact QSD"
+          }
+        ]
+      },
+      {
+        "key": "boundary",
+        "label": "Boundary convention",
+        "type": "select",
+        "value": "killed",
+        "options": [
+          {
+            "value": "killed",
+            "label": "Absorbing cemetery"
+          },
+          {
+            "value": "conservative",
+            "label": "Conservative"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Replicas",
+        "type": "select",
+        "value": 512,
+        "options": [
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          },
+          {
+            "value": 1024,
+            "label": "1024"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "kill": 0.08,
+      "initial": "A",
+      "boundary": "killed",
+      "replicas": 512
+    }
+  },
+  {
+    "id": "III-01",
+    "part": "III",
+    "title": "A population mass ledger for the forward equation",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-population",
+    "kind": "Mathematical model",
+    "prediction": "Follow the fluxes between the alive and dead reservoirs. Internal copying cancels from the total alive-mass balance; killing and escaping offspring transfer mass out, while revival brings it back, leaving the combined mass unchanged.",
+    "question": "Where does alive mass go during killing, revival, and copying?",
+    "posterAlt": "Alive and dead reservoirs. Follow the fluxes between the alive and dead reservoirs. Internal copying cancels from the total alive-mass balance; killing and escaping offspring transfer mass out, while revival brings it back, leaving the combined mass unchanged.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "kill",
+        "label": "Killing rate c",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "revive",
+        "label": "Revival rate λ",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "attempt",
+        "label": "Internal replacement rate a",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 5,
+        "step": 0.25
+      },
+      {
+        "key": "escape",
+        "label": "Offspring escape probability e",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 0.3,
+        "step": 0.02
+      },
+      {
+        "key": "initial",
+        "label": "Initial alive mass",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "kill": 0.5,
+      "revive": 1,
+      "attempt": 1,
+      "escape": 0,
+      "initial": 0.3
+    }
+  },
+  {
+    "id": "III-02",
+    "part": "III",
+    "title": "Shrinking the timestep changes reaction frequency",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-reactions",
+    "kind": "Mathematical model",
+    "prediction": "Halve the timestep while keeping the observation duration fixed. A fixed event probability gives more events per unit time; using probability 1 − exp(−a h) makes the measured event rate approach the chosen rate a.",
+    "question": "Does the same per-step probability describe the same physical reaction rate?",
+    "posterAlt": "Refinement and observed reaction intensity. Halve the timestep while keeping the observation duration fixed. A fixed event probability gives more events per unit time; using probability 1 − exp(−a h) makes the measured event rate approach the chosen rate a.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "probability",
+        "label": "Fixed probability p",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.1,
+        "max": 0.6,
+        "step": 0.1
+      },
+      {
+        "key": "rate",
+        "label": "Finite rate a",
+        "type": "range",
+        "value": 2,
+        "min": 0.5,
+        "max": 5,
+        "step": 0.5
+      },
+      {
+        "key": "h",
+        "label": "Timeline timestep",
+        "type": "select",
+        "value": 0.025,
+        "options": [
+          {
+            "value": 0.1,
+            "label": "0.1"
+          },
+          {
+            "value": 0.05,
+            "label": "0.05"
+          },
+          {
+            "value": 0.025,
+            "label": "0.025"
+          },
+          {
+            "value": 0.0125,
+            "label": "0.0125"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "probability": 0.3,
+      "rate": 2,
+      "h": 0.025
+    }
+  },
+  {
+    "id": "III-03",
+    "part": "III",
+    "title": "Watch the empirical law fluctuate between runs",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-population-laws",
+    "kind": "WASM experiment",
+    "prediction": "Compare the same bounded observable across independently seeded WASM runs at several population sizes. Then add a shared initial displacement: a random motion of the whole cloud becomes visible in the variation between runs.",
+    "question": "How do whole-cloud fluctuations change as the population grows?",
+    "posterAlt": "Across-run variance of empirical observable. Compare the same bounded observable across independently seeded WASM runs at several population sizes. Then add a shared initial displacement: a random motion of the whole cloud becomes visible in the variation between runs.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "updates",
+        "label": "Observation update",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 12,
+            "label": "12"
+          }
+        ]
+      },
+      {
+        "key": "initial",
+        "label": "Initial population",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "Independent Gaussian"
+          },
+          {
+            "value": "shared",
+            "label": "Shared random displacement"
+          }
+        ]
+      },
+      {
+        "key": "selection",
+        "label": "Reward exponent",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 2,
+        "step": 0.25
+      },
+      {
+        "key": "noise",
+        "label": "Kinetic jump amplitude",
+        "type": "range",
+        "value": 0.05,
+        "min": 0,
+        "max": 0.2,
+        "step": 0.01
+      },
+      {
+        "key": "replicas",
+        "label": "Replicas per N",
+        "type": "select",
+        "value": 24,
+        "options": [
+          {
+            "value": 12,
+            "label": "12"
+          },
+          {
+            "value": 24,
+            "label": "24"
+          },
+          {
+            "value": 48,
+            "label": "48"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "updates": 4,
+      "initial": "independent",
+      "selection": 0,
+      "noise": 0.05,
+      "replicas": 24
+    }
+  },
+  {
+    "id": "III-04",
+    "part": "III",
+    "title": "Two limits and a stationary residual",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-identification",
+    "kind": "Mathematical model",
+    "prediction": "Increase the population to reduce sampling scatter, then refine the timestep to reduce the Euler stationary bias. The discrete and continuous generator residuals respond differently, so the two controls expose two distinct sources of error.",
+    "question": "Does a stationary numerical law annihilate the continuous generator?",
+    "posterAlt": "Finite-step residual E[(P_hφ−φ)/h]. Increase the population to reduce sampling scatter, then refine the timestep to reduce the Euler stationary bias. The discrete and continuous generator residuals respond differently, so the two controls expose two distinct sources of error.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "temperature",
+        "label": "OU temperature T",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.2
+      },
+      {
+        "key": "initial",
+        "label": "Initial law",
+        "type": "select",
+        "value": "stationary",
+        "options": [
+          {
+            "value": "stationary",
+            "label": "Euler stationary Gaussian"
+          },
+          {
+            "value": "point",
+            "label": "Point at x=2"
+          }
+        ]
+      },
+      {
+        "key": "test",
+        "label": "Test function",
+        "type": "select",
+        "value": "square",
+        "options": [
+          {
+            "value": "square",
+            "label": "x²"
+          },
+          {
+            "value": "linear",
+            "label": "x"
+          },
+          {
+            "value": "constant",
+            "label": "1"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "temperature": 1,
+      "initial": "stationary",
+      "test": "square"
+    }
+  },
+  {
+    "id": "III-05",
+    "part": "III",
+    "title": "Watch an equilibrium profile emerge",
+    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
+    "target": "sec-equilibrium-selection",
+    "kind": "Mathematical model",
+    "prediction": "Evolve the positive density under the local replicator equation. It approaches the normalized profile proportional to R raised to the power αD/β; as the density adjusts, the spatial differences in fitness flatten out.",
+    "question": "Why does fitness become constant on the stationary support?",
+    "posterAlt": "Local equilibrium density. Evolve the positive density under the local replicator equation. It approaches the normalized profile proportional to R raised to the power αD/β; as the density adjusts, the spatial differences in fitness flatten out.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "ratio",
+        "label": "α / β",
+        "type": "range",
+        "value": 1,
+        "min": 0.25,
+        "max": 2,
+        "step": 0.25
+      },
+      {
+        "key": "dimension",
+        "label": "Reference dimension D",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "contrast",
+        "label": "Reward contrast",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 10,
+        "step": 0.5
+      },
+      {
+        "key": "initial",
+        "label": "Positive initial density",
+        "type": "select",
+        "value": "uniform",
+        "options": [
+          {
+            "value": "uniform",
+            "label": "Uniform"
+          },
+          {
+            "value": "tilted",
+            "label": "Tilted toward low reward"
+          }
+        ]
+      },
+      {
+        "key": "resolution",
+        "label": "Quadrature cells",
+        "type": "select",
+        "value": 96,
+        "options": [
+          {
+            "value": 48,
+            "label": "48"
+          },
+          {
+            "value": 96,
+            "label": "96"
+          },
+          {
+            "value": 192,
+            "label": "192"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "ratio": 1,
+      "dimension": 1,
+      "contrast": 3,
+      "initial": "uniform",
+      "resolution": 96
+    }
+  },
+  {
+    "id": "III-06",
+    "part": "III",
+    "title": "A sine, a parabola, and a surviving shape",
+    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
+    "target": "sec-equilibrium-kinetic",
+    "kind": "Mathematical model",
+    "prediction": "With no source, the surviving conditional density approaches the principal sine profile. Turn on a constant source and compare the unnormalized density: replenishment balances boundary loss in the stationary parabola s x(L − x)/(2D₀).",
+    "question": "Why do killed diffusion and source-balanced diffusion approach different shapes?",
+    "posterAlt": "Source-free absorbing diffusion. With no source, the surviving conditional density approaches the principal sine profile. Turn on a constant source and compare the unnormalized density: replenishment balances boundary loss in the stationary parabola s x(L − x)/(2D₀).",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "length",
+        "label": "Interval length L",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "diffusivity",
+        "label": "Diffusivity D₀",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "source",
+        "label": "Constant source s",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "modes",
+        "label": "Sine modes",
+        "type": "select",
+        "value": 31,
+        "options": [
+          {
+            "value": 15,
+            "label": "15"
+          },
+          {
+            "value": 31,
+            "label": "31"
+          },
+          {
+            "value": 63,
+            "label": "63"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "length": 1,
+      "diffusivity": 0.5,
+      "source": 0.5,
+      "modes": 31
+    }
+  },
+  {
+    "id": "III-07",
+    "part": "III",
+    "title": "Exchangeable walkers can move as one random object",
+    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
+    "target": "sec-exchangeability-qsd",
+    "kind": "Mathematical model",
+    "prediction": "Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Increase their population sizes: independent means concentrate with variance 1/N, while a shared Gaussian component leaves the variance floor ρ.",
+    "question": "Does permutation symmetry force the empirical mean to concentrate?",
+    "posterAlt": "Distribution of the empirical mean. Both Gaussian ensembles have the same one-walker marginals and are unchanged in law by relabeling. Increase their population sizes: independent means concentrate with variance 1/N, while a shared Gaussian component leaves the variance floor ρ.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "correlation",
+        "label": "Shared-state strength ρ",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "relabel",
+        "label": "Label order",
+        "type": "select",
+        "value": "permuted",
+        "options": [
+          {
+            "value": "permuted",
+            "label": "Random permutation"
+          },
+          {
+            "value": "original",
+            "label": "Original"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "correlation": 1,
+      "relabel": "permuted"
+    }
+  },
+  {
+    "id": "III-08",
+    "part": "III",
+    "title": "Sampling with replacement exposes the finite-N correction",
+    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
+    "target": "sec-exchangeability-finite-mixtures",
+    "kind": "Mathematical model",
+    "prediction": "Draw tuples with replacement and count repeated labels. The observed frequency approaches 1 − (N)ₖ/Nᵏ, whose theoretical value is bounded by k(k − 1)/(2N); increasing the tuple size makes the finite-population correction easier to see.",
+    "question": "How often does a sampled tuple repeat a population label?",
+    "posterAlt": "Tuple collision correction. Draw tuples with replacement and count repeated labels. The observed frequency approaches 1 − (N)ₖ/Nᵏ, whose theoretical value is bounded by k(k − 1)/(2N); increasing the tuple size makes the finite-population correction easier to see.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Population labels N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "tuple",
+        "label": "Tuple length k (capped at N)",
+        "type": "range",
+        "value": 8,
+        "min": 1,
+        "max": 32,
+        "step": 1
+      },
+      {
+        "key": "correlation",
+        "label": "Off-diagonal correlation ρ",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "entropy",
+        "label": "Total entropy budget H_N",
+        "type": "select",
+        "value": "constant",
+        "options": [
+          {
+            "value": "constant",
+            "label": "1"
+          },
+          {
+            "value": "sqrt",
+            "label": "√N"
+          },
+          {
+            "value": "linear",
+            "label": "N"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "walkers": 64,
+      "tuple": 8,
+      "correlation": 0,
+      "entropy": "constant"
+    }
+  },
+  {
+    "id": "IV-01",
+    "part": "IV",
+    "title": "How velocity noise reaches position information",
+    "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
+    "target": "2.2. Entropy and the three Fisher terms",
+    "kind": "Mathematical model",
+    "prediction": "Start the harmonic Gaussian away from the equilibrium position. Velocity Fisher information begins at zero, then the position–velocity dynamics creates it; the entropy loss tracks the exact dissipation term −γθ Iᵥ.",
+    "question": "How does velocity noise remove a position displacement?",
+    "posterAlt": "Entropy and information transfer. Start the harmonic Gaussian away from the equilibrium position. Velocity Fisher information begins at zero, then the position–velocity dynamics creates it; the entropy loss tracks the exact dissipation term −γθ Iᵥ.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "k",
+        "label": "Stiffness κ",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "displacement",
+        "label": "Initial displacement",
+        "type": "range",
+        "value": 2,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "k": 1,
+      "gamma": 1,
+      "displacement": 2,
+      "theta": 1
+    }
+  },
+  {
+    "id": "IV-02",
+    "part": "IV",
+    "title": "Entropy contracts toward the right target",
+    "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
+    "target": "sec-kl-hypocoercive-full-evolution",
+    "kind": "Mathematical model",
+    "prediction": "First apply the same Markov kernel to both probability laws and compare their KL divergence. An invariant reference stays fixed under that step; turning on state-dependent killing exposes the additional change caused by selecting and renormalizing survivors.",
+    "question": "Which reference distribution makes contraction visible?",
+    "posterAlt": "Probability laws. First apply the same Markov kernel to both probability laws and compare their KL divergence. An invariant reference stays fixed under that step; turning on state-dependent killing exposes the additional change caused by selecting and renormalizing survivors.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "reset",
+        "label": "Reset strength",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.05,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "target",
+        "label": "Reference target",
+        "type": "select",
+        "value": "invariant",
+        "options": [
+          {
+            "value": "invariant",
+            "label": "invariant"
+          },
+          {
+            "value": "different",
+            "label": "different"
+          }
+        ]
+      },
+      {
+        "key": "killing",
+        "label": "State-dependent killing",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 0.5,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "reset": 0.3,
+      "target": "invariant",
+      "killing": 0
+    }
+  },
+  {
+    "id": "IV-03",
+    "part": "IV",
+    "title": "Separate how much survives from where it survives",
+    "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
+    "target": "sec-hk-metrics",
+    "kind": "Mathematical model",
+    "prediction": "Keep the normalized shape fixed and change only its mass, then move its center while keeping the mass fixed. The Hellinger decomposition separates the mass mismatch from the mass-weighted shape mismatch, while normalized transport follows the change in shape.",
+    "question": "Can mass and shape errors move independently?",
+    "posterAlt": "Finite measures: total heights include mass. Keep the normalized shape fixed and change only its mass, then move its center while keeping the mass fixed. The Hellinger decomposition separates the mass mismatch from the mass-weighted shape mismatch, while normalized transport follows the change in shape.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "mass",
+        "label": "Second mass",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "center",
+        "label": "Second center",
+        "type": "range",
+        "value": 1,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "width",
+        "label": "Second width",
+        "type": "range",
+        "value": 0.8,
+        "min": 0.2,
+        "max": 1.5,
+        "step": 0.1
+      },
+      {
+        "key": "representation",
+        "label": "Comparison measure",
+        "type": "select",
+        "value": "Gaussian",
+        "options": [
+          {
+            "value": "Gaussian",
+            "label": "Gaussian"
+          },
+          {
+            "value": "Atoms",
+            "label": "Atoms"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "mass": 0.6,
+      "center": 1,
+      "width": 0.8,
+      "representation": "Gaussian"
+    }
+  },
+  {
+    "id": "IV-04",
+    "part": "IV",
+    "title": "Density estimates belong to a stated region",
+    "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
+    "target": "sec-hk-density",
+    "kind": "Mathematical model",
+    "prediction": "Widen the declared comparison region and inspect the density ratios alongside the sample coverage. Gaussian tail ratios and the vanishing density at absorbing endpoints show why a useful density comparison depends on where it is made.",
+    "question": "How does the comparison change when we widen the window?",
+    "posterAlt": "Named reference laws and KDE. Widen the declared comparison region and inspect the density ratios alongside the sample coverage. Gaussian tail ratios and the vanishing density at absorbing endpoints show why a useful density comparison depends on where it is made.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "reference",
+        "label": "Reference model",
+        "type": "select",
+        "value": "Gaussian",
+        "options": [
+          {
+            "value": "Gaussian",
+            "label": "Gaussian"
+          },
+          {
+            "value": "Absorbing",
+            "label": "Absorbing"
+          }
+        ]
+      },
+      {
+        "key": "window",
+        "label": "Tail window / interior reach",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 6,
+        "step": 0.25
+      },
+      {
+        "key": "bandwidth",
+        "label": "Gaussian KDE bandwidth",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.02,
+        "max": 0.2,
+        "step": 0.02
+      }
+    ],
+    "params": {
+      "reference": "Gaussian",
+      "window": 3,
+      "bandwidth": 0.1
+    }
+  },
+  {
+    "id": "IV-05",
+    "part": "IV",
+    "title": "Move one coordinate and watch normalization differentiate",
+    "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
+    "target": "sec-normalized-measurement-calculus",
+    "kind": "Mathematical model",
+    "prediction": "Move the query coordinate through the frozen companion cloud. Differentiating both numerator and denominator keeps the localized statistics normalized; compare the resulting fitness derivatives with the curve obtained by freezing the denominator.",
+    "question": "Which derivative terms come from the denominator?",
+    "posterAlt": "Self-inclusive local statistics. Move the query coordinate through the frozen companion cloud. Differentiating both numerator and denominator keeps the localized statistics normalized; compare the resulting fitness derivatives with the curve obtained by freezing the denominator.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "rho",
+        "label": "Localization width ρ",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.15,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "sigma",
+        "label": "Standard-deviation floor",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.02,
+        "max": 0.5,
+        "step": 0.02
+      },
+      {
+        "key": "delta",
+        "label": "Distance floor δ",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.02,
+        "max": 0.3,
+        "step": 0.02
+      },
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "rho": 0.7,
+      "sigma": 0.15,
+      "delta": 0.1,
+      "N": 4
+    }
+  },
+  {
+    "id": "IV-06",
+    "part": "IV",
+    "title": "Locality weights in dense and sparse swarms",
+    "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
+    "target": "sec-c3-counts-scaling",
+    "kind": "Mathematical model",
+    "prediction": "Replicate a cloud and compare raw neighbor counts with normalized local averages. Counts and Gaussian row sums grow with the population, while donor probability still sums to one and an identically replicated cloud keeps the same normalized average.",
+    "question": "What grows when many walkers occupy one small ball?",
+    "posterAlt": "The cloud and its locality weights. Replicate a cloud and compare raw neighbor counts with normalized local averages. Counts and Gaussian row sums grow with the population, while donor probability still sums to one and an identically replicated cloud keeps the same normalized average.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "rho",
+        "label": "Localization width ρ",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "geometry",
+        "label": "Cloud geometry",
+        "type": "select",
+        "value": "clustered",
+        "options": [
+          {
+            "value": "uniform",
+            "label": "uniform"
+          },
+          {
+            "value": "clustered",
+            "label": "clustered"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "N": 64,
+      "rho": 0.7,
+      "geometry": "clustered"
+    }
+  },
+  {
+    "id": "IV-07",
+    "part": "IV",
+    "title": "Follow the growth of higher derivatives",
+    "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
+    "target": "sec-gg-cinf-regularity",
+    "kind": "Mathematical model",
+    "prediction": "Increase the Taylor order and compare the polynomial with the exact regularized fitness slice. Higher order improves recovery in a sufficiently small neighborhood; widening that neighborhood and changing the regularizers reveals how the useful approximation radius depends on the coefficients.",
+    "question": "How do derivative coefficients control a Taylor approximation?",
+    "posterAlt": "Taylor reconstruction of the actual regularized fitness. Increase the Taylor order and compare the polynomial with the exact regularized fitness slice. Higher order improves recovery in a sufficiently small neighborhood; widening that neighborhood and changing the regularizers reveals how the useful approximation radius depends on the coefficients.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "order",
+        "label": "Taylor order",
+        "type": "range",
+        "value": 6,
+        "min": 1,
+        "max": 12,
+        "step": 1
+      },
+      {
+        "key": "radius",
+        "label": "Expansion radius",
+        "type": "range",
+        "value": 0.2,
+        "min": 0.01,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "sigma",
+        "label": "Standard-deviation floor",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.02,
+        "max": 0.5,
+        "step": 0.02
+      }
+    ],
+    "params": {
+      "order": 6,
+      "radius": 0.2,
+      "sigma": 0.15
+    }
+  },
+  {
+    "id": "IV-08",
+    "part": "IV",
+    "title": "Differentiate an averaged stochastic update",
+    "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
+    "target": "sec-cinf-companion-laws",
+    "kind": "Mathematical model",
+    "prediction": "Move one coordinate and enumerate every assignment in the selected four-walker law. The derivative of expected fitness combines changes in each assignment's fitness with changes in its probability; the two contributions add to the derivative of the averaged field.",
+    "question": "Where does the derivative of the sampling probability appear?",
+    "posterAlt": "Three different fitness fields. Move one coordinate and enumerate every assignment in the selected four-walker law. The derivative of expected fitness combines changes in each assignment's fitness with changes in its probability; the two contributions add to the derivative of the averaged field.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "width",
+        "label": "Companion width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "rho",
+        "label": "Localization width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "law",
+        "label": "Joint assignment law",
+        "type": "select",
+        "value": "independent",
+        "options": [
+          {
+            "value": "independent",
+            "label": "independent"
+          },
+          {
+            "value": "matching",
+            "label": "matching"
+          },
+          {
+            "value": "greedy",
+            "label": "greedy"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "width": 0.7,
+      "rho": 0.7,
+      "law": "independent"
+    }
+  },
+  {
+    "id": "IV-09",
+    "part": "IV",
+    "title": "A nonconvex potential can still have a controlled Gibbs law",
+    "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
+    "target": "2.3. Bounded perturbations",
+    "kind": "Mathematical model",
+    "prediction": "Increase the cosine ripple on the quadratic potential and compare curvature, Gibbs density, and sampled relaxation. Local curvature can become negative while the Gaussian envelope still confines the law; the Metropolis ensembles reveal how barriers delay exchange between wells.",
+    "question": "What changes when a bounded ripple creates wells?",
+    "posterAlt": "Two initial ensembles and the same Gibbs target. Increase the cosine ripple on the quadratic potential and compare curvature, Gibbs density, and sampled relaxation. Local curvature can become negative while the Gaussian envelope still confines the law; the Metropolis ensembles reveal how barriers delay exchange between wells.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Ripple amplitude a",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "wavelength",
+        "label": "Ripple wavelength ℓ",
+        "type": "range",
+        "value": 2,
+        "min": 0.5,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "k",
+        "label": "Confinement κ",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "theta": 1,
+      "wavelength": 2,
+      "k": 1
+    }
+  },
+  {
+    "id": "IV-10",
+    "part": "IV",
+    "title": "Follow entropy toward the numerical equilibrium",
+    "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
+    "target": "sec-fg-kl-conv-discrete",
+    "kind": "Mathematical model",
+    "prediction": "Follow two initial Gaussian laws toward the numerical stationary covariance. Decrease the timestep and watch its velocity variance approach the continuous value, linking the entropy relaxation curve to the equilibrium of the actual splitting step.",
+    "question": "Which Gaussian law is invariant under a numerical BAOAB step?",
+    "posterAlt": "Entropy relative to the numerical invariant law. Follow two initial Gaussian laws toward the numerical stationary covariance. Decrease the timestep and watch its velocity variance approach the continuous value, linking the entropy relaxation curve to the equilibrium of the actual splitting step.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "h",
+        "label": "Timestep h",
+        "type": "range",
+        "value": 0.08,
+        "min": 0.01,
+        "max": 0.3,
+        "step": 0.01
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "theta",
+        "label": "Temperature θ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "h": 0.08,
+      "gamma": 1,
+      "theta": 1
+    }
+  },
+  {
+    "id": "IV-11",
+    "part": "IV",
+    "title": "Hessian eigenvalues set the adaptive noise ellipse",
+    "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
+    "target": "sec-gg-uniform-ellipticity",
+    "kind": "WASM + reference",
+    "prediction": "Rotate the Hessian and vary its positive shifted eigenvalues. The smallest one gives the broadest diffusion direction; compare the predicted ellipse with kicks sampled by the Rust full-factor noise module after removing the known BAOAB scaling.",
+    "question": "Which Hessian direction gets the largest velocity kick?",
+    "posterAlt": "Normalized O-stage kicks from the Rust full factor. Rotate the Hessian and vary its positive shifted eigenvalues. The smallest one gives the broadest diffusion direction; compare the predicted ellipse with kicks sampled by the Rust full-factor noise module after removing the known BAOAB scaling.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "lambda",
+        "label": "First Hessian eigenvalue",
+        "type": "range",
+        "value": 0.5,
+        "min": -2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "shift",
+        "label": "Spectral shift ε",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1
+      },
+      {
+        "key": "angle",
+        "label": "Eigenvector rotation (degrees)",
+        "type": "range",
+        "value": 30,
+        "min": 0,
+        "max": 180,
+        "step": 5
+      }
+    ],
+    "params": {
+      "lambda": 0.5,
+      "shift": 1,
+      "angle": 30
+    }
+  },
+  {
+    "id": "IV-12",
+    "part": "IV",
+    "title": "The right weighted average reveals alignment",
+    "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
+    "target": "3.1. Exact component estimates",
+    "kind": "Mathematical model",
+    "prediction": "Let the velocities align on the frozen weighted graph. The degree-weighted mean stays fixed as the corresponding relative energy decays; weakening connections reduces the spectral gap and slows that decay.",
+    "question": "Which mean survives row-normalized interactions?",
+    "posterAlt": "Frozen graph: node heights are current velocities. Let the velocities align on the frozen weighted graph. The degree-weighted mean stays fixed as the corresponding relative energy decays; weakening connections reduces the spectral gap and slows that decay.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "width",
+        "label": "Neighbor width",
+        "type": "range",
+        "value": 0.8,
+        "min": 0.2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "viscosity",
+        "label": "Viscosity ν",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "gap",
+        "label": "Gap between clusters",
+        "type": "range",
+        "value": 1.5,
+        "min": 0.3,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "width": 0.8,
+      "viscosity": 1,
+      "gap": 1.5
+    }
+  },
+  {
+    "id": "IV-13",
+    "part": "IV",
+    "title": "Spend effort on the largest error term",
+    "chapter": "source/2_fractal_gas/convergence_program/13_quantitative_error_bounds",
+    "target": "sec-quantitative-total-error",
+    "kind": "Mathematical model",
+    "prediction": "Compare the sampling, timestep, and transient contributions before choosing a control. More walkers reduce the sampling fluctuation; a smaller timestep changes the stationary bias, and a longer run reduces the memory of the initial law.",
+    "question": "Which change most improves the bounded observable cos(v)?",
+    "posterAlt": "Exact harmonic error budget. Compare the sampling, timestep, and transient contributions before choosing a control. More walkers reduce the sampling fluctuation; a smaller timestep changes the stationary bias, and a longer run reduces the memory of the initial law.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "N",
+        "label": "Walkers",
+        "type": "select",
+        "value": 128,
+        "options": [
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          },
+          {
+            "value": 2048,
+            "label": "2048"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Timestep h",
+        "type": "range",
+        "value": 0.08,
+        "min": 0.01,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "T",
+        "label": "Physical duration",
+        "type": "range",
+        "value": 5,
+        "min": 1,
+        "max": 30,
+        "step": 1
+      }
+    ],
+    "params": {
+      "N": 128,
+      "h": 0.08,
+      "T": 5
+    }
+  },
+  {
+    "id": "IV-14",
+    "part": "IV",
+    "title": "Observe the timestep convergence rate",
+    "chapter": "source/2_fractal_gas/convergence_program/13_quantitative_error_bounds",
+    "target": "sec-quantitative-local-errors",
+    "kind": "Mathematical model",
+    "prediction": "Compare exact harmonic moments at a fixed physical duration as the BAOAB timestep shrinks. In the resolved range, the finite-time weak error and stationary velocity bias fall quadratically, making the convergence slope visible without Monte Carlo scatter.",
+    "question": "What remains when sampling error is removed from refinement?",
+    "posterAlt": "Finite-time weak observable error. Compare exact harmonic moments at a fixed physical duration as the BAOAB timestep shrinks. In the resolved range, the finite-time weak error and stationary velocity bias fall quadratically, making the convergence slope visible without Monte Carlo scatter.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "T",
+        "label": "Fixed physical duration",
+        "type": "select",
+        "value": 5,
+        "options": [
+          {
+            "value": 5,
+            "label": "5"
+          },
+          {
+            "value": 10,
+            "label": "10"
+          }
+        ]
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "observable",
+        "label": "Observable",
+        "type": "select",
+        "value": "cos(v)",
+        "options": [
+          {
+            "value": "cos(v)",
+            "label": "cos(v)"
+          },
+          {
+            "value": "v²",
+            "label": "v²"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "T": 5,
+      "gamma": 1,
+      "observable": "cos(v)"
+    }
+  },
+  {
+    "id": "IV-15",
+    "part": "IV",
+    "title": "Explore parameter constraints before tuning",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
+    "target": "sec-master-constraints",
+    "kind": "Mathematical model",
+    "prediction": "Choose a core diameter and a normalized-measure reach target, then inspect the required Gaussian width. Increasing the alive population leaves that width unchanged while distributing probability across more individual candidates.",
+    "question": "How does companion reach translate into a width?",
+    "posterAlt": "Width needed for a normalized measure target. Choose a core diameter and a normalized-measure reach target, then inspect the required Gaussian width. Increasing the alive population leaves that width unchanged while distributing probability across more individual candidates.",
+    "seed": 7,
+    "posterTicks": 0,
+    "controls": [
+      {
+        "key": "diameter",
+        "label": "Declared core diameter D",
+        "type": "range",
+        "value": 2,
+        "min": 0.5,
+        "max": 5,
+        "step": 0.1
+      },
+      {
+        "key": "N",
+        "label": "Alive count",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          },
+          {
+            "value": 512,
+            "label": "512"
+          }
+        ]
+      },
+      {
+        "key": "target",
+        "label": "Measure target m*",
+        "type": "range",
+        "value": 0.2,
+        "min": 0.01,
+        "max": 0.9,
+        "step": 0.01
+      },
+      {
+        "key": "gap",
+        "label": "Fitness gap Fdonor − Fi",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "cap",
+        "label": "Clone probability cap",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "diameter": 2,
+      "N": 64,
+      "target": 0.2,
+      "gap": 0.5,
+      "cap": 1
+    }
+  },
+  {
+    "id": "IV-16",
+    "part": "IV",
+    "title": "Build a reproducible experiment from the lecture’s question",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
+    "target": "sec-parameter-selection",
+    "kind": "WASM experiment",
+    "prediction": "Choose an experiment card and compare two real WASM populations. The conservative harmonic card supplies the reference E|x|² = 2; the other cards expose copying, absorption, and population-size effects, with configurations and observables recorded for replay.",
+    "question": "Do independently seeded runs show the predicted relaxation?",
+    "posterAlt": "Raw reward under two reproducible seeds. Choose an experiment card and compare two real WASM populations. The conservative harmonic card supplies the reference E|x|² = 2; the other cards expose copying, absorption, and population-size effects, with configurations and observables recorded for replay.",
+    "seed": 7,
+    "posterTicks": 12,
+    "controls": [
+      {
+        "key": "card",
+        "label": "Experiment card",
+        "type": "select",
+        "value": "kinetic",
+        "options": [
+          {
+            "value": "kinetic",
+            "label": "Conservative kinetic reference"
+          },
+          {
+            "value": "operators",
+            "label": "Operator intuition"
+          },
+          {
+            "value": "survival",
+            "label": "Absorbing full swarm"
+          },
+          {
+            "value": "population",
+            "label": "Fixed-time population comparison"
+          }
+        ]
+      },
+      {
+        "key": "N",
+        "label": "Base walkers",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Timestep h",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "gamma",
+        "label": "Friction γ",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "card": "kinetic",
+      "N": 64,
+      "h": 0.04,
+      "gamma": 1
+    }
+  }
+]

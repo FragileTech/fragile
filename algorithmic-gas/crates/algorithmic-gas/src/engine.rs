@@ -372,6 +372,26 @@ fn validate_rewards<T: Real>(p: &mut Population<T>, config: &GasConfig) -> Resul
     p.validate()
 }
 impl<T: Real> AlgorithmicGas<T> {
+    /// Enable a last-step replay for small teaching populations. Disabled by default.
+    pub fn set_trace(&mut self, enabled: bool) -> Result<()> {
+        require(
+            !enabled
+                || self
+                    .population
+                    .observations
+                    .fields
+                    .values()
+                    .map(|f| f.values().len())
+                    .sum::<usize>()
+                    <= 8192,
+            "stage tracing is limited to 8192 observation scalars",
+        )?;
+        self.cx.stage_trace = enabled.then(Vec::new);
+        Ok(())
+    }
+    pub fn stage_trace(&self) -> Option<&[serde_json::Value]> {
+        self.cx.stage_trace.as_deref()
+    }
     pub fn config(&self) -> &GasConfig {
         &self.config
     }
@@ -432,7 +452,22 @@ impl<T: Real> AlgorithmicGas<T> {
         input: Option<&InputBatch<T>>,
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
+        let previous_trace = self.cx.stage_trace.clone();
+        let result = self.execute_transaction(input, extracted).await;
+        if result.is_err() {
+            self.cx.stage_trace = previous_trace;
+        }
+        result
+    }
+    async fn execute_transaction(
+        &mut self,
+        input: Option<&InputBatch<T>>,
+        extracted: Option<Population<T>>,
+    ) -> Result<StepReport<T>> {
         self.cancellation.check()?;
+        if let Some(trace) = &mut self.cx.stage_trace {
+            trace.clear();
+        }
         self.cx.max_memory_bytes = self.config.max_memory_bytes
             - self
                 .config
@@ -474,6 +509,7 @@ impl<T: Real> AlgorithmicGas<T> {
         if !alive.iter().any(|&x| x) {
             return Err(GasError::Extinction);
         }
+        self.cx.trace_population("pre_clone", &p);
         let distance_pool = DonorPool::freeze(
             &p,
             self.step,
@@ -693,6 +729,7 @@ impl<T: Real> AlgorithmicGas<T> {
             },
         )?;
         let mut destination = plan.apply_literal(&p, &clone_pool)?;
+        self.cx.trace_population("literal_clone", &destination);
         let changed = self
             .operators
             .transform(
@@ -709,6 +746,7 @@ impl<T: Real> AlgorithmicGas<T> {
                 &mut self.cx,
             )
             .await?;
+        self.cx.trace_population("post_transform", &destination);
         self.domain.reconcile(&mut destination, &changed)?;
         self.domain.refresh_observations(&mut destination)?;
         self.cx.max_memory_bytes = self.config.max_memory_bytes
@@ -771,6 +809,7 @@ impl<T: Real> AlgorithmicGas<T> {
         destination.observations.provenance.stage = "post_kinetic".into();
         self.config
             .working_set_bytes(&destination, &self.history, input)?;
+        self.cx.trace_population("post_kinetic", &destination);
         let report = StepReport {
             step: next,
             source_version: p.version,
@@ -818,7 +857,20 @@ impl<T: Real> AlgorithmicGas<T> {
     }
     /// Explicit observation/input extraction barrier. Revalidates the complete
     /// population, reconciles opaque state, and refreshes reward before commit.
-    pub async fn replace_population(&mut self, mut population: Population<T>) -> Result<()> {
+    pub async fn replace_population(&mut self, population: Population<T>) -> Result<()> {
+        let previous_stats = self.cx.stats.clone();
+        let previous_allowance = self.cx.max_memory_bytes;
+        let result = self.replace_population_transaction(population).await;
+        if result.is_err() {
+            self.cx.stats = previous_stats;
+            self.cx.max_memory_bytes = previous_allowance;
+        }
+        result
+    }
+    async fn replace_population_transaction(
+        &mut self,
+        mut population: Population<T>,
+    ) -> Result<()> {
         population.version = self
             .population
             .version
@@ -853,6 +905,9 @@ impl<T: Real> AlgorithmicGas<T> {
         self.population = population;
         self.history.clear();
         self.last_report = None;
+        if let Some(trace) = &mut self.cx.stage_trace {
+            trace.clear();
+        }
         Ok(())
     }
     pub fn checkpoint(&self) -> Checkpoint<T> {
@@ -919,6 +974,9 @@ impl<T: Real> AlgorithmicGas<T> {
         self.last_report = checkpoint.last_report;
         self.cx.stats = checkpoint.execution;
         self.cancellation.reset();
+        if let Some(trace) = &mut self.cx.stage_trace {
+            trace.clear();
+        }
         Ok(())
     }
 }

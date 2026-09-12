@@ -1,5 +1,7 @@
 # Changelog
 
+- Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.
+
 - Make GAS (2017) with adaptive local Gaussian proposals the Optimization Lab default, and fix narrow landing-page navigation so the full Pages bundle can deploy.
 
 - Correct Algorithmic Gas distance reduction, local statistics, linear uniform sampling, donor availability, boundary timing, extinction handling and provenance. Validate tensor/checkpoint imports, introduce checkpoint format 2, enforce safe-Rust lints and add resource guards, regression tests, dependency audits and fuzz/Miri checks.

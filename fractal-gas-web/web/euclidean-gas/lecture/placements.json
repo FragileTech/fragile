@@ -1,0 +1,296 @@
+[
+  {
+    "id": "I-01",
+    "part": "I",
+    "title": "Follow one walker through a complete step",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition",
+    "target": "Minimal Pseudocode"
+  },
+  {
+    "id": "I-02",
+    "part": "I",
+    "title": "Two donor networks, two different questions",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition",
+    "target": "sec-companion-selection"
+  },
+  {
+    "id": "I-03",
+    "part": "I",
+    "title": "The fitness calculation as an instrument panel",
+    "chapter": "source/2_fractal_gas/convergence_program/01_fragile_gas_framework",
+    "target": "12. Standardization pipeline"
+  },
+  {
+    "id": "I-04",
+    "part": "I",
+    "title": "Revival, singleton continuation, and extinction",
+    "chapter": "source/2_fractal_gas/convergence_program/01_fragile_gas_framework",
+    "target": "17. The Revival State"
+  },
+  {
+    "id": "I-05",
+    "part": "I",
+    "title": "BAOAB under a microscope",
+    "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
+    "target": "3.1 Euclidean Gas algorithm"
+  },
+  {
+    "id": "I-06",
+    "part": "I",
+    "title": "Reward attracts copies; potential accelerates motion",
+    "chapter": "source/2_fractal_gas/convergence_program/02_euclidean_gas",
+    "target": "3.4 Swarm distance"
+  },
+  {
+    "id": "I-07",
+    "part": "I",
+    "title": "A probability field for one selected walker",
+    "chapter": "source/2_fractal_gas/convergence_program/04_single_particle",
+    "target": "5. Conditional Cloning Probability Field"
+  },
+  {
+    "id": "I-08",
+    "part": "I",
+    "title": "Resolve a cloning jump into its mixture components",
+    "chapter": "source/2_fractal_gas/convergence_program/04_single_particle",
+    "target": "6. Post-Cloning Position Distribution"
+  },
+  {
+    "id": "I-09",
+    "part": "I",
+    "title": "What an inelastic collision really conserves",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent",
+    "target": "2.2. What the collision conserves"
+  },
+  {
+    "id": "I-10",
+    "part": "I",
+    "title": "A flat chart is only one latent geometry",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent",
+    "target": "sec-latent-fractal-gas-kinetics"
+  },
+  {
+    "id": "II-01",
+    "part": "II",
+    "title": "The Keystone chain as linked evidence",
+    "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
+    "target": "sec-cloning-keystone"
+  },
+  {
+    "id": "II-02",
+    "part": "II",
+    "title": "Drift is an average over possible next steps",
+    "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
+    "target": "10.3. Positional Variance Contraction"
+  },
+  {
+    "id": "II-03",
+    "part": "II",
+    "title": "Matching clouds is an optimization problem",
+    "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
+    "target": "3.2. Centered Positional Wasserstein Bound"
+  },
+  {
+    "id": "II-04",
+    "part": "II",
+    "title": "Compare the variance proxy with transport cost",
+    "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
+    "target": "5. From Variance Contraction"
+  },
+  {
+    "id": "II-05",
+    "part": "II",
+    "title": "Friction removes velocity memory while noise restores variance",
+    "chapter": "source/2_fractal_gas/convergence_program/05_kinetic_contraction",
+    "target": "5. Velocity Variance Dissipation"
+  },
+  {
+    "id": "II-06",
+    "part": "II",
+    "title": "A confining force and an absorbing boundary do different jobs",
+    "chapter": "source/2_fractal_gas/convergence_program/05_kinetic_contraction",
+    "target": "7. Boundary Potential Contraction"
+  },
+  {
+    "id": "II-07",
+    "part": "II",
+    "title": "Assemble component bounds in a comparison matrix",
+    "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
+    "target": "sec-convergence-composition"
+  },
+  {
+    "id": "II-08",
+    "part": "II",
+    "title": "Survival and conditional equilibrium on separate axes",
+    "chapter": "source/2_fractal_gas/convergence_program/06_convergence",
+    "target": "4.2. A complete killed-block criterion"
+  },
+  {
+    "id": "III-01",
+    "part": "III",
+    "title": "A population mass ledger for the forward equation",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-population"
+  },
+  {
+    "id": "III-02",
+    "part": "III",
+    "title": "Shrinking the timestep changes the reaction frequency",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-reactions"
+  },
+  {
+    "id": "III-03",
+    "part": "III",
+    "title": "Watch the empirical law fluctuate between runs",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-population-laws"
+  },
+  {
+    "id": "III-04",
+    "part": "III",
+    "title": "Two limits and a stationary residual",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-identification"
+  },
+  {
+    "id": "III-05",
+    "part": "III",
+    "title": "Watch an equilibrium profile emerge",
+    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
+    "target": "sec-equilibrium-selection"
+  },
+  {
+    "id": "III-06",
+    "part": "III",
+    "title": "A sine, a parabola, and a surviving shape",
+    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
+    "target": "sec-equilibrium-kinetic"
+  },
+  {
+    "id": "III-07",
+    "part": "III",
+    "title": "Exchangeable walkers can move as one random object",
+    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
+    "target": "sec-exchangeability-qsd"
+  },
+  {
+    "id": "III-08",
+    "part": "III",
+    "title": "Sampling with replacement exposes the finite-$N$ correction",
+    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
+    "target": "sec-exchangeability-finite-mixtures"
+  },
+  {
+    "id": "IV-01",
+    "part": "IV",
+    "title": "How velocity noise reaches position information",
+    "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
+    "target": "2.2. Entropy and the three Fisher terms"
+  },
+  {
+    "id": "IV-02",
+    "part": "IV",
+    "title": "Entropy contracts toward the right target",
+    "chapter": "source/2_fractal_gas/convergence_program/10_kl_hypocoercive",
+    "target": "sec-kl-hypocoercive-full-evolution"
+  },
+  {
+    "id": "IV-03",
+    "part": "IV",
+    "title": "Separate how much survives from where it survives",
+    "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
+    "target": "sec-hk-metrics"
+  },
+  {
+    "id": "IV-04",
+    "part": "IV",
+    "title": "Density estimates belong to a stated region",
+    "chapter": "source/2_fractal_gas/convergence_program/11_hk_convergence",
+    "target": "sec-hk-density"
+  },
+  {
+    "id": "IV-05",
+    "part": "IV",
+    "title": "Move one coordinate and watch the normalization differentiate",
+    "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
+    "target": "sec-normalized-measurement-calculus"
+  },
+  {
+    "id": "IV-06",
+    "part": "IV",
+    "title": "Locality weights in dense and sparse swarms",
+    "chapter": "source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity",
+    "target": "sec-c3-counts-scaling"
+  },
+  {
+    "id": "IV-07",
+    "part": "IV",
+    "title": "Follow the growth of higher derivatives",
+    "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
+    "target": "sec-gg-cinf-regularity"
+  },
+  {
+    "id": "IV-08",
+    "part": "IV",
+    "title": "Differentiate an averaged stochastic update",
+    "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
+    "target": "sec-cinf-companion-laws"
+  },
+  {
+    "id": "IV-09",
+    "part": "IV",
+    "title": "A nonconvex potential can still have a controlled Gibbs law",
+    "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
+    "target": "2.3. Bounded perturbations"
+  },
+  {
+    "id": "IV-10",
+    "part": "IV",
+    "title": "Follow entropy toward the numerical equilibrium",
+    "chapter": "source/2_fractal_gas/convergence_program/15_kl_convergence",
+    "target": "sec-fg-kl-conv-discrete"
+  },
+  {
+    "id": "IV-11",
+    "part": "IV",
+    "title": "Hessian eigenvalues set the adaptive noise ellipse",
+    "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
+    "target": "sec-gg-uniform-ellipticity"
+  },
+  {
+    "id": "IV-12",
+    "part": "IV",
+    "title": "The right weighted average reveals alignment",
+    "chapter": "source/2_fractal_gas/convergence_program/17_geometric_gas",
+    "target": "3.1. Exact component estimates"
+  },
+  {
+    "id": "IV-13",
+    "part": "IV",
+    "title": "Spend effort on the largest error term",
+    "chapter": "source/2_fractal_gas/convergence_program/13_quantitative_error_bounds",
+    "target": "sec-quantitative-total-error"
+  },
+  {
+    "id": "IV-14",
+    "part": "IV",
+    "title": "Observe the timestep convergence rate",
+    "chapter": "source/2_fractal_gas/convergence_program/13_quantitative_error_bounds",
+    "target": "sec-quantitative-local-errors"
+  },
+  {
+    "id": "IV-15",
+    "part": "IV",
+    "title": "Explore parameter constraints before tuning",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
+    "target": "sec-master-constraints"
+  },
+  {
+    "id": "IV-16",
+    "part": "IV",
+    "title": "Build a reproducible experiment from the lecture\u2019s question",
+    "chapter": "source/2_fractal_gas/1_the_algorithm/03_parameter_constraints",
+    "target": "sec-parameter-selection"
+  }
+]

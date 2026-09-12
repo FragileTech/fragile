@@ -260,6 +260,10 @@ impl<T: Real> GradientProvider<T> for BenchmarkModel {
 #[serde(default, deny_unknown_fields)]
 pub struct RunConfig {
     pub benchmark: Benchmark,
+    /// Optional independent force potential (reward objective remains benchmark).
+    pub potential: Option<Benchmark>,
+    /// Translate the reward optimum; empty means zero in every coordinate.
+    pub reward_shift: Vec<f64>,
     pub walkers: usize,
     pub dimensions: usize,
     pub initial_lower: f64,
@@ -280,6 +284,8 @@ impl Default for RunConfig {
         };
         Self {
             benchmark: Benchmark::Rastrigin,
+            potential: None,
+            reward_shift: vec![],
             walkers: 256,
             dimensions: 2,
             initial_lower: -1.,
@@ -291,6 +297,17 @@ impl Default for RunConfig {
 impl RunConfig {
     pub fn validate(&self) -> Result<()> {
         self.benchmark.validate(self.dimensions)?;
+        if let Some(potential) = self.potential {
+            potential.validate(self.dimensions)?;
+        }
+        if !self.reward_shift.is_empty()
+            && (self.reward_shift.len() != self.dimensions
+                || self.reward_shift.iter().any(|x| !x.is_finite()))
+        {
+            return Err(GasError::Configuration(
+                "reward shift must be empty or a finite d-vector".into(),
+            ));
+        }
         if self.walkers == 0
             || self.walkers > 1_000_000
             || self
@@ -314,6 +331,15 @@ impl RunConfig {
     }
     pub fn initial_population<T: Real>(&self) -> Result<Population<T>> {
         self.validate()?;
+        if self
+            .reward_shift
+            .iter()
+            .any(|&x| !T::from_f64(x).is_finite())
+        {
+            return Err(GasError::Configuration(
+                "reward shift is not representable in the run precision".into(),
+            ));
+        }
         let lower = T::from_f64(self.initial_lower);
         let upper = T::from_f64(self.initial_upper);
         let width = upper - lower;
@@ -352,10 +378,68 @@ impl RunConfig {
             field: "positions".into(),
             direction: self.gas.fitness.direction,
         };
-        GasBuilder::new(self.initial_population()?, model.clone())
-            .config(self.gas.clone())
-            .gradient(model)
-            .build()
-            .await
+        let gradient = BenchmarkModel {
+            benchmark: self.potential.unwrap_or(self.benchmark),
+            direction: if self.potential.is_some() {
+                ObjectiveDirection::Minimize
+            } else {
+                model.direction
+            },
+            ..model.clone()
+        };
+        GasBuilder::new(
+            self.initial_population()?,
+            ShiftedReward {
+                model,
+                shift: self.reward_shift.clone(),
+            },
+        )
+        .config(self.gas.clone())
+        .gradient(gradient)
+        .build()
+        .await
+    }
+}
+
+/// Stateless translated reward; the potential provider is configured separately.
+struct ShiftedReward {
+    model: BenchmarkModel,
+    shift: Vec<f64>,
+}
+impl<T: Real> RewardSource<T> for ShiftedReward {
+    fn id(&self) -> String {
+        if self.shift.is_empty() {
+            <BenchmarkModel as RewardSource<T>>::id(&self.model)
+        } else {
+            format!("shifted/{:?}/{:?}/v1", self.model.benchmark, self.shift)
+        }
+    }
+    fn evaluate<'a>(
+        &'a self,
+        p: &'a Population<T>,
+        input: Option<&'a InputBatch<T>>,
+        stage: &'a str,
+        cx: &'a mut ExecutionContext,
+    ) -> OperatorFuture<'a, RewardBatch<T>> {
+        Box::pin(async move {
+            if self.shift.is_empty() {
+                return self.model.evaluate(p, input, stage, cx).await;
+            }
+            let mut translated = p.clone();
+            let field = translated.observations.field_mut("positions")?;
+            let width = field.width();
+            for row in field.values_mut().chunks_mut(width) {
+                for (value, shift) in row.iter_mut().zip(&self.shift) {
+                    let translated_value = *value - T::from_f64(*shift);
+                    if value.is_finite() && !translated_value.is_finite() {
+                        return Err(GasError::Numerical(
+                            "translated reward coordinate overflowed the run precision".into(),
+                        ));
+                    }
+                    *value = translated_value;
+                }
+            }
+            self.model.evaluate(&translated, input, stage, cx).await
+        })
     }
 }

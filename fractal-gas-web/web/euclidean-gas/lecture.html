@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fractal Gas · Lecture experiments</title>
+    <link rel="stylesheet" href="./lecture/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#experiment">Skip to experiment</a>
+    <header class="masthead">
+      <a href="./">FRACTAL GAS / LAB</a
+      ><span>VOLUME II · INTERACTIVE LECTURES</span
+      ><a id="standalone" href="./lecture.html" target="_blank" rel="noopener"
+        >Open full view ↗</a
+      >
+    </header>
+    <div class="layout">
+      <nav id="catalog" aria-label="Lecture experiments"></nav>
+      <main id="experiment">
+        <div class="eyebrow" id="kind">Loading experiments…</div>
+        <h1 id="title">Lecture experiments</h1>
+        <p class="question" id="question"></p>
+        <div class="prediction">
+          <span>LOOK FOR</span>
+          <p id="prediction"></p>
+        </div>
+        <form id="controls" aria-label="Experiment controls"></form>
+        <div class="toolbar">
+          <button id="run" disabled>Run</button
+          ><button id="step" disabled>Step</button
+          ><button id="reset" disabled>Reset</button>
+          <label class="seed"
+            >Seed
+            <input
+              id="seed"
+              type="number"
+              min="0"
+              max="4294967295"
+              step="1"
+              value="7"
+          /></label>
+          <span id="status" role="status" aria-live="polite"
+            >Starting worker</span
+          >
+        </div>
+        <div id="error" role="alert" hidden></div>
+        <div id="metrics" class="metrics"></div>
+        <div id="charts" class="charts"></div>
+        <div class="timeline">
+          <label for="scrub">Recorded frame</label
+          ><input id="scrub" type="range" min="0" max="0" value="0" /><output
+            id="frame"
+            >0</output
+          ><button id="live">Latest</button>
+        </div>
+        <p id="message" class="observation"></p>
+        <details>
+          <summary>Read the measurement</summary>
+          <p id="explanation"></p>
+          <div id="table"></div>
+        </details>
+        <div class="exports">
+          <button id="save">Save experiment JSON</button
+          ><label class="file-button"
+            >Replay JSON<input
+              id="load"
+              type="file"
+              accept="application/json,.json" /></label
+          ><button id="checkpoint">Save engine checkpoint</button>
+        </div>
+        <p class="footnote">
+          Changing a control starts a fresh experiment. Reset repeats the same
+          seed. Run pauses when this view is hidden. Saved JSON includes
+          parameters, measurements, and the replay step count.
+        </p>
+      </main>
+    </div>
+    <script type="module" src="./lecture/main.js"></script>
+  </body>
+</html>

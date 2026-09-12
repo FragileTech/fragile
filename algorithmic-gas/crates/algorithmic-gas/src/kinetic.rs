@@ -253,6 +253,7 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
+                cx.trace_population("B1", p);
                 if !k.has_eligible(p) {
                     return Ok(());
                 }
@@ -260,6 +261,7 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
+                cx.trace_population("A1", p);
                 if !k.has_eligible(p) {
                     return Ok(());
                 }
@@ -288,6 +290,7 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &eta, c, scale, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
+                cx.trace_population("O", p);
                 if !k.has_eligible(p) {
                     return Ok(());
                 }
@@ -295,6 +298,7 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
+                cx.trace_population("A2", p);
                 if !k.has_eligible(p) {
                     return Ok(());
                 }
@@ -303,6 +307,7 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 k.boundary(p)?;
+                cx.trace_population("B2", p);
             }
             KineticKind::Environment => {
                 let alive = p.eligible(k.include_truncated);

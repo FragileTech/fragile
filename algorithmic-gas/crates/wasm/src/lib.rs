@@ -124,6 +124,25 @@ impl BrowserGas {
             Run::F64(g) => snapshot(g),
         }
     }
+    /// Replace only numerical coordinates/status, keeping the configured shape.
+    pub async fn set_population(&mut self, fixture_json: String) -> Result<JsValue, JsValue> {
+        if fixture_json.len() > 4 * 1024 * 1024 {
+            return Err(error("fixture exceeds 4 MiB"));
+        }
+        let fixture: PopulationFixture = serde_json::from_str(&fixture_json).map_err(error)?;
+        match &mut self.run {
+            Run::F32(g) => set_population(g, &fixture, &self.config).await?,
+            Run::F64(g) => set_population(g, &fixture, &self.config).await?,
+        }
+        self.snapshot()
+    }
+    pub fn set_trace(&mut self, enabled: bool) -> Result<(), JsValue> {
+        match &mut self.run {
+            Run::F32(g) => g.set_trace(enabled),
+            Run::F64(g) => g.set_trace(enabled),
+        }
+        .map_err(error)
+    }
     pub fn config_json(&self) -> String {
         serde_json::to_string_pretty(&self.config).unwrap()
     }
@@ -179,6 +198,9 @@ impl BrowserGas {
                 let mut point = center.clone();
                 point[x_axis] = low + (high - low) * col as f64 / (resolution - 1) as f64;
                 point[y_axis] = low + (high - low) * row as f64 / (resolution - 1) as f64;
+                for (x, shift) in point.iter_mut().zip(&self.config.reward_shift) {
+                    *x -= shift;
+                }
                 let value = match self.config.gas.precision {
                     Precision::F32 => self
                         .config
@@ -205,6 +227,7 @@ fn snapshot<T: Real>(g: &AlgorithmicGas<T>) -> Result<JsValue, JsValue> {
         population: &'a algorithmic_gas::Population<T>,
         report: Option<&'a algorithmic_gas::StepReport<T>>,
         execution: &'a algorithmic_gas::compute::ExecutionStats,
+        trace: Option<&'a [serde_json::Value]>,
     }
     js(&Frame {
         step: g.step_number(),
@@ -212,5 +235,57 @@ fn snapshot<T: Real>(g: &AlgorithmicGas<T>) -> Result<JsValue, JsValue> {
         population: g.population(),
         report: g.last_report(),
         execution: g.execution_stats(),
+        trace: g.stage_trace(),
     })
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PopulationFixture {
+    positions: Vec<Vec<f64>>,
+    velocities: Option<Vec<Vec<f64>>>,
+    alive: Option<Vec<bool>>,
+}
+async fn set_population<T: Real>(
+    g: &mut AlgorithmicGas<T>,
+    f: &PopulationFixture,
+    c: &RunConfig,
+) -> Result<(), JsValue> {
+    let mut population = g.population().clone();
+    for (name, rows) in [
+        ("positions", Some(&f.positions)),
+        ("velocities", f.velocities.as_ref()),
+    ] {
+        if let Some(rows) = rows {
+            if rows.len() != c.walkers
+                || rows.iter().any(|row| {
+                    row.len() != c.dimensions
+                        || row
+                            .iter()
+                            .any(|&x| !x.is_finite() || !T::from_f64(x).is_finite())
+                })
+            {
+                return Err(error(
+                    "fixture coordinates must be finite configured N by d arrays",
+                ));
+            }
+            let field = population.observations.field_mut(name).map_err(error)?;
+            for (i, row) in rows.iter().enumerate() {
+                field
+                    .replace_row(i, &row.iter().map(|&x| T::from_f64(x)).collect::<Vec<_>>())
+                    .map_err(error)?;
+            }
+        }
+    }
+    if f.alive
+        .as_ref()
+        .is_some_and(|alive| alive.len() != c.walkers)
+    {
+        return Err(error("fixture alive mask must have N entries"));
+    }
+    for (i, status) in population.validity.iter_mut().enumerate() {
+        *status = Default::default();
+        status.terminated = f.alive.as_ref().is_some_and(|alive| !alive[i]);
+    }
+    g.replace_population(population).await.map_err(error)
 }
