@@ -71,6 +71,7 @@ name = "algorithmic-gas-benchmarks"
 version = "0.1.0"
 dependencies = [
  "algorithmic-gas",
+ "ciborium",
  "futures-lite",
  "serde",
  "serde_json",

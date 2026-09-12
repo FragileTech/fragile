@@ -84,4 +84,5 @@ await writeFile(
 console.log(`Euclidean Gas Lab built: ${profiles.join(", ")}.`);
 
 // Keep the lecture posters aligned with the compiled CPU engine.
+await import("./build-partvi-index.mjs");
 await import("./build-lecture-assets.mjs");

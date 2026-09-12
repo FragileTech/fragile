@@ -130,6 +130,7 @@ parts:
     - file: source/2_fractal_gas/3_fitness_manifold/04_field_equations
     - file: source/2_fractal_gas/3_fitness_manifold/05_holography
     - file: source/2_fractal_gas/3_fitness_manifold/06_cosmology
+    - file: source/2_fractal_gas/partvi_experiments
   - file: source/2_fractal_gas/parts/07_experiments
     title: Part VII — Computation and Experiments
     sections:

@@ -1,0 +1,9 @@
+{
+  "experiment": 32,
+  "parameters": {
+    "seed": 7,
+    "bins": 4,
+    "lag": 2,
+    "train_fraction": 0.6
+  }
+}

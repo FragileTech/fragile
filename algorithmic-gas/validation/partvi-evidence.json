@@ -1,0 +1,471 @@
+{
+  "new_suite": "algorithmic-gas/crates/benchmarks/tests/partvi_algorithm_paths.rs",
+  "new_tests_passed": 7,
+  "regression_suites": {
+    "partvi_path": 9,
+    "partvi_qft": 22
+  },
+  "evidence": [
+    {
+      "experiment": 18,
+      "algorithm_object": "Actual eligible A1 rows and executed O-stage B xi, including low-rank factors and source shifts",
+      "exact_identity": "E[Y_j^2]=mu_j^2+C_jj; E[Y_j^4]=mu_j^4+6mu_j^2 C_jj+3C_jj^2+kappa4 sum_k B_jk^4.",
+      "measurement": "Recorded second/fourth moments against predictions from the factor and innovation law fixed before sampling.",
+      "validation": {
+        "innovation": "standardized uniform",
+        "rank": 1,
+        "dimensions": 3,
+        "history_window": 2,
+        "viscosity_coefficient": 0.15,
+        "second_measured": 1.7431301050375065,
+        "second_predicted": 1.75,
+        "fourth_measured": 10.30072817957915,
+        "fourth_predicted": 10.2375,
+        "steps": 96,
+        "walkers": 8
+      },
+      "limitations": [
+        "Conditional-moment averages use dependent trajectory data; no independent-component standard error is asserted.",
+        "These are raw B xi moments before thermostat scaling; the exact physical O-stage moments are separately evaluated in VI22/48."
+      ],
+      "theory_labels": [
+        "thm-ym-kinetic-metric-correspondence",
+        "thm-ym-kinetic-metric-correspondence"
+      ],
+      "corrections": [
+        "Exclude ineligible zero-filled rows.",
+        "Use d by rank factors, preventing low-rank indexing failure.",
+        "Use actual innovation fourth cumulant, including -6/5 for standardized uniform, and retain shifted means.",
+        "Recorded mode now displays only executed data rather than an unrelated reference sampling curve."
+      ]
+    },
+    {
+      "experiment": 19,
+      "algorithm_object": "Complete checkpoint continuation map with independent future seeds and an addressed future Gaussian innovation shift",
+      "exact_identity": "E[F(Gamma(Xi+theta,V))]=E[F(Gamma(Xi,V)) exp(theta Xi-theta^2/2)] for the unselected zero-extended observable.",
+      "measurement": "Independent direct-shift and reweighted groups; Hermite derivatives at zero and paired finite differences are separate outputs.",
+      "validation": {
+        "unbounded": {
+          "initial_seeds": [
+            31,
+            407,
+            9021
+          ],
+          "replicas_per_seed": 96,
+          "horizon": 3,
+          "warmup": 3,
+          "theta": 0.3,
+          "history_window": 2,
+          "viscosity": true,
+          "residual_sum": 0.05749065239085449,
+          "independent_standard_error": 0.13109824944390772
+        },
+        "absorbing_boundary": {
+          "initial_seeds": [
+            159,
+            9183
+          ],
+          "direct_replicas": 192,
+          "extinct_direct_replicas": 3,
+          "horizon": 4,
+          "theta": 0.6,
+          "observable": "alive_fraction",
+          "residual_sum": -0.0004651478233969053,
+          "independent_standard_error": 0.07735672237046183
+        }
+      },
+      "limitations": [
+        "Hermite estimates are derivatives at zero; finite-theta finite differences can cross clone/mask thresholds and retain finite-shift bias.",
+        "Survival-selected normalized response is not the displayed unselected cemetery-extended law.",
+        "Physical force-source KL and reduced descriptor scores in VI20 are a separate calculation."
+      ],
+      "theory_labels": [
+        "thm-ym-native-source-response",
+        "thm-ym-native-source-response"
+      ],
+      "corrections": []
+    },
+    {
+      "experiment": 22,
+      "algorithm_object": "Actual complete-checkpoint finite-horizon increments and exact conditional O-stage martingales",
+      "exact_identity": "Q(S_h)-Q(S_0) has conditional drift K^h Q-Q. At each actual A1 state the Gaussian/uniform BAOAB conditional momentum/energy moments supply a known martingale compensator.",
+      "measurement": "Independent calibration/validation of complete increments; analytic O-stage residuals and predictable quadratic variations over independently seeded complete continuations.",
+      "validation": {
+        "initial_seeds": [
+          71,
+          809,
+          1217
+        ],
+        "replicas_total": 384,
+        "horizon": 3,
+        "history_window": 2,
+        "viscosity": true,
+        "momentum_residual_mean_sum": 0.03093718833664627,
+        "momentum_mean_standard_error": 0.11833943636680205,
+        "energy_residual_mean_sum": -0.4902668678494803,
+        "energy_mean_standard_error": 0.5157135201574125,
+        "realized_over_predicted_martingale_variance": 0.9750085228096965
+      },
+      "limitations": [
+        "Full-step conditional drift is estimated from independent replicas; it is not supplied by a closed macroscopic model.",
+        "The analytic substage test isolates O before boundary handling; complete-engine samples and stage ledgers retain clone, force, boundary and eligibility transfers."
+      ],
+      "theory_labels": [
+        "sec-ym-noether",
+        "thm-u1-noether-current",
+        "thm-ym-kinetic-metric-correspondence"
+      ],
+      "corrections": [
+        "Added a falsifiable analytic O-stage oracle rather than relying only on agreement between empirical drift estimates.",
+        "Analytic predictions use each actual A1 state, so prior clone/donor/viscosity/boundary effects remain.",
+        "One entire continuation is the independent sampling unit; stage predictable variances are summed."
+      ]
+    },
+    {
+      "experiment": 34,
+      "algorithm_object": "Actual pre-clone recipient and immutable current/historical distance and cloning donor snapshots",
+      "exact_identity": "Effective edge spinors and bounded local channels are deterministic functions of the exact source coordinates and configured velocity scale.",
+      "measurement": "Normalized-column spinors, scalar/vector/tensor readouts, masks, source refs and source ages.",
+      "validation": {
+        "seed": 516,
+        "history_window": 2,
+        "walkers": 8,
+        "recorded_steps": 96,
+        "valid_readouts": 8,
+        "historical_donors": 10,
+        "total_selected_donors": 16
+      },
+      "limitations": [
+        "Donor coordinates preceding retained archive/anchor coverage remain explicitly unavailable.",
+        "The effective edge uses the specified algorithmic Delta t; donor age is a separate recorded descriptor."
+      ],
+      "theory_labels": [
+        "sec-fractal-set-twistorization",
+        "def-effective-twistor-triplet",
+        "def-effective-twistor-edge-data",
+        "def-effective-edge-twistor"
+      ],
+      "corrections": [
+        "Resolve historical donors by epoch/frame/version/slot/generation instead of dropping them.",
+        "Export source ages and coverage per donor.",
+        "Extend formal effective-triplet definition to actual immutable historical sources."
+      ]
+    },
+    {
+      "experiment": 36,
+      "algorithm_object": "Actual complete-record fixed-normalization frame observable; optional separately named source-pair diagnostic",
+      "exact_identity": "C_frame_ab(n,l)=mu K^n[conj(f_a)K^l f_b]-conj(mu K^n f_a)mu K^(n+l)f_b, with actual K retaining memory, clone, kinetics, clipping, boundaries and killing.",
+      "measurement": "Training-only means/whitening, general complex roots, phase/decay fits and held-out error; fixed 1/N zero extension by default.",
+      "validation": {
+        "seed": 516,
+        "history_window": 2,
+        "viscosity": true,
+        "frame_gram_direct": 0.8500623473105489,
+        "frame_gram_measured": 0.8500623473105489,
+        "fit": {
+          "decay_rate": -1.7862384364191546,
+          "frequency": -18.089762813984343,
+          "log_fit_rmse": 0.6110975403956461,
+          "phase_fit_rmse": 0.5911784247409881,
+          "heldout_complex_rmse": 0.3924447584217878,
+          "mass": null,
+          "interpretation": "This measured finite-window mode is complex and grows in magnitude over the fit window; it does not supply a positive particle-mass estimate."
+        }
+      },
+      "limitations": [
+        "General complex finite-window fits characterize the retained observable; they do not certify a positive transfer representation.",
+        "Stationarity is not assumed in the exact actual-K identity; a single trajectory can exhibit nonstationary finite-window behavior.",
+        "Chronological held-out data retain temporal dependence."
+      ],
+      "theory_labels": [
+        "thm-effective-twistor-spectral-meaning",
+        "def-effective-twistor-correlators",
+        "thm-effective-twistor-spectral-meaning",
+        "cor-effective-twistor-positive-transfer"
+      ],
+      "corrections": [
+        "Default to actual fixed-normalization zero-extended frame means.",
+        "Keep source-pair diagnostic explicitly separate.",
+        "Return unavailable for zero-pair lags instead of a zero transfer matrix.",
+        "Remove automatic particle mass assignment based only on positive fitted real decay.",
+        "Replace the conflated frame/pair spectral theorem with the exact actual-K finite-step identity and separately labeled conditional positive-transfer corollary."
+      ]
+    }
+  ],
+  "field_evidence": [
+    {
+      "experiment": 39,
+      "algorithm_object": "Actual recorded conditional fitness query, immutable donor source and global/local normalizer; fixture alternatives",
+      "exact_identity": "g=epsilon I+H in strict domain, or epsilon I+H_positive for clipped provider; differentiate the configured query field through fourth order and contract curvature.",
+      "measurement": "Archive reconstruction matches recorded O-stage Hessian at the identical query. Analytic packed curvature is checked against finite differences of the metric.",
+      "validation": {
+        "global_phase_space_history": {
+          "historical_queries": 26,
+          "maximum_hessian_error": 3.552713678800501e-15
+        },
+        "local_phase_space_distance_history": {
+          "historical_queries": 25,
+          "maximum_hessian_error": 3.1086244689504383e-15,
+          "cloning_history": "current-frame as explicitly configured, because native historical clone rescoring requires global standardization"
+        },
+        "absorbing_killing_and_memory": {
+          "checked_revivals": 36,
+          "revival_fields_with_historical_distance_sources": 29,
+          "maximum_hessian_error": 0.0
+        },
+        "other": "Existing same-frame global/local reconstruction and independent curvature tests retained."
+      },
+      "limitations": "Clipped curvature needs a spectral neighborhood away from zero crossings. Unsupported derivative providers or missing historical coordinates are explicit errors. The programmed metric construction is a defining rule, not an inferred force law.",
+      "theory_labels": [
+        "def-curvature-conditional-fitness-field",
+        "lem-curvature-hessian-cancellation",
+        "lem-curvature-whitened-contractions",
+        "cor-curvature-packed-three-dimensional",
+        "lem-curvature-query-moment-cache",
+        "rem-curvature-clipped-computation"
+      ],
+      "corrections": [
+        "Effective epsilon, policy, clipping_threshold exposed for both available and unavailable domains; no fabricated curvature for an indefinite strict metric.",
+        "PhysicsMetricOperators now resolves companion indices to immutable donor-pool rows (including historical position and velocity), rather than substituting the current row with the same slot number. Exact current-frame revival source identity is validated; its conditional field may retain a historical distance source."
+      ]
+    },
+    {
+      "experiment": 40,
+      "algorithm_object": "Specified symmetric connection identification experiment",
+      "exact_identity": "Integrated transport contraction determines coefficients only for a full-rank design.",
+      "measurement": "Independent integrated transports feed least squares; measured Gram eigenvalues expose missing directions.",
+      "validation": "Rank-deficient fixture retains a zero eigenvalue and unavailable coefficients; full design converges.",
+      "limitations": "Reference-only transport data; no claim that a single walker velocity identifies a connection.",
+      "theory_labels": [
+        "def-edge-deformation",
+        "prop-connection-least-squares"
+      ],
+      "corrections": [
+        "Rank-deficient mode displays its measured Gram spectrum instead of an empty convergence chart."
+      ]
+    },
+    {
+      "experiment": 41,
+      "algorithm_object": "Bianchi-I and rotating Minkowski congruences",
+      "exact_identity": "Raychaudhuri includes expansion, shear, twist, Ricci contraction and acceleration divergence.",
+      "measurement": "Bianchi expansion from volume differentiation; rotating velocity gradients are finite-differenced and acceleration divergence independently differentiated.",
+      "validation": "Dimensions2/3; speeds0,.4,.8; zero expansion/shear and twist/acceleration cancellation.",
+      "limitations": "Reference-only explicitly specified congruences. No congruence is extracted automatically from cloning.",
+      "theory_labels": [
+        "def-kinematic-decomposition",
+        "thm-raychaudhuri"
+      ],
+      "corrections": [
+        "Rotating accelerated fixture now retains the terms absent in geodesic irrotational examples."
+      ]
+    },
+    {
+      "experiment": 43,
+      "algorithm_object": "Contracting Raychaudhuri comparison ODE",
+      "exact_identity": "theta_prime=-theta_squared/d-shear_squared-Ricci; nonnegative focusing terms imply focusing no later than d/abs(theta0).",
+      "measurement": "RK4 solution and Jacobian compared with exact constant-forcing solution and zero-forcing bound.",
+      "validation": "Nonzero shear shortens exact focusing time; integrated curve stays below comparison.",
+      "limitations": "Prescribed constant invariants are an ODE comparison, not a metric reconstructed from the run.",
+      "theory_labels": [
+        "def-sec",
+        "thm-focusing"
+      ],
+      "corrections": [
+        "Added explicit shear control and shortened integration horizon before the actual constant-forcing caustic."
+      ]
+    },
+    {
+      "experiment": 44,
+      "algorithm_object": "Triangulated disk, closed polyhedral sphere and independent three-dimensional hinge",
+      "exact_identity": "2D Gauss-Bonnet sums deficits plus boundary turning to2pi chi; 3D integrated hinge curvature scales with edge length.",
+      "measurement": "Triangle angles and mesh incidences computed directly at each sphere refinement.",
+      "validation": "Sphere chi2, no boundary, total4pi at refinements0..3 and scales.1,4; 3D linear scaling.",
+      "limitations": "Reference meshes; arbitrary recorded cloning does not specify a piecewise-flat manifold.",
+      "theory_labels": [
+        "def-regge-curvature",
+        "thm-curvature-topology",
+        "prop-curvature-change-2d",
+        "rem-higher-dim-curvature"
+      ],
+      "corrections": [
+        "Added closed-sphere topology rather than extrapolating disk turning to closed surfaces."
+      ]
+    },
+    {
+      "experiment": 45,
+      "algorithm_object": "Complete executed checkpoint including population, donor memory, providers and fresh future innovation keys; material metric readout",
+      "exact_identity": "Conditional increment b=E[A_next-A], covariance Gamma; two independent groups have discrepancy covariance Gamma/R+Gamma/S. Field/probe decomposition telescopes with all cross covariances.",
+      "measurement": "Native replicas evaluate the programmed conditional metric at final slot position. Exact decomposition uses new field at old probe, literal-clone probe and final probe. Fixed-probe lagged readout remains explicitly selectable.",
+      "validation": {
+        "benchmark_tests_passed": 10,
+        "material_component_covariance_telescoping": {
+          "seed11": 8.171241461241152e-14,
+          "seed29": 2.220446049250313e-16,
+          "seed43": 2.7755575615628914e-17
+        },
+        "memory_replica_test": "history_window2, warmup2, horizon2, four replicas per independent group; both groups have four defined metrics and historical sources are retained before continuation recording"
+      },
+      "limitations": "The metric is programmed; conditional drift/covariance characterize its actual evolution. Same-state replica calibration does not establish a metric-only closed equation. At horizons>1 the middle probe term includes earlier motion. Free-energy plots in reference mode are separate comparison models. Built-in revival selects an eligible current-frame donor; historical accepted cloning is retained. The revived source field can itself depend on a historical distance donor. This source convention follows cloning.rs, rather than introducing a different revival law.",
+      "theory_labels": [
+        "def-algorithmic-transition-state",
+        "thm-algorithmic-observable-increment",
+        "prop-algorithmic-material-metric",
+        "prop-algorithmic-independent-replicas",
+        "lem-algorithmic-quadratic-finite-step-moments",
+        "lem-ig-rate-function",
+        "def-ig-free-energy"
+      ],
+      "corrections": [
+        "Critical time-index correction: default material readout retains same-step clone/kinetic/boundary motion; lagged pre-clone fixed-probe readout no longer stands for that experiment.",
+        "Unsupported provider/history failures propagate; only declared spectral/ineligible metric outcomes receive zero extension.",
+        "Continuation metric reconstruction can read immutable checkpoint history with exact frame/version/generation, without clearing donor memory or fabricating archive snapshots."
+      ]
+    },
+    {
+      "experiment": 47,
+      "algorithm_object": "Specified homogeneous Gaussian redistribution closure",
+      "exact_identity": "Fourier decay D k²+lambda(1-exp(-epsilon² k²/2)); constant mode conserved.",
+      "measurement": "Grid convolution/Laplacian multiplier measured separately from analytic Fourier multiplier; explicit Euler mode evolution.",
+      "validation": "Refinement and fastest combined control endpoint maintain positive monotone decay.",
+      "limitations": "Reference closure, not the interacting donor/acceptance kernel. Negative high-frequency truncated rates diagnose breakdown of the long-wave truncation.",
+      "theory_labels": [
+        "def-mckean-vlasov",
+        "def-uniform-qsd-linearization",
+        "thm-dispersion-relation",
+        "thm-qsd-stability",
+        "cor-exponential-relaxation"
+      ],
+      "corrections": [
+        "Fixed timestep could produce negative oscillating amplitude for combined high-frequency controls; adaptive positive Euler multiplier now respects the stated decay regime."
+      ]
+    },
+    {
+      "experiment": 48,
+      "algorithm_object": "Executed raw BAOAB O stages, actual diffusion factors, Gaussian/uniform laws and addressed innovation shifts",
+      "exact_identity": "Conditional kinetic mean and variance follow from v_plus=c v+s B(xi+shift); uniform fourth moment9/5 changes energy variance. Predictable variances add for sequential martingale differences.",
+      "measurement": "Archive mode measures raw velocity increments and computes source-aware conditional moments from recorded B and law. Cumulative centered energy compared with square-root predictable variation. Scalar reference separately samples the native innovation generator.",
+      "validation": {
+        "independent_runs_per_law": 64,
+        "raw_O_stages_per_run": 2,
+        "rectangular_factor_shape": [
+          3,
+          2
+        ],
+        "nonzero_source_shift": 0.7,
+        "Gaussian": {
+          "centered_sum": -1.846554308133356,
+          "predictable_variance_sum": 16.130137994548914,
+          "standardized_sum": -0.4597725550340293,
+          "measured_to_predicted_second_moment_ratio": 1.0151134825335426
+        },
+        "StandardizedUniform": {
+          "centered_sum": 2.6660553839577825,
+          "predictable_variance_sum": 15.634784650200292,
+          "standardized_sum": 0.6742535088461272,
+          "measured_to_predicted_second_moment_ratio": 0.8695021899002708
+        },
+        "method": "Predictions use source-aware analytic conditional moments at each actual stage. Independent full-run seeds are the sampling units. The standardized sums are diagnostics, not exact Gaussian p-values."
+      },
+      "limitations": "Predictable variation is a fluctuation scale, not an exact confidence band. Programmed B=sqrt(2gamma T)g_inverse_sqrt determines noise geometry; measured raw increments independently test its consequence.",
+      "theory_labels": [
+        "thm-algorithmic-thermostat-moments",
+        "cor-algorithmic-geometric-heating",
+        "lem-field-discrete-ou-diffusion"
+      ],
+      "corrections": [
+        "Added actual archive analysis instead of only a scalar frozen-factor sampler. Preserves source shift, uniform fourth moment and raw-before-boundary convention.",
+        "Metric provider permits zero friction, for which sqrt(2 gamma T) makes the programmed thermal noise zero while the metric remains defined; tested explicitly."
+      ]
+    },
+    {
+      "experiment": 51,
+      "algorithm_object": "Recorded clone, transform, raw kinetic, boundary and eligibility stages; separate constitutive algebra",
+      "exact_identity": "Exact kinetic/momentum differences telescope. Kick work=v dot delta-v+norm(delta-v)²/2. Weak local momentum splits impulse/transport/eligibility. Restitution overwrites pre-clone pairs and must subtract literal-clone increment.",
+      "measurement": "Archive source-aware heating, full stage budgets, centered kinetic moment, raw total-force kick work, and local test-function momentum measured directly.",
+      "validation": "Executed viscosity/source-shift tests check two kicks, weak identity and telescoping; no potential inferred from reward.",
+      "limitations": "Centered kinetic moment requires volume normalization and additional contributions before serving as stress. Constitutive reference assumes a Lorentzian Einstein equation. Reported local96 closure Ebar=kappa centered_kinetic+lambda gbar failed: held-out RMSE51363 versus constant31599 and shuffled32372; this particular fitted spatial relation is rejected by that data, not repaired by fitting.",
+      "theory_labels": [
+        "def-algorithmic-mechanical-observables",
+        "prop-algorithmic-stage-telescoping",
+        "prop-algorithmic-kick-work",
+        "prop-algorithmic-clone-balances",
+        "prop-algorithmic-weak-density",
+        "thm-structural-correspondence",
+        "rem-correspondence-meaning"
+      ],
+      "corrections": [
+        "Corrected formal kick statement to executed total acceleration including viscosity; the gradient-only formula is its zero-viscosity specialization.",
+        "Added exact weak momentum and total-force work readouts; constitutive reference remains separately identified and supplies no empirical Einstein agreement."
+      ]
+    },
+    {
+      "experiment": 52,
+      "algorithm_object": "Actual recorded episode ancestry and selected directed interactions; separately reconstructed complete Gaussian graph",
+      "exact_identity": "Separator must be an antichain intersecting every chosen ancestral chain once. Cut capacities use actual edges/weights; auxiliary symmetric Gaussian graph obeys max-flow/min-cut.",
+      "measurement": "Episode parent forest resolved by epoch/slot/generation. Actual selected channels counted across fixed slot partition, missing weights retained as unavailable. Gaussian mincut on explicitly projected archived points computed separately.",
+      "validation": "Recorded channel counts compared directly with FractalSet; network-flow/partition identity; living ancestor fixture rejects terminal episodes as antichain.",
+      "limitations": "Missing historical sources yield partial ancestry coverage. Gaussian reconstruction is not the actual sparse/directed IG. Slot-partition cuts are structural observables, not geometric area.",
+      "theory_labels": [
+        "def-cst-structure",
+        "def-ig-structure",
+        "def-separating-antichain",
+        "def-ig-entanglement-entropy",
+        "prop-holo-cut-identities"
+      ],
+      "corrections": [
+        "Added actual selected-interaction cut counts and recorded-weight availability rather than displaying only auxiliary Gaussian cuts."
+      ]
+    }
+  ],
+  "independent_research": {
+    "trajectories": 544,
+    "audited_archives": 1632,
+    "complete_updates": 483328,
+    "walker_updates": 78381056,
+    "replica_updates": 36864,
+    "global_configurations": 14,
+    "local_configurations": 3,
+    "seeds_per_configuration": 32,
+    "kinetic_telescoping_residual": 0,
+    "global_metric_absolute_standardized_residual_median": 0.4831,
+    "global_metric_absolute_standardized_residual_p95": 1.9131,
+    "global_thermostat_z_range": [
+      -2.7127,
+      1.8343
+    ],
+    "local_thermostat_z": [
+      0.5615,
+      0.1905,
+      -0.2815
+    ],
+    "global_spatial_closure_rmse": 13340129,
+    "global_constant_rmse": 13414636,
+    "global_shuffled_rmse": 13384667,
+    "local_spatial_closure_rmse": 51363,
+    "local_constant_rmse": 31600,
+    "local_shuffled_rmse": 32372,
+    "source": "algorithmic-gas/VERIFICATION.md",
+    "history_window": 0
+  },
+  "additional_regressions": [
+    "Source shift changes uncentered second moment while factor covariance is unchanged",
+    "No eligible O-stage coverage is reported as unexercised"
+  ],
+  "verification": {
+    "rust_tests": 252,
+    "rust_workspace_passed": true,
+    "clippy_all_targets_passed": true,
+    "native_browser_default_cases": 26,
+    "native_browser_default_points": 1582,
+    "compiled_qft_checks": 76,
+    "engine_tracking_host_regressions": 44,
+    "mechanism_variants": 5,
+    "cpu_wasm_built": true,
+    "webgpu_wasm_built": true,
+    "gpu_hardware_runtime_tested": false,
+    "theory_build_passed": true,
+    "browser_workflows_passed": true,
+    "lecture_embed_count": 128,
+    "lecture_embeds_passed": true
+  }
+}

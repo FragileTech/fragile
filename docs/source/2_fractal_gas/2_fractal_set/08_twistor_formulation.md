@@ -510,6 +510,13 @@ $$
 T_t(i) := (i, j_t(i), k_t(i)).
 $$
 
+Each companion is the actual recorded source reference, including its source frame, population
+version, numerical slot, and generation. Its position and velocity are read from that immutable
+source snapshot. For current-frame companions this gives the usual current walker coordinates.
+For historical companions, $x_{j_t(i)}(t)$ and $v_{j_t(i)}(t)$ denote the resolved historical
+coordinates; the source age is retained with the descriptor. The recipient uses its pre-clone
+coordinates. Thus the triplet retains the configured donor-memory mechanism.
+
 The twistor companion channels always use both companion types. In particular they are triplet
 channels, not pair channels, and they do not depend on the mesonic `pair_selection` choice.
 :::
@@ -548,8 +555,8 @@ $$
 :::
 
 The real part of $B_{ij}$ records the edge displacement, while the imaginary part records the
-relative velocity weighted by $\alpha$. In the current implementation the dashboard uses the first
-three spatial coordinates and $\alpha = 1$.
+relative velocity weighted by $\alpha$. The readout uses three spatial coordinates and records the selected value of $\alpha$ with
+its result.
 
 :::{prf:definition} Effective Edge Twistor
 :label: def-effective-edge-twistor
@@ -593,7 +600,9 @@ Z_{ij}^\alpha(t) := \bigl(\mu_{ij}^{A'}(t), \lambda_{ij,A}(t)\bigr).
 $$
 
 If the chosen column norm is at most $\varepsilon$, or if any index is out of range, or if any of
-the walkers in the edge is dead, the edge is declared invalid.
+the current walkers in the edge is dead, the edge is declared invalid. A historical donor uses
+its eligible source snapshot; a source whose coordinates are outside retained archive coverage
+has an unavailable readout with its source reference retained.
 :::
 
 This is a deterministic gauge choice, not the canonical Penrose twistor of a continuum null ray.
@@ -742,7 +751,9 @@ or one of the vector-valued operators
 $\mathcal{O}_{Y,i}^a(t)$ with
 $Y \in \{\mathrm{V}, \mathrm{A}\}$. For each source time
 $t$ and source walker $i$, keep the source-frame triplet $T_t(i) = (i, j_t(i), k_t(i))$ fixed.
-For a lag $\ell \ge 0$, evaluate the sink operator at time $t+\ell$ using the same source indices:
+For a lag $\ell \ge 0$, current-frame source slots are evaluated at time $t+\ell$.
+Historical donor coordinates remain at their immutable source snapshots. The recipient advances
+to its numerical slot at $t+\ell$. This defines the source-frozen sink operator
 
 $$
 \mathcal{O}^{(\ell)}_{X,i}(t)
@@ -762,7 +773,7 @@ $$
 Whenever $N_X(\ell) > 0$, the raw correlator is
 
 $$
-C_X^{\mathrm{raw}}(\ell)
+C_X^{\mathrm{pair,raw}}(\ell)
 :=
 \frac{1}{N_X(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -775,7 +786,7 @@ Let $\overline{\mathcal{O}}_X$ denote the mean of $\mathcal{O}_{X,i}(t)$ over va
 triplets. The connected correlator is
 
 $$
-C_X^{\mathrm{conn}}(\ell)
+C_X^{\mathrm{pair,conn}}(\ell)
 :=
 \frac{1}{N_X(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -788,7 +799,7 @@ For the vector and axial-vector channels, replace the pointwise product by the E
 dot product in $\mathbb{R}^3$:
 
 $$
-C_Y^{\mathrm{raw}}(\ell)
+C_Y^{\mathrm{pair,raw}}(\ell)
 :=
 \frac{1}{N_Y(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -797,7 +808,7 @@ C_Y^{\mathrm{raw}}(\ell)
 $$
 
 $$
-C_Y^{\mathrm{conn}}(\ell)
+C_Y^{\mathrm{pair,conn}}(\ell)
 :=
 \frac{1}{N_Y(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -810,7 +821,8 @@ $$
 
 Definition {prf:ref}`def-effective-twistor-correlators` is exactly the source-frame companion
 tracking rule used by the implemented channel code. The sink triplet is **not** rebuilt from sink
-companions. The source companions are propagated through the lag.
+companions. Current source slots advance through the lag, while historical source snapshots remain fixed.
+Pairs crossing an externally replaced epoch or a missing recorded interval are excluded.
 
 :::{prf:proposition} The Local Twistor Operators Are Not Particle Masses
 :label: prop-effective-twistor-not-masses
@@ -839,89 +851,90 @@ Hence the local twistor companion operators are not masses. They are operator in
 correlators may couple to massive states. $\square$
 :::
 
-:::{prf:theorem} Spectral Meaning of the Twistor Companion Channels
+:::{prf:theorem} Algorithmic Evolution of Frame-Averaged Twistor Channels
 :label: thm-effective-twistor-spectral-meaning
 
-Assume the Euclidean transfer-matrix/spectral framework of {doc}`09_qft_calibration`. Let
-$\widehat{\mathcal{O}}_X(t)$ denote the frame-averaged twistor operator associated with one of the
-scalar-valued families
-$X \in \{\mathrm{S}, \mathrm{P}, \mathrm{G}, \mathrm{T}\}$,
-or let $\widehat{\mathcal{O}}_Y(t)$ denote the frame-averaged vector-valued operator associated with
-$Y \in \{\mathrm{V}, \mathrm{A}\}$. Then the connected two-point function has
-the spectral form
+Let $R_n$ be the complete recorded-state chain of the configured algorithm. Its state retains
+the population, donor memory, provider configuration, and the companion and stage data required
+by the twistor readout. Its transition kernel $K$ executes the configured cloning, kinetic,
+clipping, and boundary rules. After extinction, use an absorbing cemetery state $\dagger$.
+For each scalar channel or vector component $a$, define
 
 $$
-C_X^{\mathrm{conn}}(\ell)
-=
-\sum_{n>0}
-\left|\langle n | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_n \ell \Delta t}.
+f_a(R)=\frac1N\sum_{i=1}^N
+ \mathbf1_{\{\text{local readout valid at }(R,i)\}}\mathcal O_{a,i}(R),
+\qquad f_a(\dagger)=0.
 $$
 
-for scalar-valued $X$, and analogously with the Euclidean dot product for $Y \in \{\mathrm{V},\mathrm{A}\}$.
-
-If at least one overlap is nonzero, then for large $\ell$
+The factor $1/N$ is fixed. Each local readout uses that record's actual current or historical
+donor sources. These twistor observables are bounded because their spinors are normalized.
+For any initial law $\mu$ and integers $n,\ell\ge0$, their centered frame correlation satisfies
 
 $$
-C_X^{\mathrm{conn}}(\ell)
-\sim
-\left|\langle n_X | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_{n_X} \ell \Delta t},
+\begin{aligned}
+C^{\mathrm{frame}}_{ab}(n,\ell)
+&:=\mathbb E_\mu\!\left[
+ (f_a(R_n)-\mathbb E_\mu f_a(R_n))^*
+ (f_b(R_{n+\ell})-\mathbb E_\mu f_b(R_{n+\ell}))\right]\\
+&=\mu K^n\!\left[f_a^*K^\ell f_b\right]
+  -\overline{\mu K^n f_a}\,\mu K^{n+\ell}f_b.
+\end{aligned}
 $$
 
-where $E_{n_X}$ is the smallest energy with nonzero overlap. Therefore the plateau mass extracted
-from the twistor companion correlator is the mass of the lightest state that couples to that
-operator.
+In particular, $Kf_a-f_a$ is the exact one-step conditional drift, and
+$f_a(R_{n+1})-(Kf_a)(R_n)$ has conditional mean zero. For an invariant law $\pi$ of this same
+kernel, putting $\widetilde f_a=f_a-\pi f_a$ gives
+
+$$
+C^{\mathrm{frame}}_{ab}(\ell)
+ =\langle\widetilde f_a,K^\ell\widetilde f_b\rangle_{L^2(\pi)}.
+$$
+
+These identities concern the fixed-normalization frame observable. The source-frozen
+$C^{\mathrm{pair,conn}}$ of {prf:ref}`def-effective-twistor-correlators` uses its separate,
+lag-dependent valid-pair normalization.
 :::
 
 :::{prf:proof}
-Let $T = e^{-\Delta t\,H}$ be the Euclidean transfer operator and let
-$\{|n\rangle\}_{n \ge 0}$ be a complete orthonormal basis of energy eigenstates with
-$H|n\rangle = E_n |n\rangle$ and $E_0 = 0$ for the vacuum.
-
-For the frame-averaged operator $\widehat{\mathcal{O}}_X$, the unconnected correlator is
+The complete recorded state retains every variable required to execute the next update,
+including historical donor sources. Consequently the Markov property gives
 
 $$
-\langle 0 | \widehat{\mathcal{O}}_X(0)\,\widehat{\mathcal{O}}_X(\ell) | 0 \rangle
-=
-\langle 0 | \widehat{\mathcal{O}}_X\, T^\ell \,\widehat{\mathcal{O}}_X | 0 \rangle.
+\mathbb E_\mu[f_b(R_{n+\ell})\mid R_0,\ldots,R_n]=(K^\ell f_b)(R_n).
 $$
 
-Insert the identity $\sum_n |n\rangle\langle n| = \mathbf{1}$ between the two operators:
+Multiply by $f_a(R_n)^*$ and integrate. The law of $R_n$ is $\mu K^n$, so this gives the first
+term in the displayed correlation identity. Subtracting the product of the two marginal means
+gives its centered form. The same conditional-expectation calculation at $\ell=1$ proves the
+drift and martingale statements. If $\pi K=\pi$, the means are constant and the identity becomes
+the stated $L^2(\pi)$ inner product. The cemetery extension makes the calculation apply to the
+unselected executed law, retaining probability lost through killing.
+:::
+
+:::{prf:corollary} Positive Transfer Representation of a Frame Correlator
+:label: cor-effective-twistor-positive-transfer
+
+Suppose the actual kernel and observable in {prf:ref}`thm-effective-twistor-spectral-meaning`
+have the positive self-adjoint transfer representation specified in {doc}`09_qft_calibration`,
+with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis. For a
+self-adjoint frame observable with its vacuum mean removed,
 
 $$
-\langle 0 | \widehat{\mathcal{O}}_X\, T^\ell \,\widehat{\mathcal{O}}_X | 0 \rangle
-=
-\sum_n
-\langle 0 | \widehat{\mathcal{O}}_X | n \rangle
-\langle n | \widehat{\mathcal{O}}_X | 0 \rangle
-e^{-E_n \ell \Delta t}.
+C^{\mathrm{frame}}_{aa}(\ell)
+=\sum_{E_n>0}\left|\langle n|\widehat f_a|0\rangle\right|^2e^{-E_n\ell\Delta t}.
 $$
 
-Since
-$\langle 0 | \widehat{\mathcal{O}}_X | n \rangle
-= \overline{\langle n | \widehat{\mathcal{O}}_X | 0 \rangle}$,
-this becomes
+If the supported positive energies have an isolated minimum, its total overlap determines the
+leading large-lag term. The finite-step identity above applies to the actual algorithm whether
+or not this additional representation is identified.
+:::
 
-$$
-\sum_n
-\left|\langle n | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_n \ell \Delta t}.
-$$
-
-Subtracting the vacuum piece gives the connected correlator, so the $n=0$ term is removed and
-
-$$
-C_X^{\mathrm{conn}}(\ell)
-=
-\sum_{n>0}
-\left|\langle n | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_n \ell \Delta t}.
-$$
-
-Let $n_X$ be the smallest index with nonzero overlap. Then every other surviving term has strictly
-larger exponential suppression for large $\ell$, so the asymptotics are dominated by the
-$n_X$-term, proving the claim. $\square$
+:::{prf:proof}
+Insert the spectral resolution of the specified transfer operator between the two frame
+observables. Self-adjointness makes each coefficient a squared overlap, and centering removes
+the vacuum term. An isolated minimum among the energies with nonzero overlap supplies the leading
+exponential; overlaps at the same energy are summed. The operation uses the same fixed-normalization
+frame observable in both insertions.
 :::
 
 The channel interpretations are then the expected ones:

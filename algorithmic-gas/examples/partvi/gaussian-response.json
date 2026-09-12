@@ -1,0 +1,9 @@
+{
+  "experiment": 19,
+  "parameters": {
+    "seed": 7,
+    "replicas": 32,
+    "horizon": 4,
+    "theta": 0.25
+  }
+}

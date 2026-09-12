@@ -2,7 +2,7 @@
 
 An independent Rust implementation of the Volume 2 [architecture specification](../docs/source/2_fractal_gas/architecture/01_algorithmic_gas.md). It does not modify or wrap the Python Atari, robotics or Euclidean engines, or the C++ Optimization Lab.
 
-This is an initial, executable implementation, not completion of every performance and extension target in the specification. CPU and WASM CPU support both `f32` and `f64`. Accelerator adapters use **host-orchestrated Burn batches**: objective/gradient evaluation, pair reductions, noise factors and kinetic arithmetic can execute on the selected device; sampling decisions, fitness statistics/maps, cloning and random-number generation currently run on the host. Transfers are explicit and counted. There is no automatic CPU fallback or precision reduction.
+CPU and WASM CPU support both `f32` and `f64`. Accelerator adapters use **host-orchestrated Burn batches**: objective/gradient evaluation, pair reductions, noise factors and kinetic arithmetic can execute on the selected device; sampling decisions, fitness statistics/maps, cloning and random-number generation run on the host. Transfers are explicit and counted. There is no automatic CPU fallback or precision reduction.
 
 ## Build and run
 
@@ -22,6 +22,78 @@ cargo run --release -p algorithmic-gas-benchmarks --features cuda -- --backend c
 ```
 
 These profiles require a compatible adapter/driver. Compilation alone does not verify GPU execution. The WGPU adapter rejects software CPU adapters. CUDA `f64` must pass the device's dtype and primitive-operation checks; it is not promised to be fast.
+
+## Numerical algorithmic physics
+
+`physics::jet::JetSpace` provides packed multivariate Taylor algebra through order
+four. In 3D, order three uses 20 coefficients (value, three gradients, six Hessian
+and ten third-derivative components). `FitnessJet::from_jet` exports ordinary
+derivatives in lexicographic nondecreasing-axis order. Global conditional fitness
+uses prefix/suffix Welford summaries: O(N) preparation and O(1) work in population
+size per query. `pipeline_from_measurement_jets` retains all derivatives in local
+normalization or population-dependent measurements, using an O(N) query fallback.
+
+`physics::geometry::hessian_curvature` computes Ricci, scalar, and eigenframe
+sectional curvatures directly from the Hessian and third derivatives. A full
+Riemann tensor is optional. `fitness_curvature` preserves the configured spectral
+clipping: mixed-sign clipping requires fourth derivatives and spectral divided
+differences; a threshold query reports unavailable classical curvature. The
+constant negative branch has metric epsilon times identity and zero curvature.
+`metric_curvature` accepts general metric derivatives as an independent
+Levi-Civita reference. Its derivative layout is `dg[k,i,j]`, `ddg[k,l,i,j]`.
+
+`ExecutionContext::smooth_curvature_batch` performs whitening and Ricci/scalar/
+sectional contractions on the selected Burn backend, with one readback and bounded
+batch allocation. Small symmetric eigensolves remain host computations. CPU
+supports f32/f64, WebGPU f32, and CUDA the device-supported requested precision.
+Mixed-sign clipped queries require the general metric path; this batch method
+returns an explicit capability error instead of falling back to CPU.
+
+Set `RunConfig.physics_metric` to a `PhysicsMetricConfig` for general-dimensional
+fitness-conditioned BAOAB diffusion. Metric factors are evaluated at the actual O
+query, with selection-stage donors and eligibility frozen. Curvature recording is
+observational and skips D3/D4 work when no archive is requested. Archived field
+coverage distinguishes a missing curvature from a computed zero.
+
+`physics::balances::analyze_step` computes stage energy, momentum, particle-count,
+and kinetic-stress diagnostics. Pre-boundary snapshots separate the thermostat
+from killing or periodic repair. Conditional energy mean and variance use the
+executed diffusion factor, integrator scaling, source shifts, and innovation law.
+The report isolates the O substep before boundary changes.
+`Checkpoint::with_future_seed` creates a replica checkpoint with unchanged
+physical/history/provider state and schedule, fresh future random addresses, and
+a fresh recording boundary. Identical checkpoint replay remains deterministic.
+
+`physics::evolution` checks disjoint calibration/validation replica keys;
+`physics::closure` reports held-out constitutive errors against a constant
+baseline. `physics::thermodynamics::FiniteKernel` supplies exact stationary,
+Poisson-response, controlled-Fisher and path-KL reference calculations. These
+quantities and the fitness Hessian have separate APIs and definitions.
+
+Run the reproducible smoke simulation or the full research preset:
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --example physics_research -- --output ../outputs/physics-smoke
+cargo run --release -p algorithmic-gas-benchmarks --example physics_research -- --research --output ../outputs/physics-research
+cargo run --release -p algorithmic-gas-benchmarks --example physics_analyze_research -- ../outputs/physics-research
+```
+
+The research preset runs 32 seeds, d=2/3, N=32/128/512 and 1,024 updates, plus
+eight one-factor comparisons at N=128,d=3. Seed-7 baseline checkpoints at updates
+1, 512 and 1,024 have 1,024 replicas in each of two independent pools. JSON reports
+and CBOR archives are written per job; repeat the command to resume completed
+jobs. The manifest records exact coverage and limitations. A half-step comparison
+keeps the clone operator fixed while changing the BAOAB time step.
+Independent processes can partition the preset with `--shards K --shard I`,
+where `I` runs from zero through `K-1`; job IDs and random keys are unchanged.
+Adding `--local` runs the neighborhood-width study: 32 seeds, 32 walkers in 3D,
+256 updates, and Gaussian widths 0.3, 1, and 3, for 96 trajectories. Use a separate
+output directory for this study; the same analysis command summarizes it.
+The [verification report](VERIFICATION.md) records numerical checks and study
+results. `tools/plot_physics.py` renders completed summaries as scientific plots
+and Markdown tables using the repository's Python environment.
+
+Archives and checkpoints validate their supported schema and explicit field coverage.
 
 ## Project layout
 
@@ -79,7 +151,7 @@ Custom domain methods operate on the uncommitted population. They must keep nume
 |---|---|
 | Distance | Euclidean or squared Euclidean; scaled phase space; cosine dissimilarity with explicit zero-vector tolerance |
 | Kernel | Uniform; Gaussian with distance/squared-distance convention; explicit exponential kernel for general dissimilarity |
-| Sampling law | Independent directed draws; uniform Fisher–Yates mutual matching; sequential Gaussian greedy matching; legacy permutation |
+| Sampling law | Independent directed draws; uniform Fisher–Yates mutual matching; sequential Gaussian greedy matching; permutation |
 | Diversity reduction | Mean, weighted mean, minimum, maximum of scalar pair comparisons |
 
 Distance companions are dense masked `[N,K]` pool indices, default `K=1`. Multiple mutual rounds produce multiple companions; each round is a matching, not one globally disjoint multi-edge graph. Cloning currently requires `K=1`. `ClonePlan` records a list of weighted sources per recipient so future recombination can extend the representation, but more than one contributing donor is explicitly rejected today.
@@ -92,7 +164,7 @@ Gaussian independent sampling streams tiles without an `N × M` matrix. Uniform 
 
 ### Fitness, boundaries and cloning
 
-Fitness separates measurement, standardization, positive mapping and combination. Built-ins include global alive-only regularized population statistics, local kernel-weighted statistics, explicit legacy sample statistics, logistic and legacy asymmetric maps, additive positivity floors, independent reward/diversity exponents, and a distance measurement floor. The distance floor applies **after** multi-companion reduction as `sqrt(reduced² + floor²)`.
+Fitness separates measurement, standardization, positive mapping and combination. Built-ins include global alive-only regularized population statistics, local kernel-weighted statistics, sample statistics, logistic and asymmetric maps, additive positivity floors, independent reward/diversity exponents, and a distance measurement floor. The distance floor applies **after** multi-companion reduction as `sqrt(reduced² + floor²)`.
 
 Reducers convert squared-distance edge values to distances before mean, weighted mean, minimum or maximum. Cosine remains a dimensionless dissimilarity and uses scaled normalization to preserve small/large nonzero vectors. Local statistics default to `include_self: false`; an empty singleton neighborhood falls back to global statistics, recorded by `Statistics.global_fallback`. Set `include_self: true` explicitly for self-inclusive local statistics.
 
@@ -136,7 +208,7 @@ The spec's signatures are architecture sketches, not copy-paste declarations of 
 
 Addressed RNG keys contain seed/run identity, step, operator role, walker, substep and draw counter. Current streams use RNG schema version 1. Checkpoints are versioned CBOR and preserve dtype, config, population, opaque snapshots, history, lineage and RNG addresses. They require matching execution configuration and provider IDs. Replay on the same supported execution is tested; bitwise agreement between CPU, CUDA and WebGPU is not promised. Compare cross-platform numerical tolerances and distributions instead.
 
-Checkpoint format **2** and built-in operator identity **v2** include corrected sampling/measurement semantics, explicit pre-clone eligibility, and local-statistics fallback masks. Version-1 checkpoints are rejected rather than silently migrated: start a new run from its configuration. Restore validates nested report shapes, masks, source identities/generations, clone decisions, counters and population provenance before changing live state. Public tensor deserialization also enforces construction invariants. Replacement assigns the new version before evaluating rewards; no eligible walkers means remaining kinetic providers are skipped.
+Checkpoints preserve explicit pre-clone eligibility and local-statistics fallback masks. Restore validates the schema, nested report shapes, masks, source identities/generations, clone decisions, counters and population provenance before changing live state. Public tensor deserialization also enforces construction invariants. Population replacement assigns the new population version before evaluating rewards; no eligible walkers means remaining kinetic providers are skipped.
 
 Cancellation is checked at transaction barriers and never exposes a partial population. Work already submitted to a device is not forcibly cancelled. Failed/cancelled calls can still incur counted execution transfers; checkpoints describe committed state, not reversible hardware activity. Browser pause stops at the next one-step batch boundary.
 
@@ -219,9 +291,8 @@ influence. `reconstruct(epoch, step, stage)` validates indexed scalar coverage;
 cones. Population replacement creates an epoch barrier. Recording is bounded
 by both its own budget and the engine working-memory limit.
 
-Checkpoint v3 preserves the archive. Version-two byte imports migrate through a
-current-state anchor, keeping prior recording coverage unavailable. Standalone
-`RunArchive::to_bytes/from_bytes` uses CBOR with validation. JSON is useful for
+Checkpoints preserve the archive. Standalone `RunArchive::to_bytes/from_bytes`
+uses CBOR with validation. JSON is useful for
 finite lecture data; CBOR preserves nonfinite invalid observations.
 
 `partv_geometry::analyze` supplies exact 2D conditional fitness derivatives,
@@ -230,10 +301,61 @@ Delaunay maintenance, refining variable-metric distances, and shared tetrahedral
 spacetime partitions. `partv_analysis::analyze` supplies seeded independent
 transport, sampling, operator and curvature reference experiments.
 
-The benchmark `RunConfig.adaptive_metric` option accepts
-`{epsilon, temperature, policy}`. It evaluates the frozen conditional fitness
+The benchmark `RunConfig.physics_metric` option accepts
+`{epsilon, temperature, policy, curvature, clipping_threshold}`. It evaluates the frozen conditional fitness
 field at the actual O-stage position, keeping the force potential separate.
-The supported launch profile is CPU/WASM f64 with two spatial coordinates,
-BAOAB, global smooth normalization, logistic maps, and one same-frame companion.
+The provider supports general-dimensional BAOAB, smooth global or local
+normalization, logistic maps, and one same-frame companion.
 Already-dead rows have unavailable field coverage; revived rows explicitly use
 their donor's frozen field. Unsupported configurations return capability errors.
+
+
+## Part VI calculations and interactive lectures
+
+`physics::partvi::analyze(&ExperimentRequest)` runs the 66 finite reference
+calculations. `analyze_archive` uses validated walker archives for empirical
+covariance, path likelihoods, predictions, color/twistor readouts, geometry,
+and mechanical budgets across 23 supported archive experiments. Unsupported archive
+requests return an error. Every result contains its derivation contract, executed
+configuration, model, controls, computed
+curves, metrics, and numerical provenance. Independent engine continuations
+for experiments 19, 22 and 45 use `algorithmic_gas_benchmarks::qft_experiments::run`.
+
+From this directory:
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
+  sweep examples/partvi/all-reference.json --output /tmp/partvi-reference.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
+  run examples/partvi/recorded-color.json --steps 32 \
+  --save-archive /tmp/partvi-archive.json --output /tmp/partvi-color.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
+  analyze examples/partvi/recorded-action.json --archive /tmp/partvi-archive.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-physics -- \
+  run examples/partvi/metric-replicas.json --output /tmp/partvi-metric.json
+```
+
+`algorithmic-gas-qft` exposes the same CLI. `run --config RUN.json` accepts an
+explicit gas profile; calculations use CPU f64. Temporal prediction and spectral
+readouts need a long enough archive for separate training and validation windows;
+the supplied memory and spectrum requests can use `run --steps 96`. Ensemble runs
+export replica estimates and identities in their result bundle. `--save-archive`
+applies to single-trajectory runs. All imports validate the current schema.
+
+Build the browser bundles from the repository root with
+`npm --prefix fractal-gas-web run build:euclidean-gas`. Open
+`euclidean-gas/lecture.html?demo=VI-01` in the laboratory server. The Part VI
+viewer supports recorded gas runs, finite reference calculations, native result
+imports, archive exports, formula search, and downloadable SVG/JSON. Scientific
+calculations run in the compiled worker. The curvature workbench also exposes
+CPU f64/f32 and WebGPU f32 batch contractions with explicit backend results.
+
+The [experiment guide](../docs/source/2_fractal_gas/partvi_experiments.md)
+describes every placement, control, numerical comparison, and interpretation.
+The generated formula index links chapter statements and displayed equations
+to workbench families.
+
+The [QFT validation report](QFT_VALIDATION.md) traces all 66 workbenches to their
+algorithmic objects, exact identities, independent comparisons, and coverage. It
+includes measured source-response and noise agreement, historical-source checks,
+and the observed failure of the tested spatial constitutive closure.

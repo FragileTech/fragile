@@ -1,0 +1,1365 @@
+[
+  {
+    "experiment": 1,
+    "algorithm_object": "Oriented transport words supplied as unitary links",
+    "exact_identity": "Word reversal is adjoint; rebasing conjugates a closed word and preserves its trace.",
+    "measurement": "Finite supplied SU(2) links; no executed gas connection is available.",
+    "validation": "Independent matrix products check adjoint and trace identities.",
+    "limitations": "Native archive route unsupported: an actual transport connection must be constructed and recorded before this characterizes gas holonomy. Color rank-one projectors are not substitute SU(3) links.",
+    "theory_labels": [
+      "thm-lqft-oriented-word-algebra"
+    ],
+    "corrections": "No formula error found; root strict dispatch prevents synthetic links being presented as archive measurements.",
+    "title": "Oriented diagrams and transport",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 2,
+    "algorithm_object": "Actual directed cloning scores, configured epsilon/saturation, donor rescoring, clipped acceptance and revival",
+    "exact_identity": "(Vi+eps)Sij+(Vj+eps)Sji=0; Pij=clip(Sij/saturation,0,1); E[Aij|recorded pre-gate inputs]=Pij.",
+    "measurement": "All ordinary recorded gates, exact pool-aligned donor fitness including historical rescoring, selected SourceRefs, realized gates, deterministic revivals separately.",
+    "validation": "Reconstruct probabilities independently of stored CloneChoice.probability; compute realized gate innovations and predictable sum p(1-p).",
+    "limitations": "Custom clone-decision providers may differ; a nonzero stored-probability residual is a substantive mismatch, not silently forced to zero. Conditional gate variance does not assume independent temporal states.",
+    "theory_labels": [
+      "thm-cloning-antisymmetry-lqft"
+    ],
+    "corrections": "Implemented actual archive calculation: attaching recorded metadata to an unrelated fitness sweep did not measure the algorithm. Retained clipping and revival terms explicitly.",
+    "title": "Cloning antisymmetry and exclusion",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 3,
+    "algorithm_object": "Whole-swarm pre-clone frame observables and their empirical centered Gram quotient",
+    "exact_identity": "{a(fi),a†(fj)}=Gram(fi,fj)I after quotienting null covariance directions; Fock dimension=2^retained_rank.",
+    "measurement": "Eligible swarm coordinate means per complete frame, centered with equal frame weights; all contributing epoch/step/version/slot identities retained.",
+    "validation": "Independently multiply explicit creation/annihilation matrices in measured positive eigenspace and compare projected Gram; independently sum replica determinant squared.",
+    "limitations": "Requested truncation discards measured modes, reported by discarded covariance norm. Empirical frames are not iid population samples.",
+    "theory_labels": [
+      "def-lqft-record-fock-space",
+      "thm-lqft-record-fock-reconstruction",
+      "prop-lqft-finite-record-transfer"
+    ],
+    "corrections": "Replaced pooled walker rows with whole-record functions, connected actual Gram eigenvectors to CAR matrices, and capped reference Fock modes at its actual rank-two quotient rather than inventing null modes.",
+    "title": "Exterior algebra from recorded observables",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 4,
+    "algorithm_object": "Actual two-time joint law of eligible whole-swarm velocity means",
+    "exact_identity": "The conditional transfer between separately centered source/target marginal Hilbert spaces is a contraction. Its canonical singular-value vacuum dilation is UCP with defect I-C*C.",
+    "measurement": "Strict chronological training and held-out frame pairs; separate source/target covariances and whitening, empirical transfer singular values, covariance drift and held-out cross moments.",
+    "validation": "Explicit exterior-power fermionic Kraus operators and Choi construction validate CP and CAR; disjoint later pairs independently assess cross-moment drift.",
+    "limitations": "A two-time measured transfer does not imply a compressed-state semigroup. Singular-vector bases are canonical coordinates; no stationarity is imposed. Insufficient or zero-rank data gives unavailable output.",
+    "theory_labels": [
+      "prop-lqft-finite-record-transfer",
+      "thm-lqft-record-car-channel"
+    ],
+    "corrections": "Implemented archive-derived contraction. Removed repeated-power time curve from this archive result because repeated powers were not measured Markov evolution. Source and target marginal whitening avoids an unjustified equilibrium assumption.",
+    "title": "Recorded transitions and CAR evolution",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 5,
+    "algorithm_object": "Two spatial-region averages on the same full swarm record",
+    "exact_identity": "Their CAR anticommutator coefficient equals measured centered covariance, and normalized overlap equals whitened cross covariance.",
+    "measurement": "Left/right position split and chosen scalar feature; paired nonempty frame regional means and validity counts.",
+    "validation": "Explicit two-mode CAR matrices independently reproduce measured normalized covariance.",
+    "limitations": "Frames with an empty region are excluded and counts retained; no continuum locality or independence follows from spatial separation alone.",
+    "theory_labels": [
+      "thm-lqft-record-locality-defect"
+    ],
+    "corrections": "Verified separate centering and both-region masks; unknown feature names now error instead of silently selecting velocity.",
+    "title": "Regional covariance and locality",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 6,
+    "algorithm_object": "Same-record products versus independent replicas of the empirical whole-record law",
+    "exact_identity": "Squared norm of det[fi(Yj)]/sqrt(2!) under independent record replicas equals det Gram.",
+    "measurement": "Same-frame product and all pairs of centered full-frame observables from actual records.",
+    "validation": "Direct double empirical-replica sum compared with separately evaluated 2x2 Gram determinant.",
+    "limitations": "Independent replicas here are the product of the selected finite empirical law, not independence of walkers in one interacting swarm.",
+    "theory_labels": [
+      "thm-lqft-replica-isomorphism"
+    ],
+    "corrections": "Added actual archive route sharing the corrected whole-record observable law; did not interpret interacting walkers as independent replica samples.",
+    "title": "Products and replica wedges",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 7,
+    "algorithm_object": "Finite point-cloud quadrature of the declared continuum density-weighted integral operator",
+    "exact_identity": "Sample mean approximates the density-weighted kernel integral with the declared normalization.",
+    "measurement": "Independent generated point cloud and deterministic quadrature under a supplied density.",
+    "validation": "Existing regression uses independent Monte Carlo points versus quadrature and tests seed variation and sample-size error.",
+    "limitations": "Native archive route unsupported: this is a declared continuum reference sampling law, not a fitted density/operator derived from the full interacting gas.",
+    "theory_labels": [
+      "thm-lqft-record-locality-defect"
+    ],
+    "corrections": "Independent quadrature and Monte Carlo use the same specified density, normalization and continuum target.",
+    "title": "Density-aware continuum operators",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 8,
+    "algorithm_object": "Actual three-dimensional viscous force and its matching input velocity",
+    "exact_identity": "c_a=Fvisc_a exp(i kappa v_a)/max(||Fvisc||,delta), mask=1[||Fvisc||>delta].",
+    "measurement": "Latest executed B1 viscous force with exact B1 input velocity/version, per-slot availability, raw normalized vector and separate valid mask.",
+    "validation": "Independent raw norm, masked norm and strict stage/version validation; existing archive tests tamper viscous source generation/version.",
+    "limitations": "This explicitly declared matched-B1 convention differs from the book Python preceding-force/current-preclone pairing; it must be named as its own observable map. Zero viscous support yields invalid colors, not normalized physical states.",
+    "theory_labels": [
+      "def-sm-direct-observable-law"
+    ],
+    "corrections": "Confirmed actual recorded force use and explicit matched-stage provenance. Do not silently substitute copied surrogate force or a different time pairing.",
+    "title": "Recorded color states",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 9,
+    "algorithm_object": "Pair, baryon, triangle and rank-one projector contractions of actual valid color states",
+    "exact_identity": "Common SU(3) preserves q,b,triangle; independent ray phases preserve triangle; triangle=Tr(PiPjPk); |b|²=det Gram.",
+    "measurement": "Consecutive valid triples from actual B1 color records, with complex values, masks and original source-slot mapping.",
+    "validation": "Independent dense projector matrix multiplication and Gram determinant, plus non-diagonal common SU(3) rotation and independent slot phases.",
+    "limitations": "Triple selection is explicit and finite; no actual transport connection is inferred from projectors. Fewer than three valid colors gives unavailable triple result.",
+    "theory_labels": [
+      "thm-sm-direct-color-invariants",
+      "prop-sm-direct-triangle-projectors"
+    ],
+    "corrections": "Implemented archive path instead of fixture colors, retained complex observables and valid-slot provenance, and used a genuinely mixing SU(3) transform rather than only a diagonal phase.",
+    "title": "SU(3) invariant coordinates",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 10,
+    "algorithm_object": "Executed directed cloning companion scalar and companion-of-companion doublet",
+    "exact_identity": "a_i=exp(-D_i²/(4ell²)) exp(i(Fk-Fi)/((|Fi|+eps)hS)); doublet=(a_i,a_k(i)); conditional scalar variance equals pairwise half-sum under the actual categorical law.",
+    "measurement": "Actual configured distance, rescored donor fitness, selected SourceRefs, own-companion map and immutable historical source scalar lookup. Exact normalized configured-kernel probabilities for Independent count-one cloning.",
+    "validation": "Conditional variance computed both about the complex mean and by pairwise differences; actual selected scalar innovations compared with conditional means; tests verify valid doublets from engine records.",
+    "limitations": "For dependent mutual/greedy samplers actual doublets are measured but their joint-law variance is not replaced by independent-row variance. Historical companion scalar is masked only outside covered immutable source records. A full dependent-sampler conditional-doublet fluctuation estimator remains missing.",
+    "theory_labels": [
+      "def-sm-direct-companion-doublet",
+      "thm-sm-native-doublet-fluctuations"
+    ],
+    "corrections": "Implemented actual directed-map readout, configured distance and fitness scaling. Second component follows the companion’s own selected edge rather than assuming reciprocal pairing; covered history is resolved explicitly.",
+    "title": "Companion doublets",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 11,
+    "algorithm_object": "Holonomy from supplied unitary transport links",
+    "exact_identity": "Closed word transforms by basepoint conjugation; trace is invariant.",
+    "measurement": "Finite explicit SU(2) transport fixture.",
+    "validation": "Independent ordered matrix products versus gauge transformed products.",
+    "limitations": "Native archive route unsupported: executable transport must be defined from actual records. Scalar phases or rank-one color projectors do not establish the supplied SU(2)/SU(3) bundle connection.",
+    "theory_labels": [
+      "thm-lqft-oriented-word-algebra"
+    ],
+    "corrections": "Root strict native dispatch keeps reference algebra from being labeled an actual connection measurement.",
+    "title": "Attribution holonomy",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 12,
+    "algorithm_object": "Actual compressed whole-record descriptor and measured memory of its fitted transition",
+    "exact_identity": "Projected two-step difference Pi P² Pi-(Pi P Pi)² equals the finite block memory term; a fitted compressed chain need not be Markov for actual evolution.",
+    "measurement": "Training-only quantile partition, actual chronological transition counts, coarse projection, held-out multi-lag matrices and Brier scores.",
+    "validation": "Compare later empirical conditional distributions with powers fitted on strictly earlier frames; finite projection matrix multiplication independently measures algebraic memory.",
+    "limitations": "One quantile partition is not a nested prediction-completed sequence. Temporal rows remain correlated; no iid confidence bands. Fitted algebraic memory differs from full population memory.",
+    "theory_labels": [
+      "thm-sm-direct-channel-memory",
+      "thm-sm-prediction-complete-descriptors"
+    ],
+    "corrections": "Added measured occupancy stationarity defect and explicit partition scope; unknown descriptors error. Actual copying, noise, clipping and historical dependence remain in observed endpoints, rather than being removed from evolution.",
+    "title": "Channel compression and memory",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 13,
+    "algorithm_object": "Actual finite descriptor predictor and held-out multitime law",
+    "exact_identity": "Training transition powers define a proposed finite closure; held-out lagged laws measure its error.",
+    "measurement": "Strict chronological training/guard/test split, fitted partition edges, transition counts, multi-lag held-out conditional matrices, occupancy baseline.",
+    "validation": "Independent later records evaluate Brier scores and matrix RMSE; unknown transition rows remain unavailable rather than fabricated.",
+    "limitations": "No claim of predictive partition convergence follows from one nonnested empirical quantile fit. Stationarity and sufficiency are measured/required, not inferred from training fit.",
+    "theory_labels": [
+      "thm-sm-predictive-partition-convergence"
+    ],
+    "corrections": "Added occupancy stationarity diagnostics and explicit scope separating empirical closure assessment from the theorem’s nested/refined prediction-completion hypotheses.",
+    "title": "Predictive partition refinement",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 14,
+    "algorithm_object": "Actual immutable clone writes and subsequent transform/reconciliation/boundary stages",
+    "exact_identity": "For accepted recipient i, literal velocity equals the weighted immutable donor source row. Net copying momentum is incoming donor contributions minus overwritten recipient momenta.",
+    "measurement": "All source references including covered historical records; literal-clone velocity and successive stage momentum/eligibility totals at unit mass.",
+    "validation": "Independently reconstruct every copied velocity from source populations and compare recorded literal_clone; retain measured later-stage increments.",
+    "limitations": "All-slot momentum and eligibility counts are separate. General directed copying is not momentum-conserving; restitution conservation requires the actually configured reciprocal disjoint-pair transform. Out-of-coverage historical sources are a capability error.",
+    "theory_labels": [
+      "prop-sm-implemented-collision-increments",
+      "cor-sm-physics-paired-cloning"
+    ],
+    "corrections": "Implemented actual engine write accounting; did not assume balanced copying, omit overwritten recipients, or force ordinary directed cloning to satisfy paired collision conservation.",
+    "title": "Complete updates and pair cancellation",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 15,
+    "algorithm_object": "Declared charge-conjugation orbit fixture and symmetry-breaking proxy",
+    "exact_identity": "An invariant ensemble with a declared odd observable has zero mean under its full involution.",
+    "measurement": "Finite conjugate-color orbit fixture; no full algorithmic CP action or invariant ensemble has been measured.",
+    "validation": "Fixture symmetry and a biased two-orbit mean are checked algebraically.",
+    "limitations": "Native route explicitly unsupported. Conjugating a color or a zero empirical mean does not establish full CP invariance of positions, velocities, companion law, noise, clipping and history. No complete actual CP involution has been derived here.",
+    "theory_labels": [
+      "def-sm-cp-transformation",
+      "thm-sm-cp-violation"
+    ],
+    "corrections": "The complete algorithmic CP involution and its transformed transition law remain to be characterized.",
+    "title": "Coupling statistics and CP",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 16,
+    "algorithm_object": "Empirical generating function of a bounded recorded-step descriptor, together with separately reported primitive path carriers",
+    "exact_identity": "Derivatives of the logarithm of a finite empirical exponential sum equal its tilted mean and cumulants.",
+    "measurement": "Uniform retained-step exponential sum for tanh(mean terminal position components), with analytic derivative and independent finite difference; complete available primitive path densities are reported separately.",
+    "validation": "Finite differences against the directly summed tilted derivative; primitive carrier and density tests apply to the accompanying path report.",
+    "limitations": "Dependent retained steps define the displayed empirical measure. Its exponential sum is not an independently sampled full-trajectory partition function.",
+    "theory_labels": [
+      "def-sm-direct-observable-law"
+    ],
+    "corrections": "The empirical descriptor law, primitive path carriers, and full-path source response have distinct named outputs.",
+    "title": "Effective action and generating functions",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 17,
+    "algorithm_object": "Complete staged execution with current/historical companion pools, clone gates, revival, and actual innovation carriers",
+    "exact_identity": "Conditional primitive densities multiply; negative logarithms add. Deterministic stage maps retain their own carrier.",
+    "measurement": "Per-step component action, cumulative action, Gaussian quadratic and log determinant; singular/uniform stages retain exact latent innovation density.",
+    "validation": {
+      "suite": "partvi_path: 9 passing tests",
+      "checks": [
+        "uniform independent ordered assignments normalize",
+        "without-replacement assignment normalization",
+        "Fisher–Yates matching shuffle multiplicity",
+        "configured live-permutation versus death fallback",
+        "Gaussian weights reconstructed from actual historical coordinates",
+        "archive replay/serde and independent hand-evaluated Gaussian density",
+        "singular latent Gaussian law; low-rank uniform latent density -N*r*log(2*sqrt(3))"
+      ],
+      "uniform_latent_density_tolerance": 1e-12
+    },
+    "limitations": [
+      "Weighted multi-donor sampling without replacement retains unsorted reservoir slots; exact slot law is unavailable.",
+      "Gaussian-greedy joint likelihood requires its unretained shuffle path.",
+      "Unknown custom providers and unrecorded external-environment kernels remain explicitly unavailable.",
+      "The displayed primitive density is not a final-state Lebesgue density or a likelihood ratio to a separately sampled normalized reference process."
+    ],
+    "theory_labels": [
+      "sec-ym-first-principles",
+      "thm-action-from-path-integral",
+      "thm-ym-recorded-action-emergence"
+    ],
+    "corrections": [
+      "Added an explicit carrier to every component.",
+      "Retain latent Gaussian/uniform coordinate laws for singular maps rather than discarding all path likelihood.",
+      "Recognize the implemented conditional-fitness provider as sharing the built-in categorical/gate law."
+    ],
+    "title": "Executed path-action accounting",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 18,
+    "algorithm_object": "Actual eligible A1 rows and executed O-stage B xi, including low-rank factors and source shifts",
+    "exact_identity": "E[Y_j^2]=mu_j^2+C_jj; E[Y_j^4]=mu_j^4+6mu_j^2 C_jj+3C_jj^2+kappa4 sum_k B_jk^4.",
+    "measurement": "Recorded second/fourth moments against predictions from the factor and innovation law fixed before sampling.",
+    "validation": {
+      "innovation": "standardized uniform",
+      "rank": 1,
+      "dimensions": 3,
+      "history_window": 2,
+      "viscosity_coefficient": 0.15,
+      "second_measured": 1.7431301050375065,
+      "second_predicted": 1.75,
+      "fourth_measured": 10.30072817957915,
+      "fourth_predicted": 10.2375,
+      "steps": 96,
+      "walkers": 8
+    },
+    "limitations": [
+      "Conditional-moment averages use dependent trajectory data; no independent-component standard error is asserted.",
+      "These are raw B xi moments before thermostat scaling; the exact physical O-stage moments are separately evaluated in VI22/48."
+    ],
+    "theory_labels": [
+      "thm-ym-kinetic-metric-correspondence",
+      "thm-ym-kinetic-metric-correspondence"
+    ],
+    "corrections": [
+      "Exclude ineligible zero-filled rows.",
+      "Use d by rank factors, preventing low-rank indexing failure.",
+      "Use actual innovation fourth cumulant, including -6/5 for standardized uniform, and retain shifted means.",
+      "Recorded mode now displays only executed data rather than an unrelated reference sampling curve.",
+      "Factor covariance excludes the squared source mean; the uncentered second moment is reported separately."
+    ],
+    "title": "Kinetic metric from one record",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 19,
+    "algorithm_object": "Complete checkpoint continuation map with independent future seeds and an addressed future Gaussian innovation shift",
+    "exact_identity": "E[F(Gamma(Xi+theta,V))]=E[F(Gamma(Xi,V)) exp(theta Xi-theta^2/2)] for the unselected zero-extended observable.",
+    "measurement": "Independent direct-shift and reweighted groups; Hermite derivatives at zero and paired finite differences are separate outputs.",
+    "validation": {
+      "unbounded": {
+        "initial_seeds": [
+          31,
+          407,
+          9021
+        ],
+        "replicas_per_seed": 96,
+        "horizon": 3,
+        "warmup": 3,
+        "theta": 0.3,
+        "history_window": 2,
+        "viscosity": true,
+        "residual_sum": 0.05749065239085449,
+        "independent_standard_error": 0.13109824944390772
+      },
+      "absorbing_boundary": {
+        "initial_seeds": [
+          159,
+          9183
+        ],
+        "direct_replicas": 192,
+        "extinct_direct_replicas": 3,
+        "horizon": 4,
+        "theta": 0.6,
+        "observable": "alive_fraction",
+        "residual_sum": -0.0004651478233969053,
+        "independent_standard_error": 0.07735672237046183
+      }
+    },
+    "limitations": [
+      "Hermite estimates are derivatives at zero; finite-theta finite differences can cross clone/mask thresholds and retain finite-shift bias.",
+      "Survival-selected normalized response is not the displayed unselected cemetery-extended law.",
+      "Physical force-source KL and reduced descriptor scores in VI20 are a separate calculation."
+    ],
+    "theory_labels": [
+      "thm-ym-native-source-response",
+      "thm-ym-native-source-response"
+    ],
+    "corrections": [],
+    "title": "Gaussian source response",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "independent_continuations"
+  },
+  {
+    "experiment": 20,
+    "algorithm_object": "Finite scalar Gaussian source fixture; no native archive source-score projection",
+    "exact_identity": "Gaussian mean shift KL equals theta^2/2 and conditional score projection reduces Fisher information.",
+    "measurement": "Gaussian samples and exact conditional descriptor probabilities.",
+    "validation": {
+      "suite": "partvi_qft: scalar source/quadrature and finite serialization tests pass"
+    },
+    "limitations": [
+      "This reference experiment does not reconstruct the actual metric force-source score from gas archives.",
+      "The actual Gaussian innovation-source engine identity is tested in VI19."
+    ],
+    "theory_labels": [
+      "thm-ym-metric-force-sources",
+      "thm-ym-metric-force-sources"
+    ],
+    "corrections": [],
+    "title": "Force sources and information",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 21,
+    "algorithm_object": "Empirical joint law of bounded retained-step position and accepted-clone-fraction descriptors",
+    "exact_identity": "A joint empirical mass equals its row marginal times its conditional mass; -log masses add on positive cells.",
+    "measurement": "Integer-count joint/marginal/conditional histogram plus separate actual primitive likelihood components.",
+    "validation": {
+      "suite": "partvi_path empirical disintegration normalization passes"
+    },
+    "limitations": [
+      "Empirical retained-step frequencies are not the reference-conditional path-likelihood expectation in the full geometry/fiber action theorem.",
+      "Empty geometry bins have no conditional law.",
+      "Temporal dependence remains in the retained sample."
+    ],
+    "theory_labels": [
+      "thm-ym-native-geometry-fiber-action",
+      "thm-ym-native-geometry-fiber-action"
+    ],
+    "corrections": [
+      "Explicit primitive density carrier clarifies the separately exported likelihood."
+    ],
+    "title": "Geometry-fiber disintegration",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 22,
+    "algorithm_object": "Actual complete-checkpoint finite-horizon increments and exact conditional O-stage martingales",
+    "exact_identity": "Q(S_h)-Q(S_0) has conditional drift K^h Q-Q. At each actual A1 state the Gaussian/uniform BAOAB conditional momentum/energy moments supply a known martingale compensator.",
+    "measurement": "Independent calibration/validation of complete increments; analytic O-stage residuals and predictable quadratic variations over independently seeded complete continuations.",
+    "validation": {
+      "initial_seeds": [
+        71,
+        809,
+        1217
+      ],
+      "replicas_total": 384,
+      "horizon": 3,
+      "history_window": 2,
+      "viscosity": true,
+      "momentum_residual_mean_sum": 0.03093718833664627,
+      "momentum_mean_standard_error": 0.11833943636680205,
+      "energy_residual_mean_sum": -0.4902668678494803,
+      "energy_mean_standard_error": 0.5157135201574125,
+      "realized_over_predicted_martingale_variance": 0.9750085228096965
+    },
+    "limitations": [
+      "Full-step conditional drift is estimated from independent replicas; it is not supplied by a closed macroscopic model.",
+      "The analytic substage test isolates O before boundary handling; complete-engine samples and stage ledgers retain clone, force, boundary and eligibility transfers."
+    ],
+    "theory_labels": [
+      "sec-ym-noether",
+      "thm-u1-noether-current",
+      "thm-ym-kinetic-metric-correspondence"
+    ],
+    "corrections": [
+      "Added a falsifiable analytic O-stage oracle rather than relying only on agreement between empirical drift estimates.",
+      "Analytic predictions use each actual A1 state, so prior clone/donor/viscosity/boundary effects remain.",
+      "One entire continuation is the independent sampling unit; stage predictable variances are summed.",
+      "Zero covered O stages are reported as unexercised, without zero-residual validation metrics."
+    ],
+    "title": "Stochastic Noether balance",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "independent_continuations"
+  },
+  {
+    "experiment": 23,
+    "algorithm_object": "Finite supplied noncommuting SU(2) loop",
+    "exact_identity": "Trace is invariant under conjugation; direct Wilson action derivative equals analytic sine/cosine expression.",
+    "measurement": "Finite-difference action derivative and basepoint conjugation residual.",
+    "validation": {
+      "suite": "partvi_qft finite reference endpoint/serialization checks"
+    },
+    "limitations": [
+      "No archive gauge-link variation or node-by-node Ward divergence is measured."
+    ],
+    "theory_labels": [
+      "lem-ym-discrete-ward"
+    ],
+    "corrections": [],
+    "title": "Wilson variation and Ward identity",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 24,
+    "algorithm_object": "Finite constant noncommuting connection",
+    "exact_identity": "(U_square-I)/h^2 approaches the matrix commutator.",
+    "measurement": "Direct ordered products versus commutator and matrix-valued refinement residual.",
+    "validation": {
+      "suite": "partvi_qft reference checks"
+    },
+    "limitations": [
+      "The connection is supplied by the reference controls, rather than derived from actual gas transport."
+    ],
+    "theory_labels": [
+      "sec-ym-continuum"
+    ],
+    "corrections": [],
+    "title": "Continuum Yang-Mills consistency",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 25,
+    "algorithm_object": "Exact sampled two-state semigroup and Euler discretization",
+    "exact_identity": "Exact lambda=exp(-2qh) gives -log(lambda)/h=2q; Euler lambda=1-2qh converges under refinement.",
+    "measurement": "Repeated transition powers, decay curves and recovered-rate refinement.",
+    "validation": {
+      "test": "euler_gap_bias_refines_while_exact_semigroup_rate_is_fixed: passes"
+    },
+    "limitations": [
+      "These are supplied finite generators, not a native gas spectral-gap estimate."
+    ],
+    "theory_labels": [
+      "sec-ym-constants"
+    ],
+    "corrections": [],
+    "title": "Units, discrete time, and gaps",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 26,
+    "algorithm_object": "Finite joint two-walker swap/collision fixture",
+    "exact_identity": "Delta(XY)=X DeltaY+Y DeltaX+DeltaX DeltaY; joint cross-covariance is -p(1-p)(y-x)^2.",
+    "measurement": "Exact enumeration of coupled outcomes and finite-step product terms.",
+    "validation": {
+      "test": "joint_collision_covariance_and_product_terms_survive: passes"
+    },
+    "limitations": [
+      "The reference correlated swap law is not the complete configured native clone/restitution law. Native full-write measurements belong to VI14/51."
+    ],
+    "theory_labels": [
+      "prop-ym-complete-fluctuation-equations"
+    ],
+    "corrections": [],
+    "title": "Fluctuation and collision budgets",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 27,
+    "algorithm_object": "Exactly solved two-state killed chain",
+    "exact_identity": "QSD left eigenmeasure and survival-conditioned two-step path window use the same survival eigenvalue.",
+    "measurement": "Enumerated path TV against QSD-window bound under burn-in.",
+    "validation": {
+      "test": "qsd_window_comparison_enumerates_the_conditioned_path_law: passes"
+    },
+    "limitations": [
+      "No empirical QSD identification or quantitative mixing bound for the configured gas is inferred from this fixture."
+    ],
+    "theory_labels": [
+      "thm-ym-qsd-window-relaxation"
+    ],
+    "corrections": [],
+    "title": "QSD windows and burn-in",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 28,
+    "algorithm_object": "Finite labeled-word reflection matrix with specified off-diagonal moments",
+    "exact_identity": "For c=-(u+v)/2, (c,1)Q(c,1)^T=-(u+v)^2/4.",
+    "measurement": "Direct matrix contraction, Hermitian defect and Hermitian-part eigenvalues.",
+    "validation": {
+      "test": "reflection_counterexample_has_the_predicted_negative_sign: passes"
+    },
+    "limitations": [
+      "Moments u and v are supplied reference values; they are not estimated from the native reflected geometry/color law.",
+      "This reflected pairing is distinct from the ordinary covariance pairing used in VI36."
+    ],
+    "theory_labels": [
+      "prop-ym-native-labeled-color-reflection-sign"
+    ],
+    "corrections": [],
+    "title": "Reflection matrices",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 29,
+    "algorithm_object": "Finite scalar potential-difference links",
+    "exact_identity": "Closed outer edge potential differences telescope; the defined triangle readout retains its phase difference.",
+    "measurement": "Direct complex products and scalar defects.",
+    "validation": {
+      "test": "scalar_outer_faces_telescope_while_triangles_do_not: passes"
+    },
+    "limitations": [
+      "This experiment evaluates supplied scalar links rather than recording full native geometric/gauge face construction."
+    ],
+    "theory_labels": [
+      "prop-ym-native-scalar-face-evaluation"
+    ],
+    "corrections": [],
+    "title": "Scalar triangles and outer plaquettes",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 30,
+    "algorithm_object": "Finite point cloud with anchored Gaussian regulator",
+    "exact_identity": "Co-translating coordinates and the regulator preserves its readout; moving only coordinates changes the anchored measurement.",
+    "measurement": "Direct sums and translated difference curve.",
+    "validation": {
+      "suite": "partvi_qft reference checks"
+    },
+    "limitations": [
+      "No native law-level translated QSD or boundary-domain comparison is estimated."
+    ],
+    "theory_labels": [
+      "prop-ym-anchored-regulator-translation-test"
+    ],
+    "corrections": [],
+    "title": "Translation and localization",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 31,
+    "algorithm_object": "Finite multiplication operators and CAR covariance fixture",
+    "exact_identity": "Multiplication operators commute; covariance overlap controls the CAR regional anticommutator.",
+    "measurement": "Explicit matrix commutators and local/nonlocal kernel fixture.",
+    "validation": {
+      "suite": "partvi_qft CAR/operator checks"
+    },
+    "limitations": [
+      "Actual intervention-recomputed regional transition kernels are not reconstructed here."
+    ],
+    "theory_labels": [
+      "sec-qft-axioms-verification"
+    ],
+    "corrections": [],
+    "title": "Regional algebras and interventions",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 32,
+    "algorithm_object": "Actual descriptor sequence with chronological train/guard/heldout finite partitions",
+    "exact_identity": "Conditional probabilities define the finite fitted predictor; weighted coarsening measures its two-step memory defect.",
+    "measurement": "Training-only quantiles and transition matrix; later-block Brier scores and per-lag transition errors.",
+    "validation": {
+      "suite": "Chronological predictive checks compare training-only partitions with disjoint held-out transition and Brier scores."
+    },
+    "limitations": [
+      "A finite fitted descriptor transition is not automatically the exact projected Markov semigroup of the gas.",
+      "The empirical predictive pipeline does not itself verify all CAR/source-response identities listed in the synthesis chapter."
+    ],
+    "theory_labels": [
+      "sec-ym-algorithmic-qft-synthesis"
+    ],
+    "corrections": [],
+    "title": "Connected algorithmic QFT",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 33,
+    "algorithm_object": "Finite real Lorentz vector and complex two-spinor algebra",
+    "exact_identity": "Determinant of sigma map equals Lorentz norm; null and two-spinor factorization identities.",
+    "measurement": "Independent determinant and epsilon-bracket calculations.",
+    "validation": {
+      "tests": [
+        "spinor_tie_rule_and_null_mass_identity passes",
+        "effective_twistor_incidence_matches_sigma_matrix_action passes"
+      ]
+    },
+    "limitations": [
+      "This verifies the algebra of supplied vectors; it does not reconstruct a physical on-shell particle momentum from the algorithm."
+    ],
+    "theory_labels": [
+      "sec-twistor-spinor-conventions"
+    ],
+    "corrections": [],
+    "title": "Spinor and mass identities",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 34,
+    "algorithm_object": "Actual pre-clone recipient and immutable current/historical distance and cloning donor snapshots",
+    "exact_identity": "Effective edge spinors and bounded local channels are deterministic functions of the exact source coordinates and configured velocity scale.",
+    "measurement": "Normalized-column spinors, scalar/vector/tensor readouts, masks, source refs and source ages.",
+    "validation": {
+      "seed": 516,
+      "history_window": 2,
+      "walkers": 8,
+      "recorded_steps": 96,
+      "valid_readouts": 8,
+      "historical_donors": 10,
+      "total_selected_donors": 16
+    },
+    "limitations": [
+      "Donor coordinates preceding retained archive/anchor coverage remain explicitly unavailable.",
+      "The effective edge uses the specified algorithmic Delta t; donor age is a separate recorded descriptor."
+    ],
+    "theory_labels": [
+      "sec-fractal-set-twistorization",
+      "def-effective-twistor-triplet",
+      "def-effective-twistor-edge-data",
+      "def-effective-edge-twistor"
+    ],
+    "corrections": [
+      "Resolve historical donors by epoch/frame/version/slot/generation instead of dropping them.",
+      "Export source ages and coverage per donor.",
+      "Extend formal effective-triplet definition to actual immutable historical sources."
+    ],
+    "title": "Recorded triplet twistor operators",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 35,
+    "algorithm_object": "Source-frozen triplet lag diagnostic on recorded states",
+    "exact_identity": "Current numerical source slots advance to the sink; historical source snapshots stay immutable; each curve retains its valid-pair normalization.",
+    "measurement": "Complex fixed-source and reselected-source lag correlations with exact counts.",
+    "validation": {
+      "tests": [
+        "fixed_source_slots_give_distinct_lag_readouts passes",
+        "archive source identity and epoch validation tests pass"
+      ]
+    },
+    "limitations": [
+      "Numerical slots are distinct from walker ancestry identities.",
+      "Pair-conditioned correlations have lag-dependent denominators and differ from fixed frame-observable covariance."
+    ],
+    "theory_labels": [
+      "sec-twistor-vs-euclidean",
+      "def-effective-twistor-correlators"
+    ],
+    "corrections": [
+      "Historical immutable donor snapshots participate in sink evaluation.",
+      "Epoch crossings and nonconsecutive intervals remain excluded and documented."
+    ],
+    "title": "Source-frozen lag tracking",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 36,
+    "algorithm_object": "Actual complete-record fixed-normalization frame observable; optional separately named source-pair diagnostic",
+    "exact_identity": "C_frame_ab(n,l)=mu K^n[conj(f_a)K^l f_b]-conj(mu K^n f_a)mu K^(n+l)f_b, with actual K retaining memory, clone, kinetics, clipping, boundaries and killing.",
+    "measurement": "Training-only means/whitening, general complex roots, phase/decay fits and held-out error; fixed 1/N zero extension by default.",
+    "validation": {
+      "seed": 516,
+      "history_window": 2,
+      "viscosity": true,
+      "frame_gram_direct": 0.8500623473105489,
+      "frame_gram_measured": 0.8500623473105489,
+      "fit": {
+        "decay_rate": -1.7862384364191546,
+        "frequency": -18.089762813984343,
+        "log_fit_rmse": 0.6110975403956461,
+        "phase_fit_rmse": 0.5911784247409881,
+        "heldout_complex_rmse": 0.3924447584217878,
+        "mass": null,
+        "interpretation": "This measured finite-window mode is complex and grows in magnitude over the fit window; it does not supply a positive particle-mass estimate."
+      }
+    },
+    "limitations": [
+      "General complex finite-window fits characterize the retained observable; they do not certify a positive transfer representation.",
+      "Stationarity is not assumed in the exact actual-K identity; a single trajectory can exhibit nonstationary finite-window behavior.",
+      "Chronological held-out data retain temporal dependence."
+    ],
+    "theory_labels": [
+      "thm-effective-twistor-spectral-meaning",
+      "def-effective-twistor-correlators",
+      "thm-effective-twistor-spectral-meaning",
+      "cor-effective-twistor-positive-transfer"
+    ],
+    "corrections": [
+      "Default to actual fixed-normalization zero-extended frame means.",
+      "Keep source-pair diagnostic explicitly separate.",
+      "Return unavailable for zero-pair lags instead of a zero transfer matrix.",
+      "Remove automatic particle mass assignment based only on positive fitted real decay.",
+      "Replace the conflated frame/pair spectral theorem with the exact actual-K finite-step identity and separately labeled conditional positive-transfer corollary."
+    ],
+    "title": "Spectral decay and twistor amplitudes",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 37,
+    "algorithm_object": "Specified time-dependent metric slab, not an executed walker transport",
+    "exact_identity": "Slice and ambient Levi-Civita connections differ by time variation; Lorentzian parallel transport preserves norm.",
+    "measurement": "RK4 transports a vector along the slab spatial path; compares with hyperbolic-function solution.",
+    "validation": "Norm and refinement tests.",
+    "limitations": "Reference-only: the engine does not supply a Lorentzian slab or a differentiable material map.",
+    "theory_labels": [
+      "assump-curvature-geometric-setting",
+      "lem-curvature-slab-connection",
+      "def-parallel-transport"
+    ],
+    "corrections": [],
+    "title": "Transport in a changing geometry",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 38,
+    "algorithm_object": "Specified unit-sphere connection",
+    "exact_identity": "Small-loop holonomy divided by controlled area tends to Gaussian curvature.",
+    "measurement": "Integrates transport around four sides and computes loop angle and area independently.",
+    "validation": "Integrated sphere holonomy converges to K=1.",
+    "limitations": "Reference-only; no recorded scutoid connection is inferred from edge displacements.",
+    "theory_labels": [
+      "lem-holonomy-small-loops",
+      "lem-regge-holonomy-approx",
+      "thm-riemann-scutoid"
+    ],
+    "corrections": [],
+    "title": "Curvature per loop area",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 39,
+    "algorithm_object": "Actual recorded conditional fitness query, immutable donor source and global/local normalizer; fixture alternatives",
+    "exact_identity": "g=epsilon I+H in strict domain, or epsilon I+H_positive for clipped provider; differentiate the configured query field through fourth order and contract curvature.",
+    "measurement": "Archive reconstruction matches recorded O-stage Hessian at the identical query. Analytic packed curvature is checked against finite differences of the metric.",
+    "validation": {
+      "global_phase_space_history": {
+        "historical_queries": 26,
+        "maximum_hessian_error": 3.552713678800501e-15
+      },
+      "local_phase_space_distance_history": {
+        "historical_queries": 25,
+        "maximum_hessian_error": 3.1086244689504383e-15,
+        "cloning_history": "current-frame as explicitly configured, because native historical clone rescoring requires global standardization"
+      },
+      "absorbing_killing_and_memory": {
+        "checked_revivals": 36,
+        "revival_fields_with_historical_distance_sources": 29,
+        "maximum_hessian_error": 0.0
+      },
+      "other": "Existing same-frame global/local reconstruction and independent curvature tests retained."
+    },
+    "limitations": "Clipped curvature needs a spectral neighborhood away from zero crossings. Unsupported derivative providers or missing historical coordinates are explicit errors. The programmed metric construction is a defining rule, not an inferred force law.",
+    "theory_labels": [
+      "def-curvature-conditional-fitness-field",
+      "lem-curvature-hessian-cancellation",
+      "lem-curvature-whitened-contractions",
+      "cor-curvature-packed-three-dimensional",
+      "lem-curvature-query-moment-cache",
+      "rem-curvature-clipped-computation"
+    ],
+    "corrections": [
+      "Effective epsilon, policy, clipping_threshold exposed for both available and unavailable domains; no fabricated curvature for an indefinite strict metric.",
+      "PhysicsMetricOperators now resolves companion indices to immutable donor-pool rows (including historical position and velocity), rather than substituting the current row with the same slot number. Exact current-frame revival source identity is validated; its conditional field may retain a historical distance source."
+    ],
+    "title": "Conditional fitness curvature",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 40,
+    "algorithm_object": "Specified symmetric connection identification experiment",
+    "exact_identity": "Integrated transport contraction determines coefficients only for a full-rank design.",
+    "measurement": "Independent integrated transports feed least squares; measured Gram eigenvalues expose missing directions.",
+    "validation": "Rank-deficient fixture retains a zero eigenvalue and unavailable coefficients; full design converges.",
+    "limitations": "Reference-only transport data; no claim that a single walker velocity identifies a connection.",
+    "theory_labels": [
+      "def-edge-deformation",
+      "prop-connection-least-squares"
+    ],
+    "corrections": [
+      "Rank-deficient mode displays its measured Gram spectrum instead of an empty convergence chart."
+    ],
+    "title": "Connection identifiability",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 41,
+    "algorithm_object": "Bianchi-I and rotating Minkowski congruences",
+    "exact_identity": "Raychaudhuri includes expansion, shear, twist, Ricci contraction and acceleration divergence.",
+    "measurement": "Bianchi expansion from volume differentiation; rotating velocity gradients are finite-differenced and acceleration divergence independently differentiated.",
+    "validation": "Dimensions2/3; speeds0,.4,.8; zero expansion/shear and twist/acceleration cancellation.",
+    "limitations": "Reference-only explicitly specified congruences. No congruence is extracted automatically from cloning.",
+    "theory_labels": [
+      "def-kinematic-decomposition",
+      "thm-raychaudhuri"
+    ],
+    "corrections": [
+      "Rotating accelerated fixture now retains the terms absent in geodesic irrotational examples."
+    ],
+    "title": "Raychaudhuri term balance",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 42,
+    "algorithm_object": "Explicit nonlinear one-dimensional flow with transverse product",
+    "exact_identity": "Derivative of material log-volume tends to point expansion; reconstructed-cell flux is separate.",
+    "measurement": "Finite material-cell widths and redrawn Voronoi intervals are differentiated.",
+    "validation": "Cell refinement reduces error quadratically.",
+    "limitations": "Reference-only; a reconstructed Voronoi volume is not automatically a material cell.",
+    "theory_labels": [
+      "def-regularity-conditions",
+      "thm-discrete-raychaudhuri",
+      "cor-discrete-relaxation"
+    ],
+    "corrections": [],
+    "title": "Material and reconstructed volumes",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 43,
+    "algorithm_object": "Contracting Raychaudhuri comparison ODE",
+    "exact_identity": "theta_prime=-theta_squared/d-shear_squared-Ricci; nonnegative focusing terms imply focusing no later than d/abs(theta0).",
+    "measurement": "RK4 solution and Jacobian compared with exact constant-forcing solution and zero-forcing bound.",
+    "validation": "Nonzero shear shortens exact focusing time; integrated curve stays below comparison.",
+    "limitations": "Prescribed constant invariants are an ODE comparison, not a metric reconstructed from the run.",
+    "theory_labels": [
+      "def-sec",
+      "thm-focusing"
+    ],
+    "corrections": [
+      "Added explicit shear control and shortened integration horizon before the actual constant-forcing caustic."
+    ],
+    "title": "Focusing and caustics",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 44,
+    "algorithm_object": "Triangulated disk, closed polyhedral sphere and independent three-dimensional hinge",
+    "exact_identity": "2D Gauss-Bonnet sums deficits plus boundary turning to2pi chi; 3D integrated hinge curvature scales with edge length.",
+    "measurement": "Triangle angles and mesh incidences computed directly at each sphere refinement.",
+    "validation": "Sphere chi2, no boundary, total4pi at refinements0..3 and scales.1,4; 3D linear scaling.",
+    "limitations": "Reference meshes; arbitrary recorded cloning does not specify a piecewise-flat manifold.",
+    "theory_labels": [
+      "def-regge-curvature",
+      "thm-curvature-topology",
+      "prop-curvature-change-2d",
+      "rem-higher-dim-curvature"
+    ],
+    "corrections": [
+      "Added closed-sphere topology rather than extrapolating disk turning to closed surfaces."
+    ],
+    "title": "Curvature and topology",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 45,
+    "algorithm_object": "Complete executed checkpoint including population, donor memory, providers and fresh future innovation keys; material metric readout",
+    "exact_identity": "Conditional increment b=E[A_next-A], covariance Gamma; two independent groups have discrepancy covariance Gamma/R+Gamma/S. Field/probe decomposition telescopes with all cross covariances.",
+    "measurement": "Native replicas evaluate the programmed conditional metric at final slot position. Exact decomposition uses new field at old probe, literal-clone probe and final probe. Fixed-probe lagged readout remains explicitly selectable.",
+    "validation": {
+      "benchmark_tests_passed": 10,
+      "material_component_covariance_telescoping": {
+        "seed11": 8.171241461241152e-14,
+        "seed29": 2.220446049250313e-16,
+        "seed43": 2.7755575615628914e-17
+      },
+      "memory_replica_test": "history_window2, warmup2, horizon2, four replicas per independent group; both groups have four defined metrics and historical sources are retained before continuation recording"
+    },
+    "limitations": "The metric is programmed; conditional drift/covariance characterize its actual evolution. Same-state replica calibration does not establish a metric-only closed equation. At horizons>1 the middle probe term includes earlier motion. Free-energy plots in reference mode are separate comparison models. Built-in revival selects an eligible current-frame donor; historical accepted cloning is retained. The revived source field can itself depend on a historical distance donor. This source convention follows cloning.rs, rather than introducing a different revival law.",
+    "theory_labels": [
+      "def-algorithmic-transition-state",
+      "thm-algorithmic-observable-increment",
+      "prop-algorithmic-material-metric",
+      "prop-algorithmic-independent-replicas",
+      "lem-algorithmic-quadratic-finite-step-moments",
+      "lem-ig-rate-function",
+      "def-ig-free-energy"
+    ],
+    "corrections": [
+      "Critical time-index correction: default material readout retains same-step clone/kinetic/boundary motion; lagged pre-clone fixed-probe readout no longer stands for that experiment.",
+      "Unsupported provider/history failures propagate; only declared spectral/ineligible metric outcomes receive zero extension.",
+      "Continuation metric reconstruction can read immutable checkpoint history with exact frame/version/generation, without clearing donor memory or fabricating archive snapshots."
+    ],
+    "title": "Fluctuation energy and metric evolution",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "independent_continuations"
+  },
+  {
+    "experiment": 46,
+    "algorithm_object": "Declared Gaussian pair-energy functional",
+    "exact_identity": "Dilation derivative gives pressure; sign and stiffness depend on energy sign and kernel normalization.",
+    "measurement": "Finite-difference dilation pressure compared with pair-integral derivative and scaling curves.",
+    "validation": "Signed and nonnegative density fixtures, attractive/repulsive signs.",
+    "limitations": "Reference-only: pair energy is not inferred from the actual cloning law.",
+    "theory_labels": [
+      "def-boost-perturbation",
+      "thm-elastic-pressure",
+      "rem-elastic-interpretation"
+    ],
+    "corrections": [],
+    "title": "Pressure and deformation",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 47,
+    "algorithm_object": "Specified homogeneous Gaussian redistribution closure",
+    "exact_identity": "Fourier decay D k²+lambda(1-exp(-epsilon² k²/2)); constant mode conserved.",
+    "measurement": "Grid convolution/Laplacian multiplier measured separately from analytic Fourier multiplier; explicit Euler mode evolution.",
+    "validation": "Refinement and fastest combined control endpoint maintain positive monotone decay.",
+    "limitations": "Reference closure, not the interacting donor/acceptance kernel. Negative high-frequency truncated rates diagnose breakdown of the long-wave truncation.",
+    "theory_labels": [
+      "def-mckean-vlasov",
+      "def-uniform-qsd-linearization",
+      "thm-dispersion-relation",
+      "thm-qsd-stability",
+      "cor-exponential-relaxation"
+    ],
+    "corrections": [
+      "Fixed timestep could produce negative oscillating amplitude for combined high-frequency controls; adaptive positive Euler multiplier now respects the stated decay regime."
+    ],
+    "title": "Density-wave dispersion",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 48,
+    "algorithm_object": "Executed raw BAOAB O stages, actual diffusion factors, Gaussian/uniform laws and addressed innovation shifts",
+    "exact_identity": "Conditional kinetic mean and variance follow from v_plus=c v+s B(xi+shift); uniform fourth moment9/5 changes energy variance. Predictable variances add for sequential martingale differences.",
+    "measurement": "Archive mode measures raw velocity increments and computes source-aware conditional moments from recorded B and law. Cumulative centered energy compared with square-root predictable variation. Scalar reference separately samples the native innovation generator.",
+    "validation": {
+      "independent_runs_per_law": 64,
+      "raw_O_stages_per_run": 2,
+      "rectangular_factor_shape": [
+        3,
+        2
+      ],
+      "nonzero_source_shift": 0.7,
+      "Gaussian": {
+        "centered_sum": -1.846554308133356,
+        "predictable_variance_sum": 16.130137994548914,
+        "standardized_sum": -0.4597725550340293,
+        "measured_to_predicted_second_moment_ratio": 1.0151134825335426
+      },
+      "StandardizedUniform": {
+        "centered_sum": 2.6660553839577825,
+        "predictable_variance_sum": 15.634784650200292,
+        "standardized_sum": 0.6742535088461272,
+        "measured_to_predicted_second_moment_ratio": 0.8695021899002708
+      },
+      "method": "Predictions use source-aware analytic conditional moments at each actual stage. Independent full-run seeds are the sampling units. The standardized sums are diagnostics, not exact Gaussian p-values."
+    },
+    "limitations": "Predictable variation is a fluctuation scale, not an exact confidence band. Programmed B=sqrt(2gamma T)g_inverse_sqrt determines noise geometry; measured raw increments independently test its consequence.",
+    "theory_labels": [
+      "thm-algorithmic-thermostat-moments",
+      "cor-algorithmic-geometric-heating",
+      "lem-field-discrete-ou-diffusion"
+    ],
+    "corrections": [
+      "Added actual archive analysis instead of only a scalar frozen-factor sampler. Preserves source shift, uniform fourth moment and raw-before-boundary convention.",
+      "Metric provider permits zero friction, for which sqrt(2 gamma T) makes the programmed thermal noise zero while the metric remains defined; tested explicitly."
+    ],
+    "title": "BAOAB diffusion and thermostat heating",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 49,
+    "algorithm_object": "Specified independent Gaussian mode state",
+    "exact_identity": "Gaussian variance and fixed-mode-set partition derivative give the declared mode pressure; mobility controls relaxation separately.",
+    "measurement": "Sampled variance, partition pressure derivative and OU relaxation comparison.",
+    "validation": "Mode-pressure finite differences and variance tests.",
+    "limitations": "Reference-only specified mode state; no interacting QSD Gibbs law is inferred.",
+    "theory_labels": [
+      "ass-thermal-equilibrium",
+      "prop-radiation-pressure",
+      "rem-pressure-comparison"
+    ],
+    "corrections": [],
+    "title": "Gaussian mode thermodynamics",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 50,
+    "algorithm_object": "Declared thermal/correlation pressure comparison",
+    "exact_identity": "Crossover solves equality of the two explicitly supplied pressure scales.",
+    "measurement": "Independent bisection compared with analytic crossover.",
+    "validation": "Root residual test.",
+    "limitations": "Reference-only parameters require common normalization; no actual algorithm equation of state estimated here.",
+    "theory_labels": [
+      "def-thermal-correlation-length",
+      "thm-pressure-regimes"
+    ],
+    "corrections": [],
+    "title": "Pressure crossover",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 51,
+    "algorithm_object": "Recorded clone, transform, raw kinetic, boundary and eligibility stages; separate constitutive algebra",
+    "exact_identity": "Exact kinetic/momentum differences telescope. Kick work=v dot delta-v+norm(delta-v)²/2. Weak local momentum splits impulse/transport/eligibility. Restitution overwrites pre-clone pairs and must subtract literal-clone increment.",
+    "measurement": "Archive source-aware heating, full stage budgets, centered kinetic moment, raw total-force kick work, and local test-function momentum measured directly.",
+    "validation": "Executed viscosity/source-shift tests check two kicks, weak identity and telescoping; no potential inferred from reward.",
+    "limitations": "Centered kinetic moment requires volume normalization and additional contributions before serving as stress. Constitutive reference assumes a Lorentzian Einstein equation. Reported local96 closure Ebar=kappa centered_kinetic+lambda gbar failed: held-out RMSE51363 versus constant31599 and shuffled32372; this particular fitted spatial relation is rejected by that data, not repaired by fitting.",
+    "theory_labels": [
+      "def-algorithmic-mechanical-observables",
+      "prop-algorithmic-stage-telescoping",
+      "prop-algorithmic-kick-work",
+      "prop-algorithmic-clone-balances",
+      "prop-algorithmic-weak-density",
+      "thm-structural-correspondence",
+      "rem-correspondence-meaning"
+    ],
+    "corrections": [
+      "Corrected formal kick statement to executed total acceleration including viscosity; the gradient-only formula is its zero-viscosity specialization.",
+      "Added exact weak momentum and total-force work readouts; constitutive reference remains separately identified and supplies no empirical Einstein agreement."
+    ],
+    "title": "Mechanical balances and gravitational stress",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 52,
+    "algorithm_object": "Actual recorded episode ancestry and selected directed interactions; separately reconstructed complete Gaussian graph",
+    "exact_identity": "Separator must be an antichain intersecting every chosen ancestral chain once. Cut capacities use actual edges/weights; auxiliary symmetric Gaussian graph obeys max-flow/min-cut.",
+    "measurement": "Episode parent forest resolved by epoch/slot/generation. Actual selected channels counted across fixed slot partition, missing weights retained as unavailable. Gaussian mincut on explicitly projected archived points computed separately.",
+    "validation": "Recorded channel counts compared directly with FractalSet; network-flow/partition identity; living ancestor fixture rejects terminal episodes as antichain.",
+    "limitations": "Missing historical sources yield partial ancestry coverage. Gaussian reconstruction is not the actual sparse/directed IG. Slot-partition cuts are structural observables, not geometric area.",
+    "theory_labels": [
+      "def-cst-structure",
+      "def-ig-structure",
+      "def-separating-antichain",
+      "def-ig-entanglement-entropy",
+      "prop-holo-cut-identities"
+    ],
+    "corrections": [
+      "Added actual selected-interaction cut counts and recorded-weight availability rather than displaying only auxiliary Gaussian cuts."
+    ],
+    "title": "Genealogical separators and cuts",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "archive"
+  },
+  {
+    "experiment": 53,
+    "algorithm_object": "Specified qubit state and exact finite Markov path reference",
+    "exact_identity": "Density-matrix relative entropy controls modular difference; exact path KL and exponential identity depend on normalized reverse law and support.",
+    "measurement": "Eigenvalue entropy and enumerated finite paths with endpoint likelihoods; explicit support failure.",
+    "validation": "Noncommuting state and finite path identities.",
+    "limitations": "Reference-only. Recorded walker covariance does not specify a quantum state or exact reverse path likelihood.",
+    "theory_labels": [
+      "prop-modular-connection",
+      "def-algorithmic-path-irreversibility",
+      "prop-algorithmic-path-kl-identities"
+    ],
+    "corrections": [],
+    "title": "Jump, modular, and path entropy",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 54,
+    "algorithm_object": "Declared density on torus with periodized Gaussian cut kernel",
+    "exact_identity": "Scaled nonlocal cut approaches constant times integral of rho² over both boundary components.",
+    "measurement": "Direct pair quadrature compared with short-range perimeter constant.",
+    "validation": "Range refinement and density contrast tests.",
+    "limitations": "Reference-only geometric sampling hypotheses; no automatic actual IG perimeter limit.",
+    "theory_labels": [
+      "def-nonlocal-perimeter",
+      "lem-holo-bv-differences",
+      "thm-gamma-convergence"
+    ],
+    "corrections": [],
+    "title": "Gaussian cuts and perimeter",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 55,
+    "algorithm_object": "Independent uniform reference populations",
+    "exact_identity": "Mean pair cut=N(N-1) times one-sided cross integral; sampling unit is an independent population.",
+    "measurement": "Complete torus pair graph sampled in independent groups; mean and population-level SE compared with quadrature expectation.",
+    "validation": "Independent-population expectation test.",
+    "limitations": "Finite quadrature error remains; these independent samples are not interacting walkers from one gas population.",
+    "theory_labels": [
+      "thm-ig-cut-scaling",
+      "cor-holo-dependent-cut-limit",
+      "thm-antichain-surface",
+      "thm-informational-area-law"
+    ],
+    "corrections": [],
+    "title": "Finite-population area scaling",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 56,
+    "algorithm_object": "Declared density, shape and density-matrix perturbations",
+    "exact_identity": "Cut functional density derivative, geometric shape variation and quantum-state first variation are separate directional derivatives.",
+    "measurement": "Finite differences compared with analytic expressions in each state space.",
+    "validation": "All three variations implemented, including noncommuting matrix-state variation.",
+    "limitations": "Reference-only variation protocols; no universal first-law identification among the three state spaces.",
+    "theory_labels": [
+      "def-swarm-energy-variation",
+      "def-ig-entropy-variation",
+      "prop-holo-cut-first-law-condition",
+      "thm-first-law-entanglement",
+      "thm-holographic-pressure"
+    ],
+    "corrections": [],
+    "title": "Three first variations",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 57,
+    "algorithm_object": "Exact killed two-state comparison kernel",
+    "exact_identity": "Gibbs candidate and QSD are distinct; residual and contraction bound control their discrepancy.",
+    "measurement": "Numerical eigenmeasure compared with chosen Gibbs law and bound.",
+    "validation": "TV residual bound test.",
+    "limitations": "Reference-only killed kernel; not an invariant Gibbs claim for actual cloning.",
+    "theory_labels": [
+      "thm-qsd-gibbs"
+    ],
+    "corrections": [],
+    "title": "Gibbs QSD candidates",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 58,
+    "algorithm_object": "Interior two-state controlled Markov reference",
+    "exact_identity": "Stationary response pi D (I-K)_centered_inverse A; stationary, transition and path Fisher are distinct.",
+    "measurement": "Poisson solve compared with independently differentiated stationary law and exact formulas; static exponential tilt comparison.",
+    "validation": "Response finite differences and Fisher formulas.",
+    "limitations": "Reference-only. Actual stationary response requires the actual transition derivative, mixing and common-support hypotheses; actual source finite-horizon response lives in native19/22.",
+    "theory_labels": [
+      "prop-fluctuation-dissipation",
+      "thm-algorithmic-stationary-response",
+      "prop-algorithmic-controlled-fisher",
+      "rem-algorithmic-three-geometries"
+    ],
+    "corrections": [],
+    "title": "Response and Fisher information",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 59,
+    "algorithm_object": "Specified Euclidean cone and constant-curvature AdS metric",
+    "exact_identity": "Smooth cone requires kappa beta=2pi; AdS curvature solves assumed vacuum Einstein equation.",
+    "measurement": "Circumference/periodicity and algebraic curvature comparison.",
+    "validation": "Cone smoothness and AdS contraction identities.",
+    "limitations": "Reference-only spacetime/thermal state. No gas temperature or AdS radius is inferred from a graph cut.",
+    "theory_labels": [
+      "prop-unruh-hawking-connection",
+      "thm-ads-uv-regime",
+      "rem-holo-cosmological-sign"
+    ],
+    "corrections": [],
+    "title": "Euclidean horizons and AdS",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 60,
+    "algorithm_object": "Nearest-neighbor weighted perimeter reference network",
+    "exact_identity": "Terminal mincut equals the minimum of a specified local discrete surface functional.",
+    "measurement": "Max-flow partition compared with independently enumerated straight interfaces.",
+    "validation": "Constrained minimum versus exact candidates.",
+    "limitations": "Reference-only local network, distinct from the complete Gaussian graph and actual recorded IG.",
+    "theory_labels": [
+      "thm-ryu-takayanagi"
+    ],
+    "corrections": [],
+    "title": "Minimum cuts and limiting surfaces",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 61,
+    "algorithm_object": "Two-state QSD reference with independent constant killing",
+    "exact_identity": "Conditioned stationary expectations are constant; unnormalized survival decays, and an energy offset does not affect increment.",
+    "measurement": "Matrix evolution and survival curve.",
+    "validation": "Stationary/QSD distinction and shift-invariance tests.",
+    "limitations": "Reference-only; actual full-state conditional increments are characterized by native45 and22, not a claimed observed QSD.",
+    "theory_labels": [
+      "def-bulk-qsd-vacuum",
+      "thm-vanishing-bulk-vacuum",
+      "prop-geometric-distinction"
+    ],
+    "corrections": [],
+    "title": "Conditional stationarity and survival",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 62,
+    "algorithm_object": "Circle chord-distance Gaussian integral and separately declared AdS radius",
+    "exact_identity": "Local chord integral has leading relative epsilon²/(8R²); AdS radius relation assumes constant-curvature vacuum equation.",
+    "measurement": "Independent scaled-variable quadrature checks locality series.",
+    "validation": "Small-range quadrature converges without under-resolving narrow kernels.",
+    "limitations": "The positive-curvature circle reference is explicitly independent from the negative-curvature AdS algebra. Kernel range alone does not determine actual curvature.",
+    "theory_labels": [
+      "def-uv-regime",
+      "thm-ads-boundary-uv"
+    ],
+    "corrections": [],
+    "title": "Interaction range and curvature scale",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 63,
+    "algorithm_object": "Specified Riccati comparison and de Sitter/Milne geometries",
+    "exact_identity": "Complete forcing lower bound gives tanh expansion bound; positive expansion alone does not determine curvature.",
+    "measurement": "RK4 comparison plus distinct exact de Sitter and flat Milne expansion.",
+    "validation": "Lower-bound comparison tests.",
+    "limitations": "Reference-only. No freely fitted Ricci forcing is advertised as an actual metric evolution equation.",
+    "theory_labels": [
+      "thm-exploration-expansion",
+      "thm-bulk-can-be-ds"
+    ],
+    "corrections": [],
+    "title": "Expansion histories",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 64,
+    "algorithm_object": "Declared future-bit reveal channel",
+    "exact_identity": "Discarded predictive information equals conditional mutual information; reveal probability gives p log2.",
+    "measurement": "Independent samples estimate entropy/information against exact reference.",
+    "validation": "Information endpoints and sample agreement.",
+    "limitations": "Reference-only controlled information process; actual donor memory may carry predictive information but is not measured by this bit fixture.",
+    "theory_labels": [
+      "def-information-closure-cosmo",
+      "def-computational-closure-cosmo",
+      "def-causal-closure-cosmo",
+      "thm-closure-equivalence-cosmo"
+    ],
+    "corrections": [],
+    "title": "Predictive information",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 65,
+    "algorithm_object": "Exact four-state CTMC projection reference",
+    "exact_identity": "Dynkin generator closure error accumulated over time is bounded by t times uniform generator residual.",
+    "measurement": "Microscopic semigroup evolution compared with projected macro model and residual.",
+    "validation": "Lumpable case zero residual; nonlumpable error bounded.",
+    "limitations": "Reference-only. No Markov closure is inferred from a histogram of actual walkers.",
+    "theory_labels": [
+      "prop-cosmo-generator-closure"
+    ],
+    "corrections": [],
+    "title": "Dynamical closure",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  },
+  {
+    "experiment": 66,
+    "algorithm_object": "Explicit physical-unit conversion and specified cosmic parameters",
+    "exact_identity": "Lambda=3 Omega_Lambda H0²/c² and stated pressure conventions.",
+    "measurement": "Numerical unit conversion retains c² and length/time factors.",
+    "validation": "SI conversion regression.",
+    "limitations": "Parameter calculator, not an estimate of physical cosmology from the gas.",
+    "theory_labels": [
+      "prop-observed-lambda",
+      "prop-dark-energy-exploration",
+      "thm-de-sitter-resolution"
+    ],
+    "corrections": [],
+    "title": "Vacuum units and observables",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "available_measurement": "finite_model"
+  }
+]

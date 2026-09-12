@@ -17,6 +17,74 @@ archiveImport.className = "file-button";
 archiveImport.innerHTML =
   'Open trajectory archive<input id="archive-import" type="file" accept="application/json,.json">';
 document.querySelector(".exports").append(archiveImport);
+const nativeImport = document.createElement("label");
+nativeImport.className = "file-button";
+nativeImport.innerHTML =
+  'Open native sweep<input id="native-results" type="file" accept="application/json,.json">';
+document.querySelector(".exports").append(nativeImport);
+const calculationDetails = document.createElement("details");
+calculationDetails.className = "calculation-details";
+calculationDetails.hidden = true;
+calculationDetails.innerHTML =
+  "<summary>Calculation inputs and results</summary><pre></pre>";
+document.querySelector("#charts").after(calculationDetails);
+const formulaIndex = document.createElement("details");
+formulaIndex.className = "formula-index";
+formulaIndex.hidden = true;
+formulaIndex.innerHTML =
+  '<summary>Find a Part VI formula</summary><label>Formula, theorem, or experiment<input type="search" placeholder="For example: reflection, Ricci, VI-39"></label><div class="formula-matches"></div>';
+document.querySelector("#controls").after(formulaIndex);
+let formulaEntries;
+async function findFormulas() {
+  try {
+    if (!formulaEntries) {
+      const response = await fetch(
+        new URL("./partvi-formulas.json", import.meta.url),
+      );
+      if (!response.ok) throw new Error("Formula index is unavailable");
+      formulaEntries = await response.json();
+    }
+    const q = formulaIndex.querySelector("input").value.trim().toLowerCase();
+    const matches = formulaEntries.filter((e) =>
+      q
+        ? [e.label, e.title, e.expression, e.experiment]
+            .join(" ")
+            .toLowerCase()
+            .includes(q)
+        : e.experiment === demo?.id,
+    );
+    formulaIndex.querySelector(".formula-matches").innerHTML =
+      "<p>" +
+      matches.length +
+      " linked formulas and statements</p>" +
+      matches
+        .slice(0, 60)
+        .map(
+          (e) =>
+            '<button type="button" data-formula-demo="' +
+            esc(e.experiment) +
+            '"><strong>' +
+            esc(e.experiment) +
+            " · " +
+            esc(e.title || e.label) +
+            "</strong><span>" +
+            esc(e.expression || e.section || e.kind) +
+            "</span></button>",
+        )
+        .join("");
+  } catch (error) {
+    formulaIndex.querySelector(".formula-matches").textContent =
+      error.message || String(error);
+  }
+}
+formulaIndex.addEventListener("toggle", () => {
+  if (formulaIndex.open) findFormulas();
+});
+formulaIndex.querySelector("input").addEventListener("input", findFormulas);
+formulaIndex.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-formula-demo]");
+  if (b) initialize(b.dataset.formulaDemo);
+});
 const worker = new Worker(new URL("./worker.js", import.meta.url), {
   type: "module",
 });
@@ -75,7 +143,7 @@ worker.onerror = (event) => {
 function fail(error) {
   pause();
   $("#error").hidden = false;
-  $("#error").textContent = error.message;
+  $("#error").textContent = error.message || String(error);
   $("#status").textContent = "Experiment needs attention";
 }
 function pause() {
@@ -167,6 +235,8 @@ async function initialize(id, overrides, replaySeed) {
   $("#error").hidden = true;
   $("#status").textContent = "Preparing experiment…";
   demo = catalog.find((item) => item.id === id) || catalog[0];
+  formulaIndex.hidden = demo.part !== "VI";
+  if (formulaIndex.open && !formulaIndex.hidden) findFormulas();
   params =
     overrides ||
     Object.fromEntries(
@@ -195,6 +265,11 @@ async function initialize(id, overrides, replaySeed) {
         link.dataset.demo === demo.id ? "page" : "false",
       ),
     );
+  const selectedLink = document.querySelector('[data-demo="' + demo.id + '"]');
+  if (selectedLink) {
+    selectedLink.closest("details").open = true;
+    selectedLink.scrollIntoView({ block: "nearest" });
+  }
   try {
     const result = await request("initialize", {
       id: demo.id,
@@ -231,6 +306,29 @@ function render() {
   const record = frames[selected];
   if (!record) return;
   const snapshot = record.snapshot;
+  if (snapshot.result?.details?.calculation_origin) {
+    const sources = {
+      executed_algorithm_archive: "Recorded algorithm measurements",
+      independent_algorithm_continuations:
+        "Independent complete-state continuations",
+      constructed_finite_model: "Specified finite-model calculation",
+    };
+    $("#kind").textContent =
+      "PART VI / VI-" +
+      String(snapshot.result.experiment).padStart(2, "0") +
+      " · Rust/WASM · " +
+      sources[snapshot.result.details.calculation_origin];
+  }
+  if (snapshot.imported && snapshot.result)
+    $("#title").textContent =
+      "Imported native sweep · " + snapshot.result.title;
+  calculationDetails.hidden = !snapshot.result;
+  if (snapshot.result)
+    calculationDetails.querySelector("pre").textContent = JSON.stringify(
+      snapshot.result,
+      null,
+      2,
+    );
   const columns = getComputedStyle($("#charts")).gridTemplateColumns.split(
     " ",
   ).length;
@@ -396,7 +494,15 @@ $("#save").onclick = () => {
     demo.id + "-seed-" + seed + ".json",
     JSON.stringify(
       {
-        schema: "fragile-lecture-experiment-v1",
+        schema: view.snapshot.result
+          ? "fragile-partvi-results-v1"
+          : "fragile-lecture-experiment-v1",
+        ...(view.snapshot.result
+          ? {
+              results: [view.snapshot.result],
+              replayable: !view.snapshot.imported,
+            }
+          : {}),
         id: demo.id,
         seed,
         params,
@@ -431,16 +537,52 @@ $("#archive-import").onchange = async (event) => {
     if (file.size > 128 * 1024 * 1024)
       throw new Error("Archive must be smaller than 128 MiB.");
     const archive = JSON.parse(await file.text());
-    const snapshot = await request("archive_import", archive);
+    const qft = demo.part === "VI";
+    const snapshot = await request(
+      qft ? "qft_archive_import" : "archive_import",
+      qft ? { archive, id: demo.id, params, seed } : archive,
+    );
     frames = [];
     ticks = snapshot.step;
     selected = 0;
     record(snapshot);
-    $("#title").textContent = "Imported Fractal Set archive";
+    $("#title").textContent = qft
+      ? demo.title + " · imported archive"
+      : "Imported Fractal Set archive";
     $("#status").textContent = "Archive validated";
     $("#checkpoint").hidden = true;
     archiveButton.hidden = false;
     $("#save").disabled = true;
+  } catch (error) {
+    fail(error);
+  } finally {
+    event.target.value = "";
+    lock(false);
+  }
+};
+async function showNativeResults(data) {
+  const snapshot = await request("qft_results_import", data);
+  frames = [];
+  ticks = 0;
+  selected = 0;
+  record(snapshot);
+  $("#title").textContent = "Imported native sweep · " + snapshot.result.title;
+  $("#status").textContent =
+    data.results.length + " native calculations loaded. Step through results.";
+  $("#checkpoint").hidden = true;
+  archiveButton.hidden = true;
+  $("#save").disabled = false;
+}
+$("#native-results").onchange = async (event) => {
+  pause();
+  lock(true);
+  try {
+    const file = event.target.files[0];
+    if (!file) return;
+    if (file.size > 32 * 1024 * 1024)
+      throw new Error("Native results must be smaller than 32 MiB.");
+    const data = JSON.parse(await file.text());
+    await showNativeResults(data);
   } catch (error) {
     fail(error);
   } finally {
@@ -457,7 +599,23 @@ $("#load").onchange = async (event) => {
       throw new Error("Replay JSON must be smaller than 20 MB");
     const data = JSON.parse(await file.text());
     if (
-      data.schema !== "fragile-lecture-experiment-v1" ||
+      data.schema === "fragile-partvi-results-v1" &&
+      data.replayable !== true
+    ) {
+      lock(true);
+      try {
+        await showNativeResults(data);
+      } finally {
+        lock(false);
+      }
+      event.target.value = "";
+      return;
+    }
+    const expectedSchema = data.id?.startsWith("VI-")
+      ? "fragile-partvi-results-v1"
+      : "fragile-lecture-experiment-v1";
+    if (
+      data.schema !== expectedSchema ||
       !catalog.some((d) => d.id === data.id) ||
       !Number.isInteger(data.ticks) ||
       data.ticks < 0 ||
@@ -487,7 +645,7 @@ $("#checkpoint").onclick = async () => {
       "application/octet-stream",
     );
   } catch (error) {
-    $("#status").textContent = error.message;
+    $("#status").textContent = error.message || String(error);
   }
 };
 document.addEventListener("visibilitychange", () => {
@@ -520,6 +678,7 @@ try {
     III: "Mean-field limits",
     IV: "Entropy & regularity",
     V: "Fractal Set & continuum",
+    VI: "Fields & algorithmic QFT",
   };
   $("#catalog").innerHTML = Object.entries(names)
     .map(

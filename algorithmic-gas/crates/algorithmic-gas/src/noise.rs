@@ -50,6 +50,32 @@ pub struct NoiseRequest {
     pub stream: Stream,
     pub substep: u64,
 }
+/// A deterministic intervention on one reserved innovation coordinate.
+/// Addresses remain reserved even if a walker dies; unused addresses have no effect.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InnovationShift {
+    pub step: u64,
+    pub stream: Stream,
+    pub substep: u64,
+    pub walker: usize,
+    pub coordinate: usize,
+    pub shift: f64,
+}
+impl InnovationShift {
+    pub fn validate(&self, rows: usize, dimension: usize) -> Result<()> {
+        require(
+            self.walker < rows && self.coordinate < dimension && self.shift.is_finite(),
+            "invalid innovation intervention address/value",
+        )
+    }
+    fn matches(&self, request: NoiseRequest) -> bool {
+        self.step == request.step
+            && self.stream == request.stream
+            && self.substep == request.substep
+    }
+}
+
 #[allow(async_fn_in_trait)]
 pub trait NoiseSource<T: Real> {
     async fn sample(
@@ -193,6 +219,21 @@ impl<T: Real> NoiseSource<T> for Noise {
                 };
             }
         }
+        let applied_source_shifts = cx
+            .innovation_shifts
+            .iter()
+            .filter(|s| s.matches(r))
+            .cloned()
+            .collect::<Vec<_>>();
+        for shift in &applied_source_shifts {
+            shift.validate(n, rank)?;
+            let index = shift.walker * rank + shift.coordinate;
+            xi[index] = xi[index] + T::from_f64(shift.shift);
+            require(
+                xi[index].is_finite(),
+                "source-shifted innovation is nonfinite",
+            )?;
+        }
         let raw_innovation = cx
             .recorded_noise
             .as_ref()
@@ -229,7 +270,8 @@ impl<T: Real> NoiseSource<T> for Noise {
                     &output,
                     raw_innovation,
                     recorded_factor,
-                    &self.geometry,
+                    self,
+                    applied_source_shifts,
                 );
                 Ok(output)
             }
@@ -264,7 +306,8 @@ impl<T: Real> NoiseSource<T> for Noise {
                     &sample,
                     raw_innovation,
                     recorded_factor,
-                    &self.geometry,
+                    self,
+                    applied_source_shifts,
                 );
                 Ok(sample)
             }
@@ -278,7 +321,8 @@ fn record_builtin<T: Real>(
     sample: &TensorBatch<T>,
     raw_innovation: Option<Vec<f64>>,
     factor: Option<Vec<f64>>,
-    geometry: &NoiseGeometry,
+    noise: &Noise,
+    applied_source_shifts: Vec<InnovationShift>,
 ) {
     if let Some(records) = &mut cx.recorded_noise {
         records.push(crate::tracking::NoiseSnapshot {
@@ -291,7 +335,9 @@ fn record_builtin<T: Real>(
             sample: sample.values().iter().map(|x| x.to_f64()).collect(),
             raw_innovation,
             factor,
-            geometry: Some(geometry.clone()),
+            geometry: Some(noise.geometry.clone()),
+            innovation_law: Some(noise.innovation),
+            applied_source_shifts,
         });
     }
 }

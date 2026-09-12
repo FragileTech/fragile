@@ -117,21 +117,19 @@ fn recording_limit_cancellation_and_replacement_are_atomic() {
     });
 }
 #[test]
-fn v2_migration_records_only_restored_coverage() {
+fn unsupported_checkpoint_schema_is_rejected() {
     block_on(async {
         let mut g = gas().await;
         g.step().await.unwrap();
         let mut bytes = g.checkpoint().to_bytes().unwrap();
         let key = b"schema_version";
         let position = bytes.windows(key.len()).position(|w| w == key).unwrap() + key.len();
-        assert_eq!(bytes[position], 3);
+        assert_eq!(
+            bytes[position],
+            algorithmic_gas::checkpoint::CHECKPOINT_VERSION as u8
+        );
         bytes[position] = 2;
-        let migrated: Checkpoint<f64> = Checkpoint::from_bytes(&bytes).unwrap();
-        assert_eq!(migrated.schema_version, 3);
-        let a = migrated.recording.unwrap();
-        assert!(a.steps.is_empty());
-        assert_eq!(a.anchors[0].step, 1);
-        assert_eq!(a.anchors[0].reason, "checkpoint_v2_migration");
+        assert!(Checkpoint::<f64>::from_bytes(&bytes).is_err());
     });
 }
 

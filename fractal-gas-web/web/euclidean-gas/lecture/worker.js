@@ -1,24 +1,47 @@
 import { demos, metadata, parameters } from "./catalog.js";
 import { importedArchiveModel } from "./fractal.js";
+import { importedQftModel, importedResultsModel } from "./partvi.js";
 
-let modulePromise,
-  model,
+let model,
   tracked = new Set(),
   queue = Promise.resolve();
-async function wasm() {
-  if (!modulePromise)
-    modulePromise = import("../engine/cpu/gas.js")
-      .then(async (module) => {
-        await module.default();
-        return module;
-      })
-      .catch((error) => {
-        modulePromise = null;
-        throw error;
-      });
-  return modulePromise;
+const modules = new Map();
+async function wasm(profile = "cpu") {
+  if (!modules.has(profile))
+    modules.set(
+      profile,
+      import(
+        profile === "cpu" ? "../engine/cpu/gas.js" : "../engine/webgpu/gas.js"
+      )
+        .then(async (module) => {
+          await module.default();
+          return module;
+        })
+        .catch((error) => {
+          modules.delete(profile);
+          throw error;
+        }),
+    );
+  return modules.get(profile);
 }
 const engine = {
+  async curvatureBatch(request) {
+    return (
+      await wasm(request.backend === "wgpu" ? "webgpu" : "cpu")
+    ).physics_curvature_batch(JSON.stringify(request));
+  },
+  async qftRun(request, config) {
+    return (await wasm()).partvi_run(
+      JSON.stringify(request),
+      JSON.stringify(config),
+    );
+  },
+  async qft(request, archive) {
+    const module = await wasm();
+    return archive
+      ? module.partvi_archive(JSON.stringify(request), JSON.stringify(archive))
+      : module.partvi_analysis(JSON.stringify(request));
+  },
   async inspectArchive(archive) {
     return (await wasm()).partv_archive(JSON.stringify(archive));
   },
@@ -105,6 +128,16 @@ async function dispatch(type, payload) {
   if (type === "archive_import") {
     dispose();
     model = await importedArchiveModel(payload, engine);
+    return model.snapshot();
+  }
+  if (type === "qft_archive_import") {
+    dispose();
+    model = await importedQftModel(payload, engine);
+    return model.snapshot();
+  }
+  if (type === "qft_results_import") {
+    dispose();
+    model = importedResultsModel(payload);
     return model.snapshot();
   }
   if (!model) throw new Error("Initialize an experiment first");

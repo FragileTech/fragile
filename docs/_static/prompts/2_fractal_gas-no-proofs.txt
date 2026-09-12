@@ -5022,6 +5022,249 @@ identities, and the explicitly conditional drift, QSD, and entropy statements.
 Their hypotheses and state spaces determine how they may be combined.
 :::
 
+## architecture/01_algorithmic_gas.md
+
+:::{prf:definition} Algorithmic Gas execution contract
+:label: def-algorithmic-gas-execution-contract
+
+A prepared run is a tuple
+$\mathcal R=(\mathcal C,\mathcal E,\mathcal I,\mathcal P,\mathcal S,\mathcal Q)$:
+resolved component configuration, execution context, admitted input context,
+numerical population with observations and raw rewards, optional opaque state
+store, and persistent operator/random state. Each step
+reads a versioned population snapshot and commits one consistent successor.
+No operator may change the sampling law, computation precision, device placement,
+or mathematical regularizers without an explicit configuration transition.
+
+Let $N\geq1$ be the fixed number of allocated walker slots, $k$ the current number
+of eligible slots, $d$ a selected numerical feature dimension, $m$ a requested pair
+count, $K_{\rm dist}$ and $K_{\rm clone}$ the independently configured donor
+capacities (both default to one), and $r$ an innovation dimension.
+`P` denotes the run's selected `f32` or
+`f64` computation precision. Slot indices and Boolean masks are not floating-point
+data. A batch's leading dimension is its slot or explicitly declared request axis.
+:::
+
+:::{prf:definition} Input and extraction contract
+:label: def-algorithmic-gas-input-extraction
+
+`InputBatch<B>` is an immutable collection of named external/domain fields, with
+slot IDs, batch size, field shapes/dtypes/units, stage, version, and origin. It may
+contain declared views of an identified algorithm-state snapshot, including
+coordinates, velocities, and previous-step quantities. Per-walker fields have
+leading axis `[N,...]`; shared/global fields are explicitly tagged and are never
+mistaken for walker axes.
+
+An `ObservationExtractor` derives one vector/tensor observation per walker,
+possibly structured into named tensor views. A `RewardExtractor` independently
+derives exactly one raw scalar per walker. Its output is `RewardBatch<B>` with
+values `[N]` in `P`, validity `[N]`, units, and dependency provenance. Neither
+extractor is required to consume the other's output. A declared dependency is
+permitted if it fits the acyclic evaluation schedule.
+:::
+
+:::{prf:definition} Population schema and observation views
+:label: def-algorithmic-gas-population
+
+`Population<B>` owns an `ObservationBatch<B>`, a first-class `RewardBatch<B>`,
+per-slot metadata, and a committed version. Each observation field has a stable
+name, shape `[N, ...]`, storage dtype,
+semantic role, units, and provenance. Numerical views select named fields and
+their declared transformations; a view never changes the underlying meaning of
+an observation. `StateStore` is a separate, optional owner and is not an
+observation field. Numerical dynamics fields, such as velocity, can be available
+in the population/input context without belonging to the distance's selected
+observation view. Reward is scalar regardless of that view's rank or dimension.
+:::
+
+:::{prf:definition} Comparison convention
+:label: def-algorithmic-gas-comparison
+
+An `AlgorithmicDistance` evaluates a declared comparison $q_{ij}\geq0$ from a
+selected observation view. Its descriptor specifies `Distance`,
+`SquaredDistance`, or `Dissimilarity`, symmetry, units, and whether metric axioms
+hold. `ComparisonBatch` carries that convention; an interaction kernel must
+explicitly accept it. The name of the interface does not assert the triangle
+inequality for every implementation.
+:::
+
+:::{prf:definition} Donor pools and ancestry-neutral eligibility
+:label: def-algorithmic-gas-donor-pool
+
+`DonorPool<B>` is a read-only, versioned collection of $M$ source records frozen
+for a selection/clone transaction. A record is identified by source frame/step,
+slot identity and generation, and snapshot version. Its numerical observation,
+raw reward provenance, input fields, and optional opaque state refer to that
+same record. A compact integer pool-row index resolves that identity; equal slot
+numbers in different iterations do not identify the same snapshot.
+
+The default `CurrentEligible` pool uses the current round and admits every
+eligible walker regardless of ancestry or lineage label. Kernel weighting and
+explicit self/topology rules may restrict edges, but genealogical relationships
+are not an implicit filter. Optional `HistoricalWindow` and
+`CurrentPlusHistoricalWindow` policies select archived earlier frames. An
+ancestry filter is permitted only as an explicitly named, non-default experiment.
+:::
+
+:::{prf:definition} Batched donor contract
+:label: def-algorithmic-gas-donor-batch
+
+A `DonorBatch<B>` contains checked integer pool-row donor indices `[N,K]`, valid-edge
+mask `[N,K]`, per-row valid counts `[N]`, role, frozen-pool/query versions, and joint-law
+descriptor. Optional topology data includes matching-round IDs, pair lists, and
+unmatched flags. Optional sampling probabilities and consumer weights are
+separately named: sampling probability is not automatically an averaging or
+recombination weight. Floating fields use `P`; index and mask fields retain their
+own types.
+
+Every valid entry references an eligible source under the configured self policy.
+Padded entries are never evaluated or treated as zero-distance donors. Rows for
+dead queries are invalid for normal selection; revival uses a separate request.
+For each certified mutual matching round $a$, $c_a(c_a(i))=i$ on alive slots
+after resolving pool-row indices to current slot identities.
+No such certificate is inferred for the union of several rounds or a general
+directed multi-donor graph.
+:::
+
+:::{prf:definition} Raw reward and objective orientation
+:label: def-algorithmic-gas-reward-orientation
+
+The reward extractor returns one scalar $r_i$ per walker. `ObjectiveDirection`
+is a run-level configuration, defaulting to `Maximize`. The standard oriented
+measurement is
+
+$$
+y_i=\begin{cases}r_i,&\mathrm{Maximize},\\-r_i,&\mathrm{Minimize}.\end{cases}
+$$
+
+Standardization, positive mapping, and reward/diversity combination consume $y$;
+history and checkpoints retain the original $r$ and the direction. Minimization
+does not negate positive fitness or reverse the clone rule a second time.
+One may equivalently extract $-U$ and maximize, or extract $U$ and minimize, but
+must not apply both sign reversals. Direction changes create a recorded
+configuration transition and invalidate oriented fitness/derivative caches.
+:::
+
+:::{prf:definition} Global and local regularized standardization
+:label: def-algorithmic-gas-standardization
+
+For a measurement $y$ and eligible set $\mathcal A$ of size $k>0$, global
+alive-only population moments are
+
+$$
+\mu=\frac1k\sum_{j\in\mathcal A}y_j,\qquad
+s^2=\frac1k\sum_{j\in\mathcal A}(y_j-\mu)^2,\qquad
+z_i=\frac{y_i-\mu}{\sqrt{s^2+\sigma_{\min}^2}},\quad i\in\mathcal A.
+$$
+
+The positive model regularizer $\sigma_{\min}$ has measurement units. Dead slots
+receive a masked zero score. Constant alive measurements, including a singleton,
+produce $z_i=0$.
+
+For local weights $a_{ij}\geq0$, let
+$C_i=\mathcal A\setminus\{i\}$ by default and
+$\omega_{ij}=a_{ij}/\sum_{\ell\in C_i}a_{i\ell}$.
+Then
+
+$$
+\mu_i=\sum_{j\in C_i}\omega_{ij}y_j,\qquad
+s_i^2=\sum_{j\in C_i}\omega_{ij}(y_j-\mu_i)^2,\qquad
+z_i=\frac{y_i-\mu_i}{\sqrt{s_i^2+\sigma_{\min}^2}}.
+$$
+
+The neighborhood distance, kernel, bandwidth, and self policy are separate
+standardizer configuration. An empty or zero-support neighborhood uses the
+global rule by default and records that fallback. A strict-error alternative
+must be selected explicitly. Numerical underflow is not a mathematical
+zero-support neighborhood and must be handled by stable normalization.
+:::
+
+:::{prf:definition} Positive fitness channels
+:label: def-algorithmic-gas-positive-fitness
+
+The documented logistic map is
+
+$$
+g_A(z)=\frac{A}{1+e^{-z}},\qquad A>0.
+$$
+
+Its symmetry is $g_A(z)+g_A(-z)=A$; it is not an odd function.
+The default positivity policy is the separately configured additive floor
+$\widetilde g(z)=g(z)+\eta$, $\eta>0$. It is not an implicit dtype epsilon or a
+hard clipping operation.
+
+The legacy asymmetric scalar map, when applied to an already standardized value,
+is
+
+$$
+g_{\rm legacy}(z)=
+\begin{cases}
+e^z,&z\leq0,\\
+1+\log(1+z),&z>0.
+\end{cases}
+$$
+
+Given mapped reward and diversity $R_i,D_i>0$, the default combiner is
+
+$$
+F_i=R_i^\alpha D_i^\beta,\qquad \alpha,\beta\geq0.
+$$
+
+A disabled fitness channel contributes one and is not evaluated; both exponents zero
+give constant fitness one. Enabled channels and exponents are recorded
+independently. Clone acceptance uses these pre-clone fitness values.
+:::
+
+:::{prf:definition} Immutable clone plan
+:label: def-algorithmic-gas-clone-plan
+
+A `ClonePlan` is defined against one immutable pre-clone query population and a
+frozen donor pool. It records recipient slots, proposed and effective source
+references `[N,K_clone]`, donor masks/counts, any operator-defined coefficients, acceptance probabilities
+and decisions `[N]`, revival decisions, and certified topology. Each recipient
+has exactly one resolved update: `Keep`, `Copy(donor)`, or
+`Recombine(donors, operator, parameters)`. Several donors can contribute to one
+recombined successor; the plan is not universally a one-index source map.
+
+The default has one donor and uses `Copy` or `Keep`. A checked single-source map
+is available for copy-only plans. `Keep` reads the current recipient directly;
+the source-map adapter resolves both these current reads and pool-source copies,
+including historical records. Revival defaults to one pre-clone alive donor
+and a separate copy rule. Every source read, including chains, repeated donors,
+and recombination, resolves against the immutable current snapshot or frozen
+donor pool, never the destination. Current sources are from
+the current round; historical sources retain their own archived frame/version.
+An old frame is never overwritten, and ancestry never determines eligibility
+unless an explicit non-default filter was selected.
+All successor fields and domain effects are assembled in separate destination
+storage and committed consistently.
+:::
+
+:::{prf:definition} Factored noise source
+:label: def-algorithmic-gas-noise
+
+An `InnovationLaw` generates centered innovations
+$\xi_i\in\mathbb R^r$. A `NoiseGeometry` supplies factors
+$L_i\in\mathbb R^{d\times r}$. A `NoiseSource` composes them as
+
+$$
+\eta_i=L_i\xi_i.
+$$
+
+If, conditionally on the source's current inputs, $\mathbb E[\xi_i]=0$ and
+$\operatorname{Cov}(\xi_i)=I_r$, and $L_i$ is determined before the current draw,
+then
+
+$$
+\mathbb E[\eta_i\mid\text{current inputs}]=0,\qquad
+\operatorname{Cov}(\eta_i\mid\text{current inputs})=L_iL_i^\top.
+$$
+
+Default innovations are independent across walkers and calls. Noise sources do
+not multiply by $\sqrt{\Delta t}$: temporal scaling belongs to the consuming
+kinetic integrator or clone transform.
+:::
+
 ## convergence_program/03_cloning.md
 
 :::{prf:remark} Absorption and the law conditioned on survival
@@ -28644,6 +28887,65 @@ and their bounds unchanged. This uses stationarity and the one-time LSI,
 without a path-space functional inequality.
 :::
 
+:::{prf:proposition} Transient field hierarchy of the executed algorithm
+:label: prop-ym-transient-algorithm-fields
+
+Let $R_n$ be the complete algorithm state: the population and validity flags,
+retained donor records, provider state, and the recorded local data required by
+the chosen observable. Include the step counter when the configuration depends
+on time, and an absorbing cemetery state after termination. Let $K$ be the
+transition kernel obtained by executing the configured companion selection,
+fitness evaluation, literal clone writes, kinetic substeps, clipping, and
+boundary operations. For a specified real field observable $F$, use its
+specified value on ineligible records and set $F(\dagger)=0$. Write
+
+$$
+D_F=KF-F,\qquad
+Q_{FG}=K(FG)-(KF)(KG),\qquad \mu_n=\mathcal L(R_n).
+$$
+
+Whenever the displayed second moments are finite, the exact transient
+identities are
+
+$$
+\begin{aligned}
+\mu_{n+1}F&=\mu_nF+\mu_nD_F,\\
+\operatorname{Cov}_{\mu_{n+1}}(F,G)
+ &=\operatorname{Cov}_{\mu_n}(F+D_F,G+D_G)+\mu_nQ_{FG},\\
+\mathbb E[\overline{F(R_n)}G(R_{n+\ell})]
+ &=\mu_n[\overline F K^\ell G].
+\end{aligned}
+$$
+
+The residual $\eta_{F,n+1}=F(R_{n+1})-(KF)(R_n)$ satisfies
+$\mathbb E[\eta_{F,n+1}\mid R_n]=0$ and
+$\mathbb E[\eta_{F,n+1}\eta_{G,n+1}\mid R_n]=Q_{FG}(R_n)$.
+These formulas require neither a stationary initial law nor a closed evolution
+on the selected fields. If $F=N^{-1}\sum_i f_i$ and
+$\delta f_i=f_i(R_{n+1})-f_i(R_n)$, their conditional covariance is
+
+$$
+Q_{FF}(R_n)=\frac{1}{N^2}\sum_{i,j}
+ \operatorname{Cov}(\delta f_i,\delta f_j\mid R_n).
+$$
+
+Thus shared clone decisions, historical donors, and correlated state-dependent
+increments contribute through their actual joint law. For recorded intermediate
+states $R_n^{(0)},\ldots,R_n^{(m)}$, with the same readout convention at each
+stage, the exact decomposition
+
+$$
+F(R_{n+1})-F(R_n)
+ =\sum_{r=0}^{m-1}\bigl[F(R_n^{(r+1)})-F(R_n^{(r)})\bigr]
+$$
+
+also retains the cross-covariances between stages when its variance is taken.
+Conditional drift and covariance can be estimated by independent complete-state
+continuations. A predictor using only selected fields is assessed on separate
+continuations against $D_F$, including its dependence on retained algorithm
+state that those fields omit.
+:::
+
 :::{prf:proposition} Drift and covariance equations for the complete selected update
 :label: prop-ym-complete-fluctuation-equations
 
@@ -29722,7 +30024,7 @@ For these observables the following statements hold.
    reflected values in {prf:ref}`thm-ym-native-fiber-continuum`. On a common
    further subsequence, every finite polynomial moment and every finite
    reflected product has a limit. This includes the full complex pair,
-   determinant, and triangle channels jointly with the originally retained
+   determinant, and triangle channels jointly with the retained
    source and geometry coordinates.
 
 4. The limit extends to continuous cylinders of these bounded coordinates.
@@ -31248,6 +31550,13 @@ $$
 T_t(i) := (i, j_t(i), k_t(i)).
 $$
 
+Each companion is the actual recorded source reference, including its source frame, population
+version, numerical slot, and generation. Its position and velocity are read from that immutable
+source snapshot. For current-frame companions this gives the usual current walker coordinates.
+For historical companions, $x_{j_t(i)}(t)$ and $v_{j_t(i)}(t)$ denote the resolved historical
+coordinates; the source age is retained with the descriptor. The recipient uses its pre-clone
+coordinates. Thus the triplet retains the configured donor-memory mechanism.
+
 The twistor companion channels always use both companion types. In particular they are triplet
 channels, not pair channels, and they do not depend on the mesonic `pair_selection` choice.
 :::
@@ -31327,7 +31636,9 @@ Z_{ij}^\alpha(t) := \bigl(\mu_{ij}^{A'}(t), \lambda_{ij,A}(t)\bigr).
 $$
 
 If the chosen column norm is at most $\varepsilon$, or if any index is out of range, or if any of
-the walkers in the edge is dead, the edge is declared invalid.
+the current walkers in the edge is dead, the edge is declared invalid. A historical donor uses
+its eligible source snapshot; a source whose coordinates are outside retained archive coverage
+has an unavailable readout with its source reference retained.
 :::
 
 :::{prf:definition} Local Twistor Companion Operators
@@ -31434,7 +31745,9 @@ or one of the vector-valued operators
 $\mathcal{O}_{Y,i}^a(t)$ with
 $Y \in \{\mathrm{V}, \mathrm{A}\}$. For each source time
 $t$ and source walker $i$, keep the source-frame triplet $T_t(i) = (i, j_t(i), k_t(i))$ fixed.
-For a lag $\ell \ge 0$, evaluate the sink operator at time $t+\ell$ using the same source indices:
+For a lag $\ell \ge 0$, current-frame source slots are evaluated at time $t+\ell$.
+Historical donor coordinates remain at their immutable source snapshots. The recipient advances
+to its numerical slot at $t+\ell$. This defines the source-frozen sink operator
 
 $$
 \mathcal{O}^{(\ell)}_{X,i}(t)
@@ -31454,7 +31767,7 @@ $$
 Whenever $N_X(\ell) > 0$, the raw correlator is
 
 $$
-C_X^{\mathrm{raw}}(\ell)
+C_X^{\mathrm{pair,raw}}(\ell)
 :=
 \frac{1}{N_X(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -31467,7 +31780,7 @@ Let $\overline{\mathcal{O}}_X$ denote the mean of $\mathcal{O}_{X,i}(t)$ over va
 triplets. The connected correlator is
 
 $$
-C_X^{\mathrm{conn}}(\ell)
+C_X^{\mathrm{pair,conn}}(\ell)
 :=
 \frac{1}{N_X(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -31480,7 +31793,7 @@ For the vector and axial-vector channels, replace the pointwise product by the E
 dot product in $\mathbb{R}^3$:
 
 $$
-C_Y^{\mathrm{raw}}(\ell)
+C_Y^{\mathrm{pair,raw}}(\ell)
 :=
 \frac{1}{N_Y(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -31489,7 +31802,7 @@ C_Y^{\mathrm{raw}}(\ell)
 $$
 
 $$
-C_Y^{\mathrm{conn}}(\ell)
+C_Y^{\mathrm{pair,conn}}(\ell)
 :=
 \frac{1}{N_Y(\ell)}
 \sum_{t=0}^{T-1-\ell}\sum_i
@@ -31513,39 +31826,66 @@ $\mathcal{O}_{\mathrm{T},i}(t)$
 are local operator values on the companion graph. They are not particle masses.
 :::
 
-:::{prf:theorem} Spectral Meaning of the Twistor Companion Channels
+:::{prf:theorem} Algorithmic Evolution of Frame-Averaged Twistor Channels
 :label: thm-effective-twistor-spectral-meaning
 
-Assume the Euclidean transfer-matrix/spectral framework of {doc}`09_qft_calibration`. Let
-$\widehat{\mathcal{O}}_X(t)$ denote the frame-averaged twistor operator associated with one of the
-scalar-valued families
-$X \in \{\mathrm{S}, \mathrm{P}, \mathrm{G}, \mathrm{T}\}$,
-or let $\widehat{\mathcal{O}}_Y(t)$ denote the frame-averaged vector-valued operator associated with
-$Y \in \{\mathrm{V}, \mathrm{A}\}$. Then the connected two-point function has
-the spectral form
+Let $R_n$ be the complete recorded-state chain of the configured algorithm. Its state retains
+the population, donor memory, provider configuration, and the companion and stage data required
+by the twistor readout. Its transition kernel $K$ executes the configured cloning, kinetic,
+clipping, and boundary rules. After extinction, use an absorbing cemetery state $\dagger$.
+For each scalar channel or vector component $a$, define
 
 $$
-C_X^{\mathrm{conn}}(\ell)
-=
-\sum_{n>0}
-\left|\langle n | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_n \ell \Delta t}.
+f_a(R)=\frac1N\sum_{i=1}^N
+ \mathbf1_{\{\text{local readout valid at }(R,i)\}}\mathcal O_{a,i}(R),
+\qquad f_a(\dagger)=0.
 $$
 
-for scalar-valued $X$, and analogously with the Euclidean dot product for $Y \in \{\mathrm{V},\mathrm{A}\}$.
-
-If at least one overlap is nonzero, then for large $\ell$
+The factor $1/N$ is fixed. Each local readout uses that record's actual current or historical
+donor sources. These twistor observables are bounded because their spinors are normalized.
+For any initial law $\mu$ and integers $n,\ell\ge0$, their centered frame correlation satisfies
 
 $$
-C_X^{\mathrm{conn}}(\ell)
-\sim
-\left|\langle n_X | \widehat{\mathcal{O}}_X | 0 \rangle\right|^2
-e^{-E_{n_X} \ell \Delta t},
+\begin{aligned}
+C^{\mathrm{frame}}_{ab}(n,\ell)
+&:=\mathbb E_\mu\!\left[
+ (f_a(R_n)-\mathbb E_\mu f_a(R_n))^*
+ (f_b(R_{n+\ell})-\mathbb E_\mu f_b(R_{n+\ell}))\right]\\
+&=\mu K^n\!\left[f_a^*K^\ell f_b\right]
+  -\overline{\mu K^n f_a}\,\mu K^{n+\ell}f_b.
+\end{aligned}
 $$
 
-where $E_{n_X}$ is the smallest energy with nonzero overlap. Therefore the plateau mass extracted
-from the twistor companion correlator is the mass of the lightest state that couples to that
-operator.
+In particular, $Kf_a-f_a$ is the exact one-step conditional drift, and
+$f_a(R_{n+1})-(Kf_a)(R_n)$ has conditional mean zero. For an invariant law $\pi$ of this same
+kernel, putting $\widetilde f_a=f_a-\pi f_a$ gives
+
+$$
+C^{\mathrm{frame}}_{ab}(\ell)
+ =\langle\widetilde f_a,K^\ell\widetilde f_b\rangle_{L^2(\pi)}.
+$$
+
+These identities concern the fixed-normalization frame observable. The source-frozen
+$C^{\mathrm{pair,conn}}$ of {prf:ref}`def-effective-twistor-correlators` uses its separate,
+lag-dependent valid-pair normalization.
+:::
+
+:::{prf:corollary} Positive Transfer Representation of a Frame Correlator
+:label: cor-effective-twistor-positive-transfer
+
+Suppose the actual kernel and observable in {prf:ref}`thm-effective-twistor-spectral-meaning`
+have the positive self-adjoint transfer representation specified in {doc}`09_qft_calibration`,
+with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis. For a
+self-adjoint frame observable with its vacuum mean removed,
+
+$$
+C^{\mathrm{frame}}_{aa}(\ell)
+=\sum_{E_n>0}\left|\langle n|\widehat f_a|0\rangle\right|^2e^{-E_n\ell\Delta t}.
+$$
+
+If the supported positive energies have an isolated minimum, its total overlap determines the
+leading large-lag term. The finite-step identity above applies to the actual algorithm whether
+or not this additional representation is identified.
 :::
 
 :::{prf:proposition} Compatibility with On-Shell Channel Masses
@@ -31595,6 +31935,367 @@ not the second.
 
 ## 3_fitness_manifold/03_curvature_gravity.md
 
+:::{prf:definition} Conditional fitness field and derivative convention
+:label: def-curvature-conditional-fitness-field
+
+Fix a recorded population, its eligibility mask, the sampled companion
+identities, their immutable source coordinates, the fitness parameters,
+and a target row $i$. Denote these conditioning data by $\Xi$.
+An identified conditional fitness provider specifies a scalar field
+$V_i(z\mid\Xi)$ by replacing the target query by $z$ and executing its
+stated measurement and fitness calculation. Its derivatives are spatial
+derivatives with respect to $z$ on one smooth stratum of that calculation.
+The stratum excludes changes of eligibility, donor identity, periodic
+image, or an active nonsmooth floor.
+
+For the conditional global-statistics construction, the target reward
+and separation vary with $z$, and the population means and variances
+containing those measurements are recomputed and differentiated. Other
+rows and donor source coordinates remain fixed. Freezing the numerical
+means and variances instead defines a different comparison field; it
+must be identified as such. For a neighborhood-dependent construction,
+the dependence of its weights and affected measurements is also part of
+the derivative.
+
+Differentiating the complete measurement stage with respect to a source
+population coordinate follows all uses of that coordinate. Even with
+companion indices fixed, moving row $i$ changes the separation of each
+row that selects $i$ as its source. For example, on a noncoincident
+Euclidean stratum, a row $j$ selecting $i$ has
+
+$$
+\nabla_{x_i}|x_j-x_i|=\frac{x_i-x_j}{|x_i-x_j|}.
+$$
+
+Those affected measurements also enter the differentiated population
+statistics. This population derivative and the provider's query
+derivative have different data dependencies: the former moves the
+source coordinate wherever it is used; the latter evaluates a query
+against the immutable source snapshot supplied to that operator.
+Holding companion indices fixed specifies the source identities, while
+holding source coordinates fixed additionally specifies which inputs
+are constant. Two such calculations can agree in value at a recorded
+point and have different gradients and Hessians.
+
+In the fixed affine coordinates of the algorithm, define the smooth
+shifted construction by
+
+$$
+\Phi_i(z\mid\Xi)=V_i(z\mid\Xi)+\frac{\epsilon_\Sigma}{2}|z|^2,
+\qquad g_{ab}=\partial_a\partial_b\Phi_i.
+$$
+
+Its domain of classical Hessian curvature is an open region where
+$\Phi_i\in C^4$ and $g\succ0$. The configured shift or clipping is the
+algorithm's noise rule; the derivative convention follows the inputs
+of the operator that executes it. If coordinates have units $L$ and fitness
+has units $F$, then $[g]=F/L^2$, $[\epsilon_\Sigma]=F/L^2$,
+$[C]=F/L^3$, and scalar and sectional curvature have units $F^{-1}$.
+All are dimensionless for dimensionless algorithm coordinates and
+fitness. A nonlinear coordinate change transports $g$ as a tensor;
+taking an ordinary Hessian again in the new coordinates generally
+constructs a different metric.
+:::
+
+:::{prf:definition} Levi-Civita connection
+:label: def-affine-connection
+
+For a $C^1$ nondegenerate metric $q$, the Levi-Civita connection has
+coefficients
+
+$$
+\Gamma^a_{bc}[q]
+=\frac12q^{ae}
+ (\partial_bq_{ec}+\partial_cq_{eb}-\partial_eq_{bc}).
+$$
+
+It is metric compatible and torsion free. Here $q=g_t$ gives the
+intrinsic spatial connection. A spacetime application uses the separately
+specified $q=G$ in {prf:ref}`assump-curvature-geometric-setting`.
+For the smooth shifted Hessian field, spatial coefficients use
+third derivatives of the fitness potential.
+
+Metric compatibility and zero torsion determine these coefficients
+uniquely: add
+$\partial_bq_{ac}=\Gamma_{abc}+\Gamma_{cba}$ and
+$\partial_cq_{ab}=\Gamma_{acb}+\Gamma_{bca}$, subtract
+$\partial_aq_{bc}$, and use symmetry in the two lower connection
+indices to solve for $\Gamma$.
+:::
+
+:::{prf:definition} Riemann curvature tensor
+:label: def-riemann-tensor
+
+For a $C^2$ metric and its Levi-Civita connection, use the convention
+
+$$
+R^a{}_{bcd}
+=\partial_c\Gamma^a_{bd}-\partial_d\Gamma^a_{bc}
+ +\Gamma^a_{ce}\Gamma^e_{bd}
+ -\Gamma^a_{de}\Gamma^e_{bc}.
+$$
+
+Thus $R(X,Y)V$ has components $R^a{}_{bcd}V^bX^cY^d$.
+The metric and connection are both spatial or both spacetime according
+to the application.
+:::
+
+:::{prf:lemma} Cancellation of fourth derivatives in a Hessian metric
+:label: lem-curvature-hessian-cancellation
+
+Let $\Phi\in C^4$ in the fixed Euclidean coordinates and let
+$g_{ab}=\partial_a\partial_b\Phi$ be positive definite. Write
+$C_{abc}=\partial_a\partial_b\partial_c\Phi$. Then
+
+$$
+\Gamma^a_{bc}=\frac12g^{ae}C_{ebc},\qquad
+R_{abcd}
+=\frac14g^{pq}
+ \left(C_{adp}C_{bcq}-C_{acp}C_{bdq}\right).
+$$
+
+In particular, the smooth construction
+$\Phi=V_{\mathrm{fit}}+\epsilon_\Sigma|x|^2/2$ has this formula.
+
+If $g\succeq mI$ and
+$|C(X,Y,\cdot)|\leq K_3|X|\,|Y|$ in Euclidean norm, then the
+absolute value of every sectional curvature is at most
+$K_3^2/(2m^3)$. Classical use of this identity is justified by the
+stated $C^4$ regularity. A clipped field has this Hessian identity only
+where it actually agrees with the smooth Hessian metric.
+:::
+
+:::{prf:definition} Ricci tensor and scalar curvature
+:label: def-ricci-tensor-scalar
+
+For the specified metric $q$,
+
+$$
+\operatorname{Ric}_{bd}=R^a{}_{bad},\qquad
+R=q^{bd}\operatorname{Ric}_{bd}.
+$$
+
+Geodesic focusing in the timelike direction $u$ uses
+$\operatorname{Ric}(u,u)$. Scalar curvature is a trace over directions;
+its sign alone does not determine that contraction or the sign of every
+sectional curvature.
+:::
+
+:::{prf:lemma} Direct Hessian Ricci and scalar contractions
+:label: lem-curvature-whitened-contractions
+
+Under {prf:ref}`lem-curvature-hessian-cancellation`, fix a point and let
+$E$ be an invertible matrix satisfying $E^{\mathsf T}gE=I$. Its columns
+form a $g$-orthonormal frame. Set
+
+$$
+\widehat C_{ijk}=C_{abc}E^a{}_iE^b{}_jE^c{}_k,
+\qquad (S_i)_{jk}=\widehat C_{ijk},
+\qquad t_k=\sum_i\widehat C_{iik}.
+$$
+
+Then the Ricci tensor in that frame and its scalar trace are
+
+$$
+\boxed{\widehat{\operatorname{Ric}}_{ij}
+=\frac14\left(\langle S_i,S_j\rangle_F
+-\sum_k t_k\widehat C_{ijk}\right)},
+\qquad
+\boxed{R=\frac14\left(\|\widehat C\|_F^2-|t|^2\right)}.
+$$
+
+The coordinate Ricci tensor is
+$\operatorname{Ric}=E^{-\mathsf T}\widehat{\operatorname{Ric}}E^{-1}$.
+For linearly independent coordinate vectors $u,v$, sectional curvature is
+
+$$
+K(u,v)=
+\frac{
+ C(u,v,\cdot)^{\mathsf T}g^{-1}C(u,v,\cdot)
+-C(u,u,\cdot)^{\mathsf T}g^{-1}C(v,v,\cdot)}
+{4\bigl(g(u,u)g(v,v)-g(u,v)^2\bigr)}.
+$$
+
+These expressions require no evaluated fourth derivatives and no
+materialized fourth-order curvature tensor. They retain the $C^4$
+hypothesis used to justify the classical cancellation identity.
+:::
+
+:::{prf:corollary} Packed three-dimensional calculation
+:label: cor-curvature-packed-three-dimensional
+
+In $d$ dimensions, fully symmetric derivatives of order $k$ have
+$\binom{d+k-1}{k}$ independent components. For $d=3$, store the Hessian
+at indices $a\leq b$ and the cubic tensor at indices $a\leq b\leq c$.
+They require six and ten components respectively. The complete scalar
+jet through order three contains $1+3+6+10=20$ coefficients when stored
+as derivatives rather than Taylor coefficients.
+
+Given an orthonormal frame, scalar contraction costs $O(d^3)$ arithmetic
+and cubic storage; the direct Ricci contraction costs $O(d^4)$.
+Whitening the dense cubic by three successive index contractions costs
+$O(d^4)$, and a dense metric factorization costs $O(d^3)$. These counts
+exclude evaluation of the fitness derivatives. A full Riemann output
+additionally has $d^4$ entries and is unnecessary for scalar or Ricci
+queries.
+:::
+
+:::{prf:lemma} Constant-work global-statistics update at a fixed query
+:label: lem-curvature-query-moment-cache
+
+Suppose precisely one of $n\geq2$ eligible scalar measurements is a
+variable $x(z)$. Let $\bar x_-$ and $M_{2,-}$ be the mean and sum of
+squared centered deviations of the other $n-1$ measurements. The
+population mean and population variance, with denominator $n$, are
+
+$$
+\bar x(z)=\bar x_-+\frac{x(z)-\bar x_-}{n},
+\qquad
+\sigma^2(z)=\frac{M_{2,-}}{n}
++\frac{n-1}{n^2}\bigl(x(z)-\bar x_-\bigr)^2.
+$$
+
+After preparing these summaries, every derivative of these statistics
+through the requested order follows by differentiating these formulas;
+no new population scan is needed per query. For $n=1$, the mean is
+$x(z)$ and the population variance is zero.
+:::
+
+:::{prf:remark} Clipped metrics require a different derivative calculation
+:label: rem-curvature-clipped-computation
+
+For the actual clipped construction, let
+$H=\nabla^2 V_i$ and $g_+=\epsilon_\Sigma I+f(H)$, where
+$f(\lambda)=\max(\lambda,0)$. Assume $V_i\in C^4$ and the spectrum of
+$H$ remains separated from zero on an open neighborhood. Matrix spectral
+calculus then gives
+
+$$
+\partial_a g_+=Df(H)[\partial_aH],
+\qquad
+\partial_a\partial_b g_+
+=Df(H)[\partial_a\partial_bH]
++D^2f(H)[\partial_aH,\partial_bH].
+$$
+
+In an orthonormal eigenbasis of $H$, the first derivative has entries
+$f[\lambda_i,\lambda_j](\partial_aH)_{ij}$. The symmetric second
+derivative uses
+
+$$
+\bigl(D^2f(H)[A,B]\bigr)_{ij}
+=\sum_k f[\lambda_i,\lambda_k,\lambda_j]
+ (A_{ik}B_{kj}+B_{ik}A_{kj}).
+$$
+
+Here brackets denote divided differences, with their continuous
+derivative limits at repeated eigenvalues of the same sign. Repeated
+nonzero eigenvalues therefore introduce no mathematical singularity.
+To verify the formulas, take disjoint complex contours around the
+positive and negative spectra, and extend $f$ analytically as $z$ and
+$0$ on their respective interiors. In the contour representation
+$f(H)=(2\pi\mathrm i)^{-1}\oint f(z)(zI-H)^{-1}\,dz$, write
+$A_z=(zI-H)^{-1}$. Its derivatives are
+$DA_z[B]=A_zBA_z$ and
+$D^2A_z[B,D]=A_zBA_zDA_z+A_zDA_zBA_z$.
+Diagonalizing $H$ inside these integrals gives residues with two and
+three scalar resolvents, namely the first and second divided
+differences displayed above. The spectral gap lets one use the same
+contours throughout a neighborhood. The spatial formulas then follow
+by the chain rule with $H(z)=\nabla^2V_i(z)$.
+
+If every eigenvalue is positive, $g_+$ agrees with the smooth shifted
+Hessian metric and {prf:ref}`lem-curvature-whitened-contractions`
+applies. If every eigenvalue is negative, $g_+=\epsilon_\Sigma I$ on
+the neighborhood and its curvature is zero. In a mixed-sign region,
+$g_+$ is generally not a Hessian metric. Compute its Levi-Civita
+curvature from $g_+,\partial g_+,\partial^2 g_+$; the latter generally
+needs fourth fitness derivatives. Substituting clipped eigenvalues in
+the Hessian curvature identity does not perform this calculation.
+
+At a zero eigenvalue, spectral clipping does not guarantee a $C^2$
+metric. Classical curvature is unavailable without a separate proof of
+smoothness at that point. A finite-difference estimate across the
+threshold is a resolution-dependent diagnostic, not a proof of a
+classical curvature value. A numerical tolerance used to exclude such
+points must be reported with the result.
+:::
+
+:::{prf:remark} Curvature of a sampled field and of an averaged covariance
+:label: rem-curvature-sampling-convention
+
+The conditional field above is indexed by its sampled sources and
+population snapshot. Its curvature is not automatically the curvature
+of a population-averaged metric. In general,
+
+$$
+\mathbb E\bigl[(\epsilon_\Sigma I+H_+)^{-1}\bigr]
+\ne\bigl(\epsilon_\Sigma I+(\mathbb EH)_+\bigr)^{-1},
+\qquad
+\mathbb E[R(g)]\ne R(\mathbb E[g]).
+$$
+
+If a provider instead constructs an averaged covariance, its own spatial
+derivatives define its metric and curvature. Query-dependent sampling
+probabilities must also be differentiated when differentiating that
+expectation. Likewise the covariance shape $g^{-1}$, its noise factor,
+and a physical increment covariance $\alpha g^{-1}$ are separate
+quantities. For constant $\alpha>0$, interpreting the latter's inverse
+as the metric gives $q=g/\alpha$ and $R(q)=\alpha R(g)$; a varying
+$\alpha$ also contributes metric derivatives. A reported curvature must
+therefore identify its field, derivative convention, and normalization.
+:::
+
+:::{prf:definition} Computational representation of fitness and metric jets
+:label: def-curvature-rust-representation
+
+The Rust module `algorithmic_gas::physics::jet` represents multivariate
+Taylor polynomials in a shared `JetSpace::new(dimension, order)`.
+An internal coefficient indexed by the multi-index $\alpha$ equals
+$\partial^\alpha V/\alpha!$. Conversion through
+`physics::geometry::FitnessJet::from_jet` produces **ordinary
+derivatives**: its `hessian`, `third`, and optional `fourth` arrays use
+lexicographic order over nondecreasing axis tuples. `value` and
+`gradient` complete the scalar jet. Thus a repeated-index derivative
+must not be copied directly from a normalized Taylor coefficient.
+
+The geometry entry points are:
+
+| Function | Mathematical input and result |
+|---|---|
+| `hessian_curvature(&jet, epsilon, full_riemann)` | Strict positive shifted Hessian; uses third derivatives and the direct contractions above |
+| `fitness_curvature(&jet, epsilon, policy, threshold, full_riemann)` | Strict or clipped construction; the absolute Hessian spectral threshold determines where clipped classical curvature is unavailable |
+| `metric_curvature(&metric_jet, full_riemann)` | An independently supplied positive metric and its first two spatial derivatives; evaluates the general Levi-Civita formula |
+| `ExecutionContext::smooth_curvature_batch(&jets, epsilon, policy, threshold)` | Batched smooth Hessian or constant clipped metrics; whitening and curvature contractions use the explicitly selected compute backend |
+
+`MetricJet` uses row-major arrays with layouts $g_{ij}$,
+$\partial_k g_{ij}$, and $\partial_k\partial_l g_{ij}$: derivative
+indices precede matrix indices. These entries must be derivatives of
+the same $C^2$ metric field. A `CurvatureBatch` returns its `spectrum`,
+coordinate `ricci`, `scalar`, `einstein`, and eigenframe `sectional`
+curvatures, with optional covariant row-major `riemann`. The `einstein`
+field is the geometric contraction $\operatorname{Ric}-Rg/2$; computing
+it imposes no field equation or identification with stress.
+
+The sectional array enumerates pairs $i<j$ of orthonormal metric
+eigenvectors. Within a repeated-eigenvalue eigenspace the eigenbasis is
+not unique, so these particular sectional planes are frame-dependent.
+The scalar and the coordinate Ricci tensor do not depend on that choice.
+The `full_riemann=false` route avoids allocating a Riemann output.
+The third-derivative Hessian route additionally avoids fourth fitness
+derivatives; that saving does not apply to general mixed-sign clipping.
+
+The batch method performs the small eigendecompositions on the host,
+then uses backend tensor products for whitening, Ricci, scalar, and
+sectional contractions, with one combined result readback. It retains
+$O(Nd^3)$ working storage and $O(Nd^4)$ contraction work, subject to
+the execution context's allocation limits. All queries in a batch
+must share a dimension and precision. Mixed-sign clipping and clipping
+thresholds are rejected by this method; there is no automatic backend
+fallback. Such mixed-sign queries require the separately invoked
+general metric calculation.
+:::
+
 :::{prf:assumption} Spatial and spacetime geometry used in this chapter
 :label: assump-curvature-geometric-setting
 
@@ -31624,31 +32325,6 @@ The unit timelike parameter $\tau$ below satisfies
 $G(u,u)=-1$ for $u=dz/d\tau$. With dimensional $G=-c^2dt^2+g_t$,
 $\tau$ is proper length, equal to $c$ times physical proper time.
 Equivalently one may use geometric units $c=1$.
-:::
-
-:::{prf:definition} Levi-Civita connection
-:label: def-affine-connection
-
-For a $C^1$ nondegenerate metric $q$, the Levi-Civita connection has
-coefficients
-
-$$
-\Gamma^a_{bc}[q]
-=\frac12q^{ae}
- (\partial_bq_{ec}+\partial_cq_{eb}-\partial_eq_{bc}).
-$$
-
-It is metric compatible and torsion free. Here $q=g_t$ gives the
-intrinsic spatial connection, while $q=G$ gives the spacetime connection.
-For the smooth shifted Hessian field, spatial coefficients use
-third derivatives of the fitness potential.
-
-Metric compatibility and zero torsion determine these coefficients
-uniquely: add
-$\partial_bq_{ac}=\Gamma_{abc}+\Gamma_{cba}$ and
-$\partial_cq_{ab}=\Gamma_{acb}+\Gamma_{bca}$, subtract
-$\partial_aq_{bc}$, and use symmetry in the two lower connection
-indices to solve for $\Gamma$.
 :::
 
 :::{prf:lemma} Connection of the time-dependent slab metric
@@ -31835,64 +32511,6 @@ $$
 
 The coordinate contraction is $R^a{}_{bcd}V^bX^cY^d$.
 Using the same vector in both antisymmetric slots gives zero.
-:::
-
-:::{prf:definition} Riemann curvature tensor
-:label: def-riemann-tensor
-
-For a $C^2$ metric and its Levi-Civita connection, use the convention
-
-$$
-R^a{}_{bcd}
-=\partial_c\Gamma^a_{bd}-\partial_d\Gamma^a_{bc}
- +\Gamma^a_{ce}\Gamma^e_{bd}
- -\Gamma^a_{de}\Gamma^e_{bc}.
-$$
-
-Thus $R(X,Y)V$ has components $R^a{}_{bcd}V^bX^cY^d$.
-The metric and connection are both spatial or both spacetime according
-to the application.
-:::
-
-:::{prf:lemma} Cancellation of fourth derivatives in a Hessian metric
-:label: lem-curvature-hessian-cancellation
-
-Let $\Phi\in C^4$ in the fixed Euclidean coordinates and let
-$g_{ab}=\partial_a\partial_b\Phi$ be positive definite. Write
-$C_{abc}=\partial_a\partial_b\partial_c\Phi$. Then
-
-$$
-\Gamma^a_{bc}=\frac12g^{ae}C_{ebc},\qquad
-R_{abcd}
-=\frac14g^{pq}
- \left(C_{adp}C_{bcq}-C_{acp}C_{bdq}\right).
-$$
-
-In particular, the smooth construction
-$\Phi=V_{\mathrm{fit}}+\epsilon_\Sigma|x|^2/2$ has this formula.
-
-If $g\succeq mI$ and
-$|C(X,Y,\cdot)|\leq K_3|X|\,|Y|$ in Euclidean norm, then the
-absolute value of every sectional curvature is at most
-$K_3^2/(2m^3)$. Classical use of this identity is justified by the
-stated $C^4$ regularity. A clipped field has this Hessian identity only
-where it actually agrees with the smooth Hessian metric.
-:::
-
-:::{prf:definition} Ricci tensor and scalar curvature
-:label: def-ricci-tensor-scalar
-
-For the specified metric $q$,
-
-$$
-\operatorname{Ric}_{bd}=R^a{}_{bad},\qquad
-R=q^{bd}\operatorname{Ric}_{bd}.
-$$
-
-Geodesic focusing in the timelike direction $u$ uses
-$\operatorname{Ric}(u,u)$. Scalar curvature is a trace over directions;
-its sign alone does not determine that contraction or the sign of every
-sectional curvature.
 :::
 
 :::{prf:definition} Edge deformation in a declared chart
@@ -32246,17 +32864,21 @@ approximation hypotheses.
 
 | Geometric quantity | Construction used here | Required identification |
 |---|---|---|
+| Fitness derivatives | Differentiated conditional fitness pipeline | Recorded conditioning data, active smooth stratum, and stated derivative convention |
 | Spatial metric | Inverse adaptive covariance shape | Correct diffusion branch, prefactor, and spatial reconstruction |
 | Spacetime metric | $G=-c^2dt^2+g_t$ | The specified Lorentzian model and causal consistency |
 | Parallel transport | Levi-Civita or stated face maps | Same connection and compatible frames |
-| Curvature | Small-loop holonomy divided by area | Smoothness, nondegenerate shape, and $o(A)$ transport error |
+| Curvature | Metric derivative formula or consistent small-loop holonomy | A $C^2$ metric; transport recovery also needs nondegenerate loops and $o(A)$ transport error |
 | Hessian-metric curvature | Quadratic expression in third derivatives | A smooth positive Hessian metric |
 | Expansion | $\dot V/V$ | Transverse volume and differentiated consistency |
 | Geodesic focusing | Raychaudhuri inequality | Geodesic flow, convergence condition, and zero vorticity |
 
-These are geometric constructions and conditional identifications.
-An Einstein-type field equation additionally needs the variational or
-constitutive assumptions specified in {doc}`04_field_equations`.
+The next dynamical calculation uses the full transition law to derive
+metric increments and mechanical balances, as in
+{doc}`04_field_equations`. An Einstein-type equation would require
+identifying a controlled limit of those independently derived laws,
+including its stress tensor and any unresolved terms. Computing
+curvature alone does not determine that evolution or its coefficients.
 :::
 
 :::{prf:remark} Focusing and optimization use different evolution estimates
@@ -32284,6 +32906,668 @@ determine the dynamical convergence statement.
 :::
 
 ## 3_fitness_manifold/04_field_equations.md
+
+:::{prf:definition} Extended state and transition experiment
+:label: def-algorithmic-transition-state
+
+Fix population capacity $N$, step size $h$, the algorithm configuration,
+and the specified input protocol. Let $X_n$ contain the population
+(including validity and ancestry), retained donor history, provider and
+domain state, and the schedule and random-stream addresses needed at step
+$n$. Include changing external inputs in the state, or condition on their
+specified protocol. A measurable update is
+
+$$
+X_{n+1}=F_{N,h}(X_n,\xi_{n+1}),\qquad
+\mathsf P_{N,h}A(X)=
+\mathbb E[A(F_{N,h}(X,\xi))\mid X].
+$$
+
+The conditional law of $\xi$ includes the configured donor, acceptance,
+revival, jitter, and kinetic innovations. Independence is used only where
+that law supplies it. Write $\mathscr F_n$ for the information available
+through $X_n$ before these future innovations are exposed.
+
+The stochastic experiment uses the declared innovation law. A numerical
+replay with a fixed complete pseudo-random future is deterministic.
+Checkpoint-conditioned replicas hold the algorithmic state fixed and
+resample future innovation keys under a recorded ensemble protocol; they
+do not condition on an already exposed future key.
+
+An observable $A:\mathcal X\to\mathbb R^m$ includes its reconstruction
+convention and reference coordinates. When extinction is possible, extend
+the transition to a cemetery outcome and specify $A$ there. If a metric
+does not exist at an outcome, report that outcome and its probability;
+discarding it changes the conditional experiment. A killed observable
+with a specified cemetery value and a survival-conditioned observable are
+different quantities.
+:::
+
+:::{prf:theorem} Finite-step observable equation and fluctuation covariance
+:label: thm-algorithmic-observable-increment
+
+Assume $A(X_n)$ and $A(X_{n+1})$ are square integrable. Define
+
+$$
+b_A(X)=\mathsf P_{N,h}A(X)-A(X),\qquad
+\Gamma_A(X)=\mathsf P_{N,h}(AA^\top)(X)
+ -(\mathsf P_{N,h}A(X))(\mathsf P_{N,h}A(X))^\top.
+$$
+
+Then
+
+$$
+\boxed{
+A(X_{n+1})-A(X_n)=b_A(X_n)+\eta_{n+1},\qquad
+\mathbb E[\eta_{n+1}\mid\mathscr F_n]=0,\quad
+\mathbb E[\eta_{n+1}\eta_{n+1}^\top\mid\mathscr F_n]
+=\Gamma_A(X_n).
+}
+$$
+
+In particular, for fixed spatial probes $z_1,\ldots,z_q$, take $A(X)$ to
+be the vector of independent components of the specified metric
+$g_X(z_\ell)=\mathcal G(X;z_\ell)$. This gives an exact stochastic metric
+equation at finite $N,h$, whenever that observable is defined and square
+integrable. For the implemented global quadratic research fixture,
+{prf:ref}`lem-algorithmic-quadratic-finite-step-moments` proves this
+integrability directly. It does not assert that $b_A$ is a function of
+$g$ alone.
+:::
+
+:::{prf:proposition} Operator decomposition without a closure assumption
+:label: prop-algorithmic-stage-telescoping
+
+Let $X_n^{(0)},\ldots,X_n^{(L)}$ be the actual extended intermediate
+states, with $X_n^{(0)}=X_n$ and $X_n^{(L)}=X_{n+1}$. A skipped operation
+is an identity stage. Define $\Delta_\ell A=A(X_n^{(\ell)})-
+A(X_n^{(\ell-1)})$. Then
+
+$$
+\Delta A=\sum_{\ell=1}^L\Delta_\ell A,\qquad
+b_A(X_n)=\sum_{\ell=1}^L
+ \mathbb E[\Delta_\ell A\mid X_n],
+$$
+
+and
+
+$$
+\Gamma_A(X_n)=
+\sum_{\ell,k=1}^L
+\operatorname{Cov}(\Delta_\ell A,\Delta_k A\mid X_n).
+$$
+
+If $b_{A,\ell}(X_n^{(\ell-1)})$ is the stage drift conditional on
+everything entering stage $\ell$, its contribution to the full-step
+drift is $\mathbb E[b_{A,\ell}(X_n^{(\ell-1)})\mid X_n]$.
+:::
+
+:::{prf:proposition} Fixed-probe and material metric increments
+:label: prop-algorithmic-material-metric
+
+Express all tensors in a fixed reference chart. For a tracked old probe
+$z$ and its specified new location $z'$, the exact identity is
+
+$$
+g_{X'}(z')-g_X(z)
+=\underbrace{g_{X'}(z)-g_X(z)}_{\text{field change at a fixed probe}}
+ +\underbrace{g_{X'}(z')-g_{X'}(z)}_{\text{spatial sampling change}}.
+$$
+
+For a clone replacing a slot at $z_i$ by a source at $y_j$, and ending at
+$z_i'$, a useful refinement is
+
+$$
+\begin{aligned}
+g_{X'}(z_i')-g_X(z_i)
+={}&[g_{X'}(y_j)-g_X(y_j)]
+  +[g_{X'}(z_i')-g_{X'}(y_j)]\\
+ &+[g_X(y_j)-g_X(z_i)].
+\end{aligned}
+$$
+
+The three terms respectively measure field evolution at the source
+probe, subsequent motion, and the slot replacement. A historical source
+has both a source frame and a location. Comparing with its historical
+metric requires recording that frame and adding the corresponding metric
+difference explicitly.
+
+For a reconstructed material map $\Phi$, the geometrically transported
+comparison is $\Phi^*g_{X'}-g_X$, where
+
+$$
+(\Phi^*g_{X'})(z)=D\Phi(z)^\top
+                  g_{X'}(\Phi(z))D\Phi(z).
+$$
+
+A discrete clone map does not automatically provide this differentiable
+map or its Jacobian.
+:::
+
+:::{prf:proposition} Independent-replica drift test
+:label: prop-algorithmic-independent-replicas
+
+Fix $X$ and draw two conditionally independent groups of increments
+$Y=A(X')-A(X)$, of sizes $R,S>1$. Let their sample means be
+$\widehat b_{\mathrm{pred}}$ and $\widehat b_{\mathrm{test}}$. Then
+
+$$
+\mathbb E[\widehat b_{\mathrm{test}}-\widehat b_{\mathrm{pred}}\mid X]=0,
+\qquad
+\operatorname{Cov}(\widehat b_{\mathrm{test}}-\widehat b_{\mathrm{pred}}
+ \mid X)
+=\left(\frac1R+\frac1S\right)\Gamma_A(X).
+$$
+
+Each group's sample covariance with denominator one less than its size
+is unbiased for $\Gamma_A(X)$. For a fixed analytic prediction $b_*(X)$,
+the test mean instead has bias $b_A(X)-b_*(X)$ and covariance
+$\Gamma_A(X)/S$.
+:::
+
+:::{prf:remark} What a simulation can establish
+:label: rem-algorithmic-validation-law
+
+Use replicas or independent trajectories as the sampling units. Walkers
+sharing a population are not independent replicas. Finite variance gives
+the identities above; it does not make a finite-sample Gaussian confidence
+interval exact. Exact reference distributions, proved tail bounds, or a
+justified asymptotic approximation determine the uncertainty procedure.
+An estimated drift and an independently checked analytic drift must be
+reported separately. A reduced predictor using only density, current, or
+metric is tested for bias against the full-state conditional law.
+
+The formulas concern the declared innovation law and real arithmetic.
+Finite-precision evaluation and pseudo-random simulation are numerical
+approximations whose discrepancy is checked against independent analytic
+or enumerable reference cases. An unchanged-seed replay separately checks
+that instrumentation has not changed the executed dynamics.
+:::
+
+:::{prf:lemma} Finite-step moments for the implemented global quadratic fixture
+:label: lem-algorithmic-quadratic-finite-step-moments
+
+Consider the global-normalization research configuration in
+`algorithmic-gas/crates/benchmarks/examples/physics_research.rs`:
+finite $N\geq2$ and dimension $d$, the minimizing `Quadratic` objective
+$U(x)=|x|^2/2$, unbounded boundary policy, current-frame single-source
+literal cloning, the identity clone transform (no jitter or restitution),
+and the implemented BAOAB integrator. Let its fixed parameters satisfy
+$h>0$, $\gamma>0$, $T\geq0$, and $\epsilon_\Sigma>0$. Its metric provider
+uses global standardization with positive variance regularizers,
+regularized Euclidean diversity with positive distance floor, and logistic
+maps with positive amplitude and positive output floor. Fitness powers
+are the configured finite constants. The innovations are independent
+standard Gaussian vectors, and the initial population is a fixed finite
+realization of the configured initialization.
+
+In the simulation's dimensionless units, write
+$Y_n=(x_1,\ldots,x_N,v_1,\ldots,v_N)$ and let
+$\xi_{n+1}\in\mathbb R^{Nd}$ collect the $O$-stage innovations. With
+
+$$
+c=e^{-\gamma h},\qquad
+s^2=\frac{1-e^{-2\gamma h}}{2\gamma},\qquad
+\beta=\sqrt{\frac{2\gamma T}{\epsilon_\Sigma}},\qquad
+a=\sqrt N(1+h/2)^4,\quad b=(1+h/2)^2s\beta,
+$$
+
+the executed update obeys the pathwise bound
+
+$$
+\|Y_{n+1}\|\leq a\|Y_n\|+b\|\xi_{n+1}\|.
+$$
+
+For every finite $n$ and $p\geq1$,
+
+$$
+\left(\mathbb E\|Y_n\|^p\right)^{1/p}
+\leq a^n\|Y_0\|+
+b\left(\mathbb E\|\xi_1\|^p\right)^{1/p}
+ \sum_{j=0}^{n-1}a^j<\infty.
+$$
+
+All BAOAB intermediate coordinates have finite moments of every order.
+For the programmed fitness query field with frozen coordinate context
+$Y_{\mathcal C}$, there is a finite constant $C$ such that
+
+$$
+\left\|\nabla_z^2F_i^{\mathrm{probe}}(z;\mathcal C)\right\|_F
+\leq C(1+\|z\|+\|Y_{\mathcal C}\|)^{12}.
+$$
+
+The constant depends on the fixed population size, dimension, objective,
+and configured regularizers, maps, and powers, and is uniform over the
+finite companion assignments. Consequently the clipped metric at fixed
+probes and at the executed $O$ queries has finite moments of every order.
+In particular, these metric readouts satisfy the square-integrability
+condition of {prf:ref}`thm-algorithmic-observable-increment`.
+:::
+
+:::{prf:definition} Query derivative and population perturbation
+:label: def-algorithmic-query-versus-population
+
+Let $\mathcal C$ be the recorded `FrozenFitnessContext`. The configured
+query field $F_i^{\mathrm{probe}}(z;\mathcal C)$ holds its donor source
+coordinates and other rows' measurements fixed while replacing target
+row $i$ by the query measurements. It differentiates the resulting
+standardization, positive maps, and powers. For example, global reward
+standardization uses
+
+$$
+\bar r(z)=\frac{r_i(z)+\sum_{j\ne i}r_j^0}{k}
+$$
+
+over the $k$ eligible rows, with its variance recomputed from these same
+values. Local standardization also differentiates the target's configured
+localization weights. In the clipped branch the programmed metric is
+$g_{\mathcal C}(z)=\epsilon_\Sigma I+
+[\nabla_z^2F_i^{\mathrm{probe}}(z;\mathcal C)]_+$.
+
+A population perturbation instead specifies $X_\theta$ and reevaluates
+the transition from that extended state. Even with companion identities
+fixed, its branch observable $A_\theta(c)$ differentiates every affected
+measurement and normalization. For example, if $c_j=i$, moving current
+walker $i$ changes the sampled distance in row $j$. This dependence is
+absent from the query field whose other measurements remain fixed.
+These are two explicitly different arguments of the programmed formulas.
+The sampled/expected distinction in {prf:ref}`def-c3-fitness-laws`
+additionally distinguishes holding a discrete assignment fixed from
+averaging over its law.
+:::
+
+:::{prf:proposition} Derivative of the complete finite-choice transition
+:label: prop-algorithmic-transition-derivative
+
+Let $\theta$ vary in an open finite-dimensional parameter region. Let
+$\mathcal C_{\mathrm{fin}}$ be a fixed finite list of complete discrete
+choice histories, including zero-probability histories. Write
+$p_\theta(c)$ for the actual joint probability of history $c$ and
+$A_\theta(c)$ for its resulting observable after all deterministic
+dependencies on $\theta$ have been evaluated. Where these functions are
+differentiable,
+
+$$
+\partial_a\sum_c p_\theta(c)A_\theta(c)
+=\sum_c\left[p_\theta(c)\partial_a A_\theta(c)
+             +A_\theta(c)\partial_a p_\theta(c)\right].
+$$
+
+If the positive-probability support is constant in a neighborhood and
+$\ell_\theta(c)=\log p_\theta(c)$ on that support, this becomes
+
+$$
+\boxed{
+\partial_a\mathbb E_\theta[A_\theta]
+=\mathbb E_\theta[
+ \partial_a A_\theta+A_\theta\,\partial_a\ell_\theta].
+}
+$$
+
+For twice differentiable terms, the Hessian is
+
+$$
+\partial_{ab}\mathbb E_\theta[A_\theta]
+=\mathbb E_\theta\!\left[
+\partial_{ab}A_\theta
++(\partial_a A_\theta)(\partial_b\ell_\theta)
++(\partial_b A_\theta)(\partial_a\ell_\theta)
++A_\theta\bigl(\partial_{ab}\ell_\theta+
+        \partial_a\ell_\theta\,\partial_b\ell_\theta\bigr)\right].
+$$
+
+Use the actual joint law, including mutual-pair constraints and sequential
+choices. Its factorization into conditional choice probabilities, rather
+than a product of independent row marginals, follows the operator
+composition in {prf:ref}`thm-cloning-operator-composition`. Where those
+conditional probabilities are positive, the joint log-probability
+derivative is the sum of their log-probability derivatives, each evaluated
+along that history with all its state dependencies retained.
+:::
+
+:::{prf:proposition} Including continuous innovations
+:label: prop-algorithmic-continuous-response
+
+For continuous innovations $u$, write the full transition expectation as
+$J(\theta)=\sum_c\int A_\theta(c,u)r_\theta(c,u)\,\nu(du)$ against a
+fixed reference measure. Fix a parameter coordinate $a$ and a neighborhood
+of the evaluation point. Suppose $A_\theta,r_\theta$ are continuously
+differentiable in that coordinate for $\nu$-almost every $u$, $J$ is
+absolutely integrable at the evaluation point, and
+
+$$
+\sup_\theta\left[
+r_\theta(c,u)\|\partial_a A_\theta(c,u)\|
++\|A_\theta(c,u)\|\,|\partial_a r_\theta(c,u)|
+\right]\leq M_c(u),\qquad
+\sum_c\int M_c\,d\nu<\infty.
+$$
+
+Then
+
+$$
+\partial_aJ
+=\sum_c\int[
+r_\theta\,\partial_a A_\theta+
+A_\theta\,\partial_a r_\theta]\,d\nu.
+$$
+
+On a common positive support this is the same score formula with
+$\partial_a\log r_\theta$. If innovations are represented by a
+parameter-independent base law, its density derivative is zero; their
+parameter-dependent transformation remains in $\partial_a A_\theta$.
+
+:::
+
+:::{prf:remark} Applying the response formula to the metric equation
+:label: rem-algorithmic-complete-response
+
+For a perturbation of the exact drift in
+{prf:ref}`thm-algorithmic-observable-increment`, differentiate the entire
+next-state expectation by the preceding propositions and subtract the
+derivative of the initial readout $A_\theta(X_\theta)$. For the programmed
+metric observable, this differentiates both its query formula and the
+changes to its recorded context produced by the transition.
+
+The finite-choice product formula retains probability changes even
+when a history has zero probability; the score form uses the stated
+support condition. At a clipping, acceptance, eligibility, or candidate-set
+change, apply a derivative formula only where its derivatives exist;
+the finite-step expectation and finite differences use the executed
+transition wherever the chosen observable is defined at the compared
+states. A frozen-choice derivative alone
+omits the law term whenever those probabilities respond to $\theta$.
+:::
+
+:::{prf:definition} Mechanical observables and stage convention
+:label: def-algorithmic-mechanical-observables
+
+For unit particle masses, positions $x_i$, velocities $v_i$, and
+eligibility indicators $a_i$, define
+
+$$
+K(X)=\frac12\sum_i a_i|v_i|^2,\qquad
+p(X)=\sum_i a_i v_i,\qquad
+E(X)=K(X)+U(X).
+$$
+
+Here $U$ is an explicitly specified mechanical energy observable,
+possibly population-dependent. Raw reward is not automatically $-U$.
+With position units $L$ and integration-time units $\tau$, $v$ has units
+$L/\tau$, $K$ has unit-mass units $L^2/\tau^2$, friction has units
+$\tau^{-1}$, and a velocity noise factor $B$ has units
+$L/\tau^{3/2}$. The algorithm may choose dimensionless reference units.
+
+Use the executed stage ordering: measurement and donor selection; literal
+cloning; clone transforms; reconciliation, reward-validity, and boundary
+updates; kinetics; final reconciliation and validity checks. BAOAB
+kinetics executes $B_1,A_1,O,A_2,B_2$, with boundary checks between these
+operations. Eligibility is recomputed between stages. For a pure
+thermostat or kick formula, use its input and output before any subsequent
+boundary or domain transformation; those transformations receive separate
+increments when separately observed.
+:::
+
+:::{prf:theorem} Conditional energy and momentum of the Rust thermostat
+:label: thm-algorithmic-thermostat-moments
+
+For one eligible walker, condition on everything entering the $O$ stage,
+including $v$ and $B\in\mathbb R^{d\times r}$. Let $h>0$, $\gamma\geq0$,
+and suppose its innovation
+satisfies $\mathbb E\xi=0$ and $\mathbb E\xi\xi^\top=I_r$. The update in
+`algorithmic-gas/crates/algorithmic-gas/src/kinetic.rs` is
+
+$$
+v^+=c v+sB\xi,\qquad
+c=e^{-\gamma h},\qquad
+s^2=\begin{cases}
+\dfrac{1-e^{-2\gamma h}}{2\gamma},&\gamma>0,\\[4pt]
+h,&\gamma=0.
+\end{cases}
+$$
+
+Put $Q=BB^\top$ and $K_v=|v|^2/2$. Then, before boundary handling,
+
+$$
+\boxed{\mathbb E[\Delta K_v\mid v,B]
+=(c^2-1)K_v+\frac{s^2}{2}\operatorname{tr}Q,}
+\qquad
+\mathbb E[\Delta v\mid v,B]=(c-1)v,\quad
+\operatorname{Cov}(\Delta v\mid v,B)=s^2Q.
+$$
+
+For Gaussian innovations,
+
+$$
+\boxed{\operatorname{Var}(\Delta K_v\mid v,B)
+=c^2s^2 v^\top Qv+\frac{s^4}{2}\operatorname{tr}(Q^2).}
+$$
+
+For independent, symmetric unit-variance components with common fourth
+moment $\mu_4$, the variance instead is
+
+$$
+c^2s^2 v^\top Qv+\frac{s^4}{2}\operatorname{tr}(Q^2)
++\frac{s^4}{4}(\mu_4-3)
+ \sum_{\alpha=1}^r[(B^\top B)_{\alpha\alpha}]^2.
+$$
+
+The built-in standardized uniform law has $\mu_4=9/5$; its correction is
+therefore negative. The mean formula does not require Gaussian noise.
+:::
+
+:::{prf:corollary} Geometry in the thermostat budget
+:label: cor-algorithmic-geometric-heating
+
+If a provider constructs $B=\sigma g^{-1/2}$ with $g$ positive definite,
+then the conditional noise-energy injection for that walker is
+
+$$
+\frac{s^2\sigma^2}{2}\operatorname{tr}(g^{-1}).
+$$
+
+For conditionally independent innovations across walkers, total
+conditional energy means and variances sum over the eligible rows.
+Without that independence, include the cross covariances. If $B$ or the
+eligible set is itself random before the stage, the full-step prediction
+uses the tower property and total covariance over those earlier events.
+
+:::
+
+:::{prf:proposition} Exact kicks and displacements
+:label: prop-algorithmic-kick-work
+
+For any realized velocity increment $\delta v_i$ on a fixed eligible
+set,
+
+$$
+\Delta p=\sum_i a_i\delta v_i,\qquad
+\Delta K=\sum_i a_i\left(v_i\cdot\delta v_i+
+                                      \frac12|\delta v_i|^2\right).
+$$
+
+A Rust BAOAB kick uses the executed acceleration
+$f_i^{\mathrm{tot}}=-\mathcal D_i(X)+f_i^{\mathrm{visc}}(X)$, where
+$\mathcal D_i$ is the vector returned by the configured gradient provider
+and $f_i^{\mathrm{visc}}$ is the configured QFT viscosity contribution,
+zero when disabled. The recorded `total_force` stores this acceleration.
+Thus $\delta v_i=(h/2)f_i^{\mathrm{tot}}$, and its energy contribution per
+eligible walker is
+
+$$
+\frac h2 v_i\cdot f_i^{\mathrm{tot}}
+ +\frac{h^2}{8}|f_i^{\mathrm{tot}}|^2.
+$$
+
+When viscosity is disabled, this specializes to
+$-(h/2)v_i\cdot\mathcal D_i+(h^2/8)|\mathcal D_i|^2$.
+When both accelerations are present, the squared total includes their
+cross term; separate squared-force terms alone do not give the kick work.
+
+When the provider is established to be the gradient of a scalar potential,
+one may write $\mathcal D_i=\nabla_iU_{\mathrm{pot}}$. The increment
+identity does not require that additional identification.
+The second kick recomputes the provider at the post-$A_2$ state. A displacement
+with unchanged velocities has zero kinetic increment and mechanical
+potential increment $U(X^+)-U(X^-)$. Any relation between this $U$ and
+$U_{\mathrm{pot}}$ is part of the supplied energy model. Changes in
+eligibility and boundary transformations are accounted for by direct
+differences of the full observables.
+
+:::
+
+:::{prf:proposition} Literal-clone transfers and restitution
+:label: prop-algorithmic-clone-balances
+
+Condition on a frozen source pool and realized clone decisions. Let
+$C_i$ indicate that slot $i$ is replaced, and let $(y_{J_i},w_{J_i},
+\bar a_{J_i})$ be its source position, velocity, and eligibility.
+Literal cloning has the exact increments
+
+$$
+\Delta p_{\mathrm{clone}}=
+\sum_i C_i(\bar a_{J_i}w_{J_i}-a_i v_i),\qquad
+\Delta K_{\mathrm{clone}}=
+\frac12\sum_i C_i(\bar a_{J_i}|w_{J_i}|^2-a_i|v_i|^2).
+$$
+
+The source may be historical. Simultaneous recipients read the frozen
+pool, including repeated donors, rather than one another's updated slots.
+The potential contribution is the exact difference of the specified $U$.
+
+For an activated disjoint current mutual pair with pre-clone velocities
+$v_i,v_j$, the built-in restitution transform with coefficient
+$\alpha\in[0,1]$ sets
+
+$$
+\bar v=\frac{v_i+v_j}{2},\qquad
+v_i^*=\bar v+\frac\alpha2(v_i-v_j),\quad
+v_j^*=\bar v-\frac\alpha2(v_i-v_j).
+$$
+
+Relative to that pair's pre-clone state,
+
+$$
+\Delta p_{\mathrm{pair}}=0,\qquad
+\Delta K_{\mathrm{pair}}=
+-\frac{1-\alpha^2}{4}|v_i-v_j|^2.
+$$
+
+The code activates this transform when either pair member accepted a
+clone. It overwrites both velocities using their pre-clone values.
+Consequently its transform-stage increment is
+
+$$
+\Delta K_{\mathrm{transform,pair}}
+=-\frac{1-\alpha^2}{4}|v_i-v_j|^2
+  -\Delta K_{\mathrm{literal,pair}},
+$$
+
+with the analogous subtraction for momentum. It is not an additional
+pair loss applied to the literal-clone velocities.
+:::
+
+:::{prf:proposition} Weak density and local momentum equations
+:label: prop-algorithmic-weak-density
+
+For a bounded test function $\varphi$ on the walker state, define the
+fixed-capacity empirical measure
+
+$$
+\mu_X=\frac1N\sum_i a_i\delta_{z_i},\qquad A_\varphi(X)=\mu_X\varphi.
+$$
+
+Then the exact finite-step weak equation is
+
+$$
+\mu_{n+1}\varphi-\mu_n\varphi
+=(\mathsf P_{N,h}A_\varphi-A_\varphi)(X_n)+\eta_{\varphi,n+1}.
+$$
+
+Condition on the source pool and fitness values, but average over clone
+source selection and acceptance. If
+$q_{ij}=\Pr(C_i=1,J_i=j\mid\text{this context})$, literal cloning gives
+
+$$
+\mathbb E[\Delta_{\mathrm{clone}}\mu\varphi\mid\text{context}]
+=\frac1N\sum_{i,j}q_{ij}
+ [\bar a_j\varphi(y_j,w_j)-a_i\varphi(x_i,v_i)].
+$$
+
+For the default decision law on an eligible row, with donor marginal
+$\pi_{ij}$ conditional on the same frozen fitness context,
+
+$$
+q_{ij}=\pi_{ij}
+\min\!\left(1,\max\!\left(0,
+\frac{f_j-f_i}{(f_i+\epsilon)\,\zeta}\right)\right),
+$$
+
+where $\epsilon$ and $\zeta$ are the configured acceptance regularizer and
+saturation. An ineligible row is instead revived uniformly from eligible
+current-frame sources. Mutual donor constraints affect joint laws and
+covariances; they do not change this marginal expectation formula.
+
+For a spatial test function $\psi$, the local momentum observable is
+$p_\psi(X)=\sum_i a_i v_i\psi(x_i)$. Each row satisfies the exact
+decomposition
+
+$$
+\Delta(a v\psi)
+=a'\psi(x')\,\Delta v+
+ a'v[\psi(x')-\psi(x)]+(a'-a)v\psi(x).
+$$
+
+These are the impulse, transport, and eligibility contributions under
+this specified discrete convention. For a pure literal clone, the local
+momentum transfer is
+
+$$
+\sum_i C_i[
+\bar a_{J_i}w_{J_i}\psi(y_{J_i})-a_iv_i\psi(x_i)].
+$$
+
+It generally connects distinct locations and need not conserve total
+momentum. Historical replacement need not be a current-time pair
+interaction.
+:::
+
+:::{prf:remark} Stress, stationarity, and closure
+:label: rem-algorithmic-stress-closure
+
+The tested weak momentum law determines impulses and transport.
+Representing nonlocal transfers by a stress density additionally requires
+a specified spatial deposition convention. A smooth segment permits
+$\psi(y)-\psi(x)=\int_0^1\nabla\psi(x+t(y-x))\cdot(y-x)\,dt$;
+periodic domains and boundaries require the actual chosen path.
+This representation cannot silently discard sources or impose an
+isotropic perfect-fluid tensor.
+
+If a transition-closed state representation has an invariant probability
+law $\nu$ and $A$ is integrable, then $\int b_A\,d\nu=0$. Pure bookkeeping
+counters may be removed only when doing so leaves the conditional
+transition law determined by the retained state; a changing schedule
+cannot be discarded in this way. This says that the
+total stationary mean increment vanishes. The separate stage budgets
+can remain nonzero: thermostat injection can balance dissipative
+restitution or boundary losses. A quasi-stationary law of a killed chain
+is instead conditioned on survival and obeys its corresponding
+normalized law; it does not automatically satisfy this conservative
+stationarity identity.
+
+The displayed empirical measure uses fixed $N$; its mass changes with
+eligibility. Renormalizing by the number of survivors introduces a
+random denominator and yields another observable, not the same weak
+equation. Likewise, dividing a fixed-step clone increment by $h$ does
+not establish a finite continuous-time generator when clone
+probabilities remain of order one. A macroscopic closure must be
+derived from the transition, with its limit and error controlled.
+
+A comparison between an Einstein tensor and stress must compute the
+stress from these independent mechanical observables and specify any
+spacetime construction separately. Solving the proposed geometric
+equation for its own source cannot validate that equation.
+:::
 
 :::{prf:lemma} Independent-sampling rate and interacting concentration
 :label: lem-ig-rate-function
@@ -32911,6 +34195,13 @@ $8\pi G_{\mathrm{eff}}/c^4$.
 :::{prf:remark} Geometric identity and constitutive equation
 :label: rem-correspondence-meaning
 
+This section supplies no derivation of an Einstein equation from the
+transition law. A test of such an equation must use independently computed
+mechanical observables from
+{ref}`sec-algorithmic-balance-laws` and an independently specified
+spacetime reconstruction. Its coupling, source, and error cannot be
+defined by fitting the source to the same geometric tensor.
+
 Raychaudhuri relates the expansion of a specified congruence to the Ricci
 tensor of its metric. The perfect-fluid contraction in
 {prf:ref}`thm-structural-correspondence` additionally uses the stated
@@ -33313,6 +34604,280 @@ $$
 If $\mu_0$ is Gibbs and the physical perturbation is $H\mapsto H-hB$, this is the static relation $\operatorname{Cov}(A,B)=T\chi_{A,B}$ with $T=1/\beta$. It is not a general dynamical response theorem for arbitrary perturbations of a QSD generator.
 :::
 
+:::{prf:definition} Finite-step law and controlled experiment
+:label: def-algorithmic-thermodynamic-kernel
+
+Let $S_n$ contain the population and every retained variable needed for the next
+update, including donor memory and stateful provider data. For a declared
+parameter protocol $\theta_0,\ldots,\theta_{L-1}$ and the actual fixed integration
+step $h$, write its transition kernels as $K_{n,\theta_n}$ and its path law as
+
+$$
+\mathbb P_\theta(ds_{0:L})
+=\mu_{0,\theta}(ds_0)
+\prod_{n=0}^{L-1}K_{n,\theta_n}(s_n,ds_{n+1}).
+$$
+
+This is a probability law for the specified innovation and selection laws. A
+fixed replay seed realizes one path; it does not itself supply independent
+conditional samples. An explicit time schedule can remain external to the
+state. Appending a clock makes a process homogeneous formally but does not
+create an invariant probability for a clock that increases forever.
+
+For stationary response, restrict to a time-homogeneous conservative kernel
+$K_\theta$ on a specified state space and an invariant probability
+$\pi_\theta K_\theta=\pi_\theta$. A killed kernel is sub-Markov and requires its
+survival conditioning or cemetery state to be specified. Its QSD satisfies an
+eigenmeasure equation, not this invariant equation. Neither existence nor
+ergodicity of $\pi_\theta$ is assumed for every Fractal Gas configuration.
+:::
+
+:::{prf:definition} Path irreversibility and its support
+:label: def-algorithmic-path-irreversibility
+
+Specify a measurable state involution $\vartheta$, such as velocity reversal,
+and the path involution
+$\mathcal R(s_0,\ldots,s_L)=(\vartheta s_L,\ldots,\vartheta s_0)$.
+Specify also a normalized reverse experiment $\widetilde{\mathbb P}$, including
+its initial law, schedule, kernels, and treatment of retained memory. Set
+$\mathbb Q=\mathcal R_\#\widetilde{\mathbb P}$. If
+$\mathbb P\ll\mathbb Q$, define
+
+$$
+\Sigma(s_{0:L})=\log\frac{d\mathbb P}{d\mathbb Q}(s_{0:L}),
+\qquad
+\mathcal I_L=D_{\mathrm{KL}}(\mathbb P\Vert\mathbb Q).
+$$
+
+Here $\Sigma$ and $\mathcal I_L$ are in nats; $\mathcal I_L/L$ is in nats per
+step. If absolute continuity fails, the path KL is $+\infty$. An unevaluated
+likelihood or an untested support condition is an unavailable diagnostic, not
+evidence of either zero or infinite KL.
+
+For example, on a countable state space, with $\vartheta$ the identity and a
+time-homogeneous forward kernel $K$, reverse kernel $\widetilde K$, and initial
+probabilities $\mu_0,\nu_0$, the formula on supported paths is
+
+$$
+\Sigma=
+\log\frac{\mu_0(s_0)}{\nu_0(s_L)}
++\sum_{n=0}^{L-1}
+\log\frac{K(s_n,s_{n+1})}{\widetilde K(s_{n+1},s_n)}.
+$$
+
+The endpoint term is part of the path likelihood. Continuous densities give
+the same form only after verifying the dominating measures and any reversal
+Jacobian. In particular, deterministic copying, rank-deficient noise, and
+discarded memory can produce singular transition laws.
+:::
+
+:::{prf:proposition} Exact path KL identities
+:label: prop-algorithmic-path-kl-identities
+
+Under the preceding absolute continuity hypothesis, put
+$f=d\mathbb P/d\mathbb Q$. Then
+
+$$
+\mathbb E_{\mathbb P}\Sigma
+=D_{\mathrm{KL}}(\mathbb P\Vert\mathbb Q)\geq0,
+\qquad
+\mathbb E_{\mathbb P}e^{-\Sigma}
+=\mathbb Q(f>0)\leq1.
+$$
+
+The last equality is $1$ when the two path laws are equivalent. For a measurable
+recording map $C$, their exact recorded laws satisfy
+
+$$
+D_{\mathrm{KL}}(C_\#\mathbb P\Vert C_\#\mathbb Q)
+\leq D_{\mathrm{KL}}(\mathbb P\Vert\mathbb Q).
+$$
+:::
+
+:::{prf:remark} What a path diagnostic measures
+:label: rem-algorithmic-path-kl-interpretation
+
+The reverse experiment is part of the observable. Choosing the stationary
+adjoint kernel as the reverse dynamics can reproduce the forward path law
+after reversal; that construction is not a test of invariance under the same
+physical protocol. Reversing bookkeeping counters without reversing their
+schedule can instead manufacture a support mismatch. The compared variables
+and reverse protocol must therefore be recorded with the result.
+
+An exact histogram of a declared path recording has the data-processing bound
+above. A finite-sample plug-in histogram does not automatically give a lower
+confidence bound on the full path KL. Smoothing empty bins changes the
+estimated laws, and a projection of a Markov process need not remain Markov.
+A fitted one-step transition table is consequently not an exact path model
+without a separate Markov closure argument.
+
+Identifying $\Sigma$ with a physical entropy production requires a reservoir
+model and local detailed balance for the actual transitions. This extra
+condition is explicit in [Lebowitz and Spohn's path-space
+analysis](https://arxiv.org/abs/cond-mat/9811220). No phase-space differential
+entropy is inferred from the covariance matrix or from the fitness values.
+:::
+
+:::{prf:theorem} Stationary response from a discrete Poisson equation
+:label: thm-algorithmic-stationary-response
+
+Let $V\geq1$ and let $\mathcal B_V$ be the Banach space of measurable functions
+with $\|f\|_V=\sup_s|f(s)|/V(s)<\infty$. Suppose:
+
+1. $K_\theta$ are bounded Markov operators on $\mathcal B_V$ near $\theta=0$,
+   with invariant probabilities $\pi_\theta$ and
+   $\sup_{|\theta|<\delta}\pi_\theta(V)<\infty$.
+2. For $K=K_0$ and $\pi=\pi_0$, there are $C<\infty$, $r<1$ such that
+   $\|K^nf-\pi(f)\mathbf1\|_V\leq Cr^n\|f\|_V$ for all $n\geq0$.
+3. There is a bounded operator $D$ on $\mathcal B_V$ with
+   $\|K_\theta-K-\theta D\|_{\mathcal B_V\to\mathcal B_V}=o(|\theta|)$.
+
+For $A\in\mathcal B_V$, the series
+
+$$
+u_A=\sum_{n=0}^{\infty}K^n[A-\pi(A)]
+$$
+
+converges in $\mathcal B_V$ and solves
+$(I-K)u_A=A-\pi(A)$, $\pi(u_A)=0$. The exact stationary response is
+
+$$
+\left.\frac{d}{d\theta}\pi_\theta(A)\right|_{0}
+=\pi(Du_A)
+=\sum_{n=0}^{\infty}\pi\!\left(DK^n[A-\pi(A)]\right).
+$$
+
+If $A_\theta=A+\theta\dot A+o(|\theta|)$ in $\mathcal B_V$, add
+$\pi(\dot A)$. The theorem concerns the fixed-step kernel. It takes no
+$h\to0$ limit and does not replace an order-one cloning event by a small drift.
+:::
+
+:::{prf:remark} Analytic and numerical requirements for response
+:label: rem-algorithmic-response-hypotheses
+
+These are sufficient hypotheses, not conclusions about every swarm. In an
+unbounded configuration, the moment and mixing estimates must come from a
+proved confining or Safe Harbor bound; a finite simulation box does not prove
+them. A smooth change of a parameter can also fail operator differentiability
+when it moves a deterministic transition support. Stronger smoothing or a
+different function space then needs a separate argument. The theorem above is
+a direct weighted-norm proof of the resolvent approach; the more general
+framework of [Hairer and Majda](https://arxiv.org/abs/0909.4313) uses explicitly
+specified weighted function spaces and differentiability conditions.
+
+For a numerical comparison, the declared derivative of the update and a
+Poisson solution predict the response. Independently initialized runs at
+$\theta\pm\delta$ measure it. Fitting the prediction to those same responses
+does not test the identity. Finite difference error, mixing bias, Poisson
+approximation error, and sampling uncertainty are separate error sources.
+:::
+
+:::{prf:proposition} Scores and Fisher information for controlled laws
+:label: prop-algorithmic-controlled-fisher
+
+Let $\theta\in\mathbb R^m$ control a normalized law
+$p_\theta\,d\lambda$ with common support, positive density there, and twice
+differentiable densities near the reference parameter. Assume integrable
+envelopes permit differentiating normalization twice, and that each score
+$s_a=\partial_a\log p_\theta$ belongs to $L^2(p_\theta d\lambda)$.
+Then
+
+$$
+\mathbb E_\theta s_a=0,\qquad
+F_{ab}=\mathbb E_\theta[s_as_b]
+=-\mathbb E_\theta[\partial_a\partial_b\log p_\theta].
+$$
+
+$F$ is positive semidefinite, with units
+$[\theta_a]^{-1}[\theta_b]^{-1}$. For a fixed observable $A$, if differentiation
+of its expectation is justified and $As_a$ is integrable, then
+
+$$
+\partial_a\mathbb E_\theta A
+=\operatorname{Cov}_\theta(A,s_a).
+$$
+
+For a dominated finite-step path model satisfying these hypotheses at its
+initial law and conditional kernels, its score decomposes as
+
+$$
+s^{\mathrm{path}}=s^{\mathrm{initial}}(S_0)
++\sum_{n=0}^{L-1}s_n^{\mathrm{kernel}}(S_n,S_{n+1}),
+$$
+
+and its Fisher information is
+
+$$
+F^{\mathrm{path}}=F^{\mathrm{initial}}
++\sum_{n=0}^{L-1}\mathbb E_\theta
+\left[s_n^{\mathrm{kernel}}(s_n^{\mathrm{kernel}})^\top\right].
+$$
+:::
+
+:::{prf:remark} Three geometries require three definitions
+:label: rem-algorithmic-three-geometries
+
+The fitness Hessian $\partial_{x_i}\partial_{x_j}\mathcal F$ differentiates a
+conditional fitness function with its declared frozen data. Its regularized
+metric lives in the spatial query coordinates. The matrix $F$ above lives in
+controlled parameter coordinates and is a metric only where it is positive
+definite. Fisher information of a stationary law, one transition, and a whole
+path are distinct quantities.
+
+For a separately specified exponential family
+$p_\theta=\exp(\theta\cdot T-\psi(\theta))p_0$, justified differentiation gives
+$\partial_a\psi=\mathbb E_\theta T_a$ and
+$\partial_a\partial_b\psi=\operatorname{Cov}_\theta(T_a,T_b)=F_{ab}$:
+differentiate its normalization and then its first derivative. This proves a
+thermodynamic Hessian identity for that family. It does not identify
+$\psi$ with the swarm fitness, prove a Gibbs stationary law for cloning, or
+supply an Einstein equation. These identifications remain separate hypotheses
+to test against the measured laws.
+:::
+
+:::{prf:example} Exact discrete reference experiments
+:label: ex-algorithmic-thermodynamic-references
+
+For a three-state cycle, let
+$K(i,i+1)=p$, $K(i,i-1)=q$, and $K(i,i)=1-p-q$ (indices modulo three), with
+$p,q>0$, $p+q<1$. Every column sums to one, so the uniform law is stationary.
+Using the same kernel as the reverse protocol and the identity involution,
+the endpoint term is zero. The expected increment of $\Sigma$ is exactly
+
+$$
+\frac{\mathcal I_L}{L}
+=p\log(p/q)+q\log(q/p)
+=(p-q)\log(p/q).
+$$
+
+It vanishes at $p=q$. At $q=0<p$, the same reverse protocol assigns zero
+probability to some forward paths, so the path KL is infinite for $L\geq1$.
+
+For a two-state kernel
+
+$$
+K_\theta=
+\begin{pmatrix}1-a&a\\b&1-b\end{pmatrix},
+\qquad a=a_0+\theta,\qquad 0<a,b<1,
+$$
+
+direct multiplication gives $\pi=(b,a)/(a+b)$. For
+$A=\mathbf1_{\{1\}}$,
+
+$$
+\partial_\theta\pi(A)=\frac{b}{(a+b)^2},\qquad
+F^{\mathrm{stationary}}=\frac{b}{a(a+b)^2},\qquad
+F^{\mathrm{transition}}=\frac{\pi(0)}{a(1-a)}.
+$$
+
+The response follows by differentiating $a/(a+b)$. The two stationary scores
+are $-1/(a+b)$ and $b/[a(a+b)]$; their weighted squares give the stationary
+Fisher information. Only row zero of $K_\theta$ changes, and its scores are
+$-1/(1-a)$ and $1/a$, giving the last expression. These exact finite-state
+calculations supply independent numerical references; passing them does not
+establish the hypotheses for a continuous interacting swarm.
+:::
+
 :::{prf:proposition} Euclidean horizon periodicity and its temperature interpretation
 :label: prop-unruh-hawking-connection
 
@@ -33389,6 +34954,9 @@ Writing $\alpha=1/(4G_{\mathrm{area}})$ parametrizes the coefficient. Identifyin
 | $a_N|\gamma_N|$ | Calibrated antichain area under an explicit cell correspondence |
 | $K_\sigma$ | Modular Hamiltonian $-\log\sigma$ of a specified reference state |
 | $\beta$ | Inverse temperature of a specified Gibbs or thermal state |
+| $\mathcal I_L$ | KL divergence of specified forward and reversed path laws, in nats |
+| $D=\partial_\theta K_\theta$ | Derivative of the actual fixed-step kernel under a declared control change |
+| $F_{ab}$ | Fisher information of a declared controlled law, in inverse parameter units squared |
 | $\Lambda_{\mathrm{eff}}$ | Declared cosmological parameter in the Einstein equation |
 :::
 

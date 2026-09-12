@@ -1,0 +1,14 @@
+{
+  "experiment": 7,
+  "parameters": {
+    "seed": 7
+  },
+  "parameter": "n",
+  "values": [
+    32,
+    64,
+    128,
+    256,
+    512
+  ]
+}

@@ -4663,5 +4663,7850 @@
       "bandwidth": 0.4,
       "curvature": 0.2
     }
+  },
+  {
+    "id": "VI-01",
+    "part": "VI",
+    "title": "Oriented diagrams and transport",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-fg-lqft-wilson-loops",
+    "kind": "Rust/WASM · Graph traversal versus indexed products.",
+    "prediction": "Closed contractions survive changes of frame; reversing orientation conjugates a unitary loop trace.",
+    "question": "What happens to a loop trace when you reverse its traversal or rotate its frame?",
+    "posterAlt": "Loop reversal. Closed contractions survive changes of frame; reversing orientation conjugates a unitary loop trace.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "angle": 0.7,
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-02",
+    "part": "VI",
+    "title": "Cloning antisymmetry and exclusion",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-fermions",
+    "kind": "Rust/WASM · Evaluate weighted scores independently before clipping.",
+    "prediction": "Weighted opposing cloning scores cancel; accepted positive-score directions exclude each other.",
+    "question": "How does changing partner fitness change the two opposing cloning scores?",
+    "posterAlt": "Actual gates and conditional expectations. Weighted opposing cloning scores cancel; accepted positive-score directions exclude each other.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-03",
+    "part": "VI",
+    "title": "Exterior algebra from recorded observables",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-lqft-recorded-fermionic-reconstruction",
+    "kind": "Rust/WASM · Dense operators versus bitset signs and determinant identities.",
+    "prediction": "The positive Gram quotient generates CAR operators and determinant inner products.",
+    "question": "Which measured field combinations survive the Gram quotient, and how do fermionic creation operators act on occupation states?",
+    "posterAlt": "Measured covariance spectrum. The positive Gram quotient generates CAR operators and determinant inner products.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Fermionic modes",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 6,
+        "step": 1
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "fields",
+        "label": "Recorded field",
+        "type": "select",
+        "value": "phase_space",
+        "options": [
+          {
+            "value": "phase_space",
+            "label": "phase space"
+          },
+          {
+            "value": "positions",
+            "label": "positions"
+          },
+          {
+            "value": "velocities",
+            "label": "velocities"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "modes": 3,
+      "amplitude": 0.5,
+      "fields": "phase_space"
+    }
+  },
+  {
+    "id": "VI-04",
+    "part": "VI",
+    "title": "Recorded transitions and CAR evolution",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-record-car-channel",
+    "kind": "Rust/WASM · Finite path enumeration versus transition and exterior powers.",
+    "prediction": "The lifted contraction preserves the vacuum and has a computable multiplicative defect.",
+    "question": "How does increasing the contraction rate change the channel's mode and exterior-product defects?",
+    "posterAlt": "Modewise multiplicative defect. The lifted contraction preserves the vacuum and has a computable multiplicative defect.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "modes",
+        "label": "Fermionic channel modes",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Recorded lag",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 32,
+        "step": 1
+      },
+      {
+        "key": "train_fraction",
+        "label": "Recorded training fraction",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.25,
+        "max": 0.8,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "modes": 2,
+      "rate": 0.4,
+      "steps": 32,
+      "lag": 1,
+      "train_fraction": 0.6
+    }
+  },
+  {
+    "id": "VI-05",
+    "part": "VI",
+    "title": "Regional covariance and locality",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-record-locality-defect",
+    "kind": "Rust/WASM · Direct covariance versus operator contractions.",
+    "prediction": "Regional anticommutators are controlled by whitened cross-covariance.",
+    "question": "How does regional covariance determine the mixed fermionic anticommutator?",
+    "posterAlt": "Regional measurements. Regional anticommutators are controlled by whitened cross-covariance.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "region_split",
+        "label": "Recorded spatial split",
+        "type": "range",
+        "value": 0,
+        "min": -1,
+        "max": 1,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "rate": 0.4,
+      "region_split": 0
+    }
+  },
+  {
+    "id": "VI-06",
+    "part": "VI",
+    "title": "Products and replica wedges",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "thm-lqft-product-obstruction",
+    "kind": "Rust/WASM · Enumerated moments versus determinant expansion.",
+    "prediction": "Independent replica wedges give determinant correlations; repeating a wedge vector gives zero.",
+    "question": "What happens to an exterior product when its two observables are proportional?",
+    "posterAlt": "Measured covariance spectrum. Independent replica wedges give determinant correlations; repeating a wedge vector gives zero.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "modes",
+        "label": "Measured Gram modes",
+        "type": "range",
+        "value": 6,
+        "min": 1,
+        "max": 6,
+        "step": 1
+      },
+      {
+        "key": "fields",
+        "label": "Recorded field",
+        "type": "select",
+        "value": "phase_space",
+        "options": [
+          {
+            "value": "phase_space",
+            "label": "phase space"
+          },
+          {
+            "value": "positions",
+            "label": "positions"
+          },
+          {
+            "value": "velocities",
+            "label": "velocities"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "modes": 6,
+      "fields": "phase_space"
+    }
+  },
+  {
+    "id": "VI-07",
+    "part": "VI",
+    "title": "Density-aware continuum operators",
+    "chapter": "source/2_fractal_gas/2_fractal_set/03_lattice_qft",
+    "target": "sec-scalar-fields",
+    "kind": "Rust/WASM · Independent quadrature and sampled kernel sums.",
+    "prediction": "Bandwidth refinement exposes the density and density-gradient terms in the continuum operator.",
+    "question": "How do sampling density, bandwidth, and sample count change a kernel estimate of the continuum operator?",
+    "posterAlt": "Three kernel conventions. Bandwidth refinement exposes the density and density-gradient terms in the continuum operator.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "n",
+        "label": "Sampled points",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "n": 512
+    }
+  },
+  {
+    "id": "VI-08",
+    "part": "VI",
+    "title": "Recorded color states",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-direct-observables",
+    "kind": "Rust/WASM · Threshold fixtures and recorded force/velocity stage inspection.",
+    "prediction": "Valid three-component colors have unit norm; subthreshold forces are zero-extended by their mask.",
+    "question": "How do the force threshold and velocity phase change a recorded color's validity and normalization?",
+    "posterAlt": "Raw normalization and zero extension. Valid three-component colors have unit norm; subthreshold forces are zero-extended by their mask.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "threshold",
+        "label": "Color threshold",
+        "type": "number",
+        "value": 1e-12,
+        "min": 1e-15,
+        "max": 1,
+        "step": 1e-12
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "angle": 0.7,
+      "amplitude": 0.5,
+      "threshold": 1e-12
+    }
+  },
+  {
+    "id": "VI-09",
+    "part": "VI",
+    "title": "SU(3) invariant coordinates",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-direct-orbit-isomorphism",
+    "kind": "Rust/WASM · Direct contractions and transformed/reconstructed coordinates.",
+    "prediction": "Common SU(3) transformations preserve Gram and determinant coordinates.",
+    "question": "Which color coordinates stay fixed under a common SU(3) frame transformation?",
+    "posterAlt": "Recorded triangle phase readout. Common SU(3) transformations preserve Gram and determinant coordinates.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "threshold",
+        "label": "Recorded force threshold",
+        "type": "range",
+        "value": 1e-12,
+        "min": 1e-12,
+        "max": 1,
+        "step": 0.01
+      },
+      {
+        "key": "rotation",
+        "label": "Recorded common SU(3) rotation",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "angle": 0.7,
+      "amplitude": 0.5,
+      "threshold": 1e-12,
+      "rotation": 0.7
+    }
+  },
+  {
+    "id": "VI-10",
+    "part": "VI",
+    "title": "Companion doublets",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "def-sm-direct-companion-doublet",
+    "kind": "Rust/WASM · Complete finite assignment enumeration versus repeated draws.",
+    "prediction": "Two-hop assignments and fluctuations follow the actual joint companion law.",
+    "question": "How does the joint companion law change two-hop assignment probabilities and their fluctuations?",
+    "posterAlt": "Actual selected companion phase. Two-hop assignments and fluctuations follow the actual joint companion law.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      },
+      {
+        "key": "length",
+        "label": "Recorded comparison length",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "phase_scale",
+        "label": "Recorded fitness phase scale",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "rate": 0.4,
+      "n": 512,
+      "length": 1,
+      "phase_scale": 1
+    }
+  },
+  {
+    "id": "VI-11",
+    "part": "VI",
+    "title": "Attribution holonomy",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "prop-sm-attribution-holonomy-defect",
+    "kind": "Rust/WASM · Ordered matrix products versus mismatch identities.",
+    "prediction": "Coherent frames are flat while attribution mismatch can produce nonzero holonomy.",
+    "question": "When does a mismatch between attribution and transport produce nonzero holonomy?",
+    "posterAlt": "Partial transport around the loop. Coherent frames are flat while attribution mismatch can produce nonzero holonomy.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "angle": 0.7,
+      "amplitude": 0.5,
+      "rate": 0.4
+    }
+  },
+  {
+    "id": "VI-12",
+    "part": "VI",
+    "title": "Channel compression and memory",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-direct-channel-memory",
+    "kind": "Rust/WASM · Full transition powers versus compressed recurrence.",
+    "prediction": "The two-step memory defect equals BC and vanishes for the lumpable fixture.",
+    "question": "How much predictive information returns after a channel has discarded part of the state?",
+    "posterAlt": "Held-out multitime prediction. The two-step memory defect equals BC and vanishes for the lumpable fixture.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "train_fraction",
+        "label": "Training fraction",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.5,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "steps": 32,
+      "bins": 4,
+      "lag": 2,
+      "train_fraction": 0.6,
+      "descriptor": "mean_speed_squared"
+    }
+  },
+  {
+    "id": "VI-13",
+    "part": "VI",
+    "title": "Predictive partition refinement",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "thm-sm-predictive-partition-convergence",
+    "kind": "Rust/WASM · Exact transitions and independently held-out predictions.",
+    "prediction": "Refining descriptors recovers multitime predictions of the full finite law.",
+    "question": "Does a finer descriptor partition improve prediction on observations held out from training?",
+    "posterAlt": "Held-out multitime prediction. Refining descriptors recovers multitime predictions of the full finite law.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "train_fraction",
+        "label": "Training fraction",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.5,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "n": 512,
+      "bins": 4,
+      "lag": 2,
+      "train_fraction": 0.6,
+      "descriptor": "mean_speed_squared"
+    }
+  },
+  {
+    "id": "VI-14",
+    "part": "VI",
+    "title": "Complete updates and pair cancellation",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "prop-sm-implemented-collision-increments",
+    "kind": "Rust/WASM · Before/after sums versus explicit accepted donor transfers.",
+    "prediction": "Full group writes determine increments; paired cancellation requires the stated pairing.",
+    "question": "Which increments cancel when you account for every write in a complete pair update?",
+    "posterAlt": "Measured momentum change from clone writes. Full group writes determine increments; paired cancellation requires the stated pairing.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-15",
+    "part": "VI",
+    "title": "Coupling statistics and CP",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-coupling-matching",
+    "kind": "Rust/WASM · Group identities and symmetric/asymmetric ensemble comparisons.",
+    "prediction": "Casimir factors obey their normalization and CP-odd averages vanish under a symmetric law.",
+    "question": "How do generator normalization and a symmetric phase law affect coupling and CP-odd statistics?",
+    "posterAlt": "Odd expectation under the complete orbit law. Casimir factors obey their normalization and CP-odd averages vanish under a symmetric law.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "angle": 0.7,
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-16",
+    "part": "VI",
+    "title": "Effective action and generating functions",
+    "chapter": "source/2_fractal_gas/2_fractal_set/04_standard_model",
+    "target": "sec-sm-wilson-loops",
+    "kind": "Rust/WASM · History enumeration versus partition-function differentiation.",
+    "prediction": "Marginalized history weights normalize and source derivatives recover moments.",
+    "question": "How does changing a source recover descriptor moments from a normalized generating function?",
+    "posterAlt": "Recorded action components. Marginalized history weights normalize and source derivatives recover moments.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "angle": 0.7
+    }
+  },
+  {
+    "id": "VI-17",
+    "part": "VI",
+    "title": "Executed path-action accounting",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-first-principles",
+    "kind": "Rust/WASM · Finite branching and Gaussian likelihood calculations.",
+    "prediction": "Executed-law factors reconstruct path weights including state-dependent Gaussian determinants.",
+    "question": "How do companion choices, clone gates, and Gaussian factors add to the action of an executed trace?",
+    "posterAlt": "Recorded action components. Executed-law factors reconstruct path weights including state-dependent Gaussian determinants.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "rate": 0.4,
+      "angle": 0.7
+    }
+  },
+  {
+    "id": "VI-18",
+    "part": "VI",
+    "title": "Kinetic metric from one record",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-kinetic-metric-correspondence",
+    "kind": "Rust/WASM · Independent innovations versus recorded covariance factors.",
+    "prediction": "Actual O-stage increments follow their conditional covariance and fourth-moment prediction.",
+    "question": "Do recorded kinetic increments match the covariance and fourth moments of their Gaussian factors?",
+    "posterAlt": "Recorded conditional second moments. Actual O-stage increments follow their conditional covariance and fourth-moment prediction.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "n": 512
+    }
+  },
+  {
+    "id": "VI-19",
+    "part": "VI",
+    "title": "Gaussian source response",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-native-source-response",
+    "kind": "Rust/WASM · Direct interventions versus independently averaged weights.",
+    "prediction": "Shifted-noise reruns agree with Gaussian reweighting and Hermite response.",
+    "question": "Does directly shifting future Gaussian noise agree with likelihood reweighting of independent continuations?",
+    "posterAlt": "Running independent estimates. Shifted-noise reruns agree with Gaussian reweighting and Hermite response.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Engine replicas per independent group",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "theta",
+        "label": "Engine source shift",
+        "type": "range",
+        "value": 0.25,
+        "min": 0.01,
+        "max": 1.5,
+        "step": 0.01
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "replicas": 16,
+      "horizon": 4,
+      "theta": 0.25,
+      "amplitude": 0.5,
+      "n": 512
+    }
+  },
+  {
+    "id": "VI-20",
+    "part": "VI",
+    "title": "Force sources and information",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-metric-force-sources",
+    "kind": "Rust/WASM · Exact Gaussian laws and coarse-grained score covariance.",
+    "prediction": "Gaussian source energy gives KL; conditioning on a descriptor reduces score information.",
+    "question": "How much source information remains after the Gaussian outcome is compressed to a descriptor?",
+    "posterAlt": "Data processing under the sign map. Gaussian source energy gives KL; conditioning on a descriptor reduces score information.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "n": 512
+    }
+  },
+  {
+    "id": "VI-21",
+    "part": "VI",
+    "title": "Geometry-fiber disintegration",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-native-geometry-fiber-action",
+    "kind": "Rust/WASM · Exact contingency-table normalization.",
+    "prediction": "Joint action splits into marginal geometry and conditional fiber contributions.",
+    "question": "How does a joint descriptor law split into its geometry marginal and conditional fiber law?",
+    "posterAlt": "Recorded action components. Joint action splits into marginal geometry and conditional fiber contributions.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "angle": 0.7
+    }
+  },
+  {
+    "id": "VI-22",
+    "part": "VI",
+    "title": "Stochastic Noether balance",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-noether",
+    "kind": "Rust/WASM · Independent continuations from a frozen state.",
+    "prediction": "Observable increments split into conditional drift and a centered martingale increment.",
+    "question": "Do independent continuation groups agree on an observable's conditional drift?",
+    "posterAlt": "Conditional drift and independent validation. Observable increments split into conditional drift and a centered martingale increment.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Engine replicas per independent group",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 4,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "n",
+        "label": "Independent samples",
+        "type": "range",
+        "value": 512,
+        "min": 32,
+        "max": 4096,
+        "step": 32
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "replicas": 16,
+      "horizon": 4,
+      "rate": 0.4,
+      "n": 512,
+      "steps": 32
+    }
+  },
+  {
+    "id": "VI-23",
+    "part": "VI",
+    "title": "Wilson variation and Ward identity",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "lem-ym-discrete-ward",
+    "kind": "Rust/WASM · Analytic matrix variation versus symmetric finite differences.",
+    "prediction": "Gauge-orbit action variation and node divergence cancel.",
+    "question": "How does a node gauge variation cancel against the discrete Wilson-action divergence?",
+    "posterAlt": "Central-difference variation error. Gauge-orbit action variation and node divergence cancel.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "angle": 0.7,
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-24",
+    "part": "VI",
+    "title": "Continuum Yang-Mills consistency",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-continuum",
+    "kind": "Rust/WASM · Path integration versus a supplied smooth connection.",
+    "prediction": "Small-loop transport approaches curvature with the stated refinement error.",
+    "question": "How does a shrinking plaquette recover the curvature of a noncommuting connection?",
+    "posterAlt": "Plaquette curvature. Small-loop transport approaches curvature with the stated refinement error.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "rate": 0.4
+    }
+  },
+  {
+    "id": "VI-25",
+    "part": "VI",
+    "title": "Units, discrete time, and gaps",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-constants",
+    "kind": "Rust/WASM · Exact reversible-chain eigenvalues and logarithmic conversion.",
+    "prediction": "Finite-step decay rates approach generator rates under timestep refinement.",
+    "question": "How does timestep refinement change the decay rate inferred from a transition eigenvalue?",
+    "posterAlt": "Centered relaxation. Finite-step decay rates approach generator rates under timestep refinement.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      },
+      {
+        "key": "dt",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.005,
+        "max": 0.2,
+        "step": 0.005
+      }
+    ],
+    "params": {
+      "rate": 0.4,
+      "steps": 32,
+      "dt": 0.1
+    }
+  },
+  {
+    "id": "VI-26",
+    "part": "VI",
+    "title": "Fluctuation and collision budgets",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-complete-fluctuation-equations",
+    "kind": "Rust/WASM · Exact joint-event enumeration and stage increments.",
+    "prediction": "Joint collision covariance and finite-step product terms complete the balance.",
+    "question": "Which covariance and product-increment terms are needed to balance a cloning collision?",
+    "posterAlt": "Finite-step product budget. Joint collision covariance and finite-step product terms complete the balance.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-27",
+    "part": "VI",
+    "title": "QSD windows and burn-in",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "thm-ym-qsd-window-relaxation",
+    "kind": "Rust/WASM · Killed-chain path enumeration versus spectral evolution.",
+    "prediction": "Survival-conditioned windows normalize by the QSD survival factor.",
+    "question": "How do burn-in and survival normalization affect a finite killed chain's conditional law?",
+    "posterAlt": "Conditional relaxation and survival. Survival-conditioned windows normalize by the QSD survival factor.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "steps": 32
+    }
+  },
+  {
+    "id": "VI-28",
+    "part": "VI",
+    "title": "Reflection matrices",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-native-labeled-color-reflection-sign",
+    "kind": "Rust/WASM · Direct word quadratic form versus the explicit negative formula.",
+    "prediction": "The labeled reflected word has the predicted negative value.",
+    "question": "What sign does the specified reflected word have in the finite reflection calculation?",
+    "posterAlt": "Reflection sign. The labeled reflected word has the predicted negative value.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "rate": 0.4
+    }
+  },
+  {
+    "id": "VI-29",
+    "part": "VI",
+    "title": "Scalar triangles and outer plaquettes",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-native-scalar-face-evaluation",
+    "kind": "Rust/WASM · Independent oriented link products.",
+    "prediction": "Triangle defects can be nonzero while the scalar outer plaquette cancels exactly.",
+    "question": "How can a triangle have a phase defect while its scalar outer plaquette cancels?",
+    "posterAlt": "Two scalar face constructions. Triangle defects can be nonzero while the scalar outer plaquette cancels exactly.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "angle": 0.7,
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-30",
+    "part": "VI",
+    "title": "Translation and localization",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "prop-ym-anchored-regulator-translation-test",
+    "kind": "Rust/WASM · Translated inputs with fixed and transported regulator.",
+    "prediction": "A fixed anchored regulator changes translated readouts; co-transformation restores its geometric relation.",
+    "question": "How does translating a configuration change a readout tied to a fixed spatial regulator?",
+    "posterAlt": "Moving points and moving the regulator. A fixed anchored regulator changes translated readouts; co-transformation restores its geometric relation.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "rate": 0.4
+    }
+  },
+  {
+    "id": "VI-31",
+    "part": "VI",
+    "title": "Regional algebras and interventions",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-qft-axioms-verification",
+    "kind": "Rust/WASM · Direct commutators and covariance bounds.",
+    "prediction": "Multiplication readouts commute while CAR locality depends on covariance.",
+    "question": "Why can multiplication readouts commute while regional fermionic operators retain a covariance-dependent defect?",
+    "posterAlt": "Intervention propagation. Multiplication readouts commute while CAR locality depends on covariance.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "steps": 32
+    }
+  },
+  {
+    "id": "VI-32",
+    "part": "VI",
+    "title": "Connected algorithmic QFT",
+    "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
+    "target": "sec-ym-algorithmic-qft-synthesis",
+    "kind": "Rust/WASM · Independent computational routes through one finite model or archive.",
+    "prediction": "The same selected law connects descriptors, transitions, CAR words and source response.",
+    "question": "How do descriptor choice and compression affect the full pipeline from recorded observations to temporal predictions?",
+    "posterAlt": "Held-out multitime prediction. The same selected law connects descriptors, transitions, CAR words and source response.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      },
+      {
+        "key": "bins",
+        "label": "Predictive states",
+        "type": "range",
+        "value": 4,
+        "min": 2,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "lag",
+        "label": "Prediction lag",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "train_fraction",
+        "label": "Training fraction",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.5,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "descriptor",
+        "label": "Recorded descriptor",
+        "type": "select",
+        "value": "mean_speed_squared",
+        "options": [
+          {
+            "value": "mean_speed_squared",
+            "label": "mean speed squared"
+          },
+          {
+            "value": "mean_position_x",
+            "label": "mean position x"
+          },
+          {
+            "value": "mean_velocity_x",
+            "label": "mean velocity x"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "steps": 32,
+      "bins": 4,
+      "lag": 2,
+      "train_fraction": 0.6,
+      "descriptor": "mean_speed_squared"
+    }
+  },
+  {
+    "id": "VI-33",
+    "part": "VI",
+    "title": "Spinor and mass identities",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-twistor-spinor-conventions",
+    "kind": "Rust/WASM · Matrix determinants versus Lorentz contractions.",
+    "prediction": "The sigma-map determinant equals the Lorentz norm and null data factorize.",
+    "question": "How do spinor determinants distinguish null vectors from vectors with nonzero Lorentz norm?",
+    "posterAlt": "Mass from two spinors. The sigma-map determinant equals the Lorentz norm and null data factorize.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "angle",
+        "label": "Phase / angle",
+        "type": "range",
+        "value": 0.7,
+        "min": -3.14,
+        "max": 3.14,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "amplitude": 0.5,
+      "angle": 0.7
+    }
+  },
+  {
+    "id": "VI-34",
+    "part": "VI",
+    "title": "Recorded triplet twistor operators",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-fractal-set-twistorization",
+    "kind": "Rust/WASM · Independent operator fixtures and exact validity masks.",
+    "prediction": "Source triplets determine the effective spinors and scalar/vector/tensor channels.",
+    "question": "How do a recorded source triplet and its velocity scale determine effective twistor readouts?",
+    "posterAlt": "Twistor scalar channels. Source triplets determine the effective spinors and scalar/vector/tensor channels.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5
+    }
+  },
+  {
+    "id": "VI-35",
+    "part": "VI",
+    "title": "Source-frozen lag tracking",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "sec-twistor-vs-euclidean",
+    "kind": "Rust/WASM · Explicit source indices and valid-pair denominators.",
+    "prediction": "Fixed source companion slots and sink-reselected companions give distinct lag readouts.",
+    "question": "How do lag correlations change when companion identities are frozen at the source or selected again at the sink?",
+    "posterAlt": "Complex twistor correlation. Fixed source companion slots and sink-reselected companions give distinct lag readouts.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "amplitude": 0.5,
+      "steps": 32
+    }
+  },
+  {
+    "id": "VI-36",
+    "part": "VI",
+    "title": "Spectral decay and twistor amplitudes",
+    "chapter": "source/2_fractal_gas/2_fractal_set/08_twistor_formulation",
+    "target": "thm-effective-twistor-spectral-meaning",
+    "kind": "Rust/WASM · Manufactured mixtures and rank-aware spectral extraction.",
+    "prediction": "Known finite transfer modes produce their predicted lag decay rates.",
+    "question": "Which complex temporal modes support a stable decay fit and predict a later block of observations?",
+    "posterAlt": "Training fit and held-out complex modes. Known finite transfer modes produce their predicted lag decay rates.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "aggregation",
+        "label": "Recorded correlator",
+        "type": "select",
+        "value": "frame_mean",
+        "options": [
+          {
+            "value": "frame_mean",
+            "label": "Fixed-normalization frame observable"
+          },
+          {
+            "value": "source_pairs",
+            "label": "Source-frozen valid-pair statistic"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 2,
+        "step": 0.05
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.01,
+        "max": 2,
+        "step": 0.01
+      },
+      {
+        "key": "steps",
+        "label": "Lag / horizon",
+        "type": "range",
+        "value": 32,
+        "min": 2,
+        "max": 128,
+        "step": 1
+      },
+      {
+        "key": "readout",
+        "label": "Recorded spectral channel",
+        "type": "select",
+        "value": "phase_space",
+        "options": [
+          {
+            "value": "phase_space",
+            "label": "phase space"
+          },
+          {
+            "value": "twistor",
+            "label": "twistor"
+          }
+        ]
+      },
+      {
+        "key": "channels",
+        "label": "Recorded channels",
+        "type": "range",
+        "value": 2,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "max_lag",
+        "label": "Maximum recorded lag",
+        "type": "range",
+        "value": 12,
+        "min": 2,
+        "max": 24,
+        "step": 1
+      },
+      {
+        "key": "fit_start",
+        "label": "Fit start lag",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      },
+      {
+        "key": "fit_end",
+        "label": "Fit end lag",
+        "type": "range",
+        "value": 6,
+        "min": 2,
+        "max": 16,
+        "step": 1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "aggregation": "frame_mean",
+      "amplitude": 0.5,
+      "rate": 0.4,
+      "steps": 32,
+      "readout": "phase_space",
+      "channels": 2,
+      "max_lag": 12,
+      "fit_start": 1,
+      "fit_end": 6
+    }
+  },
+  {
+    "id": "VI-37",
+    "part": "VI",
+    "title": "Transport in a changing geometry",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-tessellation-to-curvature",
+    "kind": "Rust/WASM · Integrated transport and metric-compatibility residual.",
+    "prediction": "Ambient transport includes time-space connection terms when the spatial metric changes.",
+    "question": "How does ambient transport acquire a time component in an expanding geometry?",
+    "posterAlt": "The time component generated along a spatial path. Ambient transport includes time-space connection terms when the spatial metric changes.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "expansion",
+        "label": "Expansion",
+        "type": "range",
+        "value": 0.4,
+        "min": -1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "length",
+        "label": "Length",
+        "type": "range",
+        "value": 1,
+        "min": 0.05,
+        "max": 3,
+        "step": 0.05
+      },
+      {
+        "key": "resolution",
+        "label": "Resolution",
+        "type": "range",
+        "value": 32,
+        "min": 4,
+        "max": 128,
+        "step": 4
+      }
+    ],
+    "params": {
+      "expansion": 0.4,
+      "length": 1,
+      "resolution": 32
+    }
+  },
+  {
+    "id": "VI-38",
+    "part": "VI",
+    "title": "Curvature per loop area",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-riemann-scutoid-dictionary",
+    "kind": "Rust/WASM · Independent path integration and tensor contraction.",
+    "prediction": "Normalized small-loop holonomy approaches the curvature action.",
+    "question": "How does dividing loop holonomy by its enclosed area recover curvature?",
+    "posterAlt": "Sphere curvature from loop transport. Normalized small-loop holonomy approaches the curvature action.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "latitude",
+        "label": "Latitude",
+        "type": "range",
+        "value": 0.8,
+        "min": 0.3,
+        "max": 1.2,
+        "step": 0.05
+      },
+      {
+        "key": "resolution",
+        "label": "Resolution",
+        "type": "range",
+        "value": 64,
+        "min": 8,
+        "max": 256,
+        "step": 8
+      }
+    ],
+    "params": {
+      "latitude": 0.8,
+      "resolution": 64
+    }
+  },
+  {
+    "id": "VI-39",
+    "part": "VI",
+    "title": "Conditional fitness curvature",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-algorithmic-curvature-computation",
+    "kind": "Rust/WASM · Packed versus expanded tensors and finite differences.",
+    "prediction": "Whitened cubic contractions recover Ricci/scalar curvature of a smooth Hessian metric.",
+    "question": "How do the query point and metric regularizer change conditional fitness curvature across differentiation methods and arithmetic backends?",
+    "posterAlt": "Coordinate Ricci components. Whitened cubic contractions recover Ricci/scalar curvature of a smooth Hessian metric.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "backend",
+        "label": "Curvature calculation",
+        "type": "select",
+        "value": "host_f64",
+        "options": [
+          {
+            "value": "host_f64",
+            "label": "host_f64"
+          },
+          {
+            "value": "cpu_f64",
+            "label": "cpu_f64"
+          },
+          {
+            "value": "cpu_f32",
+            "label": "cpu_f32"
+          },
+          {
+            "value": "webgpu_f32",
+            "label": "webgpu_f32"
+          }
+        ]
+      },
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "mode",
+        "label": "Mode",
+        "type": "select",
+        "value": "conditional",
+        "options": [
+          {
+            "value": "conditional",
+            "label": "Conditional"
+          },
+          {
+            "value": "coupled",
+            "label": "Coupled"
+          },
+          {
+            "value": "separable",
+            "label": "Separable"
+          },
+          {
+            "value": "mixed",
+            "label": "Mixed"
+          }
+        ]
+      },
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 3,
+        "min": 0.1,
+        "max": 10,
+        "step": 0.1
+      },
+      {
+        "key": "query",
+        "label": "Query",
+        "type": "range",
+        "value": 0.2,
+        "min": -0.7,
+        "max": 0.7,
+        "step": 0.05
+      },
+      {
+        "key": "difference_step",
+        "label": "Difference Step",
+        "type": "range",
+        "value": 0.002,
+        "min": 0.0002,
+        "max": 0.02,
+        "step": 0.0002
+      }
+    ],
+    "params": {
+      "backend": "host_f64",
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "mode": "conditional",
+      "epsilon": 3,
+      "query": 0.2,
+      "difference_step": 0.002
+    }
+  },
+  {
+    "id": "VI-40",
+    "part": "VI",
+    "title": "Connection identifiability",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-discrete-connection",
+    "kind": "Rust/WASM · Least squares versus a supplied connection and singular values.",
+    "prediction": "Independent transport directions determine the connection; deficient designs lose rank.",
+    "question": "Which transport directions are needed to identify every connection coefficient?",
+    "posterAlt": "Identified connection convergence. Independent transport directions determine the connection; deficient designs lose rank.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "mode",
+        "label": "Mode",
+        "type": "select",
+        "value": "identified",
+        "options": [
+          {
+            "value": "identified",
+            "label": "Identified"
+          },
+          {
+            "value": "single_velocity",
+            "label": "Single Velocity"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "mode": "identified"
+    }
+  },
+  {
+    "id": "VI-41",
+    "part": "VI",
+    "title": "Raychaudhuri term balance",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-raychaudhuri",
+    "kind": "Rust/WASM · Congruence differentiation versus the geometric identity.",
+    "prediction": "Expansion evolution equals the sum of shear, vorticity, Ricci and acceleration terms.",
+    "question": "How do expansion, shear, vorticity, curvature, and acceleration balance in expanding and rotating congruences?",
+    "posterAlt": "Signed terms in the expansion equation. Expansion evolution equals the sum of shear, vorticity, Ricci and acceleration terms.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "mode",
+        "label": "Congruence",
+        "type": "select",
+        "value": "bianchi",
+        "options": [
+          {
+            "value": "bianchi",
+            "label": "Bianchi I geodesics"
+          },
+          {
+            "value": "rotation",
+            "label": "Rigid rotation with acceleration"
+          }
+        ]
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "expansion",
+        "label": "Expansion",
+        "type": "range",
+        "value": 0.4,
+        "min": -1,
+        "max": 1,
+        "step": 0.1
+      },
+      {
+        "key": "anisotropy",
+        "label": "Anisotropy",
+        "type": "range",
+        "value": 0.3,
+        "min": 0,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "rotation_speed",
+        "label": "Rotation speed / c",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "radius",
+        "label": "Rotation probe radius",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.2,
+        "max": 1,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "mode": "bianchi",
+      "dimension": 3,
+      "expansion": 0.4,
+      "anisotropy": 0.3,
+      "rotation_speed": 0.4,
+      "radius": 0.6
+    }
+  },
+  {
+    "id": "VI-42",
+    "part": "VI",
+    "title": "Material and reconstructed volumes",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-discrete-raychaudhuri",
+    "kind": "Rust/WASM · Independent volume derivatives and material Jacobian.",
+    "prediction": "Material and reconstructed-cell expansion differ by a measurable boundary flux.",
+    "question": "How does boundary flux separate material expansion from a reconstructed cell's volume change?",
+    "posterAlt": "Material expansion approaches point expansion. Material and reconstructed-cell expansion differ by a measurable boundary flux.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.05,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "time",
+        "label": "Time",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 0.8,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "rate": 0.4,
+      "time": 0.5
+    }
+  },
+  {
+    "id": "VI-43",
+    "part": "VI",
+    "title": "Focusing and caustics",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-focusing-theorem",
+    "kind": "Rust/WASM · Numerical evolution versus comparison solution.",
+    "prediction": "Contracting irrotational congruences obey the Riccati bound and focusing time.",
+    "question": "How do initial contraction, Ricci curvature, and shear change the focusing time?",
+    "posterAlt": "Contracting expansion. Contracting irrotational congruences obey the Riccati bound and focusing time.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "initial_expansion",
+        "label": "Initial Expansion",
+        "type": "range",
+        "value": -1,
+        "min": -3,
+        "max": -0.1,
+        "step": 0.1
+      },
+      {
+        "key": "ricci",
+        "label": "Ricci",
+        "type": "range",
+        "value": 0.2,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "shear_squared",
+        "label": "Prescribed shear norm squared",
+        "type": "range",
+        "value": 0,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "dimension": 3,
+      "initial_expansion": -1,
+      "ricci": 0.2,
+      "shear_squared": 0
+    }
+  },
+  {
+    "id": "VI-44",
+    "part": "VI",
+    "title": "Curvature and topology",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity",
+    "target": "sec-curvature-topology",
+    "kind": "Rust/WASM · Triangulation bookkeeping and independent angle sums.",
+    "prediction": "Angle deficits plus boundary turning recover Euler characteristic.",
+    "question": "How do angle deficits and boundary turning recover the topology of a disk or a closed sphere?",
+    "posterAlt": "Boundary turning supplies the disk curvature. Angle deficits plus boundary turning recover Euler characteristic.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "surface",
+        "label": "Surface topology",
+        "type": "select",
+        "value": "disk",
+        "options": [
+          {
+            "value": "disk",
+            "label": "Euclidean disk and 3D hinge"
+          },
+          {
+            "value": "sphere",
+            "label": "Closed polyhedral sphere"
+          }
+        ]
+      },
+      {
+        "key": "vertices",
+        "label": "Vertices",
+        "type": "range",
+        "value": 8,
+        "min": 3,
+        "max": 32,
+        "step": 1
+      },
+      {
+        "key": "scale",
+        "label": "Scale",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      },
+      {
+        "key": "refinement",
+        "label": "Sphere subdivisions",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 1
+      }
+    ],
+    "params": {
+      "surface": "disk",
+      "vertices": 8,
+      "scale": 1,
+      "refinement": 1
+    }
+  },
+  {
+    "id": "VI-45",
+    "part": "VI",
+    "title": "Fluctuation energy and metric evolution",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-algorithmic-metric-evolution",
+    "kind": "Rust/WASM · Independent predictor/test ensembles and exact finite laws.",
+    "prediction": "Conditional drift and all cross-stage covariance terms predict independent replica differences.",
+    "question": "Do independent gas continuations agree on the mean and covariance of a metric increment at a fixed probe?",
+    "posterAlt": "Material metric conditional increment. Conditional drift and all cross-stage covariance terms predict independent replica differences.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "readout",
+        "label": "Metric observable",
+        "type": "select",
+        "value": "material",
+        "options": [
+          {
+            "value": "material",
+            "label": "material"
+          },
+          {
+            "value": "fixed_probe",
+            "label": "fixed_probe"
+          }
+        ]
+      },
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "replicas",
+        "label": "Engine replicas per independent group",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          }
+        ]
+      },
+      {
+        "key": "horizon",
+        "label": "Engine continuation steps",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "key": "amplitude",
+        "label": "Amplitude",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.03,
+        "max": 0.4,
+        "step": 0.01
+      },
+      {
+        "key": "population",
+        "label": "Population",
+        "type": "range",
+        "value": 64,
+        "min": 8,
+        "max": 256,
+        "step": 8
+      },
+      {
+        "key": "reference_replicas",
+        "label": "Reference ensemble samples",
+        "type": "range",
+        "value": 1024,
+        "min": 128,
+        "max": 8192,
+        "step": 128
+      }
+    ],
+    "params": {
+      "readout": "material",
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "replicas": 16,
+      "horizon": 1,
+      "amplitude": 0.4,
+      "epsilon": 0.15,
+      "population": 64,
+      "reference_replicas": 1024
+    }
+  },
+  {
+    "id": "VI-46",
+    "part": "VI",
+    "title": "Pressure and deformation",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-elastic-pressure",
+    "kind": "Rust/WASM · Energy finite differences versus analytic derivatives.",
+    "prediction": "Dilation pressure and affine jump stiffness have their own normalization-dependent scaling.",
+    "question": "How does changing interaction range or deformation change pressure and affine stiffness?",
+    "posterAlt": "Pair energy along a mass-preserving dilation. Dilation pressure and affine jump stiffness have their own normalization-dependent scaling.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.05,
+        "max": 0.6,
+        "step": 0.05
+      },
+      {
+        "key": "mode",
+        "label": "Mode",
+        "type": "select",
+        "value": "positive",
+        "options": [
+          {
+            "value": "positive",
+            "label": "Positive"
+          },
+          {
+            "value": "signed",
+            "label": "Signed"
+          },
+          {
+            "value": "attractive",
+            "label": "Attractive"
+          }
+        ]
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      }
+    ],
+    "params": {
+      "epsilon": 0.3,
+      "mode": "positive",
+      "dimension": 3
+    }
+  },
+  {
+    "id": "VI-47",
+    "part": "VI",
+    "title": "Density-wave dispersion",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-linearized-dynamics",
+    "kind": "Rust/WASM · Sampled increments or grid evolution versus exact dispersion.",
+    "prediction": "Fourier amplitudes decay with the exact diffusion-plus-jump multiplier.",
+    "question": "How do wavelength, diffusion, and jump rate determine a density wave's decay?",
+    "posterAlt": "A sinusoidal density wave. Fourier amplitudes decay with the exact diffusion-plus-jump multiplier.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 0.15,
+        "min": 0.03,
+        "max": 0.5,
+        "step": 0.01
+      },
+      {
+        "key": "diffusion",
+        "label": "Diffusion",
+        "type": "range",
+        "value": 0.02,
+        "min": 0,
+        "max": 0.2,
+        "step": 0.01
+      },
+      {
+        "key": "rate",
+        "label": "Rate",
+        "type": "range",
+        "value": 0.7,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "length",
+        "label": "Length",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 5,
+        "step": 0.5
+      },
+      {
+        "key": "wave_number",
+        "label": "Wave Number",
+        "type": "range",
+        "value": 1,
+        "min": 1,
+        "max": 6,
+        "step": 1
+      },
+      {
+        "key": "resolution",
+        "label": "Resolution",
+        "type": "range",
+        "value": 96,
+        "min": 32,
+        "max": 256,
+        "step": 16
+      }
+    ],
+    "params": {
+      "epsilon": 0.15,
+      "diffusion": 0.02,
+      "rate": 0.7,
+      "length": 1,
+      "wave_number": 1,
+      "resolution": 96
+    }
+  },
+  {
+    "id": "VI-48",
+    "part": "VI",
+    "title": "BAOAB diffusion and thermostat heating",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-algorithmic-balance-laws",
+    "kind": "Rust/WASM · Independent noise ensembles versus conditional moments.",
+    "prediction": "Actual thermostat scaling determines covariance, energy injection and fourth-moment fluctuations.",
+    "question": "How do timestep and friction change thermostat covariance, energy injection, and fourth moments?",
+    "posterAlt": "Raw energy increments versus conditional means. Actual thermostat scaling determines covariance, energy injection and fourth-moment fluctuations.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "friction",
+        "label": "Friction",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "time_step",
+        "label": "Time Step",
+        "type": "range",
+        "value": 0.2,
+        "min": 0.01,
+        "max": 1,
+        "step": 0.01
+      },
+      {
+        "key": "velocity",
+        "label": "Velocity",
+        "type": "range",
+        "value": 1,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "noise",
+        "label": "Noise",
+        "type": "range",
+        "value": 1,
+        "min": 0.05,
+        "max": 3,
+        "step": 0.05
+      },
+      {
+        "key": "mode",
+        "label": "Mode",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "Gaussian"
+          },
+          {
+            "value": "uniform",
+            "label": "Uniform"
+          }
+        ]
+      },
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "range",
+        "value": 8192,
+        "min": 128,
+        "max": 32768,
+        "step": 128
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "friction": 1,
+      "time_step": 0.2,
+      "velocity": 1,
+      "noise": 1,
+      "mode": "gaussian",
+      "samples": 8192
+    }
+  },
+  {
+    "id": "VI-49",
+    "part": "VI",
+    "title": "Gaussian mode thermodynamics",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-radiation-pressure",
+    "kind": "Rust/WASM · Sampled Gaussian modes and partition derivatives.",
+    "prediction": "Mode variance is temperature divided by stiffness and relaxation also depends on mobility.",
+    "question": "How do temperature, stiffness, volume, and mobility affect Gaussian mode fluctuations and relaxation?",
+    "posterAlt": "Equipartition at the specified mode stiffness. Mode variance is temperature divided by stiffness and relaxation also depends on mobility.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "modes",
+        "label": "Modes",
+        "type": "range",
+        "value": 8,
+        "min": 1,
+        "max": 32,
+        "step": 1
+      },
+      {
+        "key": "temperature",
+        "label": "Temperature",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "volume",
+        "label": "Volume",
+        "type": "range",
+        "value": 2,
+        "min": 0.3,
+        "max": 5,
+        "step": 0.1
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "mobility",
+        "label": "Mobility",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "modes": 8,
+      "temperature": 1,
+      "volume": 2,
+      "dimension": 3,
+      "mobility": 0.7
+    }
+  },
+  {
+    "id": "VI-50",
+    "part": "VI",
+    "title": "Pressure crossover",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-pressure-regimes",
+    "kind": "Rust/WASM · Root finding versus the explicit crossover expression.",
+    "prediction": "The pressure zero follows the dimension-dependent coefficient ratio.",
+    "question": "How does the ratio of attractive and mode-pressure coefficients move the pressure zero?",
+    "posterAlt": "Pressure across the crossover. The pressure zero follows the dimension-dependent coefficient ratio.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "attraction",
+        "label": "Attraction",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "mode_pressure",
+        "label": "Mode Pressure",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 1,
+        "max": 3,
+        "step": 1
+      }
+    ],
+    "params": {
+      "attraction": 1,
+      "mode_pressure": 1,
+      "dimension": 3
+    }
+  },
+  {
+    "id": "VI-51",
+    "part": "VI",
+    "title": "Mechanical balances and gravitational stress",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
+    "target": "sec-stress-energy-tensor",
+    "kind": "Rust/WASM · Stage budgets and independent Lorentz tensor contractions.",
+    "prediction": "Executed stage transfers telescope and the Einstein trace gives the stated Ricci contraction.",
+    "question": "How do recorded stage transfers balance mechanical energy, and how does a supplied stress tensor determine the Einstein trace?",
+    "posterAlt": "Recorded mechanical stage ledger. Executed stage transfers telescope and the Einstein trace gives the stated Ricci contraction.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "velocity",
+        "label": "Velocity",
+        "type": "range",
+        "value": 1,
+        "min": -3,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "restitution",
+        "label": "Restitution",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "energy_density",
+        "label": "Energy Density",
+        "type": "range",
+        "value": 1,
+        "min": -1,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "pressure",
+        "label": "Pressure",
+        "type": "range",
+        "value": 0.2,
+        "min": -2,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "lambda",
+        "label": "Lambda",
+        "type": "range",
+        "value": 0.1,
+        "min": -1,
+        "max": 1,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "velocity": 1,
+      "restitution": 0.5,
+      "dimension": 3,
+      "energy_density": 1,
+      "pressure": 0.2,
+      "lambda": 0.1
+    }
+  },
+  {
+    "id": "VI-52",
+    "part": "VI",
+    "title": "Genealogical separators and cuts",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ig-entropy",
+    "kind": "Rust/WASM · Enumeration versus native minimum cut.",
+    "prediction": "Valid separators cover terminal chains and nonnegative cuts satisfy their graph identities.",
+    "question": "Does a chosen episode set meet every terminal ancestry chain, and does a spatial cut equal its crossing capacity?",
+    "posterAlt": "Terminal partition on the point cloud. Valid separators cover terminal chains and nonnegative cuts satisfy their graph identities.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "source",
+        "label": "Data source",
+        "type": "select",
+        "value": "recorded",
+        "options": [
+          {
+            "value": "reference",
+            "label": "reference"
+          },
+          {
+            "value": "recorded",
+            "label": "recorded"
+          }
+        ]
+      },
+      {
+        "key": "walkers",
+        "label": "Recorded walkers",
+        "type": "select",
+        "value": 32,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "engine_memory",
+        "label": "Engine donor history window",
+        "type": "select",
+        "value": 2,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "key": "engine_dt",
+        "label": "Engine time step",
+        "type": "select",
+        "value": 0.04,
+        "options": [
+          {
+            "value": 0.01,
+            "label": "0.01"
+          },
+          {
+            "value": 0.04,
+            "label": "0.04"
+          },
+          {
+            "value": 0.1,
+            "label": "0.1"
+          }
+        ]
+      },
+      {
+        "key": "engine_friction",
+        "label": "Engine friction",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_viscosity",
+        "label": "Engine viscous coefficient",
+        "type": "select",
+        "value": 1,
+        "options": [
+          {
+            "value": 0,
+            "label": "0"
+          },
+          {
+            "value": 0.5,
+            "label": "0.5"
+          },
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 2,
+            "label": "2"
+          }
+        ]
+      },
+      {
+        "key": "engine_boundary",
+        "label": "Engine boundary (box ±4)",
+        "type": "select",
+        "value": "unbounded",
+        "options": [
+          {
+            "value": "unbounded",
+            "label": "unbounded"
+          },
+          {
+            "value": "absorbing_box",
+            "label": "absorbing_box"
+          },
+          {
+            "value": "periodic_box",
+            "label": "periodic_box"
+          }
+        ]
+      },
+      {
+        "key": "engine_innovation",
+        "label": "Engine innovation law",
+        "type": "select",
+        "value": "gaussian",
+        "options": [
+          {
+            "value": "gaussian",
+            "label": "gaussian"
+          },
+          {
+            "value": "standardized_uniform",
+            "label": "standardized_uniform"
+          }
+        ]
+      },
+      {
+        "key": "population",
+        "label": "Population",
+        "type": "range",
+        "value": 24,
+        "min": 8,
+        "max": 64,
+        "step": 4
+      },
+      {
+        "key": "epsilon",
+        "label": "Epsilon",
+        "type": "range",
+        "value": 0.25,
+        "min": 0.05,
+        "max": 0.7,
+        "step": 0.05
+      },
+      {
+        "key": "separator",
+        "label": "Episode separator",
+        "type": "select",
+        "value": "roots",
+        "options": [
+          {
+            "value": "roots",
+            "label": "Root episodes"
+          },
+          {
+            "value": "terminal_episodes",
+            "label": "Terminal episodes"
+          }
+        ]
+      }
+    ],
+    "params": {
+      "source": "recorded",
+      "walkers": 32,
+      "engine_memory": 2,
+      "engine_dt": 0.04,
+      "engine_friction": 1,
+      "engine_viscosity": 1,
+      "engine_boundary": "unbounded",
+      "engine_innovation": "gaussian",
+      "population": 24,
+      "epsilon": 0.25,
+      "separator": "roots"
+    }
+  },
+  {
+    "id": "VI-53",
+    "part": "VI",
+    "title": "Jump, modular, and path entropy",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-algorithmic-thermodynamic-response",
+    "kind": "Rust/WASM · Independent matrix entropy and finite path enumeration.",
+    "prediction": "Relative entropy satisfies modular and path-likelihood identities with declared support.",
+    "question": "How do state perturbations and forward/reverse path probabilities determine their respective relative entropies?",
+    "posterAlt": "Jump cost starts quadratically. Relative entropy satisfies modular and path-likelihood identities with declared support.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "perturbation",
+        "label": "Perturbation",
+        "type": "range",
+        "value": 0.1,
+        "min": -0.2,
+        "max": 0.2,
+        "step": 0.01
+      },
+      {
+        "key": "forward",
+        "label": "Forward",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.05,
+        "max": 0.55,
+        "step": 0.05
+      },
+      {
+        "key": "reverse",
+        "label": "Reverse",
+        "type": "range",
+        "value": 0.2,
+        "min": 0,
+        "max": 0.4,
+        "step": 0.05
+      },
+      {
+        "key": "path_length",
+        "label": "Path Length",
+        "type": "range",
+        "value": 5,
+        "min": 1,
+        "max": 8,
+        "step": 1
+      }
+    ],
+    "params": {
+      "perturbation": 0.1,
+      "forward": 0.4,
+      "reverse": 0.2,
+      "path_length": 5
+    }
+  },
+  {
+    "id": "VI-54",
+    "part": "VI",
+    "title": "Gaussian cuts and perimeter",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-gamma-convergence",
+    "kind": "Rust/WASM · Periodized quadrature versus independent boundary integral.",
+    "prediction": "Rescaled Gaussian cut energy approaches density-squared weighted perimeter.",
+    "question": "How does a rescaled Gaussian cut approach density-weighted perimeter as its range shrinks?",
+    "posterAlt": "Correct density-squared and bandwidth normalization. Rescaled Gaussian cut energy approaches density-squared weighted perimeter.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 2,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "density_contrast",
+        "label": "Density Contrast",
+        "type": "range",
+        "value": 0.3,
+        "min": 0,
+        "max": 0.7,
+        "step": 0.05
+      },
+      {
+        "key": "resolution",
+        "label": "Resolution",
+        "type": "range",
+        "value": 128,
+        "min": 32,
+        "max": 256,
+        "step": 16
+      }
+    ],
+    "params": {
+      "dimension": 2,
+      "density_contrast": 0.3,
+      "resolution": 128
+    }
+  },
+  {
+    "id": "VI-55",
+    "part": "VI",
+    "title": "Finite-population area scaling",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-area-law",
+    "kind": "Rust/WASM · Independent point ensembles and U-statistic moments.",
+    "prediction": "Exact pair counting and shared-index covariance determine finite-population scaling.",
+    "question": "How do population size and interaction range change the mean and uncertainty of a random spatial cut?",
+    "posterAlt": "Replicas fluctuate around N(N-1) times the pair integral. Exact pair counting and shared-index covariance determine finite-population scaling.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "population",
+        "label": "Population",
+        "type": "range",
+        "value": 64,
+        "min": 16,
+        "max": 256,
+        "step": 16
+      },
+      {
+        "key": "replicas",
+        "label": "Replicas",
+        "type": "range",
+        "value": 24,
+        "min": 8,
+        "max": 64,
+        "step": 8
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 2,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "range_factor",
+        "label": "Range Factor",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.3,
+        "max": 1.2,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "population": 64,
+      "replicas": 24,
+      "dimension": 2,
+      "range_factor": 0.7
+    }
+  },
+  {
+    "id": "VI-56",
+    "part": "VI",
+    "title": "Three first variations",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-first-law",
+    "kind": "Rust/WASM · Symmetric finite differences versus each analytic derivative.",
+    "prediction": "Density, boundary, and state perturbations have distinct first variations.",
+    "question": "What changes when you vary a boundary shape, a spatial density, or a quantum state while fixing the other inputs?",
+    "posterAlt": "Surface energy under radius variation. Density, boundary, and state perturbations have distinct first variations.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "radius",
+        "label": "Radius",
+        "type": "range",
+        "value": 0.6,
+        "min": 0.2,
+        "max": 1.2,
+        "step": 0.05
+      },
+      {
+        "key": "density_contrast",
+        "label": "Density Contrast",
+        "type": "range",
+        "value": 0.3,
+        "min": -0.3,
+        "max": 0.7,
+        "step": 0.05
+      },
+      {
+        "key": "tension",
+        "label": "Tension",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 3,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "radius": 0.6,
+      "density_contrast": 0.3,
+      "tension": 1
+    }
+  },
+  {
+    "id": "VI-57",
+    "part": "VI",
+    "title": "Gibbs QSD candidates",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-qsd-thermal",
+    "kind": "Rust/WASM · Exact eigenmeasure versus normalized candidate and residual bound.",
+    "prediction": "The killed-kernel eigenmeasure residual controls candidate QSD error.",
+    "question": "How closely does a Gibbs candidate satisfy the killed kernel's eigenmeasure equation?",
+    "posterAlt": "Survival-conditioned iteration. The killed-kernel eigenmeasure residual controls candidate QSD error.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "temperature",
+        "label": "Temperature",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "killing_contrast",
+        "label": "Killing Contrast",
+        "type": "range",
+        "value": 0.1,
+        "min": 0,
+        "max": 0.3,
+        "step": 0.02
+      }
+    ],
+    "params": {
+      "temperature": 1,
+      "killing_contrast": 0.1
+    }
+  },
+  {
+    "id": "VI-58",
+    "part": "VI",
+    "title": "Response and Fisher information",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-algorithmic-thermodynamic-response",
+    "kind": "Rust/WASM · Independent tilted laws, Poisson solve, and finite differences.",
+    "prediction": "Static covariance and Poisson response follow their respective perturbation laws.",
+    "question": "How do static tilts and transition perturbations produce their respective response and Fisher-information formulas?",
+    "posterAlt": "Delayed response sums to the stationary derivative. Static covariance and Poisson response follow their respective perturbation laws.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "transition_a",
+        "label": "Transition A",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "transition_b",
+        "label": "Transition B",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 0.8,
+        "step": 0.05
+      },
+      {
+        "key": "difference_step",
+        "label": "Difference Step",
+        "type": "range",
+        "value": 0.001,
+        "min": 0.0001,
+        "max": 0.02,
+        "step": 0.0001
+      },
+      {
+        "key": "path_length",
+        "label": "Path Length",
+        "type": "range",
+        "value": 8,
+        "min": 1,
+        "max": 64,
+        "step": 1
+      }
+    ],
+    "params": {
+      "transition_a": 0.3,
+      "transition_b": 0.4,
+      "difference_step": 0.001,
+      "path_length": 8
+    }
+  },
+  {
+    "id": "VI-59",
+    "part": "VI",
+    "title": "Euclidean horizons and AdS",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ads-cft",
+    "kind": "Rust/WASM · Geometric circumference and direct curvature contractions.",
+    "prediction": "Cone regularity fixes the Euclidean period and AdS curvature fixes the cosmological constant.",
+    "question": "Which Euclidean period removes a horizon's cone defect, and which curvature radius matches the chosen AdS constant?",
+    "posterAlt": "Circumference distinguishes a cone from a smooth plane. Cone regularity fixes the Euclidean period and AdS curvature fixes the cosmological constant.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "lambda",
+        "label": "Lambda",
+        "type": "range",
+        "value": -0.5,
+        "min": -2,
+        "max": -0.1,
+        "step": 0.1
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "surface_gravity",
+        "label": "Surface Gravity",
+        "type": "range",
+        "value": 1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      },
+      {
+        "key": "period_ratio",
+        "label": "Period Ratio",
+        "type": "range",
+        "value": 1,
+        "min": 0.5,
+        "max": 1.5,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "lambda": -0.5,
+      "dimension": 3,
+      "surface_gravity": 1,
+      "period_ratio": 1
+    }
+  },
+  {
+    "id": "VI-60",
+    "part": "VI",
+    "title": "Minimum cuts and limiting surfaces",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/05_holography",
+    "target": "sec-holography-ads-cft",
+    "kind": "Rust/WASM · Minimum cut versus independently evaluated competitors.",
+    "prediction": "Constrained graph cuts approach the weighted surface minimization problem.",
+    "question": "How does a minimum-cut interface move when the density valley changes and the grid is refined?",
+    "posterAlt": "The minimum interface tracks the density valley. Constrained graph cuts approach the weighted surface minimization problem.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "resolution",
+        "label": "Resolution",
+        "type": "range",
+        "value": 16,
+        "min": 8,
+        "max": 32,
+        "step": 4
+      },
+      {
+        "key": "density_contrast",
+        "label": "Density Contrast",
+        "type": "range",
+        "value": 0.4,
+        "min": 0,
+        "max": 0.8,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "resolution": 16,
+      "density_contrast": 0.4
+    }
+  },
+  {
+    "id": "VI-61",
+    "part": "VI",
+    "title": "Conditional stationarity and survival",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-three-vacuum-energies",
+    "kind": "Rust/WASM · Killed-chain evolution and normalized observables.",
+    "prediction": "A QSD preserves the conditional law while survival decays.",
+    "question": "How can a conditional law remain stationary while its surviving probability mass decreases?",
+    "posterAlt": "Observable relaxation under survival conditioning. A QSD preserves the conditional law while survival decays.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "initial_probability",
+        "label": "Initial Probability",
+        "type": "range",
+        "value": 0.8,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "energy_shift",
+        "label": "Energy Shift",
+        "type": "range",
+        "value": 0,
+        "min": -3,
+        "max": 3,
+        "step": 0.25
+      },
+      {
+        "key": "survival",
+        "label": "Survival",
+        "type": "range",
+        "value": 0.85,
+        "min": 0.5,
+        "max": 1,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "initial_probability": 0.8,
+      "energy_shift": 0,
+      "survival": 0.85
+    }
+  },
+  {
+    "id": "VI-62",
+    "part": "VI",
+    "title": "Interaction range and curvature scale",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-uv-regime",
+    "kind": "Rust/WASM · Exact geometric quantities versus local expansions.",
+    "prediction": "Local geometric approximations improve as interaction range decreases relative to curvature radius.",
+    "question": "How does reducing interaction range relative to curvature radius improve a local flat approximation?",
+    "posterAlt": "Measured kernel locality error. Local geometric approximations improve as interaction range decreases relative to curvature radius.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "lambda",
+        "label": "Lambda",
+        "type": "range",
+        "value": -0.5,
+        "min": -2,
+        "max": -0.1,
+        "step": 0.1
+      },
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "range_ratio",
+        "label": "Range Ratio",
+        "type": "range",
+        "value": 0.1,
+        "min": 0.02,
+        "max": 0.4,
+        "step": 0.02
+      }
+    ],
+    "params": {
+      "lambda": -0.5,
+      "dimension": 3,
+      "range_ratio": 0.1
+    }
+  },
+  {
+    "id": "VI-63",
+    "part": "VI",
+    "title": "Expansion histories",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-raychaudhuri-expansion",
+    "kind": "Rust/WASM · Scale-factor differentiation and Raychaudhuri terms.",
+    "prediction": "De Sitter and Milne expansion satisfy different complete curvature balances.",
+    "question": "How do de Sitter, Milne, and forced expansion histories satisfy their respective evolution equations?",
+    "posterAlt": "A lower bound that retains the complete forcing. De Sitter and Milne expansion satisfy different complete curvature balances.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "dimension",
+        "label": "Dimension",
+        "type": "range",
+        "value": 3,
+        "min": 2,
+        "max": 3,
+        "step": 1
+      },
+      {
+        "key": "expansion",
+        "label": "Expansion",
+        "type": "range",
+        "value": 0.4,
+        "min": 0.1,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "forcing",
+        "label": "Forcing",
+        "type": "range",
+        "value": 0.3,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "dimension": 3,
+      "expansion": 0.4,
+      "forcing": 0.3
+    }
+  },
+  {
+    "id": "VI-64",
+    "part": "VI",
+    "title": "Predictive information",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-closure-theory",
+    "kind": "Rust/WASM · Exact joint-law enumeration and conditional entropy.",
+    "prediction": "The finite-bit example separates retained information from predictive-state complexity.",
+    "question": "How does revealing a predictive bit change retained information and predictive-state complexity?",
+    "posterAlt": "A single macro forecast can discard predictive information. The finite-bit example separates retained information from predictive-state complexity.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "reveal_probability",
+        "label": "Reveal Probability",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "samples",
+        "label": "Samples",
+        "type": "range",
+        "value": 4096,
+        "min": 128,
+        "max": 16384,
+        "step": 128
+      }
+    ],
+    "params": {
+      "reveal_probability": 1,
+      "samples": 4096
+    }
+  },
+  {
+    "id": "VI-65",
+    "part": "VI",
+    "title": "Dynamical closure",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-closure-theory",
+    "kind": "Rust/WASM · Full semigroup versus reduced semigroup evolution.",
+    "prediction": "Lumpable generators give closed evolution and perturbed closure has a bounded residual.",
+    "question": "How does perturbing a lumpable generator change the error of its closed evolution?",
+    "posterAlt": "Expected Dynkin residual. Lumpable generators give closed evolution and perturbed closure has a bounded residual.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "rate_perturbation",
+        "label": "Rate Perturbation",
+        "type": "range",
+        "value": 0.15,
+        "min": 0,
+        "max": 0.5,
+        "step": 0.05
+      },
+      {
+        "key": "time",
+        "label": "Time",
+        "type": "range",
+        "value": 2,
+        "min": 0.1,
+        "max": 5,
+        "step": 0.1
+      }
+    ],
+    "params": {
+      "rate_perturbation": 0.15,
+      "time": 2
+    }
+  },
+  {
+    "id": "VI-66",
+    "part": "VI",
+    "title": "Vacuum units and observables",
+    "chapter": "source/2_fractal_gas/3_fitness_manifold/06_cosmology",
+    "target": "sec-cosmological-observations",
+    "kind": "Rust/WASM · Dimensional conversion and stress reconstruction.",
+    "prediction": "Declared Hubble and density inputs determine Lambda, energy, mass density and pressure.",
+    "question": "What cosmological constant, energy density, mass density, and pressure follow from the chosen Hubble and density inputs?",
+    "posterAlt": "The declared density parameter controls the inferred curvature. Declared Hubble and density inputs determine Lambda, energy, mass density and pressure.",
+    "seed": 7,
+    "posterTicks": 8,
+    "controls": [
+      {
+        "key": "hubble",
+        "label": "Hubble",
+        "type": "range",
+        "value": 70,
+        "min": 30,
+        "max": 100,
+        "step": 1
+      },
+      {
+        "key": "omega",
+        "label": "Omega",
+        "type": "range",
+        "value": 0.7,
+        "min": 0,
+        "max": 1,
+        "step": 0.05
+      }
+    ],
+    "params": {
+      "hubble": 70,
+      "omega": 0.7
+    }
   }
 ]

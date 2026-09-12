@@ -19,7 +19,7 @@ await init({
 });
 
 test("Checkpoint format explicitly versions corrected semantics", () => {
-  assert.equal(capabilities().checkpoint_version, 3);
+  assert.equal(capabilities().checkpoint_version, 4);
 });
 
 test("Squared distance and ordinary distance have the same mean-diversity semantics", async () => {

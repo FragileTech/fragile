@@ -37,10 +37,13 @@
     "test:llm-browser": "node tests/llm/browser.mjs",
     "test:llm-live": "node tests/llm/live.mjs",
     "build:euclidean-lectures": "node tools/build-lecture-assets.mjs",
-    "test:euclidean-lectures": "node tests/euclidean-gas/lecture-foundations.test.mjs && node tests/euclidean-gas/lecture-convergence.test.mjs && node tests/euclidean-gas/lecture-entropy.test.mjs && node tests/euclidean-gas/lecture-host.test.mjs && node tests/euclidean-gas/lecture-theory-regression.test.mjs && node tests/euclidean-gas/lecture-fractal.test.mjs",
+    "test:euclidean-lectures": "node tests/euclidean-gas/lecture-foundations.test.mjs && node tests/euclidean-gas/lecture-convergence.test.mjs && node tests/euclidean-gas/lecture-entropy.test.mjs && node tests/euclidean-gas/lecture-host.test.mjs && node tests/euclidean-gas/lecture-theory-regression.test.mjs && node tests/euclidean-gas/lecture-fractal.test.mjs && node tests/euclidean-gas/lecture-qft.test.mjs",
     "test:euclidean-lectures-browser": "node tests/euclidean-gas/lecture-browser.mjs",
     "test:euclidean-lecture-embeds-browser": "node tests/euclidean-gas/lecture-embeds-browser.mjs",
-    "test:euclidean-fractal-browser": "node tests/euclidean-gas/lecture-fractal-browser.mjs"
+    "test:euclidean-fractal-browser": "node tests/euclidean-gas/lecture-fractal-browser.mjs",
+    "build:partvi-index": "node tools/build-partvi-index.mjs",
+    "test:euclidean-qft": "node tests/euclidean-gas/lecture-qft.test.mjs",
+    "test:euclidean-qft-browser": "node tests/euclidean-gas/lecture-qft-browser.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",

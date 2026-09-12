@@ -5636,7 +5636,7 @@ Hermite projections uniformly approximate each bounded ball. Markov's
 inequality applied to {ref}`(YM.F5) <eq-fg-ym-f5>` proves tightness in $\mathscr H_{-s_1}$.
 This Hilbert space is separable and complete and embeds continuously in
 $\mathcal S'$, since Schwartz Hermite coefficients decay faster than
-every power. For each $N$, the originally defined distribution is the
+every power. For each $N$, the defined distribution is the
 same coefficient expansion: the pairing is bounded by
 $2\sqrt N\int\|\varphi(t,\cdot)\|_\infty dt$, and Hermite expansions
 converge in that Schwartz seminorm. The argument uses the whole unbounded
@@ -5673,6 +5673,78 @@ corollary below combines that cancellation with the kinetic noise to prove
 a positive variance bound uniform in population size. Pairing fixes the
 collision identity; the LSI belongs to the stationary law identified in that
 corollary.
+:::
+
+:::{prf:proposition} Transient field hierarchy of the executed algorithm
+:label: prop-ym-transient-algorithm-fields
+
+Let $R_n$ be the complete algorithm state: the population and validity flags,
+retained donor records, provider state, and the recorded local data required by
+the chosen observable. Include the step counter when the configuration depends
+on time, and an absorbing cemetery state after termination. Let $K$ be the
+transition kernel obtained by executing the configured companion selection,
+fitness evaluation, literal clone writes, kinetic substeps, clipping, and
+boundary operations. For a specified real field observable $F$, use its
+specified value on ineligible records and set $F(\dagger)=0$. Write
+
+$$
+D_F=KF-F,\qquad
+Q_{FG}=K(FG)-(KF)(KG),\qquad \mu_n=\mathcal L(R_n).
+$$
+
+Whenever the displayed second moments are finite, the exact transient
+identities are
+
+$$
+\begin{aligned}
+\mu_{n+1}F&=\mu_nF+\mu_nD_F,\\
+\operatorname{Cov}_{\mu_{n+1}}(F,G)
+ &=\operatorname{Cov}_{\mu_n}(F+D_F,G+D_G)+\mu_nQ_{FG},\\
+\mathbb E[\overline{F(R_n)}G(R_{n+\ell})]
+ &=\mu_n[\overline F K^\ell G].
+\end{aligned}
+$$
+
+The residual $\eta_{F,n+1}=F(R_{n+1})-(KF)(R_n)$ satisfies
+$\mathbb E[\eta_{F,n+1}\mid R_n]=0$ and
+$\mathbb E[\eta_{F,n+1}\eta_{G,n+1}\mid R_n]=Q_{FG}(R_n)$.
+These formulas require neither a stationary initial law nor a closed evolution
+on the selected fields. If $F=N^{-1}\sum_i f_i$ and
+$\delta f_i=f_i(R_{n+1})-f_i(R_n)$, their conditional covariance is
+
+$$
+Q_{FF}(R_n)=\frac{1}{N^2}\sum_{i,j}
+ \operatorname{Cov}(\delta f_i,\delta f_j\mid R_n).
+$$
+
+Thus shared clone decisions, historical donors, and correlated state-dependent
+increments contribute through their actual joint law. For recorded intermediate
+states $R_n^{(0)},\ldots,R_n^{(m)}$, with the same readout convention at each
+stage, the exact decomposition
+
+$$
+F(R_{n+1})-F(R_n)
+ =\sum_{r=0}^{m-1}\bigl[F(R_n^{(r+1)})-F(R_n^{(r)})\bigr]
+$$
+
+also retains the cross-covariances between stages when its variance is taken.
+Conditional drift and covariance can be estimated by independent complete-state
+continuations. A predictor using only selected fields is assessed on separate
+continuations against $D_F$, including its dependence on retained algorithm
+state that those fields omit.
+:::
+
+:::{prf:proof}
+The definition of $K$ gives
+$\mathbb E[F(R_{n+1})\mid R_n]=(KF)(R_n)$ and
+$\mathbb E[F(R_{n+1})G(R_{n+1})\mid R_n]=K(FG)(R_n)$.
+Taking expectations proves the mean identity. Applying the law of total
+covariance proves the covariance identity. Iterated conditional expectation
+proves the lag identity and the martingale residual statements. Expanding the
+covariance of the sum of all walker increments gives the double sum over
+$i,j$. The stage identity telescopes, and expansion of its square includes all
+stage cross terms. The same calculations apply with termination because the
+cemetery extension belongs to the state and the observable definition.
 :::
 
 :::{prf:proposition} Drift and covariance equations for the complete selected update
@@ -7601,7 +7673,7 @@ For these observables the following statements hold.
    reflected values in {prf:ref}`thm-ym-native-fiber-continuum`. On a common
    further subsequence, every finite polynomial moment and every finite
    reflected product has a limit. This includes the full complex pair,
-   determinant, and triangle channels jointly with the originally retained
+   determinant, and triangle channels jointly with the retained
    source and geometry coordinates.
 
 4. The limit extends to continuous cylinders of these bounded coordinates.

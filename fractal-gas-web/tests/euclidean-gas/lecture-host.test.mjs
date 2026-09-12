@@ -14,7 +14,7 @@ import {
   pushBounded,
 } from "../../web/euclidean-gas/lecture/math.js";
 
-test("All 62 descriptors have distinct IDs, controls, and chapter placements", async () => {
+test("All 128 descriptors have distinct IDs, controls, and chapter placements", async () => {
   const placements = JSON.parse(
     await readFile(
       new URL(
@@ -23,8 +23,8 @@ test("All 62 descriptors have distinct IDs, controls, and chapter placements", a
       ),
     ),
   );
-  assert.equal(new Set(demos.map((demo) => demo.id)).size, 62);
-  assert.equal(new Set(placements.map((item) => item.chapter)).size, 26);
+  assert.equal(new Set(demos.map((demo) => demo.id)).size, 128);
+  assert.equal(new Set(placements.map((item) => item.chapter)).size, 34);
   assert.deepEqual(
     placements.map((item) => item.id),
     demos.map((item) => item.id),

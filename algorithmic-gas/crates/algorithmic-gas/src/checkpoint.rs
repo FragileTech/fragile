@@ -7,9 +7,8 @@ use crate::{
 };
 use std::collections::BTreeSet;
 
-/// Version 3 preserves durable observational archives. Version 2 bytes migrate
-/// at decoding with a current-state anchor; prior stage coverage is unavailable.
-pub const CHECKPOINT_VERSION: u32 = 3;
+/// The single supported checkpoint schema.
+pub const CHECKPOINT_VERSION: u32 = 4;
 
 fn rewards<T: Real>(r: &RewardBatch<T>, n: usize, version: u64) -> Result<()> {
     r.validate(n)?;

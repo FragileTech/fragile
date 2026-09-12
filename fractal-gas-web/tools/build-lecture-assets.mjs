@@ -1,5 +1,8 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
-import { demos, parameters } from "../web/euclidean-gas/lecture/catalog.js";
+await import("./build-partvi-index.mjs");
+const { demos, parameters } = await import(
+  "../web/euclidean-gas/lecture/catalog.js"
+);
 import {
   chartSVG,
   escapeXML,
@@ -10,6 +13,10 @@ import init, {
   default_config,
   partv_geometry,
   partv_analysis,
+  partvi_analysis,
+  partvi_archive,
+  partvi_run,
+  physics_curvature_batch,
 } from "../web/euclidean-gas/engine/cpu/gas.js";
 
 await init({
@@ -18,6 +25,13 @@ await init({
   ),
 });
 const engine = {
+  curvatureBatch: (request) => physics_curvature_batch(JSON.stringify(request)),
+  qftRun: async (request, config) =>
+    partvi_run(JSON.stringify(request), JSON.stringify(config)),
+  qft: async (request, archive) =>
+    archive
+      ? partvi_archive(JSON.stringify(request), JSON.stringify(archive))
+      : partvi_analysis(JSON.stringify(request)),
   geometry: async (request) => partv_geometry(JSON.stringify(request)),
   analysis: async (request) => partv_analysis(JSON.stringify(request)),
   defaults: async () => JSON.parse(default_config()),

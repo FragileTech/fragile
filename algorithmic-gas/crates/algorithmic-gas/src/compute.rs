@@ -5,6 +5,9 @@ use crate::{GasError, Precision, Real, Result, TensorBatch};
 use burn::tensor::{DType, Tensor, TensorData, backend::Backend};
 use serde::{Deserialize, Serialize};
 
+#[path = "physics/device.rs"]
+mod physics_device;
+
 async fn guarded<T>(future: impl std::future::Future<Output = Result<T>>) -> Result<T> {
     #[cfg(not(target_arch = "wasm32"))]
     {
@@ -231,6 +234,7 @@ enum Device {
 }
 #[derive(Clone, Debug)]
 pub struct ExecutionContext {
+    pub(crate) innovation_shifts: Vec<crate::noise::InnovationShift>,
     /// Opt-in, bounded lecture diagnostics; never consumes random draws.
     pub(crate) stage_trace: Option<Vec<serde_json::Value>>,
     pub(crate) recorded_stages: Option<Vec<crate::tracking::StageSnapshot>>,
@@ -246,6 +250,20 @@ pub struct ExecutionContext {
     pub max_memory_bytes: usize,
 }
 impl ExecutionContext {
+    /// Install an immutable source schedule. Duplicate addresses add their shifts.
+    pub fn set_innovation_shifts(
+        &mut self,
+        shifts: Vec<crate::noise::InnovationShift>,
+    ) -> Result<()> {
+        if shifts.iter().any(|s| !s.shift.is_finite()) {
+            return Err(GasError::Configuration(
+                "nonfinite innovation source".into(),
+            ));
+        }
+        self.innovation_shifts = shifts;
+        Ok(())
+    }
+
     pub fn record_influence(
         &mut self,
         stage: &str,
@@ -317,6 +335,8 @@ impl ExecutionContext {
                 raw_innovation: None,
                 factor,
                 geometry: None,
+                innovation_law: None,
+                applied_source_shifts: Vec::new(),
             });
         }
     }
@@ -380,6 +400,7 @@ impl ExecutionContext {
             stage_trace: None,
             recorded_stages: None,
             recorded_noise: None,
+            innovation_shifts: Vec::new(),
             recorded_fields: None,
             recorded_influences: None,
             max_batch_elements: 16_777_216,

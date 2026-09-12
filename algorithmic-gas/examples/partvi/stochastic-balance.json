@@ -1,0 +1,8 @@
+{
+  "experiment": 22,
+  "parameters": {
+    "seed": 7,
+    "replicas": 32,
+    "horizon": 4
+  }
+}

@@ -572,3 +572,10 @@ th {
   max-width: 100%;
   flex-wrap: wrap;
 }
+/* Part VI keeps detailed formulas and numerical provenance next to the experiment. */
+.calculation-details, .formula-index { margin: 1rem 0; padding: 1rem; border: 1px solid #35435a; border-radius: .6rem; }
+.calculation-details pre { max-height: 28rem; overflow: auto; font-size: .78rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.formula-index input { width: 100%; margin: .7rem 0; }
+.formula-matches { max-height: 28rem; overflow: auto; }
+.formula-matches button { display: block; width: 100%; text-align: left; margin: .4rem 0; }
+.formula-matches span { display: block; font-size: .75rem; max-height: 4rem; overflow: hidden; white-space: pre-wrap; overflow-wrap: anywhere; }

@@ -83,6 +83,8 @@ outputs/
 # MLflow tracking
 mlruns/
 examples/
+!algorithmic-gas/crates/benchmarks/examples/
+!algorithmic-gas/crates/benchmarks/examples/*.rs
 !docs/_static/control_lab/examples/
 !docs/_static/control_lab/examples/*.json
 
@@ -90,3 +92,8 @@ examples/
 temp_diagrams/
 single_agent_tldr_temp.md
 *.md.backup
+
+# Native Part VI experiment requests.
+!algorithmic-gas/examples/
+!algorithmic-gas/examples/partvi/
+!algorithmic-gas/examples/partvi/*.json

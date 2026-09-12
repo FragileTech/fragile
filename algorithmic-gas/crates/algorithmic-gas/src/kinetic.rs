@@ -9,6 +9,42 @@ use crate::{
 };
 use serde::{Deserialize, Serialize};
 
+/// Optional execution features used by recorded QFT experiments.
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
+pub struct QftExecutionConfig {
+    pub viscosity: Option<ViscousForceConfig>,
+    pub innovation_shifts: Vec<crate::noise::InnovationShift>,
+}
+/// Gaussian spatial graph: w_ij = exp(-|x_i-x_j|²/(2 bandwidth²)).
+/// Symmetric normalization divides by the eligible population, including self;
+/// row normalization divides by off-diagonal row mass and need not conserve momentum.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ViscousForceConfig {
+    pub coefficient: f64,
+    pub bandwidth: f64,
+    #[serde(default)]
+    pub row_normalized: bool,
+}
+impl QftExecutionConfig {
+    pub fn validate(&self, rows: usize, dimension: usize) -> Result<()> {
+        if let Some(v) = &self.viscosity {
+            require(
+                v.coefficient.is_finite()
+                    && v.coefficient >= 0.
+                    && v.bandwidth.is_finite()
+                    && v.bandwidth > 0.,
+                "invalid viscous coefficient/bandwidth",
+            )?;
+        }
+        for s in &self.innovation_shifts {
+            s.validate(rows, dimension)?;
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum KineticKind {
@@ -128,6 +164,125 @@ impl<T: Real> KineticContext<'_, T> {
         }
     }
 }
+/// Evaluate the actual BAOAB force and record its input stage. This is an
+/// acceleration convention (unit mass), matching the potential-gradient kick.
+fn recorded_force<T: Real>(
+    p: &Population<T>,
+    positions: &str,
+    velocities: &str,
+    gradient: &TensorBatch<T>,
+    k: &KineticContext<'_, T>,
+    stage: &str,
+    cx: &mut ExecutionContext,
+) -> Result<Option<TensorBatch<T>>> {
+    let eligible = p.eligible(k.include_truncated);
+    let v = p.observations.field(velocities)?;
+    let x = p.observations.field(positions)?;
+    require(
+        gradient.rows() == p.len() && gradient.width() == v.width(),
+        "force gradient shape",
+    )?;
+    let n = p.len();
+    let d = v.width();
+    let config = k
+        .frozen_fitness
+        .as_ref()
+        .and_then(|f| f.config.qft.viscosity.as_ref());
+    if config.is_none_or(|c| c.coefficient == 0.) && cx.recorded_fields.is_none() {
+        return Ok(None);
+    }
+    let force_bytes = crate::memory::checked_mul(
+        crate::memory::checked_mul(n, d)?,
+        std::mem::size_of::<T>() * 4,
+    )?;
+    let edge_bytes =
+        if config.is_some_and(|c| c.coefficient > 0.) && cx.recorded_influences.is_some() {
+            crate::memory::checked_mul(crate::memory::checked_mul(n, n.saturating_sub(1))?, 256)?
+        } else {
+            0
+        };
+    crate::memory::enforce(
+        crate::memory::checked_add(force_bytes, edge_bytes)?,
+        cx.max_memory_bytes,
+    )?;
+    let mut viscous = vec![T::ZERO; n * d];
+    if let Some(config) = config.filter(|c| c.coefficient > 0.) {
+        let count = eligible.iter().filter(|&&a| a).count();
+        let bandwidth = T::from_f64(config.bandwidth);
+        let denominator = T::from_f64(2.) * bandwidth * bandwidth;
+        let coefficient = T::from_f64(config.coefficient);
+        for i in 0..n {
+            if !eligible[i] {
+                continue;
+            }
+            let mut weights = vec![T::ZERO; n];
+            let mut mass = T::ZERO;
+            for j in 0..n {
+                if i == j || !eligible[j] {
+                    continue;
+                }
+                let mut distance = T::ZERO;
+                for a in 0..d {
+                    let delta = x.values()[i * d + a] - x.values()[j * d + a];
+                    distance = distance + delta * delta;
+                }
+                weights[j] = (-distance / denominator).exp();
+                mass = mass + weights[j];
+            }
+            let normalizer = if config.row_normalized {
+                mass
+            } else {
+                T::from_f64(count as f64)
+            };
+            if normalizer == T::ZERO {
+                continue;
+            }
+            for j in 0..n {
+                if i == j || !eligible[j] {
+                    continue;
+                }
+                let weight = coefficient * weights[j] / normalizer;
+                for a in 0..d {
+                    viscous[i * d + a] = viscous[i * d + a]
+                        + weight * (v.values()[j * d + a] - v.values()[i * d + a]);
+                }
+                cx.record_influence(
+                    stage,
+                    "viscous_force",
+                    i as u32,
+                    crate::donor::SourceRef {
+                        frame: k.step,
+                        slot: j as u32,
+                        generation: p.generations[j],
+                        version: p.version,
+                    },
+                    weight.to_f64(),
+                );
+            }
+        }
+    }
+    let potential: Vec<T> = gradient.values().iter().map(|&g| -g).collect();
+    let total: Vec<T> = potential
+        .iter()
+        .zip(&viscous)
+        .map(|(&a, &b)| a + b)
+        .collect();
+    let viscous = TensorBatch::vectors(n, d, viscous)?;
+    let total = TensorBatch::vectors(n, d, total)?;
+    cx.record_field_with_coverage(stage, "force_input_velocity", p.version, v, &eligible);
+    cx.record_field_with_coverage(
+        stage,
+        "potential_force",
+        p.version,
+        &TensorBatch::vectors(n, d, potential)?,
+        &eligible,
+    );
+    cx.record_field_with_coverage(stage, "viscous_force", p.version, &viscous, &eligible);
+    cx.record_field_with_coverage(stage, "total_force", p.version, &total, &eligible);
+    // Preserve the precise arithmetic path of every existing zero-viscosity run.
+    Ok(config.filter(|c| c.coefficient > 0.).map(|_| total))
+}
+
 impl KineticOperator {
     pub fn validate<T: Real>(&self, p: &Population<T>, has_gradient: bool) -> Result<()> {
         match &self.integrator {
@@ -237,6 +392,7 @@ impl KineticOperator {
                     k.domain,
                 )
                 .await?;
+                cx.record_boundary_input("jump_before_boundary", p);
                 k.boundary(p)?;
             }
             KineticKind::Baoab {
@@ -252,9 +408,16 @@ impl KineticOperator {
                     .gradient
                     .ok_or_else(|| GasError::Capability("missing gradient provider".into()))?;
                 let grad = gradient.gradient(p, cx).await?;
+                cx.record_boundary_input("B1_input", p);
                 cx.record_field("B1", "potential_gradient", p.version, &grad);
+                let force = recorded_force(p, positions, velocities, &grad, &k, "B1", cx)?;
                 let alive = p.eligible(k.include_truncated);
-                update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
+                if let Some(force) = force {
+                    update(p, velocities, &force, T::ONE, half, &alive, cx, k.domain).await?;
+                } else {
+                    update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
+                }
+                cx.record_boundary_input("B1_before_boundary", p);
                 k.boundary(p)?;
                 cx.trace_population("B1", p);
                 if !k.has_eligible(p) {
@@ -263,6 +426,7 @@ impl KineticOperator {
                 let velocity = p.observations.field(velocities)?.clone();
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
+                cx.record_boundary_input("A1_before_boundary", p);
                 k.boundary(p)?;
                 cx.trace_population("A1", p);
                 if !k.has_eligible(p) {
@@ -285,6 +449,13 @@ impl KineticOperator {
                         cx,
                     )
                     .await?;
+                cx.record_field_with_coverage(
+                    "O",
+                    "executed_noise",
+                    p.version,
+                    &eta,
+                    &noise_eligible,
+                );
                 let c = (-gamma * h).exp();
                 // Stable near gamma=0. B is the diffusion factor in dv=B dW.
                 let scale = if gamma == T::ZERO {
@@ -294,6 +465,7 @@ impl KineticOperator {
                 };
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &eta, c, scale, &alive, cx, k.domain).await?;
+                cx.record_boundary_input("O_before_boundary", p);
                 k.boundary(p)?;
                 cx.trace_population("O", p);
                 if !k.has_eligible(p) {
@@ -302,6 +474,7 @@ impl KineticOperator {
                 let velocity = p.observations.field(velocities)?.clone();
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
+                cx.record_boundary_input("A2_before_boundary", p);
                 k.boundary(p)?;
                 cx.trace_population("A2", p);
                 if !k.has_eligible(p) {
@@ -309,9 +482,16 @@ impl KineticOperator {
                 }
                 // Deliberately recompute at the post-A positions; no stale cache.
                 let grad = gradient.gradient(p, cx).await?;
+                cx.record_boundary_input("B2_input", p);
                 cx.record_field("B2", "potential_gradient", p.version, &grad);
+                let force = recorded_force(p, positions, velocities, &grad, &k, "B2", cx)?;
                 let alive = p.eligible(k.include_truncated);
-                update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
+                if let Some(force) = force {
+                    update(p, velocities, &force, T::ONE, half, &alive, cx, k.domain).await?;
+                } else {
+                    update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
+                }
+                cx.record_boundary_input("B2_before_boundary", p);
                 k.boundary(p)?;
                 cx.trace_population("B2", p);
             }
@@ -323,6 +503,7 @@ impl KineticOperator {
                     .checked_add(1)
                     .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
                 k.domain.refresh_observations(p)?;
+                cx.record_boundary_input("environment_before_boundary", p);
                 k.boundary(p)?;
             }
         }

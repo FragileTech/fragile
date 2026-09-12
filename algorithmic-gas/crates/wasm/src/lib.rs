@@ -5,6 +5,7 @@ use algorithmic_gas::{AlgorithmicGas, BackendKind, Checkpoint, Precision, Real};
 use algorithmic_gas_benchmarks::RunConfig;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
+mod physics_bindings;
 
 enum Run {
     F32(AlgorithmicGas<f32>),
@@ -26,25 +27,12 @@ fn decode_checkpoint(bytes: &[u8]) -> Result<BrowserCheckpoint, JsValue> {
         return Err(error("checkpoint exceeds 256 MiB decode limit"));
     }
     let mut remaining = bytes;
-    let mut saved: BrowserCheckpoint =
+    let saved: BrowserCheckpoint =
         ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64).map_err(error)?;
-    if !remaining.is_empty() || ![2, CHECKPOINT_VERSION].contains(&saved.version) {
+    if !remaining.is_empty() || saved.version != CHECKPOINT_VERSION {
         return Err(error(
             "unsupported browser checkpoint version or trailing data",
         ));
-    }
-    if saved.version == 2 {
-        // Use the core migration so browser/native imports have identical coverage.
-        fn migrate<T: Real>(state: &Checkpoint<T>) -> Result<Checkpoint<T>, JsValue> {
-            let mut bytes = Vec::new();
-            ciborium::ser::into_writer(state, &mut bytes).map_err(error)?;
-            Checkpoint::from_bytes(&bytes).map_err(error)
-        }
-        saved.state = match &saved.state {
-            SavedRun::F32(state) => SavedRun::F32(migrate(state)?),
-            SavedRun::F64(state) => SavedRun::F64(migrate(state)?),
-        };
-        saved.version = CHECKPOINT_VERSION;
     }
     saved.config.validate().map_err(error)?;
     match &saved.state {
@@ -106,14 +94,50 @@ pub fn partv_analysis(request_json: String) -> Result<JsValue, JsValue> {
     let request = serde_json::from_str(&request_json).map_err(error)?;
     js(&algorithmic_gas::partv_analysis::analyze(request).map_err(error)?)
 }
+/// Part VI reference calculations. The browser worker owns scheduling and cancellation.
+#[wasm_bindgen]
+pub fn partvi_analysis(request_json: String) -> Result<JsValue, JsValue> {
+    if request_json.len() > 8 * 1024 * 1024 {
+        return Err(error("Part VI request exceeds 8 MiB"));
+    }
+    let request = serde_json::from_str(&request_json).map_err(error)?;
+    js(&algorithmic_gas::physics::partvi::analyze(&request).map_err(error)?)
+}
+/// Independent complete-engine continuations for native source/Noether experiments.
+#[wasm_bindgen]
+pub async fn partvi_run(request_json: String, config_json: String) -> Result<JsValue, JsValue> {
+    if request_json.len() > 8 * 1024 * 1024 || config_json.len() > 8 * 1024 * 1024 {
+        return Err(error("Part VI run request exceeds decode budget"));
+    }
+    let request = serde_json::from_str(&request_json).map_err(error)?;
+    let config = serde_json::from_str(&config_json).map_err(error)?;
+    js(
+        &algorithmic_gas_benchmarks::qft_experiments::run(&config, &request)
+            .await
+            .map_err(error)?,
+    )
+}
+
+/// Analyze an imported, validated f64 trajectory with the same native kernels.
+#[wasm_bindgen]
+pub fn partvi_archive(request_json: String, archive_json: String) -> Result<JsValue, JsValue> {
+    if request_json.len() > 8 * 1024 * 1024 || archive_json.len() > 128 * 1024 * 1024 {
+        return Err(error("Part VI archive/request exceeds decode budget"));
+    }
+    let request = serde_json::from_str(&request_json).map_err(error)?;
+    let archive = algorithmic_gas::RunArchive::<f64>::from_json(&archive_json).map_err(error)?;
+    js(
+        &algorithmic_gas::physics::partvi::analyze_archive(&request, Some(&archive))
+            .map_err(error)?,
+    )
+}
 /// Validate a standalone archive before exposing its topology to the viewer.
 #[wasm_bindgen]
 pub fn partv_archive(archive_json: String) -> Result<JsValue, JsValue> {
     if archive_json.len() > 128 * 1024 * 1024 {
         return Err(error("archive JSON exceeds 128 MiB"));
     }
-    let archive: algorithmic_gas::RunArchive<f64> =
-        serde_json::from_str(&archive_json).map_err(error)?;
+    let archive = algorithmic_gas::RunArchive::<f64>::from_json(&archive_json).map_err(error)?;
     archive.validate().map_err(error)?;
     js(
         &serde_json::json!({"graph":archive.graph(),"orders":archive.compare_orders(1.,0.04,200).map_err(error)?}),
@@ -202,6 +226,21 @@ impl BrowserGas {
             Run::F64(g) => js(g
                 .recording()
                 .ok_or_else(|| error("recording is not enabled"))?),
+        }
+    }
+    /// Analyze the current lossless record without advancing or drawing randomness.
+    pub fn qft(&self, request_json: String) -> Result<JsValue, JsValue> {
+        if request_json.len() > 8 * 1024 * 1024 {
+            return Err(error("Part VI request exceeds 8 MiB"));
+        }
+        let request = serde_json::from_str(&request_json).map_err(error)?;
+        match &self.run {
+            Run::F64(g) => js(&algorithmic_gas::physics::partvi::analyze_archive(
+                &request,
+                g.recording(),
+            )
+            .map_err(error)?),
+            Run::F32(_) => Err(error("QFT comparisons require an f64 recorded run")),
         }
     }
     pub fn fractal_set(&self) -> Result<JsValue, JsValue> {

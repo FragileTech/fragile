@@ -1,0 +1,1050 @@
+{
+  "37": [
+    {
+      "key": "expansion",
+      "label": "Expansion",
+      "type": "range",
+      "value": 0.4,
+      "min": -1,
+      "max": 1,
+      "step": 0.1
+    },
+    {
+      "key": "length",
+      "label": "Length",
+      "type": "range",
+      "value": 1,
+      "min": 0.05,
+      "max": 3,
+      "step": 0.05
+    },
+    {
+      "key": "resolution",
+      "label": "Resolution",
+      "type": "range",
+      "value": 32,
+      "min": 4,
+      "max": 128,
+      "step": 4
+    }
+  ],
+  "38": [
+    {
+      "key": "latitude",
+      "label": "Latitude",
+      "type": "range",
+      "value": 0.8,
+      "min": 0.3,
+      "max": 1.2,
+      "step": 0.05
+    },
+    {
+      "key": "resolution",
+      "label": "Resolution",
+      "type": "range",
+      "value": 64,
+      "min": 8,
+      "max": 256,
+      "step": 8
+    }
+  ],
+  "39": [
+    {
+      "key": "mode",
+      "label": "Mode",
+      "type": "select",
+      "value": "conditional",
+      "options": [
+        {
+          "value": "conditional",
+          "label": "Conditional"
+        },
+        {
+          "value": "coupled",
+          "label": "Coupled"
+        },
+        {
+          "value": "separable",
+          "label": "Separable"
+        },
+        {
+          "value": "mixed",
+          "label": "Mixed"
+        }
+      ]
+    },
+    {
+      "key": "epsilon",
+      "label": "Epsilon",
+      "type": "range",
+      "value": 3,
+      "min": 0.1,
+      "max": 10,
+      "step": 0.1
+    },
+    {
+      "key": "query",
+      "label": "Query",
+      "type": "range",
+      "value": 0.2,
+      "min": -0.7,
+      "max": 0.7,
+      "step": 0.05
+    },
+    {
+      "key": "difference_step",
+      "label": "Difference Step",
+      "type": "range",
+      "value": 0.002,
+      "min": 0.0002,
+      "max": 0.02,
+      "step": 0.0002
+    }
+  ],
+  "40": [
+    {
+      "key": "mode",
+      "label": "Mode",
+      "type": "select",
+      "value": "identified",
+      "options": [
+        {
+          "value": "identified",
+          "label": "Identified"
+        },
+        {
+          "value": "single_velocity",
+          "label": "Single Velocity"
+        }
+      ]
+    }
+  ],
+  "41": [
+    {
+      "key": "mode",
+      "label": "Congruence",
+      "type": "select",
+      "value": "bianchi",
+      "options": [
+        {
+          "value": "bianchi",
+          "label": "Bianchi I geodesics"
+        },
+        {
+          "value": "rotation",
+          "label": "Rigid rotation with acceleration"
+        }
+      ]
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "expansion",
+      "label": "Expansion",
+      "type": "range",
+      "value": 0.4,
+      "min": -1,
+      "max": 1,
+      "step": 0.1
+    },
+    {
+      "key": "anisotropy",
+      "label": "Anisotropy",
+      "type": "range",
+      "value": 0.3,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "rotation_speed",
+      "label": "Rotation speed / c",
+      "type": "range",
+      "value": 0.4,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "radius",
+      "label": "Rotation probe radius",
+      "type": "range",
+      "value": 0.6,
+      "min": 0.2,
+      "max": 1,
+      "step": 0.05
+    }
+  ],
+  "42": [
+    {
+      "key": "rate",
+      "label": "Rate",
+      "type": "range",
+      "value": 0.4,
+      "min": 0.05,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "time",
+      "label": "Time",
+      "type": "range",
+      "value": 0.5,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05
+    }
+  ],
+  "43": [
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "initial_expansion",
+      "label": "Initial Expansion",
+      "type": "range",
+      "value": -1,
+      "min": -3,
+      "max": -0.1,
+      "step": 0.1
+    },
+    {
+      "key": "ricci",
+      "label": "Ricci",
+      "type": "range",
+      "value": 0.2,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "shear_squared",
+      "label": "Prescribed shear norm squared",
+      "type": "range",
+      "value": 0,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    }
+  ],
+  "44": [
+    {
+      "key": "surface",
+      "label": "Surface topology",
+      "type": "select",
+      "value": "disk",
+      "options": [
+        {
+          "value": "disk",
+          "label": "Euclidean disk and 3D hinge"
+        },
+        {
+          "value": "sphere",
+          "label": "Closed polyhedral sphere"
+        }
+      ]
+    },
+    {
+      "key": "vertices",
+      "label": "Vertices",
+      "type": "range",
+      "value": 8,
+      "min": 3,
+      "max": 32,
+      "step": 1
+    },
+    {
+      "key": "scale",
+      "label": "Scale",
+      "type": "range",
+      "value": 1,
+      "min": 0.1,
+      "max": 4,
+      "step": 0.1
+    },
+    {
+      "key": "refinement",
+      "label": "Sphere subdivisions",
+      "type": "range",
+      "value": 1,
+      "min": 0,
+      "max": 3,
+      "step": 1
+    }
+  ],
+  "45": [
+    {
+      "key": "amplitude",
+      "label": "Amplitude",
+      "type": "range",
+      "value": 0.4,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "epsilon",
+      "label": "Epsilon",
+      "type": "range",
+      "value": 0.15,
+      "min": 0.03,
+      "max": 0.4,
+      "step": 0.01
+    },
+    {
+      "key": "population",
+      "label": "Population",
+      "type": "range",
+      "value": 64,
+      "min": 8,
+      "max": 256,
+      "step": 8
+    },
+    {
+      "key": "replicas",
+      "label": "Replicas",
+      "type": "range",
+      "value": 1024,
+      "min": 128,
+      "max": 8192,
+      "step": 128
+    }
+  ],
+  "46": [
+    {
+      "key": "epsilon",
+      "label": "Epsilon",
+      "type": "range",
+      "value": 0.3,
+      "min": 0.05,
+      "max": 0.6,
+      "step": 0.05
+    },
+    {
+      "key": "mode",
+      "label": "Mode",
+      "type": "select",
+      "value": "positive",
+      "options": [
+        {
+          "value": "positive",
+          "label": "Positive"
+        },
+        {
+          "value": "signed",
+          "label": "Signed"
+        },
+        {
+          "value": "attractive",
+          "label": "Attractive"
+        }
+      ]
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    }
+  ],
+  "47": [
+    {
+      "key": "epsilon",
+      "label": "Epsilon",
+      "type": "range",
+      "value": 0.15,
+      "min": 0.03,
+      "max": 0.5,
+      "step": 0.01
+    },
+    {
+      "key": "diffusion",
+      "label": "Diffusion",
+      "type": "range",
+      "value": 0.02,
+      "min": 0,
+      "max": 0.2,
+      "step": 0.01
+    },
+    {
+      "key": "rate",
+      "label": "Rate",
+      "type": "range",
+      "value": 0.7,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "length",
+      "label": "Length",
+      "type": "range",
+      "value": 1,
+      "min": 0.5,
+      "max": 5,
+      "step": 0.5
+    },
+    {
+      "key": "wave_number",
+      "label": "Wave Number",
+      "type": "range",
+      "value": 1,
+      "min": 1,
+      "max": 6,
+      "step": 1
+    },
+    {
+      "key": "resolution",
+      "label": "Resolution",
+      "type": "range",
+      "value": 96,
+      "min": 32,
+      "max": 256,
+      "step": 16
+    }
+  ],
+  "48": [
+    {
+      "key": "friction",
+      "label": "Friction",
+      "type": "range",
+      "value": 1,
+      "min": 0,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "time_step",
+      "label": "Time Step",
+      "type": "range",
+      "value": 0.2,
+      "min": 0.01,
+      "max": 1,
+      "step": 0.01
+    },
+    {
+      "key": "velocity",
+      "label": "Velocity",
+      "type": "range",
+      "value": 1,
+      "min": -3,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "noise",
+      "label": "Noise",
+      "type": "range",
+      "value": 1,
+      "min": 0.05,
+      "max": 3,
+      "step": 0.05
+    },
+    {
+      "key": "mode",
+      "label": "Mode",
+      "type": "select",
+      "value": "gaussian",
+      "options": [
+        {
+          "value": "gaussian",
+          "label": "Gaussian"
+        },
+        {
+          "value": "uniform",
+          "label": "Uniform"
+        }
+      ]
+    },
+    {
+      "key": "samples",
+      "label": "Samples",
+      "type": "range",
+      "value": 8192,
+      "min": 128,
+      "max": 32768,
+      "step": 128
+    }
+  ],
+  "49": [
+    {
+      "key": "modes",
+      "label": "Modes",
+      "type": "range",
+      "value": 8,
+      "min": 1,
+      "max": 32,
+      "step": 1
+    },
+    {
+      "key": "temperature",
+      "label": "Temperature",
+      "type": "range",
+      "value": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "volume",
+      "label": "Volume",
+      "type": "range",
+      "value": 2,
+      "min": 0.3,
+      "max": 5,
+      "step": 0.1
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "mobility",
+      "label": "Mobility",
+      "type": "range",
+      "value": 0.7,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1
+    }
+  ],
+  "50": [
+    {
+      "key": "attraction",
+      "label": "Attraction",
+      "type": "range",
+      "value": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "mode_pressure",
+      "label": "Mode Pressure",
+      "type": "range",
+      "value": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 1,
+      "max": 3,
+      "step": 1
+    }
+  ],
+  "51": [
+    {
+      "key": "velocity",
+      "label": "Velocity",
+      "type": "range",
+      "value": 1,
+      "min": -3,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "restitution",
+      "label": "Restitution",
+      "type": "range",
+      "value": 0.5,
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "energy_density",
+      "label": "Energy Density",
+      "type": "range",
+      "value": 1,
+      "min": -1,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "pressure",
+      "label": "Pressure",
+      "type": "range",
+      "value": 0.2,
+      "min": -2,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "lambda",
+      "label": "Lambda",
+      "type": "range",
+      "value": 0.1,
+      "min": -1,
+      "max": 1,
+      "step": 0.1
+    }
+  ],
+  "52": [
+    {
+      "key": "population",
+      "label": "Population",
+      "type": "range",
+      "value": 24,
+      "min": 8,
+      "max": 64,
+      "step": 4
+    },
+    {
+      "key": "epsilon",
+      "label": "Epsilon",
+      "type": "range",
+      "value": 0.25,
+      "min": 0.05,
+      "max": 0.7,
+      "step": 0.05
+    },
+    {
+      "key": "separator",
+      "label": "Episode separator",
+      "type": "select",
+      "value": "roots",
+      "options": [
+        {
+          "value": "roots",
+          "label": "Root episodes"
+        },
+        {
+          "value": "terminal_episodes",
+          "label": "Terminal episodes"
+        }
+      ]
+    }
+  ],
+  "53": [
+    {
+      "key": "perturbation",
+      "label": "Perturbation",
+      "type": "range",
+      "value": 0.1,
+      "min": -0.2,
+      "max": 0.2,
+      "step": 0.01
+    },
+    {
+      "key": "forward",
+      "label": "Forward",
+      "type": "range",
+      "value": 0.4,
+      "min": 0.05,
+      "max": 0.55,
+      "step": 0.05
+    },
+    {
+      "key": "reverse",
+      "label": "Reverse",
+      "type": "range",
+      "value": 0.2,
+      "min": 0,
+      "max": 0.4,
+      "step": 0.05
+    },
+    {
+      "key": "path_length",
+      "label": "Path Length",
+      "type": "range",
+      "value": 5,
+      "min": 1,
+      "max": 8,
+      "step": 1
+    }
+  ],
+  "54": [
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 2,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "density_contrast",
+      "label": "Density Contrast",
+      "type": "range",
+      "value": 0.3,
+      "min": 0,
+      "max": 0.7,
+      "step": 0.05
+    },
+    {
+      "key": "resolution",
+      "label": "Resolution",
+      "type": "range",
+      "value": 128,
+      "min": 32,
+      "max": 256,
+      "step": 16
+    }
+  ],
+  "55": [
+    {
+      "key": "population",
+      "label": "Population",
+      "type": "range",
+      "value": 64,
+      "min": 16,
+      "max": 256,
+      "step": 16
+    },
+    {
+      "key": "replicas",
+      "label": "Replicas",
+      "type": "range",
+      "value": 24,
+      "min": 8,
+      "max": 64,
+      "step": 8
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 2,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "range_factor",
+      "label": "Range Factor",
+      "type": "range",
+      "value": 0.7,
+      "min": 0.3,
+      "max": 1.2,
+      "step": 0.1
+    }
+  ],
+  "56": [
+    {
+      "key": "radius",
+      "label": "Radius",
+      "type": "range",
+      "value": 0.6,
+      "min": 0.2,
+      "max": 1.2,
+      "step": 0.05
+    },
+    {
+      "key": "density_contrast",
+      "label": "Density Contrast",
+      "type": "range",
+      "value": 0.3,
+      "min": -0.3,
+      "max": 0.7,
+      "step": 0.05
+    },
+    {
+      "key": "tension",
+      "label": "Tension",
+      "type": "range",
+      "value": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1
+    }
+  ],
+  "57": [
+    {
+      "key": "temperature",
+      "label": "Temperature",
+      "type": "range",
+      "value": 1,
+      "min": 0.2,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "killing_contrast",
+      "label": "Killing Contrast",
+      "type": "range",
+      "value": 0.1,
+      "min": 0,
+      "max": 0.3,
+      "step": 0.02
+    }
+  ],
+  "58": [
+    {
+      "key": "transition_a",
+      "label": "Transition A",
+      "type": "range",
+      "value": 0.3,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "transition_b",
+      "label": "Transition B",
+      "type": "range",
+      "value": 0.4,
+      "min": 0.1,
+      "max": 0.8,
+      "step": 0.05
+    },
+    {
+      "key": "difference_step",
+      "label": "Difference Step",
+      "type": "range",
+      "value": 0.001,
+      "min": 0.0001,
+      "max": 0.02,
+      "step": 0.0001
+    },
+    {
+      "key": "path_length",
+      "label": "Path Length",
+      "type": "range",
+      "value": 8,
+      "min": 1,
+      "max": 64,
+      "step": 1
+    }
+  ],
+  "59": [
+    {
+      "key": "lambda",
+      "label": "Lambda",
+      "type": "range",
+      "value": -0.5,
+      "min": -2,
+      "max": -0.1,
+      "step": 0.1
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "surface_gravity",
+      "label": "Surface Gravity",
+      "type": "range",
+      "value": 1,
+      "min": 0.2,
+      "max": 3,
+      "step": 0.1
+    },
+    {
+      "key": "period_ratio",
+      "label": "Period Ratio",
+      "type": "range",
+      "value": 1,
+      "min": 0.5,
+      "max": 1.5,
+      "step": 0.05
+    }
+  ],
+  "60": [
+    {
+      "key": "resolution",
+      "label": "Resolution",
+      "type": "range",
+      "value": 16,
+      "min": 8,
+      "max": 32,
+      "step": 4
+    },
+    {
+      "key": "density_contrast",
+      "label": "Density Contrast",
+      "type": "range",
+      "value": 0.4,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.1
+    }
+  ],
+  "61": [
+    {
+      "key": "initial_probability",
+      "label": "Initial Probability",
+      "type": "range",
+      "value": 0.8,
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    },
+    {
+      "key": "energy_shift",
+      "label": "Energy Shift",
+      "type": "range",
+      "value": 0,
+      "min": -3,
+      "max": 3,
+      "step": 0.25
+    },
+    {
+      "key": "survival",
+      "label": "Survival",
+      "type": "range",
+      "value": 0.85,
+      "min": 0.5,
+      "max": 1,
+      "step": 0.05
+    }
+  ],
+  "62": [
+    {
+      "key": "lambda",
+      "label": "Lambda",
+      "type": "range",
+      "value": -0.5,
+      "min": -2,
+      "max": -0.1,
+      "step": 0.1
+    },
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "range_ratio",
+      "label": "Range Ratio",
+      "type": "range",
+      "value": 0.1,
+      "min": 0.02,
+      "max": 0.4,
+      "step": 0.02
+    }
+  ],
+  "63": [
+    {
+      "key": "dimension",
+      "label": "Dimension",
+      "type": "range",
+      "value": 3,
+      "min": 2,
+      "max": 3,
+      "step": 1
+    },
+    {
+      "key": "expansion",
+      "label": "Expansion",
+      "type": "range",
+      "value": 0.4,
+      "min": 0.1,
+      "max": 1,
+      "step": 0.05
+    },
+    {
+      "key": "forcing",
+      "label": "Forcing",
+      "type": "range",
+      "value": 0.3,
+      "min": 0.05,
+      "max": 1,
+      "step": 0.05
+    }
+  ],
+  "64": [
+    {
+      "key": "reveal_probability",
+      "label": "Reveal Probability",
+      "type": "range",
+      "value": 1,
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    },
+    {
+      "key": "samples",
+      "label": "Samples",
+      "type": "range",
+      "value": 4096,
+      "min": 128,
+      "max": 16384,
+      "step": 128
+    }
+  ],
+  "65": [
+    {
+      "key": "rate_perturbation",
+      "label": "Rate Perturbation",
+      "type": "range",
+      "value": 0.15,
+      "min": 0,
+      "max": 0.5,
+      "step": 0.05
+    },
+    {
+      "key": "time",
+      "label": "Time",
+      "type": "range",
+      "value": 2,
+      "min": 0.1,
+      "max": 5,
+      "step": 0.1
+    }
+  ],
+  "66": [
+    {
+      "key": "hubble",
+      "label": "Hubble",
+      "type": "range",
+      "value": 70,
+      "min": 30,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "key": "omega",
+      "label": "Omega",
+      "type": "range",
+      "value": 0.7,
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    }
+  ]
+}

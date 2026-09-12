@@ -1,5 +1,5 @@
 //! Analytic objectives shared by the native runner and browser bindings.
-pub mod adaptive;
+pub mod physics_metric;
 use algorithmic_gas::{
     AlgorithmicGas, ComputeBackend, ExecutionContext, GasBuilder, GasConfig, GasError, InputBatch,
     ObservationBatch, Population, Provenance, Real, Result, RewardBatch, TensorBatch,
@@ -263,8 +263,8 @@ pub struct RunConfig {
     pub benchmark: Benchmark,
     /// Optional independent force potential (reward objective remains benchmark).
     pub potential: Option<Benchmark>,
-    /// Frozen conditional-fitness diffusion at the actual BAOAB O stage.
-    pub adaptive_metric: Option<adaptive::AdaptiveMetricConfig>,
+    /// General-dimensional metric and optional curvature at the actual O query.
+    pub physics_metric: Option<physics_metric::PhysicsMetricConfig>,
     /// Translate the reward optimum; empty means zero in every coordinate.
     pub reward_shift: Vec<f64>,
     pub walkers: usize,
@@ -288,7 +288,7 @@ impl Default for RunConfig {
         Self {
             benchmark: Benchmark::Rastrigin,
             potential: None,
-            adaptive_metric: None,
+            physics_metric: None,
             reward_shift: vec![],
             walkers: 256,
             dimensions: 2,
@@ -400,8 +400,8 @@ impl RunConfig {
         )
         .config(self.gas.clone())
         .gradient(gradient);
-        let builder = if let Some(config) = &self.adaptive_metric {
-            builder.operators(adaptive::AdaptiveMetricOperators {
+        let builder = if let Some(config) = &self.physics_metric {
+            builder.operators(physics_metric::PhysicsMetricOperators {
                 config: config.clone(),
                 benchmark: self.benchmark,
                 reward_shift: self.reward_shift.clone(),
@@ -455,3 +455,5 @@ impl<T: Real> RewardSource<T> for ShiftedReward {
         })
     }
 }
+
+pub mod qft_experiments;

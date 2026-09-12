@@ -223,7 +223,7 @@ export class LectureScene {
       .map((s) => s.html)
       .join(
         "",
-      )}<text x="18" y="480" fill="#b7c6dc" font-size="13">x₁, x₂, time · drag or use arrow keys to rotate</text></svg>`;
+      )}<text x="18" y="480" fill="#b7c6dc" font-size="13">${s.coordinateSystem === "spatial" ? "x₁, x₂, x₃" : "x₁, x₂, time"} · drag or use arrow keys to rotate</text></svg>`;
   }
   render() {
     const s = this.scene;
@@ -237,7 +237,7 @@ export class LectureScene {
     const selected = (s.nodes || []).find(
       (n) => String(n.id) === this.selected,
     );
-    this.host.innerHTML = `<div class="chart-heading"><h2>${esc(s.title)}</h2><button data-scene-export>Save scene SVG</button></div><div class="scene-controls">${layers.map((l) => `<label><input type="checkbox" data-layer="${esc(l)}" ${this.hidden.has(l) ? "" : "checked"}>${esc(l)}</label>`).join("")}<label>Time cut <input name="time-cut" type="range" min="0" max="1" step=".01" value="${this.cut}"></label><label>Vertical display scale ×${this.vertical} <input name="vertical-scale" type="range" min="1" max="100" step="1" value="${this.vertical}"></label><label>Trace <select name="trace-relation">${[
+    this.host.innerHTML = `<div class="chart-heading"><h2>${esc(s.title)}</h2><button data-scene-export>Save scene SVG</button></div><div class="scene-controls">${layers.map((l) => `<label><input type="checkbox" data-layer="${esc(l)}" ${this.hidden.has(l) ? "" : "checked"}>${esc(l)}</label>`).join("")}<label>${s.coordinateSystem === "spatial" ? "x₃ cut" : "Time cut"} <input name="time-cut" type="range" min="0" max="1" step=".01" value="${this.cut}"></label><label>Vertical display scale ×${this.vertical} <input name="vertical-scale" type="range" min="1" max="100" step="1" value="${this.vertical}"></label><label>Trace <select name="trace-relation">${[
       ["incident", "Incident edges"],
       ["ancestry", "Material ancestors"],
       ["descendants", "Material descendants"],
@@ -259,6 +259,6 @@ export class LectureScene {
       )
       .join(
         "",
-      )}</select></label></div><div class="scene-viewport" tabindex="0" aria-label="Rotate spacetime scene with arrow keys">${this.svg()}</div><p>${esc(selected?.detail || s.message || "Select an event to inspect its identity and incident edges.")}</p>`;
+      )}</select></label></div><div class="scene-viewport" tabindex="0" aria-label="Rotate ${s.coordinateSystem === "spatial" ? "spatial" : "spacetime"} scene with arrow keys">${this.svg()}</div><p>${esc(selected?.detail || s.message || "Select an event to inspect its identity and incident edges.")}</p>`;
   }
 }

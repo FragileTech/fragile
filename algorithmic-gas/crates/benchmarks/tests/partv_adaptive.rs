@@ -7,7 +7,7 @@ use algorithmic_gas::{
     },
     tracking::RecordingConfig,
 };
-use algorithmic_gas_benchmarks::{Benchmark, RunConfig, adaptive::AdaptiveMetricConfig};
+use algorithmic_gas_benchmarks::{Benchmark, RunConfig, physics_metric::PhysicsMetricConfig};
 use futures_lite::future::block_on;
 #[allow(clippy::field_reassign_with_default)]
 fn config() -> RunConfig {
@@ -23,10 +23,11 @@ fn config() -> RunConfig {
         dt: 0.18,
         friction: 0.7,
     };
-    c.adaptive_metric = Some(AdaptiveMetricConfig {
+    c.physics_metric = Some(PhysicsMetricConfig {
         epsilon: 0.2,
         temperature: 0.6,
         policy: MetricPolicy::Clipped,
+        ..Default::default()
     });
     c
 }
@@ -202,7 +203,7 @@ fn death_before_o_has_absent_metric_coverage_and_zero_factor() {
         };
         c.initial_lower = -0.2;
         c.initial_upper = 0.2;
-        c.adaptive_metric.as_mut().unwrap().policy = MetricPolicy::Strict;
+        c.physics_metric.as_mut().unwrap().policy = MetricPolicy::Strict;
         let mut gas = c.build::<f64>().await.unwrap();
         let mut p = gas.population().clone();
         let mut v = vec![0.; 2 * c.walkers];

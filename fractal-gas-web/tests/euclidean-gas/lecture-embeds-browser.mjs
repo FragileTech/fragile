@@ -16,7 +16,10 @@ await mkdir(output, { recursive: true });
 for (const chapter of new Set(manifest.map((entry) => entry.chapter))) {
   const html = await readFile(
     new URL(
-      "../../../docs/_build/theory-direct/" + chapter + ".html",
+      (process.env.LECTURE_DOCS_BUILD_DIR ||
+        "../../../docs/_build/theory-site/_build/html/") +
+        chapter +
+        ".html",
       import.meta.url,
     ),
     "utf8",
@@ -107,6 +110,16 @@ try {
   assert.ok(
     await staticPage.locator(".gas-demo a").first().getAttribute("href"),
   );
+  const qft = manifest.find(e => e.id === "VI-39");
+  await page.goto(base + "/docs/theory/" + qft.chapter + ".html",{waitUntil:"domcontentloaded"});
+  const qftFigure=page.locator("#gas-demo-VI-39");
+  await qftFigure.scrollIntoViewIfNeeded();
+  await qftFigure.locator("button").click();
+  const qftFrame=qftFigure.frameLocator("iframe");
+  await qftFrame.locator("#status").filter({hasText:"Ready"}).waitFor({timeout:60000});
+  assert.equal(await qftFrame.locator("#error").isVisible(),false);
+  assert.match(await qftFrame.locator("#title").textContent(),/curvature/i);
+  await page.screenshot({path:new URL("partvi-embed.png",output).pathname});
   assert.deepEqual(localErrors, []);
   console.log(
     `${manifest.length} built figures; lazy loading, project prefix, hidden pause, one iframe, Expert Mode, close/reopen and no-JS fallback passed`,

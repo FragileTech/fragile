@@ -37,6 +37,7 @@ pub struct GasConfig {
     pub clone_decision: CloneDecision,
     pub clone_transform: CloneTransform,
     pub kinetic: KineticOperator,
+    pub qft: crate::kinetic::QftExecutionConfig,
     pub include_truncated: bool,
     pub invalid_reward: InvalidRewardPolicy,
     pub max_batch_elements: usize,
@@ -63,6 +64,7 @@ impl Default for GasConfig {
             clone_decision: CloneDecision::default(),
             clone_transform: CloneTransform::default(),
             kinetic: KineticOperator::default(),
+            qft: crate::kinetic::QftExecutionConfig::default(),
             include_truncated: false,
             invalid_reward: InvalidRewardPolicy::Error,
             max_batch_elements: 16_777_216,
@@ -77,6 +79,22 @@ impl GasConfig {
             "gas",
         )?;
         p.validate()?;
+        let dimension = p
+            .observations
+            .fields
+            .values()
+            .map(|f| f.width())
+            .max()
+            .unwrap_or(1);
+        self.qft.validate(p.len(), dimension)?;
+        require(
+            self.qft.viscosity.is_none()
+                || matches!(
+                    self.kinetic.integrator,
+                    crate::kinetic::KineticKind::Baoab { .. }
+                ),
+            "viscosity requires BAOAB",
+        )?;
         require(self.max_memory_bytes > 0, "memory budget must be positive")?;
         self.working_set_bytes(p, &[], None)?;
         require(
@@ -229,6 +247,22 @@ pub struct Checkpoint<T: Real> {
     pub operator_set: String,
 }
 impl<T: Real> Checkpoint<T> {
+    /// Independent conditional replica: retain physical/provider/history state
+    /// and schedule counter, replace only future addressed randomness.
+    /// Recording starts afresh so past samples retain their original seed.
+    /// Build the replica with the returned config before restoring it.
+    pub fn with_future_seed(&self, seed: u64) -> Result<Self> {
+        self.validate()?;
+        require(
+            seed != self.config.seed,
+            "replica needs a distinct future seed",
+        )?;
+        let mut replica = self.clone();
+        replica.config.seed = seed;
+        replica.recording = None;
+        replica.validate()?;
+        Ok(replica)
+    }
     /// CBOR preserves non-finite invalid observations, unlike JSON. Configuration
     /// and ordinary result exports remain human-readable JSON.
     pub fn to_bytes(&self) -> Result<Vec<u8>> {
@@ -245,36 +279,9 @@ impl<T: Real> Checkpoint<T> {
             ));
         }
         let mut remaining = bytes;
-        let mut checkpoint: Self =
-            ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64)
-                .map_err(|e| GasError::Checkpoint(e.to_string()))?;
+        let checkpoint: Self = ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64)
+            .map_err(|e| GasError::Checkpoint(e.to_string()))?;
         require(remaining.is_empty(), "trailing checkpoint data")?;
-        if checkpoint.schema_version == 2 {
-            checkpoint.schema_version = crate::checkpoint::CHECKPOINT_VERSION;
-            checkpoint.recording = Some(crate::tracking::RunArchive::new(
-                Default::default(),
-                checkpoint.config.clone(),
-                checkpoint.step,
-                &checkpoint.population,
-                "checkpoint_v2_migration",
-            )?);
-            if let Some(archive) = &mut checkpoint.recording {
-                archive
-                    .providers
-                    .insert("reward".into(), checkpoint.reward_provider.clone());
-                archive
-                    .providers
-                    .insert("domain".into(), checkpoint.domain_provider.clone());
-                archive
-                    .providers
-                    .insert("operators".into(), checkpoint.operator_set.clone());
-                if let Some(gradient) = &checkpoint.gradient_provider {
-                    archive
-                        .providers
-                        .insert("gradient".into(), gradient.clone());
-                }
-            }
-        }
         checkpoint.validate()?;
         Ok(checkpoint)
     }
@@ -569,6 +576,8 @@ impl<T: Real> AlgorithmicGas<T> {
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
         self.cancellation.check()?;
+        self.cx
+            .set_innovation_shifts(self.config.qft.innovation_shifts.clone())?;
         if let Some(archive) = &self.recording {
             require(
                 archive.steps.len() < archive.config.max_steps,

@@ -19,6 +19,18 @@ def block_tokens(lines):
 def section_end(lines, target):
     """Locate a unique source heading/label and the end of its section."""
     tokens = block_tokens(lines)
+    formal = [
+        token
+        for token in tokens
+        if token.type in {"fence", "colon_fence"}
+        and token.info.strip().startswith("{prf:")
+        and re.search(rf"^\s*:label:\s*{re.escape(target)}\s*$", token.content, re.MULTILINE)
+    ]
+    if formal:
+        if len(formal) != 1:
+            raise ExtensionError(f"Lecture formal placement must match once: {target}")
+        # Insert after the entire directive, including nested proof/math blocks.
+        return formal[0].map[1]
     headings = {
         token.map[0]: int(token.tag[1:])
         for token in tokens

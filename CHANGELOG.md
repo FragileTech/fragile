@@ -1,8 +1,13 @@
 # Changelog
 
+- Derive transient field drift/covariance from complete algorithm states; measure historical-source fields, material metric increments, source-aware noise moments and stage balances, with explicit per-experiment provenance and independent validation.
+- Add 66 compiled Part VI workbenches with Rust/WASM calculation APIs, native `gas-physics` runs and sweeps, source-aware archive readouts, conditional trace likelihoods, held-out predictions, independent response and metric replicas, formula lookup, and a detailed lecture experiment guide.
+
+- Derive and implement finite-step Algorithmic Gas geometry and balances: packed general-dimensional fitness jets, efficient 3D curvature, exact global-statistics caching and local derivatives, spectral clipping, backend batch contractions, independent checkpoint replicas, thermostat fluctuations, stationary response/Fisher references, and reproducible research sweeps.
+
 - Audit and correct Part V experiments: stabilize metric eigenvalues and Spin(2) reconstruction, prevent overlapping spacetime cells, align geodesic quadrature, preserve archive and replica identities, and add exact transient and sampling-error predictions with independent numerical regressions.
 
-- Add 20 Part V lecture experiments with durable Rust walker archives, stage and lineage provenance, scalar reconstruction, adaptive O-stage geometry, Voronoi and spacetime cells, causal-order comparisons, and independently calibrated continuum statistics. Include checkpoint v3 migration, archive import/export, interactive scene controls, and 20 computed chapter posters.
+- Add 20 Part V lecture experiments with durable Rust walker archives, stage and lineage provenance, scalar reconstruction, adaptive O-stage geometry, Voronoi and spacetime cells, causal-order comparisons, and independently calibrated continuum statistics. Include archive import/export, interactive scene controls, and 20 computed chapter posters.
 
 - Align Volume II lecture experiments with their theoretical predictions: correct BAOAB pseudocode and alive-conditioned mixtures, use theorem-specific entropy and drift diagnostics, calibrate sampling uncertainty, resolve misleading spectral and density-ratio displays, and exercise survival and population comparisons with independent replicas.
 

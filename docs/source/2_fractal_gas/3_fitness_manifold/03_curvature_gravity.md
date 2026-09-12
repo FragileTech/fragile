@@ -1,5 +1,5 @@
 (sec-curvature-from-holonomy)=
-# Curvature from Discrete Holonomy
+# Curvature of the Algorithmic Fitness Metric
 
 **Prerequisites:** {doc}`01_emergent_geometry` and
 {doc}`02_scutoid_spacetime`.
@@ -7,46 +7,682 @@
 (sec-tldr-curvature)=
 ## TLDR
 
-A connection specifies how vectors are compared at different points.
-For a smooth, shape-controlled small loop with oriented area $A$,
+Start with the algorithm's recorded population, eligibility mask,
+companion sources, and fitness configuration. Move one query through
+that fixed conditioning data, recomputing the affected measurements,
+statistics, and local weights. This defines the conditional fitness
+field $V_i(z\mid\Xi)$ and its spatial derivatives.
 
-$$
-(\operatorname{Hol}_\Pi-I)V
-=A\,R(X,Y)V+O(K_1A^{3/2}+K^2A^2)|V|.
-$$
+The configured diffusion provider converts its Hessian $H$ into
+$g=H+\epsilon_\Sigma I$ on the strict positive branch, or
+$g=H_++\epsilon_\Sigma I$ on the clipped branch. Its normalized
+covariance shape is $g^{-1}$. These are identified algorithmic
+constructions; their curvature follows from differentiating them.
 
-A discrete transport recovers this curvature when its error is $o(A)$.
-The metric, the transport rule, and its consistency bound are distinct
-inputs.
+A smooth Hessian metric needs six Hessian and ten third-derivative
+components in three dimensions. Direct contractions give Ricci, scalar,
+and sectional curvature without evaluated fourth derivatives or a
+materialized Riemann tensor. Mixed-sign clipping generally needs fourth
+fitness derivatives through the first two derivatives of its metric.
+Clipping thresholds require separate smoothness analysis.
 
-Raychaudhuri's identity describes the expansion of a specified timelike
-geodesic congruence. Cell-volume estimates inherit it when their expansion
-and its derivative approximate the continuum expansion. A reconstructed
-Voronoi boundary contributes a normalized flux correction.
+Transport supplies a second measurement: consistent small-loop holonomy
+recovers the same curvature with a quantified error. Spacetime transport,
+Raychaudhuri, and geodesic focusing apply only after the additional
+Lorentzian construction and their stated hypotheses. They impose no
+evolution equation on the gas. The finite-step metric evolution and
+mechanical balances of the executed updates are developed in
+{doc}`04_field_equations`.
 
-Polyhedral Gauss–Bonnet constrains curvature on a fixed surface.
-Subdividing a cell preserves the Euler characteristic. Focusing concerns
-geodesics and their caustics; stochastic optimization uses the analytical
-convergence results for its actual dynamics.
+Polyhedral Gauss–Bonnet constrains curvature on a fixed surface;
+subdividing a cell preserves the Euler characteristic.
 
 (sec-introduction-curvature)=
 ## Introduction
 
 :::{div} feynman-prose
-Carry an arrow around a loop while keeping it parallel along each part of
-the journey. On a curved surface it may return pointing in a different
-direction. A small loop provides a local measurement: divide the change
-in the arrow by the loop's oriented area.
+Choose a walker at the stage where the algorithm constructs its adaptive
+noise. Keep the recorded population and donor sources in view, and move
+the walker's query position a little. Its reward and companion distance
+change. The statistics used to normalize those measurements can change
+too. Calculating all of those changes gives the derivatives of the
+conditional fitness actually used by this provider.
 
-A mesh gives us loops, but it does not yet tell us how to carry the arrow.
-We must specify a connection or a comparison rule for neighboring cells.
-The approximation theorem then asks whether that rule agrees with smooth
-parallel transport accurately enough.
+The next step is a concrete matrix calculation. Apply the configured
+Hessian shift or spectral clipping, and obtain the positive metric that
+sets the shape of the noise. Its inverse tells us which directions the
+walker explores easily. Spatial derivatives of that same metric give
+the connection and curvature. We can evaluate these quantities on a
+snapshot and compare two independent formulas before asking what they
+do over time.
 
-We will also follow small bundles of curves. Their volume can expand or
-contract even in flat space. Curvature is one term in the equation for
-that change; the initial motion, shear, and rotation are other terms.
-Keeping all of them makes the geometric interpretation precise.
+Only after this calculation do we carry an arrow around a loop. That
+experiment measures the already identified curvature when the transport
+rule is sufficiently accurate. Introducing a time coordinate and a
+Lorentzian metric lets us study additional geometric identities, but
+their hypotheses must be stated separately. To find how the gas changes
+its own geometry, we return to its transition law and calculate the
+metric increment produced by the full update.
+:::
+
+(sec-algorithmic-curvature-computation)=
+## From Conditional Fitness to the Metric
+
+:::{div} feynman-prose
+Suppose every walker carries a little ruler, with squared length
+$g_{ab}\,dx^a dx^b$. Its principal axes tell us which directions the
+adaptive noise explores more easily. Now put identical rulers everywhere,
+all stretched by the same amount along the same axes. There is anisotropy,
+but there is no geometric curvature: a fixed change of coordinates makes
+every ruler Euclidean.
+
+This distinguishes two uses of the word curvature. The Hessian measures
+how a scalar fitness changes near a point. Riemann curvature measures how
+the rulers fit together across neighboring points. Even a positive,
+large fitness Hessian gives a flat metric when it is constant. Nor does
+every varying Hessian metric have nonzero Riemann curvature; a separable
+potential provides another useful flat example.
+
+Three dimensions need not make the local calculation expensive. For a
+smooth Hessian metric, the cancellation in
+{prf:ref}`lem-curvature-hessian-cancellation` leaves only six
+independent Hessian entries and ten independent third derivatives. We can
+compute the scalar curvature from those sixteen numbers without building
+an 81-entry Riemann array. The important preliminary work is to specify
+which fitness function those derivatives belong to. Moving a query while
+keeping its sampled donor fixed and moving the whole population are
+different experiments, and their derivatives answer different questions.
+:::
+
+:::{prf:definition} Conditional fitness field and derivative convention
+:label: def-curvature-conditional-fitness-field
+
+Fix a recorded population, its eligibility mask, the sampled companion
+identities, their immutable source coordinates, the fitness parameters,
+and a target row $i$. Denote these conditioning data by $\Xi$.
+An identified conditional fitness provider specifies a scalar field
+$V_i(z\mid\Xi)$ by replacing the target query by $z$ and executing its
+stated measurement and fitness calculation. Its derivatives are spatial
+derivatives with respect to $z$ on one smooth stratum of that calculation.
+The stratum excludes changes of eligibility, donor identity, periodic
+image, or an active nonsmooth floor.
+
+For the conditional global-statistics construction, the target reward
+and separation vary with $z$, and the population means and variances
+containing those measurements are recomputed and differentiated. Other
+rows and donor source coordinates remain fixed. Freezing the numerical
+means and variances instead defines a different comparison field; it
+must be identified as such. For a neighborhood-dependent construction,
+the dependence of its weights and affected measurements is also part of
+the derivative.
+
+Differentiating the complete measurement stage with respect to a source
+population coordinate follows all uses of that coordinate. Even with
+companion indices fixed, moving row $i$ changes the separation of each
+row that selects $i$ as its source. For example, on a noncoincident
+Euclidean stratum, a row $j$ selecting $i$ has
+
+$$
+\nabla_{x_i}|x_j-x_i|=\frac{x_i-x_j}{|x_i-x_j|}.
+$$
+
+Those affected measurements also enter the differentiated population
+statistics. This population derivative and the provider's query
+derivative have different data dependencies: the former moves the
+source coordinate wherever it is used; the latter evaluates a query
+against the immutable source snapshot supplied to that operator.
+Holding companion indices fixed specifies the source identities, while
+holding source coordinates fixed additionally specifies which inputs
+are constant. Two such calculations can agree in value at a recorded
+point and have different gradients and Hessians.
+
+In the fixed affine coordinates of the algorithm, define the smooth
+shifted construction by
+
+$$
+\Phi_i(z\mid\Xi)=V_i(z\mid\Xi)+\frac{\epsilon_\Sigma}{2}|z|^2,
+\qquad g_{ab}=\partial_a\partial_b\Phi_i.
+$$
+
+Its domain of classical Hessian curvature is an open region where
+$\Phi_i\in C^4$ and $g\succ0$. The configured shift or clipping is the
+algorithm's noise rule; the derivative convention follows the inputs
+of the operator that executes it. If coordinates have units $L$ and fitness
+has units $F$, then $[g]=F/L^2$, $[\epsilon_\Sigma]=F/L^2$,
+$[C]=F/L^3$, and scalar and sectional curvature have units $F^{-1}$.
+All are dimensionless for dimensionless algorithm coordinates and
+fitness. A nonlinear coordinate change transports $g$ as a tensor;
+taking an ordinary Hessian again in the new coordinates generally
+constructs a different metric.
+:::
+
+(sec-tessellation-to-curvature)=
+## From a Metric to a Connection
+
+:::{div} feynman-prose
+Once the provider has supplied a smooth positive metric field, we can
+compare arrows at neighboring query positions. Requiring that comparison
+to preserve the metric and have zero torsion determines the Levi-Civita
+connection. Its coefficients follow from the spatial derivatives of the
+same field; a collection of metric matrices without a spatial
+reconstruction does not supply those derivatives.
+
+The first calculation uses only the algorithm's spatial coordinates.
+A spacetime comparison introduces additional coefficients under
+{prf:ref}`assump-curvature-geometric-setting`.
+:::
+
+:::{prf:definition} Levi-Civita connection
+:label: def-affine-connection
+
+For a $C^1$ nondegenerate metric $q$, the Levi-Civita connection has
+coefficients
+
+$$
+\Gamma^a_{bc}[q]
+=\frac12q^{ae}
+ (\partial_bq_{ec}+\partial_cq_{eb}-\partial_eq_{bc}).
+$$
+
+It is metric compatible and torsion free. Here $q=g_t$ gives the
+intrinsic spatial connection. A spacetime application uses the separately
+specified $q=G$ in {prf:ref}`assump-curvature-geometric-setting`.
+For the smooth shifted Hessian field, spatial coefficients use
+third derivatives of the fitness potential.
+
+Metric compatibility and zero torsion determine these coefficients
+uniquely: add
+$\partial_bq_{ac}=\Gamma_{abc}+\Gamma_{cba}$ and
+$\partial_cq_{ab}=\Gamma_{acb}+\Gamma_{bca}$, subtract
+$\partial_aq_{bc}$, and use symmetry in the two lower connection
+indices to solve for $\Gamma$.
+:::
+
+(sec-riemann-tensor)=
+## Curvature Tensors and Hessian Metrics
+
+:::{div} feynman-prose
+A varying metric produces a connection, and a varying connection produces
+curvature. For a general metric this uses second derivatives of the metric.
+
+A Hessian metric has extra symmetry. All its entries are second derivatives
+of the same scalar function. When we antisymmetrize to form curvature, the
+fourth derivatives of that scalar cancel. What remains is a product of
+third derivatives. This gives a useful direct bound from the fitness
+regularity estimates.
+:::
+
+:::{prf:definition} Riemann curvature tensor
+:label: def-riemann-tensor
+
+For a $C^2$ metric and its Levi-Civita connection, use the convention
+
+$$
+R^a{}_{bcd}
+=\partial_c\Gamma^a_{bd}-\partial_d\Gamma^a_{bc}
+ +\Gamma^a_{ce}\Gamma^e_{bd}
+ -\Gamma^a_{de}\Gamma^e_{bc}.
+$$
+
+Thus $R(X,Y)V$ has components $R^a{}_{bcd}V^bX^cY^d$.
+The metric and connection are both spatial or both spacetime according
+to the application.
+:::
+
+:::{prf:lemma} Cancellation of fourth derivatives in a Hessian metric
+:label: lem-curvature-hessian-cancellation
+
+Let $\Phi\in C^4$ in the fixed Euclidean coordinates and let
+$g_{ab}=\partial_a\partial_b\Phi$ be positive definite. Write
+$C_{abc}=\partial_a\partial_b\partial_c\Phi$. Then
+
+$$
+\Gamma^a_{bc}=\frac12g^{ae}C_{ebc},\qquad
+R_{abcd}
+=\frac14g^{pq}
+ \left(C_{adp}C_{bcq}-C_{acp}C_{bdq}\right).
+$$
+
+In particular, the smooth construction
+$\Phi=V_{\mathrm{fit}}+\epsilon_\Sigma|x|^2/2$ has this formula.
+
+If $g\succeq mI$ and
+$|C(X,Y,\cdot)|\leq K_3|X|\,|Y|$ in Euclidean norm, then the
+absolute value of every sectional curvature is at most
+$K_3^2/(2m^3)$. Classical use of this identity is justified by the
+stated $C^4$ regularity. A clipped field has this Hessian identity only
+where it actually agrees with the smooth Hessian metric.
+:::
+
+:::{prf:proof}
+Symmetry of $C$ reduces the connection formula to
+$\Gamma^a_{bc}=g^{ae}C_{ebc}/2$. Differentiating the inverse gives
+
+$$
+\partial_cg^{ae}=-g^{ap}C_{pqc}g^{qe}.
+$$
+
+Substitute into the curvature definition. The two terms
+$\tfrac12g^{ae}\partial_c C_{ebd}$ and
+$-\tfrac12g^{ae}\partial_d C_{ebc}$ cancel because the fourth
+derivatives are symmetric. The remaining derivative-of-inverse terms
+combine with the two connection products. Lowering the first index gives
+
+$$
+R_{abcd}
+=\tfrac14g^{pq}C_{adp}C_{bcq}
+ -\tfrac14g^{pq}C_{acp}C_{bdq}.
+$$
+
+For $g$-orthonormal $X,Y$, Euclidean lengths satisfy
+$|X|,|Y|\leq m^{-1/2}$. Each cubic tensor contracted with two of
+these vectors has Euclidean norm at most $K_3/m$. Each of the two
+inverse-metric products is therefore at most $K_3^2/m^3$.
+Their coefficients sum to $1/2$, proving the sectional bound.
+:::
+
+:::{prf:definition} Ricci tensor and scalar curvature
+:label: def-ricci-tensor-scalar
+
+For the specified metric $q$,
+
+$$
+\operatorname{Ric}_{bd}=R^a{}_{bad},\qquad
+R=q^{bd}\operatorname{Ric}_{bd}.
+$$
+
+Geodesic focusing in the timelike direction $u$ uses
+$\operatorname{Ric}(u,u)$. Scalar curvature is a trace over directions;
+its sign alone does not determine that contraction or the sign of every
+sectional curvature.
+:::
+
+(sec-curvature-direct-contractions)=
+### Direct contractions and three-dimensional computation
+
+:::{prf:lemma} Direct Hessian Ricci and scalar contractions
+:label: lem-curvature-whitened-contractions
+
+Under {prf:ref}`lem-curvature-hessian-cancellation`, fix a point and let
+$E$ be an invertible matrix satisfying $E^{\mathsf T}gE=I$. Its columns
+form a $g$-orthonormal frame. Set
+
+$$
+\widehat C_{ijk}=C_{abc}E^a{}_iE^b{}_jE^c{}_k,
+\qquad (S_i)_{jk}=\widehat C_{ijk},
+\qquad t_k=\sum_i\widehat C_{iik}.
+$$
+
+Then the Ricci tensor in that frame and its scalar trace are
+
+$$
+\boxed{\widehat{\operatorname{Ric}}_{ij}
+=\frac14\left(\langle S_i,S_j\rangle_F
+-\sum_k t_k\widehat C_{ijk}\right)},
+\qquad
+\boxed{R=\frac14\left(\|\widehat C\|_F^2-|t|^2\right)}.
+$$
+
+The coordinate Ricci tensor is
+$\operatorname{Ric}=E^{-\mathsf T}\widehat{\operatorname{Ric}}E^{-1}$.
+For linearly independent coordinate vectors $u,v$, sectional curvature is
+
+$$
+K(u,v)=
+\frac{
+ C(u,v,\cdot)^{\mathsf T}g^{-1}C(u,v,\cdot)
+-C(u,u,\cdot)^{\mathsf T}g^{-1}C(v,v,\cdot)}
+{4\bigl(g(u,u)g(v,v)-g(u,v)^2\bigr)}.
+$$
+
+These expressions require no evaluated fourth derivatives and no
+materialized fourth-order curvature tensor. They retain the $C^4$
+hypothesis used to justify the classical cancellation identity.
+:::
+
+:::{prf:proof}
+Because $EE^{\mathsf T}=g^{-1}$, changing all four free indices in
+{prf:ref}`lem-curvature-hessian-cancellation` to the orthonormal frame
+gives
+
+$$
+\widehat R_{abcd}
+=\frac14\sum_p
+ (\widehat C_{adp}\widehat C_{bcp}
+ -\widehat C_{acp}\widehat C_{bdp}).
+$$
+
+The Ricci convention of {prf:ref}`def-ricci-tensor-scalar` contracts the
+first and third indices. Thus
+
+$$
+\widehat{\operatorname{Ric}}_{bd}
+=\frac14\sum_{a,p}
+ (\widehat C_{adp}\widehat C_{bap}
+ -\widehat C_{aap}\widehat C_{bdp}).
+$$
+
+Symmetry of the cubic tensor identifies the first term as
+$\langle S_d,S_b\rangle_F$ and the second as
+$\sum_p t_p\widehat C_{bdp}$. Taking the trace sums the first term to
+$\|\widehat C\|_F^2$ and the second to $\sum_p t_p^2$.
+Since $\widehat{\operatorname{Ric}}=E^{\mathsf T}\operatorname{Ric}E$,
+inverting that change of basis gives the coordinate formula. Finally,
+contract $R_{abcd}$ with $u^av^bu^cv^d$ and divide by the squared
+$g$-area of the parallelogram. Positivity of $g$ and independence of
+$u,v$ make this denominator positive.
+:::
+
+:::{prf:corollary} Packed three-dimensional calculation
+:label: cor-curvature-packed-three-dimensional
+
+In $d$ dimensions, fully symmetric derivatives of order $k$ have
+$\binom{d+k-1}{k}$ independent components. For $d=3$, store the Hessian
+at indices $a\leq b$ and the cubic tensor at indices $a\leq b\leq c$.
+They require six and ten components respectively. The complete scalar
+jet through order three contains $1+3+6+10=20$ coefficients when stored
+as derivatives rather than Taylor coefficients.
+
+Given an orthonormal frame, scalar contraction costs $O(d^3)$ arithmetic
+and cubic storage; the direct Ricci contraction costs $O(d^4)$.
+Whitening the dense cubic by three successive index contractions costs
+$O(d^4)$, and a dense metric factorization costs $O(d^3)$. These counts
+exclude evaluation of the fitness derivatives. A full Riemann output
+additionally has $d^4$ entries and is unnecessary for scalar or Ricci
+queries.
+:::
+
+:::{prf:proof}
+A symmetric component corresponds to a multiset of $k$ indices selected
+from $d$ possibilities, giving the stated binomial count. In three
+dimensions the cubic entries are
+$111,112,113,122,123,133,222,223,233,333$.
+For each transformed index, multiplication by $E$ sums $d$ terms for
+each of $d^3$ output entries. The scalar expression then sums cubic
+entries and the $d$ traces. Each of $d^2$ Ricci entries uses an inner
+product with $d^2$ terms. Packed storage must account for permutation
+multiplicities in full contractions: $\|\widehat C\|_F^2$ counts an
+all-equal entry once, a two-equal entry three times, and an all-distinct
+entry six times. These are the numbers of distinct permutations of
+their indices.
+:::
+
+:::{div} feynman-prose
+Whitening means choosing units and axes that make the ruler the identity
+at the point where we are calculating. It does not flatten a neighborhood.
+The third derivatives still describe how the neighboring rulers change,
+and their contractions retain the curvature.
+
+Two checks are particularly revealing. If the fitness is quadratic, the
+cubic tensor vanishes and all geometric curvature vanishes. If the
+potential is separable, $\Phi(x)=\sum_a\phi_a(x^a)$ with positive
+$\phi_a''$, the metric varies but is still flat: replace each coordinate
+by $y^a=\int^{x^a}\sqrt{\phi_a''(s)}\,ds$. The line element becomes
+$\sum_a(dy^a)^2$. Both the direct contraction and an independent general
+metric calculation must reproduce these answers. A nonzero scalar
+curvature cannot be manufactured merely by measuring a large Hessian.
+:::
+
+:::{prf:lemma} Constant-work global-statistics update at a fixed query
+:label: lem-curvature-query-moment-cache
+
+Suppose precisely one of $n\geq2$ eligible scalar measurements is a
+variable $x(z)$. Let $\bar x_-$ and $M_{2,-}$ be the mean and sum of
+squared centered deviations of the other $n-1$ measurements. The
+population mean and population variance, with denominator $n$, are
+
+$$
+\bar x(z)=\bar x_-+\frac{x(z)-\bar x_-}{n},
+\qquad
+\sigma^2(z)=\frac{M_{2,-}}{n}
++\frac{n-1}{n^2}\bigl(x(z)-\bar x_-\bigr)^2.
+$$
+
+After preparing these summaries, every derivative of these statistics
+through the requested order follows by differentiating these formulas;
+no new population scan is needed per query. For $n=1$, the mean is
+$x(z)$ and the population variance is zero.
+:::
+
+:::{prf:proof}
+Write $\delta=x(z)-\bar x_-$. The other measurements have deviations
+from the new mean equal to their old centered deviations minus
+$\delta/n$. Their centered deviations sum to zero, so their new
+squared deviations sum to $M_{2,-}+(n-1)\delta^2/n^2$. The target
+deviation is $(n-1)\delta/n$. Add its square and divide by $n$ to obtain
+the variance formula. The mean follows by adding the target to the
+other measurements' sum. Differentiation is exact on the stated smooth
+stratum. The formulas do not apply when changing the query also changes
+other measurements or query-dependent neighborhood weights.
+:::
+
+:::{prf:remark} Clipped metrics require a different derivative calculation
+:label: rem-curvature-clipped-computation
+
+For the actual clipped construction, let
+$H=\nabla^2 V_i$ and $g_+=\epsilon_\Sigma I+f(H)$, where
+$f(\lambda)=\max(\lambda,0)$. Assume $V_i\in C^4$ and the spectrum of
+$H$ remains separated from zero on an open neighborhood. Matrix spectral
+calculus then gives
+
+$$
+\partial_a g_+=Df(H)[\partial_aH],
+\qquad
+\partial_a\partial_b g_+
+=Df(H)[\partial_a\partial_bH]
++D^2f(H)[\partial_aH,\partial_bH].
+$$
+
+In an orthonormal eigenbasis of $H$, the first derivative has entries
+$f[\lambda_i,\lambda_j](\partial_aH)_{ij}$. The symmetric second
+derivative uses
+
+$$
+\bigl(D^2f(H)[A,B]\bigr)_{ij}
+=\sum_k f[\lambda_i,\lambda_k,\lambda_j]
+ (A_{ik}B_{kj}+B_{ik}A_{kj}).
+$$
+
+Here brackets denote divided differences, with their continuous
+derivative limits at repeated eigenvalues of the same sign. Repeated
+nonzero eigenvalues therefore introduce no mathematical singularity.
+To verify the formulas, take disjoint complex contours around the
+positive and negative spectra, and extend $f$ analytically as $z$ and
+$0$ on their respective interiors. In the contour representation
+$f(H)=(2\pi\mathrm i)^{-1}\oint f(z)(zI-H)^{-1}\,dz$, write
+$A_z=(zI-H)^{-1}$. Its derivatives are
+$DA_z[B]=A_zBA_z$ and
+$D^2A_z[B,D]=A_zBA_zDA_z+A_zDA_zBA_z$.
+Diagonalizing $H$ inside these integrals gives residues with two and
+three scalar resolvents, namely the first and second divided
+differences displayed above. The spectral gap lets one use the same
+contours throughout a neighborhood. The spatial formulas then follow
+by the chain rule with $H(z)=\nabla^2V_i(z)$.
+
+If every eigenvalue is positive, $g_+$ agrees with the smooth shifted
+Hessian metric and {prf:ref}`lem-curvature-whitened-contractions`
+applies. If every eigenvalue is negative, $g_+=\epsilon_\Sigma I$ on
+the neighborhood and its curvature is zero. In a mixed-sign region,
+$g_+$ is generally not a Hessian metric. Compute its Levi-Civita
+curvature from $g_+,\partial g_+,\partial^2 g_+$; the latter generally
+needs fourth fitness derivatives. Substituting clipped eigenvalues in
+the Hessian curvature identity does not perform this calculation.
+
+At a zero eigenvalue, spectral clipping does not guarantee a $C^2$
+metric. Classical curvature is unavailable without a separate proof of
+smoothness at that point. A finite-difference estimate across the
+threshold is a resolution-dependent diagnostic, not a proof of a
+classical curvature value. A numerical tolerance used to exclude such
+points must be reported with the result.
+:::
+
+:::{prf:remark} Curvature of a sampled field and of an averaged covariance
+:label: rem-curvature-sampling-convention
+
+The conditional field above is indexed by its sampled sources and
+population snapshot. Its curvature is not automatically the curvature
+of a population-averaged metric. In general,
+
+$$
+\mathbb E\bigl[(\epsilon_\Sigma I+H_+)^{-1}\bigr]
+\ne\bigl(\epsilon_\Sigma I+(\mathbb EH)_+\bigr)^{-1},
+\qquad
+\mathbb E[R(g)]\ne R(\mathbb E[g]).
+$$
+
+If a provider instead constructs an averaged covariance, its own spatial
+derivatives define its metric and curvature. Query-dependent sampling
+probabilities must also be differentiated when differentiating that
+expectation. Likewise the covariance shape $g^{-1}$, its noise factor,
+and a physical increment covariance $\alpha g^{-1}$ are separate
+quantities. For constant $\alpha>0$, interpreting the latter's inverse
+as the metric gives $q=g/\alpha$ and $R(q)=\alpha R(g)$; a varying
+$\alpha$ also contributes metric derivatives. A reported curvature must
+therefore identify its field, derivative convention, and normalization.
+:::
+
+(sec-algorithmic-curvature-rust)=
+### Rust representation and execution
+
+:::{prf:definition} Computational representation of fitness and metric jets
+:label: def-curvature-rust-representation
+
+The Rust module `algorithmic_gas::physics::jet` represents multivariate
+Taylor polynomials in a shared `JetSpace::new(dimension, order)`.
+An internal coefficient indexed by the multi-index $\alpha$ equals
+$\partial^\alpha V/\alpha!$. Conversion through
+`physics::geometry::FitnessJet::from_jet` produces **ordinary
+derivatives**: its `hessian`, `third`, and optional `fourth` arrays use
+lexicographic order over nondecreasing axis tuples. `value` and
+`gradient` complete the scalar jet. Thus a repeated-index derivative
+must not be copied directly from a normalized Taylor coefficient.
+
+The geometry entry points are:
+
+| Function | Mathematical input and result |
+|---|---|
+| `hessian_curvature(&jet, epsilon, full_riemann)` | Strict positive shifted Hessian; uses third derivatives and the direct contractions above |
+| `fitness_curvature(&jet, epsilon, policy, threshold, full_riemann)` | Strict or clipped construction; the absolute Hessian spectral threshold determines where clipped classical curvature is unavailable |
+| `metric_curvature(&metric_jet, full_riemann)` | An independently supplied positive metric and its first two spatial derivatives; evaluates the general Levi-Civita formula |
+| `ExecutionContext::smooth_curvature_batch(&jets, epsilon, policy, threshold)` | Batched smooth Hessian or constant clipped metrics; whitening and curvature contractions use the explicitly selected compute backend |
+
+`MetricJet` uses row-major arrays with layouts $g_{ij}$,
+$\partial_k g_{ij}$, and $\partial_k\partial_l g_{ij}$: derivative
+indices precede matrix indices. These entries must be derivatives of
+the same $C^2$ metric field. A `CurvatureBatch` returns its `spectrum`,
+coordinate `ricci`, `scalar`, `einstein`, and eigenframe `sectional`
+curvatures, with optional covariant row-major `riemann`. The `einstein`
+field is the geometric contraction $\operatorname{Ric}-Rg/2$; computing
+it imposes no field equation or identification with stress.
+
+The sectional array enumerates pairs $i<j$ of orthonormal metric
+eigenvectors. Within a repeated-eigenvalue eigenspace the eigenbasis is
+not unique, so these particular sectional planes are frame-dependent.
+The scalar and the coordinate Ricci tensor do not depend on that choice.
+The `full_riemann=false` route avoids allocating a Riemann output.
+The third-derivative Hessian route additionally avoids fourth fitness
+derivatives; that saving does not apply to general mixed-sign clipping.
+
+The batch method performs the small eigendecompositions on the host,
+then uses backend tensor products for whitening, Ricci, scalar, and
+sectional contractions, with one combined result readback. It retains
+$O(Nd^3)$ working storage and $O(Nd^4)$ contraction work, subject to
+the execution context's allocation limits. All queries in a batch
+must share a dimension and precision. Mixed-sign clipping and clipping
+thresholds are rejected by this method; there is no automatic backend
+fallback. Such mixed-sign queries require the separately invoked
+general metric calculation.
+:::
+
+:::{div} feynman-prose
+Here is a small calculation whose answer can be checked on paper. Take
+$V(x,y,z)=(x^2+y^2+z^2)/2+0.1xyz$ and evaluate at the origin, with
+$\epsilon_\Sigma=0.2$. The metric there is $1.2I$. The only nonzero
+cubic derivatives are the six permutations of $V_{xyz}=0.1$.
+Whitening divides each by $1.2^{3/2}$, while the trace vector $t$ is
+zero. Consequently $R=6(0.1)^2/(4(1.2)^3)$. This example tests a
+nonzero curvature, all three coordinates, and the multiplicity of a
+packed mixed derivative at once.
+:::
+
+:::{div} feynman-added
+```rust
+use algorithmic_gas::physics::{
+    geometry::{FitnessJet, hessian_curvature},
+    jet::JetSpace,
+};
+
+fn check_three_dimensional_curvature() -> algorithmic_gas::Result<()> {
+    let space = JetSpace::new(3, 3)?;
+    let x = space.variable(0.0_f64, 0)?;
+    let y = space.variable(0.0_f64, 1)?;
+    let z = space.variable(0.0_f64, 2)?;
+    let quadratic = x.pow(2.0).add(&y.pow(2.0)).add(&z.pow(2.0));
+    let potential = quadratic.scale(0.5).add(&x.mul(&y).mul(&z).scale(0.1));
+    let jet = FitnessJet::from_jet(&potential)?;
+    let curvature = hessian_curvature(&jet, 0.2, false)?;
+    let expected = 6.0 * 0.1_f64.powi(2) / (4.0 * 1.2_f64.powi(3));
+    assert!((curvature.scalar - expected).abs() < 1e-12);
+    Ok(())
+}
+```
+:::
+
+:::{note}
+:class: feynman-added
+
+The benchmark runner selects the fitness metric provider through
+`RunConfig.physics_metric`. The provider supports smooth global and
+local standardizers with logistic positive maps. Its global cache uses
+{prf:ref}`lem-curvature-query-moment-cache`. For local normalization,
+`pipeline_from_measurement_jets` and `local_log_weights` retain the
+derivatives of both measurements and neighborhood weights, using an
+$O(N)$ calculation per query. Supported smooth Euclidean and phase-space
+kernels retain the recorded eligibility and donor sources; nonsmooth
+coincident-neighbor distances or periodic seams require their own
+identified treatment.
+
+When a population-coordinate calculation changes several measurement
+rows, supply every affected row as a jet to
+`pipeline_from_measurement_jets`. The test
+`coupled_population_derivative_matches_executed_fitness_with_fixed_companions`
+checks the resulting gradient and Hessian against finite differences of
+the production `FitnessPipeline::evaluate`, with two other rows using
+the moved walker as their companion. It also checks a matching
+fitness value and a different gradient for the immutable-source query
+calculation. This tests the dependency distinction directly.
+
+The provider evaluates conditional jets and its curvature diagnostics
+on the host in `f32` or `f64`; applying the resulting diffusion factors
+uses the selected noise backend. The separate
+`smooth_curvature_batch` entry point runs its tensor contractions on
+the selected CPU, WebGPU, or CUDA backend, retaining host
+eigendecompositions. CPU supports `f32` and `f64`; WebGPU uses `f32`,
+and CUDA precision requires the corresponding device capability. A
+backend build does not establish numerical agreement or a speedup on
+GPU hardware; those require an actual device run.
+
+At the thermostat stage, the provider records `fitness_hessian`,
+`fitness_metric`, `metric_inverse_sqrt`, and, when requested,
+`fitness_ricci` and `fitness_scalar_curvature`. Third and, where needed,
+fourth derivatives are evaluated only when curvature recording is
+enabled; unrecorded steps retain the second-order metric calculation.
+Coverage masks distinguish
+unavailable curvature from a computed zero. In particular, a clipping
+threshold can make classical curvature unavailable while the positive
+clipped diffusion metric remains usable. Conditional target-slot and
+revival-field records identify which reconstructed field was evaluated.
+:::
+
+(sec-curvature-spacetime-setting)=
+## Additional Spacetime Geometry
+
+:::{div} feynman-prose
+The conditional fitness calculation supplies a spatial metric. To use
+that family of metrics in spacetime transport, we must also specify how
+time enters the line element. The following construction states that
+extra choice explicitly. Its mixed connection coefficients then follow
+by substitution; they are not inferred from a spatial curvature map.
 :::
 
 :::{prf:assumption} Spatial and spacetime geometry used in this chapter
@@ -78,44 +714,6 @@ The unit timelike parameter $\tau$ below satisfies
 $G(u,u)=-1$ for $u=dz/d\tau$. With dimensional $G=-c^2dt^2+g_t$,
 $\tau$ is proper length, equal to $c$ times physical proper time.
 Equivalently one may use geometric units $c=1$.
-:::
-
-(sec-tessellation-to-curvature)=
-## From a Metric to a Connection
-
-:::{div} feynman-prose
-There are two connections to distinguish on a moving spatial slice.
-The intrinsic connection compares arrows within the slice. The spacetime
-connection also sees how the slice bends and changes with time.
-
-Even a path lying entirely in one slice can acquire a time component under
-spacetime parallel transport. Writing the mixed Christoffel symbols makes
-this visible.
-:::
-
-:::{prf:definition} Levi-Civita connection
-:label: def-affine-connection
-
-For a $C^1$ nondegenerate metric $q$, the Levi-Civita connection has
-coefficients
-
-$$
-\Gamma^a_{bc}[q]
-=\frac12q^{ae}
- (\partial_bq_{ec}+\partial_cq_{eb}-\partial_eq_{bc}).
-$$
-
-It is metric compatible and torsion free. Here $q=g_t$ gives the
-intrinsic spatial connection, while $q=G$ gives the spacetime connection.
-For the smooth shifted Hessian field, spatial coefficients use
-third derivatives of the fitness potential.
-
-Metric compatibility and zero torsion determine these coefficients
-uniquely: add
-$\partial_bq_{ac}=\Gamma_{abc}+\Gamma_{cba}$ and
-$\partial_cq_{ab}=\Gamma_{acb}+\Gamma_{bca}$, subtract
-$\partial_aq_{bc}$, and use symmetry in the two lower connection
-indices to solve for $\Gamma$.
 :::
 
 :::{prf:lemma} Connection of the time-dependent slab metric
@@ -382,105 +980,6 @@ Spacetime curvature uses the full connection of $G$; the relation between
 the two also involves the slice's second fundamental form.
 :::
 
-
-(sec-riemann-tensor)=
-## Curvature Tensors and Hessian Metrics
-
-:::{div} feynman-prose
-A varying metric produces a connection, and a varying connection produces
-curvature. For a general metric this uses second derivatives of the metric.
-
-A Hessian metric has extra symmetry. All its entries are second derivatives
-of the same scalar function. When we antisymmetrize to form curvature, the
-fourth derivatives of that scalar cancel. What remains is a product of
-third derivatives. This gives a useful direct bound from the fitness
-regularity estimates.
-:::
-
-:::{prf:definition} Riemann curvature tensor
-:label: def-riemann-tensor
-
-For a $C^2$ metric and its Levi-Civita connection, use the convention
-
-$$
-R^a{}_{bcd}
-=\partial_c\Gamma^a_{bd}-\partial_d\Gamma^a_{bc}
- +\Gamma^a_{ce}\Gamma^e_{bd}
- -\Gamma^a_{de}\Gamma^e_{bc}.
-$$
-
-Thus $R(X,Y)V$ has components $R^a{}_{bcd}V^bX^cY^d$.
-The metric and connection are both spatial or both spacetime according
-to the application.
-:::
-
-:::{prf:lemma} Cancellation of fourth derivatives in a Hessian metric
-:label: lem-curvature-hessian-cancellation
-
-Let $\Phi\in C^4$ in the fixed Euclidean coordinates and let
-$g_{ab}=\partial_a\partial_b\Phi$ be positive definite. Write
-$C_{abc}=\partial_a\partial_b\partial_c\Phi$. Then
-
-$$
-\Gamma^a_{bc}=\frac12g^{ae}C_{ebc},\qquad
-R_{abcd}
-=\frac14g^{pq}
- \left(C_{adp}C_{bcq}-C_{acp}C_{bdq}\right).
-$$
-
-In particular, the smooth construction
-$\Phi=V_{\mathrm{fit}}+\epsilon_\Sigma|x|^2/2$ has this formula.
-
-If $g\succeq mI$ and
-$|C(X,Y,\cdot)|\leq K_3|X|\,|Y|$ in Euclidean norm, then the
-absolute value of every sectional curvature is at most
-$K_3^2/(2m^3)$. Classical use of this identity is justified by the
-stated $C^4$ regularity. A clipped field has this Hessian identity only
-where it actually agrees with the smooth Hessian metric.
-:::
-
-:::{prf:proof}
-Symmetry of $C$ reduces the connection formula to
-$\Gamma^a_{bc}=g^{ae}C_{ebc}/2$. Differentiating the inverse gives
-
-$$
-\partial_cg^{ae}=-g^{ap}C_{pqc}g^{qe}.
-$$
-
-Substitute into the curvature definition. The two terms
-$\tfrac12g^{ae}\partial_c C_{ebd}$ and
-$-\tfrac12g^{ae}\partial_d C_{ebc}$ cancel because the fourth
-derivatives are symmetric. The remaining derivative-of-inverse terms
-combine with the two connection products. Lowering the first index gives
-
-$$
-R_{abcd}
-=\tfrac14g^{pq}C_{adp}C_{bcq}
- -\tfrac14g^{pq}C_{acp}C_{bdq}.
-$$
-
-For $g$-orthonormal $X,Y$, Euclidean lengths satisfy
-$|X|,|Y|\leq m^{-1/2}$. Each cubic tensor contracted with two of
-these vectors has Euclidean norm at most $K_3/m$. Each of the two
-inverse-metric products is therefore at most $K_3^2/m^3$.
-Their coefficients sum to $1/2$, proving the sectional bound.
-:::
-
-:::{prf:definition} Ricci tensor and scalar curvature
-:label: def-ricci-tensor-scalar
-
-For the specified metric $q$,
-
-$$
-\operatorname{Ric}_{bd}=R^a{}_{bad},\qquad
-R=q^{bd}\operatorname{Ric}_{bd}.
-$$
-
-Geodesic focusing in the timelike direction $u$ uses
-$\operatorname{Ric}(u,u)$. Scalar curvature is a trace over directions;
-its sign alone does not determine that contraction or the sign of every
-sectional curvature.
-:::
 
 (sec-discrete-connection)=
 ## Discrete Connection Recovery
@@ -1086,9 +1585,10 @@ approximation hypotheses.
 
 :::{div} feynman-prose
 The equations now tell us exactly what a curvature measurement means.
-We choose a metric, compare arrows using its connection, and control the
-error of the discrete transport. We choose a smooth flow and compare its
-expansion with measured volume changes.
+The configured diffusion rule identifies a metric field. Differentiating
+that field computes its curvature, and consistent discrete transport
+provides an independent recovery. A specified smooth flow additionally
+allows us to compare geometric expansion with measured volume changes.
 
 Optimization asks an additional question: does the actual stochastic
 process approach its target law or improve its objective? The force,
@@ -1102,17 +1602,21 @@ for a mixing or optimization theorem.
 
 | Geometric quantity | Construction used here | Required identification |
 |---|---|---|
+| Fitness derivatives | Differentiated conditional fitness pipeline | Recorded conditioning data, active smooth stratum, and stated derivative convention |
 | Spatial metric | Inverse adaptive covariance shape | Correct diffusion branch, prefactor, and spatial reconstruction |
 | Spacetime metric | $G=-c^2dt^2+g_t$ | The specified Lorentzian model and causal consistency |
 | Parallel transport | Levi-Civita or stated face maps | Same connection and compatible frames |
-| Curvature | Small-loop holonomy divided by area | Smoothness, nondegenerate shape, and $o(A)$ transport error |
+| Curvature | Metric derivative formula or consistent small-loop holonomy | A $C^2$ metric; transport recovery also needs nondegenerate loops and $o(A)$ transport error |
 | Hessian-metric curvature | Quadratic expression in third derivatives | A smooth positive Hessian metric |
 | Expansion | $\dot V/V$ | Transverse volume and differentiated consistency |
 | Geodesic focusing | Raychaudhuri inequality | Geodesic flow, convergence condition, and zero vorticity |
 
-These are geometric constructions and conditional identifications.
-An Einstein-type field equation additionally needs the variational or
-constitutive assumptions specified in {doc}`04_field_equations`.
+The next dynamical calculation uses the full transition law to derive
+metric increments and mechanical balances, as in
+{doc}`04_field_equations`. An Einstein-type equation would require
+identifying a controlled limit of those independently derived laws,
+including its stress tensor and any unresolved terms. Computing
+curvature alone does not determine that evolution or its coefficients.
 :::
 
 :::{prf:remark} Focusing and optimization use different evolution estimates
@@ -1160,11 +1664,16 @@ determine the dynamical convergence statement.
 (sec-summary-curvature)=
 ## Results Carried Forward
 
-The small-loop and product-error proofs give curvature recovery for a
-consistent discrete connection. The Hessian identity supplies an explicit
-curvature bound from third derivatives, under sufficient classical
-regularity. Least-squares recovery has the stated design-rank and
-measurement-error requirements.
+The conditioned algorithm data and differentiated fitness pipeline
+specify the metric-producing calculation. Smooth Hessian metrics admit
+direct third-derivative curvature contractions, including the packed
+three-dimensional calculation and its explicit curvature bound.
+Mixed-sign clipping uses the full metric derivative rule under a
+spectral gap; the required smoothness remains part of each result.
+
+The small-loop and product-error proofs give independent curvature
+recovery for a consistent discrete connection. Least-squares recovery
+has the stated design-rank and measurement-error requirements.
 
 Raychaudhuri's identity and the material-volume calculation transfer to
 reconstructed cells when their normalized flux and differentiated errors

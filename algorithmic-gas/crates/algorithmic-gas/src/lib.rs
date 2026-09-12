@@ -16,6 +16,7 @@ pub mod memory;
 pub mod noise;
 pub mod operators;
 pub mod partv_geometry;
+pub mod physics;
 pub mod random;
 pub mod scalar;
 pub use batch::*;

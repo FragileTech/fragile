@@ -1,0 +1,9 @@
+{
+  "experiment": 45,
+  "parameters": {
+    "seed": 7,
+    "replicas": 16,
+    "horizon": 1,
+    "warmup": 1
+  }
+}

@@ -195,7 +195,7 @@ async function makeGas(engine, seed, n, params = {}) {
       factor: { kind: "constant", values: params.factor.flat() },
     };
   if (params.adaptive) {
-    c.adaptive_metric = { epsilon: 1, temperature: 0.4, policy: "clipped" };
+    c.physics_metric = { epsilon: 1, temperature: 0.4, policy: "clipped" };
     c.gas.fitness.reward_standardizer = { kind: "global", sigma_min: 0.1 };
     c.gas.fitness.diversity_standardizer = { kind: "global", sigma_min: 0.1 };
     c.gas.fitness.distance_floor = 0.15;
