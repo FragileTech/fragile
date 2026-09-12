@@ -1,0 +1,79 @@
+name: Algorithmic Gas Rust
+
+on:
+  push:
+    paths: ['algorithmic-gas/**', 'fractal-gas-web/web/euclidean-gas/**', 'fractal-gas-web/tools/build-euclidean-gas.mjs', 'fractal-gas-web/tests/euclidean-gas/**', '.github/workflows/algorithmic-gas.yml']
+  pull_request:
+    paths: ['algorithmic-gas/**', 'fractal-gas-web/web/euclidean-gas/**', 'fractal-gas-web/tools/build-euclidean-gas.mjs', 'fractal-gas-web/tests/euclidean-gas/**', '.github/workflows/algorithmic-gas.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: algorithmic-gas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.95.0'
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: algorithmic-gas
+      - run: cargo fmt --all -- --check
+      - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+      - run: cargo test --workspace --locked
+      - run: cargo run -p algorithmic-gas-benchmarks --locked -- --precision f64 --walkers 32 --steps 3
+      # Compile checks are not accelerator runtime tests.
+      - run: cargo check -p algorithmic-gas-benchmarks --features wgpu --locked
+      - run: cargo check -p algorithmic-gas-benchmarks --features cuda --locked
+  dependency-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install cargo-audit --version 0.22.2 --locked
+      - run: cargo audit --file algorithmic-gas/Cargo.lock --deny unsound
+  memory-safety:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: algorithmic-gas
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: miri
+      # Miri exercises our pure data boundary, not GPU drivers or unsupported
+      # SIMD/backend execution. Fuzzing uses AddressSanitizer on the host.
+      - run: cargo +nightly miri test -p algorithmic-gas --test review_regressions tensor_deserialization_validates_shapes_without_panicking
+      - run: cargo +nightly miri test -p algorithmic-gas --test review_regressions local_statistics_exclude_self_and_record_singleton_fallback
+      - run: cargo install cargo-fuzz --version 0.13.2 --locked
+      - run: mkdir -p fuzz/corpus/decode
+      - run: cp fuzz/seeds/*.json fuzz/corpus/decode/
+      - run: cargo +nightly fuzz run decode -- -max_total_time=60 -max_len=65536 -rss_limit_mb=1024
+  wasm-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: fractal-gas-web/package-lock.json
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.95.0'
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: algorithmic-gas
+      - run: cargo install wasm-bindgen-cli --version 0.2.114 --locked
+      - run: npm --prefix fractal-gas-web ci --ignore-scripts
+      - run: npm --prefix fractal-gas-web run build:euclidean-gas
+      - run: npm --prefix fractal-gas-web run test:euclidean-gas

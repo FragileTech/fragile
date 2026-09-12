@@ -1,5 +1,9 @@
 # Changelog
 
+- Correct Algorithmic Gas distance reduction, local statistics, linear uniform sampling, donor availability, boundary timing, extinction handling and provenance. Validate tensor/checkpoint imports, introduce checkpoint format 2, enforce safe-Rust lints and add resource guards, regression tests, dependency audits and fuzz/Miri checks.
+
+- Add the independent Algorithmic Gas Rust workspace and Euclidean Gas Lab, with modular observations/rewards, separate donor roles, CPU/WASM f32/f64, explicit hybrid GPU adapters, stochastic and Langevin kinetics, anisotropic noise, transactional cloning, and replay checkpoints. Existing Python and C++ engines are unchanged.
+
 - Make beam-style length normalization with α = 0.6 the default LLM generation reward while preserving explicit objectives and legacy recording imports.
 
 - Add a visual FragileTech home page introducing Arcade, Control, Optimization, and LLM labs; preserve Arcade at `arcade.html` and update lab navigation.

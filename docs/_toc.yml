@@ -84,6 +84,8 @@ parts:
     - file: source/2_fractal_gas/convergence_program/02_euclidean_gas
     - file: source/2_fractal_gas/convergence_program/04_single_particle
     - file: source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent
+  - file: source/2_fractal_gas/architecture/01_algorithmic_gas
+    title: Architecture
   - file: source/2_fractal_gas/parts/02_convergence
     title: Part II — Finite-Particle Convergence
     sections:

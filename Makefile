@@ -55,6 +55,29 @@ optimization-test: optimization-native optimization-web
 
 .PHONY: optimization-native optimization-web optimization-web-build optimization-lab optimization-test
 
+ALGORITHMIC_GAS_PORT ?= 8770
+.PHONY: algorithmic-gas-native algorithmic-gas-web algorithmic-gas-lab algorithmic-gas-test algorithmic-gas-targets
+algorithmic-gas-native:
+	cd algorithmic-gas && cargo build --workspace --release --locked
+
+algorithmic-gas-web:
+	npm --prefix fractal-gas-web ci --ignore-scripts
+	npm --prefix fractal-gas-web run build:euclidean-gas
+
+algorithmic-gas-lab:
+	uv run --no-project python fractal-gas-web/tools/serve-control.py --port $(ALGORITHMIC_GAS_PORT)
+
+algorithmic-gas-test:
+	cd algorithmic-gas && cargo fmt --all -- --check
+	cd algorithmic-gas && cargo clippy --workspace --all-targets --locked -- -D warnings
+	cd algorithmic-gas && cargo test --workspace --locked
+	npm --prefix fractal-gas-web run test:euclidean-gas
+
+algorithmic-gas-targets:
+	cd algorithmic-gas && cargo check -p algorithmic-gas-benchmarks --features wgpu --locked
+	cd algorithmic-gas && cargo check -p algorithmic-gas-benchmarks --features cuda --locked
+	cd algorithmic-gas && cargo check -p algorithmic-gas-wasm --target wasm32-unknown-unknown --features webgpu --locked
+
 style:
 	uv run ruff check --fix-only --unsafe-fixes .
 	uv run ruff format .

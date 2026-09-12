@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Euclidean Gas Lab · Fragile</title>
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="app-brand" href="../" aria-label="Fragile Tech home"
+        ><img
+          class="app-brand-logo"
+          src="../lab/branding/logo.png"
+          alt=""
+          width="48"
+          height="48"
+        /><span
+          >fragile.tech<span class="app-brand-sub"
+            >Euclidean Gas Lab</span
+          ></span
+        ></a
+      >
+      <h1 class="app-page-title">Euclidean Gas Lab</h1>
+      <nav class="app-nav" aria-label="Laboratory navigation">
+        <a href="../arcade.html">Arcade</a><a href="../lab/">Control Lab</a
+        ><a href="../llm/">LLM Lab</a
+        ><a href="../optimization/">Optimization Lab</a
+        ><span class="is-active" aria-current="page">Euclidean Gas</span>
+      </nav>
+      <span id="engine-status" class="app-connection" role="status"
+        >Loading Rust engine…</span
+      >
+    </header>
+    <main class="lab-layout">
+      <aside class="configuration" aria-label="Run configuration">
+        <form id="configuration">
+          <div class="section-heading">
+            <h2>Configuration</h2>
+            <span class="tag">Rust · Burn</span>
+          </div>
+          <label
+            >Benchmark<select id="benchmark">
+              <option value="rastrigin">Rastrigin</option>
+              <option value="sphere">Sphere</option>
+              <option value="rosenbrock">Rosenbrock</option>
+              <option value="styblinski_tang">Styblinski–Tang</option>
+            </select></label
+          >
+          <div class="pair">
+            <label
+              >Dimensions<input
+                id="dimensions"
+                type="number"
+                min="2"
+                max="128"
+                value="2"
+                required /></label
+            ><label
+              >Walkers<input
+                id="walkers"
+                type="number"
+                min="1"
+                max="16384"
+                value="256"
+                required
+            /></label>
+          </div>
+          <div class="pair">
+            <label
+              >Seed<input
+                id="seed"
+                type="number"
+                min="0"
+                max="4294967295"
+                value="7"
+                required /></label
+            ><label
+              >Objective<select id="direction">
+                <option value="minimize">Minimize</option>
+                <option value="maximize">Maximize</option>
+              </select></label
+            >
+          </div>
+          <label
+            >Execution<select id="backend">
+              <option value="cpu">WASM CPU</option>
+              <option value="wgpu">WebGPU · hybrid</option>
+            </select></label
+          >
+          <label
+            >Computation precision<select id="precision">
+              <option value="f32">32-bit · f32</option>
+              <option value="f64">64-bit · f64 (CPU)</option>
+            </select></label
+          >
+          <p class="hint">
+            GPU batches use explicit host orchestration. Transfers are reported;
+            no automatic fallback.
+          </p>
+          <label
+            >Kinetic operator<select id="kinetic">
+              <option value="direct_jump">Gaussian jumps</option>
+              <option value="baoab">Langevin · BAOAB</option>
+              <option value="brownian">Brownian increments</option>
+            </select></label
+          >
+          <div class="pair">
+            <label
+              >Jump amplitude<input
+                id="amplitude"
+                type="number"
+                step="any"
+                min="0"
+                value="0.05"
+                required /></label
+            ><label
+              >Time step<input
+                id="dt"
+                type="number"
+                step="any"
+                min="0.000001"
+                value="0.01"
+                required
+            /></label>
+          </div>
+          <details open>
+            <summary>Companion modules</summary>
+            <label
+              >Diversity donors<select id="distance-law">
+                <option value="gaussian">Gaussian independent</option>
+                <option value="uniform">Uniform independent</option>
+                <option value="fisher_yates">Fisher–Yates mutual</option>
+                <option value="gaussian_greedy">Gaussian greedy mutual</option>
+                <option value="legacy_permutation">Legacy permutation</option>
+              </select></label
+            >
+            <div class="pair">
+              <label
+                >Companions · K<input
+                  id="distance-count"
+                  type="number"
+                  min="1"
+                  max="64"
+                  value="1"
+                  required /></label
+              ><label
+                >Kernel width<input
+                  id="kernel-width"
+                  type="number"
+                  min="0.000001"
+                  step="any"
+                  value="1"
+                  required
+              /></label>
+            </div>
+            <label
+              >Reduction<select id="reducer">
+                <option value="mean">Mean distance</option>
+                <option value="minimum">Minimum</option>
+                <option value="maximum">Maximum</option>
+              </select></label
+            >
+            <label
+              >Cloning donors<select id="clone-law">
+                <option value="gaussian">Gaussian independent</option>
+                <option value="uniform">Uniform independent</option>
+                <option value="fisher_yates">Fisher–Yates mutual</option>
+                <option value="gaussian_greedy">Gaussian greedy mutual</option>
+                <option value="legacy_permutation">Legacy permutation</option>
+              </select></label
+            >
+            <p class="hint">
+              Independent modules and random streams. Cloning uses one donor;
+              ancestry is not a filter.
+            </p>
+          </details>
+          <details>
+            <summary>Geometry, fitness &amp; noise</summary>
+            <label
+              >Distance<select id="distance">
+                <option value="euclidean">Position Euclidean</option>
+                <option value="phase_space">Phase-space</option>
+                <option value="cosine">Cosine dissimilarity</option>
+              </select></label
+            >
+            <label
+              >Boundary<select id="boundary">
+                <option value="absorbing_box">Absorbing benchmark box</option>
+                <option value="periodic_box">Periodic benchmark box</option>
+                <option value="unbounded">Unbounded</option>
+              </select></label
+            >
+            <div class="pair">
+              <label
+                >Reward exponent<input
+                  id="alpha"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value="1"
+                  required /></label
+              ><label
+                >Diversity exponent<input
+                  id="beta"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value="1"
+                  required
+              /></label>
+            </div>
+            <label
+              >Positive map<select id="positive-map">
+                <option value="logistic">Logistic · A = 2</option>
+                <option value="legacy_asymmetric">Legacy asymmetric</option>
+              </select></label
+            >
+            <label
+              >Standardization<select id="standardizer">
+                <option value="global">Global alive-only</option>
+                <option value="local">Local kernel-weighted</option>
+              </select></label
+            >
+            <div class="pair">
+              <label
+                >Statistics floor<input
+                  id="sigma-min"
+                  type="number"
+                  min="0.000000001"
+                  step="any"
+                  value="0.001"
+                  required /></label
+              ><label
+                >Friction · γ<input
+                  id="friction"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value="1"
+                  required
+              /></label>
+            </div>
+            <label
+              >Innovation law<select id="innovation">
+                <option value="gaussian">Gaussian</option>
+                <option value="standardized_uniform">
+                  Standardized uniform
+                </option>
+              </select></label
+            >
+            <label
+              >Noise geometry<select id="noise-geometry">
+                <option value="isotropic">Isotropic</option>
+                <option value="diagonal">Diagonal anisotropic</option>
+                <option value="full">Full factor · 2D</option>
+                <option value="low_rank">Low rank · rank 1</option>
+              </select></label
+            >
+            <label
+              >Noise scale<input
+                id="noise-scale"
+                type="number"
+                min="0"
+                step="any"
+                value="1"
+                required
+            /></label>
+            <p class="hint">
+              BAOAB's equilibrium interpretation requires Gaussian innovations.
+              Other laws are experimental dynamics.
+            </p>
+          </details>
+          <button id="apply" type="submit" class="primary wide">
+            Apply &amp; reset
+          </button>
+          <p id="config-note" class="hint">Changes apply only after reset.</p>
+        </form>
+      </aside>
+      <section class="workspace" aria-label="Population visualization">
+        <div class="run-bar">
+          <div class="run-actions">
+            <button id="run" class="primary" disabled>Run</button
+            ><button id="step" disabled>Step</button
+            ><button id="reset" disabled>Reset</button>
+          </div>
+          <span id="run-status" role="status">Preparing engine</span
+          ><span id="timing" class="hint"></span>
+        </div>
+        <div id="error" role="alert" hidden></div>
+        <div class="metrics">
+          <div><span>Iteration</span><strong id="metric-step">—</strong></div>
+          <div>
+            <span>Best raw reward</span><strong id="metric-best">—</strong>
+          </div>
+          <div>
+            <span>Eligible walkers</span><strong id="metric-alive">—</strong>
+          </div>
+          <div>
+            <span>Reward evaluations</span><strong id="metric-evals">—</strong>
+          </div>
+        </div>
+        <div class="view-bar">
+          <div>
+            <span class="overline">Population</span
+            ><span id="view-caption">2D projection</span>
+          </div>
+          <div class="view-controls">
+            <label
+              >X<select
+                id="x-axis"
+                aria-label="Horizontal projection axis"
+              ></select></label
+            ><label
+              >Y<select
+                id="y-axis"
+                aria-label="Vertical projection axis"
+              ></select></label
+            ><label
+              ><input id="landscape-toggle" type="checkbox" checked />
+              Landscape</label
+            ><button id="fit-view">Fit</button>
+          </div>
+        </div>
+        <div id="stage">
+          <div id="stage-loading">Preparing population…</div>
+          <div class="stage-legend">
+            <span><i class="dot teal"></i>Lower reward</span
+            ><span><i class="dot rose"></i>Higher reward</span
+            ><span><i class="dot white"></i>Selected</span>
+          </div>
+          <span class="stage-help"
+            >Click a walker to inspect · scroll to zoom</span
+          >
+        </div>
+        <section class="convergence">
+          <div class="section-heading">
+            <h2>Convergence</h2>
+            <label class="inline"
+              >Horizontal axis<select id="chart-axis">
+                <option value="step">Iteration</option>
+                <option value="evaluations">Reward evaluations</option>
+              </select></label
+            >
+          </div>
+          <canvas
+            id="convergence"
+            aria-label="Best and mean raw reward over time"
+          ></canvas>
+          <p id="chart-note" class="hint">
+            Run or step to collect measurements. Teal: best recorded. Lavender:
+            current mean.
+          </p>
+        </section>
+      </section>
+      <aside class="inspector" aria-label="Walker inspector and exports">
+        <div class="section-heading">
+          <h2>Walker inspector</h2>
+          <span id="walker-tag" class="tag">#0</span>
+        </div>
+        <label
+          >Walker slot<input id="walker" type="number" min="0" value="0"
+        /></label>
+        <dl id="walker-details"></dl>
+        <div class="section-heading"><h2>Execution</h2></div>
+        <dl id="execution-details"></dl>
+        <p class="hint">
+          Plots convert coordinates to display precision only. Engine arithmetic
+          uses the selected dtype.
+        </p>
+        <div class="section-heading"><h2>Save &amp; replay</h2></div>
+        <button id="save-checkpoint" class="wide" disabled>
+          Save checkpoint</button
+        ><button id="restore-checkpoint" class="wide" disabled>
+          Restore checkpoint…</button
+        ><input id="checkpoint-file" type="file" accept=".agc" hidden />
+        <button id="save-local" class="wide" disabled>
+          Save in this browser</button
+        ><button id="load-local" class="wide" disabled>
+          Restore browser save
+        </button>
+        <button id="export-config" class="wide" disabled>
+          Export configuration</button
+        ><button id="import-config" class="wide" disabled>
+          Import configuration…</button
+        ><input id="config-file" type="file" accept=".json" hidden /><button
+          id="export-results"
+          class="wide"
+          disabled
+        >
+          Export results
+        </button>
+        <p class="hint">
+          Checkpoints include donor history, opaque state, RNG version, and
+          resolved configuration.
+        </p>
+        <a
+          class="guide-link"
+          href="../docs/theory/source/2_fractal_gas/architecture/01_algorithmic_gas.html"
+          >Architecture specification ↗</a
+        >
+      </aside>
+    </main>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

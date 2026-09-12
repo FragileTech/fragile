@@ -1,0 +1,24 @@
+[package]
+name = "algorithmic-gas-benchmarks"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[features]
+default = ["cpu"]
+cpu = ["algorithmic-gas/cpu"]
+wgpu = ["algorithmic-gas/wgpu"]
+cuda = ["algorithmic-gas/cuda"]
+
+[dependencies]
+algorithmic-gas = { path = "../algorithmic-gas", default-features = false }
+serde.workspace = true
+serde_json.workspace = true
+futures-lite.workspace = true
+
+[dev-dependencies]
+futures-lite.workspace = true

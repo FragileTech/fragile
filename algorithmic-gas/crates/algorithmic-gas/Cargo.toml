@@ -1,0 +1,30 @@
+[package]
+name = "algorithmic-gas"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Modular Algorithmic Gas engine with private Burn compute adapters"
+
+[lints]
+workspace = true
+
+[features]
+default = ["cpu"]
+cpu = ["burn/flex"]
+wgpu = ["burn/wgpu", "burn/webgpu"]
+cuda = ["burn/cuda"]
+
+[dependencies]
+burn.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+ciborium.workspace = true
+thiserror.workspace = true
+futures-util.workspace = true
+
+[dev-dependencies]
+futures-lite.workspace = true
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = { version = "0.4", features = ["wasm_js"] }

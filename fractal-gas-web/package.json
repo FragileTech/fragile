@@ -27,6 +27,8 @@
     "test:lab-action-readability": "node tests/control-action-readability-browser.mjs",
     "test:lab-workspace": "node --test tests/control-workspace.test.mjs && node tests/control-workspace-browser.mjs",
     "build:optimization": "node tools/build-optimization.mjs",
+    "build:euclidean-gas": "node tools/build-euclidean-gas.mjs",
+    "test:euclidean-gas": "node tests/euclidean-gas/wasm.test.mjs",
     "test:optimization": "node --test tests/optimization/*.test.mjs",
     "test:optimization-browser": "node tests/optimization/browser.mjs",
     "build:llm": "node tools/build-llm.mjs",

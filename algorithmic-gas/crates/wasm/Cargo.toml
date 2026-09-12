@@ -1,0 +1,28 @@
+[package]
+name = "algorithmic-gas-wasm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["cpu"]
+cpu = ["algorithmic-gas/cpu", "algorithmic-gas-benchmarks/cpu"]
+webgpu = ["algorithmic-gas/wgpu", "algorithmic-gas-benchmarks/wgpu"]
+
+[dependencies]
+algorithmic-gas = { path = "../algorithmic-gas", default-features = false }
+algorithmic-gas-benchmarks = { path = "../benchmarks", default-features = false }
+serde.workspace = true
+serde_json.workspace = true
+wasm-bindgen.workspace = true
+wasm-bindgen-futures.workspace = true
+serde-wasm-bindgen.workspace = true
+js-sys.workspace = true
+ciborium.workspace = true

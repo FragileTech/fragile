@@ -94,6 +94,8 @@ project:
       - file: source/2_fractal_gas/convergence_program/02_euclidean_gas.md
       - file: source/2_fractal_gas/convergence_program/04_single_particle.md
       - file: source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent.md
+    - file: source/2_fractal_gas/architecture/01_algorithmic_gas.md
+      title: Architecture
     - file: source/2_fractal_gas/parts/02_convergence.md
       title: Part II — Finite-Particle Convergence
       children:
