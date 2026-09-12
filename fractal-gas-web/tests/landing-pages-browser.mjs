@@ -84,6 +84,10 @@ try {
           ),
         ["arcade.html", "lab/", "optimization/", "llm/"],
       );
+      assert.equal(
+        await page.locator('.site-header nav a[href="euclidean-gas/"]').count(),
+        1,
+      );
       if (
         process.env.CAPTURE_LANDING_SCREENSHOTS === "1" &&
         javaScriptEnabled &&
@@ -118,7 +122,13 @@ try {
   // Lab entry files and brand navigation must remain usable without running engines.
   const context = await browser.newContext({ javaScriptEnabled: false });
   const page = await context.newPage();
-  for (const route of ["arcade.html", "lab/", "optimization/", "llm/"]) {
+  for (const route of [
+    "arcade.html",
+    "lab/",
+    "optimization/",
+    "euclidean-gas/",
+    "llm/",
+  ]) {
     assert.equal((await page.goto(new URL(route, base).href)).status(), 200);
     await page.locator(".app-brand").click();
     assert.equal(page.url(), base);
@@ -170,7 +180,7 @@ try {
     await ctx.close();
   }
   console.log(
-    "Landing page passed: five widths, no JavaScript, no engines, four lab routes, and home navigation.",
+    "Landing page passed: five widths, no JavaScript, no engines, five lab routes, and home navigation.",
   );
 } finally {
   await browser?.close();

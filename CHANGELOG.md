@@ -1,5 +1,7 @@
 # Changelog
 
+- Make GAS (2017) with adaptive local Gaussian proposals the Optimization Lab default, and fix narrow landing-page navigation so the full Pages bundle can deploy.
+
 - Correct Algorithmic Gas distance reduction, local statistics, linear uniform sampling, donor availability, boundary timing, extinction handling and provenance. Validate tensor/checkpoint imports, introduce checkpoint format 2, enforce safe-Rust lints and add resource guards, regression tests, dependency audits and fuzz/Miri checks.
 
 - Add the independent Algorithmic Gas Rust workspace and Euclidean Gas Lab, with modular observations/rewards, separate donor roles, CPU/WASM f32/f64, explicit hybrid GPU adapters, stochastic and Langevin kinetics, anisotropic noise, transactional cloning, and replay checkpoints. Existing Python and C++ engines are unchanged.

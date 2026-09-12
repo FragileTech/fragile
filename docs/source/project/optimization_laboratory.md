@@ -291,8 +291,9 @@ whole box to the estimator.
 Wave and GAS update geometry after each complete population step. All walkers
 in that step therefore see one model snapshot. GAS measures each accepted random
 jump from its post-cloning origin, using its unwrapped displacement and dividing
-out the retry scale when learning. Its default remains `gas_adaptive`; select
-`local_covariance` explicitly to use this variant. FMC and Wave Jump update before a new
+out the retry scale when learning. Optimization Lab selects `local_covariance`
+when GAS is chosen. The objective-scaled `gas_adaptive` variant remains available.
+FMC and Wave Jump update before a new
 planning cycle and freeze geometry throughout search and execution. Replaying a
 chosen action uses the same factor and action seed as its search trial, including
 the same stochastic objective draw. Executing that trial does not count as a new
@@ -324,14 +325,16 @@ It maintains positions, applies flow-based cloning, and proposes random jumps.
 Euclidean Gas has a separate velocity state and BAOAB integration; selecting GAS
 does not enable another kinetic mode of that integrator.
 
-The default perturbation, `gas_adaptive`, gives better walkers smaller jumps.
+The default Optimization Lab configuration uses `local_covariance`, which learns
+local Gaussian proposal directions from accepted GAS moves. The alternative
+`gas_adaptive` perturbation gives better walkers smaller isotropic jumps.
 For a coordinate whose domain width is 10, a best walker has jump standard
 deviation 0.0001, while a worst walker has standard deviation 1. These are widths
 of random distributions, not fixed jump lengths. A good position can therefore
-be explored finely while other walkers search farther away. Gaussian, uniform,
-and **Adaptive local Gaussian** perturbations are explicit GAS variants; their
+be explored finely while other walkers search farther away. Gaussian and uniform
+perturbations are also explicit GAS variants; their
 scale is the ordinary **Standard deviation** control, rather than the adaptive
-domain fraction. The default `gas_adaptive` strategy appears only for GAS.
+domain fraction. The `gas_adaptive` strategy appears only for GAS.
 :::
 
 :::{prf:definition} GAS conventions in Optimization Lab

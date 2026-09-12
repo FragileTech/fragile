@@ -5,6 +5,8 @@ import { exportFixedBudgetCSV } from "./fixed-budget.js";
 import { SwarmRenderer, MoleculeRenderer } from "./renderer.js";
 const $ = (id) => document.getElementById(id),
   form = $("configuration");
+const DEFAULT_ALGORITHM = "gas",
+  DEFAULT_GAS_PERTURBATION = "local_covariance";
 const client = new EngineClient();
 let catalog,
   config,
@@ -142,7 +144,7 @@ function perturbationOptions(values = {}) {
   const selected =
     values.perturbation ??
     (algorithm === "gas"
-      ? "gas_adaptive"
+      ? DEFAULT_GAS_PERTURBATION
       : catalog.perturbations.some(
             (entry) =>
               entry.id === current &&
@@ -237,7 +239,17 @@ function algorithmFields(values = {}) {
   details.append(summary, content);
   panel.append(details);
   if (["wave", "graph", "fmc", "wave_jump"].includes(algorithm))
-    content.append(selectInput("distance_metric", "Observation distance", values.distance_metric ?? "l2", [["l2", "L2"], ["cosine", "Cosine"]]));
+    content.append(
+      selectInput(
+        "distance_metric",
+        "Observation distance",
+        values.distance_metric ?? "l2",
+        [
+          ["l2", "L2"],
+          ["cosine", "Cosine"],
+        ],
+      ),
+    );
   const common = [
     ["reward_coef", "Reward exponent", 0, 10],
     ["distance_coef", "Distance exponent", 0, 10],
@@ -990,7 +1002,7 @@ try {
   for (const entry of catalog.algorithms)
     $("algorithm").add(new Option(entry.name, entry.id));
   $("benchmark").value = "rastrigin";
-  $("algorithm").value = "euclidean";
+  $("algorithm").value = DEFAULT_ALGORITHM;
   perturbationOptions();
   benchmarkFields();
   algorithmFields();

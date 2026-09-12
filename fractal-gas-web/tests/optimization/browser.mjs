@@ -52,6 +52,15 @@ for (const [name, type] of [
       return window.optimizationReady;
     });
     assert.equal(await page.locator("#iteration").textContent(), "0");
+    assert.equal(await page.locator("#algorithm").inputValue(), "gas");
+    assert.equal(
+      await page.locator("#perturbation").inputValue(),
+      "local_covariance",
+    );
+    assert.match(
+      await page.locator("#perturbation-note").textContent(),
+      /local proposal/,
+    );
     const apply = async () => {
       await page.locator("#apply").click();
       await page.waitForFunction(() => {
@@ -138,7 +147,7 @@ for (const [name, type] of [
     await page.locator("#algorithm").selectOption("gas");
     assert.equal(
       await page.locator("#perturbation").inputValue(),
-      "gas_adaptive",
+      "local_covariance",
     );
     assert.equal(await page.locator('[name="gas_tabu"]').isChecked(), true);
     assert.equal(
