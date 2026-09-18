@@ -28,7 +28,7 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
       - run: cargo test --workspace --locked
-      - run: cargo run -p algorithmic-gas-benchmarks --locked -- --precision f64 --walkers 32 --steps 3
+      - run: cargo run -p algorithmic-gas-benchmarks --locked --bin gas-benchmark -- --precision f64 --walkers 32 --steps 3
       # Compile checks are not accelerator runtime tests.
       - run: cargo check -p algorithmic-gas-benchmarks --features wgpu --locked
       - run: cargo check -p algorithmic-gas-benchmarks --features cuda --locked

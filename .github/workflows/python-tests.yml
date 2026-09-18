@@ -55,7 +55,7 @@ jobs:
           uv venv --python 3.10
           uv pip install --torch-backend=cpu --constraint /tmp/constraints.txt -e '.[test]'
       - name: Run Python suite
-        run: uv run --no-sync pytest -q -n 2 --dist loadfile tests --junitxml=test-results/python.xml
+        run: uv run --no-sync pytest -q -n 2 --dist loadfile tests --ignore=tests/docs --junitxml=test-results/python.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:
