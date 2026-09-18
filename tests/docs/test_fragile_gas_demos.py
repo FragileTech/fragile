@@ -1,6 +1,6 @@
 """Check lecture placement against the actual Volume II source and generated manifest."""
 
-from collections import defaultdict
+from collections import Counter, defaultdict
 from html.parser import HTMLParser
 import importlib.util
 import json
@@ -117,10 +117,17 @@ def test_every_demo_is_a_top_level_raw_block_with_working_published_paths(chapte
         assert (DOCS / f"_static_theory/gas-demos/{entry['id']}.svg").is_file()
 
 
-def test_manifest_covers_all_62_unique_demos_in_26_chapters():
-    assert len(ENTRIES) == len({entry["id"] for entry in ENTRIES}) == 62
-    assert len(CHAPTERS) == 26
-    assert {entry["part"] for entry in ENTRIES} == {"I", "II", "III", "IV", "V"}
+def test_manifest_covers_all_128_unique_demos_in_six_parts():
+    assert len(ENTRIES) == len({entry["id"] for entry in ENTRIES}) == 128
+    assert Counter(entry["part"] for entry in ENTRIES) == {
+        "I": 10,
+        "II": 8,
+        "III": 8,
+        "IV": 16,
+        "V": 20,
+        "VI": 66,
+    }
+    assert all((DOCS / f"{chapter}.md").is_file() for chapter in CHAPTERS)
 
 
 @pytest.mark.parametrize("entry", ENTRIES, ids=itemgetter("id"))
