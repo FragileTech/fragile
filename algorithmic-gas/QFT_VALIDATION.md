@@ -149,6 +149,68 @@ The global improvement is only 0.56%, nearly matched by shuffled data; the local
 
 Curvature depends on differentiated normalized fitness, donor context and clipping. A centered velocity second moment is only one candidate stress ingredient; volume normalization and force, transport, cloning, thermal and boundary contributions require explicit treatment. Their omission is a possible explanation of the failed reduction, not a demonstrated causal diagnosis. [The research protocol](VERIFICATION.md) states the configurations, train/test split and measured quantities.
 
+## Tessellation geometry and the Einstein–Hilbert gas
+
+The tessellation estimators are checked against three kinds of reference
+(`crates/algorithmic-gas/tests/tessellation_{geometry,parity,engine}.rs`,
+`crates/benchmarks/tests/einstein_hilbert_gas.rs`).
+
+**Analytic.** A flat metric gives zero curvature for every estimator. For a
+conformally flat metric `e^{2u}δ` with quadratic `u` the quadratic-fit scalar
+and the trace of its Ricci tensor match the closed form to `1e-5` in 2D and 3D
+(ridge far below the squared spacing). Voronoi volumes sum to the box volume to
+`1e-10` in clip and periodic boxes in 2D and 3D, with reciprocal facet areas.
+Regge deficits of a flat triangulation vanish up to the conditioning of angles
+computed from lengths (`< 1e-4` in curvature); with exact great-circle lengths
+on the unit sphere the Regge action per area is `2` within `1%` at 1500 sites.
+With endpoint-metric lengths on the same sphere it is `4.8`: the documented
+`O(1)` bias of that length model. The 3D Delaunay complex passes brute-force
+empty-circumsphere, orientation, Euler and hull checks on generic clouds, a
+cubic lattice, a Kronecker lattice with exactly coplanar quadruples, and sites
+on a sphere.
+
+**Python reference estimators** (`fragile.physics.geometry`, float64 fixtures
+from `tools/export_tessellation_fixtures.py`, 60 sites in 2D and 80 in 3D).
+Delaunay edges agree exactly, including coincident, collinear, coplanar and
+duplicate-group swarms. Emergent metric, determinant, volume element, diffusion
+factor and geodesic lengths agree to `1e-8` relative; all shared edge-weight
+modes and the conformal Laplacian curvature to `1e-7`; the quadratic-fit scalar
+and Ricci tensor to `1e-5` (normal equations with an absolute ridge); viscous
+force and one Boris B step to `1e-8`, curl and rotation angle to `1e-6`. The
+reference `inverse_volume` weights have unit cells and equal the uniform
+weights; here that mode uses the Voronoi volumes.
+
+**Dynamics.** 500 walkers, three dimensions, 750 steps, single precision, all
+walkers starting at the origin at rest, cloning every 20 steps. Under
+`GeometrySchedule::PostClone { every: 1, on_clone: true }`, which is the
+reference run's schedule, eight Rust seeds and three Python seeds give
+
+| Quantity (final state) | Rust, 8 seeds | Python, 3 seeds |
+|---|---|---|
+| Mean squared speed | 0.281 ± 0.007 | 0.289 ± 0.018 |
+| Action `Σ R_i sqrt(det g_i)` | (1.10 ± 0.15) × 10⁶ | 0.78, 1.13, 1.03 × 10⁶ |
+| Mean curvature | 0.074 ± 0.010 | 0.070, 0.083, 0.055 |
+| Mean volume element | 2490 ± 320 | 1756, 2781, 2488 |
+| Directed neighbor edges | 2960–2976 | 2962–2974 |
+| Clones per cloning step | 157 | 159 |
+
+The two engines use different random number generators, so agreement is
+statistical; the spreads are seed-to-seed standard deviations. The mean squared
+speed is below `3T = 0.99` because the row-normalized viscous coupling adds a
+relaxation rate `ν = 3` toward the neighbor mean without a matching noise. A
+run takes 1.5–3 s natively and 20–45 s in the Python engine on the same
+machine. Under the default `EveryStage` schedule the same configuration gives
+an action of (0.78 ± 0.13) × 10⁶ over eight seeds: rewarding current rather
+than one-step-old geometry changes the selection pressure, not the estimators.
+
+The Python Einstein-equation analyzer
+(`fragile.physics.app.qft.einstein_equations.compute_einstein_test`) runs
+unchanged on a `RunHistory` converted from a recorded `RunArchive`
+(`tools/eh_archive_to_history.py`). These runs validate the implementation of
+the estimators and of the sampler; they make no claim that the conformal
+curvature proxy converges to a continuum curvature of the walker density, nor
+that the gas satisfies a field equation.
+
 ## What the geometric and information experiments establish
 
 Recorded ray-overlap loops provide an explicit U(1) connection and exact orientation/local-phase identities. They do not establish an SU(3) transporter or identify the loop action with the gas path action. Paired parity and translation experiments transform the complete configured dynamics rather than inferring symmetry from a color conjugation identity alone.

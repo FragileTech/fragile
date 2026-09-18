@@ -99,6 +99,7 @@ async fn continuation(
     gas.start_recording(RecordingConfig {
         max_steps: horizon,
         max_bytes: config.gas.max_memory_bytes.min(128 * 1024 * 1024),
+        ..Default::default()
     })?;
     let mut survived = true;
     for _ in 0..horizon {
@@ -969,6 +970,7 @@ async fn metric_prediction(
         gas.start_recording(RecordingConfig {
             max_steps: warmup,
             max_bytes: config.gas.max_memory_bytes.min(128 * 1024 * 1024),
+            ..Default::default()
         })?;
         for _ in 0..warmup {
             gas.step().await?;

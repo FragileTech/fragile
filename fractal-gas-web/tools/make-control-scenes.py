@@ -117,7 +117,9 @@ save(
     ],
     bases=[{"position": [12, 11], "radius": 3}],
     gravity=[{"position": [46, 22], "strength": 28, "softening": 3}],
-    tethers=[{"a": 0, "b": -1, "automatic": True, "hook_range": 2.8, "rest_length": 2.5}],
+    # Half the engine's default stiffness: the hook stretches twice as far per newton.
+    tethers=[{"a": 0, "b": -1, "automatic": True, "hook_range": 2.8, "rest_length": 2.5,
+              "stiffness": 12.5}],
 )
 # Four-metre grid, excluding the central pillar with 1.5 metres of clearance.
 ants_positions = [

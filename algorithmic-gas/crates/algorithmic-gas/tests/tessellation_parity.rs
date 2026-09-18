@@ -39,7 +39,10 @@ fn edges(v: &Value) -> Vec<[u32; 2]> {
 #[track_caller]
 fn close(label: &str, actual: &[f64], expected: &[f64], tolerance: f64) {
     assert_eq!(actual.len(), expected.len(), "{label}: length");
-    let scale = expected.iter().fold(0f64, |m, v| m.max(v.abs())).max(1e-300);
+    let scale = expected
+        .iter()
+        .fold(0f64, |m, v| m.max(v.abs()))
+        .max(1e-300);
     for (k, (a, e)) in actual.iter().zip(expected).enumerate() {
         assert!(
             (a - e).abs() <= tolerance * (e.abs() + 1e-6 * scale),
@@ -90,7 +93,9 @@ fn evaluate(d: usize, positions: Vec<f64>, length_scale: f64) -> TessellationGeo
     };
     let obs = ObservationBatch::positions(TensorBatch::vectors(n, d, positions).unwrap());
     config.validate::<f64>(d).unwrap();
-    config.evaluate(&obs, &vec![true; n], None, 1 << 22).unwrap()
+    config
+        .evaluate(&obs, &vec![true; n], None, 1 << 22)
+        .unwrap()
 }
 
 #[test]
@@ -98,20 +103,65 @@ fn geometry_matches_the_reference_estimators() {
     for name in ["cloud_2d", "cloud_3d"] {
         let f = fixture(name);
         let d = f["dimension"].as_u64().unwrap() as usize;
-        let g = evaluate(d, flat(&f["positions"]), f["length_scale"].as_f64().unwrap());
-        assert_eq!(g.graph().coo(), edges(&f["edges"]), "{name}: Delaunay edges");
+        let g = evaluate(
+            d,
+            flat(&f["positions"]),
+            f["length_scale"].as_f64().unwrap(),
+        );
+        assert_eq!(
+            g.graph().coo(),
+            edges(&f["edges"]),
+            "{name}: Delaunay edges"
+        );
         close("metric", &g.metric.metric, &flat(&f["metric"]), 1e-8);
-        close("metric_det", &g.metric.determinant, &flat(&f["metric_det"]), 1e-8);
+        close(
+            "metric_det",
+            &g.metric.determinant,
+            &flat(&f["metric_det"]),
+            1e-8,
+        );
         close("volume", &g.volume, &flat(&f["volume"]), 1e-8);
-        close("diffusion", &g.metric.diffusion, &flat(&f["diffusion"]), 1e-8);
-        close("edge_distances", &g.lengths.euclidean, &flat(&f["edge_distances"]), 1e-12);
-        close("edge_geodesic", &g.lengths.geodesic(), &flat(&f["edge_geodesic"]), 1e-8);
+        close(
+            "diffusion",
+            &g.metric.diffusion,
+            &flat(&f["diffusion"]),
+            1e-8,
+        );
+        close(
+            "edge_distances",
+            &g.lengths.euclidean,
+            &flat(&f["edge_distances"]),
+            1e-12,
+        );
+        close(
+            "edge_geodesic",
+            &g.lengths.geodesic(),
+            &flat(&f["edge_geodesic"]),
+            1e-8,
+        );
         for (mode, expected) in f["weights"].as_object().unwrap() {
-            close(mode, &g.weights[mode], &flat(expected), 1e-8);
+            // The reference has unit cells, which makes its volume weights
+            // uniform; here they use the Voronoi cell volumes.
+            let key = if mode == "inverse_volume" {
+                "uniform"
+            } else {
+                mode.as_str()
+            };
+            close(mode, &g.weights[key], &flat(expected), 1e-8);
         }
-        close("ricci_proxy", &g.curvature["proxy"].scalar, &flat(&f["ricci_proxy"]), 1e-7);
+        close(
+            "ricci_proxy",
+            &g.curvature["proxy"].scalar,
+            &flat(&f["ricci_proxy"]),
+            1e-7,
+        );
         // Normal equations with an absolute ridge: allow for their conditioning.
-        close("ricci_proxy_full", &g.curvature["full"].scalar, &flat(&f["ricci_proxy_full"]), 1e-5);
+        close(
+            "ricci_proxy_full",
+            &g.curvature["full"].scalar,
+            &flat(&f["ricci_proxy_full"]),
+            1e-5,
+        );
         close(
             "ricci_tensor_full",
             g.curvature["full"].tensor.as_ref().unwrap(),
@@ -134,7 +184,12 @@ fn geometry_matches_the_reference_estimators() {
         let par = Parallelism::Serial;
         let nu = forces["nu"].as_f64().unwrap();
         let viscous = viscous_force(&field, &velocities, nu, par);
-        close("viscous_force", &viscous, &flat(&forces["viscous_force"]), 1e-8);
+        close(
+            "viscous_force",
+            &viscous,
+            &flat(&forces["viscous_force"]),
+            1e-8,
+        );
         let c = curl(&field, &viscous, par).unwrap();
         close("curl", &c, &flat(&forces["curl"]), 1e-6);
         // One B step: quarter kick, rotation over dt / 2, quarter kick.
@@ -152,8 +207,18 @@ fn geometry_matches_the_reference_estimators() {
             .zip(&second)
             .map(|(v, f)| v + 0.5 * duration * f)
             .collect();
-        close("kicked_velocities", &result, &flat(&forces["kicked_velocities"]), 1e-8);
-        close("rotation_angle", &angle, &flat(&forces["rotation_angle"]), 1e-6);
+        close(
+            "kicked_velocities",
+            &result,
+            &flat(&forces["kicked_velocities"]),
+            1e-8,
+        );
+        close(
+            "rotation_angle",
+            &angle,
+            &flat(&forces["rotation_angle"]),
+            1e-6,
+        );
     }
 }
 

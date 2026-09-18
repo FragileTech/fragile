@@ -126,7 +126,7 @@ fn checkpoint_and_archive_require_the_supported_schema_and_explicit_coverage() {
             archive_bytes
         );
 
-        for unsupported in [0, 1, 2, 3, 5, u32::MAX] {
+        for unsupported in [0, 1, 2, 3, 4, 6, u32::MAX] {
             let mut invalid = checkpoint.clone();
             invalid.schema_version = unsupported;
             let mut bytes = Vec::new();

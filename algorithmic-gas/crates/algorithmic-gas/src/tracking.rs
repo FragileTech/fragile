@@ -49,12 +49,16 @@ fn boundary_matches<T: Real>(before: &Population<T>, previous: &Population<T>) -
 pub struct RecordingConfig {
     pub max_steps: usize,
     pub max_bytes: usize,
+    /// Also record the tessellation graph and edge arrays that drove each
+    /// step's graph forces. Per-walker geometry is part of the populations.
+    pub graph: bool,
 }
 impl Default for RecordingConfig {
     fn default() -> Self {
         Self {
             max_steps: 256,
             max_bytes: 128 * 1024 * 1024,
+            graph: false,
         }
     }
 }
@@ -172,7 +176,7 @@ pub struct RecordedStep<T: Real> {
     /// Actual pool-aligned inputs used for the clone decision (including historical rescoring).
     pub donor_fitness: Vec<T>,
     /// Tessellation graph and edge arrays that drove this step's graph forces,
-    /// when the geometry stage records them.
+    /// when `RecordingConfig.graph` is set.
     #[serde(default)]
     pub graph: Option<crate::tessellation::GraphSnapshot<T>>,
 }

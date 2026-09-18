@@ -64,7 +64,7 @@ pub struct GeometryReward {
 impl Default for GeometryReward {
     fn default() -> Self {
         Self {
-            curvature: "ricci_scalar".into(),
+            curvature: super::presets::RICCI_SCALAR.into(),
             allocation: RewardAllocationKind::default(),
         }
     }

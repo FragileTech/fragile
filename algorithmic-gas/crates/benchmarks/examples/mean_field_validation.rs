@@ -56,6 +56,7 @@ async fn run_case(case: &str, seed_start: u64, replicas: usize, sizes: &[usize])
                 gas.start_recording(RecordingConfig {
                     max_steps: 1,
                     max_bytes: 64 * 1024 * 1024,
+                    ..Default::default()
                 })?;
                 match gas.step().await {
                     Ok(_) => {}

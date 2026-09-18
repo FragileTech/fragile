@@ -1,10 +1,18 @@
-use algorithmic_gas::{BackendKind, Precision, Real, Result};
+use algorithmic_gas::{BackendKind, Precision, Real, RecordingConfig, Result};
 use algorithmic_gas_benchmarks::{Benchmark, RunConfig};
 use std::{env, time::Instant};
 
-async fn run<T: Real>(config: RunConfig, steps: usize) -> Result<()> {
+/// Durable recording of the run through the engine's `RunArchive`.
+struct Recording {
+    path: String,
+    config: RecordingConfig,
+}
+async fn run<T: Real>(config: RunConfig, steps: usize, recording: Option<Recording>) -> Result<()> {
     let initialization = Instant::now();
     let mut gas = config.build::<T>().await?;
+    if let Some(recording) = &recording {
+        gas.start_recording(recording.config.clone())?;
+    }
     let initialization_seconds = initialization.elapsed().as_secs_f64();
     let initial = gas
         .population()
@@ -33,7 +41,46 @@ async fn run<T: Real>(config: RunConfig, steps: usize) -> Result<()> {
                 a.max(b)
             }
         });
-    let output = serde_json::json!({"config":config,"steps":gas.step_number(),"initialization_seconds":initialization_seconds,"elapsed_seconds":start.elapsed().as_secs_f64(),"initial_minimum":initial,"final_best":best,"reward_evaluations":gas.reward_evaluations(),"execution":gas.execution_stats(),"execution_model":"host-orchestrated Burn batches; accelerator transfers included"});
+    // Population geometry of the final state, when the gas has a geometry stage.
+    let geometry = gas.graph().map(|graph| {
+        let fields = &gas.population().observations.fields;
+        let column = |name: &str| -> Vec<f64> {
+            fields
+                .get(name)
+                .map(|f| f.values().iter().map(|v| v.to_f64()).collect())
+                .unwrap_or_default()
+        };
+        let volume = column(algorithmic_gas::tessellation::stage::VOLUME_FIELD);
+        let mut summary = serde_json::json!({
+            "neighbor_edges": graph.graph.edges(),
+            "mean_volume_element": volume.iter().sum::<f64>() / volume.len().max(1) as f64,
+        });
+        for (name, field) in fields {
+            if let Some(curvature) = name.strip_prefix("geometry.curvature.") {
+                let r: Vec<f64> = field.values().iter().map(|v| v.to_f64()).collect();
+                summary[format!("mean_{curvature}")] =
+                    (r.iter().sum::<f64>() / r.len().max(1) as f64).into();
+                summary[format!("action_{curvature}")] = r
+                    .iter()
+                    .zip(&volume)
+                    .map(|(r, v)| r * v)
+                    .sum::<f64>()
+                    .into();
+            }
+        }
+        summary
+    });
+    if let (Some(recording), Some(archive)) = (&recording, gas.stop_recording()) {
+        let bytes = if recording.path.ends_with(".json") {
+            serde_json::to_vec(&archive)
+                .map_err(|e| algorithmic_gas::GasError::Checkpoint(e.to_string()))?
+        } else {
+            archive.to_bytes()?
+        };
+        std::fs::write(&recording.path, bytes)
+            .map_err(|e| algorithmic_gas::GasError::Execution(e.to_string()))?;
+    }
+    let output = serde_json::json!({"config":config,"geometry":geometry,"steps":gas.step_number(),"initialization_seconds":initialization_seconds,"elapsed_seconds":start.elapsed().as_secs_f64(),"initial_minimum":initial,"final_best":best,"reward_evaluations":gas.reward_evaluations(),"execution":gas.execution_stats(),"execution_model":"host-orchestrated Burn batches; accelerator transfers included"});
     println!("{}", serde_json::to_string_pretty(&output).unwrap());
     Ok(())
 }
@@ -42,11 +89,13 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let mut steps = 100usize;
     let mut from_file = false;
     let mut dimensions_given = false;
+    let mut record_path: Option<String> = None;
+    let mut recording = RecordingConfig::default();
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
         if arg == "--help" {
             println!(
-                "gas-benchmark [--config FILE] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark ID] [--instance N] [--param KEY=VALUE] [--walkers N] [--dimensions D] [--seed N]\n--list-benchmarks prints the objective catalog (ids, domains, dimension rules, parameters).\nGPU profiles are explicitly host-orchestrated and report transfers."
+                "gas-benchmark [--config FILE] [--einstein-hilbert] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark ID] [--instance N] [--param KEY=VALUE] [--walkers N] [--dimensions D] [--seed N] [--record FILE.cbor|FILE.json] [--record-steps N] [--record-bytes N] [--record-graph]\n--list-benchmarks prints the objective catalog (ids, domains, dimension rules, parameters).\n--einstein-hilbert selects the free gas rewarded with the Einstein-Hilbert action of its tessellation geometry.\n--record writes the run archive; --record-graph adds the tessellation graph of every step.\nGPU profiles are explicitly host-orchestrated and report transfers."
             );
             return Ok(());
         }
@@ -57,6 +106,15 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             );
             return Ok(());
         }
+        if arg == "--einstein-hilbert" {
+            config = RunConfig::einstein_hilbert()?;
+            from_file = true;
+            continue;
+        }
+        if arg == "--record-graph" {
+            recording.graph = true;
+            continue;
+        }
         let value = args.next().ok_or("missing argument value")?;
         match arg.as_str() {
             "--config" => {
@@ -64,6 +122,9 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 from_file = true;
             }
             "--steps" => steps = value.parse()?,
+            "--record" => record_path = Some(value),
+            "--record-steps" => recording.max_steps = value.parse()?,
+            "--record-bytes" => recording.max_bytes = value.parse()?,
             "--walkers" => config.walkers = value.parse()?,
             "--dimensions" => {
                 config.dimensions = value.parse()?;
@@ -113,9 +174,16 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         domain.lower = vec![lo; config.dimensions];
         domain.upper = vec![hi; config.dimensions];
     }
+    let recording = record_path.map(|path| Recording {
+        path,
+        config: RecordingConfig {
+            max_steps: recording.max_steps.max(steps),
+            ..recording
+        },
+    });
     match config.gas.precision {
-        Precision::F32 => futures_lite::future::block_on(run::<f32>(config, steps))?,
-        Precision::F64 => futures_lite::future::block_on(run::<f64>(config, steps))?,
+        Precision::F32 => futures_lite::future::block_on(run::<f32>(config, steps, recording))?,
+        Precision::F64 => futures_lite::future::block_on(run::<f64>(config, steps, recording))?,
     }
     Ok(())
 }

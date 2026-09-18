@@ -150,6 +150,7 @@ impl LectureSession {
             gas.start_recording(RecordingConfig {
                 max_steps: budget,
                 max_bytes: 256 * 1024 * 1024,
+                ..Default::default()
             })?;
             budgets.push(budget);
             runs.push(gas);

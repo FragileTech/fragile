@@ -16,6 +16,7 @@ fn graph_resolves_material_force_sources_at_their_recorded_stage_versions() {
             gas.start_recording(RecordingConfig {
                 max_steps: 8,
                 max_bytes: 32 * 1024 * 1024,
+                ..Default::default()
             })
             .unwrap();
             for _ in 0..8 {

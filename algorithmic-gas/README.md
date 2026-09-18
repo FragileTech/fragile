@@ -142,22 +142,28 @@ components, each a small trait implemented by a serde config enum:
 | Voronoi dual | `VoronoiCells` | cell volumes, facet areas, vertices and boundary classes from circumcenters, `V_i = Σ_j A_ij |x_j − x_i| / 2d` |
 | Metric | `MetricEstimator` / `MetricKind` | inverse neighbor covariance (emergent metric), Voronoi-cell covariance, neighbor finite-difference Hessian, an observation field, identity |
 | Volume element | `VolumeElement` / `VolumeKind` | `sqrt(det g)`, Voronoi cell volume, their product, unit |
-| Edge weights | `EdgeWeighting` / `WeightMode` | uniform, inverse (Riemannian) distance or volume, Euclidean and Riemannian kernels, kernel × volume, facet-area weights |
+| Edge weights | `EdgeWeighting` / `WeightMode` | uniform, inverse Euclidean or Riemannian distance, inverse Voronoi or Riemannian volume, Euclidean and Riemannian kernels, kernel × volume, facet-area weights |
 | Curvature | `CurvatureEstimator` / `CurvatureKind` | conformal graph Laplacian of `log det g`, local quadratic fit (scalar and Ricci tensor), Regge deficit angles (2D vertices, 3D edges), Voronoi volume/shape distortion, Raychaudhuri expansion |
 | Reward | `RewardAllocation` / `RewardAllocationKind` | per-walker Einstein–Hilbert density `R_i · vol_i`, curvature only |
 
 `GeometryPipelineConfig::evaluate` composes them and
 `evaluate_with(&dyn Tessellator, …)` accepts a custom tessellator; the
 `GasOperators::geometry` hook replaces the whole stage. Setting
-`GasConfig.geometry` runs the stage inside the step: after cloning by default
-(`GeometryTiming::AfterCloning`, so a step's pre-cloning reward reads the
-geometry of the previous post-cloning state) or also at the start of the step
-(`Both`). Per-walker results are written to observation fields
+`GasConfig.geometry` runs the stage inside the step. With the default
+`GeometrySchedule::EveryStage` it tessellates whenever positions changed before
+a reward evaluation (after cloning and after the kinetic update), so every
+reward, the committed fields and `AlgorithmicGas::graph` describe their own
+positions. `GeometrySchedule::PostClone { every, on_clone }` tessellates the
+post-cloning population only, at most once per step: the other rewards read
+the fields carried by the walkers and graph forces reuse the last graph.
+Per-walker results are written to observation fields
 (`geometry.curvature.<name>`, `geometry.volume_element`, `geometry.diffusion`),
 so they are checkpointed with the population, copied from donor to clone, and
 readable by reward sources (`GeometryReward`) and by `NoiseGeometry::Full` as a
-diffusion factor. The neighbor graph is kept as a `GraphSnapshot` for graph
-forces: `QftExecutionConfig.graph_viscosity` is the viscous coupling
+diffusion factor. Being observation fields they are part of every recorded
+population; `RecordingConfig.graph` adds the `GraphSnapshot` that drove each
+step's graph forces to the `RunArchive`. The neighbor graph is kept as a
+`GraphSnapshot` for graph forces: `QftExecutionConfig.graph_viscosity` is the viscous coupling
 `F_i = ν Σ_j w_ij (v_j − v_i)` over tessellation neighbors, and
 `QftExecutionConfig.curl` turns every B step into quarter kick, Cayley rotation
 by the curl of that force, quarter kick (Boris BAOAB). `CloneDecision.every`
@@ -172,16 +178,27 @@ pure function of immutable inputs and no floating-point reduction crosses
 threads, so serial and parallel results are bit-identical; wasm32 and
 `--no-default-features` builds compile the serial path only.
 
-`tessellation::EinsteinHilbertGas` is the free gas whose reward is
-`r_i = eh_scale · R_i · sqrt(det g_i)`: no potential force, graph viscosity with
-Boris rotation, an Ornstein–Uhlenbeck thermostat, and uniform random mutual
-pairings for both the diversity and the cloning companion.
+`GasConfig::einstein_hilbert(temperature, dt)` is the free gas whose reward
+(`GeometryReward`) is `r_i = R_i · sqrt(det g_i)`: no potential force
+(`ZeroPotential`), graph viscosity with Boris rotation, an Ornstein–Uhlenbeck
+thermostat, and uniform random mutual pairings for both the diversity and the
+cloning companion. Like `GasConfig::euclidean` it returns an ordinary
+configuration whose fields are then edited directly. In the benchmark crate
+`RunConfig.geometry_reward` selects a geometry reward in place of the objective
+(the force comes from `RunConfig.potential`, or vanishes), equal initial bounds
+start every walker at one point, and `RunConfig::einstein_hilbert()` is the
+500-walker, three-dimensional run from the origin at rest:
 
 ```sh
-cargo run --release -p algorithmic-gas-benchmarks --bin gas-eh -- --output run.json
-uv run python tools/eh_archive_to_history.py run.json history.pt   # RunHistory for the QFT analyzers
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --einstein-hilbert --steps 750
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --einstein-hilbert --walkers 60 --steps 40 \
+    --record run.json --record-graph --record-bytes 2000000000
+uv run python tools/eh_archive_to_history.py run.json history.pt   # RunArchive -> RunHistory for the QFT analyzers
 uv run python tools/export_tessellation_fixtures.py               # reference values for tests/tessellation_parity.rs
 ```
+
+`--record` writes the engine's `RunArchive` (CBOR, or JSON for a `.json` path) for any
+benchmark run; the summary gains a `geometry` block when the gas has a geometry stage.
 
 Two estimator properties matter when choosing components. The quadratic-fit
 ridge is absolute, so it must stay far below the squared neighbor spacing. A

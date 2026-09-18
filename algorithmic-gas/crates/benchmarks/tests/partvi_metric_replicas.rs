@@ -77,6 +77,7 @@ fn archived_three_dimensional_field_matches_executed_hessian_on_the_same_probe()
         gas.start_recording(RecordingConfig {
             max_steps: 2,
             max_bytes: 32 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         gas.step().await.unwrap();
@@ -161,6 +162,7 @@ fn archived_local_fitness_reconstruction_differentiates_the_neighborhood_weights
         gas.start_recording(RecordingConfig {
             max_steps: 1,
             max_bytes: 32 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         gas.step().await.unwrap();
@@ -281,6 +283,7 @@ fn historical_distance_sources_match_archived_global_and_local_phase_space_jets(
             gas.start_recording(RecordingConfig {
                 max_steps: 5,
                 max_bytes: 64 * 1024 * 1024,
+                ..Default::default()
             })
             .unwrap();
             for _ in 0..5 {
@@ -423,6 +426,7 @@ fn absorbing_kills_and_revivals_retain_historical_distance_context() {
             gas.start_recording(RecordingConfig {
                 max_steps: 8,
                 max_bytes: 64 * 1024 * 1024,
+                ..Default::default()
             })
             .unwrap();
             for _ in 0..8 {

@@ -19,41 +19,35 @@ pub fn curvature_field(name: &str) -> String {
     format!("geometry.curvature.{name}")
 }
 
+/// When the stage tessellates. Rewards are evaluated before cloning, after
+/// cloning and after the kinetic update; graph forces act in between.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum GeometryTiming {
-    /// Tessellate the post-cloning population only. The pre-cloning reward of
-    /// a step then reads the geometry of the previous step's post-cloning state.
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum GeometrySchedule {
+    /// Tessellate whenever positions changed before a reward evaluation, so
+    /// every reward and the committed fields describe their own positions.
     #[default]
-    AfterCloning,
-    /// Also tessellate at the start of the step, so the pre-cloning reward
-    /// sees the geometry of the current positions.
-    Both,
+    EveryStage,
+    /// Tessellate the post-cloning population only, every `every` steps (and,
+    /// with `on_clone`, on any step that cloned or revived a walker). Rewards
+    /// at the other stages read the fields carried by the walkers, and graph
+    /// forces reuse the last graph: one tessellation per step at most.
+    PostClone { every: u64, on_clone: bool },
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct GeometryStageConfig {
     pub pipeline: GeometryPipelineConfig,
-    pub timing: GeometryTiming,
-    /// Post-cloning refresh period in steps.
-    pub refresh_every: u64,
-    /// Refresh on any step that cloned or revived a walker, whatever the period.
-    pub refresh_on_clone: bool,
+    pub schedule: GeometrySchedule,
     /// Write g^{-1/2}, embedded in the ambient space, as `geometry.diffusion`.
     pub write_diffusion: bool,
-    /// Store the neighbor graph and its edge arrays in every recorded step.
-    /// Per-walker results are observation fields and are always recorded.
-    pub record_graph: bool,
 }
 impl Default for GeometryStageConfig {
     fn default() -> Self {
         Self {
             pipeline: GeometryPipelineConfig::default(),
-            timing: GeometryTiming::AfterCloning,
-            refresh_every: 1,
-            refresh_on_clone: true,
+            schedule: GeometrySchedule::EveryStage,
             write_diffusion: true,
-            record_graph: false,
         }
     }
 }
@@ -100,7 +94,10 @@ impl<T: Real> GraphSnapshot<T> {
 
 impl GeometryStageConfig {
     pub fn validate<T: Real>(&self, p: &Population<T>) -> Result<()> {
-        require(self.refresh_every >= 1, "geometry refresh period")?;
+        require(
+            !matches!(self.schedule, GeometrySchedule::PostClone { every: 0, .. }),
+            "geometry refresh period",
+        )?;
         let x = p.observations.field(&self.pipeline.positions)?;
         require(
             x.item_shape().len() == 1,
@@ -149,10 +146,17 @@ impl GeometryStageConfig {
         Ok(())
     }
     /// True when the post-cloning stage of step `step` must tessellate.
-    pub fn due(&self, step: u64, cloned: bool, cached: bool) -> bool {
-        !cached
-            || (step - 1).is_multiple_of(self.refresh_every)
-            || (cloned && self.refresh_on_clone)
+    pub fn due_after_cloning(&self, step: u64, cloned: bool, cached: bool) -> bool {
+        match self.schedule {
+            GeometrySchedule::EveryStage => true,
+            GeometrySchedule::PostClone { every, on_clone } => {
+                !cached || (step - 1).is_multiple_of(every) || (cloned && on_clone)
+            }
+        }
+    }
+    /// True when rewards outside the post-cloning stage get fresh geometry.
+    pub fn every_stage(&self) -> bool {
+        self.schedule == GeometrySchedule::EveryStage
     }
     /// Evaluate the pipeline on `p` and write its per-walker results back.
     pub fn refresh<T: Real>(

@@ -134,6 +134,7 @@ fn recorded_twistors_retain_historical_sources_and_frame_spectra_match_direct_su
         gas.start_recording(RecordingConfig {
             max_steps: 100,
             max_bytes: 128 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         for _ in 0..96 {
@@ -258,6 +259,7 @@ fn low_rank_uniform_kinetic_moments_use_the_actual_innovation_law() {
         gas.start_recording(RecordingConfig {
             max_steps: 100,
             max_bytes: 128 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         for _ in 0..96 {
@@ -381,6 +383,7 @@ fn source_shift_changes_second_moment_without_changing_factor_covariance() {
         gas.start_recording(RecordingConfig {
             max_steps: 4,
             max_bytes: 16 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         for _ in 0..3 {

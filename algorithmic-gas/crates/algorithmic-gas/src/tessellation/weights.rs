@@ -29,7 +29,7 @@ pub enum WeightMode {
     Uniform,
     /// 1 / (|dx| + 1e-8)
     InverseDistance,
-    /// 1 / (V_j + 1e-12) with unit coordinate cells.
+    /// 1 / (V_j + 1e-12) with the Voronoi cell volume of the neighbor.
     InverseVolume,
     /// 1 / (volume_j + 1e-12) with the pipeline's volume element.
     InverseRiemannianVolume,
@@ -124,7 +124,8 @@ impl<T: Real> EdgeWeighting<T> for WeightSpec {
     fn needs_cells(&self) -> bool {
         matches!(
             self.mode,
-            WeightMode::FacetArea
+            WeightMode::InverseVolume
+                | WeightMode::FacetArea
                 | WeightMode::FacetAreaOverDistance
                 | WeightMode::FacetAreaOverVolume
         )
@@ -146,7 +147,9 @@ impl<T: Real> EdgeWeighting<T> for WeightSpec {
             _ => None,
         };
         let cell_volume = match self.mode {
-            WeightMode::FacetAreaOverVolume => Some(super::volume::filled_cell_volumes(cells()?)),
+            WeightMode::InverseVolume | WeightMode::FacetAreaOverVolume => {
+                Some(super::volume::filled_cell_volumes(cells()?))
+            }
             _ => None,
         };
         let two_l2 = T::from_f64(2. * self.length_scale * self.length_scale);
@@ -159,7 +162,9 @@ impl<T: Real> EdgeWeighting<T> for WeightSpec {
             match self.mode {
                 WeightMode::Uniform => T::ONE,
                 WeightMode::InverseDistance => T::ONE / (euclid + small),
-                WeightMode::InverseVolume => T::ONE / (T::ONE + tiny),
+                WeightMode::InverseVolume => {
+                    T::ONE / (cell_volume.as_deref().map_or(T::ONE, |v| v[j]) + tiny)
+                }
                 WeightMode::InverseRiemannianVolume => T::ONE / (cx.volume[j] + tiny),
                 WeightMode::InverseRiemannianDistance => {
                     T::ONE / (geo_sq.max(small).sqrt() + small)

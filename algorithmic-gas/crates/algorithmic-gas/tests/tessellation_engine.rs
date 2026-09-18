@@ -1,8 +1,9 @@
 //! The geometry stage inside the engine: the Einstein-Hilbert gas end to end.
 use algorithmic_gas::{
-    AlgorithmicGas, GasBuilder, ObservationBatch, Population, Precision, Real, TensorBatch,
+    AlgorithmicGas, GasBuilder, GasConfig, ObservationBatch, Population, Real, TensorBatch,
+    noise::Noise,
     tessellation::{
-        EinsteinHilbertGas, GeometryTiming, ZeroPotential,
+        GeometryReward, GeometrySchedule, ZeroPotential,
         stage::{VOLUME_FIELD, curvature_field},
     },
 };
@@ -25,11 +26,20 @@ fn population<T: Real>(n: usize, spread: f64) -> Population<T> {
     );
     Population::new(obs).unwrap()
 }
-fn build<T: Real>(preset: &EinsteinHilbertGas, p: Population<T>, seed: u64) -> AlgorithmicGas<T> {
+/// Einstein-Hilbert gas with a cloning period and geometry schedule.
+fn eh_config<T: Real>(seed: u64, clone_every: u64, schedule: GeometrySchedule) -> GasConfig {
+    let mut config = GasConfig::einstein_hilbert(0.33, 0.002).unwrap();
+    config.precision = T::PRECISION;
+    config.seed = seed;
+    config.clone_decision.every = clone_every;
+    config.geometry.as_mut().unwrap().schedule = schedule;
+    config
+}
+fn build<T: Real>(config: GasConfig, p: Population<T>) -> AlgorithmicGas<T> {
     block_on(
-        GasBuilder::new(p, preset.reward())
+        GasBuilder::new(p, GeometryReward::default())
             .gradient(ZeroPotential::new("velocities"))
-            .config(preset.config(T::PRECISION, seed))
+            .config(config)
             .build(),
     )
     .unwrap()
@@ -51,12 +61,10 @@ fn bits<T: Real>(p: &Population<T>) -> Vec<(String, Vec<u64>)> {
 fn coincident_start_runs_the_canonical_gas() {
     // Every walker at the origin and at rest, single precision, odd count.
     let n = 41;
-    let preset = EinsteinHilbertGas {
-        clone_every: 5,
-        ..EinsteinHilbertGas::default()
-    };
-    assert_eq!(preset.config(Precision::F32, 7).precision, Precision::F32);
-    let mut gas = build::<f32>(&preset, population(n, 0.), 7);
+    let mut gas = build::<f32>(
+        eh_config::<f32>(7, 5, GeometrySchedule::EveryStage),
+        population(n, 0.),
+    );
     // Coincident walkers: complete graph, flat, g = 1e5 I on the two tessellated axes.
     assert_eq!(gas.graph().unwrap().graph.edges(), n * (n - 1));
     let field = |gas: &AlgorithmicGas<f32>, name: &str| {
@@ -87,9 +95,9 @@ fn coincident_start_runs_the_canonical_gas() {
         let graph = &gas.graph().unwrap().graph;
         graph.validate().unwrap();
         assert!(graph.edges() > 0);
-        // The committed graph is the post-cloning, pre-kinetic one: step 1 still
-        // sees coincident walkers, later steps a planar triangulation.
-        if report.clones == 0 && step > 1 {
+        // The committed graph belongs to the committed positions, which the
+        // first kinetic update already separates: a planar triangulation.
+        {
             assert!(
                 graph.edges() <= 2 * (3 * n - 6),
                 "step {step}: {}",
@@ -122,20 +130,24 @@ fn coincident_start_runs_the_canonical_gas() {
 
 #[test]
 fn checkpoints_resume_bit_for_bit() {
-    for (refresh_every, timing) in [
-        (1, GeometryTiming::AfterCloning),
-        (3, GeometryTiming::AfterCloning),
-        (1, GeometryTiming::Both),
+    for schedule in [
+        GeometrySchedule::EveryStage,
+        GeometrySchedule::PostClone {
+            every: 1,
+            on_clone: true,
+        },
+        GeometrySchedule::PostClone {
+            every: 3,
+            on_clone: true,
+        },
     ] {
-        let preset = EinsteinHilbertGas {
-            clone_every: 2,
-            refresh_every,
-            timing,
-            sigma_x: 0.01,
-            restitution: 0.5,
-            ..EinsteinHilbertGas::default()
-        };
-        let mut reference = build::<f64>(&preset, population(30, 1.), 11);
+        // Inelastic collisions and position jitter exercise every clone stream.
+        let mut config = eh_config::<f64>(11, 2, schedule);
+        config.clone_transform.position_field = Some("positions".into());
+        config.clone_transform.jitter = Some(Noise::default());
+        config.clone_transform.jitter_amplitude = 0.01;
+        config.clone_transform.restitution = Some(0.5);
+        let mut reference = build::<f64>(config.clone(), population(30, 1.));
         let mut checkpoint = None;
         for step in 1..=10 {
             block_on(reference.step()).unwrap();
@@ -144,7 +156,7 @@ fn checkpoints_resume_bit_for_bit() {
                 checkpoint = Some(algorithmic_gas::Checkpoint::<f64>::from_bytes(&bytes).unwrap());
             }
         }
-        let mut resumed = build::<f64>(&preset, population(30, 1.), 11);
+        let mut resumed = build::<f64>(config, population(30, 1.));
         resumed.restore(checkpoint.unwrap()).unwrap();
         for _ in 6..=10 {
             block_on(resumed.step()).unwrap();
@@ -152,33 +164,22 @@ fn checkpoints_resume_bit_for_bit() {
         assert_eq!(
             bits(reference.population()),
             bits(resumed.population()),
-            "refresh_every={refresh_every} timing={timing:?}"
+            "{schedule:?}"
         );
         assert_eq!(reference.graph(), resumed.graph());
     }
 }
 
 #[test]
-fn clones_inherit_the_geometry_of_their_donor() {
-    // No refresh after the initial one: fields change only by cloning.
-    let mut preset = EinsteinHilbertGas {
-        clone_every: 1,
-        refresh_every: 1_000_000,
-        ..EinsteinHilbertGas::default()
+fn post_clone_schedule_carries_geometry_with_the_clones() {
+    // No refresh after the scheduled one at step 1: fields change only by cloning.
+    let schedule = GeometrySchedule::PostClone {
+        every: 1_000_000,
+        on_clone: false,
     };
-    let mut config = preset.config(Precision::F64, 3);
-    config.geometry.as_mut().unwrap().refresh_on_clone = false;
-    preset.refresh_every = 1_000_000;
-    let mut gas = block_on(
-        GasBuilder::new(population::<f64>(40, 1.), preset.reward())
-            .gradient(ZeroPotential::new("velocities"))
-            .config(config)
-            .build(),
-    )
-    .unwrap();
+    let mut gas = build::<f64>(eh_config::<f64>(3, 1, schedule), population(40, 1.));
     let name = curvature_field("ricci_scalar");
     let mut inherited = 0;
-    // Step 1 is a scheduled refresh: (step - 1) is a multiple of every period.
     block_on(gas.step()).unwrap();
     for _ in 0..4 {
         let before = gas
@@ -204,13 +205,58 @@ fn clones_inherit_the_geometry_of_their_donor() {
 }
 
 #[test]
+fn recorded_steps_carry_the_graph_of_their_forces() {
+    use algorithmic_gas::{RecordingConfig, RunArchive};
+    let mut gas = build::<f64>(
+        eh_config::<f64>(5, 2, GeometrySchedule::EveryStage),
+        population(25, 1.),
+    );
+    gas.start_recording(RecordingConfig {
+        graph: true,
+        ..RecordingConfig::default()
+    })
+    .unwrap();
+    for _ in 0..4 {
+        block_on(gas.step()).unwrap();
+    }
+    let archive = gas.stop_recording().unwrap();
+    let decoded = RunArchive::<f64>::from_bytes(&archive.to_bytes().unwrap()).unwrap();
+    assert_eq!(decoded, archive);
+    for step in &archive.steps {
+        let graph = step.graph.as_ref().unwrap();
+        graph.validate(25).unwrap();
+        assert!(graph.weights.contains_key("riemannian_kernel_volume"));
+        // Per-walker geometry and the recorded graph forces are in the archive.
+        assert!(
+            step.final_population
+                .observations
+                .fields
+                .contains_key(VOLUME_FIELD)
+        );
+        for name in ["viscous_force", "curl_field", "boris_rotation_angle"] {
+            assert!(
+                step.field_evaluations.iter().any(|f| f.field == name),
+                "{name} missing from the recorded field evaluations"
+            );
+        }
+    }
+    // Without the option the archive stores no graphs.
+    let mut gas = build::<f64>(
+        eh_config::<f64>(5, 2, GeometrySchedule::EveryStage),
+        population(25, 1.),
+    );
+    gas.start_recording(RecordingConfig::default()).unwrap();
+    block_on(gas.step()).unwrap();
+    assert!(gas.stop_recording().unwrap().steps[0].graph.is_none());
+}
+
+#[test]
 fn geometry_budget_and_missing_stage_are_reported() {
-    let preset = EinsteinHilbertGas::default();
     // 60 coincident walkers need 1770 clique edges.
-    let mut config = preset.config(Precision::F64, 7);
+    let mut config = eh_config::<f64>(7, 20, GeometrySchedule::EveryStage);
     config.max_batch_elements = 2000;
     let error = block_on(
-        GasBuilder::new(population::<f64>(60, 0.), preset.reward())
+        GasBuilder::new(population::<f64>(60, 0.), GeometryReward::default())
             .gradient(ZeroPotential::new("velocities"))
             .config(config)
             .build(),
@@ -219,11 +265,11 @@ fn geometry_budget_and_missing_stage_are_reported() {
     .unwrap();
     assert!(error.to_string().contains("neighbor edges"), "{error}");
     // Graph viscosity without a geometry stage is a configuration error.
-    let mut config = preset.config(Precision::F64, 7);
+    let mut config = eh_config::<f64>(7, 20, GeometrySchedule::EveryStage);
     config.geometry = None;
     assert!(
         block_on(
-            GasBuilder::new(population::<f64>(10, 1.), preset.reward())
+            GasBuilder::new(population::<f64>(10, 1.), GeometryReward::default())
                 .gradient(ZeroPotential::new("velocities"))
                 .config(config)
                 .build()

@@ -1486,6 +1486,7 @@ mod tests {
         gas.start_recording(RecordingConfig {
             max_steps: updates,
             max_bytes: 32 * 1024 * 1024,
+            ..Default::default()
         })?;
         for _ in 0..updates {
             gas.step().await?;
@@ -1572,6 +1573,7 @@ mod tests {
             gas.start_recording(RecordingConfig {
                 max_steps: 4,
                 max_bytes: 32 * 1024 * 1024,
+                ..Default::default()
             })
             .unwrap();
             gas.step().await.unwrap();
@@ -1657,6 +1659,7 @@ mod control_tests {
                         gas.start_recording(algorithmic_gas::RecordingConfig {
                             max_steps: 1,
                             max_bytes: 128 * 1024 * 1024,
+                            ..Default::default()
                         })
                         .unwrap();
                         if let Err(error) = gas.step().await {
@@ -1684,6 +1687,7 @@ mod control_tests {
                 gas.start_recording(algorithmic_gas::RecordingConfig {
                     max_steps: 16,
                     max_bytes: 32 * 1024 * 1024,
+                    ..Default::default()
                 })
                 .unwrap();
                 for _ in 0..16 {

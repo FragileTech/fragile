@@ -270,6 +270,10 @@ pub struct RunConfig {
     pub potential: Option<Benchmark>,
     /// General-dimensional metric and optional curvature at the actual O query.
     pub physics_metric: Option<physics_metric::PhysicsMetricConfig>,
+    /// Reward the walkers with their share of a population-geometry action
+    /// instead of the benchmark objective. Requires `gas.geometry`. The force
+    /// comes from `potential`, or vanishes (a free gas) when there is none.
+    pub geometry_reward: Option<algorithmic_gas::tessellation::GeometryReward>,
     /// Translate the reward optimum; empty means zero in every coordinate.
     pub reward_shift: Vec<f64>,
     pub walkers: usize,
@@ -294,6 +298,7 @@ impl Default for RunConfig {
             benchmark: Benchmark::Rastrigin,
             potential: None,
             physics_metric: None,
+            geometry_reward: None,
             reward_shift: vec![],
             walkers: 256,
             dimensions: 2,
@@ -336,10 +341,18 @@ impl RunConfig {
         }
         if !self.initial_lower.is_finite()
             || !self.initial_upper.is_finite()
-            || self.initial_lower >= self.initial_upper
+            || self.initial_lower > self.initial_upper
         {
             return Err(GasError::Configuration(
                 "initial bounds must be finite and ordered".into(),
+            ));
+        }
+        if self.geometry_reward.is_some()
+            && (self.gas.geometry.is_none() || self.physics_metric.is_some())
+        {
+            return Err(GasError::Configuration(
+                "a geometry reward needs the gas geometry stage and excludes the physics metric"
+                    .into(),
             ));
         }
         Ok(())
@@ -358,7 +371,8 @@ impl RunConfig {
         let lower = T::from_f64(self.initial_lower);
         let upper = T::from_f64(self.initial_upper);
         let width = upper - lower;
-        if !lower.is_finite() || !upper.is_finite() || !width.is_finite() || width <= T::ZERO {
+        // Equal bounds start every walker at one point.
+        if !lower.is_finite() || !upper.is_finite() || !width.is_finite() || width < T::ZERO {
             return Err(GasError::Configuration(
                 "initial bounds are not representable in the run precision".into(),
             ));
@@ -387,7 +401,37 @@ impl RunConfig {
         }
         Population::new(obs)
     }
+    /// The Einstein-Hilbert gas of `GasConfig::einstein_hilbert`: 500 walkers
+    /// in three dimensions, all starting at the origin at rest, rewarded with
+    /// their share of the Einstein-Hilbert action and subject to no potential.
+    pub fn einstein_hilbert() -> Result<Self> {
+        Ok(Self {
+            geometry_reward: Some(algorithmic_gas::tessellation::GeometryReward::default()),
+            walkers: 500,
+            dimensions: 3,
+            initial_lower: 0.,
+            initial_upper: 0.,
+            gas: GasConfig::einstein_hilbert(0.33, 0.002)?,
+            ..Self::default()
+        })
+    }
     pub async fn build<T: Real>(&self) -> Result<AlgorithmicGas<T>> {
+        if let Some(reward) = &self.geometry_reward {
+            let builder = GasBuilder::new(self.initial_population()?, reward.clone())
+                .config(self.gas.clone());
+            let builder = match (self.potential, &self.gas.kinetic.integrator) {
+                (Some(benchmark), _) => builder.gradient(BenchmarkModel {
+                    benchmark,
+                    field: "positions".into(),
+                    direction: ObjectiveDirection::Minimize,
+                }),
+                (None, KineticKind::Baoab { velocities, .. }) => builder.gradient(
+                    algorithmic_gas::tessellation::ZeroPotential::new(velocities.clone()),
+                ),
+                (None, _) => builder,
+            };
+            return builder.build().await;
+        }
         let model = BenchmarkModel {
             benchmark: self.benchmark,
             field: "positions".into(),

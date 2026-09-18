@@ -687,9 +687,11 @@ impl<T: Real> AlgorithmicGas<T> {
         self.cx.max_memory_bytes = self.execution_allowance(&p, input)?;
         p.observations.provenance.population_version = p.version;
         p.observations.provenance.stage = "pre_clone".into();
+        // The committed fields describe the committed positions unless the
+        // population was replaced by extraction or repaired at the boundary.
         let mut step_graph = self.graph.clone();
         if self.config.geometry.as_ref().is_some_and(|g| {
-            extracted_version.is_some() || g.timing == crate::tessellation::GeometryTiming::Both
+            extracted_version.is_some() || (g.every_stage() && p.version != self.population.version)
         }) {
             step_graph = self.refresh_geometry(&mut p)?;
         }
@@ -964,7 +966,7 @@ impl<T: Real> AlgorithmicGas<T> {
         }
         if let Some(stage) = &self.config.geometry {
             let cloned = plan.choices.iter().any(|c| c.accepted);
-            if stage.due(next, cloned, step_graph.is_some()) {
+            if stage.due_after_cloning(next, cloned, step_graph.is_some()) {
                 step_graph = self.refresh_geometry(&mut destination)?;
             }
         }
@@ -1021,6 +1023,17 @@ impl<T: Real> AlgorithmicGas<T> {
             &mut destination,
             self.domain.as_ref(),
         )?;
+        // Graph forces used the post-cloning graph; the committed one belongs
+        // to the committed positions when every stage is tessellated.
+        let kinetic_graph = step_graph.clone();
+        if self
+            .config
+            .geometry
+            .as_ref()
+            .is_some_and(|g| g.every_stage())
+        {
+            step_graph = self.refresh_geometry(&mut destination)?;
+        }
         destination.rewards = self
             .reward
             .evaluate(&destination, input, "post_kinetic", &mut self.cx)
@@ -1071,14 +1084,9 @@ impl<T: Real> AlgorithmicGas<T> {
                 influences: self.cx.recorded_influences.clone().unwrap_or_default(),
                 report: report.clone(),
                 donor_fitness,
-                graph: step_graph
+                graph: kinetic_graph
                     .as_deref()
-                    .filter(|_| {
-                        self.config
-                            .geometry
-                            .as_ref()
-                            .is_some_and(|g| g.record_graph)
-                    })
+                    .filter(|_| archive.config.graph)
                     .cloned(),
             };
             archive.append(record)?;

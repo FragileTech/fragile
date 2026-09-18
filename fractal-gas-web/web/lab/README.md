@@ -251,7 +251,9 @@ Their `controller_defaults` select a 64-action horizon, 6 physics frames per
 action and 4 elites, a look-ahead long enough to reach the inner delivery disk.
 Asteroid harvesting starts with a single rock and recommends 256 walkers;
 Collaborative mining keeps the standard 128. Wave Jump keeps shared-prefix
-execution. New tasks use these recommendations; switching scenes updates values
+execution. Asteroid harvesting sets its hook `stiffness` to 12.5 N/m, half the
+engine default, so the towline stretches twice as far under the same load and
+snaps at 40 m of extension instead of 20 m. New tasks use these recommendations; switching scenes updates values
 that still match the previous preset and preserves custom controller settings.
 Imported runs and checkpoints retain their recorded settings.
 

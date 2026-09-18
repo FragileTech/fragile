@@ -654,6 +654,7 @@ mod tests {
         gas.start_recording(RecordingConfig {
             max_steps: 4,
             max_bytes: 32 * 1024 * 1024,
+            ..Default::default()
         })
         .unwrap();
         for _ in 0..3 {

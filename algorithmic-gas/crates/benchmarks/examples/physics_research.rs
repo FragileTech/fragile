@@ -75,6 +75,7 @@ async fn job(
             run.start_recording(RecordingConfig {
                 max_steps: 1,
                 max_bytes: 128 * 1024 * 1024,
+                ..Default::default()
             })?;
         }
         run.step().await?;
@@ -116,6 +117,7 @@ async fn job(
                     independent.start_recording(RecordingConfig {
                         max_steps: 1,
                         max_bytes: 128 * 1024 * 1024,
+                        ..Default::default()
                     })?;
                     independent.step().await?;
                     let next = mean_metric(&independent.recording().unwrap().steps[0])?;
