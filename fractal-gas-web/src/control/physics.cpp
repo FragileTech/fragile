@@ -409,7 +409,9 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
                   }
                   growth += rotational_growth;
                 }
-                if (growth <= 0) break;
+                // Rounding residue after the normal solve must not pin a
+                // tangential slide; the overlap pass absorbs this much travel.
+                if (growth <= 1e-5f) break;
               }
               found = true;
               break;
@@ -519,7 +521,12 @@ void Physics::substep(float* r, const float* actions, float h, Scratch& q,
             body_shape(b, q.old_positions[b] + db * time, q.old_angles[b] + ab * time);
             gap = separation(sa, sb, n);
             if (gap <= .0001f) {
-              hit = time > 0 || dot(db - da, n) < 0;
+              // Bodies touching at the start and apart at the end need no
+              // rewind: undoing the whole substep would repeat forever. Later
+              // hits count only if the contact point closes, rotation included.
+              const Vec2 cp = contact_point(sa, sb, n);
+              hit = time > 0 && dot(db + perp(cp - sb.center) * ab - da -
+                                    perp(cp - sa.center) * aa, n) < 0;
               break;
             }
             time += .9f * gap / speed;

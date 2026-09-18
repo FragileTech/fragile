@@ -289,3 +289,58 @@ TEST_CASE(control_physical_hook_can_be_pulled_out_of_wall_overlap) {
   CHECK(result.ccd_limits == 0);
   CHECK(!result.dead);
 }
+
+TEST_CASE(control_spinning_rock_resting_on_vehicle_keeps_moving) {
+  // A flat rock face overlaps the vehicle slightly while the rock spins its
+  // contact point away. Centre translation alone still looks like an approach.
+  auto s = Scene::compile(R"({"size":[64,44],"environment":{"flight":false},
+    "physics":{"substeps":4},
+    "bodies":[{"position":[17.286764,16.459],"velocity":[4.17,0.96],"angle":1.18,"omega":1.33,
+               "radius":0.65,"mass":1,"drag":0,"angular_drag":0,"controlled":true,"thrust":0},
+              {"position":[19.016,16.162],"velocity":[4.06,-6.08],"omega":-3.96,"mass":0.03,"drag":0,
+               "angular_drag":0,"vertices":[[1.2,0],[0.74819,0.9382],[-0.26703,1.16991],
+               [-1.08116,0.52066],[-1.08116,-0.52066],[-0.26703,-1.16991],[0.74819,-0.9382]]}]})");
+  Physics physics(s);
+  StateBatch state(1, *s);
+  state.reset(*s, 7);
+  std::vector<float> actions(s->channels.size(), 0);
+  StepResult result;
+  for (int frame = 0; frame < 10; ++frame) {
+    const Vec2 vehicle = position(state.row(0), s->layout, 0),
+               rock = position(state.row(0), s->layout, 1);
+    const float rock_angle = angle(state.row(0), s->layout, 1);
+    physics.step_world(state.row(0), actions.data(), 1, result);
+    CHECK(length(position(state.row(0), s->layout, 0) - vehicle) > .03f);
+    CHECK(length(position(state.row(0), s->layout, 1) - rock) > .03f);
+    CHECK(angle(state.row(0), s->layout, 1) != rock_angle);
+  }
+}
+
+TEST_CASE(control_pressed_diagonal_wall_slide_is_not_pinned_by_rounding) {
+  // A hook pressed against a 45 degree wall slides along it. The normal solve
+  // leaves a few ulps of into-wall velocity that must not consume the sweep.
+  for (float strength : {50.f, 1000.f, 5000.f}) for (float omega : {0.f, 10.7f, 25.f}) {
+    std::ostringstream json;
+    json << R"({"size":[80,80],"environment":{"flight":false},"physics":{"substeps":4},
+      "boundary":[[0,0],[40,0],[80,40],[80,80],[0,80]],
+      "gravity":[{"position":[70,10],"softening":2,"strength":)" << strength << R"(}],
+      "bodies":[{"position":[70,30.28283],"velocity":[-30,-30],"radius":0.2,"mass":0.25,
+                 "drag":0,"angular_drag":0,"friction":0.5,"controlled":true,"thrust":0,
+                 "omega":)" << omega << "}]}";
+    auto s = Scene::compile(json.str());
+    Physics physics(s);
+    StateBatch state(1, *s);
+    state.reset(*s, 7);
+    std::vector<float> actions(s->channels.size(), 0);
+    StepResult result;
+    for (int frame = 0; frame < 30; ++frame) {
+      const Vec2 start = position(state.row(0), s->layout, 0);
+      const float speed = length(velocity(state.row(0), s->layout, 0));
+      physics.step_world(state.row(0), actions.data(), 1, result);
+      const Vec2 end = position(state.row(0), s->layout, 0);
+      CHECK(length(end - start) > .25f * speed * s->dt);
+      CHECK(result.ccd_limits == 0);
+      CHECK(s->inside(end));
+    }
+  }
+}
