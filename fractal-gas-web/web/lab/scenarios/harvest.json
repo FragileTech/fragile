@@ -151,166 +151,6 @@
         ]
       ],
       "respawn": true
-    },
-    {
-      "position": [
-        45,
-        31
-      ],
-      "mass": 0.05,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          1.6,
-          0
-        ],
-        [
-          0.99758,
-          1.25093
-        ],
-        [
-          -0.35603,
-          1.55988
-        ],
-        [
-          -1.44155,
-          0.69421
-        ],
-        [
-          -1.44155,
-          -0.69421
-        ],
-        [
-          -0.35603,
-          -1.55988
-        ],
-        [
-          0.99758,
-          -1.25093
-        ]
-      ],
-      "respawn": true
-    },
-    {
-      "position": [
-        47,
-        12
-      ],
-      "mass": 0.02,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          1.1,
-          0
-        ],
-        [
-          0.68584,
-          0.86001
-        ],
-        [
-          -0.24477,
-          1.07242
-        ],
-        [
-          -0.99107,
-          0.47727
-        ],
-        [
-          -0.99107,
-          -0.47727
-        ],
-        [
-          -0.24477,
-          -1.07242
-        ],
-        [
-          0.68584,
-          -0.86001
-        ]
-      ],
-      "respawn": true
-    },
-    {
-      "position": [
-        16,
-        31
-      ],
-      "mass": 0.02,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          0.9,
-          0
-        ],
-        [
-          0.56114,
-          0.70365
-        ],
-        [
-          -0.20027,
-          0.87744
-        ],
-        [
-          -0.81087,
-          0.3905
-        ],
-        [
-          -0.81087,
-          -0.3905
-        ],
-        [
-          -0.20027,
-          -0.87744
-        ],
-        [
-          0.56114,
-          -0.70365
-        ]
-      ],
-      "respawn": true
-    },
-    {
-      "position": [
-        41,
-        9
-      ],
-      "mass": 0.04,
-      "cargo": true,
-      "drag": 0.08,
-      "vertices": [
-        [
-          1.4,
-          0
-        ],
-        [
-          0.87289,
-          1.09456
-        ],
-        [
-          -0.31153,
-          1.3649
-        ],
-        [
-          -1.26136,
-          0.60744
-        ],
-        [
-          -1.26136,
-          -0.60744
-        ],
-        [
-          -0.31153,
-          -1.3649
-        ],
-        [
-          0.87289,
-          -1.09456
-        ]
-      ],
-      "respawn": true
     }
   ],
   "bases": [
@@ -343,7 +183,7 @@
   ],
   "agent_types": {
     "rocket": {
-      "label": "Kestrel · vector rocket",
+      "label": "Kestrel \u00b7 vector rocket",
       "physics": {
         "controlled": true,
         "flight_capable": true,
@@ -362,7 +202,7 @@
       }
     },
     "kart": {
-      "label": "Mite · electric kart",
+      "label": "Mite \u00b7 electric kart",
       "extends": "rocket",
       "physics": {
         "flight_capable": false,
@@ -381,7 +221,7 @@
       }
     },
     "drone": {
-      "label": "Wisp · survey drone",
+      "label": "Wisp \u00b7 survey drone",
       "extends": "rocket",
       "physics": {
         "flight_capable": true,
@@ -400,7 +240,7 @@
     },
     "thruster_tug": {
       "extends": "rocket",
-      "label": "Kestrel · independent thrusters",
+      "label": "Kestrel \u00b7 independent thrusters",
       "physics": {
         "actuator": {
           "kind": "thrusters",
@@ -444,7 +284,7 @@
       }
     },
     "harvester": {
-      "label": "Harvester · steam ore collector",
+      "label": "Harvester \u00b7 steam ore collector",
       "extends": "kart",
       "physics": {
         "radius": 1.3,
@@ -481,7 +321,8 @@
   },
   "keep_delivered_rocks": true,
   "controller_defaults": {
-    "horizon": 32,
+    "walkers": 256,
+    "horizon": 64,
     "frames": 6,
     "elites": 4
   }

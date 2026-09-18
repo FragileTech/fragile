@@ -87,15 +87,24 @@ for (const name of ["harvest", "mining"]) {
       assert.deepEqual(rockOptions(changed), { scale: 1, count, weight });
       const rocks = changed.bodies.filter((body) => body.cargo);
       for (const [i, rock] of rocks.entries()) {
-        assert.equal(rock.mass, originalRocks[i].mass * weight);
-        assert.deepEqual(rock.vertices, originalHulls[i]);
+        assert.equal(
+          rock.mass,
+          originalRocks[i % originalRocks.length].mass * weight,
+        );
+        assert.deepEqual(
+          rock.vertices,
+          originalHulls[i % originalHulls.length],
+        );
       }
       const reset = configureRocks(changed, { scale: 0.5, count, weight: 1 });
       assert.deepEqual(rockOptions(reset), { scale: 0.5, count, weight: 1 });
       for (const [i, rock] of reset.bodies
         .filter((body) => body.cargo)
         .entries())
-        assert.ok(Math.abs(rock.mass - originalRocks[i].mass) < 1e-10);
+        assert.ok(
+          Math.abs(rock.mass - originalRocks[i % originalRocks.length].mass) <
+            1e-10,
+        );
     }
     assert.deepEqual(template, before);
     for (const weight of [0, 0.009, 10.01, Infinity, NaN])

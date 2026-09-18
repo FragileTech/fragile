@@ -6,7 +6,7 @@ const common = {
     label: "Candidate worlds",
     min: 1,
     max: 8192,
-    default: 128,
+    default: DEFAULT_PLANNING_BUDGET.walkers,
     step: 1,
   },
   horizon: {

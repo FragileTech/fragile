@@ -25,22 +25,29 @@ const standard = {
 
 test("flight mining recommendations follow fresh tasks and unchanged preset settings", () => {
   const flight = presetControllerSettings(scenes.harvest, standard);
-  assert.deepEqual(flight, { ...standard, horizon: 32, frames: 6, elites: 4 });
+  assert.deepEqual(flight, {
+    ...standard,
+    walkers: 256,
+    horizon: 64,
+    frames: 6,
+    elites: 4,
+  });
+  const mining = { ...flight, walkers: 128 };
   assert.deepEqual(
     presetControllerSettings(scenes.mining, flight, scenes.harvest),
-    { ...flight, horizon: 64 },
+    mining,
   );
   assert.deepEqual(
-    presetControllerSettings(
-      scenes.racing,
-      { ...flight, horizon: 64 },
-      scenes.mining,
-    ),
+    presetControllerSettings(scenes.racing, mining, scenes.mining),
     standard,
   );
   assert.deepEqual(
     presetControllerSettings(scenes.mining, standard, scenes.racing),
-    { ...flight, horizon: 64 },
+    mining,
+  );
+  assert.deepEqual(
+    presetControllerSettings(scenes.harvest, mining, scenes.mining),
+    flight,
   );
 });
 
@@ -52,7 +59,11 @@ test("scenario switches preserve explicit controller tuning and respect small po
     frames: 4,
     elites: 2,
   };
-  assert.deepEqual(presetControllerSettings(scenes.harvest, custom), custom);
+  // Walkers were left at the standard value, so they follow the preset.
+  assert.deepEqual(presetControllerSettings(scenes.harvest, custom), {
+    ...custom,
+    walkers: 256,
+  });
   assert.deepEqual(
     presetControllerSettings(scenes.mining, custom, scenes.harvest),
     custom,
@@ -61,7 +72,8 @@ test("scenario switches preserve explicit controller tuning and respect small po
     presetControllerSettings(scenes.harvest, custom, scenes.racing, true),
     {
       ...custom,
-      horizon: 32,
+      walkers: 256,
+      horizon: 64,
       frames: 6,
       elites: 4,
     },
@@ -84,6 +96,8 @@ test("invalid preset budgets cannot reach the native engine", () => {
     { frames: 0 },
     { horizon: 2.5 },
     { elites: -1 },
+    { walkers: 0 },
+    { walkers: 8193 },
   ])
     assert.throws(() =>
       presetControllerSettings({ controller_defaults }, standard),

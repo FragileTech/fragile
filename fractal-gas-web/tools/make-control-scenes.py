@@ -77,6 +77,9 @@ def save(key, name, description, task, lethal_walls=False, **data):
         scene["rewards"]["distance_squared"] = 0
         # Two coupled rockets need a longer look-ahead for the inner drop zone.
         scene["controller_defaults"] = dict(horizon=64, frames=6, elites=4)
+    if key == "harvest":
+        # One rock needs a long look-ahead; more walkers keep its branches covered.
+        scene["controller_defaults"] = dict(walkers=256, horizon=64, frames=6, elites=4)
     scene.setdefault("rewards", {})["wall_collision"] = 100
     scene["agent_types"] = json.loads((DEST.parent / "agent-catalog.json").read_text())
     for body in scene["bodies"]:
@@ -111,10 +114,6 @@ save(
     bodies=[
         ship(16, 16, 0.45),
         dict(rock(19, 19, mass=0.03), respawn=True),
-        dict(rock(45, 31, 1.6, 0.05), respawn=True),
-        dict(rock(47, 12, 1.1, 0.02), respawn=True),
-        dict(rock(16, 31, 0.9, 0.02), respawn=True),
-        dict(rock(41, 9, 1.4, 0.04), respawn=True),
     ],
     bases=[{"position": [12, 11], "radius": 3}],
     gravity=[{"position": [46, 22], "strength": 28, "softening": 3}],

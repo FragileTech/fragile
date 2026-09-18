@@ -244,10 +244,10 @@ outside every outer delivery zone, after which an automatic hook can acquire it
 again. Set `keep_delivered_rocks: false` to restore full-radius delivery and the
 scene's seeded random `respawn: true` behavior.
 
-Their `controller_defaults` select a 32-action horizon for Asteroid harvesting
-and a 64-action horizon for Collaborative mining, giving the coupled rockets a
-longer look-ahead to reach the inner delivery disk. Both use 6 physics frames per
-action and 4 elites. Wave Jump keeps the standard 128 walkers and shared-prefix
+Their `controller_defaults` select a 64-action horizon, 6 physics frames per
+action and 4 elites, a look-ahead long enough to reach the inner delivery disk.
+Asteroid harvesting starts with a single rock and recommends 256 walkers;
+Collaborative mining keeps the standard 128. Wave Jump keeps shared-prefix
 execution. New tasks use these recommendations; switching scenes updates values
 that still match the previous preset and preserves custom controller settings.
 Imported runs and checkpoints retain their recorded settings.

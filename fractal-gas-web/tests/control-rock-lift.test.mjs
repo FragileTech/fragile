@@ -145,16 +145,16 @@ test("every stock asteroid lifts with one rocket and the default hook at 1×", a
       new URL("../web/lab/scenarios/harvest.json", import.meta.url),
     ),
   );
-  const baseline = configureRocks(harvest, { scale: 1, count: 5, weight: 1 });
+  const baseline = configureRocks(harvest, { scale: 1, count: 1, weight: 1 });
   const rocks = baseline.bodies.filter((b) => b.cargo);
   assert.deepEqual(
     rocks.map((b) => b.mass),
-    [0.03, 0.05, 0.02, 0.02, 0.04],
+    [0.03],
   );
   assert.equal(baseline.rock_options.weight, 1);
   const budget = rockLiftBudget(baseline);
   assert.equal(budget.thrust, 24);
-  assert.ok(Math.abs(budget.load - 12.753) < 1e-8);
+  assert.ok(Math.abs(budget.load - 12.5568) < 1e-8);
   assert.ok(budget.load <= 0.8 * budget.thrust);
   assert.ok(budget.suggestedWeight >= 1);
   for (const rock of rocks) {
