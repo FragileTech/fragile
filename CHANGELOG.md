@@ -1,5 +1,27 @@
 # Changelog
 
+- Add tessellation geometry to the Rust Algorithmic Gas: planar (Spade) and native exact-predicate 3D Delaunay with coincident-walker and rank-deficient handling, clip-box and periodic domains, dual Voronoi cells, and swappable metric, volume-element, edge-weight, curvature (conformal Laplacian and quadratic fit, Regge deficits in 2D and 3D, Voronoi proxies) and reward-allocation components, bit-identical in serial and Rayon-parallel execution. Add an engine geometry stage with clone-carried observation fields, graph viscosity with Boris curl rotation, periodic cloning, the `EinsteinHilbertGas` preset and the `gas-eh` runner, with Python reference fixtures and a `RunHistory` converter. Checkpoint format 5.
+
+- Add 3D spatial and landscape population views to the Euclidean Gas Lab (surface with contours, slices, companion links, trails, atom viewer) beside the 2D projection, and bring its objectives to parity with the Optimization Lab: nine more classic tensor-graph objectives with analytic gradients and a pure-Rust port of the 24 COCO BBOB functions validated against COCO 2.8.2, served to the browser and the CLI from one Rust catalog.
+
+- Restore the original combined mean-field proof target, retain additive drift offsets, and repair full-slot moment and velocity-weight accounting in the cloning inputs.
+
+- Complete geometric coverage for the averaged Keystone estimate and certify unequal-fitness structural expansion with exact interval bounds and independent full Rust engine comparisons.
+
+- Derive measurement-averaged Keystone cluster pressure and complete signed cloning balances; verify a population-uniform structural-pressure family and independent full-engine measurement averages.
+
+- Repair Keystone donor flux with moving-barycenter identities, signed geometric-cluster bounds, canonical barycenter concentration, and component-average cancellation for revival. Prove bounded transport smoothing for the actual nonlinear BAOAB/cap update and verify the estimates with Rust execution.
+
+- Recover the mean-field proof sources and add reviewed exact geometric-cluster coupling balances, quantitative full-step bias and variance estimates, survival-aware entropy identities, finite-population entropy convergence, and independent Rust conditional-fluctuation checks.
+
+- Derive the canonical Euclidean Gas fixed-step population law and propagation of chaos from frozen weighted sampling and shared component collisions. Implement component Haar rotations, scheduled weighted revival, final position diffusion and smooth capping; add exact collision covariances, independent rooted population integration, Part III diagnostics and independently seeded validation. Repair cloning drift with exact reset bounds and prove finite-population QSD convergence for the actual kernel.
+
+- Add coupled Taylor sensitivity and exact companion-law averaging to IV-07, with production fitness comparisons, adaptive sampled accuracy windows, independent coefficient-resolution checks, and reward-landscape controls.
+
+- Validate complete field-equation recording coverage, preserve legitimate boundary extinction, distinguish field accounting from prediction checks, and test full covariance with exact quadrature, clone-gate enumeration and independent metric-active ensembles.
+
+- Derive the gas field equations from explicit donor, cloning and BAOAB primitives, including spatial sources/fluxes, anisotropic stress, conditional metric evolution and transient memory. Add Rust Fourier-field predictions and interactive clone/thermostat validation with immutable historical sources.
+
 - Execute all 128 Volume II demos through shared native/WASM Rust sessions, with recorded algorithm measurements, configured predictions, validated evidence replay, tracked geometry, continuation protocols, and control stress tests.
 
 - Derive transient field drift/covariance from complete algorithm states; measure historical-source fields, material metric increments, source-aware noise moments and stage balances, with explicit per-experiment provenance and independent validation.

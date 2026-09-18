@@ -5,6 +5,7 @@
 pub mod balances;
 pub mod closure;
 pub mod evolution;
+pub mod field_evolution;
 pub mod fields;
 pub mod fitness;
 pub mod geometry;

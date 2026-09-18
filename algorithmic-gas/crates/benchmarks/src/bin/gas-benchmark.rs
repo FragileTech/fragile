@@ -41,11 +41,19 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let mut config = RunConfig::default();
     let mut steps = 100usize;
     let mut from_file = false;
+    let mut dimensions_given = false;
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
         if arg == "--help" {
             println!(
-                "gas-benchmark [--config FILE] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark sphere|rastrigin|rosenbrock|styblinski_tang] [--walkers N] [--dimensions D] [--seed N]\nGPU profiles are explicitly host-orchestrated and report transfers."
+                "gas-benchmark [--config FILE] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark ID] [--instance N] [--param KEY=VALUE] [--walkers N] [--dimensions D] [--seed N]\n--list-benchmarks prints the objective catalog (ids, domains, dimension rules, parameters).\nGPU profiles are explicitly host-orchestrated and report transfers."
+            );
+            return Ok(());
+        }
+        if arg == "--list-benchmarks" {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&algorithmic_gas_benchmarks::catalog::catalog())?
             );
             return Ok(());
         }
@@ -57,7 +65,10 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             }
             "--steps" => steps = value.parse()?,
             "--walkers" => config.walkers = value.parse()?,
-            "--dimensions" => config.dimensions = value.parse()?,
+            "--dimensions" => {
+                config.dimensions = value.parse()?;
+                dimensions_given = true;
+            }
             "--seed" => config.gas.seed = value.parse()?,
             "--precision" => {
                 config.gas.precision = match value.as_str() {
@@ -75,16 +86,24 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
                 }
             }
             "--benchmark" => {
-                config.benchmark = match value.as_str() {
-                    "sphere" => Benchmark::Sphere,
-                    "rastrigin" => Benchmark::Rastrigin,
-                    "rosenbrock" => Benchmark::Rosenbrock,
-                    "styblinski_tang" => Benchmark::StyblinskiTang,
-                    _ => return Err("unknown benchmark".into()),
-                }
+                config.benchmark = Benchmark::from_id(&value)
+                    .ok_or_else(|| format!("unknown benchmark {value}; see --list-benchmarks"))?;
+            }
+            "--instance" => config
+                .benchmark
+                .set_parameter("coco_instance", value.parse()?)?,
+            "--param" => {
+                let (key, number) = value.split_once('=').ok_or("--param expects key=value")?;
+                config.benchmark.set_parameter(key, number.parse()?)?;
             }
             _ => return Err(format!("unknown option {arg}").into()),
         }
+    }
+    if !from_file
+        && !dimensions_given
+        && let Some(fixed) = config.benchmark.fixed_dimension()
+    {
+        config.dimensions = fixed;
     }
     if !from_file
         && let algorithmic_gas::boundary::BoundaryPolicy::AbsorbingBox { domain, .. } =

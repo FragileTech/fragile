@@ -137,6 +137,17 @@ fn js(value: &impl Serialize) -> Result<JsValue, JsValue> {
 pub fn default_config() -> String {
     serde_json::to_string(&RunConfig::default()).unwrap()
 }
+/// Every selectable objective: identifiers, domains, dimension rules, parameters, execution.
+#[wasm_bindgen]
+pub fn benchmark_catalog() -> Result<JsValue, JsValue> {
+    js(&algorithmic_gas_benchmarks::catalog::catalog())
+}
+/// Parameter- and dimension-dependent objective facts for a configuration, without a run.
+#[wasm_bindgen]
+pub fn objective_info(config_json: String) -> Result<JsValue, JsValue> {
+    let config: RunConfig = serde_json::from_str(&config_json).map_err(error)?;
+    js(&algorithmic_gas_benchmarks::catalog::objective_info(&config).map_err(error)?)
+}
 /// Bounded native geometry queries. Run in a Worker so rendering stays responsive.
 #[wasm_bindgen]
 pub fn partv_geometry(request_json: String) -> Result<JsValue, JsValue> {
@@ -193,7 +204,7 @@ pub fn checkpoint_config(bytes: Vec<u8>) -> Result<String, JsValue> {
 }
 #[wasm_bindgen]
 pub fn capabilities() -> JsValue {
-    js(&serde_json::json!({"wasm_cpu":["f32","f64"],"webgpu_compiled":cfg!(feature="webgpu"),"webgpu_precision":["f32"],"execution_model":"host-orchestrated Burn batches","rng_version":algorithmic_gas::random::RNG_VERSION,"checkpoint_version":CHECKPOINT_VERSION})).unwrap()
+    js(&serde_json::json!({"wasm_cpu":["f32","f64"],"webgpu_compiled":cfg!(feature="webgpu"),"webgpu_precision":["f32"],"execution_model":"host-orchestrated Burn batches","rng_version":algorithmic_gas::random::RNG_VERSION,"checkpoint_version":CHECKPOINT_VERSION,"objective_execution":["graph","host"],"objective_catalog_version":algorithmic_gas_benchmarks::catalog::VERSION,"bbob":{"provider":"COCO 2.8.2 (Rust port)","dimensions":algorithmic_gas_benchmarks::bbob::DIMENSIONS}})).unwrap()
 }
 
 #[wasm_bindgen]
@@ -362,7 +373,12 @@ impl BrowserGas {
         }
         Ok(gas)
     }
+    /// Resolved objective facts of this run (minimum, minimiser, execution, molecule view).
+    pub fn objective_info(&self) -> Result<JsValue, JsValue> {
+        js(&algorithmic_gas_benchmarks::catalog::objective_info(&self.config).map_err(error)?)
+    }
     /// Pure visualization query: does not alter RNG, steps, or objective budget.
+    /// A stochastic objective is sampled at its expectation.
     pub fn landscape(
         &self,
         x_axis: usize,
@@ -379,7 +395,11 @@ impl BrowserGas {
         {
             return Err(error("invalid landscape projection"));
         }
-        let (low, high) = self.config.benchmark.bounds();
+        let benchmark = self.config.benchmark;
+        let (low, high) = benchmark.bounds();
+        // Instance data (BBOB rotations, mixture components) is resolved once per grid.
+        let evaluator = benchmark.evaluator(self.config.dimensions).map_err(error)?;
+        let run_precision = benchmark.supports_physics_metric();
         let mut values = Vec::with_capacity(resolution * resolution);
         for row in 0..resolution {
             for col in 0..resolution {
@@ -390,19 +410,17 @@ impl BrowserGas {
                     *x -= shift;
                 }
                 let value = match self.config.gas.precision {
-                    Precision::F32 => self
-                        .config
-                        .benchmark
+                    Precision::F32 if run_precision => benchmark
                         .value(&point.iter().map(|&x| x as f32).collect::<Vec<_>>())
-                        .map(|x| x as f64),
-                    Precision::F64 => self.config.benchmark.value(&point),
-                }
-                .map_err(error)?;
+                        .map(|x| x as f64)
+                        .map_err(error)?,
+                    _ => evaluator.value(&point),
+                };
                 values.push(value);
             }
         }
         js(
-            &serde_json::json!({"resolution":resolution,"low":low,"high":high,"values":values,"x_axis":x_axis,"y_axis":y_axis,"center":center}),
+            &serde_json::json!({"resolution":resolution,"low":low,"high":high,"values":values,"x_axis":x_axis,"y_axis":y_axis,"center":center,"minimum":benchmark.known_minimum(self.config.dimensions),"stochastic":benchmark.is_stochastic(),"objective_execution":benchmark.execution()}),
         )
     }
 }

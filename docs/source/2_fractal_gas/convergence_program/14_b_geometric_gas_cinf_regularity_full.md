@@ -44,6 +44,58 @@ Here $A,\eta,\sigma_{\min},\rho>0$. The diversity companion scale is $\epsilon_d
 Write $\widetilde F_i$ for the same formula evaluated at expected measurements, and $\overline F_i=\sum_c p_cF_i^c$ for the expectation of the sampled fitness. These generally differ. This chapter first treats finite populations. Mean-field passage is stated separately in {ref}`sec-cinf-mean-field-parameters`.
 :::
 
+(sec-cinf-companion-sensitivity-experiment)=
+### Measuring landscape sensitivity and companion fluctuations
+
+IV-07 evaluates a displacement of one walker in an executed swarm. The selected
+companion identities are retained for the fixed-assignment comparison. Every
+measurement affected by the displacement is recomputed, including distances in
+other rows whose companion is the displaced walker. The population moments and
+local normalization weights participate in the derivative.
+
+For the displaced state $S(h)$, the experiment compares
+
+$$
+F_i(S(h),c),\qquad
+\overline F_i(h)=\sum_c p_c(S(h))F_i(S(h),c),\qquad
+\sum_c p_c(S(0))F_i(S(h),c).
+$$
+
+The third quantity holds assignment probabilities fixed while retaining the
+fitness response. With the configured independent current-frame companion law,
+IV-07 enumerates all assignments for the default four-walker swarm. It computes
+the conditional fitness distribution and its variance at the expansion point,
+and checks the identity
+
+$$
+\overline F_i'(0)
+=\sum_c p_c(S(0))\,\partial_hF_i(S(h),c)|_{h=0}
+ +\sum_c \partial_hp_c(S(h))|_{h=0}\,F_i(S(0),c)
+$$
+
+against a finite difference of the complete mean evaluated through the production
+fitness and donor-kernel routines. These are expectations of the completed
+nonlinear fitness, not fitness evaluated at expected measurements. Enumeration
+is capped at 4096 assignments; larger swarms retain the fixed-assignment test.
+
+The raw reward curve, slope and curvature expose the landscape contribution.
+The reward and diversity exponents allow either channel to be disabled. The
+standard-deviation floor and neighborhood width control normalization. Changing
+a configuration control executes a new run; the three comparison curves within
+each run use the same recorded swarm. For deterministic rewards, the distribution
+at a fixed swarm comes from companion sampling; displacement probes sensitivity.
+
+The Taylor coefficients come from differentiation of the complete fixed-assignment
+fitness. Independent scalar finite-difference stencils check each coefficient at
+paired step sizes, selecting the least estimated error, and report step sensitivity
+and estimated roundoff. An unresolved
+coefficient check is displayed as such. The requested displacement radius is
+halved until 65 grid points and 65 staggered points meet the scaled error criterion
+$|F-T_m|/(1+|F|)\leq\varepsilon$. This is a sampled accuracy window. The analytic
+remainder in {prf:ref}`cor-gevrey-1-fitness-potential-full` additionally requires
+an evaluated uniform majorant and bounds on the entire intervening segment;
+IV-07 does not identify its sampled window with that theorem's radius.
+
 :::{prf:definition} Smooth bounds and Gevrey-1 bounds
 :label: def-cinf-majorants
 

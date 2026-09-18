@@ -14,7 +14,7 @@ cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --precision f64 --walkers 256 --steps 100
 ```
 
-The runner accepts `--benchmark sphere|rastrigin|rosenbrock|styblinski_tang`, `--dimensions`, `--seed`, `--backend`, and `--config FILE`. Arguments apply in order; place `--config` before overrides. Explicit file boundary settings are preserved. Output is JSON with resolved configuration, initialization and step timings, raw reward summaries, submitted reward-row count, synchronization count and transfer bytes. Initialization/compilation must be reported separately from steady-state performance.
+The runner accepts `--benchmark ID` (any catalog id; `--list-benchmarks` prints the catalog), `--instance N` for COCO BBOB, `--param KEY=VALUE` for benchmark parameters, `--dimensions`, `--seed`, `--backend`, and `--config FILE`. Arguments apply in order; place `--config` before overrides. Explicit file boundary settings are preserved. Output is JSON with resolved configuration, initialization and step timings, raw reward summaries, submitted reward-row count, synchronization count and transfer bytes. Initialization/compilation must be reported separately from steady-state performance.
 
 ```sh
 cargo run --release -p algorithmic-gas-benchmarks --features wgpu --bin gas-benchmark -- --backend wgpu --precision f32
@@ -22,6 +22,39 @@ cargo run --release -p algorithmic-gas-benchmarks --features cuda --bin gas-benc
 ```
 
 These profiles require a compatible adapter/driver. Compilation alone does not verify GPU execution. The WGPU adapter rejects software CPU adapters. CUDA `f64` must pass the device's dtype and primitive-operation checks; it is not promised to be fast.
+
+## Canonical Euclidean Gas and population diagnostics
+
+`GasConfig::euclidean(dimensions, dt)` selects the fixed-step kernel analyzed in
+Volume 2. Supply the quadratic benchmark and gradient for the canonical lecture
+configuration, with `dt = 0.04`. The configuration retains weighted sampled
+fitness, immediate weighted revival, frozen connected-component collisions with
+one shared Haar rotation, BAOAB, final independent position diffusion, the smooth
+radial velocity cap, and terminal absorption. Explicit library configurations
+can select other donor, noise and boundary rules; their mathematical scope is
+specified by those choices.
+
+`mean_field::step_diagnostics` reports actual clone/revival counts, gate variance,
+component sizes, the forest edge identity, shared-component probabilities, and
+bounded empirical observables. `physics::field_evolution::collision_field_balance`
+integrates the shared component rotation, including donor velocity changes and
+cross-walker covariance. `mean_field_population::AtomicMeanField` independently
+samples the marked rooted population law from an entering atomic measure; it
+retains sampled fitness and incoming cloners. Exploration capacity errors are
+returned without truncating or resampling oversized components.
+
+Part III experiments expose these calculations with configuration and seed
+provenance. Reproduce the population study with:
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --example mean_field_validation -- 128 0 canonical
+```
+
+The other study names are `boundary_stress`, `shared_initial`, and
+`shifted_initial`. An optional fourth argument selects comma-separated population
+sizes. [Validation results](MEAN_FIELD_VALIDATION.md) separate independent-run
+uncertainty, exact conditional balances and population comparisons; the
+[engineering audit](MEAN_FIELD_AUDIT.md) records the repaired proof steps.
 
 ## Numerical algorithmic physics
 
@@ -95,14 +128,76 @@ and Markdown tables using the repository's Python environment.
 
 Archives and checkpoints validate their supported schema and explicit field coverage.
 
+## Tessellation geometry and the Einstein–Hilbert gas
+
+`algorithmic_gas::tessellation` tessellates the swarm and estimates the geometry
+the walkers sample. The stage is a pipeline of independently replaceable
+components, each a small trait implemented by a serde config enum:
+
+| Role | Trait / config | Provided |
+|---|---|---|
+| Sites | `Projection`, `TessellationDomain` | any subset of coordinates (for example all but Euclidean time); open space, clip box (mirror images) or periodic box (translated images) |
+| Tessellator | `Tessellator` / `TessellatorKind` | sorted path (1D), Spade Delaunay (2D), native Bowyer–Watson with exact predicates and ghost tetrahedra (3D) |
+| Degeneracy | `DegeneracyPolicy` | coincident walkers share a site and form a clique; a swarm in an affine subspace is triangulated inside it; nothing is ever perturbed |
+| Voronoi dual | `VoronoiCells` | cell volumes, facet areas, vertices and boundary classes from circumcenters, `V_i = Σ_j A_ij |x_j − x_i| / 2d` |
+| Metric | `MetricEstimator` / `MetricKind` | inverse neighbor covariance (emergent metric), Voronoi-cell covariance, neighbor finite-difference Hessian, an observation field, identity |
+| Volume element | `VolumeElement` / `VolumeKind` | `sqrt(det g)`, Voronoi cell volume, their product, unit |
+| Edge weights | `EdgeWeighting` / `WeightMode` | uniform, inverse (Riemannian) distance or volume, Euclidean and Riemannian kernels, kernel × volume, facet-area weights |
+| Curvature | `CurvatureEstimator` / `CurvatureKind` | conformal graph Laplacian of `log det g`, local quadratic fit (scalar and Ricci tensor), Regge deficit angles (2D vertices, 3D edges), Voronoi volume/shape distortion, Raychaudhuri expansion |
+| Reward | `RewardAllocation` / `RewardAllocationKind` | per-walker Einstein–Hilbert density `R_i · vol_i`, curvature only |
+
+`GeometryPipelineConfig::evaluate` composes them and
+`evaluate_with(&dyn Tessellator, …)` accepts a custom tessellator; the
+`GasOperators::geometry` hook replaces the whole stage. Setting
+`GasConfig.geometry` runs the stage inside the step: after cloning by default
+(`GeometryTiming::AfterCloning`, so a step's pre-cloning reward reads the
+geometry of the previous post-cloning state) or also at the start of the step
+(`Both`). Per-walker results are written to observation fields
+(`geometry.curvature.<name>`, `geometry.volume_element`, `geometry.diffusion`),
+so they are checkpointed with the population, copied from donor to clone, and
+readable by reward sources (`GeometryReward`) and by `NoiseGeometry::Full` as a
+diffusion factor. The neighbor graph is kept as a `GraphSnapshot` for graph
+forces: `QftExecutionConfig.graph_viscosity` is the viscous coupling
+`F_i = ν Σ_j w_ij (v_j − v_i)` over tessellation neighbors, and
+`QftExecutionConfig.curl` turns every B step into quarter kick, Cayley rotation
+by the curl of that force, quarter kick (Boris BAOAB). `CloneDecision.every`
+gates cloning to a period and `CollisionRotation::Identity` keeps the direction
+of relative velocities in collisions.
+
+Tessellation predicates are exact (`robust`, Spade); numerical geometry runs in
+the run dtype. With the default `parallel` feature per-walker, per-edge and
+per-cell stages run on a Rayon pool, and `par::map_tasks` runs independent
+tessellations (replicas, time slices) concurrently. Every output element is a
+pure function of immutable inputs and no floating-point reduction crosses
+threads, so serial and parallel results are bit-identical; wasm32 and
+`--no-default-features` builds compile the serial path only.
+
+`tessellation::EinsteinHilbertGas` is the free gas whose reward is
+`r_i = eh_scale · R_i · sqrt(det g_i)`: no potential force, graph viscosity with
+Boris rotation, an Ornstein–Uhlenbeck thermostat, and uniform random mutual
+pairings for both the diversity and the cloning companion.
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-eh -- --output run.json
+uv run python tools/eh_archive_to_history.py run.json history.pt   # RunHistory for the QFT analyzers
+uv run python tools/export_tessellation_fixtures.py               # reference values for tests/tessellation_parity.rs
+```
+
+Two estimator properties matter when choosing components. The quadratic-fit
+ridge is absolute, so it must stay far below the squared neighbor spacing. A
+Regge deficit angle is `O(h²)`, the same order as the relative error of an edge
+length built from endpoint metrics; Regge curvature converges with exact
+geodesic lengths (`regge::curvature` accepts any lengths) and is a biased
+indicator with `ReggeLengths::Geodesic`.
+
 ## Project layout
 
 | Path | Responsibility |
 |---|---|
-| `crates/algorithmic-gas` | Public data contracts, selection, fitness, cloning, kinetics, noise, private Burn adapters, transactional engine and checkpoints |
-| `crates/benchmarks` | Analytic objectives/gradients, initialization, native runner and end-to-end tests |
+| `crates/algorithmic-gas` | Public data contracts, selection, fitness, cloning, kinetics, noise, tessellation geometry, private Burn adapters, transactional engine and checkpoints |
+| `crates/benchmarks` | Objective catalog (classic tensor-graph objectives with analytic gradients, pure-Rust COCO BBOB suite), initialization, native runner and end-to-end tests |
 | `crates/wasm` | Asynchronous browser bindings and precision-preserving binary checkpoints |
-| `../fractal-gas-web/web/euclidean-gas` | Independent worker, controls, objective plot, convergence plot and walker inspector |
+| `../fractal-gas-web/web/euclidean-gas` | Independent worker, controls, 2D/3D population views, objective surface, convergence plot and walker inspector |
 
 Burn 0.21.0 is pinned and remains behind `ComputeBackend` / `ExecutionContext`. No public signature exposes a Burn tensor. `Real` is sealed to `f32` and `f64`; one precision applies to all numerical fields, rewards, random innovations and arithmetic within a run. Configuration values are converted once at their use sites; unrepresentable nonzero model parameters are rejected rather than replaced with dtype-dependent defaults. Indices use `u32`, with checked `i32` limits for the initial backend adapters.
 
@@ -223,7 +318,9 @@ make algorithmic-gas-web
 make algorithmic-gas-lab
 ```
 
-Open `http://127.0.0.1:8770/euclidean-gas/`. The lab starts paused with 256 walkers, seed 7, 2D Rastrigin and WASM CPU `f32`. It runs in a Web Worker with asynchronous initialization and bounded step batches. Controls expose independent donor laws, multiple distance companions, objective direction, metrics, fitness, boundaries, noise and kinetics. The inspector shows raw rewards, pre-clone fitness, donor identities and clone decisions. A 2D projection supports higher-dimensional populations; 3D rendering is not implemented.
+Open `http://127.0.0.1:8770/euclidean-gas/`. The lab starts paused with 256 walkers, seed 7, 2D Rastrigin and WASM CPU `f32`. It runs in a Web Worker with asynchronous initialization and bounded step batches. Controls expose independent donor laws, multiple distance companions, objective direction, metrics, fitness, boundaries, noise and kinetics. The inspector shows raw rewards, pre-clone fitness, donor identities and clone decisions. The population has three views: a 2D projection, a 3D spatial view of any three coordinates, and a 3D landscape whose height is the asinh-scaled objective over the sampled surface with contour lines. Hidden coordinates are fixed by slice sliders (from the best or the selected walker). Walkers are coloured by raw reward or pre-clone fitness; overlays show distance companions, clone donors and 30-step trails that break at cloning events. Lennard–Jones runs add an atom viewer for the selected walker.
+
+The benchmark list is the engine's objective catalog (`benchmark_catalog()`): Sphere, Quadratic Well, Mexican Hat, Rastrigin, EggHolder, Styblinski–Tang, Rosenbrock, Easom, Holder Table, Lennard–Jones, Constant, Stochastic Gaussian, Mixture of Gaussians, the 24 COCO BBOB functions (dimensions 2, 3, 5, 10, 20, 40; instances 1–1000) and the unit lecture quadratic. Classic objectives are tensor graphs with analytic gradients and run on every backend. BBOB is a pure-Rust port of COCO 2.8.2 that reproduces the reference instances; it is evaluated on the host in `f64` for every backend, its gradient is a central difference costing `2d` evaluations, and the inspector reports both (`host_reward_evaluations`, `host_gradient_evaluations`). Differences from the C++ Optimization Lab: EggHolder and Holder Table gradients are analytic with a finite regularisation at cusps; Lennard–Jones clamps squared pair distances at `1e-4` instead of returning infinity; the lab's `quadratic` (α = 0.1) is `quadratic_well`, while `quadratic` remains the unit well of the lecture experiments; mixture components are seeded only. Stochastic Gaussian noise is addressed by seed, population version, stage and walker, so checkpoints replay it exactly. Reference values are regenerated with `python3 fractal-gas-web/tests/euclidean-gas/generate_objective_goldens.py` after `make optimization-native`.
 
 Configuration/results export as JSON. Checkpoints export as binary `.agc` files or save explicitly in IndexedDB; restore recreates the selected precision/profile. IndexedDB quota/private-mode failures are reported. Plot traces restart at the restored frame and are not checkpoint state. WebGPU requires a secure context (localhost or HTTPS), an available adapter, supported operations and sufficient memory. `f64` selects WASM CPU explicitly; WebGPU never silently narrows it. The current WASM CPU build is single-threaded; a future shared-memory build needs browser isolation headers and a thread-pool adapter.
 
@@ -272,9 +369,10 @@ cargo check -p algorithmic-gas-wasm --target wasm32-unknown-unknown --features w
 
 # From the repository root, after building WASM:
 npm --prefix fractal-gas-web run test:euclidean-gas
+make algorithmic-gas-browser-test  # sandbox views; needs `make algorithmic-gas-lab` running
 ```
 
-Contract tests cover shapes, scalar precision, matching laws, separate streams, multi-companion reduction, frozen cloning, historical identities/rescoring, boundary timing, degenerate fitness, cosine zeros, anisotropic covariance, thermostat scaling, extraction, custom hooks, opaque state, replay and failure paths. GPU feature checks verify compilation, not runtime on every vendor. Long-run statistical equivalence, GPU numerical conformance and full performance sweeps remain required before claiming accelerator parity or speedup.
+Tessellation tests cover the empty-circumsphere property and Euler relation in 2D and 3D, cospherical lattices, degenerate swarms, Voronoi volume closure in clip and periodic boxes, facet reciprocity, flat and conformally flat curvature, Regge curvature of a sphere, serial/parallel bit equality, checkpoint resume of the Einstein–Hilbert gas, and agreement with the Python reference estimators. Contract tests cover shapes, scalar precision, matching laws, separate streams, multi-companion reduction, frozen cloning, historical identities/rescoring, boundary timing, degenerate fitness, cosine zeros, anisotropic covariance, thermostat scaling, extraction, custom hooks, opaque state, replay and failure paths. GPU feature checks verify compilation, not runtime on every vendor. Long-run statistical equivalence, GPU numerical conformance and full performance sweeps remain required before claiming accelerator parity or speedup.
 
 `max_batch_elements` limits individual batches. `max_memory_bytes` (default 512 MiB) adds conservative admission reservations for populations, frozen pools, reports, retained history and inputs; each compute graph checks aggregate node/staging bytes against the remaining allowance. Checked arithmetic rejects overflow. These are engine-owned working-set guards, not an OS/browser/driver memory sandbox: custom-provider allocations and backend-internal workspaces still require deployment limits. See [SAFETY.md](SAFETY.md) for the enforced unsafe-code policy, fuzz/Miri commands and dependency trust boundaries.
 

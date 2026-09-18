@@ -41,12 +41,14 @@
             <h2>Configuration</h2>
             <span class="tag">Rust · Burn</span>
           </div>
+          <label>Benchmark<select id="benchmark"></select></label>
+          <p id="benchmark-note" class="hint"></p>
+          <div id="benchmark-parameters" class="pair"></div>
           <label
-            >Benchmark<select id="benchmark">
-              <option value="rastrigin">Rastrigin</option>
-              <option value="sphere">Sphere</option>
-              <option value="rosenbrock">Rosenbrock</option>
-              <option value="styblinski_tang">Styblinski–Tang</option>
+            >Initial positions<select id="initial-box">
+              <option value="unit">Unit box [−1, 1]</option>
+              <option value="domain">Whole benchmark domain</option>
+              <option value="custom" hidden>Imported box</option>
             </select></label
           >
           <div class="pair">
@@ -301,6 +303,9 @@
           <div>
             <span>Reward evaluations</span><strong id="metric-evals">—</strong>
           </div>
+          <div id="metric-gap-tile" hidden>
+            <span>Gap to known minimum</span><strong id="metric-gap">—</strong>
+          </div>
         </div>
         <div class="view-bar">
           <div>
@@ -309,6 +314,12 @@
           </div>
           <div class="view-controls">
             <label
+              >View<select id="view" aria-label="Population view">
+                <option value="2d">2D projection</option>
+                <option value="spatial">3D spatial</option>
+                <option value="landscape">3D landscape</option>
+              </select></label
+            ><label
               >X<select
                 id="x-axis"
                 aria-label="Horizontal projection axis"
@@ -318,23 +329,101 @@
                 id="y-axis"
                 aria-label="Vertical projection axis"
               ></select></label
+            ><label id="z-axis-label" hidden
+              >Z<select id="z-axis" aria-label="Depth axis"></select></label
+            ><label
+              >Color<select id="color-mode" aria-label="Walker color">
+                <option value="reward">Raw reward</option>
+                <option value="fitness">Pre-clone fitness</option>
+                <option value="uniform">Uniform</option>
+              </select></label
             ><label
               ><input id="landscape-toggle" type="checkbox" checked />
-              Landscape</label
-            ><button id="fit-view">Fit</button>
+              Surface</label
+            ><button id="fit-view" type="button">Fit</button
+            ><button id="reset-camera" type="button" hidden>
+              Reset camera
+            </button>
           </div>
         </div>
         <div id="stage">
           <div id="stage-loading">Preparing population…</div>
           <div class="stage-legend">
-            <span><i class="dot teal"></i>Lower reward</span
-            ><span><i class="dot rose"></i>Higher reward</span
+            <span
+              ><i class="dot teal"></i
+              ><span id="legend-low">Lower reward</span></span
+            ><span id="legend-high-item"
+              ><i class="dot rose"></i
+              ><span id="legend-high">Higher reward</span></span
+            ><span id="legend-best" hidden><i class="dot gold"></i>Best</span
             ><span><i class="dot white"></i>Selected</span>
           </div>
-          <span class="stage-help"
+          <span id="stage-help" class="stage-help"
             >Click a walker to inspect · scroll to zoom</span
           >
         </div>
+        <details id="display-options" class="display-options">
+          <summary>Display and slices</summary>
+          <div class="display-grid">
+            <label
+              >Point size<input
+                id="point-size"
+                type="range"
+                min="1"
+                max="15"
+                step="0.5"
+                value="4"
+            /></label>
+            <label
+              >Surface opacity<input
+                id="surface-opacity"
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.01"
+                value="0.77"
+            /></label>
+            <label
+              >Height scale<input
+                id="height-scale"
+                type="range"
+                min="0.2"
+                max="8"
+                step="0.1"
+                value="3"
+            /></label>
+            <label
+              >Links<select id="links">
+                <option value="none">None</option>
+                <option value="distance">Diversity companions</option>
+                <option value="cloning">Clone donors</option>
+              </select></label
+            >
+            <label
+              >Surface resolution<select id="resolution">
+                <option value="64">64 × 64</option>
+                <option value="128" selected>128 × 128</option>
+                <option value="160">160 × 160</option>
+              </select></label
+            >
+            <label class="check"
+              ><input id="trails" type="checkbox" /> Trails · last 30
+              steps</label
+            >
+          </div>
+          <div class="slice-actions">
+            <button id="slice-from-best" type="button">Slice at best</button
+            ><button id="slice-from-selected" type="button">
+              Slice at selected</button
+            ><button id="slice-reset" type="button">Reset slice</button>
+          </div>
+          <div id="slice-controls"></div>
+          <p id="slice-empty" class="hint">
+            Every coordinate is displayed; there is nothing to slice.
+          </p>
+          <p id="slice-note" class="hint"></p>
+          <p id="links-note" class="hint" hidden></p>
+        </details>
         <section class="convergence">
           <div class="section-heading">
             <h2>Convergence</h2>
@@ -364,6 +453,13 @@
           >Walker slot<input id="walker" type="number" min="0" value="0"
         /></label>
         <dl id="walker-details"></dl>
+        <section id="molecule" hidden>
+          <div class="section-heading"><h2>Atom configuration</h2></div>
+          <canvas
+            id="molecule-canvas"
+            aria-label="Atoms of the selected walker"
+          ></canvas>
+        </section>
         <div class="section-heading"><h2>Execution</h2></div>
         <dl id="execution-details"></dl>
         <p class="hint">

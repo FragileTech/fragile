@@ -1,8 +1,17 @@
 //! Analytic objectives shared by the native runner and browser bindings.
+pub mod bbob;
+mod benchmark;
+pub mod catalog;
+pub mod classics;
+mod host;
 pub mod lecture;
 pub mod lecture_early;
 pub mod lecture_fractal;
+pub mod lecture_meanfield;
 pub mod lecture_qft_protocols;
+mod lecture_taylor;
+pub mod mixture;
+mod mt64;
 pub mod physics_metric;
 use algorithmic_gas::{
     AlgorithmicGas, ComputeBackend, ExecutionContext, GasBuilder, GasConfig, GasError, InputBatch,
@@ -14,55 +23,11 @@ use algorithmic_gas::{
     kinetic::KineticKind,
     random::{RandomStream, Stream},
 };
+pub use benchmark::{Benchmark, Evaluator, GradientExecution, ObjectiveExecution};
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "snake_case")]
-pub enum Benchmark {
-    Sphere,
-    Rastrigin,
-    Rosenbrock,
-    StyblinskiTang,
-    Quadratic,
-}
 impl Benchmark {
-    pub fn bounds(self) -> (f64, f64) {
-        match self {
-            Self::Sphere => (-1000., 1000.),
-            Self::Rastrigin => (-5.12, 5.12),
-            Self::Rosenbrock => (-10., 10.),
-            Self::StyblinskiTang => (-5., 5.),
-            Self::Quadratic => (-5., 5.),
-        }
-    }
-    pub fn validate(self, d: usize) -> Result<()> {
-        if d == 0 || d > 4096 || (self == Self::Rosenbrock && d < 2) {
-            Err(GasError::Configuration(
-                "invalid benchmark dimension (Rosenbrock requires at least two)".into(),
-            ))
-        } else {
-            Ok(())
-        }
-    }
-    pub fn value<T: Real>(self, x: &[T]) -> Result<T> {
-        self.validate(x.len())?;
-        let c = T::from_f64;
-        Ok(match self {
-            Self::Sphere => x.iter().fold(T::ZERO, |s, &x| s + x * x),
-            Self::Quadratic => x.iter().fold(T::ZERO, |s, &x| s + c(0.5) * x * x),
-            Self::Rastrigin => x.iter().fold(T::ZERO, |s, &x| {
-                s + x * x - c(10.) * (c(std::f64::consts::TAU) * x).cos() + c(10.)
-            }),
-            Self::StyblinskiTang => x.iter().fold(T::ZERO, |s, &x| {
-                s + c(0.5) * (x * x * x * x - c(16.) * x * x + c(5.) * x)
-            }),
-            Self::Rosenbrock => x.windows(2).fold(T::ZERO, |s, p| {
-                let a = p[0] * p[0] - p[1];
-                let b = p[0] - T::ONE;
-                s + c(100.) * a * a + b * b
-            }),
-        })
-    }
+    /// Constant-free tensor graph of the five lecture objectives; see [`Benchmark::graph`].
     pub fn expression(self, d: usize, gradient: bool) -> Result<Expression> {
         self.validate(d)?;
         let mut e = Expression::default();
@@ -162,6 +127,12 @@ impl Benchmark {
                     e.binary(Binary::Add, term, bias2)
                 }
             }
+            _ => {
+                return Err(GasError::Capability(
+                    "this objective needs Benchmark::graph (constants) or the host evaluator"
+                        .into(),
+                ));
+            }
         };
         if gradient {
             // Ensure a terminal identity even when the result is input x.
@@ -181,7 +152,14 @@ pub struct BenchmarkModel {
 }
 impl<T: Real> RewardSource<T> for BenchmarkModel {
     fn id(&self) -> String {
-        format!("benchmark/{:?}/{}/v1", self.benchmark, self.field)
+        match self.benchmark.execution() {
+            ObjectiveExecution::Graph => {
+                format!("benchmark/{:?}/{}/v1", self.benchmark, self.field)
+            }
+            ObjectiveExecution::Host => {
+                format!("benchmark-host/{:?}/{}/v1", self.benchmark, self.field)
+            }
+        }
     }
     fn evaluate<'a>(
         &'a self,
@@ -202,11 +180,20 @@ impl<T: Real> RewardSource<T> for BenchmarkModel {
                     *v = T::ZERO;
                 }
             }
-            let result = cx
-                .evaluate(&self.benchmark.expression(x.width(), false)?, &[x])
-                .await?;
+            let values = if matches!(self.benchmark, Benchmark::Bbob { .. }) {
+                cx.stats.host_reward_evaluations += x.rows() as u64;
+                host::values(self.benchmark, &x)?
+            } else {
+                let graph = self.benchmark.graph(x.width(), false)?;
+                let mut inputs = vec![x];
+                inputs.extend(host::constants::<T>(&graph)?);
+                cx.evaluate(&graph.expression, &inputs)
+                    .await?
+                    .values()
+                    .to_vec()
+            };
             let mut rewards = RewardBatch::new(
-                result.values().to_vec(),
+                values,
                 Provenance {
                     input_version: input.map_or(0, |i| i.version),
                     population_version: p.version,
@@ -222,10 +209,16 @@ impl<T: Real> RewardSource<T> for BenchmarkModel {
 }
 impl<T: Real> GradientProvider<T> for BenchmarkModel {
     fn id(&self) -> String {
-        format!(
-            "analytic-gradient/{:?}/{:?}/v1",
-            self.benchmark, self.direction
-        )
+        match self.benchmark.gradient_execution() {
+            GradientExecution::HostCentralDifference => format!(
+                "central-difference-gradient/{:?}/{:?}/v1",
+                self.benchmark, self.direction
+            ),
+            _ => format!(
+                "analytic-gradient/{:?}/{:?}/v1",
+                self.benchmark, self.direction
+            ),
+        }
     }
     fn gradient<'a>(
         &'a self,
@@ -239,9 +232,17 @@ impl<T: Real> GradientProvider<T> for BenchmarkModel {
                     *v = T::ZERO;
                 }
             }
-            let mut gradient = cx
-                .evaluate(&self.benchmark.expression(x.width(), true)?, &[x])
-                .await?;
+            let mut gradient = if matches!(self.benchmark, Benchmark::Bbob { .. }) {
+                let (gradient, evaluations) =
+                    host::central_gradient(self.benchmark, &x, |i| p.validity[i].eligible(true))?;
+                cx.stats.host_gradient_evaluations += evaluations;
+                gradient
+            } else {
+                let graph = self.benchmark.graph(x.width(), true)?;
+                let mut inputs = vec![x];
+                inputs.extend(host::constants::<T>(&graph)?);
+                cx.evaluate(&graph.expression, &inputs).await?
+            };
             let width = gradient.width();
             let sign = if self.direction == ObjectiveDirection::Minimize {
                 T::ONE
@@ -307,6 +308,12 @@ impl RunConfig {
         self.benchmark.validate(self.dimensions)?;
         if let Some(potential) = self.potential {
             potential.validate(self.dimensions)?;
+        }
+        if self.physics_metric.is_some() && !self.benchmark.supports_physics_metric() {
+            return Err(GasError::Capability(format!(
+                "the conditional physics metric has no closed-form jet for `{}`",
+                self.benchmark.id()
+            )));
         }
         if !self.reward_shift.is_empty()
             && (self.reward_shift.len() != self.dimensions
@@ -398,6 +405,13 @@ impl RunConfig {
         let builder = GasBuilder::new(
             self.initial_population()?,
             ShiftedReward {
+                noise: match self.benchmark {
+                    Benchmark::StochasticGaussian { std } => Some(host::RewardNoise {
+                        std,
+                        seed: self.gas.seed,
+                    }),
+                    _ => None,
+                },
                 model,
                 shift: self.reward_shift.clone(),
             },
@@ -421,13 +435,19 @@ impl RunConfig {
 struct ShiftedReward {
     model: BenchmarkModel,
     shift: Vec<f64>,
+    /// Observation noise of a stochastic objective, drawn after the deterministic value.
+    noise: Option<host::RewardNoise>,
 }
 impl<T: Real> RewardSource<T> for ShiftedReward {
     fn id(&self) -> String {
-        if self.shift.is_empty() {
+        let id = if self.shift.is_empty() {
             <BenchmarkModel as RewardSource<T>>::id(&self.model)
         } else {
             format!("shifted/{:?}/{:?}/v1", self.model.benchmark, self.shift)
+        };
+        match &self.noise {
+            Some(noise) => format!("noisy/{:?}/{}/{id}", noise.std, noise.seed),
+            None => id,
         }
     }
     fn evaluate<'a>(
@@ -439,7 +459,11 @@ impl<T: Real> RewardSource<T> for ShiftedReward {
     ) -> OperatorFuture<'a, RewardBatch<T>> {
         Box::pin(async move {
             if self.shift.is_empty() {
-                return self.model.evaluate(p, input, stage, cx).await;
+                let mut rewards = self.model.evaluate(p, input, stage, cx).await?;
+                if let Some(noise) = &self.noise {
+                    noise.apply(&mut rewards, p, stage);
+                }
+                return Ok(rewards);
             }
             let mut translated = p.clone();
             let field = translated.observations.field_mut("positions")?;
@@ -455,7 +479,11 @@ impl<T: Real> RewardSource<T> for ShiftedReward {
                     *value = translated_value;
                 }
             }
-            self.model.evaluate(&translated, input, stage, cx).await
+            let mut rewards = self.model.evaluate(&translated, input, stage, cx).await?;
+            if let Some(noise) = &self.noise {
+                noise.apply(&mut rewards, p, stage);
+            }
+            Ok(rewards)
         })
     }
 }

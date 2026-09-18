@@ -1369,7 +1369,7 @@ where $\tau$ is the timestep and $S'_1, S'_2$ are the outputs after the kinetic 
 **Equivalently (one-step drift):**
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W + C_W'
+\frac1\tau\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W + C_W'
 
 $$
 
@@ -1391,7 +1391,418 @@ $$
 3. **N-uniformity:** All constants are independent of swarm size $N$.
 :::
 
-### 4.4. Proof Strategy
+### 4.4. Exact finite-step coupling for the quadratic kinetic stage
+
+:::{div} feynman-prose
+Imagine running the quadratic kinetic stage twice, starting from slightly
+different positions and velocities but feeding both runs the same Gaussian
+draws. This lets us follow what happens to the initial separation through each
+operation of the actual update. The common additive noise cancels from the
+separation before capping. Friction removes part of that separation, but the
+BAOAB identity below shows that it removes only one linear combination of
+position and velocity. A second direction still needs control.
+
+The smooth velocity cap supplies that control. Its slope is smaller away from
+zero, and the velocity noise gives a uniformly positive chance of reaching
+that region, whatever the starting mean. Thus the noise matters even though
+the two runs use identical draws: it changes where the nonlinear cap acts.
+The two dissipated combinations are independent, so together they control the
+whole physical separation. The weighted norm records this fact exactly for
+the quadratic force and the stated timestep range. Applying the same estimate
+to paired rows and averaging introduces no population-size factor; collision
+clusters enter through the inputs to this kinetic stage.
+:::
+
+:::{prf:theorem} Strict coupling of quadratic BAOAB with the velocity cap
+:label: thm-kinetic-exact-baoab-cap-coupling
+
+For the kinetic stage with $U(x)=|x|^2/2$, $0<h<2$, friction $\gamma>0$,
+isotropic velocity diffusion factor $B>0$, final independent position
+noise, and cap $C_V(v)=Vv/(V+|v|)$ with $V>0$, couple two input rows using
+identical Gaussian innovations. The force kicks, drifts, and cap are those
+of the complete algorithm. Put
+
+$$
+c=h/2,\quad k=1-c^2,\quad a=e^{-\gamma h},\quad
+q=B\sqrt{\frac{1-a^2}{2\gamma}},\qquad
+\|z\|_Q^2=k|x|^2+|v|^2.
+$$
+
+Define the positive constants
+
+$$
+p_0=\sqrt{2/\pi}\,e^{-2},\quad
+\eta=p_0\left[1-\left(\frac V{V+kq}\right)^2\right],
+$$
+
+$$
+T=1-a^2+\eta\bigl[a^2+c^2(1-a^2)\bigr],\quad
+D=\eta c^2(1-a^2),\qquad \delta=D/T.
+$$
+
+The output physical coordinates, including the final position noise and cap,
+satisfy
+
+$$
+\mathbb E\|Z^+-\widetilde Z^+\|_Q^2
+\le(1-\delta)\|Z-\widetilde Z\|_Q^2.                 \tag{5.K1}
+$$
+
+The constants are independent of dimension and population size. Applied to
+all paired rows, (5.K1) also contracts the averaged physical-coordinate
+coupling cost. Terminal alive/dead indicators are governed separately by
+{prf:ref}`lem-kinetic-terminal-status-coupling`.
+:::
+
+:::{prf:proof}
+**Exact BAOAB difference.** The successive differences are
+$\Delta v_1=\Delta v-c\Delta x$,
+$\Delta x_1=\Delta x+c\Delta v_1$,
+$\Delta v_2=a\Delta v_1$,
+$\Delta x_2=\Delta x_1+c\Delta v_2$,
+and $\Delta v_3=\Delta v_2-c\Delta x_2$.
+Consequently, before capping the deterministic difference matrix is
+
+$$
+A=\begin{pmatrix}
+1-c^2(1+a)&c(1+a)\\
+-c(1+a)k&a-c^2(1+a)
+\end{pmatrix},\qquad
+A^\top QA=Q-k(1-a^2)ww^\top,\quad w=\binom{-c}{1}.       \tag{5.K2}
+$$
+
+The matrices act identically on every coordinate. Write
+$b=(-c(1+a)k,\ a-c^2(1+a))^\top$. The last pre-cap velocity is its
+input-dependent mean plus $kq\xi$, for a standard Gaussian vector $\xi$;
+its coupled difference is $b^\top\Delta z$.
+
+**Strict cap dissipation.** The cap derivative satisfies
+$\|DC_V(u)\|_{\mathrm{op}}\le V/(V+|u|)$, including its continuous value
+at zero. For any $m$ and $\sigma>0$, a centered interval maximizes the
+probability of a fixed-length interval under the centered one-dimensional
+Gaussian. This follows directly by differentiating the interval probability
+with respect to its center. Therefore
+
+$$
+\Pr(|m+\sigma\xi|\ge\sigma)
+\ge\Pr(|\xi_1|\ge1)
+\ge 2\int_1^2\frac{e^{-2}}{\sqrt{2\pi}}\,dt=p_0.
+$$
+
+Taking $\sigma=kq$ yields
+$\sup_m\mathbb E\|DC_V(m+kq\xi)\|_{\mathrm{op}}^2\le1-\eta$.
+Integrate the derivative along the segment between the two deterministic
+means and apply Jensen's inequality to obtain
+
+$$
+\mathbb E|C_V(u+kq\xi)-C_V(\widetilde u+kq\xi)|^2
+\le(1-\eta)|u-\widetilde u|^2.                         \tag{5.K3}
+$$
+
+**Control of both coordinates.** The common final position noise cancels
+from the difference. Equations (5.K2)–(5.K3) give
+
+$$
+\mathbb E\|\Delta z^+\|_Q^2
+\le\|\Delta z\|_Q^2-k(1-a^2)|w^\top\Delta z|^2
+-\eta|b^\top\Delta z|^2.
+$$
+
+The positive matrix
+$Q^{-1/2}[k(1-a^2)ww^\top+\eta bb^\top]Q^{-1/2}$
+has trace $T$ and determinant $D$. In particular, it is positive definite:
+$\det(w,b)=c\ne0$. For its eigenvalues $0<\lambda_1\le\lambda_2$,
+$\lambda_1=D/\lambda_2\ge D/T=\delta$. This proves (5.K1).
+Averaging this row estimate proves its population version. $\square$
+:::
+
+:::{prf:corollary} The configured quadratic kinetic stage
+:label: cor-kinetic-canonical-coupling
+
+For $h=0.04$, $\gamma=B=1$, and $V=2$, the exact constants above give
+$\eta>0.0184$ and $\delta>6.03\times10^{-6}$. These are strict
+physical-coordinate contraction constants for the executed kinetic stage.
+:::
+
+:::{prf:proof}
+Substitute the specified constants into the positive expressions for
+$q,\eta,T,D$. The symbolic expressions in (5.K1) specify the constants exactly;
+substitution gives $\eta=0.018414\ldots$ and
+$\delta=0.0000060320\ldots$, with the stated strict lower bounds.
+:::
+
+:::{prf:lemma} Terminal status coupling under the final position noise
+:label: lem-kinetic-terminal-status-coupling
+
+Let the terminal domain be an axis-aligned box $\mathcal D\subset\mathbb R^d$.
+Condition on the complete cloning, collision, and BAOAB innovations, and let
+$x,y$ be the two positions before final position diffusion. For its actual
+amplitude $s=\sigma_x\sqrt h>0$, the synchronous Gaussian coupling obeys
+
+$$
+\Pr\!\left(\mathbf1_{\mathcal D}(x+s\zeta)
+\ne\mathbf1_{\mathcal D}(y+s\zeta)\right)
+\le \min\!\left\{1,\frac{2\|x-y\|_1}{s\sqrt{2\pi}}\right\}.
+                                                               \tag{5.K4}
+$$
+
+This compares the terminal status marks used by the next cloning stage.
+:::
+
+:::{prf:proof}
+For one coordinate, the translated membership intervals have symmetric
+difference of length at most $2|x_j-y_j|$. The density of $s\zeta_j$ is
+bounded by $1/(s\sqrt{2\pi})$. If box membership differs, at least one
+coordinate's interval membership differs. Sum these one-dimensional
+bounds and bound the resulting probability by one. $\square$
+:::
+
+:::{div} feynman-prose
+Two nearby positions can sit on opposite sides of the boundary. Their physical
+separation is small, yet their alive/dead marks disagree, and that disagreement
+affects the next cloning stage. This is why the terminal test needs its own
+estimate. With the same final Gaussian displacement, the marks can differ
+only when the draw lands in the thin region between two translated boundary
+tests. The Gaussian density bounds the probability of landing there.
+
+Notice the different roles of position noise in these two calculations. It
+cancels exactly when we compare physical positions, while its spread controls
+the probability of a status mismatch. Equation (5.K4) keeps that contribution
+available for the complete marked-state analysis, where revival and collision
+membership must also be accounted for.
+:::
+
+:::{div} feynman-prose
+Imagine following two walkers through the same BAOAB schedule. Their OU kicks
+need not be identical for their final positions to agree. We can couple the
+two Gaussian draws so that, on a matched event, their difference compensates
+exactly for the entering position discrepancy. Each walker still receives
+the prescribed Gaussian law. Only the relationship between the two runs has
+been chosen for the comparison.
+
+Once the intermediate positions agree, the final force evaluations agree
+too. Shared position noise then preserves that agreement, including the
+terminal alive/dead decision. A velocity discrepancy remains, and the radial
+cap compresses it. The proof averages this compression over the actual OU
+draw and separately charges for the event on which position matching fails.
+The force and timestep bounds below make this estimate uniform over entering
+physical states. This gives a bound on the distance between output laws
+without requiring identical noise to shrink every individual trajectory.
+:::
+
+:::{prf:theorem} Bounded transport smoothing for the actual BAOAB and cap update
+:label: thm-kinetic-bounded-transport-smoothing
+
+Let the configured force $F:\mathbb R^d\to\mathbb R^d$ be globally
+$L_F$-Lipschitz, and use the declared isotropic BAOAB, final position noise,
+radial cap and terminal position classification. Put
+
+$$
+c=h/2,\quad a=e^{-\gamma h},\quad
+q=B\sqrt{(1-a^2)/(2\gamma)}>0,\quad
+\lambda=1-c^2L_F>0,\quad s=\sigma_x\sqrt h.
+$$
+
+The force bound is on all physical positions reached by the Gaussian
+innovations. A bound only inside the valid domain is not sufficient for
+this statement. For fixed position and velocity units $\ell_x,\ell_v>0$,
+define the bounded marked-coordinate metric
+
+$$
+d_0(z,\widetilde z)=\min\left\{1,
+\frac{|x-\widetilde x|}{\ell_x}
++\frac{|v-\widetilde v|}{\ell_v}
++\mathbf1_{\{e\ne\widetilde e\}}\right\}.
+$$
+
+Here $e$ is the terminal alive/dead mark; dead coordinates are retained.
+Let $K(z,\cdot)$ be the row kinetic law from a post-cloning physical state
+$z=(X,V)$. Define its actual intermediate quantities
+
+$$
+v_1=V+cF(X),\qquad x_1=X+cv_1,\qquad m=x_1+ca v_1.
+$$
+
+With $C_0=\sqrt{\pi/2}$ and cap radius $R$, the transport distance obeys
+
+$$
+W_{d_0}(K(z),K(\widetilde z))
+\leq\min\left\{1,
+\frac{|\Delta m|}{cq\sqrt{2\pi}}
++\frac{C_0R|\Delta x_1|}{\ell_v cq\lambda}\right\}
+\leq\min\left\{1,
+\frac{A_x|\Delta X|+A_v|\Delta V|}{q}\right\},             \tag{5.K5}
+$$
+
+where
+
+$$
+A_x=\frac{1+c^2(1+a)L_F}{c\sqrt{2\pi}}
++\frac{C_0R(1+c^2L_F)}{\ell_v c\lambda},\qquad
+A_v=\frac{1+a}{\sqrt{2\pi}}+\frac{C_0R}{\ell_v\lambda}.
+$$
+
+These constants are independent of dimension, population size and $B$.
+No convexity of the potential is required.
+:::
+
+:::{prf:proof}
+The complete row update, with independent standard Gaussian vectors
+$\xi,\zeta$, is
+
+$$
+x_2=m+cq\xi,\qquad
+v_3=av_1+q\xi+cF(x_2),\qquad
+x^+=x_2+s\zeta,\qquad v^+=C_R(v_3),
+\quad C_R(u)=\frac{Ru}{R+|u|}.
+$$
+
+**Match positions through the OU innovation.** Set
+$b=\Delta m/(cq)$. Couple $\xi$ and $\widetilde\xi$ with their required
+standard Gaussian marginals so that $\widetilde\xi=\xi+b$ except with
+probability $2\Phi(|b|/2)-1\leq |b|/\sqrt{2\pi}$. Such a coupling is
+obtained by assigning the common density
+$\min\{\phi(u),\phi(u+b)\}$ to the matched event and coupling the remaining
+densities. Its mass follows by integrating on the two half-spaces separated
+by their density-equality hyperplane. The matched subdensity of $\xi$ is
+bounded above by $\phi$.
+
+Use the same independent $\zeta$. On the matched event, $x_2=\widetilde x_2$,
+so both final force evaluations, final positions and terminal marks agree.
+The pre-cap velocity difference is exactly
+
+$$
+D=a\Delta v_1-\Delta m/c=-\Delta x_1/c.                 \tag{5.K6}
+$$
+
+This cancellation uses the final force evaluation in the actual BAOAB step.
+
+**Average the cap derivative.** For the first input set
+$T(y)=y+cF(x_1+cy)$. Then
+$|T(y)-T(\widetilde y)|\geq\lambda|y-\widetilde y|$.
+For each target $w$, the equation $y=w-cF(x_1+cy)$ is a contraction with
+constant $c^2L_F<1$ on complete Euclidean space. Thus $T$ is onto and
+one-to-one. For $t\in[0,1]$, let $y_t=T^{-1}(tD)$ and
+$\xi_t=(y_t-av_1)/q$. Consequently
+
+$$
+|T(av_1+qG)-tD|\geq q\lambda|G-\xi_t|.
+$$
+
+For $d\geq2$, $\|DC_R(u)\|_{\mathrm{op}}=R/(R+|u|)\leq R/|u|$.
+The identity
+$r^{-1}=\pi^{-1/2}\int_0^\infty t^{-1/2}e^{-tr^2}\,dt$
+and Gaussian integration give, for every $b\in\mathbb R^d$,
+
+$$
+\begin{aligned}
+\mathbb E|G-b|^{-1}
+&=\pi^{-1/2}\int_0^\infty
+ t^{-1/2}(1+2t)^{-d/2}
+ e^{-t|b|^2/(1+2t)}\,dt\\
+&\leq\mathbb E|G|^{-1}
+\leq\mathbb E(G_1^2+G_2^2)^{-1/2}=\sqrt{\pi/2}.
+\end{aligned}
+$$
+
+The integrals are finite for $d\geq2$, and Tonelli justifies their order.
+For $d=1$, $T$ is increasing and its inverse is $\lambda^{-1}$-Lipschitz.
+The density of $T(av_1+qG)$ is therefore bounded by
+$(q\lambda\sqrt{2\pi})^{-1}$. Since
+$\int_{\mathbb R}|C_R'(u)|\,du=2R$, both cases yield
+
+$$
+\sup_{t\in[0,1]}
+\mathbb E\|DC_R(T(av_1+qG)-tD)\|_{\mathrm{op}}
+\leq\frac{C_0R}{q\lambda}.
+$$
+
+Integrate the derivative along the segment of length $|D|$. The matched
+subdensity bound shows that the expected marked cost on the matched event
+is at most $C_0R|D|/(\ell_v q\lambda)$. Failure costs at most one. Add its
+probability and substitute (5.K6) to prove the first inequality in (5.K5).
+Finally,
+$|\Delta x_1|\leq(1+c^2L_F)|\Delta X|+c|\Delta V|$ and
+$|\Delta m|\leq[1+c^2(1+a)L_F]|\Delta X|+c(1+a)|\Delta V|$
+give the displayed coefficients. $\square$
+:::
+
+:::{prf:corollary} Population-normalized smoothing after the full component collision
+:label: cor-kinetic-full-cluster-smoothing
+
+Let $P,\widetilde P$ be laws of nonextinct entering swarms, and let $\Gamma$
+couple their complete post-cloning swarm laws, including their
+actual measurements, frozen acceptance, copied positions, jitter, revival
+and shared component rotations. For the normalized output cost
+$d_N=N^{-1}\sum_i d_0(z_i,\widetilde z_i)$, the complete kinetic laws satisfy
+
+$$
+W_{d_N}(\mathcal C_N(P)K_N,\mathcal C_N(\widetilde P)K_N)
+\leq\mathbb E_\Gamma\frac1N\sum_i
+\min\left\{1,\frac{A_x|\Delta X_i|+A_v|\Delta V_i|}{q}\right\}.
+                                                               \tag{5.K7}
+$$
+
+Here $\mathcal C_N$ is the actual cloning kernel and $K_N$ retains the
+physical marked outputs also on total extinction. The inequality does not
+condition on survival. For the geometric error clusters, take their common
+refinement under the chosen row pairing. In each block $G$, write
+$\Delta X_i=\overline{\Delta X}_G+u_i$ and
+$\Delta V_i=\overline{\Delta V}_G+w_i$. The right side of (5.K7) is at most
+
+$$
+\frac1q\sum_G\frac{|G|}{N}\left[
+A_x\left(|\overline{\Delta X}_G|+
+\sqrt{\frac1{|G|}\sum_{i\in G}|u_i|^2}\right)
++A_v\left(|\overline{\Delta V}_G|+
+\sqrt{\frac1{|G|}\sum_{i\in G}|w_i|^2}\right)\right]
+$$
+
+averaged over $\Gamma$. Thus the smoothing estimate uses the same cluster
+means and internal errors, with weights summing to one.
+
+*Proof.* Conditional on both post-cloning swarms, apply the row coupling
+independently to each paired row. Each marginal has exactly the prescribed
+independent kinetic innovations. Sum the conditional bounds and integrate
+over $\Gamma$. No independence of cloning outputs is used. The cluster bound
+is the triangle inequality followed by Cauchy--Schwarz within each cluster.
+$\square$
+:::
+
+:::{div} feynman-prose
+Now keep the entire cloning outcome in view before applying this row
+estimate. Several walkers may share a donor or a component rotation, so their
+positions and velocities can be correlated. We first condition on those
+complete outcomes. The kinetic innovations are independent across rows at
+that stage, and we can apply the coupling to each paired row. Averaging over
+the cloning outcomes afterwards retains their correlations.
+
+The geometric error clusters organize the resulting sum. Within each cluster,
+separate the mean discrepancy from the deviations around that mean. The
+cluster contributes with weight $|G|/N$: the fraction of the population it
+contains. These weights sum to one, so collecting more clusters does not
+introduce a growing population factor. The resulting estimate feeds the
+cluster means and internal errors directly into the kinetic comparison.
+It concerns the complete marked outputs, with retained dead coordinates;
+conditioning the whole population on survival would require its own
+normalization.
+:::
+
+:::{prf:example} Verification for configured smooth potentials
+:label: ex-kinetic-smoothing-force-constants
+
+For the canonical $U(x)=|x|^2/2$, $F(x)=-x$ has $L_F=1$ on the entire
+physical space. At $h=0.04$, $c^2L_F=0.0004<1$.
+The implemented Rastrigin potential is
+$U(x)=\sum_j[x_j^2-10\cos(2\pi x_j)+10]$. Its Hessian is diagonal with
+entries $2+40\pi^2\cos(2\pi x_j)$, so its force is globally Lipschitz with
+$L_F=2+40\pi^2$. At the same timestep, $c^2L_F<0.159<1$.
+Both configurations therefore satisfy every force and timestep condition
+of (5.K5) in every dimension, including at positions reached outside the
+terminal valid domain. The second potential is nonconvex.
+:::
+
+### 4.5. Proof Strategy
 
 The proof follows the **entropy method** adapted to the discrete swarm setting:
 
@@ -1402,7 +1813,7 @@ The proof follows the **entropy method** adapted to the discrete swarm setting:
 
 We now execute this strategy in detail.
 
-### 4.5. Location Error Drift
+### 4.6. Location Error Drift
 
 :::{prf:lemma} Drift of Location Error Under Kinetics
 :label: lem-location-error-drift-kinetic
@@ -1662,7 +2073,7 @@ where $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ combines hypo
 **Q.E.D.**
 :::
 
-### 4.6. Structural Error Drift
+### 4.7. Structural Error Drift
 
 :::{prf:lemma} Drift of Structural Error Under Kinetics
 :label: lem-structural-error-drift-kinetic
@@ -1856,7 +2267,7 @@ where $\kappa_{\text{struct}} \sim \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ 
 **Q.E.D.**
 :::
 
-### 4.7. Proof of Main Theorem
+### 4.8. Proof of Main Theorem
 
 :::{prf:proof}
 **Proof of {prf:ref}`thm-inter-swarm-contraction-kinetic`.**
@@ -1892,7 +2303,7 @@ $$
 **Q.E.D.**
 :::
 
-### 4.8. Summary
+### 4.9. Summary
 
 This chapter has proven:
 

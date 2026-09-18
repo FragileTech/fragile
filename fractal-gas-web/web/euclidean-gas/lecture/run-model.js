@@ -46,7 +46,13 @@ export function renderSnapshot(raw) {
       ? [result.model, ...result.notes].join(" · ")
       : "Running the gas to collect the required measurement window…",
     scene: result?.details.scene,
-    table: {
+    table: result?.details?.coefficient_checks ? {
+      columns: ["Taylor order", "Derivative coefficient", "Independent check", "Estimated check error", "Check status"],
+      rows: result.details.coefficient_checks.map((c) => [
+        c.order, c.automatic, c.independent_coefficient, c.step_change_and_roundoff,
+        !c.resolved ? "Unresolved" : c.agrees_within_estimated_error ? "Agrees within estimated error" : "Disagreement",
+      ]),
+    } : {
       columns: ["Run", "Completed steps", "Required steps"],
       rows: (raw.run_steps || []).map((n, i) => [i, n, raw.budgets[i]]),
     },

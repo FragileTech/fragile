@@ -1524,6 +1524,128 @@ For $m=2dN$, the absolute Fisher bound is proportional to $N$. Dividing entropy 
 
 ### 7.2. Heat flow and its reference density
 
+:::{div} feynman-prose
+Imagine running two swarms and pairing their walkers after the complete
+cloning stage. Each pair carries a position and velocity error. The kinetic
+step turns that error into a separation between two Gaussian means; the
+noise covariance tells us how distinguishable those means are. An error
+along a direction with little noise costs more relative entropy than the
+same error along a direction with substantial noise. The matrix below
+measures precisely this cost for the declared BAOAB step and position noise.
+
+The geometric clusters organize that cost. Within each block, split the
+paired errors into their average and their deviations from that average.
+The average measures displacement of the whole block; the deviations
+measure its internal deformation. Their cross term is exactly zero.
+Intersecting the two transported cluster partitions lets every paired row
+belong to one block without changing either swarm's collision groups.
+Shared rotations and donor motion are already present in those rows.
+
+This identity preserves the cluster strategy: it connects its geometric
+errors to entropy without counting all possible interacting pairs. A bound
+uniform in population size still requires controlling the resulting cluster
+cost. The identity itself introduces no factor from the number of pairs.
+:::
+
+:::{prf:theorem} Full kinetic entropy bound from geometric cluster errors
+:label: thm-kl-canonical-cluster-entropy-bridge
+
+Use the actual quadratic-force configuration of
+{prf:ref}`thm-kinetic-exact-baoab-cap-coupling`, with $h\ne2$ and positive
+OU and final position-noise amplitudes. Let $P,R$ be laws of nonextinct
+marked input swarms. Apply the complete actual cloning stage to each,
+including measurement, retained fitness, donor selection, frozen gates,
+revival, component rotations, and position jitter. Denote the resulting
+physical laws by $\mathcal C_N(P)$ and $\mathcal C_N(R)$.
+
+For any coupling $\Gamma$ of these laws, write paired post-cloning rows as
+$Z_i,\widetilde Z_i\in\mathbb R^{2d}$ and $\Delta_i=Z_i-\widetilde Z_i$.
+Set $c=h/2$, $k=1-c^2$, $a=e^{-\gamma h}$,
+$q=B\sqrt{(1-a^2)/(2\gamma)}$, and $s=\sigma_x\sqrt h$.
+Define the actual BAOAB mean matrix and noise covariance by
+
+$$
+A=\begin{pmatrix}
+1-c^2(1+a)&c(1+a)\\
+-c(1+a)k&a-c^2(1+a)
+\end{pmatrix}\otimes I_d,
+\qquad
+\Sigma_1=\begin{pmatrix}
+c^2q^2+s^2&ckq^2\\
+ckq^2&k^2q^2
+\end{pmatrix}\otimes I_d.
+$$
+
+Let $K_N$ denote the complete update retaining every physical terminal
+output, including extinct outputs, and $Q_N$ its restriction to survival.
+For $a_P=PQ_N1>0$ and $a_R=RQ_N1>0$,
+
+$$
+\begin{aligned}
+D(PK_N\Vert RK_N)
+&\leq\frac12\mathbb E_\Gamma\sum_{i=1}^N
+\langle\Delta_i,A^{\mathsf T}\Sigma_1^{-1}A\Delta_i\rangle,\\
+D\!\left(\frac{PQ_N}{a_P}\middle\Vert\frac{RQ_N}{a_R}\right)
+&\leq\frac1{2a_P}\mathbb E_\Gamma\sum_{i=1}^N
+\langle\Delta_i,A^{\mathsf T}\Sigma_1^{-1}A\Delta_i\rangle.
+\end{aligned}
+$$
+
+To express this cost in the geometric error clusters of
+{doc}`03_cloning`, transport their labels through the chosen row pairing and
+take their common refinement, keeping any residual labels as separate
+blocks. Call the resulting partition $\mathcal G$. It is a proof partition
+of the paired rows, not a change to the algorithm's clusters or collision
+components. For $G\in\mathcal G$, put
+$\bar\Delta_G=|G|^{-1}\sum_{i\in G}\Delta_i$ and
+$e_i=\Delta_i-\bar\Delta_G$. With $M=A^{\mathsf T}\Sigma_1^{-1}A$,
+the entropy cost has the exact decomposition
+
+$$
+\sum_i\langle\Delta_i,M\Delta_i\rangle
+=\sum_{G\in\mathcal G}|G|\langle\bar\Delta_G,M\bar\Delta_G\rangle
++\sum_{G\in\mathcal G}\sum_{i\in G}\langle e_i,Me_i\rangle.
+$$
+
+Both terms vanish for identical paired configurations. Taking $R=\nu_N$
+uses the actual QSD output $RQ_N/a_R=\nu_N$ without imposing a common
+invariant law on the individual algorithm stages.
+:::
+
+:::{prf:proof}
+Every dead input slot is revived at the scheduled cloning stage because
+the input is nonextinct. Thus all post-cloning rows undergo the same declared
+kinetic schedule. Conditional on all post-cloning coordinates, the pre-cap
+outputs are independent Gaussians with means $AZ_i$ and common covariance
+$\Sigma_1$. The final position noise is added after the last force kick;
+this gives the displayed covariance, whose scalar-block determinant is
+$s^2k^2q^2>0$.
+
+For coupled deterministic inputs the relative entropy of these Gaussian
+product laws equals
+$\frac12\sum_i|A\Delta_i|_{\Sigma_1^{-1}}^2$.
+Integrate both Gaussian laws against the same coupling $\Gamma$ and use
+joint convexity of relative entropy. The first and second mixtures have
+the correct actual input marginals; no independence of post-cloning rows
+is asserted. Applying the same deterministic velocity cap and terminal
+marking to both mixtures cannot increase relative entropy, proving the
+first inequality.
+
+Disintegrate $PK_N$ and $RK_N$ according to terminal survival. The relative
+entropy chain rule includes the nonnegative Bernoulli relative entropy,
+$a_P D(PQ_N/a_P\Vert RQ_N/a_R)$, and the nonnegative extinct-branch
+relative entropy. Discarding the other terms proves the second inequality.
+If the total entropy is infinite, that upper bound remains valid in the
+extended sense.
+
+For each block $G$, expand
+$\Delta_i=\bar\Delta_G+e_i$. The cross terms sum to zero because
+$\sum_{i\in G}e_i=0$. This proves the exact cluster decomposition, also
+when the partition depends measurably on the coupled configuration.
+The complete collision noise and changed donor velocities enter
+$\mathcal C_N(P)$ and $\mathcal C_N(R)$; none are omitted from the cost.
+:::
+
 :::{prf:theorem} Relative entropy along heat flow
 :label: thm-entropy-bound-debruijn
 
@@ -1686,6 +1808,170 @@ This estimate is conditional on the candidate sets and on shared weights for com
 
 (sec-fg-kl-conv-discrete)=
 ## 8. Discrete time and the numerical kernel
+
+:::{div} feynman-prose
+Keep a record of both the input swarm and the output swarm for one actual
+update. Compare two possible input laws, while using exactly the same
+transition rule for both. Once we condition on survival, the input law is
+tilted: inputs more likely to survive occur more often in this record.
+That is why the entropy entering the calculation belongs to the
+survivor-tilted input law.
+
+Now erase the input column and retain only the output. The backward
+conditional term measures the distinguishing information that this erasure
+loses. It is nonnegative, so it enters the output entropy balance with a
+minus sign. Survival contributes two other terms: a covariance accounting
+for preferential retention of inputs, and the logarithm of the ratio of
+survival probabilities. Neither contribution has a fixed favorable sign
+on its own.
+
+For the QSD reference, the complete surviving output has the same law as
+the reference input. Its reference-change term therefore vanishes exactly.
+This uses the full update, including the correlations created by shared
+component rotations. The balance tells us which terms must be controlled
+together to prove contraction; it does not require each algorithm stage to
+preserve the QSD separately.
+:::
+
+:::{prf:theorem} Exact entropy balance for the complete marked update
+:label: thm-kl-full-step-survivor-chain-rule
+
+Let $Q_N$ be the actual Euclidean Gas sub-Markov kernel on nonextinct,
+terminally consistent marked swarms. Its transition integrates the weighted
+measurement and donor draws, retained sampled fitness and frozen gates,
+connected-component rotations, revival and jitter, BAOAB, position noise,
+velocity cap, and terminal boundary classification. Set $k_N=Q_N1$.
+For input probability laws $P\ll R$, put
+
+$$
+a=P(k_N)>0,\quad b=R(k_N)>0,\quad
+P^+=PQ_N/a,\quad R^+=RQ_N/b,
+$$
+
+and define the survivor-tilted input laws
+$P^{\rm s}=k_NP/a$, $R^{\rm s}=k_NR/b$.
+Let $\mathsf B_P(y,dx)$ and $\mathsf B_R(y,dx)$ be the backward conditional
+input laws under $P(dx)Q_N(x,dy)/a$ and $R(dx)Q_N(x,dy)/b$, respectively.
+Then the following identity holds in $[0,\infty]$:
+
+$$
+D(P^{\rm s}\Vert R^{\rm s})
+=D(P^+\Vert R^+)
++\int D(\mathsf B_P(y,\cdot)\Vert\mathsf B_R(y,\cdot))\,P^+(dy).
+$$
+
+Write the last nonnegative term as $\mathcal B_N(P,R)$. If all terms below
+are finite and $P^+\ll T$, with $\log(dR^+/dT)$ defined $P^+$-almost
+everywhere, then
+
+$$
+\begin{aligned}
+D(P^+\Vert T)
+={}&\frac1a\int k_N\log\frac{dP}{dR}\,dP
++\log\frac ba-\mathcal B_N(P,R)
++\int\log\frac{dR^+}{dT}\,dP^+.
+\end{aligned}
+$$
+
+In particular, for $T=R$ and $f=dP/dR$,
+
+$$
+\begin{aligned}
+D(P^+\Vert R)-D(P\Vert R)
+={}&\frac{\operatorname{Cov}_{P}(k_N,\log f)}a
++\log\frac ba-\mathcal B_N(P,R)
++P^+\!\left(\log\frac{dR^+}{dR}\right).
+\end{aligned}
+$$
+
+For the actual QSD reference $R=\nu_N$, $b=\alpha_N$ and $R^+=\nu_N$,
+so the last term vanishes identically. No separate invariance of cloning,
+kinetics, or a Gibbs law is required.
+:::
+
+:::{prf:proof}
+The marked state space is a standard Borel space, so the two joint survivor
+laws admit the stated disintegrations. On $\{k_N>0\}$ they have the same
+forward conditional kernel $Q_N(x,dy)/k_N(x)$. The chain rule in the input
+coordinate therefore identifies their joint relative entropy with
+$D(P^{\rm s}\Vert R^{\rm s})$. The chain rule in the output coordinate
+gives its decomposition into $D(P^+\Vert R^+)$ and the expected backward
+relative entropy. This establishes the first identity without subtraction
+of infinite quantities.
+
+The survivor input likelihood ratio is
+$dP^{\rm s}/dR^{\rm s}=(b/a)f$; integrating its logarithm yields the first
+two terms of the second identity. The reference change follows by integrating
+$\log(dP^+/dT)=\log(dP^+/dR^+)+\log(dR^+/dT)$.
+Finally
+$P(k_N\log f)/a=P(\log f)+\operatorname{Cov}_P(k_N,\log f)/a$.
+The QSD substitution uses the full discrete eigenmeasure identity.
+
+Every random choice defining $Q_N$ has already been integrated in these
+joint laws. In particular, this argument does not factor the outputs of
+walkers that share a component rotation, and it does not replace fitness
+marks by their conditional means.
+:::
+
+:::{prf:proposition} Conditional interaction information
+:label: prop-kl-component-multi-information
+
+For any input swarm $S$, let $K_S$ be the complete conservative output law
+before restricting extinction, with marginals $K_{S,i}$. For any product
+comparison law $T_1\otimes\cdots\otimes T_N$ for which the entropies are
+finite,
+
+$$
+D(K_S\Vert\textstyle\bigotimes_iT_i)
+=D(K_S\Vert\textstyle\bigotimes_iK_{S,i})
++\sum_iD(K_{S,i}\Vert T_i).
+$$
+
+The first term is the conditional total correlation. Given a frozen
+accepted component $C$, put $u_i=v_i-\bar v_C$. Its shared Haar rotation
+satisfies
+
+$$
+\operatorname{Cov}(v_i^+,v_j^+\mid C,(v_\ell)_{\ell\in C})
+=\frac{\alpha^2}{d}(u_i\cdot u_j)I_d,\qquad i,j\in C.
+$$
+
+Consequently the component output law need not equal the product of its
+marginals, even conditionally on the input and accepted graph.
+:::
+
+:::{prf:proof}
+Insert the product of the actual marginals between the two densities in
+the likelihood ratio. Each marginal term integrates against $K_{S,i}$,
+which proves the entropy decomposition. For Haar $R\in O(d)$,
+$\mathbb ER=0$ and
+$\mathbb E[R_{ap}R_{bq}]=\delta_{ab}\delta_{pq}/d$.
+Apply these identities to $v_i^+=\bar v_C+\alpha Ru_i$.
+For a two-member component with $u_1=-u_2\ne0$ and $\alpha>0$, the
+cross-covariance is $-\alpha^2|u_1|^2I_d/d$, which is nonzero. The
+entropy decomposition applies to the complete output law after the actual
+kinetic noises and terminal marks; its total-correlation term must be
+evaluated for that law rather than omitted on the basis of independent
+per-slot innovations.
+:::
+
+:::{div} feynman-prose
+For a two-walker collision, the velocities relative to the component mean
+point in opposite directions. Rotate them together and they remain
+opposite. Looking at either walker alone conceals this relation; looking at
+both reveals it immediately. The negative cross-covariance in the
+proposition is the numerical expression of that picture.
+
+Independent kinetic noise is added afterward, but the resulting joint law
+must still carry whatever dependence survives that noise. The entropy of
+each individual output therefore supplies only part of the entropy relative
+to a product comparison law. The total-correlation term supplies the rest.
+Geometric error clusters and accepted collision components have different
+jobs here: the former organize the error of a paired-swarm comparison,
+while the latter determine which walkers receive a shared rotation in an
+actual run. Keeping both structures in the calculation lets the cluster
+estimate address the joint algorithm, with its correlations intact.
+:::
 
 :::{prf:definition} One-step entropy dissipation
 :label: def-discrete-lsi

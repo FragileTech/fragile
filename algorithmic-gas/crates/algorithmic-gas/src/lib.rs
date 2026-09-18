@@ -1,6 +1,7 @@
 //! Independent Algorithmic Gas. Public contracts do not expose Burn types.
 pub mod batch;
 pub mod boundary;
+pub mod canonical;
 pub mod checkpoint;
 pub mod cloning;
 pub mod compute;
@@ -13,6 +14,8 @@ pub mod fitness;
 pub mod geometry;
 pub mod kinetic;
 pub mod lecture;
+pub mod mean_field;
+pub mod mean_field_population;
 pub mod memory;
 pub mod noise;
 pub mod operators;
@@ -20,6 +23,7 @@ pub mod partv_geometry;
 pub mod physics;
 pub mod random;
 pub mod scalar;
+pub mod tessellation;
 pub use batch::*;
 pub use compute::{BackendKind, ComputeBackend, ExecutionContext};
 pub use engine::{

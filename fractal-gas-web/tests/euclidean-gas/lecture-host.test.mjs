@@ -19,7 +19,8 @@ test("All 128 descriptors have distinct IDs, controls, and chapter placements", 
     ),
   );
   assert.equal(new Set(demos.map((demo) => demo.id)).size, 128);
-  assert.equal(new Set(placements.map((item) => item.chapter)).size, 34);
+  await Promise.all([...new Set(placements.map(item => item.chapter))].map(chapter =>
+    readFile(new URL(`../../../docs/${chapter}.md`, import.meta.url), "utf8")));
   assert.deepEqual(
     placements.map((item) => item.id),
     demos.map((item) => item.id),

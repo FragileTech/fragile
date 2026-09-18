@@ -81,6 +81,7 @@ async fn executed(seed: u64, law: InnovationLaw) -> AlgorithmicGas<f64> {
                 coordinate: 1,
                 shift: 0.7,
             }],
+            ..Default::default()
         },
         kinetic: KineticOperator {
             integrator: KineticKind::Baoab {
@@ -98,6 +99,7 @@ async fn executed(seed: u64, law: InnovationLaw) -> AlgorithmicGas<f64> {
                     },
                 },
             },
+            ..Default::default()
         },
         ..Default::default()
     };

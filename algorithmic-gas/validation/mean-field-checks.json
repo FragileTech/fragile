@@ -1,0 +1,61 @@
+{
+  "rust_workspace": {
+    "passed": 335,
+    "failed": 0,
+    "suites": 48,
+    "command": "cargo test --workspace --no-fail-fast"
+  },
+  "canonical_operator_regressions": {
+    "passed": 7,
+    "failed": 0,
+    "includes": "Exact resonant velocity trajectory and nonresonant joint covariance"
+  },
+  "clippy": {
+    "status": "passed",
+    "command": "cargo clippy --workspace --all-targets -- -D warnings"
+  },
+  "compiled_engine": {
+    "test_cases": 156,
+    "status": "passed after final host-manifest retest",
+    "suite_passes_before_final_manifest": 155,
+    "final_host_tests_passed": 4
+  },
+  "part_iii_browser": {
+    "experiments": 8,
+    "status": "passed",
+    "checks": [
+      "actual Rust results",
+      "512 independent rooted draws",
+      "lossless decimal seed provenance",
+      "rendering",
+      "reset replay"
+    ]
+  },
+  "assets": {
+    "profiles": [
+      "cpu",
+      "webgpu"
+    ],
+    "computed_posters": 128
+  },
+  "documentation": {
+    "status": "built",
+    "latest_build_warnings": [
+      "10"
+    ],
+    "clean_full_build_warnings": 112,
+    "warning_scope": "Includes notebook MIME warnings and references in downstream chapters; downstream theorem text was not modified."
+  },
+  "population_study": {
+    "actual_trajectories": 2176,
+    "replicas_per_N": 128,
+    "timesteps": [
+      1,
+      4,
+      16,
+      64
+    ],
+    "h": 0.04,
+    "independent_four_slot_operator_runs": 4096
+  }
+}

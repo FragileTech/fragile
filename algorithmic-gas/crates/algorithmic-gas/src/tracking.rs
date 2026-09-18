@@ -171,6 +171,10 @@ pub struct RecordedStep<T: Real> {
     pub report: StepReport<T>,
     /// Actual pool-aligned inputs used for the clone decision (including historical rescoring).
     pub donor_fitness: Vec<T>,
+    /// Tessellation graph and edge arrays that drove this step's graph forces,
+    /// when the geometry stage records them.
+    #[serde(default)]
+    pub graph: Option<crate::tessellation::GraphSnapshot<T>>,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound = "T: Real", deny_unknown_fields)]
@@ -273,6 +277,9 @@ impl<T: Real> RunArchive<T> {
                 )?,
             )?;
             bytes = checked_add(bytes, checked_mul(s.influences.len(), 256)?)?;
+            if let Some(graph) = &s.graph {
+                bytes = checked_add(bytes, graph.buffer_bytes())?;
+            }
             for f in &s.field_evaluations {
                 bytes = checked_add(bytes, checked_add(256, checked_mul(f.values.len(), 8)?)?)?;
             }
@@ -366,6 +373,9 @@ impl<T: Real> RunArchive<T> {
                 s.before.len() == s.final_population.len(),
                 "archive endpoint row counts differ",
             )?;
+            if let Some(graph) = &s.graph {
+                graph.validate(s.before.len())?;
+            }
             require(
                 s.before
                     .generations

@@ -103,7 +103,12 @@ export function createSceneEditor({
       ? JSON.stringify(currentScene[selected.key][selected.i], null, 2)
       : "";
     properties.show(resolvedSelection());
-    renderer.selectMany(selections.map((s) => s.pos));
+    // A live vehicle is ringed at its current position by the inspector, so
+    // a marker at its recorded position would stay behind as it moves.
+    const live = $("editor").hidden;
+    renderer.selectMany(
+      selections.filter((s) => !(live && s.key === "bodies")).map((s) => s.pos),
+    );
     renderer.setActionGuideBody?.(
       selected?.key === "bodies" ? selected.i : undefined,
     );
@@ -384,6 +389,7 @@ export function createSceneEditor({
       selections = hit ? [hit] : [];
       showEntity();
     },
+    refreshSelection: showEntity,
     setDraftScene(scene) {
       currentScene = copy(scene);
       if (selected && !currentScene[selected.key]?.[selected.i]) {

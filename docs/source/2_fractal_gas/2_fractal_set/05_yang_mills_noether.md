@@ -7686,12 +7686,7 @@ For these observables the following statements hold.
    {prf:ref}`lem-ym-physical-gauge-word-uniform-integrability`.
 
 These statements identify the hierarchy of the specified direct invariant
-observables. Its full labeled algebra has the exact negative reflected test
-in {prf:ref}`prop-ym-native-labeled-color-reflection-sign` whenever the
-specified localized diagonal channel survives. Thus the complete descriptor
-is retained to compute the native law; admitting all its labeled
-localizations into the physical future algebra is incompatible with that
-nonzero channel and reflection positivity.
+observables.
 Full-coordinate orbit separation pertains to a common color
 frame; local gauge covariance and a pure Yang--Mills force identity require
 their native correspondence calculations. Normalized channel averages
@@ -8175,91 +8170,6 @@ approximation on the compact bounded-coordinate ranges makes this error
 arbitrarily small, proving the equivalence of the two positivity tests.
 Finally the even/odd identity applies to arbitrary complex cylinders,
 including the determinant and mixed channels retained here.
-:::
-
-:::{prf:proposition} Exact reflection sign for a localized labeled color coordinate
-:label: prop-ym-native-labeled-color-reflection-sign
-
-Use the full labeled descriptor retained in
-{prf:ref}`thm-ym-native-physical-gauge-hierarchy`, with its actual selected
-record law and its specified geometric reflection. Fix a recorded vertex
-label $i$ and a nonnegative $f\in C_c^\infty(\{x^0>0\})$. The diagonal
-Gram coordinate is $q_{ii}=\|c_i\|^2=m_i$. Its bounded future readout and
-its reflected evaluation are
-
-$$
-F_i^+=m_i\mathbf1_{\{x_i^0>0\}}f(x_i),\qquad
-F_i^-=m_i\mathbf1_{\{x_i^0<0\}}f(\vartheta x_i).
-$$
-
-A missing recorded slot has $m_i=0$. Set
-$u=\mathbb E_{\mathbb P_{N,h}}F_i^+$ and
-$v=\mathbb E_{\mathbb P_{N,h}}F_i^-$. The physical reflected matrix of
-$(1,F_i^+)$ is exactly
-
-$$
-Q=\begin{pmatrix}1&u\\v&0\end{pmatrix}.
-$$
-
-If $u+v>0$, the future word $G=F_i^+-(u+v)/2$ has strictly negative
-physical reflected form:
-
-$$
-\mathbb E_{\mathbb P_{N,h}}
- [\overline{G(\mathsf T_\vartheta Y)}G(Y)]
-=-\frac{(u+v)^2}{4}<0.
-$$
-
-This conclusion applies to the complete execution, survival-conditioned,
-QSD-derived, or stationary law used to define $u,v$. It requires no
-independence of opposite-side stages and no reflection invariance of the
-law. Under reflection invariance $u=v$, and the same value is $-u^2$.
-If $\mathbb P_{N,h}(m_i=1,\,x_i^0\ne0)>0$, some such compactly
-supported $f$ has $u+v>0$.
-
-On the common subsequence retaining these coordinates, let
-$u_{N,h}\to u_*$ and $v_{N,h}\to v_*$. If $u_*+v_*>0$, the fixed
-limiting future word $F_i^+-(u_*+v_*)/2$ has reflected form
-$-(u_*+v_*)^2/4$. Hence a nonzero retained labeled channel of this kind
-also prevents reflection positivity in that limit. In particular the
-uniform bounds and convergence of the full descriptor cannot make it a
-nontrivial physical OS future algebra containing these insertions.
-
-This test concerns individually labeled localizations in the full
-recorded algebra. A summed physical readout has cross-label terms, as
-calculated in {prf:ref}`prop-ym-native-color-reflected-matrices`, and
-its diagonal reflected entry need not vanish. Such an observable remains
-a further pushforward of the full descriptor, in the sense of
-{prf:ref}`thm-sm-direct-measure-isomorphism`.
-:::
-
-:::{prf:proof}
-The same recorded vertex cannot satisfy $x_i^0>0$ and $x_i^0<0$.
-Consequently $F_i^-F_i^+=0$ for every record, before any expectation.
-The diagonal color identity follows from the original masked unit-vector
-normalization. The three remaining matrix entries are the expectation of
-one and the two one-point functions, proving the matrix formula.
-For any real number $a$, direct expansion gives
-
-$$
-\mathbb E[(F_i^--a)(F_i^+-a)]=a^2-a(u+v).
-$$
-
-Its minimum occurs at $a=(u+v)/2$ and has the claimed negative value.
-All factors are bounded, so the calculation applies under the selected
-likelihood, with its companion, cloning, kinetic, and selection factors
-unchanged. Conditioning on any retained interface also leaves the
-pointwise zero product equal to zero.
-
-Choose nonnegative smooth compact cutoffs on the positive half-space
-increasing to one. Their values at $x_i$ and $\vartheta x_i$, with the
-respective masks, increase jointly to
-$m_i\mathbf1_{\{x_i^0\ne0\}}$. Monotone convergence proves the stated
-existence of $f$. Finally the hierarchy theorem passes the bounded
-one-point functions and the identically zero product to the same limit.
-Expanding with the fixed constant $(u_*+v_*)/2$ proves the limiting
-negative form. No population-uniform lower bound on $u+v$ is assumed
-from a finite-cutoff nonzero value.
 :::
 
 :::{prf:proposition} Scalar triangle and outer-plaquette laws in the raw record
@@ -9734,11 +9644,6 @@ physical reflected entries and extends a polynomial sign estimate to
 continuous cylinders. This application uses the existing invariant-coordinate
 and native predictive-kernel results directly. The color orbit identification
 is the common-frame $SU(3)$ identification of the Standard Model chapter.
-The exact test in {prf:ref}`prop-ym-native-labeled-color-reflection-sign`
-excludes reflection positivity for the full labeled future algebra when
-its specified nonzero localized channel survives. Its role as a complete
-native descriptor is distinct from selecting the physical observable
-pushforward on which OS reconstruction is sought.
 
 For the scalar phase record implemented by the raw-array codec,
 {prf:ref}`prop-ym-native-scalar-face-evaluation` evaluates the outer-plaquette

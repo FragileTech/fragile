@@ -1,20 +1,101 @@
-export const BENCHMARKS = {
-  sphere: { label: "Sphere", bounds: [-1000, 1000] },
-  rastrigin: { label: "Rastrigin", bounds: [-5.12, 5.12] },
-  rosenbrock: { label: "Rosenbrock", bounds: [-10, 10] },
-  styblinski_tang: { label: "Styblinski–Tang", bounds: [-5, 5] },
-};
-export function validateLabConfig(config) {
-  if (!config || !Object.hasOwn(BENCHMARKS, config.benchmark))
-    throw new Error("Choose a benchmark supported by this lab.");
-  if (
-    !Number.isInteger(config.dimensions) ||
-    config.dimensions < 2 ||
-    config.dimensions > 128
-  )
+// The objective catalog comes from the Rust engine (`benchmark_catalog()`): ids,
+// names, groups, domains, dimension rules and parameter fields. Nothing about a
+// benchmark is restated here.
+export const benchmarkId = (benchmark) =>
+  typeof benchmark === "string" ? benchmark : benchmark?.id;
+export function catalogEntry(catalog, benchmark) {
+  const id = benchmarkId(benchmark);
+  return catalog?.benchmarks?.find((entry) => entry.id === id) || null;
+}
+// Current parameter values of a configured benchmark, defaults filled in.
+export function benchmarkParameters(entry, benchmark) {
+  const given = typeof benchmark === "object" && benchmark ? benchmark : {};
+  return Object.fromEntries(
+    (entry?.parameterFields || []).map((field) => [
+      field.key,
+      given[field.key] ?? field.default,
+    ]),
+  );
+}
+// The engine's encoding: a bare id, or {id, ...parameters} when it has parameters.
+export function benchmarkValue(entry, parameters = {}) {
+  const fields = entry.parameterFields || [];
+  if (!fields.length) return entry.id;
+  const value = { id: entry.id };
+  for (const field of fields) {
+    const n = Number(parameters[field.key] ?? field.default);
+    if (
+      !Number.isFinite(n) ||
+      n < field.min ||
+      n > field.max ||
+      (field.kind === "integer" && !Number.isInteger(n))
+    )
+      throw new Error(
+        `${field.label} must be ${field.kind === "integer" ? "an integer" : "a number"} in ${field.min}–${field.max}.`,
+      );
+    value[field.key] = n;
+  }
+  return value;
+}
+// Dimension the benchmark admits: fixed (2D functions), 3 × atoms, the nearest
+// COCO dimension, or the requested one above the benchmark's minimum.
+export function dimensionFor(entry, parameters, requested) {
+  if (entry.dimension) return entry.dimension;
+  if (entry.dimensionRule)
+    return 3 * Number(parameters?.n_atoms ?? entry.parameters.n_atoms);
+  if (entry.dimensions)
+    return entry.dimensions.reduce((best, d) =>
+      Math.abs(d - requested) < Math.abs(best - requested) ? d : best,
+    );
+  return Math.max(requested, entry.minDimension || 1);
+}
+export const dimensionLocked = (entry) =>
+  !!(entry?.dimension || entry?.dimensionRule);
+// Display facts about the configured objective. `objective` is the engine's
+// resolved info for the run (instance minimum, molecule view); renderers and
+// view code take bounds and the known minimum from here.
+export function benchmarkInfo(config, catalog, objective) {
+  const entry = catalogEntry(catalog, config.benchmark);
+  const bounds = objective?.bounds || entry?.bounds || [-1, 1];
+  return {
+    id: benchmarkId(config.benchmark),
+    low: bounds[0],
+    high: bounds[1],
+    minimum: objective ? objective.minimum : (entry?.minimum ?? null),
+    minimizer: objective?.minimizer ?? null,
+    label:
+      objective?.name || entry?.name || String(benchmarkId(config.benchmark)),
+    molecule: !!(objective?.molecule ?? entry?.molecule),
+    stochastic: !!(objective?.stochastic ?? entry?.stochastic),
+    objectiveExecution:
+      objective?.objective_execution || entry?.objective_execution || "graph",
+    gradientExecution:
+      objective?.gradient_execution || entry?.gradient_execution || "graph",
+    problemId: objective?.coco_problem_id || null,
+  };
+}
+function checkDimension(entry, config) {
+  const d = config.dimensions;
+  if (!Number.isInteger(d) || d < 2 || d > 128)
     throw new Error(
       "The lab supports 2–128 dimensions; use the Rust API for other dimensions.",
     );
+  const expected = dimensionFor(
+    entry,
+    benchmarkParameters(entry, config.benchmark),
+    d,
+  );
+  if (expected !== d)
+    throw new Error(
+      entry.dimensions
+        ? `${entry.name} is defined in ${entry.dimensions.join(", ")} dimensions.`
+        : `${entry.name} requires ${expected} dimensions.`,
+    );
+}
+export function validateLabConfig(config, catalog) {
+  const entry = config && catalogEntry(catalog, config.benchmark);
+  if (!entry) throw new Error("Choose a benchmark supported by this lab.");
+  checkDimension(entry, config);
   if (
     !Number.isInteger(config.walkers) ||
     config.walkers < 1 ||
@@ -31,27 +112,41 @@ export function validateLabConfig(config) {
     throw new Error("The lab seed must be an unsigned 32-bit integer.");
   return config;
 }
-export function resolveConfig(base, values) {
+export function resolveConfig(base, values, catalog) {
   const config = structuredClone(base);
   const number = (name) => {
     const n = Number(values[name]);
     if (!Number.isFinite(n)) throw new Error(`Invalid ${name}`);
     return n;
   };
-  config.benchmark = values.benchmark;
+  const entry = catalogEntry(catalog, values.benchmark);
+  if (!entry) throw new Error("Choose a benchmark supported by this lab.");
+  config.benchmark = benchmarkValue(entry, values.parameters);
   config.dimensions = number("dimensions");
   config.walkers = number("walkers");
   const d = config.dimensions;
-  if (!Number.isInteger(d) || d < 2 || d > 128)
-    throw new Error(
-      "The lab supports 2–128 dimensions; the Rust API also supports 1D.",
-    );
+  checkDimension(entry, config);
   if (
     !Number.isInteger(config.walkers) ||
     config.walkers < 1 ||
     config.walkers > 16384
   )
     throw new Error("Use 1–16384 walkers in the browser lab.");
+  // The closed-form physics metric and an independent potential are defined for
+  // the lecture objectives only; they do not carry over to another benchmark.
+  if (benchmarkId(base.benchmark) !== entry.id) {
+    if (!entry.physics_metric) config.physics_metric = null;
+    config.potential = null;
+    config.reward_shift = [];
+  }
+  const [low, high] = entry.bounds;
+  if (values["initial-box"] === "domain") {
+    config.initial_lower = low;
+    config.initial_upper = high;
+  } else if (values["initial-box"] === "unit") {
+    config.initial_lower = Math.max(low, -1);
+    config.initial_upper = Math.min(high, 1);
+  }
   const gas = config.gas;
   gas.seed = number("seed");
   gas.backend = values.backend;
@@ -60,10 +155,7 @@ export function resolveConfig(base, values) {
     throw new Error("The lab seed must be an unsigned 32-bit integer.");
   if (gas.backend === "wgpu" && gas.precision !== "f32")
     throw new Error("WebGPU requires f32. Select WASM CPU for f64.");
-  const domain = {
-    lower: Array(d).fill(BENCHMARKS[config.benchmark].bounds[0]),
-    upper: Array(d).fill(BENCHMARKS[config.benchmark].bounds[1]),
-  };
+  const domain = { lower: Array(d).fill(low), upper: Array(d).fill(high) };
   gas.boundary =
     values.boundary === "unbounded"
       ? { kind: "unbounded" }

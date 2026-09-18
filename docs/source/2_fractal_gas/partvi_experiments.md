@@ -433,7 +433,7 @@ Watch the two curves together when eligibility changes. The fraction of eligible
 (sec-partvi-experiment-28)=
 ### VI-28 — Empirical temporal reflection spectrum
 
-**Placement:** {doc}`2_fractal_set/05_yang_mills_noether` at {prf:ref}`prop-ym-native-labeled-color-reflection-sign`.
+**Placement:** {doc}`2_fractal_set/05_yang_mills_noether` at {prf:ref}`prop-ym-native-physical-reflection-calculation`.
 
 **Rust measurement and comparison:** Build a centered past/future bilinear matrix from consecutive same-epoch frame windows, symmetrize it explicitly, and display its eigenvalues and window count.
 
@@ -735,15 +735,43 @@ Compare their changes under viscosity and noise controls. These empirical scales
 :::
 
 (sec-partvi-experiment-51)=
-### VI-51 — Complete mechanical balances and stress ingredients
+### VI-51 — Algorithm-derived field equations and mechanical balances
 
 **Placement:** {doc}`3_fitness_manifold/04_field_equations` at {ref}`sec-stress-energy-tensor`.
 
-**Rust measurement and comparison:** Resolve cloning, restitution, jitter, total-force work, thermostat, transport, boundary, and eligibility contributions using recorded stages. Compare exact balance ledgers with direct changes and retain the quantities needed for stress diagnostics.
+**Rust measurement and comparison:** Measure Fourier probes of the executed
+density, momentum, velocity stress, energy or phase-space field. The sum
+of realized stage increments verifies the mechanical accounting. Stage
+coverage checks detect missing or reordered operations while preserving
+the valid stopping sequence when a boundary causes extinction.
+
+Independent literal-copy, kick and displacement reconstructions check
+the executed maps. The kick calculation uses the recorded potential
+gradient and independently computes viscosity from its input population.
+Independent continuation ensembles test conditional clone-gate and
+thermostat means and covariances, including the full covariance between
+real and imaginary Fourier components. Clone predictions condition on
+the sampled candidates, rescored fitness and revival sources. Thermostat
+predictions use the configured Gaussian or standardized-uniform law;
+metric-enabled cases also independently verify
+$g(BB^\top)=2\gamma T I$. These predictive checks implement
+{prf:ref}`thm-algorithmic-field-characteristics` and
+{prf:ref}`thm-algorithmic-spatial-field-equations`.
 
 :::{div} feynman-prose
-Use the complete force, including viscosity, in kick work. Compare these mechanical measurements with VI-45 metric evolution before proposing a stress relation. A fitted spatial curvature relation must predict independent data as well as the complete balances permit.
+Set the wave number to zero to read a total mass, momentum or energy.
+Increase it to resolve changes across space. A clone changes the Fourier
+phase when the recipient takes the donor's position. Adding the recorded
+changes tells us whether the ledger is complete. Predicting those
+changes from the input state, then comparing with independent runs,
+tests the field equation and its fluctuations.
 :::
+
+**Analysis or protocol controls:** `field_observable` selects `density`,
+`momentum`, `stress`, `energy` or `phase_space`; `wave_number` ranges from
+`0` to `4` with default `1`. Validation covers all 17 quarter-step wave
+numbers for each observable, giving 85 combinations. The common engine
+controls remain active.
 
 (sec-partvi-experiments-holography)=
 ## Executed graphs, entropy, and response

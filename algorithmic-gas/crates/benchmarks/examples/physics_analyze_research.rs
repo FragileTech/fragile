@@ -88,7 +88,7 @@ fn main() -> Result<(), Error> {
                     &run_config
                         .potential
                         .unwrap_or(run_config.benchmark)
-                        .physics_objective(d),
+                        .physics_objective(d)?,
                 ),
             )?;
             if serde_json::to_value(computed)? != record["balance"] {

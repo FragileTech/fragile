@@ -5275,49 +5275,34 @@ The separate transition-law estimate is
 :::{prf:algorithm} Euclidean Gas Update
 :label: alg-euclidean-gas
 
-Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_i)$, the Euclidean Gas performs one update as follows:
+Given the complete marked swarm $S=((x_i,v_i,a_i))_{i=1}^N$, retain all coordinates, including those of dead slots.
 
-1.  **Cemetery check.** If all walkers are dead (no alive indices in $\mathcal A_t$) return the cemetery state ({prf:ref}`def-cemetery-state`); otherwise continue.
-2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 3.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
-3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
-4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
-5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel ({prf:ref}`def-alg-distance`) and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of {doc}`03_cloning`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
-6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
-7.  **Status refresh ({prf:ref}`def-status-update-operator`).** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
+1. If $M=\sum_i a_i=0$, return $S$ unchanged and stop the run.
+2. Each alive row draws one measurement companion from the normalized Gaussian law on squashed phase-space distance, excluding itself when another alive row exists. Measure reward and the sampled separation, including the positive diversity floor, as specified in {ref}`sec-eg-stage2`.
+3. Compute alive-population means and population variances. Standardize each channel using $\sqrt{\operatorname{Var}+\sigma_{\min}^2}$, apply its positive logistic map, and form the fitness product. Retain every realized sampled fitness throughout the cloning stage.
+4. Each row draws one current cloning donor from the same distance-weighted law. For alive rows, accept with probability $\min\{1,[(V_{\mathrm{fit},j}-V_{\mathrm{fit},i})/(p_{\max}(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}}))]_+\}$. Accept every dead row whenever $M>0$. An alive singleton has no distinct donor and does not clone.
+5. Form the undirected graph of accepted recipient–donor edges and compute its connected components. Copy accepted recipient positions from their frozen donors and add independent Gaussian jitter $\sigma_{\mathrm{clone}}\zeta_i$. For each nontrivial component $C$, independently draw $R_C$ from normalized Haar measure on $O(d)$ and set
+   $$
+   \bar v_C=\frac1{|C|}\sum_{i\in C}v_i,\qquad
+   \widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}R_C(v_i-\bar v_C).
+   $$
+   Uninvolved rows keep their input position and velocity. A donor's position changes only if that donor is itself an accepted recipient. Every slot is alive after this stage.
+6. Apply the BAOAB map of {prf:ref}`def-eg-baoab-canonical` to each intermediate row, then independent Gaussian position diffusion and the smooth radial velocity cap. Use fresh independent kinetic noises across rows.
+7. Apply terminal boundary classification once. Retain the positions and velocities of every terminally dead row in the output.
 
-**Euclidean Gas Algorithm**
+All coordinates used in Steps 2–5 are frozen input coordinates. In particular, velocity updates include donors and revived recipients, and no updated donor coordinate feeds another recipient during the same step.
+:::
 
-$$
-\begin{aligned}
-& \textbf{Input:} \mathcal S_t = \{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\}_{i=1}^N\text{; and parameters } \alpha, \beta, \varepsilon_{\mathrm{std}}, \eta, \tau, p_{\max}, \varepsilon_{\mathrm{clone}}, \sigma_x, \alpha_{\text{restitution}}, \sigma_v, \\
-& \qquad \sigma'_{\mathrm{patch}}, g_A, \mathbb C_i, Q_{\delta}, \Psi_{\mathrm{kin,BAOAB}}. \\
-& \textbf{If } |\mathcal A_t| = 0: \textbf{ return } \delta_{\mathcal S_t} \quad \text{\# Cemetery absorption} \\
-\\
-& \underline{\text{Stage 2a: Raw vectors on alive set ({prf:ref}`def-alive-dead-sets`)}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2b: Patched standardisation}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2c: Logistic rescale of components}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2d: Assemble full vectors with floors}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 3: Cloning transition}} \\
-& \dots \quad \text{\# Unchanged logic, produces } (x_i^{(t+\frac{1}{2})}, v_i^{(t+\frac{1}{2})}) \\
-\\
-& \underline{\text{Stage 4: Langevin perturbation and status refresh}} \\
-& \mathcal S_{\mathrm{pert}} \sim \Psi_{\mathrm{kin,BAOAB}}(\{(x_i^{(t+\frac{1}{2})}, v_i^{(t+\frac{1}{2})})\}, \cdot) \quad \text{\# BAOAB Langevin step with velocity capping} \\
-& \textbf{For each } i = 1..N: \\
-& \quad (x_i^{(t+1)}, v_i^{(t+1)}) \leftarrow \text{draw from kinetic step output} \\
-& \quad s_i^{(t+1)} \leftarrow \mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^{(t+1)}) \\
-& \textbf{Return } \mathcal S_{t+1}
-\end{aligned}
+:::{prf:definition} Canonical Rust configuration
+:label: def-eg-canonical-rust
 
-$$
+`GasConfig::euclidean(d, h)` in the Rust `algorithmic-gas` library selects current-frame independent companions, Gaussian width $\epsilon_D=\epsilon_C=2$, squashing radii $R_x=R_v=2$, and phase-space weight $\lambda_v=1$. Both standardization floors are $0.1$, both logistic maps are $g(z)=2/(1+e^{-z})+0.1$, and both fitness exponents are $1$. The separation floor is $10^{-3}$; clone saturation is $p_{\max}=1$ and acceptance denominator floor is $10^{-6}$.
 
+The collision has $\alpha_{\mathrm{restitution}}=0.5$ and $\sigma_{\mathrm{clone}}=0.1$. BAOAB uses unit mass, friction $1$, velocity diffusion factor $1$, final position diffusion $\sigma_x=0.1$, and velocity radius $V_{\mathrm{alg}}=2$. The absorbing box is $[-2,2]^d$, with terminal-only boundary classification. The caller supplies the objective and its potential gradient; the benchmark experiments use an explicit quadratic objective. Rust supports $1\le d\le256$ for the shared orthogonal sampler.
+
+The mathematical formulas describe the real-arithmetic transition. Each interactive experiment executes the Rust engine and records its configuration, seed, accepted edges, component rotations, stage outputs, and terminal status. They do not run a separate Python trajectory implementation.
+
+Uniform companions, uncapped kinetics, substep absorption, direct-copy cloning, historical donors, and additional force terms are separately configured library extensions. Statements for the canonical configuration apply to an extension only after its changed transition and proof hypotheses have been checked.
 :::
 
 ::::{prf:lemma} Properties of smooth radial squashing maps
@@ -5385,198 +5370,78 @@ Taking square roots gives the stated bound.
 ```
 ::::
 
-::::{prf:lemma} Lipschitz property of the kinetic flow
+:::{prf:definition} BAOAB, position diffusion, smooth cap, and terminal classification
+:label: def-eg-baoab-canonical
+
+Write $h=\tau>0$, $\gamma\ge0$, $F=-\nabla U$, and
+$$
+c=e^{-\gamma h},\qquad
+q^2=\sigma_v^2\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\ h,&\gamma=0.\end{cases}
+$$
+From the post-collision row $(x,v)$ draw independent standard Gaussian vectors $\xi_v,\xi_x$ and apply
+$$
+\begin{aligned}
+v_1&=v+\tfrac h2F(x), &x_1&=x+\tfrac h2v_1,\\
+v_2&=c v_1+q\xi_v, &x_2&=x_1+\tfrac h2v_2,\\
+v_3&=v_2+\tfrac h2F(x_2), &x^+&=x_2+\sigma_x\sqrt h\xi_x,\\
+v^+&=\psi_v(v_3)=\frac{V_{\mathrm{alg}}v_3}{V_{\mathrm{alg}}+\|v_3\|},
+&a^+&=\mathbf1_D(x^+).
+\end{aligned}
+$$
+The force is an acceleration; a nonunit physical mass is incorporated into $F$. The canonical thermostat is centered at zero. No boundary operation occurs at the clone, B, A, or O stages. The cap changes velocities only, and terminal absorption changes the mark only. In particular, $\|v^+\|<V_{\mathrm{alg}}$ for every finite input.
+
+Clone jitter uses the separate parameter $\sigma_{\mathrm{clone}}$ and independent $\zeta_i$ for every accepted row, including revived rows. These jitters and the kinetic noises are independent across rows and independent of the graph. Rotations are independent across components, with one rotation shared inside each component. Conditional collision outputs are consequently correlated.
+:::
+
+:::{prf:remark} Continuous-time interpretation
+:label: remark-eg-fixed-step-kinetics
+
+BAOAB discretizes underdamped Langevin dynamics before the final diffusion, cap, and selection operations are composed with it. The complete canonical kernel is the composition just defined. Its stationary law is not asserted to be a Gibbs law. Holding the cap radius and order-one cloning rule fixed while $h\downarrow0$ need not yield a finite continuous-time generator; {doc}`08_mean_field` analyzes this identification using the actual one-step map.
+:::
+
+:::{prf:lemma} Scheduled revival
+:label: lem-eg-scheduled-revival
+
+If at least one slot is alive, every dead slot draws an eligible donor using its retained position and velocity in the Gaussian weights and is accepted with probability one. Thus the post-cloning population has $N$ alive slots. If no slot is alive, the swarm is absorbing. This conclusion does not require an inequality relating the fitness floor to the clone acceptance denominator.
+
+*Proof.* The Gaussian donor weights are positive for all finite coordinates. Their sum over the nonempty alive pool is positive. The dead-row branch of the cloning rule accepts the selected donor deterministically. The component transform and jitter are then applied before any terminal classification. $\square$
+:::
+
+:::{prf:lemma} Lipschitz property of the kinetic position map
 :label: lem-sasaki-kinetic-lipschitz
 
-For $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and any $\xi_v,\xi_x\in\mathbb R^d$ define
-
+For the canonical kinetic step, let $b=h(1+c)/2$ and
 $$
-\Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\big(v+\tfrac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))+\sqrt{\sigma_v^2\tau}\,\xi_v\big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
-
+M_h(x,v)=x+b\bigl(v+\tfrac h2F(x)\bigr),\qquad
+s_h^2=\tfrac{h^2q^2}{4}+h\sigma_x^2.
 $$
-Then
-
+Then $x^+$ has law $\mathcal N(M_h(x,v),s_h^2 I_d)$, and under identical innovations
 $$
-\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')),\qquad L_{\mathrm{flow}}:=1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}.
-
+\|x^+-x'^+\|\le L_{\mathrm{flow}}d_{\mathrm{phys}}((x,v),(x',v')),
+\qquad L_{\mathrm{flow}}=1+\tfrac{bhL_F}{2}+\frac b{\sqrt{\lambda_v}}.
 $$
 
-Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and $\xi_v,\xi_x\in\mathbb R^d$. Define the uncapped velocities
-
-$$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad\tilde v':=v'+\frac{\tau}{m}F(x')-\gamma_{\mathrm{fric}}\tau\big(v'-u(x')\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Because the same velocity noise $\xi_v$ appears in both expressions, it cancels in the difference $\tilde v-\tilde v'$. We bound the displacement in four steps.
-
-1. **Uncapped velocity difference.** Using the triangle inequality, the Lipschitz constant $L_F$ of $F$, and the Lipschitz constant $L_u$ of $u$, we obtain
-
-$$
-\begin{aligned}
-\|\tilde v-\tilde v'\|&\le \|v-v'\|+\frac{\tau}{m}\|F(x)-F(x')\|+\gamma_{\mathrm{fric}}\tau\|v-v'\|+\gamma_{\mathrm{fric}}\tau\|u(x)-u(x')\|\\
-&\le(1+\gamma_{\mathrm{fric}}\tau)\,\|v-v'\|+\Big(\frac{\tau}{m}L_F+\gamma_{\mathrm{fric}}\tau L_u\Big)\,\|x-x'\|.
-\end{aligned}
-
-$$
-
-2. **Lipschitz projection.** Lemma {prf:ref}`lem-squashing-properties-generic` shows the smooth squashing map $\psi_v$ is $1$-Lipschitz, so the same inequality holds for the capped velocities $v^+:=\psi_v(\tilde v)$ and $v'^+:=\psi_v(\tilde v')$.
-
-3. **Position update.** The Euler step sets $x^+:=x+\tau v^+ +\sqrt{\tau}\,\sigma_x\,\xi_x$ and $x'^+:=x'+\tau v'^+ +\sqrt{\tau}\,\sigma_x\,\xi_x$. Hence
-
-$$
-\|x^+-x'^+\|\le\|x-x'\|+\tau\,\|v^+-v'^+\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u\Big)\|x-x'\|+\tau(1+\gamma_{\mathrm{fric}}\tau)\|v-v'\|.
-
-$$
-
-4. **Express via the Sasaki metric.** The Sasaki distance satisfies $d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))^2=\|x-x'\|^2+\lambda_v\|v-v'\|^2$, so $\|x-x'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}$ and $\|v-v'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}/\sqrt{\lambda_v}$. Substituting these bounds into the inequality from Step 3 yields
-
-$$
-\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}\Big) d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')).
-
-$$
-
-The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
+*Proof.* Substitute $v_2=cv_1+q\xi_v$ into $x_2=x+h(v_1+v_2)/2$. This gives $x^+=M_h+(hq/2)\xi_v+\sigma_x\sqrt h\xi_x$. The noises are independent and their covariance is $s_h^2I_d$. In a synchronous coupling they cancel. The Lipschitz bound on $F$ and the two coordinate bounds supplied by $d_{\mathrm{phys}}$ give the result. The B2 kick and cap do not change $x^+$. $\square$
 :::
-```
-::::
 
-::::{prf:lemma} Hölder continuity of the death probability
+:::{prf:lemma} Lipschitz continuity of the death probability
 :label: lem-euclidean-boundary-holder
 
-Let $p_{\mathrm{dead}}(x,v) := \mathbb{P}(x^+ \notin \mathcal{X}_{\mathrm{valid}})$ denote the probability that a walker at $(x,v)$ exits the valid domain after one kinetic step. Then for any compact $C \subset \mathcal{X}_{\mathrm{valid}}$ containing $(x,v)$ and $(x',v')$, there exists a constant $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) < \infty$ such that
-
+For any Borel domain $D$, define $p_{\mathrm{dead}}(x,v)=\mathbb P(x^+\notin D)$. If $s_h>0$, then
 $$
-|p_{\mathrm{dead}}(x,v) - p_{\mathrm{dead}}(x',v')| \le L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) \cdot d_{\mathcal{Y}}^{\mathrm{Sasaki}}((x,v),(x',v')).
+|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|
+\le \frac{L_{\mathrm{flow}}}{\sqrt{2\pi}s_h}\,
+ d_{\mathrm{phys}}((x,v),(x',v')).
 $$
+For a domain with Lebesgue-null boundary, $\mathbb P(x^+\in\partial D)=0$.
 
-This establishes Hölder continuity with exponent $\alpha_B^{\mathrm{Sasaki}} = 1$.
-
-Referenced by {prf:ref}`thm-euclidean-feller`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and set $\Delta:=d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))$. Let $C$ be any compact subset of $\mathbb R^d$ containing $x$ and $x'$, so that the local constants from Lemma {prf:ref}`lem-euclidean-geometric-consistency` apply uniformly on $C$. For independent $\xi_v,\xi_x\sim\mathcal N(0,I_d)$ define
-
-$$
-\Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\Big(v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v\Big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
-
-$$
-
-Lemma {prf:ref}`lem-sasaki-kinetic-lipschitz` delivers $\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,\Delta$ almost surely. Consequently
-
-$$
-|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le\mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)+\mathbb P\big(\Phi_{x',v'}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big).
-
-$$
-
-We bound the first term; the second is identical with primed variables.
-
-1. **Tubular neighbourhood volume.** Because $\partial\mathcal X_{\mathrm{valid}}$ is $C^1$ with bounded curvature, the tubular-neighbourhood theorem ([Federer 69, §4.18]) provides $\varepsilon_{\mathrm{tube}}>0$ and
-
-$$
-C_{\partial}:=\sup_{0<\varepsilon\le\varepsilon_{\mathrm{tube}}}\frac{\operatorname{Vol}(N_\varepsilon(\partial\mathcal X_{\mathrm{valid}}))}{\varepsilon}<\infty.
-
-$$
-
-By monotonicity it suffices to treat $L_{\mathrm{flow}}\Delta\le\varepsilon_{\mathrm{tube}}$; otherwise the Hölder bound follows immediately.
-
-2. **Affine Gaussian contribution (no capping).** Introduce the uncapped velocity update
-
-$$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Then $\tilde x:=x+\tau\tilde v+\sqrt{\tau}\,\sigma_x\,\xi_x$ is Gaussian with mean $x+\tau m(x,v)$, where $m(x,v):=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))$, and covariance $\tau(\sigma_v^2\tau^2+\sigma_x^2)I_d$. Its density is
-
-$$
-p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}\exp\Big(-\frac{\|y-(x+\tau m(x,v))\|^2}{2\tau(\sigma_v^2\tau^2+\sigma_x^2)}\Big).
-
-$$
-
-The density attains its supremum at the mean, yielding
-
-$$
-p_{\mathrm{aff}}:=\sup_{y\in\mathbb R^d}p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}.
-
-$$
-
-This constant governs the contribution of $C^c:=\{\|\tilde v\|\le V_{\mathrm{alg}}\}$, where the velocity cap is inactive.
-
-3. **Directional density under capping.** Let $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Lemma {prf:ref}`lem-euclidean-geometric-consistency` gives $\mathbb P(E)\le\rho_*(C)$. On $E$ write $\tilde v=ru$ with $r>V_{\mathrm{alg}}$ and $u\in S^{d-1}$. The capped velocity is $v^+=V_{\mathrm{alg}}u$, whose conditional density equals
-
-$$
-g(u)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\int_{V_{\mathrm{alg}}}^{\infty}\exp\Big(-\frac{\|ru-m(x,v)\|^2}{2\sigma_v^2\tau}\Big) r^{d-1}\,dr.
-
-$$
-
-The local bounds on $F$ and $u$ over $C$ imply
-
-$$
-\|m(x,v)\|\le M_{\mathrm{kin}}(C).
-
-$$
-
-For $r\ge V_{\mathrm{alg}}$ the inequality $\|a-b\|^2\ge\tfrac{1}{2}\|a\|^2-\|b\|^2$ yields
-
-$$
-\|ru-m(x,v)\|^2\ge\frac{r^2}{2}-M_{\mathrm{kin}}(C)^2.
-
-$$
-
-Substituting into $g(u)$ and changing variables via $s=r^2/(4\sigma_v^2\tau)$ produces
-
-$$
-g(u)\le\frac{\exp(M_{\mathrm{kin}}(C)^2/(2\sigma_v^2\tau))}{(2\pi\sigma_v^2\tau)^{d/2}}(2\sigma_v^2\tau)^{d/2}\Gamma\Big(\frac{d}{2},\frac{V_{\mathrm{alg}}^2}{4\sigma_v^2\tau}\Big)=:q_{\mathrm{dir}}(C),
-
-$$
-
-where $\Gamma(\cdot,\cdot)$ is the upper incomplete gamma function. Thus the capped direction has uniformly bounded density.
-
-4. **Probability of hitting the tube.** For any Borel $A\subseteq\mathcal X$ split according to $E$:
-
-$$
-\begin{aligned}
-\mathbb P\big(\Phi_{x,v}(\xi)\in A\big)&=\mathbb P(E^c)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E^c\big)+\mathbb P(E)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E\big)\\
-&\le p_{\mathrm{aff}}\operatorname{Vol}(A)+\rho_*(C) q_{\mathrm{dir}}(C)\operatorname{Vol}(A).
-\end{aligned}
-
-$$
-
-Taking $A=N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})$ and using Step 1 yields
-
-$$
-\mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)\le\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
-
-$$
-
-Combining the two probabilities shows
-
-$$
-|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
-
-$$
-
-Therefore $\alpha_B^{\mathrm{Sasaki}}=1$ with Hölder constant
-
-$$
-L_{\mathrm{death}}^{\mathrm{Sasaki}}(C):=2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}.
-
-$$
-
+*Proof.* Two Gaussians with covariance $s_h^2I$ and mean separation $r$ have total variation distance $2\Phi(r/(2s_h))-1$. To see this, divide their densities: the region where the first is larger is the half-space through their midpoint perpendicular to the mean difference. Integrating over that half-space reduces the distance to the displayed one-dimensional expression. Since $\Phi'$ is at most $1/\sqrt{2\pi}$, this distance is at most $r/(\sqrt{2\pi}s_h)$. Apply the bound to the exit event and then use {prf:ref}`lem-sasaki-kinetic-lipschitz`. The null-boundary assertion follows from the Gaussian density. $\square$
 :::
-```
-::::
 
 ::::{prf:lemma} Reward regularity in the Sasaki metric
 :label: lem-euclidean-reward-regularity
 
-The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`).
+The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous in physical coordinates and Lipschitz on each compact physical set. Expressed in squashed coordinates it is Lipschitz on the image of each such compact set. This gives the reward-regularity bound on the alive box with capped velocities. It does not assert a bounded continuous extension to the boundary of the full feature-space compactification.
 
 
 ```{dropdown} Proof
@@ -5584,7 +5449,7 @@ The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ i
 Let $\mathcal Y^{\circ}:=B(0,R_x)\times B(0,V_{\mathrm{alg}})$ be the image of the projection $\varphi:\mathbb R^d\times\mathbb R^d\to\mathcal Y^{\circ}$. For $y=(y_x,y_v)\in\mathcal Y^{\circ}$ the inverse mapping is explicit:
 
 $$
-\psi_C^{-1}(y)=\frac{C}{1-\|y\|/C}\,y\qquad(\|y\|<C).
+\psi_C^{-1}(y)=\frac{y}{1-\|y\|/C}\qquad(\|y\|<C).
 
 $$
 
@@ -5602,274 +5467,90 @@ Because $R_{\mathcal Y}$ is continuous on $\mathcal Y^{\circ}$ and $\mathcal Y^{
 ```
 ::::
 
-::::{prf:lemma} Environmental richness with a kinetic regularizer
+:::{prf:lemma} Reward variation and a quantitative richness condition
 :label: lem-euclidean-richness
 
-The reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ with $\lambda_{\mathrm{vel}}>0$ satisfies the Axiom of Environmental Richness ({prf:ref}`axiom-environmental-richness`).
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x_0,v_0)\in\mathcal Y$ and radius $r>0$. Every Sasaki ball of radius $r$ contains the set of velocities with Euclidean norm at most $r/\sqrt{\lambda_v}$ around $v_0$. Let
-
+Let $\pi_B$ be the reference probability on a specified local region $B$ used in a richness assertion. Suppose two measurable subsets $B_1,B_2\subset B$ satisfy $\pi_B(B_i)\ge p_i>0$ and
 $$
-\delta:=\min\Big\{\frac{r}{\sqrt{\lambda_v}},\,\frac{V_{\mathrm{alg}}}{2}\Big\}>0.
-
+\inf_{z\in B_1,z'\in B_2}|R(z)-R(z')|\ge\Delta>0.
 $$
-Consider the two velocities $v_1:=v_0$ and $v_2:=v_0+\delta e$, where the direction $e$ is chosen as follows:
+Then $\operatorname{Var}_{\pi_B}R\ge p_1p_2\Delta^2$.
 
-1. If $\|v_0\|\le V_{\mathrm{alg}}-\delta$, take $e$ orthogonal to $v_0$. Then $\|v_2\|^2=\|v_0\|^2+\delta^2\le V_{\mathrm{alg}}^2$, so $v_2\in\mathcal V_{\mathrm{alg}}$ and $d_{\mathcal Y}^{\mathrm{Sasaki}}((x_0,v_0),(x_0,v_2))=\sqrt{\lambda_v}\,\delta\le r$.
-2. If $\|v_0\|>V_{\mathrm{alg}}-\delta$, set $e:=-v_0/\|v_0\|$ (if $v_0=0$, pick any unit vector). The new velocity has norm $\|v_0\| - \delta\le V_{\mathrm{alg}}$ and again lies within the Sasaki ball.
+*Proof.* If $Z,Z'$ are independent with law $\pi_B$, then $\operatorname{Var}R=\frac12\mathbb E[(R(Z)-R(Z'))^2]$. The two ordered events $B_1\times B_2$ and $B_2\times B_1$ contribute at least $2p_1p_2\Delta^2$. $\square$
 
-In both cases the velocities stay in the ball, and the reward difference equals
-
-$$
-|R(x_0,v_1)-R(x_0,v_2)|=\lambda_{\mathrm{vel}}\,|\|v_2\|^2-\|v_0\|^2|\ge \lambda_{\mathrm{vel}}\,\delta^2.
-
-$$
-For the inward-pointing choice we use that $\|v_0\|>V_{\mathrm{alg}}-\delta\ge V_{\mathrm{alg}}/2\ge\delta$ because $\delta\le V_{\mathrm{alg}}/2$, guaranteeing the same lower bound.
-Hence the variance of $R$ on the ball is at least $\sigma_{\mathrm{rich}}^2(r):=\lambda_{\mathrm{vel}}^2\delta^4/4>0$, establishing environmental richness.
+A nonzero kinetic penalty creates local reward variation, but a pair of distinct reward values alone does not provide the probability factors $p_1,p_2$. A uniform richness axiom requires these factors and the gap to be bounded uniformly over the specified regions and reference law. The canonical fixed-step population proofs use positive regularization floors and do not assume this additional richness statement. For a constant objective with zero kinetic penalty, reward variance is exactly zero while the regularized algorithm remains defined.
 :::
-```
-::::
 
-::::{prf:lemma} Perturbation second moment in the Sasaki metric
+:::{prf:lemma} Perturbation second moment in physical phase space
 :label: lem-euclidean-perturb-moment
 
-Let $(x^+, v^+)$ denote the walker state after one BAOAB kinetic step from $(x,v)$. The expected squared Sasaki displacement satisfies the quadratic growth bound
-
+For the canonical BAOAB step, let $b,s_h$ be as in {prf:ref}`lem-sasaki-kinetic-lipschitz`, and assume $\|F(x)\|\le B_F+L_F\|x\|$. Then
 $$
-\mathbb{E}\big[d_{\mathcal{Y}}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big] \le C_x^{(\mathrm{pert})}\|x\|^2 + C_v^{(\mathrm{pert})}\|v\|^2 + C_0^{(\mathrm{pert})}
+\mathbb E d_{\mathrm{phys}}((x,v),(x^+,v^+))^2
+\le C_x\|x\|^2+C_v\|v\|^2+C_0,
 $$
-
-where $C_x^{(\mathrm{pert})}$, $C_v^{(\mathrm{pert})}$, and $C_0^{(\mathrm{pert})}$ are explicit constants depending on the physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\mathrm{fric}}, L_F, L_u, \lambda_v, V_{\mathrm{alg}})$. Moreover, the kinetic kernel is Feller: it maps bounded continuous functions to bounded continuous functions.
-
-Referenced by {prf:ref}`thm-euclidean-feller`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Introduce the uncapped velocity update
-
+where
 $$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad \xi_v\sim\mathcal N(0,I_d).
-
+C_x=\frac{3b^2h^2L_F^2}{4},\qquad
+C_v=3b^2+2\lambda_v,\qquad
+C_0=\frac{3b^2h^2B_F^2}{4}+d s_h^2+2\lambda_v V_{\mathrm{alg}}^2.
 $$
+The unmarked kinetic kernel maps bounded continuous functions to bounded continuous functions.
 
-Write $a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)$. {ref}`Stage 4 <sec-eg-stage4>` applies the cap and Euler step to obtain
-
+*Proof.* The Gaussian position formula gives
 $$
-v^+:=\psi_v(\tilde v),\qquad x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x,
-
+\mathbb E\|x^+-x\|^2=b^2\|v+\tfrac h2F(x)\|^2+d s_h^2
+\le3b^2\|v\|^2+\tfrac{3b^2h^2}{4}(L_F^2\|x\|^2+B_F^2)+d s_h^2.
 $$
-
-with $\xi_x\sim\mathcal N(0,I_d)$ independent of $\xi_v$.
-
-We bound the expected Sasaki increment in three explicit steps.
-
-1. **Positional increment.** The cap guarantees $\|v^+\|\le V_{\mathrm{alg}}$. Hence
-
-$$
-\|x^+-x\|\le\tau\,\|v^+\|+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|\le\tau V_{\mathrm{alg}}+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|,
-
-$$
-
-so $\mathbb E\big[\|x^+-x\|^2\big]\le 2\tau^2 V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d$.
-
-2. **Velocity increment.** Lemma {prf:ref}`lem-squashing-properties-generic` gives $\|v^+-v\|\le\|\tilde v-v\|$. The random increment decomposes as
-
-$$
-\tilde v-v=a(x,v)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Let $F_0:=\|F(0)\|$ and $u_0:=\|u(0)\|$. The Lipschitz bounds $\|F(x)\|\le F_0+L_F\|x\|$ and $\|u(x)\|\le u_0+L_u\|x\|$ imply
-
-$$
-\|a(x,v)\|\le\frac{\tau}{m}\big(F_0+L_F\|x\|\big)+\gamma_{\mathrm{fric}}\tau\Big(\|v\|+u_0+L_u\|x\|\Big).
-
-$$
-
-Define the coefficients
-
-$$
-A_x:=\tau\Big(\frac{L_F}{m}+\gamma_{\mathrm{fric}}L_u\Big),\qquad A_v:=\gamma_{\mathrm{fric}}\tau,\qquad A_0:=\frac{\tau}{m}F_0+\gamma_{\mathrm{fric}}\tau u_0.
-
-$$
-
-Then $\|a(x,v)\|\le A_x\|x\|+A_v\|v\|+A_0$. Using $\mathbb E\|\xi_v\|^2=d$ and $(\alpha+\beta+\gamma)^2\le 3(\alpha^2+\beta^2+\gamma^2)$ gives
-
-$$
-\mathbb E\big[\|\tilde v-v\|^2\big]\le 3A_x^2\|x\|^2+3A_v^2\|v\|^2+3A_0^2+\sigma_v^2\tau d.
-
-$$
-
-3. **Assemble the Sasaki moment.** By definition of the Sasaki metric,
-
-$$
-d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2=\|x^+-x\|^2+\lambda_v\,\|v^+-v\|^2.
-
-$$
-
-Taking expectations and combining the bounds from Steps 1–2 yields
-
-$$
-\mathbb E\big[d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big]\le C_x^{(\mathrm{pert})}\,\|x\|^2+C_v^{(\mathrm{pert})}\,\|v\|^2+C_0^{(\mathrm{pert})},
-
-$$
-
-with
-
-$$
-\begin{aligned}
-C_x^{(\mathrm{pert})}&:=3\lambda_vA_x^2,\\
-C_v^{(\mathrm{pert})}&:=3\lambda_vA_v^2,\\
-C_0^{(\mathrm{pert})}&:=2\tau^2V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d+3\lambda_vA_0^2+\lambda_v\sigma_v^2\tau d.
-\end{aligned}
-
-$$
-
-The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapsto(x,\tilde v)$, the 1-Lipschitz projection $\psi_v$, and addition of a Gaussian with full support; appending the deterministic status update preserves this property.
-
+The smooth cap gives $\|v^+-v\|^2\le2V_{\mathrm{alg}}^2+2\|v\|^2$. Sum these inequalities with velocity weight $\lambda_v$. Every BAOAB substep and the cap are continuous in the input for each fixed pair of innovations. Dominated convergence proves the asserted kernel continuity. The bound for projected displacement follows from the squashing maps' 1-Lipschitz property. $\square$
 :::
-```
-::::
 
-::::{prf:lemma} Geometric consistency under the capped kinetic kernel
+:::{prf:lemma} Kinetic drift, positional covariance, and local phase-space nondegeneracy
 :label: lem-euclidean-geometric-consistency
 
-Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Because $\mathcal X_{\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on the geometry explicit we index the constants by an arbitrary compact subset $C \subset \mathcal X_{\mathrm{valid}}$; in practice we take $C = \mathcal X_{\mathrm{valid}}$ and obtain uniform constants on the entire valid domain.
-
-Let $C\subset\mathbb R^d$ be an arbitrary compact set and define the local envelopes
-
+For the same transition,
 $$
-F_C:=\sup_{x\in C}\|F(x)\|,\qquad u_C:=\sup_{x\in C}\|u(x)\|,
-
+\mathbb E(x^+-x)=b(v+\tfrac h2F(x)),\qquad
+\operatorname{Cov}(x^+)=s_h^2I_d.
 $$
+Hence the positional covariance condition number is exactly $1$, and the phase-space mean displacement has magnitude at most $\sqrt{C_x\|x\|^2+C_v\|v\|^2+C_0}$. The full position–velocity covariance is not generally isotropic.
 
-which are finite by continuity. Set
+If $F$ is $C^1$, $q>0$, $\sigma_x>0$, and $h^2L_F/4<1$, then the full physical phase-space covariance is positive definite. Its condition number is bounded on every compact set of inputs, with constants depending on that set and on $h$.
 
+*Proof.* The first two identities follow directly from the Gaussian position formula; Jensen's inequality and {prf:ref}`lem-euclidean-perturb-moment` give the drift bound. For the final assertion, condition on $x_1$. The map from the O-stage velocity $w$ to the B2 velocity is
 $$
-C_{\mathrm{force}}(C):=\frac{F_C}{m}+\gamma_{\mathrm{fric}}\big(V_{\mathrm{alg}}+u_C\big),\qquad M_{\mathrm{kin}}(C):=V_{\mathrm{alg}}+\frac{\tau}{m}F_C+\gamma_{\mathrm{fric}}\tau\big(V_{\mathrm{alg}}+u_C\big).
-
+T(w)=w+\tfrac h2F(x_1+\tfrac h2w).
 $$
+Its perturbation of the identity has Lipschitz constant $h^2L_F/4<1$. For every target $y$, the equation $w=y-\tfrac h2F(x_1+hw/2)$ has a unique solution by geometric convergence of this contraction. Its derivative is invertible, so $T$ is a $C^1$ bijection with continuous inverse. Composing with $\psi_v$ maps onto $B(0,V_{\mathrm{alg}})$ with a positive density. Independent final position noise then gives a positive joint density on $\mathbb R^d\times B(0,V_{\mathrm{alg}})$.
 
-Let $\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v$ with $\xi_v\sim\mathcal N(0,I_d)$ and set $v^+:=\psi_v(\tilde v)$, $x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x$. Denote
+A nonzero linear functional cannot be constant on this open set, so its variance is positive. Covariance entries depend continuously on the initial state by Gaussian moment domination and the velocity bound. Compactness therefore supplies a positive minimum eigenvalue and a finite maximum eigenvalue on each compact input set. Their ratio is the stated local condition-number bound. $\square$
 
-$$
-a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big).
+For the unit quadratic potential used by the canonical experiments, $F(x)=-x$ and $L_F=1$, so the positive-definiteness condition is verified whenever $0<h<2$, including the experiment default $h=0.04$. There is an exact obstruction at $h=2$: $x_2=x_1+v_2$ and $v_3=v_2-x_2=-x_1$, so the final velocity is deterministic conditional on the kinetic input, despite positive thermostat noise. Its velocity covariance is zero. The final position still has the displayed nondegenerate Gaussian law.
 
-$$
-
-We supply explicit constants for the drift and anisotropy parts of Definition {prf:ref}`axiom-geometric-consistency`.
-
-1. **Drift of the mean displacement.** Because $\|v\|\le V_{\mathrm{alg}}$ we have
-
-$$
-\|\mathbb E[x^+-x]\|=\tau\,\|\mathbb E[v^+]\|\le\tau\big(\|\mathbb E[v^+-v]\|+V_{\mathrm{alg}}\big).
-
-$$
-
-The increment of the velocity splits as
-
-$$
-\mathbb E[v^+-v]=\mathbb E[\tilde v-v]+\mathbb E[\psi_v(\tilde v)-\tilde v].
-
-$$
-
-The affine term obeys $\|\mathbb E[\tilde v-v]\|=\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. The projection error equals $(\|\tilde v\|-V_{\mathrm{alg}})_+$ and is supported on the capping event $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Since $\tilde v = v + a(x,v) + \sqrt{\sigma_v^2\tau}\xi_v$ and $\mathbb E[\xi_v]=0$, the second moment satisfies
-
-$$
-\mathbb E[\|\tilde v\|^2]=\|v+a(x,v)\|^2+\sigma_v^2\tau d\le(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d
-
-$$
-
-where we used $\|v\|\le V_{\mathrm{alg}}$ and $\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. By Markov's inequality, $\mathbb P(E)\le\mathbb E[\|\tilde v\|^2]/V_{\mathrm{alg}}^2$, and since $(\|\tilde v\|-V_{\mathrm{alg}})_+\le\|\tilde v\|-V_{\mathrm{alg}}$ on $E$ and equals zero elsewhere, we have
-
-$$
-\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\frac{\mathbb E[\|\tilde v\|^2]}{V_{\mathrm{alg}}}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
-
-$$
-
-Thus $\|\mathbb E[v^+-v]\|\le\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)$ and
-
-$$
-\|\mathbb E[x^+-x]\|\le\tau\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big).
-
-$$
-
-Combining the position and velocity components gives
-
-$$
-\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C):=\sqrt{\tau^2\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big)^2+\lambda_v\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)\big)^2}.
-
-$$
-
-2. **Probability of capping.** The same second-moment estimate implies
-
-$$
-\rho_*(C):=\mathbb P(E)\le\frac{\mathbb E\|\tilde v\|^2}{V_{\mathrm{alg}}^2}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}^2}.
-
-$$
-
-3. **Lower bound on the uncapped density.** The mean of $\tilde v$ satisfies
-
-$$
-\|m(x,v)\|=\Big\|v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))\Big\|\le M_{\mathrm{kin}}(C).
-
-$$
-
-The Gaussian density of $\tilde v$ is
-
-$$
-p_{\tilde v}(y)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{\|y-m(x,v)\|^2}{2\sigma_v^2\tau}\Big).
-
-$$
-
-For $u\in S^{d-1}$ and $0\le r\le V_{\mathrm{alg}}/2$ the inequality $\|a-b\|^2\le 2\|a\|^2+2\|b\|^2$ yields
-
-$$
-\|ru-m(x,v)\|^2\le\Big(\frac{V_{\mathrm{alg}}}{2}+M_{\mathrm{kin}}(C)\Big)^2.
-
-$$
-
-Hence $p_{\tilde v}(ru)\ge c_{d,0}$ where
-
-$$
-c_{d,0}(C):=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{(V_{\mathrm{alg}}/2+M_{\mathrm{kin}}(C))^2}{2\sigma_v^2\tau}\Big)>0.
-
-$$
-
-Integrating over the radial segment $[0,V_{\mathrm{alg}}/2]$ yields
-
-$$
-P(\tilde v\in K(u))\ge c_{d,0}(C)\int_{0}^{V_{\mathrm{alg}}/2} r^{d-1}\,dr=:c_d(C)>0,
-
-$$
-
-where $K(u):=\{ru:0\le r\le V_{\mathrm{alg}}/2\}$ and we used the polar-volume factor $r^{d-1}$. Thus every cone with opening direction $u$ receives probability at least $c_d(C)$.
-
-4. **Pushforward through the cap.** On $E^c$ the cap is inactive and $v^+=\tilde v$, so the lower bound from Step 3 applies. On $E$ the map $\psi_v$ replaces the radial component by $V_{\mathrm{alg}}$ while leaving the direction $u$ unchanged, whence the directional distribution of $v^+$ dominates $(1-\rho_*(C))c_d(C)$ times the surface measure $\sigma_{d-1}$ on $S^{d-1}$. Equivalently, for every measurable $A\subseteq S^{d-1}$
-
-$$
-P(v^+\in A)\ge(1-\rho_*(C))c_d(C)\,\sigma_{d-1}(A).
-
-$$
-
-Taking reciprocals furnishes the anisotropy constant
-
-$$
-\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C):=\frac{1}{(1-\rho_*(C))c_d(C)}.
-
-$$
-
-These constants realise the drift and anisotropy requirements of Definition {prf:ref}`axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
-
+These are fixed-step drift and covariance statements. The mean force drift, the full covariance, and contraction of the selection–collision kernel are different quantities.
 :::
-```
-::::
+
+:::{prf:remark} Scope of the auxiliary uniform-companion estimates
+:label: remark-eg-uniform-estimates
+
+The expected-distance estimates {prf:ref}`lem-sasaki-single-walker-structural-error` and {prf:ref}`thm-sasaki-distance-ms` below are for the explicitly defined extension with uniform independent companions. Their constants do not cover the canonical finite-width Gaussian donor probabilities. The deterministic aggregation and standardization inequalities remain usable for actual input arrays satisfying their stated bounds. Replacing a sampled distance by its expectation before nonlinear standardization or acceptance is not licensed by an expected-distance estimate.
+
+For the canonical weighted law, use the normalized-kernel denominator bounds, marked measurement law, component exploration estimates, and one-step consistency proof in {doc}`08_mean_field` and {doc}`09_propagation_chaos`. Pairing without replacement is another configuration, not the canonical independent single-companion law.
+:::
+
+:::{prf:definition} Notation for auxiliary finite-swarm continuity estimates
+:label: def-eg-auxiliary-continuity-notation
+
+For two swarms $\mathcal S_r$ let $\mathcal A_r$ be their alive sets, $k_r=|\mathcal A_r|$, and $\mathcal A_{\mathrm{stable}}=\mathcal A_1\cap\mathcal A_2$. Set
+$$
+n_c(\mathcal S_1,\mathcal S_2)=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2,\qquad
+\Delta_{\mathrm{pos,Sasaki}}^2=
+\sum_{i=1}^N d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))^2,
+$$
+and $D_{\mathcal Y}=\operatorname{diam}(\mathcal Y)$. Expected-distance statements below use unregularized comparison distance and the uniform-companion extension. The deterministic scalar-array statements assume their displayed uniform bound $V_{\max}$; physical reward comparisons are restricted to compact sets where the specified $L_R^{\mathrm{Sasaki}}$ is finite.
+
+For the canonical global regularizer, the notation $\sigma_{\min,\mathrm{patch}}$ in these scalar-array inequalities means $\sigma_{\min}$: take $\kappa_{\mathrm{var,min}}=0$ and $\varepsilon_{\mathrm{std}}=\sigma_{\min}$. As a function of variance $t\ge0$, the scale $\sqrt{t+\sigma_{\min}^2}$ has derivative at most $1/(2\sigma_{\min})$. Thus its denominator bounds are available directly. Its application to sampled arrays still requires averaging after, rather than before, the nonlinear pipeline.
+:::
 
 ::::{prf:lemma} Single-walker positional error bound in the Sasaki metric
 :label: lem-sasaki-single-walker-positional-error
@@ -5960,7 +5641,7 @@ $$
 \text{Error} \le \frac{2 M_f}{|S_1|} \cdot n_c(\mathcal S_1, \mathcal S_2)
 
 $$
-This bound is purely algebraic and holds for any choice of metric or bounded function.
+This bound is algebraic for uniform probability on the specified support sets and any bounded test function. Changing Gaussian weights on a fixed support requires an additional term.
 
 **Step 4: Substitute and Finalize.**
 We substitute our specific function bound $M_f = D_{\mathcal Y}$ and the support set size $|S_1| = k_1 - 1$ into the general formula. This immediately yields the stated bound for the structural error component.
@@ -6112,7 +5793,7 @@ Combine Lemmas {prf:ref}`lem-sasaki-aggregator-value` and {prf:ref}`lem-sasaki-a
 
 Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`.
 
-##### Value Error Coefficients
+#### Value Error Coefficients
 The following coefficients bound the error in the standardization operator when the swarm structure is fixed but the raw values change due to positional displacement. They are notably independent of the number of alive walkers, `k`.
 
 -   **Direct Shift Coefficient ($C_{V,\mathrm{direct}}$):** Bounding the error from the direct change in the raw value vector.
@@ -6143,7 +5824,7 @@ The following coefficients bound the error in the standardization operator when 
 
     $$
 
-##### Structural Error Coefficients
+#### Structural Error Coefficients
 The structural error coefficients, which are used in the subsequent theorem for structural continuity, remain as defined:
 
 $$
@@ -6909,6 +6590,14 @@ The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standa
 
 ::::
 
+:::{prf:remark} Constants and their scope
+:label: remark-eg-continuity-scope
+
+The kinetic constants $L_{\mathrm{flow}},s_h,C_x,C_v,C_0$ are given explicitly in {prf:ref}`lem-sasaki-kinetic-lipschitz` and {prf:ref}`lem-euclidean-perturb-moment`. The terminal death-probability constant is $L_{\mathrm{flow}}/(\sqrt{2\pi}s_h)$ in physical phase-space distance. On a compact physical set these can be converted to squashed-distance constants using the Lipschitz constant of the inverse projection.
+
+For each fixed $N$, the complete marked kernel is Feller by {prf:ref}`thm-euclidean-feller`. Uniform-in-$N$ continuity and concentration require control of the accepted components and sampled global statistics. Their proofs are given for the same canonical transition in {doc}`08_mean_field` and {doc}`09_propagation_chaos`; they do not follow from independent per-walker collision outputs. The shared rotation is part of the population map.
+:::
+
 :::{prf:axiom} Axiom of Non-Deceptive Landscapes
 :label: axiom-non-deceptive
 
@@ -6919,28 +6608,126 @@ $$
 
 $$
 
-**Validation:** This axiom is satisfied by ensuring the potential function $R_{\mathrm{pos}}$ does not contain large, perfectly flat plateaus within the compact valid domain $X_{\mathrm{valid}}$. Continuity of $\nabla R_{\mathrm{pos}}$ on the compact set allows the constants to be chosen with $L_{\mathrm{grad}}$ no larger than the richness scale $r_{\mathrm{rich}}/4$ from Section 4.2. This regularity condition is assumed to hold for the Euclidean Gas instantiation.
+**Applicability:** This inequality is an additional quantitative landscape hypothesis wherever a theorem uses it. Continuity alone does not prove a positive lower bound. It is not required to define the canonical transition or its finite-horizon population limit; any geometric-ergodicity application must verify it for its specified potential and scales.
 :::
 
-::::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
+:::{prf:theorem} Well-defined canonical Euclidean Gas
+:label: thm-eg-canonical-kernel
+
+For finite $N\ge1$, positive Gaussian donor widths, positive regularization and fitness floors, finite $h>0$, globally Lipschitz force, and the canonical schedule, {prf:ref}`alg-euclidean-gas` defines a time-homogeneous Markov kernel on the full marked state. It preserves all-slot momentum during the collision stage and is permutation equivariant. With $\sigma_x>0$ and Lebesgue-null boundary it is Feller.
+
+*Proof.* With at least one alive row the donor normalizers are positive; self-exclusion and singleton rules specify every draw. Positive regularization denominators make the sampled fitness finite, and all acceptance probabilities lie in $[0,1]$. A finite undirected graph has a unique partition into connected components. The common-rotation formula assigns each row exactly one output. BAOAB, final diffusion, cap, and status classification are measurable, so their composition with the finite draws is a probability kernel. The all-dead branch is absorbing.
+
+For each component, $\sum_{i\in C}(v_i-\bar v_C)=0$, so summing its velocity formula gives $\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i$. Relabeling the input, donor indices, innovations, and components relabels the output: weights, empirical statistics, connectedness, and component means are unchanged as unlabeled objects. Haar matrices have the same independent law after this transport. This proves kernel equivariance, without requiring equality of arbitrary fixed-seed trajectories under relabeling. The Feller assertion is proved in {prf:ref}`thm-euclidean-feller`. $\square$
+:::
+
+:::{prf:remark} What requires a separate convergence argument
+:label: remark-eg-convergence-hypotheses
+
+Kernel existence and symmetry do not imply every axiom of an abstract convergence theorem. In particular, a richness lower bound depends on an explicitly specified reference measure, correlated component outputs cannot satisfy an independent-output assumption, and stationary uniqueness requires an attraction or contraction argument for the actual nonlinear map. The canonical population and finite-horizon chaos statements are established in {doc}`08_mean_field` and {doc}`09_propagation_chaos`; the latter gives the exact stationary identification obligations.
+:::
+
+:::{prf:definition} Finite sampled measurement and fitness law
+:label: def-eg-frozen-measurements
+
+Let $\mathcal A=\{i:a_i=1\}$. For $M\ge2$, the measurement and cloning kernels for an alive recipient exclude its own label. A dead recipient's clone kernel uses all of $\mathcal A$. For either role $b\in\{D,C\}$,
+$$
+P_b^N(i,j)=\frac{\mathbf1_{j\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,j)^2/(2\epsilon_b^2)]}
+{\sum_{k\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,k)^2/(2\epsilon_b^2)]}.
+$$
+An alive singleton uses the zero-distance exception and cannot clone from itself. Dead rows still select the sole alive donor.
+
+Fix the separation floor $\delta_D>0$. Independently for each alive $i$, sample $J_i^D$ and retain
+$$
+r_i=R(x_i,v_i),\qquad d_i=\sqrt{d_{\mathrm{alg}}(i,J_i^D)^2+\delta_D^2}.
+$$
+In the singleton exception the measured raw distance is zero and the separation is $\delta_D$. Set unused dead measurement entries to zero. For $y=r,d$, compute
+$$
+\bar y=\frac1M\sum_{i\in\mathcal A}y_i,\qquad
+\widehat\sigma_y=\sqrt{\frac1M\sum_{i\in\mathcal A}(y_i-\bar y)^2+\sigma_{\min,y}^2},\qquad
+z_i^y=(y_i-\bar y)/\widehat\sigma_y.
+$$
+For an objective minimized by the engine, $R$ denotes its negative, so larger $z_i^r$ is better. Define
+$$
+V_{\mathrm{fit},i}=
+\left(\frac{A_r}{1+e^{-z_i^r}}+\eta_r\right)^\alpha
+\left(\frac{A_d}{1+e^{-z_i^d}}+\eta_d\right)^\beta
+\quad(i\in\mathcal A),
+$$
+and set unused dead fitness to zero. Freeze the entire realized fitness vector for acceptance. In particular, its donor entry contains the donor's own sampled measurement, and common empirical means and variances are retained.
+:::
+
+:::{prf:definition} Frozen component cloning transformation
+:label: def-eg-component-collision
+
+Draw cloning donors $J_i^C$ from the kernels in {prf:ref}`def-eg-frozen-measurements` and independent $U_i\sim\operatorname{Unif}[0,1]$. For alive rows with a distinct donor, set
+$$
+p_i=\min\left\{1,\frac{[V_{\mathrm{fit},J_i^C}-V_{\mathrm{fit},i}]_+}{p_{\max}(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}})}\right\},
+\qquad A_i=\mathbf1_{\{U_i<p_i\}}.
+$$
+For dead rows set $p_i=A_i=1$; for an alive singleton set $p_i=A_i=0$.
+
+Let $G$ have undirected edges $\{i,J_i^C\}$ whenever $A_i=1$, and let $\mathcal C(G)$ be its nontrivial connected components. From frozen input coordinates set
+$$
+\widetilde x_i=\begin{cases}x_{J_i^C}+\sigma_{\mathrm{clone}}\zeta_i,&A_i=1,\\x_i,&A_i=0,\end{cases}
+\qquad \zeta_i\overset{\mathrm{iid}}\sim\mathcal N(0,I_d).
+$$
+For each $C\in\mathcal C(G)$, draw one independent Haar orthogonal matrix $R_C$ and set
+$$
+\bar v_C=|C|^{-1}\sum_{i\in C}v_i,\qquad
+\widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}R_C(v_i-\bar v_C).
+$$
+For vertices outside these components set $\widetilde v_i=v_i$. All intermediate marks equal one. A persisting donor can therefore change velocity even though it does not copy a position.
+:::
+
+:::{prf:theorem} Component conservation, restitution, and shared covariance
+:label: thm-eg-component-balances
+
+For each component, with $u_i=v_i-\bar v_C$,
+$$
+\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i,\qquad
+\sum_{i\in C}\|\widetilde v_i-\bar v_C\|^2=
+\alpha_{\mathrm{restitution}}^2\sum_{i\in C}\|u_i\|^2.
+$$
+Conditional on the accepted graph and all frozen velocities,
+$$
+\mathbb E\widetilde v_i=\bar v_C,\qquad
+\operatorname{Cov}(\widetilde v_i,\widetilde v_j)=
+\frac{\alpha_{\mathrm{restitution}}^2}{d}(u_i\cdot u_j)I_d,
+\quad i,j\in C.
+$$
+At $\alpha_{\mathrm{restitution}}=0$ all component velocities become their mean. At $\alpha_{\mathrm{restitution}}=1$ total component kinetic energy is conserved.
+
+*Proof.* The sum of the $u_i$ is zero, and a common linear map preserves that identity. Orthogonality preserves every squared relative norm. Haar invariance under $R\mapsto-R$ gives $\mathbb E R=0$, and left orthogonal invariance implies $\mathbb E[(Ru_i)(Ru_j)^\top]$ is a scalar multiple of $I_d$. Taking its trace gives that scalar as $(u_i\cdot u_j)/d$. Summing the relative-energy identity and the unchanged center-of-mass energy proves the last assertion. $\square$
+
+These momentum sums include dead input slots. Before kinetics, all slots have become alive, so the change in alive-only momentum relative to the input is exactly the sum of the retained dead input velocities. The full-slot collision momentum change is zero. Terminal killing then removes its own measured momentum from the alive sum.
+:::
+
+:::{prf:definition} Innovation representation of the kernel
+:label: def-eg-complete-kernel
+
+For each input $S$, let $\nu_S$ be the law obtained by: drawing independent measurement and cloning companions with their input-dependent categorical weights; drawing the independent gate uniforms; forming $G$; drawing one Haar matrix per component of $G$; and drawing independent clone and kinetic Gaussian innovations. If $\Phi_h$ executes the specified stages, then
+$$
+\Psi_{\mathcal F_{\mathrm{EG}}}(S,B)=\int\mathbf1_B(\Phi_h(S;\omega))\nu_S(d\omega).
+$$
+The equivalent representation with input-independent uniforms realizes each categorical draw by inverse cumulative probabilities. Component matrices can be preassigned independently to every nonempty vertex subset and the matrix indexed by each realized component selected. Only the selected matrices are used. This supplies a fixed product innovation space without assuming independent collision outputs.
+:::
+
+:::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
 :label: thm-euclidean-feller
 
-```{dropdown} Proof
-:::{prf:proof}
-Write the single-step operator as the composition of the cemetery check (Stage 1), the measurement and potential pipeline (Stage 2), the Clone/Persist gate (Stage 3), and the kinetic-plus-status update (Stage 4). Each stage defines a Markov kernel on $\Sigma_N$ that is Feller with respect to $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$; the claim follows because Feller kernels are closed under composition (see, e.g., [Ethier & Kurtz 86, Prop. 4.2.2]).
+For fixed $N$, continuous reward, globally Lipschitz force, positive donor and standardization denominators, $\sigma_x>0$, and Lebesgue-null $\partial D$, the canonical marked kernel maps bounded continuous functions to bounded continuous functions on
+$$
+\Sigma_N=(\mathbb R^d\times\mathbb R^d\times\{0,1\})^N,
+$$
+with the discrete topology on the marks. Restricting to terminally consistent marked states preserves this assertion. The physical and squashed coordinate metrics induce the same topology on finite states.
 
-1. **Stage 1 (cemetery absorption).** The map $\mathcal S\mapsto\delta_{\mathcal S}$ is continuous. The absorbing branch fires only when $\mathcal A(\mathcal S)=\varnothing$, which is a closed condition, so Stage 1 is Feller.
+*Proof.* Suppose $S_k\to S$. The finite vector of discrete marks is eventually constant. If all marks are zero, the transition is the identity and the result follows. Otherwise the alive set and the singleton convention are eventually fixed.
 
-2. **Stage 2 (measurement and potential pipeline).** Conditional on $\mathcal S$, the companion draws $(c_{\mathrm{pot}}(i))$ are sampled from the product coupling $\mathbb C(\mathcal S)$, which depends continuously on $\mathcal S$ in the dispersion metric by Lemma {prf:ref}`lem-sasaki-single-walker-positional-error`. Lemma {prf:ref}`thm-sasaki-distance-ms` bounds the mean-square variation of the companion distances, and Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq` show that the patched standardisation and logistic rescale operators depend continuously on the raw values. Consequently the kernel that outputs $(\mathbf r,\mathbf d,\mathbf V_{\text{fit}})$ is Feller.
+There are finitely many possible measurement donor arrays, clone donor arrays, and acceptance arrays. Their probabilities depend continuously on $S$: Gaussian weights have positive denominators, measured features and rewards are continuous, and regularized scales and positive fitness denominators do not vanish. Fix one such discrete array. Its accepted graph and connected components are fixed. Each component mean is a continuous linear function of the frozen velocities, and the rotation and position-copy maps are continuous for each fixed set of Haar and Gaussian innovations. BAOAB and the cap are likewise continuous.
 
-3. **Stage 3 (Clone/Persist gate).** The Bernoulli probabilities $p_i(\mathcal S)$ governing the Clone/Persist decision are continuous functions of the standardized scores produced in Stage 2. Conditional on cloning, the jitter distribution is Gaussian with fixed covariance; the resulting pushforward through the 1-Lipschitz squashing map $\psi_v$ is Feller by Lemma {prf:ref}`lem-squashing-properties-generic`. Therefore the Stage-3 kernel is a finite mixture of Feller kernels with continuous weights and is itself Feller.
-
-4. **Stage 4 (kinetic step and boundary check).** Lemma {prf:ref}`lem-euclidean-perturb-moment` proves that the capped kinetic update map $(x,v)\mapsto(x^+,v^+)$ is Feller and that its second moment grows at most quadratically in the state norm. The status indicator is applied to $x^+$; Lemma {prf:ref}`lem-euclidean-boundary-holder` shows that the death probability varies continuously and that $\mathbb P(x^+\in\partial\mathcal X_{\mathrm{valid}})=0$ under the $C^1$-boundary assumption, so the indicator preserves the Feller property.
-
-Since every stage is Feller, their composition $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Markov kernel on $(\Sigma_N,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}})$.
+The terminal status indicator can be discontinuous only when one output position lies on $\partial D$. Conditional on all earlier innovations, independent final Gaussian position noise gives this event probability zero. Hence the marked outputs converge almost surely under the common innovations for the fixed discrete array. A bounded continuous test function then converges in expectation by dominated convergence. Sum over the finitely many discrete arrays with their continuous weights. This proves the assertion. No independence of output rows is used. $\square$
 :::
-```
-::::
 
 ## convergence_program/04_single_particle.md
 
@@ -9062,7 +8849,7 @@ V_{\text{x,struct}} \leq 2(\text{Var}_1(x) + \text{Var}_2(x)) \leq 2\left(\frac{
 
 $$
 
-This proves the contrapositive statement. By logical equivalence, the original implication is proven: if $V_{\text{x,struct}} > R^2_{\text{spread}}$, then at least one swarm must satisfy $\text{Var}_k(x) > R^2_{\text{spread}}/4$.
+This proves the contrapositive statement. By logical equivalence, the implication follows: if $V_{\text{x,struct}} > R^2_{\text{spread}}$, then at least one swarm must satisfy $\text{Var}_k(x) > R^2_{\text{spread}}/4$.
 
 **Q.E.D.**
 :::
@@ -9103,9 +8890,9 @@ The function is a sum of three components:
     *   A **Structural Component ($V_{\text{struct}}$)**, measuring the mismatch in swarm shapes.
 
 2.  **The Intra-Swarm Error ($V_{\text{Var}}$):** The sum of the internal hypocoercive variances of each swarm. This term quantifies the internal dispersion or "shape error" *within* each individual swarm in phase space, measuring their lack of internal convergence in both position and velocity. This component is the primary target of the **synergistic dissipation framework**:
-    *   The **cloning operator** ($\Psi_{\text{clone}}$, analyzed in this document) provides powerful contraction of the positional variance component $V_{Var,x}$ but causes bounded expansion of the velocity variance component $V_{Var,v}$ through the velocity reset mechanism.
+    *   The **cloning operator** ($\Psi_{\text{clone}}$, analyzed in this document) has the exact positional drift $H_x$ and dissipates full-slot velocity variance inside collision components. Alive-only velocity variance has an additional bounded revival contribution.
     *   The **kinetic operator** ($\Psi_{\text{kin}}$, analyzed in {doc}`05_kinetic_contraction`) provides contraction of the velocity variance component $V_{Var,v}$ through Langevin dissipation but causes bounded expansion of the positional variance component $V_{Var,x}$ through diffusion.
-    *   When properly balanced, these two operators achieve **net contraction** of the total $V_{Var}$, enabling the system to converge in both position and velocity simultaneously.
+    *   A net contraction estimate for their composition requires the positional donor-geometry and kinetic drift bounds stated in the composition theorem.
 
 3.  **The Boundary Potential ($W_b$):** A term that penalizes **alive** walkers approaching the boundary, constructed from the smooth barrier function $\varphi_{\text{barrier}}(x)$ defined in {prf:ref}`prop-barrier-existence`.
 
@@ -9232,61 +9019,12 @@ $$
 - From $V_{\text{Var},x}$ to $S_k$: **multiply by $N$**
 :::
 
-:::{prf:proposition} Necessity of the Augmented Lyapunov Structure
+:::{prf:remark} Distinct information in the Lyapunov components
 :label: prop-lyapunov-necessity
 
-The Lyapunov function $V_{\text{total}} = W_h^2 + c_V V_{\text{Var}} + c_B W_b$ with three distinct weighted components is mathematically necessary for the following reasons:
+The proposed observable $V_{\mathrm{total}}=W_h^2+c_VV_{\mathrm{Var}}+c_BW_b$ combines different information. Two identical broad swarms have $W_h=0$ and positive internal variance. Two distinct point clouds each concentrated at one point have zero internal variance and positive $W_h$. Neither component determines the other.
 
-**1. Complementary Information Content**
-
-The two kinematic components measure fundamentally different aspects of swarm ({prf:ref}`def-swarm-and-state-space`) error:
-
-- **$W_h^2(\mu_1, \mu_2)$**: Measures how far apart the two swarms are **as distributions**. This is the squared Wasserstein distance ({prf:ref}`def-n-particle-displacement-metric`) between the full empirical measures $\mu_1$ and $\mu_2$. It quantifies the minimal transport cost to transform one swarm 's distribution into the other's.
-
-- **$V_{\text{Var}}(S_1, S_2)$**: Measures the **internal dispersion within each swarm**. This is the sum of the internal variances (positional and velocity) of each swarm's alive-walker population.
-
-These quantities contain **non-redundant information**:
-- A system can have **small $W_h^2$ but large $V_{\text{Var}}$**: Both swarms have similar empirical measures (so Wasserstein distance is small), but each swarm is internally highly dispersed (large variance).
-- A system can have **small $V_{\text{Var}}$ but large $W_h^2$**: Both swarms are internally tight clusters (small variance), but the two tight clusters are far apart in phase space (large Wasserstein distance).
-
-**2. Operator-Specific Targeting**
-
-The two stochastic operators act on fundamentally different error components:
-
-- **The Cloning Operator $\Psi_{\text{clone}}$**: Acts **within** each swarm independently. It selects walkers based on their fitness **relative to their own swarm's distribution**. The cloning mechanism directly targets $V_{\text{Var}}$ by eliminating low-fitness walkers and duplicating high-fitness walkers, thereby reducing the internal spread of each swarm's distribution.
-
-- **The Kinetic Operator $\Psi_{\text{kin}}$**: Contains a drift term $F(x)$ (the negative gradient of a confining potential) that acts on walker positions. This drift causes walkers in both swarms to move toward regions of lower potential, thereby moving both swarms' barycenters toward the same equilibrium. This directly targets $W_h^2$ by reducing the distance between the swarms' centers of mass.
-
-**3. Synergistic Dissipation Necessity**
-
-Neither operator can contract the full hypocoercive norm $\|\!(\delta x, \delta v)\!\|_h^2 = \|\delta x\|^2 + \lambda_v \|\delta v\|^2$ in both position and velocity simultaneously:
-
-- **Velocity Desynchronization from Cloning**: In the inelastic collision model, cloned walkers' velocities are updated by random rotations in the center-of-mass frame, $u'_k = \alpha_{\text{restitution}} R_k(u_k)$, with no additive Gaussian term. This randomization **breaks velocity correlations** between swarms, causing the velocity component of the structural error to increase (expansion of the velocity-related parts of $W_h^2$). Additionally, the collision reset redistributes velocities within each swarm and can increase $V_{\text{Var},v}$.
-
-- **Positional Diffusion from Kinetic Noise**: The Langevin equation for the kinetic step includes a diffusion term: $dx = (\text{drift terms}) \, dt + \sigma \, dW$. This stochastic noise **desynchronizes positions** between the two swarms' trajectories, causing positional components to expand. It also contributes to an increase in $V_{\text{Var},x}$ within each swarm.
-
-**4. The Weighted Sum as a Solution**
-
-The augmented Lyapunov function resolves this by allowing us to **balance expansions against contractions**:
-
-$$
-\mathbb{E}[V_{\text{total}}(t+1) - V_{\text{total}}(t)] = \underbrace{\mathbb{E}[\Delta W_h^2]}_{\Psi_{\text{clone}}: +, \ \Psi_{\text{kin}}: -} + c_V \underbrace{\mathbb{E}[\Delta V_{\text{Var}}]}_{\Psi_{\text{clone}}: -, \ \Psi_{\text{kin}}: +} + c_B \underbrace{\mathbb{E}[\Delta W_b]}_{\text{both: } -}
-
-$$
-
-By choosing the coupling constant $c_V$ appropriately, we can ensure that:
-- The **strong contraction** of $V_{\text{Var}}$ under $\Psi_{\text{clone}}$ (weighted by $c_V$) **dominates** the bounded expansion of $W_h^2$ under $\Psi_{\text{clone}}$.
-- The **strong contraction** of $W_h^2$ under $\Psi_{\text{kin}}$ **dominates** the bounded expansion of $c_V V_{\text{Var}}$ under $\Psi_{\text{kin}}$.
-
-This yields **net negative drift**: $\mathbb{E}[V_{\text{total}}(t+1) - V_{\text{total}}(t)] \leq -\kappa V_{\text{total}}(t) + C$ for some $\kappa > 0$.
-
-**5. The Boundary Term $W_b$**
-
-The term $c_B W_b$ ensures that walkers near the boundary $\partial \mathcal{X}_{\text{valid}}$ are penalized. Both operators have mechanisms that contract this term:
-- **$\Psi_{\text{clone}}$**: Walkers near the boundary have lower survival probability and are thus eliminated and replaced by clones of interior walkers.
-- **$\Psi_{\text{kin}}$**: The confining potential $U(x)$ and force field $F(x) = -\nabla U(x)$ (see {prf:ref}`axiom-lipschitz-fields`) push walkers away from the boundary.
-
-The coupling constant $c_B$ is chosen small enough that the boundary term does not dominate but ensures global stability on the entire valid domain.
+The cloning contribution is computed from the exact position law and component energy identities below. Common randomness does not automatically increase inter-swarm error: identical inputs with the same innovations remain identical. A weighted combination proves a drift inequality only after each component estimate is established for the same transition. This choice of Lyapunov observable is useful; no assertion that it is the only possible choice is needed.
 :::
 
 :::{prf:remark} Analogy to Classical Hypocoercivity Theory
@@ -9302,7 +9040,7 @@ This structure is the **discrete stochastic analogue** of the classical hypocoer
 - The augmented norm $\|f\|^2_{L^2} + \varepsilon \|\nabla_x f\|^2_{L^2}$ allows proving exponential decay by balancing the operators' effects.
 
 **Our Discrete Stochastic Framework (Fragile Gas)**:
-- The cloning operator $\Psi_{\text{clone}}$ contracts $V_{\text{Var}}$ (internal swarm structure) but may expand $W_h^2$ (inter-swarm distance via velocity resets).
+- The cloning operator has an exact internal-variance balance; a strict positional rate and an inter-swarm coupling estimate require their own geometric bounds.
 - The kinetic operator $\Psi_{\text{kin}}$ contracts $W_h^2$ (via confining potential) but may expand $V_{\text{Var}}$ (via diffusion noise).
 - Neither operator alone contracts the full phase-space error.
 - The augmented Lyapunov $V_{\text{total}} = W_h^2 + c_V V_{\text{Var}} + c_B W_b$ allows proving exponential convergence by balancing the operators' synergistic dissipation.
@@ -9505,29 +9243,16 @@ If $\|x - y\| \geq L_{\text{grad}}$, then $|R_{\mathrm{pos}}(y) - R_{\mathrm{pos
 **Rationale:** This is the most important "learnability" axiom. It forges the critical link between the geometric diversity signal and the reward signal, preventing the algorithm from getting stuck on deceptive plateaus. It is the direct input for proving the "intelligence" of the fitness metric in the Keystone Principle.
 :::
 
-:::{prf:axiom} **(Axiom EG-4): Velocity Regularization via Reward**
+:::{prf:definition} Optional velocity penalty in the objective
 :label: axiom-velocity-regularization
 
-The total reward function `R(x,v)` is designed to actively penalize high kinetic energy. It is composed of the positional reward `R_pos(x)` and a quadratic velocity regularization term:
+An explicitly configured reward may take the form
 
 $$
-R_{\text{total}}(x, v) := R_{\text{pos}}(x) - c_{v\_reg} \|v\|^2
-
+R(x,v)=R_{\rm pos}(x)-c_{v\_reg}|v|^2,\qquad c_{v\_reg}\geq0.
 $$
 
-where `c_{v\_reg}` is a strictly positive constant `c_{v\_reg} > 0`.
-
-**Rationale:**
-
-This axiom is a critical safety mechanism within the synergistic dissipation framework. While the cloning operator ({prf:ref}`def-cloning-operator-formal`) contracts positional variance $V_{\text{Var},x}$ but causes bounded expansion of velocity variance $V_{\text{Var},v}$, the velocity regularization term biases selection away from high velocities; the hard state-independent cap is supplied by $\psi_v$.
-
-1.  **Limiting Velocity Variance Expansion During Cloning:** A walker ({prf:ref}`def-walker`) `i` that acquires an anomalously large velocity `v_i` contributes significantly to the $V_{\text{Var},v}$ component of the Lyapunov function. The `-c_{v\_reg} ||v_i||^{2}` term gives this walker an extremely low raw reward, making it "unfit" regardless of its position. It thus becomes a prime target for cloning. When cloned, its high velocity is reset to that of a companion, which is overwhelmingly likely to be much smaller. This mechanism biases the selection pressure away from high velocities; the hard state-independent cap remains the squashing map $\psi_v$.
-
-2.  **Enabling Kinetic Stage Dissipation:** This mechanism acts as a robust safety net, preventing the kinetic energy of the swarm from growing to levels where the kinetic stage's Langevin friction term cannot overcome the expansion caused by cloning. It ensures that the velocity variance remains within a regime where the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s dissipation can dominate, enabling the synergistic framework to achieve net contraction of the total Lyapunov function.
-
-**Implications and Trade-offs:**
-
-The inclusion of this term modifies the optimization objective. The algorithm no longer seeks a distribution concentrated on the maxima of `R_pos(x)`, but rather a quasi-stationary distribution over the phase space `(x, v)` that jointly finds high-reward positions while maintaining low collective kinetic energy. This "cooling" effect is a deliberate trade-off, prioritizing the stability and convergence of the swarm over finding the absolute theoretical maximum of the positional potential alone. The constant `c_{v\_reg}` becomes a key hyperparameter that balances the objective of positional optimization against the requirement of kinetic stability.
+Claims using a strictly positive reward penalty assume $c_{v\_reg}>0$. The canonical positional-objective configuration allows $c_{v\_reg}=0$. Its input velocity bound is supplied by the completed-step radial cap $\psi_v(v)=V_{\rm alg}v/(V_{\rm alg}+|v|)$, and component energy dissipation follows from {prf:ref}`prop-cloning-component-conservation` without a velocity reward penalty. Selection does not overwrite velocity by the donor's velocity.
 :::
 
 :::{prf:axiom} **(Axiom EG-5): Active Diversity Signal**
@@ -9543,19 +9268,29 @@ $$
 **Rationale:** This is a fundamental assumption for the Keystone Principle's proof of intelligent targeting. It ensures that the algorithm pays attention to the reliable geometric signal generated by the **phase-space** companion kernel. This signal is the primary mechanism that allows the algorithm to detect its own lack of convergence and escape deceptive reward landscapes. This ensures that the algorithm is sensitive to its degree of convergence in the full kinematic state space, not just its spatial configuration.
 :::
 
-:::{prf:definition} Algorithmic Distance for Companion Selection
+:::{prf:definition} Algorithmic comparison for companion selection
 :label: def-algorithmic-distance-metric
 
-For any two walkers $i$ and $j$ with states $(x_i, v_i)$ and $(x_j, v_j)$, the **algorithmic distance ({prf:ref}`def-alg-distance`)** between them is defined as:
+For the canonical Euclidean Gas, put $S_R(u)=Ru/(R+|u|)$ and
 
 $$
-d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
-
+d_{\mathrm{alg}}(i,j)^2=
+|S_{R_x}(x_i)-S_{R_x}(x_j)|^2+
+\lambda_{\mathrm{alg}}|S_{R_v}(v_i)-S_{R_v}(v_j)|^2.
 $$
 
-where $\lambda_{\text{alg}} \geq 0$ is a fixed algorithmic parameter that controls the relative importance of velocity similarity in the pairing and selection processes.
+It satisfies $d_{\mathrm{alg}}^2\leq4R_x^2+4\lambda_{\mathrm{alg}}R_v^2$ on unbounded physical space. The independent measurement and cloning kernels use their own Gaussian bandwidths with this comparison.
 
-Referenced by {prf:ref}`def-greedy-pairing-algorithm` and {prf:ref}`def-spatial-pairing-diversity-idealized`.
+An explicitly configured unsquashed comparison instead uses
+$|x_i-x_j|^2+\lambda_{\mathrm{alg}}|v_i-v_j|^2$. Geometric estimates identifying algorithmic distance with that physical quadratic distance apply to that configuration. They require a proved comparison estimate before being applied to the squashed configuration; bounded comparison features alone do not bound physical positions.
+:::
+
+:::{prf:remark} Canonical independent sampling and matching laws
+:label: rem-cloning-measurement-law-scope
+
+The canonical gas draws one measurement companion independently for each alive recipient, from its Gaussian weighted eligible pool with self exclusion. Its sampled separation, global regularized statistics, and retained fitness marks are defined in {prf:ref}`def-mean-field-measurement-law` and {prf:ref}`def-mean-field-moments`. The canonical finite-population and population-limit proofs use that law.
+
+The perfect-matching and sequential-greedy constructions below define distinct available measurement configurations. Their conditional signal estimates retain the specified matching law and are not automatically estimates for independent sampling. Similarly, geometric arguments below that identify algorithmic distance with physical phase-space distance retain the unsquashed-comparison hypothesis. The canonical fixed-step mean-field proof is discharged directly in {doc}`08_mean_field` and {doc}`09_propagation_chaos` and does not rely on those matching estimates.
 :::
 
 :::{prf:definition} Spatially-Aware Pairing Operator (Idealized Model)
@@ -9771,19 +9506,34 @@ r_i := R(x_i, v_i) = R_{\text{pos}}(x_i) - c_{v\_reg} \|v_i\|^2
 
 $$
 
-    where $R_{\text{pos}}(x_i)$ is the positional reward and $c_{v\_reg} > 0$ is the velocity regularization coefficient from {prf:ref}`axiom-velocity-regularization`.
+    where $R_{\text{pos}}(x_i)$ is the positional reward and $c_{v\_reg} \geq 0$ is the explicitly configured velocity regularization coefficient from {prf:ref}`axiom-velocity-regularization`.
 
 2.  **The Paired Distance Measurement Operator ($V_D$):** Given the Companion Map `c(i)` generated by the pairing operator, the raw distance for each alive walker ({prf:ref}`def-walker`) `i` is deterministically defined as the algorithmic distance ({prf:ref}`def-alg-distance`) to its assigned companion:
 
 
 $$
-d_i := d_{\text{alg}}(i, c(i))
+\ell_i:=d_{\mathrm{alg}}(i,c(i)),\qquad d_i:=\sqrt{\ell_i^2+\delta_D^2},\qquad\delta_D>0
 
 $$
 
 For any walker ({prf:ref}`def-walker`) `j` that is dead, its raw values are deterministically zero: $r_j = 0$ and $d_j = 0$.
 
 Referenced by {prf:ref}`def-measurement-operator`.
+:::
+
+:::{prf:lemma} Transferring a raw-distance estimate to the measured separation
+:label: lem-cloning-distance-floor-transfer
+
+The actual separation and raw feature distance satisfy $0\leq d_i-\ell_i\leq\delta_D$. Their empirical means differ by at most $\delta_D$, and their empirical standard deviations differ by at most $\delta_D$. Therefore
+
+$$
+|\operatorname{Var}(d)-\operatorname{Var}(\ell)|
+\leq2\delta_D\sqrt{\operatorname{Var}(\ell)}+\delta_D^2.
+$$
+
+*Proof.* The pointwise inequality follows from $\sqrt{u^2+\delta_D^2}\leq u+\delta_D$ for $u\geq0$. Averaging bounds the means. Centering is an orthogonal projection in the empirical $L^2$ norm, hence the reverse triangle inequality bounds the difference of standard deviations by $\|d-\ell\|_{L^2}\leq\delta_D$. Squaring yields the variance bound. $\square$
+
+Geometric estimates for the raw feature distances use these explicit errors when applied to the regularized measurements entering fitness.
 :::
 
 :::{prf:definition} Swarm Aggregation Operator
@@ -9794,27 +9544,24 @@ A **Swarm ({prf:ref}`def-swarm-and-state-space`) Aggregation Operator**, $M$, ma
 Referenced by {prf:ref}`def-standardization-operator`.
 :::
 
-:::{prf:definition} Patched Standard Deviation Function
+:::{prf:definition} Regularized standard deviation
 :label: def-patched-std-dev-function
 
-The **Patched Standard Deviation Function**, $\sigma'_{\text{patch}}: \mathbb{R}_{\ge 0} \to \mathbb{R}_{>0}$, is a $C^1$ smooth replacement for the standard square-root function, designed to be globally Lipschitz and bounded away from zero. It is defined piecewise in terms of the raw variance, $V := \operatorname{Var}[\mu_{\mathbf{v}}]$:
+For the canonical global standardizer, the function denoted $\sigma'_{\rm patch}$ is
 
 $$
-\sigma'_{\text{patch}}(V) :=
-\begin{cases}
-\sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}, & V \le \kappa_{\text{var,min}} \\
-P(V), & \kappa_{\text{var,min}} < V < 2\kappa_{\text{var,min}} \\
-\sqrt{V + \varepsilon_{\mathrm{std}}^2}, & V \ge 2\kappa_{\text{var,min}}
-\end{cases}
-
+\sigma'_{\rm patch}(V)=\sqrt{V+\sigma_{\min}^2},\qquad V\geq0,\quad\sigma_{\min}>0.
 $$
 
-where $P(V)$ is a unique cubic polynomial that ensures a $C^1$ smooth transition.
+Reward and diversity may have their own fixed regularizers. This is the scale computed from the population variance by the Rust standardizer.
 :::
 
-:::{prf:lemma} Properties of the Patching Function
+:::{prf:lemma} Properties of the regularized scale
 :label: lem-patching-properties
-By its construction in the framework document ({doc}`01_fragile_gas_framework`, Definition 11.1.2), the function $\sigma'_{\text{patch}}(V)$ is continuously differentiable, strictly positive, and globally Lipschitz continuous. It is uniformly bounded below by $\sigma'_{\min,\text{patch}} = \sqrt{\kappa_{\text{var,min}} + \varepsilon_{\mathrm{std}}^2}$.
+
+The scale is smooth on a neighborhood of $[0,\infty)$, bounded below by $\sigma'_{\min,\rm patch}=\sigma_{\min}$, and globally Lipschitz on $[0,\infty)$ with constant $1/(2\sigma_{\min})$.
+
+*Proof.* Differentiate: $(\sigma'_{\rm patch})'(V)=1/(2\sqrt{V+\sigma_{\min}^2})\leq1/(2\sigma_{\min})$. Positivity and smoothness follow from $V+\sigma_{\min}^2>0$. $\square$
 :::
 
 :::{prf:definition} N-Dimensional Standardization Operator
@@ -9922,7 +9669,7 @@ This completes the proof.
 :::{prf:definition} Companion Selection Operator for Cloning
 :label: def-cloning-companion-operator
 
-The first step of the cloning action is to select a companion. The **Companion Selection ({prf:ref}`def-companion-selection-measure`) Operator for Cloning** defines, for each walker ({prf:ref}`def-walker`) `i`, a probability measure $\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. This is a hybrid operator that uses the best available information for each type of walker.
+The first step of the cloning action is to select a companion. The **Companion Selection ({prf:ref}`def-companion-selection-measure`) Operator for Cloning** defines, for each walker ({prf:ref}`def-walker`) `i`, a probability measure $\mathcal{C}_i(S)$ from which a companion `c_i` is sampled independently. The same configured weighted kernel is used for live selection and dead-slot revival, with their respective eligible donor sets.
 
 **Inputs:**
 *   The swarm ({prf:ref}`def-swarm-and-state-space`) state `S`, which defines the set of alive walkers, $\mathcal{A}_k$, and the set of dead walkers, $\mathcal{D}_k$.
@@ -9941,11 +9688,11 @@ P(c_i=j \mid i \in \mathcal{A}_k) := \frac{\exp\left(-\frac{d_{\text{alg}}(i, j)
 $$
 
 2.  **If `i` is a DEAD walker ($i \in \mathcal{D}_k$):**
-    The selection is a uniform random choice from the entire set of `k` alive walkers. For any alive walker $j \in \mathcal{A}_k$:
+    Use the retained dead position and velocity in the same weighted comparison. For any alive walker $j \in \mathcal{A}_k$:
 
 
 $$
-P(c_i=j \mid i \in \mathcal{D}_k) := \frac{1}{k}
+P(c_i=j \mid i \in \mathcal{D}_k) := \frac{\exp[-d_{\mathrm{alg}}(i,j)^2/(2\epsilon_c^2)]}{\sum_{\ell\in\mathcal A_k}\exp[-d_{\mathrm{alg}}(i,\ell)^2/(2\epsilon_c^2)]}
 
 $$
 
@@ -9955,7 +9702,7 @@ Referenced by {prf:ref}`def-decision-operator`.
 :::{prf:definition} The Canonical Cloning Score
 :label: def-cloning-score
 
-Once a companion `c_i` has been selected for walker ({prf:ref}`def-walker`) `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:
+Once a companion `c_i` has been selected for an alive walker ({prf:ref}`def-walker`) `i`, the **Canonical Cloning Score**, $S_i(c_i)$, is calculated as:
 
 $$
 S_i(c_i) := \frac{V_{\text{fit},{c_i}} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\mathrm{clone}}}
@@ -9970,7 +9717,7 @@ Referenced by {prf:ref}`def-cloning-decision` and {prf:ref}`def-cloning-probabil
 :::{prf:definition} Total Cloning Probability
 :label: def-cloning-probability
 
-The **total cloning probability**, $p_i$, for a walker ({prf:ref}`def-walker`) `i` is its unconditional probability of being marked for cloning. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`, where the score is defined by {prf:ref}`def-cloning-score`.
+For an alive row, the **total cloning probability** $p_i=p_i(S,\mathbf F)$ is its probability of acceptance conditional on the input and frozen measured fitness. This is the expectation of the cloning event taken over the random draws of both the companion `c_i` and the threshold `T_i`, where the score is defined by {prf:ref}`def-cloning-score`.
 
 $$
 p_i := \mathbb{E}_{c_i \sim \mathcal{C}_i(S)} \left[ \mathbb{P}_{T_i \sim U(0,p_{\max})} \left( S_i(c_i) > T_i \right) \right]
@@ -9984,280 +9731,100 @@ p_i = \mathbb{E}_{c_i \sim \mathcal{C}_i(S)}\left[\min\left(1, \max\left(0, \fra
 
 $$
 
-This quantity, $p_i$, is the direct measure of the corrective pressure applied to walker ({prf:ref}`def-walker`) `i` and is a central variable in the Keystone Principle proof.
+For dead rows $p_i=1$ by the mandatory revival branch. When conditioning only on $S$, average the displayed probability over the actual measurement law. This distinction is retained in the Keystone selection estimates and exact variance formulas.
 :::
 
 :::{prf:definition} The Stochastic Cloning Decision
 :label: def-cloning-decision
 
-The decision to clone is made by comparing the score (see {prf:ref}`def-cloning-score`) to a random threshold. For each walker ({prf:ref}`def-walker`) `i`, after its score $S_i(c_i)$ has been computed, a random threshold $T_i$ is sampled from the uniform distribution $T_i \sim \mathrm{Unif}(0, p_{\max})$. The walker `i` is marked for **cloning** if $S_i(c_i) > T_i$. Otherwise, it is marked to **persist**.
+For a live recipient, the decision to clone is made by comparing the score (see {prf:ref}`def-cloning-score`) to a random threshold. For each walker ({prf:ref}`def-walker`) `i`, after its score $S_i(c_i)$ has been computed, a random threshold $T_i$ is sampled from the uniform distribution $T_i \sim \mathrm{Unif}(0, p_{\max})$. The walker `i` is marked for **cloning** if $S_i(c_i) > T_i$. Otherwise, it is marked to **persist**. A dead recipient is accepted unconditionally whenever the current alive donor pool is nonempty.
 :::
 
-:::{prf:definition} The Inelastic Collision State Update
+:::{prf:definition} The inelastic component update
 :label: def-inelastic-collision-update
 
-Let the set of all walkers marked for cloning be `C_set`. For each cloner $i \in C_set$, let `c_i` be its selected companion. The intermediate swarm ({prf:ref}`def-swarm-and-state-space`) state `S'` is constructed as follows.
+Condition on the frozen input $S$, its sampled fitness vector, donor choices $c_i$, and accepted set $A_C$. Every dead slot belongs to $A_C$ when the current alive pool is nonempty. Form the undirected graph with edge $\{i,c_i\}$ for every $i\in A_C$. Let $\mathfrak C$ be its connected components, including isolated vertices.
 
-First, for each unique companion `c` in the swarm , we identify the set of all cloners that selected it:
-
-$$
-I_c := \{j \in C_{set} \mid c_j = c\}
+For each nontrivial component $C$, draw one independent Haar matrix $R_C\in O(d)$ and write $\alpha=\alpha_{\mathrm{restitution}}\in[0,1]$. Using the frozen pre-collision velocities of every slot, including retained dead velocities, set
 
 $$
-
-Let `M = |I_c|` be the number of walkers cloning from companion `c`. The update is then defined for each `(M+1)`-particle system consisting of the companion `c` and its set of cloners `I_c`.
-
-1.  **Position Updates:**
-    *   For each cloner $j \in I_c$, its position is reset to that of its companion `c`, plus independent Gaussian jitter:
-
-
-$$
-x'_j := x_c + \sigma_x \zeta_j^x
-
+\bar v_C=\frac1{|C|}\sum_{j\in C}v_j,\qquad
+v_i'=\bar v_C+\alpha R_C(v_i-\bar v_C),\quad i\in C.
 $$
 
-    *   The position of the companion `c` is unchanged by this interaction: `x'_c := x_c`.
-
-2.  **Velocity Updates (The Inelastic Collapse):**
-    The velocities of all `M+1` interacting walkers are updated simultaneously in a process that conserves the group's total momentum.
-
-    *   **a. Center-of-Mass Velocity:** First, compute the center-of-mass velocity of the `(M+1)`-particle interacting system. This quantity is conserved throughout the collision.
-
+An isolated walker retains its velocity. The positional update is
 
 $$
-V_{COM, c} := \frac{1}{M+1} \left( v_c + \sum_{j \in I_c} v_j \right)
-
+x_i'=\begin{cases}x_{c_i}+\sigma_x\zeta_i^x,&i\in A_C,\\x_i,&i\notin A_C,\end{cases}
+\qquad\zeta_i^x\sim N(0,I_d),
 $$
 
-    *   **b. Update Relative Velocities:** For each walker ({prf:ref}`def-walker`) `k` in the system ($k \in I_c \cup {c}$), its velocity relative to the CoM is `u_k = v_k - V_{COM,c}`. The new relative velocities `u'_k` are defined by a random rotation and a frictional contraction.
-        Let $\alpha_{\mathrm{restitution}} \in [0, 1]$ be a fixed algorithmic parameter representing the coefficient of restitution. For each `k`, let `R_k` be a random orthogonal transformation that isotropically rotates `u_k` (i.e., `R_k(u_k)` has the same magnitude as `u_k` but a uniformly random direction on the `(d-1)`-sphere). The new relative velocity is:
+with independent row jitters, independent of the graph and rotations. Jitter applies to every accepted recipient, including revival. All donor positions on the right-hand side are frozen input positions. The cloning proposal marks every slot alive; canonical boundary classification occurs after the subsequent kinetic stages and final position diffusion.
 
-
-$$
-u'_k := \alpha_{\text{restitution}} \cdot R_k(u_k)
-
-$$
-
-    *   **c. Return to Lab Frame:** The final velocities for all interacting walkers are then reconstructed:
-
-
-$$
-v'_k := V_{COM, c} + u'_k
-
-$$
-
-3.  **Uninvolved Walkers:** Any walker ({prf:ref}`def-walker`) `k` that is not a cloner and was not selected as a companion by any cloner has its state `(x_k, v_k)` unchanged.
-
-**Analysis of the Restitution Parameter $\alpha_{\mathrm{restitution}}$:**
-
-This model introduces $\alpha_{\mathrm{restitution}}$ as a crucial hyperparameter that controls the velocity variance expansion caused by the velocity reset mechanism during cloning.
-
-*   If **$\alpha_{\mathrm{restitution}} = 1$**, the collision is **perfectly elastic**. The magnitudes of the relative velocities are preserved (`||u'_k|| = ||u_k||`), and the total kinetic energy of the interacting system is conserved. In this regime, cloning redistributes kinetic energy among walkers but does not directly dissipate it. However, the velocity reset mechanism still causes bounded expansion of $V_{\text{Var},v}$ as walkers' velocities are reset based on their companions.
-
-*   If **$\alpha_{\mathrm{restitution}} = 0$**, the collision is **perfectly inelastic**. All new relative velocities are zero (`u'_k = 0`), meaning all `M+1` walkers emerge with the identical center-of-mass velocity, `v'_k = V_{COM,c}`. This corresponds to the **maximum possible dissipation** of the group's internal kinetic energy while still conserving total momentum. In this regime, the velocity variance expansion is minimized, as all walkers in a cloning group collapse to a single velocity.
-
-*   If **$\alpha_{\mathrm{restitution}} \in (0, 1)$**, the cloning event has **intermediate dissipation**. The internal kinetic energy of the interacting group is reduced by a factor of $\alpha_{\mathrm{restitution}}^{2}$. This parameter provides a tunable mechanism for controlling the trade-off between maintaining kinetic diversity and bounding velocity variance expansion.
-
-The key insight is that **cloning causes bounded expansion of velocity variance through the velocity reset mechanism**, regardless of the value of $\alpha_{\mathrm{restitution}}$. The restitution coefficient controls the magnitude of this expansion, with lower values providing tighter bounds. This expansion is then overcome by the kinetic operator ({prf:ref}`def-kinetic-operator-stratonovich`)'s Langevin dissipation, as proven in {doc}`05_kinetic_contraction`.
+A live accepted edge strictly increases its frozen fitness, and a dead vertex cannot be a donor. The graph is therefore a forest: its outdegree is at most one, and an undirected cycle would force a directed cycle. Components are disjoint even when donor stars overlap. There is one rotation and one destination write per participating slot.
 :::
 
-:::{prf:proposition} Bounded Velocity Variance Expansion from Cloning
+:::{prf:proposition} Exact component momentum and energy
+:label: prop-cloning-component-conservation
+
+For each realized component,
+
+$$
+\sum_{i\in C}v_i'=\sum_{i\in C}v_i,\qquad
+\sum_{i\in C}|v_i'|^2
+=\sum_{i\in C}|v_i|^2-(1-\alpha^2)\sum_{i\in C}|v_i-\bar v_C|^2.
+$$
+
+Conditional on its graph and velocities,
+
+$$
+\mathbb E v_i'=\bar v_C,\qquad
+\operatorname{Cov}(v_i',v_j')=
+\frac{\alpha^2}{d}\bigl[(v_i-\bar v_C)\cdot(v_j-\bar v_C)\bigr]I_d.
+$$
+
+*Proof.* The centered vectors sum to zero. The same linear map $\alpha R_C$ acts on every one, so their transformed sum is zero. Orthogonality gives the squared-norm identity. Haar invariance gives $\mathbb E R_C=0$ and $\mathbb E[(R_Cu)(R_Cw)^T]=(u\cdot w)I_d/d$. These statements also hold for $d=1$, where Haar $O(1)$ is a uniform sign. $\square$
+:::
+
+:::{prf:proposition} Velocity dissipation with the exact revival contribution
 :label: prop-bounded-velocity-expansion
 
-For any cloning event where a fraction $f_{\text{clone}}$ of walkers are cloned with restitution coefficient $\alpha_{\text{restitution}}$, the change in internal velocity variance from the velocity resets is bounded:
+Suppose every input slot, alive or dead, satisfies $|v_i|\leq V_{\max}$. Define
 
 $$
-\Delta V_{Var,v} \leq f_{\text{clone}} \cdot C_{\text{reset}} \cdot V_{\max,\text{KE}}
-
+\mathcal V_v^{\rm all}(S)=\frac1N\sum_i|v_i-\bar v_{\rm all}|^2,\qquad
+\mathcal V_v^a(S)=\frac1N\sum_{i\in\mathcal A}|v_i-\bar v_a|^2,
 $$
 
-where $V_{\max,\text{KE}}$ is a uniform bound on the maximum possible kinetic energy per walker ({prf:ref}`def-walker`), and $C_{\text{reset}}$ is a constant depending on $\alpha_{\text{restitution}}$ and the domain geometry.
-:::
-
-:::{prf:proof}
-**Proof:**
-
-We will prove that the one-step change in the velocity variance component $V_{Var,v}$ due to cloning is bounded by a state-independent constant. The proof proceeds in four parts: (1) establish the domain of possible velocities, (2) bound the per-walker variance change from velocity reset, (3) bound the total variance change across all cloned walkers, and (4) verify that all bounds are state-independent via the velocity squashing map that caps algorithmic velocities (Section 3.3 of {doc}`02_euclidean_gas`).
-
-**Part 1: The Velocity Domain and Its Diameter**
-
-By construction of the Euclidean Gas, algorithmic velocities are squashed by the smooth map
-$\psi_v(v) = V_{\mathrm{alg}}\,v/(V_{\mathrm{alg}}+\|v\|)$ (Section 3.3 of {doc}`02_euclidean_gas`). Hence every algorithmic velocity used in the cloning analysis satisfies the uniform bound
-$\|v_i\| \leq V_{\max}$ with
-
 $$
-V_{\max} := V_{\mathrm{alg}}.
-
+\mathcal E_C=\frac1N\sum_{C\in\mathfrak C}\sum_{i\in C}|v_i-\bar v_C|^2,
+\qquad R_v(S)=\mathcal V_v^{\rm all}(S)-\mathcal V_v^a(S).
 $$
 
-The squashing map is $1$-Lipschitz and smooth away from the origin; the dynamics operate in this smooth regime. The velocity regularization term still influences fitness, but the **hard** state-independent bound comes from $\psi_v$.
-
-**Part 2: Bounding the Per-Walker Variance Change**
-
-Consider a single walker $i$ that is cloned at step $t$. Let $v_i^{\text{old}}$ be its velocity before cloning and $v_i^{\text{new}}$ be its velocity after the inelastic collision reset. Let $\mu_v^{\text{old}}$ and $\mu_v^{\text{new}}$ be the velocity barycentres before and after cloning.
-
-The contribution of walker $i$ to the velocity variance changes as:
+With $D=|\mathcal D|$ and $|\mathcal A|>0$, the all-alive proposal obeys the pathwise identities and bounds
 
 $$
-\Delta_i := \|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2
-
+\mathcal V_v^{\rm all}(S')-\mathcal V_v^{\rm all}(S)=-(1-\alpha^2)\mathcal E_C,
 $$
 
-We bound this change using the triangle inequality and the velocity domain bounds. First, note that:
-
 $$
-\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 \leq 2\|v_i^{\text{new}}\|^2 + 2\|\mu_v^{\text{new}}\|^2 \leq 2V_{\max}^2 + 2V_{\max}^2 = 4V_{\max}^2
-
-$$
-
-Similarly, $\|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2 \geq 0$. Therefore:
-
-$$
-\Delta_i \leq 4V_{\max}^2
-
+\boxed{\quad\mathcal V_v^a(S')-\mathcal V_v^a(S)
+=R_v(S)-(1-\alpha^2)\mathcal E_C,\qquad
+0\leq R_v(S)\leq\frac{4D}{N}V_{\max}^2.\quad}
 $$
 
-However, this is a worst-case bound. We can obtain a tighter bound by analyzing the inelastic collision mechanism directly.
+In particular $\Delta\mathcal V_v^a\leq4f_{\rm clone}V_{\max}^2$ when the cloning fraction includes all revived slots. With no dead slots, the velocity variance cannot increase. Elastic components preserve it exactly. No positive uniform contraction factor follows unless accepted components capture a controlled fraction of the incoming velocity variance.
 
-**Step 2a: The Inelastic Collision Model**
-
-When walker $i$ is cloned, it participates in an inelastic collision with $M$ companion walkers. Let $v_i^{\text{old}}$ and $\{v_j^{\text{comp}}\}_{j=1}^M$ be the velocities of the participants. The center-of-mass velocity is:
+*Proof.* Full-slot momentum conservation keeps $\bar v_{\rm all}$ fixed, so summing the component energy identity gives the first formula. The proposal is all alive, which gives the second formula by adding and subtracting $\mathcal V_v^{\rm all}(S)$. The minimization identity for variance yields
 
 $$
-V_{\text{COM}} = \frac{1}{M+1}\left(v_i^{\text{old}} + \sum_{j=1}^M v_j^{\text{comp}}\right)
-
+\mathcal V_v^{\rm all}(S)
+=\min_b\frac1N\sum_i|v_i-b|^2
+\leq\mathcal V_v^a(S)+\frac1N\sum_{i\in\mathcal D}|v_i-\bar v_a|^2
+\leq\mathcal V_v^a(S)+\frac{4D}{N}V_{\max}^2.
 $$
 
-The new velocity is computed via:
-
-$$
-v_i^{\text{new}} = V_{\text{COM}} + \alpha_{\text{restitution}} \cdot R(u_i)
-
-$$
-
-where $u_i = v_i^{\text{old}} - V_{\text{COM}}$ is the old relative velocity and $R$ is a random rotation. The magnitude change is bounded by:
-
-$$
-\|v_i^{\text{new}} - v_i^{\text{old}}\| = \|\alpha_{\text{restitution}} R(u_i) - u_i\| \leq (1+\alpha_{\text{restitution}})\,\|u_i\|
-
-$$
-
-Since $\|v_i^{\text{new}} - V_{\text{COM}}\| = \alpha_{\text{restitution}} \|u_i\|$ and $\|V_{\text{COM}} - v_i^{\text{old}}\| = \|u_i\|$:
-
-$$
-\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq (1+\alpha_{\text{restitution}})^2 \|u_i\|^2
-
-$$
-
-The relative velocity magnitude is bounded by:
-
-$$
-\|u_i\| = \|v_i^{\text{old}} - V_{\text{COM}}\| \leq \|v_i^{\text{old}}\| + \|V_{\text{COM}}\| \leq V_{\max} + V_{\max} = 2V_{\max}
-
-$$
-
-Therefore:
-
-$$
-\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2
-
-$$
-
-**Part 3: Total Variance Change from All Cloned Walkers**
-
-The velocity variance component of the Lyapunov function is defined (with $N$-normalization) as:
-
-$$
-V_{Var,v}(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|v_i - \mu_v\|^2
-
-$$
-
-When a cloning event occurs, let $\mathcal{C} \subset \mathcal{A}(S_k)$ be the set of walkers that are cloned, with $|\mathcal{C}| = n_{\text{clone}}$. The change in $V_{Var,v}$ can be decomposed into three contributions:
-
-1. **Direct variance change from velocity resets** (cloned walkers)
-2. **Barycentre shift effect** (changes $\mu_v$, affecting all walkers)
-3. **Status changes** (deaths and revivals)
-
-We bound each contribution separately.
-
-**Contribution 1 (Direct Reset):** For each cloned walker $i \in \mathcal{C}$, the velocity changes from $v_i^{\text{old}}$ to $v_i^{\text{new}}$. Using the squared-norm expansion:
-
-$$
-\begin{aligned}
-&\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2 \\
-&= \|v_i^{\text{new}}\|^2 - 2\langle v_i^{\text{new}}, \mu_v^{\text{new}}\rangle + \|\mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}}\|^2 + 2\langle v_i^{\text{old}}, \mu_v^{\text{old}}\rangle - \|\mu_v^{\text{old}}\|^2
-\end{aligned}
-
-$$
-
-This can be bounded using the fact that $\|v_i^{\text{new}} - v_i^{\text{old}}\|^2 \leq 4(1+\alpha_{\text{restitution}})^2 V_{\max}^2$ and $\|\mu_v^{\text{new}} - \mu_v^{\text{old}}\|^2$ is also bounded by a similar expression (since the barycentre is an average of velocities, all bounded by $V_{\max}$).
-
-Through careful algebraic expansion (using $\|a - b\|^2 = \|a\|^2 - 2\langle a, b\rangle + \|b\|^2$) and the triangle inequality:
-
-$$
-\left|\|v_i^{\text{new}} - \mu_v^{\text{new}}\|^2 - \|v_i^{\text{old}} - \mu_v^{\text{old}}\|^2\right| \leq 8(1+\alpha_{\text{restitution}})^2 V_{\max}^2 + 8V_{\max}^2 = 8\big((1+\alpha_{\text{restitution}})^2 + 1\big) V_{\max}^2
-
-$$
-
-**Contribution 2 (Barycentre Shift):** The barycentre shift affects all $k_{\text{alive}}$ walkers. The magnitude of the shift is bounded by:
-
-$$
-\|\mu_v^{\text{new}} - \mu_v^{\text{old}}\| \leq \frac{n_{\text{clone}}}{k_{\text{alive}}} \cdot 2V_{\max}
-
-$$
-
-The contribution to variance change from barycentre shift across all walkers is bounded by:
-
-$$
-\left|\frac{1}{N}\sum_{i \in \mathcal{A}} \left(\|v_i - \mu_v^{\text{new}}\|^2 - \|v_i - \mu_v^{\text{old}}\|^2\right)\right| \leq \frac{k_{\text{alive}}}{N} \cdot 4V_{\max} \cdot \|\mu_v^{\text{new}} - \mu_v^{\text{old}}\| \leq \frac{8n_{\text{clone}}V_{\max}^2}{N}
-
-$$
-
-**Contribution 3 (Status Changes):** Dead walkers contribute zero to the sum. When a walker revives, it adds a term $\frac{1}{N}\|v_i - \mu_v\|^2 \leq \frac{4V_{\max}^2}{N}$. The number of revivals equals the number of deaths, which is at most $n_{\text{clone}}$.
-
-**Total Bound:** Combining all contributions:
-
-$$
-\begin{aligned}
-|\Delta V_{Var,v}| &\leq \frac{n_{\text{clone}}}{N} \cdot 8\big((1+\alpha_{\text{restitution}})^2 + 1\big) V_{\max}^2 + \frac{8n_{\text{clone}}V_{\max}^2}{N} + \frac{4n_{\text{clone}}V_{\max}^2}{N} \\
-&= \frac{n_{\text{clone}}}{N} \cdot \left[8(1+\alpha_{\text{restitution}})^2 + 20\right] V_{\max}^2
-\end{aligned}
-
-$$
-
-Since $n_{\text{clone}} = f_{\text{clone}} \cdot N$ by definition:
-
-$$
-|\Delta V_{Var,v}| \leq f_{\text{clone}} \cdot \left[8(1+\alpha_{\text{restitution}})^2 + 20\right] V_{\max}^2
-
-$$
-
-**Part 4: State-Independence of the Bound**
-
-The bound depends only on:
-- $f_{\text{clone}}$: the cloning fraction (algorithmic parameter)
-- $\alpha_{\text{restitution}}$: the restitution coefficient (algorithmic parameter)
-- $V_{\max}^2$: the velocity domain bound
-
-The critical claim is that $V_{\max}$ is state-independent. This follows directly from the squashing map $\psi_v$, which caps algorithmic velocities at $V_{\mathrm{alg}}$ regardless of the underlying uncapped dynamics. The velocity regularization term still shapes the fitness landscape, but the hard uniform bound is supplied by $\psi_v$.
-
-**Conclusion:** Setting:
-
-$$
-C_{\text{reset}} := 8(1+\alpha_{\text{restitution}})^2 + 20, \quad V_{\max,\text{KE}} := V_{\max}^2
-
-$$
-
-we have proven:
-
-$$
-\Delta V_{Var,v} \leq f_{\text{clone}} \cdot C_{\text{reset}} \cdot V_{\max,\text{KE}}
-
-$$
-
-where both $C_{\text{reset}}$ and $V_{\max,\text{KE}}$ are state-independent constants depending only on algorithmic parameters and domain geometry.
-
-**Q.E.D.**
+Its lower bound by $\mathcal V_v^a$ follows by dropping the dead terms before minimization. Finally $D/N\leq f_{\rm clone}$. Collision outputs obey $|v_i'|\leq(1+2\alpha)V_{\max}$; they need not yet satisfy the final cap. $\square$
 :::
 
 :::{prf:lemma} Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
@@ -11859,6 +11426,8 @@ $$
 
 where $I_{11}$ is the set of stably alive walkers and $p_{k,i}$ is the total cloning probability for walker ({prf:ref}`def-walker`) $i$ in swarm ({prf:ref}`def-swarm-and-state-space`) $k$.
 
+For the complete measurement-averaged kernel, {prf:ref}`thm-keystone-complete-error-coverage` includes every geometric cluster and derives the self-exclusion correction without a target-mass or error-coverage premise. {prf:ref}`thm-keystone-discharged-averaged-pressure` then proves the averaged Keystone bound from the entering geometry, with population-independent positive constants and an explicit $N^{-2}$ correction; its structural formulation retains the actual velocity and alive-status terms. The sharper state-dependent route in {prf:ref}`thm-keystone-averaged-cluster-pressure` remains available, and {prf:ref}`cor-keystone-canonical-balanced-structural` gives a zero-offset family. All these averaged statements retain complete-fitness-tie events in their probability space.
+
 Referenced by {prf:ref}`def-decision-operator` and {prf:ref}`lem-keystone-contraction-alive`.
 :::
 
@@ -12094,9 +11663,549 @@ are at most $N$ terms. These give the displayed constants. In the purely
 positional comparison, the standard inequality
 $V_{x,\mathrm{struct}}\leq2(S_1+S_2)/N$ allows $a=1/2$ and
 $b=S_j/N\leq D_{\mathrm{valid}}^2$. A bounded velocity remainder is added to
-$b$ when a phase-space comparison is used. Thus the proof retains the original
+$b$ when a phase-space comparison is used. Thus the proof retains the stated
 variance, comparison, and complement decomposition with every remainder
 explicit.
+:::
+
+:::{prf:lemma} Weighted near and far measurement events in a geometric cluster
+:label: lem-keystone-geometric-measurement-events
+
+The actual alive-row diversity measurement is $Y_i=\sqrt{|z_i-z_{D_i}|^2+\delta_D^2}$, where $D_i$ is the independently sampled current measurement companion and $\delta_D=10^{-3}$ in the canonical configuration. The diversity standardizer here is the configured global one:
+
+$$
+\bar Y=\frac1k\sum_{i\in\mathcal A}Y_i,\qquad
+s_Y=\sqrt{\frac1k\sum_{i\in\mathcal A}(Y_i-\bar Y)^2+\varepsilon_s^2},
+$$
+
+with $\varepsilon_s=0.1$ canonically. The comparison features and weights below are those of the actual canonical kernel. In particular, the bounds in {prf:ref}`thm-cloning-canonical-barycenter-concentration` give $D_z^2\le32$ and $\kappa_D=\kappa_C=e^{-4}$. Actual pairwise extrema may sharpen these constants. The geometric partition remains the chapter's complete-linkage partition; the estimates use its actual cluster diameters.
+
+
+Let $k\ge2$ alive rows have comparison features $z_i$, actual symmetric measurement weights $\kappa_D\le w^D_{ij}\le1$, and actual cloning weights $\kappa_C\le w^C_{ij}\le1$, all with self exclusion. Put
+$$
+\mathsf V_z=\frac1k\sum_i|z_i-\bar z|^2,\qquad
+D_z=\max_{i,j}|z_i-z_j|,
+$$
+and choose a geometric distance threshold $h$ with $0<h^2<\mathsf V_z$. This $h$ is a distance threshold for the estimate, distinct from the physical timestep of the unchanged transition. Define
+$$
+\rho_h=\frac{\mathsf V_z-h^2}{D_z^2-h^2}>0.
+\tag{3.AP1}
+$$
+For completed canonical box inputs, this feature variance has a proved relation to physical positional variance. On the ball $|x|\le B$, the radial and tangential eigenvalues of $DS_R(x)$ are at least $m_R=R^2/(R+B)^2$. Integrating the Jacobian along the segment from $x$ to $y$ gives $(S_R(x)-S_R(y))\cdot(x-y)\ge m_R|x-y|^2$, hence $|S_R(x)-S_R(y)|\ge m_R|x-y|$. Applying the pairwise variance identity and retaining the nonnegative velocity-feature contribution yields $\mathsf V_z\ge m_R^2\operatorname{Var}_{\mathcal A}(x)$. Canonically $R=2$ and $B=2\sqrt d$, so $m_R=(1+\sqrt d)^{-2}$. This comparison concerns eligible alive positions; it imposes no bound on retained dead coordinates.
+
+For every alive row $j$, the proportion of its distinct eligible companions at distance at least $h$ is at least $\rho_h$. Indeed,
+$$
+\frac1k\sum_\ell|z_\ell-z_j|^2
+=\mathsf V_z+|z_j-\bar z|^2
+\le h^2+(D_z^2-h^2)\frac{\#\{\ell:|z_\ell-z_j|\ge h\}}k.
+$$
+The self term is zero, so removal of $j$ only increases this proportion. Its actual weighted probability is consequently at least $\kappa_D\rho_h$.
+
+For a geometric cluster $G$, write $n_G=|G|$, $r_G=\operatorname{diam}_z(G)$, and
+$$
+\ell_G=\sqrt{r_G^2+\delta_D^2},\qquad
+H_h=\sqrt{h^2+\delta_D^2},\qquad
+\delta_G=H_h-\ell_G.
+$$
+Consider clusters with $n_G\ge2$ and $r_G<h$, so $\delta_G>0$. Define their exact nonself mass
+$$
+\rho_G=\frac{n_G-1}{k-1}.
+\tag{3.AP2}
+$$
+For $i,j\in G$, $i\ne j$, the measurement event
+$$
+E_{ij}=\{Y_i\le\ell_G,\ Y_j\ge H_h\}
+$$
+has probability at least $\kappa_D^2\rho_G\rho_h$. The first event contains all measurement choices by $i$ within $G\setminus\{i\}$; the second uses (3.AP1). The two measurement draws are independent, even though their resulting fitnesses use the same population standardization.
+
+Let $A_i$ be the actual rescaled reward factor in the product fitness. It is fixed by the entering state. Let $f(z)=g_s(z)^{p_s}$ be its positive increasing diversity factor, where $p_s>0$, and let $\varepsilon_s>0$ be the configured global diversity regularizer. All possible measured separations lie in a deterministically known interval $[y_-,y_+]$; one may take its exact range over eligible pairs. Set
+$$
+D_m=y_+-y_-,\quad Z_m=D_m/\varepsilon_s,\quad
+s_*=\sqrt{D_m^2/4+\varepsilon_s^2},
+$$
+$$
+f_-=\min_{|z|\le Z_m}f(z)>0,\quad
+f_+=\max_{|z|\le Z_m}f(z),\quad
+m_f=\min_{|z|\le Z_m}f'(z)>0.
+\tag{3.AP3}
+$$
+These minima exist for the configured logistic map with strictly positive amplitude and every fixed positive exponent; the canonical amplitude is $2$. The bounded-interval variance inequality is explicit: averaging $(Y-y_-)(y_+-Y)\ge0$ gives $\operatorname{Var}(Y)\le(y_+-\bar Y)(\bar Y-y_-)\le D_m^2/4$. Thus every realized regularized scale is at most $s_*$, and every realized standardized measurement lies in $[-Z_m,Z_m]$.
+
+The following are actual cluster statistics, not presumed favorable fitness gaps:
+$$
+A_G^- =\min_{i\in G}A_i,\qquad
+\omega_G=\max_{i\in G}A_i-\min_{i\in G}A_i,
+$$
+$$
+\gamma_G=A_G^-m_f\delta_G/s_*-f_+\omega_G,
+\qquad
+\mathfrak a_G=\min\left\{1,
+\frac{(\gamma_G)_+}{p_{\max}(F^*+\varepsilon_c)}\right\}.
+\tag{3.AP4}
+$$
+Here $F^*$ is the algorithm's proved fitness upper bound. All quantities in (3.AP1)--(3.AP4) can be evaluated from the entering state and configured maps before any random measurement is drawn.
+
+
+:::
+
+:::{prf:theorem} Measurement-averaged pressure on geometric clusters
+:label: thm-keystone-averaged-cluster-pressure
+
+
+For every alive row $i$ in one of these same geometric clusters, its unconditional cloning probability satisfies
+$$
+\boxed{\overline p_i:=\mathbb E[p_i(\mathbf F)\mid S]
+\ge \pi_G:=\kappa_C\kappa_D^2\rho_G^2\rho_h\mathfrak a_G.}
+\tag{3.AP5}
+$$
+This is an inequality for the actual complete retained-fitness acceptance law. Equal-fitness events remain in its probability space. It imposes no assumption that $i$ is below the realized global fitness mean.
+
+**Proof.** On $E_{ij}$, the two standardized diversity arguments satisfy
+$$
+\frac{Y_j-\bar Y}{s_Y}-\frac{Y_i-\bar Y}{s_Y}
+\ge\delta_G/s_*.
+$$
+The same realized mean and scale occur in both arguments. By the derivative bound in (3.AP3),
+$$
+f((Y_j-\bar Y)/s_Y)-f((Y_i-\bar Y)/s_Y)
+\ge m_f\delta_G/s_*.
+$$
+Consequently
+$$
+F_j-F_i
+=A_j(f_j-f_i)+(A_j-A_i)f_i
+\ge A_G^-m_f\delta_G/s_*-f_+\omega_G=\gamma_G.
+$$
+For $\gamma_G>0$, the conditional acceptance of donor $j$ is at least $\mathfrak a_G$; if $\gamma_G\le0$, (3.AP5) is the valid zero lower bound. The actual cloning donor probability is fixed by the entering physical state and independent of the measurement draws. Average the acceptance after the event estimate, then sum only over donors $j\in G\setminus\{i\}$. Their total actual cloning probability is at least $\kappa_C\rho_G$. Together with $\Pr(E_{ij})\ge\kappa_D^2\rho_G\rho_h$, this gives (3.AP5). No joint occurrence of all events $E_{ij}$ is required, because the algorithm draws only one cloning donor and the donor expectation is a sum. The proof never replaces sampled fitness by an expected fitness. $\square$
+
+For every statistically valid cluster in the chapter's construction,
+$n_G\ge\max(5,\lceil0.05k\rceil)$. Thus
+$$
+\rho_G\ge\frac{(4/5)n_G}{k}\ge0.04,
+\tag{3.AP6}
+$$
+where $n_G-1\ge(4/5)n_G$ follows from $n_G\ge5$. Therefore (3.AP5) has the explicit population-independent lower bound
+$$
+\overline p_i\ge 0.04^2\kappa_C\kappa_D^2\rho_h\mathfrak a_G.
+$$
+Small clusters need not be discarded: their exact $\rho_G$ in (3.AP5) remains available. Only a claim of a common positive constant over such clusters requires inspecting their masses.
+
+The reward oscillation can also be bounded analytically from the actual objective. If its reward is $L_R$-Lipschitz on the entering alive region and the reward map has derivative bound $L_g$, global regularization $\varepsilon_r$, and unit reward exponent, then
+$$
+\omega_G\le (L_gL_R/\varepsilon_r)\operatorname{diam}_{\rm phys}(G).
+$$
+For other fixed exponents, include the derivative of the configured powered reward map. This is a derived bound, not a replacement reward law. Canonical box inputs bound $L_R$ directly for their configured smooth objective; the actual finite cluster oscillation in (3.AP4) is often sharper.
+
+
+:::
+
+:::{prf:theorem} Actual averaged target error and its uncovered contribution
+:label: thm-keystone-averaged-error-capture
+
+
+Apply (3.AP5) in both swarms. Put its value equal to zero on any row whose cluster is not certified by the displayed geometry, without changing the cluster partition. For $i\in I_{11}$, let $\pi_i=\pi_{1,i}+\pi_{2,i}$ and $e_i=|\Delta\delta_{x,i}|^2$. Then
+$$
+\boxed{\mathbb E\!\left[\frac1N\sum_{i\in I_{11}}
+ (p_{1,i}+p_{2,i})e_i\,\middle|\,S_1,S_2\right]
+\ge\frac1N\sum_{i\in I_{11}}\pi_i e_i.}
+\tag{3.AP7}
+$$
+**Proof.** The geometric errors are fixed by the entering states, so this averaging introduces no covariance assumption. Let $\mathcal P$ be the common refinement of the existing geometric partitions and the common-alive label set, and let $\pi_B=\min_{i\in B}\pi_i$. The right side has the proved lower bound
+$$
+\sum_{B\in\mathcal P}\pi_B\frac{|B|}{N}
+\left(\left|\overline{\Delta\delta_x}_B\right|^2
++\frac1{|B|}\sum_{i\in B}
+ |\Delta\delta_{x,i}-\overline{\Delta\delta_x}_B|^2\right).
+\tag{3.AP8}
+$$
+This is the exact within/between cluster identity applied to the error vectors, followed by a pointwise probability lower bound. It does not infer error capture from population counts.
+
+For any chosen $p_*>0$, let $T_*$ be the union of blocks with $\pi_B\ge p_*$, and define the actual uncovered error
+$$
+R_* =\frac1N\sum_{i\in I_{11}\setminus T_*}e_i.
+$$
+Then the right side of (3.AP7) is at least
+$$
+p_*\left[\frac1N\sum_{i\in I_{11}}e_i-R_*\right].
+\tag{3.AP9}
+$$
+Both the probability coefficient and the error not captured are now explicit functions of the actual entering state. On a common alive position domain of diameter $D_x$,
+$R_*\le4D_x^2|I_{11}\setminus T_*|/N$. Thus uncertified or low-mass clusters are charged their actual geometric error rather than assigned a positive probability by assumption.
+
+For all-alive inputs, the structural hypocoercive cost satisfies, for every $\eta>0$,
+$$
+V_{\rm struct}\le(1+\eta)\frac1N\sum_i e_i
++\left(\lambda_v+\frac{b^2}{4\eta}\right)
+ \frac1N\sum_i|\Delta\delta_{v,i}|^2.
+$$
+This follows by using the comparison-label pairing as a transport plan and applying Young's inequality to its cross term. Substitution into (3.AP9) produces the Keystone inequality with coefficient $p_* /(1+\eta)$ and the explicitly retained uncovered-error and velocity remainders. If every entering velocity has norm at most $V_{\max}$, its displayed mean squared centered discrepancy is at most $4V_{\max}^2$: centering is an orthogonal projection in the empirical $L^2$ norm, and $|v_{1,i}-v_{2,i}|\le2V_{\max}$. The positional pressure estimate cannot absorb a velocity-only discrepancy without that remainder. For unequal alive pools the original alive-normalization and common-label residual must likewise be retained; (3.AP7)--(3.AP9) themselves apply without an alive-fraction floor.
+
+
+A zero certificate is distinct from zero actual activity. A coarse cluster, an insufficient reward contrast, or a small eligible mass can make (3.AP5) uninformative while the actual algorithm continues to clone. The exact uncovered error in (3.AP9) retains these cases; it is not replaced by an assumed favorable fraction. $\square$
+
+:::
+
+:::{prf:lemma} Uniform constants from the actual fitness and companion laws
+:label: lem-keystone-complete-coverage-constants
+
+Use the chapter's independent Gaussian-weighted measurement and cloning companions, retained global empirical standardization, powered positive fitness, and frozen acceptance. Keep every configured parameter fixed. Write the actual fitness as
+$$
+F_i=A_i f(u_i),\qquad A_i=H((R_i-\bar R)/s_R),\qquad
+u_i=(Y_i-\bar Y)/s_Y,
+$$
+where $H(t)=(g_r(t)+\eta_r)^\alpha$, $f(t)=(g_s(t)+\eta_s)^\beta$, $\alpha\ge0$, and the active diversity exponent satisfies $\beta>0$. The positive floors, bounded smooth rescaling, and positive regularizers are those of the fitness pipeline. The canonical rescalings are $g_r(t)=g_s(t)=2/(1+e^{-t})$; the argument also applies to the same pipeline with any of its fixed positive strictly increasing smooth rescalings. No derivative lower bound is imposed.
+
+Only entering alive coordinates are bounded by the valid physical domain and the completed velocity cap. Retained dead coordinates remain unrestricted. Put $B_x=\sup_{x\in\mathcal X_{\rm valid}}|x|$, $B_v=V_{\max}$. For the actual squashed comparison use
+$$
+z_i=(S_{R_x}(x_i),\sqrt{\lambda_{\rm alg}}S_{R_v}(v_i)),\qquad
+D_0=2\sqrt{R_x^2+\lambda_{\rm alg}R_v^2},\quad
+B_f=\max(R_x,\sqrt{\lambda_{\rm alg}}R_v).
+$$
+These features lie in $[-B_f,B_f]^{2d}$ and have diameter at most $D_0$. The positive phase-space weight is the configured $\lambda_{\rm alg}$. Define
+$$
+m_x=\frac{R_x^2}{(R_x+B_x)^2},\qquad
+m_z=\min\left\{m_x,\frac{\sqrt{\lambda_{\rm alg}}R_v^2}{(R_v+B_v)^2}\right\}>0.
+$$
+Then
+$$
+|z_i-z_j|\ge m_x|x_i-x_j|,\qquad
+|z_i-z_j|\ge m_z|(x_i,v_i)-(x_j,v_j)|.
+\tag{3.CC1}
+$$
+Indeed the symmetric Jacobian of $S_R(x)=Rx/(R+|x|)$ has eigenvalues at least $R^2/(R+B)^2$ on the containing ball of radius $B$. Integrate along the segment, take its inner product with the segment direction, and apply Cauchy--Schwarz. This proves each component estimate and then their product-space bounds. For the explicitly configured unsquashed comparison the same proof below uses $z=(x,\sqrt{\lambda_{\rm alg}}v)$, $D_0=2\sqrt{B_x^2+\lambda_{\rm alg}B_v^2}$, $B_f=\max(B_x,\sqrt{\lambda_{\rm alg}}B_v)$, $m_x=1$, and $m_z=\min(1,\sqrt{\lambda_{\rm alg}})$. This keeps its own configured distance law.
+
+If $\sigma_D,\sigma_C>0$ are the actual Gaussian bandwidths, put $\kappa_D=e^{-D_0^2/(2\sigma_D^2)}$, $\kappa_C=e^{-D_0^2/(2\sigma_C^2)}$. Every eligible measurement or cloning donor has probability at least $\kappa_D/(k-1)$ or $\kappa_C/(k-1)$, respectively. This follows directly by bounding the numerator below and each denominator summand above by one.
+
+Let $\varepsilon_r,\varepsilon_s>0$ be the reward and diversity regularizers. With the actual measurement companion $C_i$, the measured diversity is
+$$
+Y_i=\sqrt{|z_i-z_{C_i}|^2+\delta_D^2},\qquad
+s_Y=\sqrt{k^{-1}\sum_{i\in\mathcal A}(Y_i-\bar Y)^2+\varepsilon_s^2},
+$$
+where $\delta_D\ge0$ is the configured distance floor. Define
+$$
+D_m=\sqrt{D_0^2+\delta_D^2}-\delta_D,\qquad
+s_*=\sqrt{D_m^2/4+\varepsilon_s^2},\qquad Z_*=D_m/\varepsilon_s.
+$$
+Thus $|u_i|\le Z_*$ and $s_Y\le s_*$. In fact, for values in $[y_-,y_+]$, averaging $(Y-y_-)(y_+-Y)\ge0$ gives
+$\operatorname{Var}(Y)\le(y_+-\bar Y)(\bar Y-y_-)\le(y_+-y_-)^2/4$.
+
+Let $A_->0$, $f_+<\infty$, and $F^*<\infty$ be the pipeline's lower reward-factor bound, upper diversity-factor bound, and upper fitness bound. These follow from its positive floors and bounded rescalings, for every fixed $\alpha\ge0,\beta>0$. Let $L_R$ bound the Lipschitz constant of the configured reward in the joint position/velocity norm on the bounded alive region, and put $Z_R=\operatorname{osc}_{\mathcal X_{\rm valid}\times B_{V_{\max}}}(R)/\varepsilon_r$. Let $L_H=\max_{|t|\le Z_R}|H'(t)|$, which is finite on this compact standardized-reward interval. Then
+$$
+|A_i-A_j|\le L_A|z_i-z_j|,\qquad
+L_A=\frac{L_H L_R}{\varepsilon_r m_z}.
+\tag{3.CC2}
+$$
+Both factors use the same entering reward mean and regularized scale. The positive floor makes $L_H$ finite even for exponents below one; when $\alpha=0$, $L_H=0$. The stated reward regularity supplies $L_R$. On a convex containing region a bound on its joint gradient norm suffices. More generally, if the reward is smooth on a neighborhood of the compact valid region, choose a positive neighborhood radius $\rho$: for pairs at distance below $\rho$, use the gradient bound on their segment; for the other pairs use $\operatorname{osc}(R)/\rho$. Their maximum is a finite Lipschitz constant. A velocity penalty contributes its velocity gradient to this joint norm; summing the positional and velocity gradient bounds is sufficient. No reward is replaced by a quadratic objective.
+
+Fix an analysis threshold $0<W_0\le E_{\max}$ small enough that $m_x^2W_0/4<D_0^2$, where $E_{\max}$ bounds the entering positional error below. Put
+$$
+v_0=m_x^2W_0/4,\qquad h_f=\sqrt{v_0/2},\qquad
+\rho_f=\frac{v_0/2}{D_0^2-v_0/2}>0.
+\tag{3.CC3}
+$$
+The threshold $h_f$ is a comparison distance, not a physical timestep. Define
+$$
+\Delta_f=\sqrt{h_f^2+\delta_D^2}-\sqrt{h_f^2/4+\delta_D^2}>0,
+\quad t_f=\Delta_f/s_*,\quad
+\omega_f=\min_{u\in[-Z_*,Z_*-t_f]}\{f(u+t_f)-f(u)\}>0.
+\tag{3.CC4}
+$$
+Here $0<t_f\le Z_*$. The minimum is attained on a compact interval, and strict increase makes every value strictly positive. This proves positivity even when the derivative vanishes at individual scores. Choose
+$$
+r=\begin{cases}
+\min\{h_f/2,A_-\omega_f/(2f_+L_A)\},&L_A>0,\\
+h_f/2,&L_A=0,
+\end{cases}\qquad
+\gamma_0=A_-\omega_f/2,
+$$
+$$
+a_0=\min\{1,\gamma_0/[p_{\max}(F^*+\varepsilon_c)]\},\qquad
+C_0=\kappa_C\kappa_D^2\rho_f a_0>0.
+\tag{3.CC5}
+$$
+The actual acceptance is $\min\{1,(F_j-F_i)_+/[p_{\max}(F_i+\varepsilon_c)]\}$. All displayed constants depend only on the fixed algorithmic parameters, bounded entering region, reward, and analysis threshold; none depends on the population or the number of clusters.
+
+For the canonical parameters, $R_x=R_v=2$, $\lambda_{\rm alg}=1$, $\sigma_D=\sigma_C=2$, $B_x=2\sqrt d$, $B_v=2$, so $D_0^2=32$, $B_f=2$, $m_x=m_z=(1+\sqrt d)^{-2}$, and $\kappa_D=\kappa_C=e^{-4}$. Also $\delta_D=.001$, $\varepsilon_r=\varepsilon_s=.1$, $\alpha=\beta=1$, $A_-=.1$, $f_+=2.1$, $F^*=4.41$, $L_H=1/2$, $p_{\max}=1$, and $\varepsilon_c=10^{-6}$. The logistic choice has the additional explicit bound $\omega_f\ge 2e^{-Z_*}t_f/(1+e^{-Z_*})^2$. These specialize the proof; they are not restrictions to a demonstration potential.
+
+:::
+
+:::{prf:lemma} Measurement-averaged pressure from every near-neighbor mass
+:label: lem-keystone-near-neighbor-pressure
+
+Use the actual kernel and constants of {prf:ref}`lem-keystone-complete-coverage-constants`. Consider a swarm with $k\ge2$ alive slots and actual feature variance
+$\mathsf V_z\ge v_0$. For an alive recipient $i$, let
+$$
+n_i(r)=\#\{j\in\mathcal A\setminus\{i\}:|z_j-z_i|\le r\}.
+$$
+Then
+$$
+\boxed{\overline p_i:=\mathbb E[p_i(\mathbf F)\mid S]
+\ge C_0\left(\frac{n_i(r)}{k-1}\right)^2.}
+\tag{3.CC6}
+$$
+**Proof.** The feature-variance identity shows that every alive row $j$ has at least a fraction $\rho_f$ of its eligible companions at distance at least $h_f$:
+$$
+\frac1k\sum_\ell|z_\ell-z_j|^2
+=\mathsf V_z+|z_j-\bar z|^2\ge v_0.
+$$
+Comparing distances below $h_f$ with the bound $D_0$ gives the fraction $(v_0-h_f^2)/(D_0^2-h_f^2)=\rho_f$; self exclusion can only improve it. Its actual measurement probability is at least $\kappa_D\rho_f$.
+
+Restrict the cloning donor $j$ to $|z_j-z_i|\le r$. The recipient's near-measurement event has probability at least $\kappa_D n_i(r)/(k-1)$; independently, the donor's far-measurement event has probability at least $\kappa_D\rho_f$. On their joint event,
+$$
+Y_j-Y_i\ge\sqrt{h_f^2+\delta_D^2}-\sqrt{r^2+\delta_D^2}\ge\Delta_f.
+$$
+Shared empirical standardization retains exactly this difference divided by the same $s_Y\le s_*$. The finite-increment bound for the actual diversity rescaling and the reward-factor variation therefore give
+$$
+F_j-F_i\ge A_-\omega_f-f_+L_A r\ge\gamma_0.
+$$
+Thus its actual acceptance is at least $a_0$. Sum over the restricted cloning donors, whose actual probability is at least $\kappa_C n_i(r)/(k-1)$, and average their independent measurement events. This proves (3.CC6). It does not demand that every measurement realization have a fitness gap. $\square$
+
+:::
+
+:::{prf:theorem} Complete geometric-cluster error coverage at every population size
+:label: thm-keystone-complete-error-coverage
+
+Use the actual kernel and constants of {prf:ref}`lem-keystone-complete-coverage-constants`, and suppose the entering alive feature variance is $\mathsf V_z\ge v_0$. Fix any comparison labels $I\subseteq\mathcal A$, nonnegative entering error weights $e_i\le E_{\max}$, and normalization $N\ge k$. Put
+$$
+W=\frac1N\sum_{i\in I}e_i.
+$$
+For two swarms, take $I=I_{11}$ and $e_i=|\Delta\delta_{x,i}|^2$. If both alive domains have common diameter bound $D_x$, then $E_{\max}=4D_x^2$ works, since each centered position has norm at most $D_x$. Canonically one may use $D_x=4\sqrt d$, so $E_{\max}=64d$.
+
+Partition the fixed feature cube into cells of side at most $r/\sqrt{2d}$. Their feature diameter is at most $r$, and their number is bounded by
+$$
+M_r=\left\lceil\frac{2B_f\sqrt{2d}}r\right\rceil^{2d}.
+\tag{3.CC7}
+$$
+Use half-open cells with the outer boundary included in the last cell. This is a finite auxiliary cover, fixed independently of the population. Let $n_c$ count the alive rows in cell $c$, and write
+$$
+E_c=\frac1N\sum_{G}\sum_{i\in I\cap G\cap c}e_i.
+$$
+The sum uses every original geometric cluster $G$, with no mass or validity restriction. Thus $\sum_c E_c=W$ and $E_c\le E_{\max}n_c/N$.
+
+For every $N\ge k\ge2$,
+$$
+\boxed{\frac1N\sum_{i\in I}\overline p_i e_i
+\ge C_0 W\left[
+\frac{(NW/(E_{\max}M_r)-1)_+}{k-1}\right]^2.}
+\tag{3.CC8}
+$$
+**Proof.** Every row in cell $c$ has $n_i(r)\ge n_c-1$. Hence (3.CC6) bounds the left side below by
+$$
+\frac{C_0}{(k-1)^2}\sum_c E_c(n_c-1)^2.
+$$
+If $W=0$, the claim is immediate. Otherwise weighted Cauchy--Schwarz gives
+$$
+\sum_c E_c(n_c-1)^2
+\ge\frac1W\left(\sum_c E_c(n_c-1)\right)^2.
+$$
+Terms with $E_c>0$ have $n_c\ge1$, so the sum being squared is nonnegative. Also
+$$
+\sum_c E_c n_c\ge\frac N{E_{\max}}\sum_c E_c^2
+\ge\frac{NW^2}{E_{\max}M_r}.
+$$
+Subtract $W$, take its positive part, and substitute. This proves (3.CC8) without assuming any error is captured by a prescribed fraction of clusters. $\square$
+
+The estimate is valid even below the range where its right side becomes positive. Such a zero lower bound does not assert zero actual activity. The self-exclusion correction and all previously uncovered error are explicit.
+
+If $w=W/(k/N)\ge W_0$ and
+$$
+k\ge\frac{2E_{\max}M_r}{W_0},
+$$
+then (3.CC8) gives the population-uniform linear bound
+$$
+\frac1N\sum_{i\in I}\overline p_i e_i
+\ge\chi_0 W,
+\qquad \chi_0=\frac{C_0W_0^2}{4E_{\max}^2M_r^2}>0.
+\tag{3.CC9}
+$$
+Indeed $NW/(E_{\max}M_r)=kw/(E_{\max}M_r)\ge2$, so the numerator in (3.CC8) is at least half that value. Dividing by $k-1\le k$ yields at least $w/(2E_{\max}M_r)$.
+
+:::
+
+:::{prf:theorem} Discharged averaged Keystone estimate with finite-population correction
+:label: thm-keystone-discharged-averaged-pressure
+
+Use the actual kernel, bounded entering alive region, and constants of {prf:ref}`lem-keystone-complete-coverage-constants`. No lower bound on either alive fraction or the mass of any geometric cluster is imposed. All expectations below condition on the two complete entering marked states. Any coupling of the two measurement laws with the prescribed one-swarm marginals is allowed: only linearity of their summed marginal expectations is used.
+
+For two nonextinct swarms define $m_s=k_s/N$ and
+$$
+W=\frac1N\sum_{i\in I_{11}}|\Delta\delta_{x,i}|^2.
+$$
+Their alive positional variances satisfy
+$$
+W\le2\sum_{s=1}^2m_s\operatorname{Var}_{\mathcal A_s}(x).
+$$
+Choose a swarm $s$ maximizing the weighted positional variance. If $W>0$, this swarm has positive positional variance and hence $k_s\ge2$, so every denominator $k_s-1$ below is defined. Then
+$$
+m_s\operatorname{Var}_{\mathcal A_s}(x)\ge W/4,
+\qquad \mathsf V_{z,s}\ge m_x^2 W/(4m_s).
+\tag{3.CC10}
+$$
+Thus $W\ge W_0$ implies the feature threshold $\mathsf V_{z,s}\ge v_0$ used in (3.CC6), because $m_s\le1$. It also implies $W/m_s\ge W_0$ and $m_s\ge W_0/E_{\max}$, since $W\le E_{\max}m_s$. The latter is a consequence of the entering error, not an assumed alive-fraction floor.
+
+A quantitative affine estimate already holds for every population size, without a large-population premise. Put
+$$
+\chi_*=\frac{C_0W_0^2}{2E_{\max}^2M_r^2},\qquad
+B_*=\frac{C_0E_{\max}^2}{W_0}.
+$$
+Then
+$$
+\boxed{\mathbb E\left[\frac1N\sum_{i\in I_{11}}
+(p_{1,i}+p_{2,i})|\Delta\delta_{x,i}|^2\right]
+\ge\chi_*(W-W_0)-\frac{B_*}{N^2}.}
+\tag{3.CC11a}
+$$
+To prove this in the high-error branch, (3.CC8) is at least
+$$
+C_0W\left(\frac{W}{m_s E_{\max}M_r}-\frac1{k_s}\right)_+^2
+\ge\frac{C_0W^3}{2m_s^2E_{\max}^2M_r^2}
+-\frac{C_0W}{k_s^2}.
+$$
+Here $(a-b)_+^2\ge a^2/2-b^2$: for $a\ge b$ subtract the right side to obtain $(a-2b)^2/2$, and for $a<b$ the right side is nonpositive. Since $m_s\le1$, $W\ge W_0$, $W\le E_{\max}k_s/N$, and $k_s\ge NW_0/E_{\max}$, the last display is at least $\chi_*W-B_*/N^2$. For $W<W_0$, nonnegativity proves (3.CC11a). The zero-error $N=1$ case is included through this low-error branch. For all-alive inputs the sharper $B_*=C_0E_{\max}$ works because $k_s=N$. Thus the finite-population correction explicitly accounts for self exclusion without assuming any cluster covers the error.
+
+Consequently, for
+$$
+N\ge N_0:=\left\lceil\frac{2E_{\max}^2M_r}{W_0^2}\right\rceil,
+$$
+the selected alive count satisfies the threshold in (3.CC9). The full two-swarm error-weighted activity therefore obeys
+$$
+\boxed{\mathbb E\left[\frac1N\sum_{i\in I_{11}}
+(p_{1,i}+p_{2,i})|\Delta\delta_{x,i}|^2\right]
+\ge\chi_0(W-W_0),\qquad N\ge N_0.}
+\tag{3.CC11}
+$$
+For $W\ge W_0$, the stronger lower bound is $\chi_0W$, by selecting the spread swarm above. For $W<W_0$, nonnegativity proves (3.CC11). Every original cluster has been included. No target-probability, cluster-mass, or error-coverage assumption remains in this estimate. Below $N_0$, (3.CC8) remains the proved finite-population statement; this theorem does not identify all such populations with the exceptional no-selection case.
+
+For all-alive inputs, use the actual comparison matching as a transport plan. For $\eta>0$, Young's inequality gives
+$$
+V_{\rm struct}\le(1+\eta)W+
+ c_v\frac1N\sum_i|\Delta\delta_{v,i}|^2,
+\qquad c_v=\lambda_v+\frac{b^2}{4\eta}.
+$$
+The last mean squared centered discrepancy is at most $4V_{\max}^2$, since centering is an orthogonal projection and each entering velocity has norm at most $V_{\max}$. Thus (3.CC11) supplies the fully discharged Keystone constants
+$$
+\mathbb E[\text{error-weighted activity}]
+\ge \frac{\chi_0}{1+\eta}V_{\rm struct}
+-\chi_0\left[W_0+
+ \frac{4c_vV_{\max}^2}{1+\eta}\right],\qquad N\ge N_0.
+\tag{3.CC12}
+$$
+For zero velocity discrepancy, its actual velocity remainder is zero, so the positional branch is nonvacuous whenever $V_{\rm struct}>(1+\eta)W_0$. The threshold $W_0$ is arbitrary positive below the attainable positional error; it is not chosen to cover the entire physical state space.
+
+For partially alive states, retain the normalization of the original alive-law structural cost. With $k_{\max}=\max(k_1,k_2)$, $s=|I_{11}|$, $m_{\max}=k_{\max}/N$, and $D_v=N^{-1}\sum_{i\in I_{11}}|\Delta\delta_{v,i}|^2$, the matching of common labels has mass $s/k_{\max}$. Completing its residual marginals by any coupling yields
+$$
+m_{\max}V_{\rm struct}
+\le(1+\eta)W+c_vD_v+
+ \frac{k_{\max}-s}{N}\bigl[(1+\eta)E_{\max}+16c_vV_{\max}^2\bigr].
+\tag{3.CC13}
+$$
+The factor 16 bounds centered velocity differences on arbitrary residual label pairs; unlike the full equal-mass pairing average, it is a pointwise bound. Applying (3.CC11) to (3.CC13) retains exactly the alive-mass, velocity, and unmatched-label contributions. No claim that positional cloning pressure controls a purely velocity discrepancy or a missing common-alive population is needed.
+
+The all-population version (3.CC11a) gives, for all-alive inputs,
+$$
+\mathbb E[\text{error-weighted activity}]
+\ge\frac{\chi_*}{1+\eta}V_{\rm struct}
+-\chi_*\left[W_0+
+\frac{c_v}{1+\eta}\frac1N\sum_i|\Delta\delta_{v,i}|^2\right]
+-\frac{C_0E_{\max}}{N^2}.
+\tag{3.CC14}
+$$
+For partially alive inputs, substitute (3.CC13) into (3.CC11a) to obtain the same fully explicit formula with $m_{\max}V_{\rm struct}$, its displayed common-label and velocity remainders, and $B_*/N^2$. All coverage and probability estimates are thereby discharged for the stated actual kernel; no error outside the original geometric clusters has been assumed away.
+
+:::
+
+:::{prf:corollary} A canonical population-uniform structural Keystone application
+:label: cor-keystone-canonical-balanced-structural
+
+Use the canonical Euclidean Gas in dimension $d\geq1$ and population
+$N=2M\geq4$. Let one entering swarm contain $M$ walkers at $+ae_1$ and
+$M$ at $-ae_1$, and another contain $M$ at $+be_1$ and $M$ at $-be_1$,
+where $a,b\in[0.5,2)$. All slots are alive and all velocities are zero.
+The potential is the actual quadratic $U(x)=|x|^2/2$. Use the optimal
+same-sign matching of their centered empirical measures. The structural
+error of {prf:ref}`def-structural-error-component` is exactly
+$$
+V_{\mathrm{struct}}=(a-b)^2.
+$$
+Let $p_{s,i}$ be the actual cloning acceptance probability conditional on
+swarm $s$'s retained fitness vector. The full measurement-averaged Keystone
+quantity satisfies
+$$
+\boxed{
+\mathbb E\left[\frac1N\sum_i(p_{1,i}+p_{2,i})
+ |\Delta\delta_{x,i}|^2\right]
+\geq\chi_0V_{\mathrm{struct}},\qquad
+\chi_0=\frac49A_0(0.5)=0.30251915319\ldots>0.}          \tag{3.KB1}
+$$
+Here $A_0(r)$ is the explicit canonical function defined in
+{prf:ref}`prop-cloning-two-cluster-noise-balance`. The constant is independent
+of $N,d,a,b$ in the stated family, and the offset is zero. Every measurement
+outcome, including complete fitness ties, is included in the expectation.
+:::
+
+:::{prf:proof}
+At radius $r$, the actual row measurement laws are identical two-point
+laws: an opposite-site companion is measured with probability
+$$
+q_M(r)=\frac{Mw(r)}{M-1+Mw(r)},\qquad
+w(r)=\exp\left[-\frac18\left(\frac{4r}{2+r}\right)^2\right].
+$$
+The measurement innovations are independent across rows, though the
+resulting retained fitness values share their global normalizers. For any
+fixed recipient $i$ and distinct donor $j$, the event that $i$ has the low
+measurement and $j$ the high measurement has probability
+$(1-q_M)q_M$. On that event the actual retained-fitness acceptance is at
+least $A_0(r)$, irrespective of the other measurements, as proved in
+{prf:ref}`prop-cloning-two-cluster-noise-balance`. The cloning donor law is
+fixed by the entering physical state. Sum its normalized probabilities over
+$j\ne i$ to obtain, for every row,
+$$
+\pi_i(r):=\mathbb E[p_i\mid S_r]
+\geq A_0(r)q_M(r)(1-q_M(r)).                            \tag{3.KB2}
+$$
+No event is removed from this expectation: it is a lower bound obtained by
+retaining particular nonnegative contributions of the actual kernel.
+
+The two swarm means vanish. With zero velocities, the hypocoercive ground
+cost is exactly the squared positional distance. A same-sign pair costs
+$(a-b)^2$, whereas an opposite-sign pair costs $(a+b)^2$. Both empirical
+measures put half their mass at each sign, so matching equal signs is
+optimal and gives the displayed structural error. Moreover every paired
+squared positional discrepancy equals $(a-b)^2$. Consequently (3.KB2)
+gives the sharper bound
+$$
+\mathbb E\left[\frac1N\sum_i(p_{1,i}+p_{2,i})
+ |\Delta\delta_{x,i}|^2\right]
+\geq\bigl[A_0(a)q_M(a)(1-q_M(a))
++A_0(b)q_M(b)(1-q_M(b))\bigr]V_{\mathrm{struct}}.
+$$
+Thus no unproved correlation between the target error and sampled
+acceptance has been factored out.
+
+For $r<2$, $w(r)>e^{-1/2}>1/2$, so
+$q_M(r)\geq w(r)/(1+w(r))>1/3$.
+Also $w(r)\leq1$ and $M\geq2$ give
+$q_M(r)\leq M/(2M-1)\leq2/3$. Hence $q_M(1-q_M)\geq2/9$.
+The distance gap $\delta(r)$ in the definition of $A_0$ increases with $r$,
+and $\delta/\sqrt{\delta^2+4(0.1)^2}$ is increasing. Therefore
+$A_0(r)\geq A_0(0.5)$ for $r\geq0.5$. Applying these inequalities to
+both swarms proves (3.KB1). Embedding the two sites along $e_1$ does not
+alter any reward, metric distance, measurement probability, or cost, so the
+same constants apply in every dimension. $\square$
+:::
+
+:::{prf:remark} Scope of the structural application
+:label: rem-keystone-balanced-structural-scope
+
+The condition $N\ge4$ identifies an exact exception. For $N=2$ at $\pm re_1$ with zero velocities, each row has only its opposite companion. Both rewards and both measured separations agree, so the two retained fitnesses are exactly $1.21$ and both cloning acceptance probabilities are zero. Two such swarms with different radii have $V_{\mathrm{struct}}>0$, so a positive zero-offset cloning-pressure bound fails at that stage. This does not assert failure of their subsequent kinetic evolution. For $N\ge4$, complete-fitness-tie outcomes still occur with positive probability and are already included in (3.KB1); they are not excluded by conditioning. The one-alive-row no-self-donor branch follows its declared separate convention.
+
+The result controls the actual paired structural-error pressure, not an
+internal-variance proxy. In particular it coexists with the positive
+internal-variance drift in {prf:ref}`prop-cloning-two-cluster-noise-balance`.
+Passing from pressure to a coupled structural increment still uses the
+signed terms and chosen full-kernel coupling in
+{prf:ref}`thm-cloning-incremental-cluster-balance` and
+{prf:ref}`lem-cloning-coupled-error-not-internal-variance`.
 :::
 
 :::{prf:proof}
@@ -12226,7 +12335,7 @@ score bound, and contains no factor tending to zero with $N$.
 :::{prf:definition} The Cloning Operator $\Psi_{\text{clone}}$
 :label: def-cloning-operator-formal
 
-The cloning proposal $\Psi_{\mathrm{clone}}$ is a Markov kernel from nonempty valid swarms to the ambient proposal state space containing all jittered positions. Composing it with the specified validity test gives the kernel on the valid swarm space with the corresponding dead statuses. The component drift estimates specify whether they concern this proposal or the tested transition.
+The cloning proposal $\Psi_{\mathrm{clone}}$ is a Markov kernel from nonempty valid swarms to the ambient proposal state space containing all jittered positions. The canonical transition applies its validity test after the complete kinetic update and final position noise, giving the corresponding terminal dead statuses. The component drift estimates specify whether they concern this proposal or the tested transition.
 
 **Domain and Range:**
 - **Input:** A swarm  configuration $S = ((x_1, v_1, s_1), \ldots, (x_N, v_N, s_N)) \in \Sigma_N$ with at least one alive walker ({prf:ref}`def-walker`) ($|\mathcal{A}(S)| \geq 1$).
@@ -12257,343 +12366,79 @@ This status statement uses the forced-revival convention and a nonempty alive co
 Referenced by {prf:ref}`thm-complete-cloning-drift`.
 :::
 
-:::{prf:definition} The Measurement Operator
+:::{prf:definition} The measurement operator
 :label: def-measurement-operator
 
-For input swarm ({prf:ref}`def-swarm-and-state-space`) $S$ with alive set ({prf:ref}`def-alive-dead-sets`) $\mathcal{A}(S)$ of size $k = |\mathcal{A}(S)|$:
-
-**Input:** Swarm  configuration $S$
-
-**Stochastic Process:**
-
-1. **Companion Pairing:** Sample a pairing $\pi: \mathcal{A}(S) \to \mathcal{A}(S)$ from the spatially-aware random pairing distribution ({prf:ref}`def-standardization-operator`):
-
+For each alive row independently, draw $d(i)$ from the Gaussian weighted current eligible pool excluding $i$, and record
 
 $$
-\pi \sim P_{\text{pair}}(S, \cdot)
-
+s_i=\sqrt{d_{\mathrm{alg}}(i,d(i))^2+\delta_D^2},\qquad\delta_D>0.
 $$
 
-2. **Raw Distance Vector** (see {prf:ref}`def-raw-value-operators`): For each alive walker ({prf:ref}`def-walker`) $i \in \mathcal{A}(S)$, compute:
-
-
-$$
-d_i = d_{\text{alg}}(x_i, x_{\pi(i)})
-
-$$
-
-
-   For dead walkers $i \notin \mathcal{A}(S)$, set $d_i = 0$ deterministically.
-
-**Output:** The $N$-dimensional raw distance vector $\mathbf{d} = (d_1, \ldots, d_N) \in \mathbb{R}^N_{\geq 0}$
-
-**Key Properties:**
-- The pairing $\pi$ is sampled once per swarm ({prf:ref}`def-swarm-and-state-space`), creating correlations between measurements
-- The distribution of $\mathbf{d}$ depends only on $S$ and the algorithmic parameters $(\epsilon_p, \ell_p)$
-- Dead walkers receive deterministic zero measurements
+For a singleton eligible pool the raw companion distance is zero. Dead rows have dummy measurements and do not contribute to current reward or diversity moments. The chosen measurement for every alive row is retained throughout fitness and acceptance. A matching configuration uses its explicitly defined joint measurement law instead.
 :::
 
-:::{prf:remark} Stochastic Coupling for Drift Analysis
+:::{prf:remark} Coupling measurement draws
 :label: rem-measurement-coupling
 
-When analyzing two swarms $(S_1, S_2)$ in the drift analysis (Sections 10-11), we use **synchronous coupling** of the randomness:
-- The same random pairing algorithm is applied to both swarms
-- The PRNG streams are coupled so that walker $i$ in swarm 1 and walker $i$ in swarm 2 use the same random seed
-- This coupling is critical for bounding the divergence between the two trajectories
+Recipient-addressed common uniforms define a valid synchronous coupling of two independent-sampling kernels, even when their state-dependent donor laws differ. They do not force the same donor or the same fitness. In a matching configuration, couple the matching innovations according to its joint law. Conditional independence of row measurements is specific to the independent configuration.
 :::
 
-:::{prf:definition} The Fitness Evaluation Operator
+:::{prf:definition} The fitness evaluation operator
 :label: def-fitness-operator
 
-**Input:**
-- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
-- Raw distance vector $\mathbf{d} \in \mathbb{R}^N_{\geq 0}$
-
-**Deterministic Computation:**
-
-1. **Boundary Proximity:** For each walker ({prf:ref}`def-walker`) $i$, compute:
-
+Evaluate the configured oriented reward $r_i=R(x_i,v_i)$ on alive rows. A barrier or a velocity penalty is included only when explicitly part of that objective. For $q=r,s$, compute
 
 $$
-r_i=R_{\mathrm{pos}}(x_i)-\varphi_{\mathrm{barrier}}(x_i)-c_{v\_reg}\|v_i\|^2
-
+\bar q=\frac1{|\mathcal A|}\sum_{i\in\mathcal A}q_i,\qquad
+\widehat\sigma_q=\sqrt{\frac1{|\mathcal A|}\sum_{i\in\mathcal A}(q_i-\bar q)^2+\sigma_{q,\min}^2}.
 $$
 
-   yielding the raw reward vector $\mathbf{r} = (r_1, \ldots, r_N)$.
-
-2. **Rescaling:** Apply the rescale function ({prf:ref}`def-canonical-logistic-rescale-function-example`) with floor $\eta > 0$:
-
+For the canonical positive logistic maps $g_q(z)=A_q/(1+e^{-z})+\eta_q$ and nonnegative exponents $p_r,p_s$, the frozen fitness is
 
 $$
-\tilde{d}_i = d_i + \eta, \quad \tilde{r}_i = r_i + \eta
-
+F_i=g_r((r_i-\bar r)/\widehat\sigma_r)^{p_r}
+g_s((s_i-\bar s)/\widehat\sigma_s)^{p_s}.
 $$
 
-3. **Z-Score Normalization:** Compute empirical means and standard deviations over **alive walkers only**:
-
-
-$$
-\bar{d} = \frac{1}{k}\sum_{i \in \mathcal{A}(S)} \tilde{d}_i, \quad \sigma_d = \sqrt{\frac{1}{k}\sum_{i \in \mathcal{A}(S)} (\tilde{d}_i - \bar{d})^2}
-
-$$
-
-
-
-$$
-\bar{r} = \frac{1}{k}\sum_{i \in \mathcal{A}(S)} \tilde{r}_i, \quad \sigma_r = \sqrt{\frac{1}{k}\sum_{i \in \mathcal{A}(S)} (\tilde{r}_i - \bar{r})^2}
-
-$$
-
-
-   For alive walkers $i \in \mathcal{A}(S)$:
-
-
-$$
-z_{d,i} = \frac{\tilde{d}_i - \bar{d}}{\sigma_d + \sigma_{\text{stab}}}, \quad z_{r,i} = \frac{\tilde{r}_i - \bar{r}}{\sigma_r + \sigma_{\text{stab}}}
-
-$$
-
-
-   For dead walkers, set $z_{d,i} = z_{r,i} = 0$.
-
-4. **Fitness Potential:** For each walker ({prf:ref}`def-walker`) $i$, compute:
-
-   a. Apply the Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) $g_A$ and add the floor $\eta$ to create the rescaled components:
-      - $r'_i := g_A(z_{r,i}) + \eta$
-      - $d'_i := g_A(z_{d,i}) + \eta$
-
-   b. Combine the components using the dynamics weights $\alpha$ and $\beta$:
-
-
-$$
-V_{\text{fit},i} = \begin{cases}
-      (d'_i)^{\beta} \cdot (r'_i)^{\alpha} & \text{if } i \in \mathcal{A}(S) \\
-      0 & \text{if } i \notin \mathcal{A}(S)
-      \end{cases}
-
-$$
-
-**Output:** The fitness potential vector $\mathbf{V}_{\text{fit}} = (V_{\text{fit},1}, \ldots, V_{\text{fit},N}) \in \mathbb{R}^N_{\geq 0}$
-
-**Key Properties:**
-- The operator is deterministic given $S$ and $\mathbf{d}$
-- Bounded: $V_{\text{fit},i} \in [0, V_{\text{pot,max}}]$ for alive walkers, where $V_{\text{pot,max}} = (g_{A,\max} + \eta)^{\alpha+\beta}$
-- Lower bound: $V_{\text{fit},i} \geq \eta^{\alpha+\beta}$ for alive walkers ({prf:ref}`lem-potential-bounds`)
+Positive floors and variance regularizers are fixed. Dead fitness is a dummy value: revival does not evaluate a live acceptance score. The exponents are fitness parameters, distinct from collision restitution $\alpha$. Every selected donor is scored with this same frozen vector. Averaging over measurement draws occurs after the nonlinear acceptance calculation.
 :::
 
-:::{prf:definition} The Cloning Decision Operator
+:::{prf:definition} The cloning decision operator
 :label: def-decision-operator
 
-**Input:**
-- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
-- Fitness potential vector $\mathbf{V}_{\text{fit}}$
+Condition on $S$ and its frozen sampled fitness vector. Each row draws one donor independently from {prf:ref}`def-cloning-companion-operator`. For a live row with a distinct eligible donor, sample $T_i\sim U(0,p_{\max})$ and accept when $S_i(c_i)>T_i$. A live row without a distinct eligible donor persists. Every dead row accepts its weighted current eligible donor with probability one. No fitness threshold is applied to revival.
 
-**Stochastic Process:**
-
-For each walker ({prf:ref}`def-walker`) $i \in \{1, \ldots, N\}$:
-
-1. **Companion Selection ({prf:ref}`def-companion-selection-measure`)** (see {prf:ref}`def-cloning-companion-operator`):
-
-   - If $i \in \mathcal{A}(S)$ (alive): Sample companion $c_i$ from the softmax distribution over other alive walkers:
-
+The output consists of the donor vector and the accepted-edge indicator vector. For a live row, its total probability is
 
 $$
-P(c_i = j) = \frac{\exp\left(-\frac{d_{\text{alg}}(x_i, x_j)^2}{2\epsilon_c^2}\right)}{\sum_{\ell \in \mathcal{A}(S) \setminus \{i\}} \exp\left(-\frac{d_{\text{alg}}(x_i, x_\ell)^2}{2\epsilon_c^2}\right)} \quad \text{for } j \in \mathcal{A}(S) \setminus \{i\}
-
+p_i=\sum_{j\in\mathcal A\setminus\{i\}}P(c_i=j\mid S)
+\min\!\left(1,\frac{(V_{\rm fit,j}-V_{\rm fit,i})_+}{p_{\max}(V_{\rm fit,i}+\varepsilon_{\rm clone})}\right).
 $$
 
-
-   - If $i \in \mathcal{D}(S)$ (dead): Sample companion uniformly from all alive walkers:
-
-
-$$
-P(c_i = j) = \frac{1}{k} \quad \text{for all } j \in \mathcal{A}(S)
-
-$$
-
-2. **Cloning Score:** Compute the score based on fitness difference:
-
-
-$$
-S_i = \frac{V_{\text{fit},c_i} - V_{\text{fit},i}}{V_{\text{fit},i} + \varepsilon_{\text{clone}}}
-
-$$
-
-3. **Stochastic Decision:** Sample threshold $T_i \sim \text{Uniform}(0, p_{\max})$ independently.
-
-   Walker ({prf:ref}`def-walker`) $i$ is marked for **cloning** if $S_i > T_i$, otherwise marked to **persist**.
-
-**Output:**
-- Companion assignment vector $\mathbf{c} = (c_1, \ldots, c_N)$
-- Binary action vector $\mathbf{a} = (a_1, \ldots, a_N)$ where $a_i \in \{\text{clone}, \text{persist}\}$
-
-**Total Cloning Probability:**
-
-The key quantity for drift analysis is the **total probability** that walker ({prf:ref}`def-walker`) $i$ clones, averaging over all randomness in companion selection and threshold sampling:
-
-$$
-p_i := P(\text{walker } i \text{ clones} \mid S, \mathbf{V}_{\text{fit}})
-
-$$
-
-This is the probability that enters the Keystone Lemma ({prf:ref}`lem-quantitative-keystone`).
+For a dead row, $p_i=1$. These probabilities remain conditional on the sampled fitness; averaging over measurement draws comes afterwards.
 :::
 
-:::{prf:lemma} Total Cloning Probability for Dead Walkers
+:::{prf:lemma} Mandatory revival
 :label: lem-dead-walker-clone-prob
 
-Under the Axiom of Guaranteed Revival ($\varepsilon_{\text{clone}} \cdot p_{\max} < \eta^{\alpha+\beta}$), any dead walker ({prf:ref}`def-walker`) clones with probability 1:
+If the current alive pool is nonempty, each dead slot revives with probability one during the cloning proposal, independently of the fitness floor and the acceptance regularizer.
 
-$$
-i \in \mathcal{D}(S) \implies p_i = 1
-
-$$
-
+*Proof.* Its decision branch draws an eligible current donor and accepts unconditionally. If the alive pool is empty, the algorithm stops at extinction; it does not invent a donor or a restart law. $\square$
 :::
 
-:::{prf:proof}
-
-For a dead walker $i$, the fitness potential is $V_{\text{fit},i} = 0$. Any alive companion $c_i$ has $V_{\text{fit},c_i} \geq \eta^{\alpha+\beta}$ by {prf:ref}`lem-potential-bounds`.
-
-The cloning score is:
-
-$$
-S_i = \frac{V_{\text{fit},c_i} - 0}{0 + \varepsilon_{\text{clone}}} = \frac{V_{\text{fit},c_i}}{\varepsilon_{\text{clone}}} \geq \frac{\eta^{\alpha+\beta}}{\varepsilon_{\text{clone}}}
-
-$$
-
-By the revival axiom: $\frac{\eta^{\alpha+\beta}}{\varepsilon_{\text{clone}}} > p_{\max}$
-
-Since $T_i \in [0, p_{\max}]$, we have $S_i > T_i$ with probability 1.
-
-**Q.E.D.**
-:::
-
-:::{prf:definition} The State Update Operator
+:::{prf:definition} The state update operator
 :label: def-update-operator
 
-The state update operator implements the inelastic collision model (see {prf:ref}`def-inelastic-collision-update`) to update walker ({prf:ref}`def-walker`) states after cloning decisions.
+Given the frozen input, donors, and accepted indicators, apply {prf:ref}`def-inelastic-collision-update`. Build the connected components of all accepted undirected edges before any write. Each accepted row, including every revived row, copies its own frozen donor position and receives its independent Gaussian jitter. Every vertex in a nontrivial component receives the component's shared-Haar velocity update from its frozen velocity. A row that persists in position can therefore change velocity as a donor. Isolated rows retain their velocity. All proposal statuses are alive.
 
-**Input:**
-- Swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S$
-- Companion vector $\mathbf{c}$
-- Action vector $\mathbf{a}$
-
-**Deterministic Grouping:**
-
-For each unique companion $j \in \mathcal{A}(S)$, identify all walkers cloning from it:
-
-$$
-I_j := \{i \in \{1, \ldots, N\} : a_i = \text{clone} \text{ and } c_i = j\}
-
-$$
-
-Let $M_j = |I_j|$ be the number of cloners for companion $j$.
-
-**Stochastic State Update:**
-
-For each $(M_j + 1)$-particle system consisting of companion $j$ and its cloners $I_j$:
-
-1. **Position Updates:**
-
-   For each cloner $i \in I_j$, the position is reset to the companion's position plus **Gaussian jitter**:
-
-
-$$
-x'_i = x_j + \sigma_x \zeta_i^x \quad \text{where } \zeta_i^x \sim \mathcal{N}(0, I_d)
-
-$$
-
-
-   Companion position is unchanged: $x'_j = x_j$
-
-2. **Velocity Updates (The Inelastic Collision):**
-
-   The velocities are updated through the specified inelastic collision model. This update uses rotations of relative velocities; it adds no Gaussian velocity jitter.
-
-   **a. Center-of-Mass Velocity:**
-
-
-$$
-V_{\text{COM},j} = \frac{1}{M_j + 1}\left(v_j + \sum_{i \in I_j} v_i\right)
-
-$$
-
-
-   **b. Update Relative Velocities:**
-
-   For each walker ({prf:ref}`def-walker`) $k \in I_j \cup \{j\}$, compute the relative velocity:
-
-
-$$
-u_k = v_k - V_{\text{COM},j}
-
-$$
-
-
-   Sample a random orthogonal transformation $R_k$ that isotropically rotates $u_k$ (uniformly random direction on the $(d-1)$-sphere, preserving magnitude). The new relative velocity is:
-
-
-$$
-u'_k = \alpha_{\text{restitution}} \cdot R_k(u_k)
-
-$$
-
-
-   **c. Return to Lab Frame:**
-
-
-$$
-v'_k = V_{\text{COM},j} + u'_k
-
-$$
-
-3. **Persisting Walkers:**
-
-   For walkers with $a_i = \text{persist}$:
-
-
-$$
-x'_i = x_i, \quad v'_i = v_i
-
-$$
-
-4. **Status Update:**
-
-   All walkers in the output are alive:
-
-
-$$
-s'_i = 1 \quad \text{for all } i \in \{1, \ldots, N\}
-
-$$
-
-**Output:** The intermediate swarm ({prf:ref}`def-swarm-and-state-space`) configuration $S' = ((x'_1, v'_1, 1), \ldots, (x'_N, v'_N, 1))$
+The output is a probability kernel on the ambient proposal space, which includes jittered positions outside the valid domain and pre-cap velocities. The canonical boundary schedule tests positions only at the end of the full kinetic update, after its independent final position noise.
 :::
 
-:::{prf:remark} Position Jitter vs. Velocity Collision Model
+:::{prf:remark} Conditional independence belongs to the correct stage
 :label: rem-position-velocity-update-difference
 
-The cloning operator treats positions and velocities asymmetrically:
-
-1. **Position:** Stochastic Gaussian jitter with variance $\sigma_x^2$ breaks spatial correlations between swarms in the drift analysis.
-
-2. **Velocity:** Deterministic inelastic collision model (with random rotation) conserves momentum and provides controlled energy dissipation via $\alpha_{\text{restitution}}$.
-
-This design choice has important implications:
-
-- **Positional desynchronization** comes from explicit Gaussian noise $\mathcal{N}(0, \sigma_x^2 I_d)$
-- **Velocity desynchronization** comes from the random rotations $R_k$ in the collision model, which randomize velocity directions while preserving or reducing magnitudes
-- The parameter $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation: $\alpha_{\text{restitution}} = 0$ gives maximum dissipation (all walkers collapse to $V_{\text{COM}}$), while $\alpha_{\text{restitution}} = 1$ gives elastic collisions
-
-For a collision group with relative velocities $u_k$ satisfying $\sum_k u_k=0$,
-the displayed per-walker rotations give a momentum change
-$\alpha_{\mathrm{restitution}}\sum_k R_ku_k$. This vanishes pathwise for a
-common rotation $R_k=R$, but separate isotropic rotations give zero conditional
-expectation rather than pathwise conservation. The collision estimates must
-use the rotation convention in the specified transition. This distinction does
-not alter the displayed per-walker update rule.
-
+Conditional on the frozen state and fitness, donor decisions and row jitters are independent, so post-copy positions are independent across rows. Velocities within a collision component share both its center of mass and one Haar rotation. Their conditional covariance is {prf:ref}`prop-cloning-component-conservation`; it cannot be replaced by an independent per-row noise covariance. Coupling two swarms must likewise couple component rotations, not assign separate rotations to walkers in one component.
 :::
 
 :::{prf:theorem} Compositional Structure of $\Psi_{\text{clone}}$
@@ -12656,9 +12501,9 @@ $$
 $$
 
    This arises from the inelastic collision model. The expected squared velocity change depends on:
-   - The center-of-mass shift: $\mathbb{E}[\|V_{\text{COM},j} - v_i\|^2]$
+   - The component center: $\mathbb{E}[\|\bar v_{C(i)} - v_i\|^2]$
    - The restitution coefficient: $\alpha_{\text{restitution}}$
-   - The random rotation: $R_i$
+   - The shared component rotation: $R_{C(i)}$
 
 4. **Centered Displacements:** For coupled swarms $(S_1, S_2)$:
 
@@ -12670,48 +12515,31 @@ $$
 
 :::
 
-:::{prf:proposition} Expected Displacement Under Cloning
+:::{prf:proposition} Exact positional displacement and Gaussian moments
 :label: prop-expected-displacement-cloning
 
-For walker ({prf:ref}`def-walker`) $i$ with cloning probability $p_i$, the expected squared position displacement satisfies:
+Conditional on the frozen state and measured fitness,
 
 $$
-\mathbb{E}[\|\Delta x_i\|^2 \mid S] \leq p_i \cdot D_{\text{max}}^2
-
+\mathbb E[|\Delta x_i|^2\mid S,\mathbf F]
+=\sum_jb_{ij}\bigl(|x_j-x_i|^2+d\sigma_x^2\bigr).
 $$
 
-where $D_{\text{max}}$ is the maximum distance in the valid domain (or a suitable bound on the jitter kernel range).
+For an alive row in a domain of diameter $D_x$, this is at most $p_i(D_x^2+d\sigma_x^2)$. For a dead row with retained position $x_i$ and donor positions bounded by $R_D$, it is at most $2|x_i|^2+2R_D^2+d\sigma_x^2$. A persisting row has zero positional displacement; it may still receive a donor velocity update.
 
-For a walker ({prf:ref}`def-walker`) that persists ($a_i = \text{persist}$), $\Delta x_i = 0$ deterministically.
-:::
-
-:::{prf:proof}
-**Proof.**
-
-The walker clones with probability $p_i$, in which case its position is sampled from $\mathcal{Q}_\delta(x_{c_i}, \cdot)$, yielding displacement bounded by $D_{\text{max}}$.
-
-With probability $1 - p_i$, the walker persists and has zero displacement.
-
-Therefore:
-
-$$
-\mathbb{E}[\|\Delta x_i\|^2 \mid S] = p_i \cdot \mathbb{E}[\|\Delta x_i\|^2 \mid S, a_i = \text{clone}] + (1-p_i) \cdot 0 \leq p_i \cdot D_{\text{max}}^2
-
-$$
-
-**Q.E.D.**
+*Proof.* Given acceptance and donor $j$, the displacement is $x_j-x_i+\sigma_x\zeta_i$. Centering and Gaussian covariance give the displayed second moment. Average the donor decisions and apply the corresponding deterministic distance bound. $\square$
 :::
 
 :::{prf:definition} Coupled Cloning Expectation
 :label: def-coupled-cloning-expectation
 
-Consider two swarms $(S_1, S_2)$ in the coupled state space (see {prf:ref}`def-coupled-state-space`). Let $(S'_1, S'_2)$ be the output swarms after applying $\Psi_{\text{clone}}$ to each independently, using **synchronous coupling** of all randomness:
+Consider two swarms $(S_1, S_2)$ in the coupled state space (see {prf:ref}`def-coupled-state-space`). Let $(S'_1, S'_2)$ be the output swarms after applying $\Psi_{\text{clone}}$ to each with its correct marginal kernel, using **synchronous coupling** of the innovations:
 
 - Same PRNG seeds for companion selection ({prf:ref}`def-companion-selection-measure`)
 - Same pairing algorithm random choices
 - Same threshold samples $T_i$ for each walker ({prf:ref}`def-walker`) index $i$
 - Same Gaussian jitters $\zeta_i^x$ for position updates (when both walkers clone)
-- Same rotation operators $R_i$ for velocity collisions (when both walkers participate in collisions)
+- One independent Haar matrix per component in each marginal; identical components may share their matrix across swarms, and different component partitions retain their distinct centers and membership
 
 For any function $f: \Sigma_N \times \Sigma_N \to \mathbb{R}$, the **coupled cloning expectation** is:
 
@@ -12722,651 +12550,1512 @@ $$
 
 :::
 
-:::{prf:remark} Synchronous Coupling Benefits
+:::{prf:remark} What synchronous coupling provides
 :label: rem-coupling-benefits
 
-The synchronous coupling ensures that:
-
-1. **Common randomness cancels:** When both swarms have walker $i$ in similar states and both make the same cloning decision, much of the random perturbation is shared, reducing divergence.
-
-2. **Worst-case expansion is bounded:** Even when the swarms make different decisions (e.g., walker $i$ clones in swarm 1 but persists in swarm 2), the expansion is controlled by the maximum displacement $D_{\text{valid}}$.
-
-3. **The Keystone Lemma applies:** The coupled analysis ensures that the corrective force proportional to error (from the Keystone Lemma) dominates the expansion terms.
+Identical inputs and identical innovations give identical outputs, including their accepted graph and component rotations. On other inputs, a shared uniform can select different donors, and changed graph membership changes a whole component's center of mass. Gaussian positional displacement has finite moments but no deterministic bound by the domain diameter. The estimates below use its actual second moment. Neither synchronization alone nor a selection-probability bound proves a negative inter-swarm drift.
 :::
 
-:::{prf:theorem} Positional Variance Contraction Under Cloning
-:label: thm-positional-variance-contraction
+:::{prf:definition} Conditional position laws after copying
+:label: def-cloning-position-row-law
 
-Assume the variance decomposition, the target-selection and error bounds of
-{prf:ref}`lem-quantitative-keystone`, and the status-change estimates below hold
-on the same family of coupled configurations. The constants constructed in the
-proof give $\kappa_x>0$, $C_x<\infty$, and a threshold
-$R_{\mathrm{spread}}^2>0$ such that, on that family:
+Freeze the input and the sampled fitness vector. Let $b_{ij}$ be the probability of the accepted edge $i\to j$ under {prf:ref}`def-decision-operator`, and let $p_i=\sum_jb_{ij}$. A dead row has $p_i=1$. Write $G_{\sigma_x}$ for the centered Gaussian jitter law. The exact row position law is
 
 $$
-\mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_x) V_{\text{Var},x}(S_1, S_2) + C_x
-
+Q_i=(1-p_i)\delta_{x_i}+\sum_{j\in\mathcal A}b_{ij}
+(\delta_{x_j}*G_{\sigma_x}),\qquad
+m_i=\int yQ_i(dy),\quad \Sigma_i=\int(y-m_i)(y-m_i)^TQ_i(dy).
 $$
 
-Furthermore, when $V_{\text{Var},x}(S_1, S_2) > \tilde{C}_x$ for a sufficiently large threshold $\tilde{C}_x$, the contraction becomes strict:
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] := \mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S'_1, S'_2) - V_{\text{Var},x}(S_1, S_2)] < 0
-
-$$
-
-Referenced by {prf:ref}`cor-structural-error-contraction`.
+All retained dead coordinates enter donor selection, but the dead row's position is replaced in $Q_i$. Conditional on the frozen fitness, the output positions are independent with laws $Q_i$. Component rotations do not change this positional statement.
 :::
 
-:::{prf:lemma} Variance Change Decomposition
+:::{prf:lemma} Exact variance decomposition
 :label: lem-variance-change-decomposition
 
-The total change in positional variance can be decomposed as:
+For the all-alive proposal and $\bar m=N^{-1}\sum_i m_i$,
 
 $$
-\Delta V_{\text{Var},x} = \sum_{k=1}^{2} \left[\underbrace{\Delta V_{\text{Var},x}^{(k,\text{alive})}}_{\text{alive walkers}} + \underbrace{\Delta V_{\text{Var},x}^{(k,\text{status})}}_{\text{status changes}}\right]
-
+\boxed{\quad
+\mathbb E[V_{\mathrm{Var},x}(S')\mid S,\mathbf F]
+=\frac1N\sum_i|m_i-\bar m|^2
++\left(1-\frac1N\right)\frac1N\sum_i\operatorname{tr}\Sigma_i.
+\quad}
 $$
 
-where:
+Here the single-swarm input observable is the $N$-normalized alive variance. For two swarms, sum this formula; independence between swarms is unnecessary. Averaging over their sampled fitness vectors gives the unconditional cloning drift.
 
-1. **Alive walker ({prf:ref}`def-walker`) contribution:**
+*Proof.* The output variance equals $N^{-1}\sum_i|X_i'|^2-|N^{-1}\sum_iX_i'|^2$. The expected first term is $N^{-1}\sum_i(|m_i|^2+\operatorname{tr}\Sigma_i)$. Conditional independence gives the expected second term $|\bar m|^2+N^{-2}\sum_i\operatorname{tr}\Sigma_i$. Subtraction proves the formula. $\square$
+:::
 
+:::{prf:definition} Frozen positional moments for the complete cloning proposal
+:label: def-cloning-frozen-positional-moments
 
+The following identities concern the cloning proposal of the specified independent weighted-companion configuration. They do not alter its measurement law, retained sampled fitness, frozen acceptance decisions, revival, component rotations, or jitter. They apply before the prescribed kinetic and terminal-boundary stages. All conditional expectations below first condition on the complete marked input state $S$ and the complete retained fitness vector $\mathbf F$. An outer expectation over its actual measurement law is required to obtain the cloning kernel conditional only on $S$.
+
+Write $\mathcal A$ for the entering alive set. Assume initially that it is nonempty. For every slot define the actual accepted-edge probabilities
 $$
-\Delta V_{\text{Var},x}^{(k,\text{alive})} = \frac{1}{N}\sum_{i \in \mathcal{A}(S_k)} \left[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right]
-
+b_{ij}=\Pr(A_i=1,J_i=j\mid S,\mathbf F),\qquad p_i=\sum_{j\in\mathcal A}b_{ij}.
 $$
-
-   where $\delta'_{x,k,i}$ is the centered position after cloning.
-
-2. **Status change contribution:**
-
-
+For a live row when $|\mathcal A|\geq2$,
 $$
-\Delta V_{\text{Var},x}^{(k,\text{status})} = \frac{1}{N}\sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
-
+b_{ij}=\frac{w_{ij}}{Z_i}
+ \min\left\{1,\frac{(F_j-F_i)_+}{p_{\max}(F_i+\varepsilon_{\rm clone})}\right\},
+\quad Z_i=\sum_{j\in\mathcal A\setminus\{i\}}w_{ij},
+\quad w_{ij}=\exp[-d_{\rm alg}(i,j)^2/(2\epsilon_c^2)].
 $$
+There is no self-edge. A singleton live row persists. A dead row has $p_i=1$ and $b_{ij}=w_{ij}/\sum_{\ell\in\mathcal A}w_{i\ell}$, using its retained entering coordinates in the weights. These revival probabilities do not evaluate a fictitious dead fitness.
 
-   representing dead walkers that are revived.
+Let the position-jitter standard deviation be $j$, in dimension $d$, and set
+$$
+t_i=\sum_j b_{ij}(x_j-x_i),\qquad
+m_i=x_i+t_i,\qquad
+c_i=\sum_j b_{ij}|x_j-x_i|^2-|t_i|^2+d j^2p_i.
+\tag{3.F1}
+$$
+Here $m_i$ is the exact conditional output mean, and $c_i$ is the trace of the exact conditional output covariance. In particular $c_i\ge0$. Although the displacement representation in (3.F1) uses retained dead coordinates, for a dead row it simplifies to
+$$
+m_i=\sum_jb_{ij}x_j,\qquad
+c_i=\sum_jb_{ij}|x_j-m_i|^2+d j^2.
+\tag{3.F2}
+$$
+Consequently neither output moment contains an artificial contribution from a discarded dead position. Retained coordinates still affect the donor probabilities.
+
+Conditional on $(S,\mathbf F)$, the output positions $X_i'$ are independent: donor/gate innovations and position jitters are row-independent. This positional assertion remains true when the collision velocities have a shared component rotation. It makes no assertion of independence for the full output states, or of unconditional positional independence after the fitness vector is averaged out.
+:::
+
+:::{prf:lemma} Individual centered displacement with the moving barycenter
+:label: lem-cloning-individual-centered-displacement
+
+Use full-slot centers $\bar x=N^{-1}\sum_i x_i$, $\bar t=N^{-1}\sum_i t_i$, and $\delta_i=x_i-\bar x$. The output center is $\bar X'=N^{-1}\sum_iX_i'$. For every row,
+$$
+\boxed{
+\mathbb E\bigl[|X_i'-\bar X'|^2-|\delta_i|^2\mid S,\mathbf F\bigr]
+=2\delta_i\cdot(t_i-\bar t)+|t_i-\bar t|^2
+ +\left(1-\frac2N\right)c_i+\frac1{N^2}\sum_\ell c_\ell .}
+\tag{3.F3}
+$$
+**Proof.** Write $X_i'=m_i+\xi_i$, where the centered vectors $\xi_i$ are conditionally independent and $\mathbb E|\xi_i|^2=c_i$. The mean of $X_i'-\bar X'$ is $\delta_i+t_i-\bar t$. Expanding the covariance of $\xi_i-N^{-1}\sum_\ell\xi_\ell$ gives $(1-2/N)c_i+N^{-2}\sum_\ell c_\ell$. The mixed mean-noise term has zero expectation. This proves (3.F3), including $N=1$, where the covariance terms cancel. $\square$
+
+Thus a row with $p_i=0$ can have a changing centered position: its own position stays fixed, while its population center changes. The deterministic contribution $-2\delta_i\cdot\bar t+|\bar t|^2$ need not be small in $N$. The stochastic center term $N^{-2}\sum c_\ell$ is distinct from this deterministic movement.
+
+For an all-alive entering cloud of position diameter at most $D_x$,
+$$
+0\le \operatorname{Var}(\bar X'\mid S,\mathbf F)
+=\frac1{N^2}\sum_i c_i
+\le\frac{D_x^2+d j^2}{N}\,\bar p,
+\qquad \bar p=\frac1N\sum_i p_i.
+\tag{3.F4}
+$$
+This follows from $c_i\le p_i(D_x^2+d j^2)$. For nonempty alive pools with revival, all row means are convex combinations of eligible positions and all copied or retained pre-jitter positions lie in the eligible cloud; the weaker bound $c_i\le D_x^2+d j^2$ gives the same $N^{-1}$ bound without $\bar p$. No bound on retained dead positions is used. Conditional only on $S$, the law of total variance adds the separate term
+$$
+\operatorname{Var}_{\mathbf F}(\bar m\mid S),\qquad \bar m=\frac1N\sum_i m_i.
+\tag{3.F5}
+$$
+The complete canonical bound for (3.F5) is proved in {prf:ref}`thm-cloning-canonical-barycenter-concentration`.
+:::
+
+:::{prf:theorem} Canonical cloning barycenter concentration for every nonempty alive pool
+:label: thm-cloning-canonical-barycenter-concentration
+
+Fix a nonextinct entering marked state $S$ of the canonical Euclidean Gas, with $N$ retained slots and $k\ge1$ alive slots. Apply the actual cloning proposal, including its independent weighted measurement companions, retained sampled fitness, independent weighted cloning companions, frozen acceptance, immediate revival, recipient Gaussian jitter, and shared component rotations. Let $\bar X^c=N^{-1}\sum_iX_i^c$ and $\bar V^c=N^{-1}\sum_iV_i^c$ denote its full-slot output barycenters.
+
+Write $D_x$ for a bound on the entering eligible positions' diameter and $j$ for the position-jitter standard deviation. The following are actual canonical parameter bounds:
+$$
+D_m=\sqrt{32+10^{-6}},\quad \varepsilon_s=0.1,\quad
+\kappa_C=e^{-4},\quad C=\kappa_C^{-1}=e^4,\quad
+F_*=0.01,\quad F^*=4.41.
+$$
+Let $\varepsilon_c=10^{-6}$, $p_{\max}=1$, and define
+$$
+\begin{aligned}
+L_0&=1.05\left(\frac{D_m}{\varepsilon_s}
+ +\frac{3D_m^3}{2\varepsilon_s^3}\right),\\
+L_a&=\frac1{p_{\max}}\max\left\{\frac1{F_*+\varepsilon_c},
+ \frac{F^*+\varepsilon_c}{(F_*+\varepsilon_c)^2}\right\},\\
+B_0&=1+C+2L_aL_0.
+\end{aligned}
+$$
+For vector variance $\operatorname{Var}(Z)=\mathbb E|Z-\mathbb EZ|^2$, the complete proposal obeys
+$$
+\boxed{\operatorname{Var}(\bar X^c\mid S)
+\le \frac{D_x^2+d j^2}{N}
+ +\frac{kD_x^2B_0^2}{2N^2}
+\le\frac{D_x^2+d j^2+D_x^2B_0^2/2}{N}.}
+\tag{3.B1}
+$$
+Its full-slot velocity barycenter is deterministic:
+$$
+\boxed{\bar V^c=\frac1N\sum_i v_i\quad\text{almost surely},
+\qquad \operatorname{Var}(\bar V^c\mid S)=0.}
+\tag{3.B2}
+$$
+Neither bound requires a lower bound on $k/N$, a collision-component-size estimate, or bounded retained dead positions. For completed-step states in the canonical absorbing box, one may take $D_x=4\sqrt d$ and $j=0.1$, so every displayed constant is discharged directly for that configuration. Smaller entering eligible diameters may be used statewise. The assertions concern the cloning proposal before the kinetic stage and before conditioning on terminal survival.
 :::
 
 :::{prf:proof}
-**Proof.**
+**1. Bound the actual canonical measurements and weights.** The configured metric squashes each position and velocity vector separately with radius $2$, and compares the two resulting vectors in the phase-space norm with velocity weight $1$. Each squashed vector has norm at most $2$, irrespective of the original physical coordinates or dimension. Consequently every squared comparison is at most $4^2+4^2=32$. The measured diversity value includes the squared floor $10^{-6}$, so every alive row's measurement $Y_i$ lies in $[0,D_m]$. The cloning Gaussian width is $2$, hence its weights lie in $[e^{-4},1]$. Conditional on $S$, alive measurement companion draws, and therefore the random variables $(Y_i)_{i\in\mathcal A}$, are independent. They need not have identical laws.
 
-Following {prf:ref}`def-variance-conversions`, recall that $V_{\text{Var},x}$ is **$N$-normalized** (per walker slot):
+The canonical positive map is $g(z)=0.1+2/(1+e^{-z})$, with $0.1\le g\le2.1$ and $|g'|\le0.5$. Its reward and diversity exponents are both one. Thus $F_*\le F_i\le F^*$. Reward measurements and their standardization are fixed when only a diversity companion innovation is replaced. This remains true when the fixed physical rewards themselves are unbounded.
 
+**2. Replace one measurement innovation.** Assume first $k\ge2$. Replace $Y_r$ by an independent copy, leaving all other entering physical data and measurement innovations unchanged. Tildes denote quantities computed with the replacement. For the alive empirical diversity mean and variance,
 $$
-V_{\text{Var},x}(S_k) = \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
-
+|\bar Y-\widetilde{\bar Y}|\le\frac{D_m}{k},\qquad
+|\operatorname{var}(Y)-\operatorname{var}(\widetilde Y)|
+\le\frac{3D_m^2}{k}.
 $$
-
-After cloning, all walkers are alive (dead walkers are revived), so:
-
+Indeed the empirical second moment changes by at most $D_m^2/k$, while the squared mean changes by at most $2D_m^2/k$. Let
+$s_Y=\sqrt{\operatorname{var}(Y)+\varepsilon_s^2}$. Since both regularized scales are at least $\varepsilon_s$, the mean-value bound for $u\mapsto(u+\varepsilon_s^2)^{-1/2}$ gives
 $$
-V_{\text{Var},x}(S'_k) = \frac{1}{N} \sum_{i=1}^{N} \|\delta'_{x,k,i}\|^2
-
+|s_Y^{-1}-s_{\widetilde Y}^{-1}|
+\le\frac{3D_m^2}{2\varepsilon_s^3k}.
 $$
-
-The change is (keeping $\frac{1}{N}$ normalization throughout):
-
+For $i\ne r$, the measurement itself has not changed and $|Y_i-\widetilde{\bar Y}|\le D_m$. Hence
 $$
-\Delta V_{\text{Var},x}^{(k)} = \frac{1}{N} \sum_{i=1}^{N} \|\delta'_{x,k,i}\|^2 - \frac{1}{N} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2
-
+\left|\frac{Y_i-\bar Y}{s_Y}
+ -\frac{Y_i-\widetilde{\bar Y}}{s_{\widetilde Y}}\right|
+\le\frac1k\left(\frac{D_m}{\varepsilon_s}
+ +\frac{3D_m^3}{2\varepsilon_s^3}\right).
 $$
-
-Split the first sum into alive and dead walkers in the input state:
-
+The fixed rescaled reward factor is at most $2.1$, so the product fitness satisfies
 $$
-\Delta V_{\text{Var},x}^{(k)} = \frac{1}{N}\sum_{i \in \mathcal{A}(S_k)} \left[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right] + \frac{1}{N}\sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
-
+|F_i-\widetilde F_i|\le L_0/k\qquad(i\ne r).
+\tag{3.B3}
 $$
+No small bound is imposed on $F_r-\widetilde F_r$.
 
-This decomposition preserves the N-normalization, ensuring all subsequent bounds are N-uniform.
+**3. Sum the exact output-mean influence before estimating it.** The live donor probability $K_{i\ell}$ depends on the frozen entering physical state, so it is unchanged by this measurement replacement. Its self-excluded denominator has $k-1$ terms, each at least $\kappa_C$. Thus
+$$
+K_{ir}\le\frac{C}{k-1}\qquad(i\ne r).
+\tag{3.B4}
+$$
+The actual clipped acceptance
+$$
+a(f,g)=\min\left\{1,\max\left\{0,
+ \frac{g-f}{p_{\max}(f+\varepsilon_c)}\right\}\right\}
+$$
+is $L_a$-Lipschitz in the sum of its two fitness arguments on $[F_*,F^*]^2$. This follows by differentiating the ratio, whose partial derivatives in magnitude are at most the two constants defining $L_a$, and using the nonexpansiveness of scalar clipping.
 
-**Q.E.D.**
+Let $m_i=\mathbb E[X_i^c\mid S,\mathbf Y]$. For a live row,
+$$
+m_i=x_i+\sum_{\ell\in\mathcal A\setminus\{i\}}
+ K_{i\ell}a(F_i,F_\ell)(x_\ell-x_i).
+$$
+Gaussian jitter has zero mean. Both $m_r$ and $\widetilde m_r$ are convex combinations of eligible positions, whence $|m_r-\widetilde m_r|\le D_x$. For $i\ne r$, isolate donor $r$, for which the acceptance difference is at most one. For every other donor, apply (3.B3) to both fitness arguments. This yields
+$$
+|m_i-\widetilde m_i|
+\le D_x\left(K_{ir}+\frac{2L_aL_0}{k}\right).
+$$
+Every dead row revives unconditionally, with mean $m_i=\sum_{\ell\in\mathcal A}K_{i\ell}x_\ell$. Its donor law uses retained dead coordinates but not sampled fitness, so $m_i=\widetilde m_i$ for all dead rows. Summing the alive-row inequalities and using (3.B4) proves
+$$
+\left|\bar m(\mathbf Y)-\bar m(\widetilde{\mathbf Y})\right|
+\le\frac{D_x}{N}\left[1+C+2L_aL_0\frac{k-1}{k}\right]
+\le\frac{D_xB_0}{N},\quad
+\bar m=\frac1N\sum_i m_i.
+\tag{3.B5}
+$$
+The factor $1/(k-1)$ has canceled against exactly $k-1$ recipient rows; no positive alive-fraction bound has been used.
+
+**4. Apply the conditional vector Efron--Stein inequality.** The independent alive measurement variables and (3.B5) give
+$$
+\operatorname{Var}_{\mathbf Y}(\bar m\mid S)
+\le\frac12\sum_{r\in\mathcal A}
+ \mathbb E\bigl|\bar m(\mathbf Y)-\bar m(\mathbf Y^{(r)})\bigr|^2
+\le\frac{kD_x^2B_0^2}{2N^2}.
+\tag{3.B6}
+$$
+For completeness, the scalar product-measure variance bound follows by induction on the number of independent inputs. The conditional variance identity isolates the last input; apply the induction hypothesis to its conditional mean and Jensen to each resulting squared difference. This gives $\operatorname{Var}(f)\leq\sum_r\mathbb E\operatorname{Var}_{Y_r}(f\mid Y_{-r})$. Each term equals one half of the expected squared difference under independent replacement of $Y_r$. Summing this scalar inequality over coordinates proves the displayed vector inequality, with no additional dimension factor.
+
+Conditional on all measurements, the output positions are independent across recipient rows. Each pre-jitter row position is an eligible input position, including every revived row, so its conditional variance is at most $D_x^2$. Accepted-row jitter adds at most $d j^2$. Consequently
+$$
+\operatorname{Var}(\bar X^c\mid S,\mathbf Y)
+=\frac1{N^2}\sum_i\operatorname{Var}(X_i^c\mid S,\mathbf Y)
+\le\frac{D_x^2+d j^2}{N}.
+$$
+The vector law of total variance and (3.B6) prove (3.B1). When $k=1$, the sole alive measurement and fitness are deterministic, and every revived row uses the sole eligible donor. The measurement-variance contribution is zero and the same bound holds. Nonextinction excludes $k=0$, where no donor law is defined.
+
+Finally, in every realized accepted component $C$, the actual velocity transformation satisfies
+$$
+\sum_{i\in C}v_i^c
+=|C|\bar v_C+\alpha R_C\sum_{i\in C}(v_i-\bar v_C)
+=\sum_{i\in C}v_i.
+$$
+The sums include retained dead-slot velocities when recipients revive. Summing over components, including unchanged singletons, proves the pathwise identity (3.B2). It is unaffected by averaging sampled fitness, donor choices, or Haar rotations. $\square$
 :::
 
-:::{prf:lemma} Keystone-Driven Contraction for Stably Alive Walkers
+:::{prf:theorem} Collective donor flux in the geometric clusters
 :label: lem-keystone-contraction-alive
 
-For walkers in the stably alive set ({prf:ref}`def-alive-dead-sets`) $I_{11}$, the expected change in their contribution to variance satisfies:
+For an all-alive input, let $r_i^2=|x_i-\bar x|^2$, and define the nonnegative row-copy variance
+$$
+a_i=\sum_jb_{ij}|x_j-x_i|^2-|t_i|^2.
+$$
+The complete conditional variance drift is
+$$
+\boxed{
+\mathbb E[\Delta V_{\mathrm{Var},x}\mid S,\mathbf F]
+=\frac1N\sum_{i,j}b_{ij}(r_j^2-r_i^2)
+ -|\bar t|^2-\frac1{N^2}\sum_i a_i
+ +\left(1-\frac1N\right)d j^2\bar p .}
+\tag{3.F6}
+$$
+**Proof.** Sum (3.F3) and divide by $N$. Use $\sum_i\delta_i=0$, $\sum_i|t_i-\bar t|^2=\sum_i|t_i|^2-N|\bar t|^2$, and $c_i=a_i+d j^2p_i$. Finally,
+$$
+2\delta_i\cdot t_i+\sum_jb_{ij}|x_j-x_i|^2
+=\sum_jb_{ij}(r_j^2-r_i^2).
+$$
+Substitution proves (3.F6). Nonnegativity of $a_i$ is the variance of the pre-jitter row-copy law. $\square$
+
+Use exactly the chapter's geometric cluster partition $\{G\}$, with no change to its construction. Put
+$$
+x_G=\frac1{|G|}\sum_{i\in G}x_i,\quad
+e_G=|x_G-\bar x|^2,\quad
+\rho_i=|x_i-\bar x|^2-e_G\quad(i\in G),\quad
+B_{GH}=\frac1N\sum_{i\in G,j\in H}b_{ij}.
+$$
+Then the signed flux in (3.F6) decomposes exactly as
+$$
+\frac1N\sum_{i,j}b_{ij}(r_j^2-r_i^2)
+=\sum_{G,H}B_{GH}(e_H-e_G)+\mathcal R_{\mathrm{cl}},
+\qquad
+\mathcal R_{\mathrm{cl}}=\frac1N\sum_{i,j}b_{ij}(\rho_j-\rho_i).
+\tag{3.F7}
+$$
+If the eligible position diameter is $D_x$, and $D_c=\max_G\operatorname{diam}_x(G)$ is the actual positional diameter of these same clusters, then
+$$
+|\rho_i|\le2D_xD_c,
+\qquad
+|\mathcal R_{\mathrm{cl}}|\le4D_xD_c\bar p.
+\tag{3.F8}
+$$
+Indeed $|x_i-x_G|\le D_c$, while both $|x_i-\bar x|$ and $|x_G-\bar x|$ are at most $D_x$; factor the difference of the squared norms. Summing actual accepted-edge masses uses only $N^{-1}\sum_{ij}b_{ij}=\bar p\le1$. No factor equal to the number of walkers or clusters is introduced. A phase-space diameter bound controls $D_c$ when its metric dominates position distance. For a saturated metric, use its proved inverse modulus if available, or the actual positional cluster diameter; a saturated distance must not be silently treated as the physical distance.
+
+The symmetric donor weight gives an additional exact symmetrization, using the realized fitness order:
+$$
+\frac1N\sum_{i,j}b_{ij}(r_j^2-r_i^2)
+=\frac1N\sum_{\{i,j\}:F_i<F_j}
+ \frac{w_{ij}}{Z_i}
+ \min\left\{1,\frac{F_j-F_i}{p_{\max}(F_i+\varepsilon_{\rm clone})}\right\}
+ (r_j^2-r_i^2).
+\tag{3.F9}
+$$
+Here every unordered unequal-fitness pair is written with its lower-fitness endpoint first; ties contribute zero. The normalization remains that of the recipient. Symmetry of $w$ does not make the directed normalized acceptance weights symmetric. Equations (3.F7)--(3.F9) retain inward and outward flux separately. In particular the incoming term $\sum_{G,H}B_{GH}e_H$ cannot be omitted when a Keystone estimate bounds outgoing selection pressure.
+:::
+
+:::{prf:theorem} Signed cluster flow from retained fitness gaps
+:label: thm-cloning-signed-cluster-fitness-flux
+
+Condition on the complete entering state and retained fitness vector, with
+$k=|\mathcal A|\geq2$. Use its actual bounds
+$0<F_*\leq F_i\leq F^*$ and symmetric weights
+$\kappa\leq w_{ij}=w_{ji}\leq1$. For the canonical configuration these
+bounds are discharged in
+{prf:ref}`thm-cloning-canonical-barycenter-concentration`.
+For two nonempty disjoint geometric clusters $H,L$, retain the actual
+$b_{ij},Z_i,B_{HL}$ of (3.F7)--(3.F9). Put
 
 $$
-\mathbb{E}_{\text{clone}}\left[\frac{1}{N}\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{pers}}
-
+A_*=\max\{F^*-F_*,p_{\max}(F^*+\varepsilon_{\rm clone})\},
+\quad c_+=\frac\kappa{A_*},\quad
+c_-=\frac1{\kappa p_{\max}(F_*+\varepsilon_{\rm clone})},
+$$
+$$
+\Delta=\bar F_L-\bar F_H,\qquad
+s^2=\frac1{|H|}\sum_{i\in H}(F_i-\bar F_H)^2
++\frac1{|L|}\sum_{j\in L}(F_j-\bar F_L)^2.
 $$
 
-where $\chi(\epsilon) > 0$ and $g_{\max}(\epsilon)$ are the Keystone constants ({prf:ref}`lem-quantitative-keystone`), and $C_{\text{pers}}$ accounts for persisting walkers and bounded jitter effects.
+Then $0<c_+\leq c_-$, and the signed flow satisfies, for either sign of
+$\Delta$,
 
-**Note on normalization:** The left side is **N-normalized** to match $V_{\text{Var},x}$. In the proof we temporarily scale by $N$ to apply the Keystone Lemma and then divide back, so all constants remain N-uniform.
+$$
+B_{HL}-B_{LH}\geq
+\frac{|H||L|}{N(k-1)}
+\left[c_+\Delta-
+\frac{c_--c_+}{2}\bigl(\sqrt{\Delta^2+s^2}-\Delta\bigr)\right]
+=:\mathcal L_{HL}.                                      \tag{3.S1}
+$$
+
+There is also a bound retaining the kernel weights and measured
+normalizers. Define
+
+$$
+W_{HL}=\sum_{i\in H,j\in L}w_{ij},\quad
+P_w(i,j)=\frac{w_{ij}}{W_{HL}},\quad
+\Delta_w=\sum_{i,j}P_w(i,j)(F_j-F_i),
+$$
+$$
+s_w^2=\sum_{i,j}P_w(i,j)(F_j-F_i-\Delta_w)^2,
+$$
+$$
+A_{HL}=\max\left\{
+(\max_L F-\min_H F)_+,\ p_{\max}(\max_H F+\varepsilon_{\rm clone})\right\},
+$$
+$$
+a_{HL}=\frac1{(\max_{i\in H}Z_i)A_{HL}},\qquad
+b_{HL}=\frac1{(\min_{j\in L}Z_j)
+ p_{\max}(\min_L F+\varepsilon_{\rm clone})}.
+$$
+
+With these deterministic weighted moments of the retained marks,
+
+$$
+B_{HL}-B_{LH}\geq\frac{W_{HL}}N\left[
+a_{HL}\Delta_w-\frac{(b_{HL}-a_{HL})_+}{2}
+\bigl(\sqrt{\Delta_w^2+s_w^2}-\Delta_w\bigr)\right]
+=:\mathcal L^w_{HL}.                                    \tag{3.S2}
+$$
+
+In particular the weighted variance retains the covariance induced by
+$P_w$; it is not replaced by a product of uniform donor laws.
 :::
 
 :::{prf:proof}
-**Proof.**
-
-We analyze the variance change for each walker $i \in I_{11}$ by conditioning on its cloning action.
-
-**Case 1: Walker $i$ clones in at least one swarm**
-
-When walker $i$ clones in swarm $k$, its centered position changes as:
-
-$$
-\delta'_{x,k,i} = x'_{k,i} - \mu'_{x,k}
+For $i\in H,j\in L$, write $D_{ij}=F_j-F_i$.
+When $D_{ij}\geq0$, the reverse acceptance vanishes and
+$\min\{1,D_{ij}/[p_{\max}(F_i+\varepsilon_{\rm clone})]\}
+\geq D_{ij}/A_*$.
+When $D_{ij}\leq0$, the forward acceptance vanishes and reverse acceptance
+is at most $(-D_{ij})/[p_{\max}(F_*+\varepsilon_{\rm clone})]$.
+Since $\kappa(k-1)\leq Z_i\leq k-1$, this proves pointwise
 
 $$
-
-where $x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x$ (companion position plus jitter).
-
-The key insight from the Keystone Lemma is that walkers with large centered position errors $\|\Delta\delta_{x,i}\| = \|\delta_{x,1,i} - \delta_{x,2,i}\|$ have high cloning probability. When they clone, their positions are reset, causing:
-
-$$
-\mathbb{E}[\|\delta'_{x,k,i}\|^2 \mid \text{clone}] \ll \|\delta_{x,k,i}\|^2 \quad \text{when } \|\delta_{x,k,i}\|^2 \text{ is large}
-
+b_{ij}-b_{ji}\geq
+\frac{c_+(D_{ij})_+-c_-(D_{ij})_-}{k-1}.                 \tag{3.S3}
 $$
 
-**Quantitative bound from Keystone Lemma:**
-
-The Keystone Lemma ({prf:ref}`lem-quantitative-keystone`) states:
-
-$$
-\frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
-
-$$
-
-When walker $i$ clones with probability $p_{k,i}$, its centered position is reset. Using the triangle inequality and the fact that the new position $x'_{k,i}$ is drawn from near the companion's position:
+Let $\langle\cdot\rangle$ denote the finite arithmetic average over
+$H\times L$. It is used only to sum this already proved weighted
+inequality. Direct expansion gives
+$\langle D\rangle=\Delta$ and
+$\langle D^2\rangle=\Delta^2+s^2$. Therefore
 
 $$
-\mathbb{E}[\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2 \mid i \in I_{11}] \leq -p_{k,i} \cdot \frac{1}{4}\|\Delta\delta_{x,i}\|^2 + p_{k,i} \cdot C_{\text{jitter}}
-
+\langle D_-\rangle
+=\frac{\langle|D|\rangle-\Delta}{2}
+\leq\frac{\sqrt{\Delta^2+s^2}-\Delta}{2}.
 $$
 
-where $C_{\text{jitter}} = O(\sigma_x^2)$ accounts for the Gaussian position jitter and barycenter shifts.
+Use $\langle D_+\rangle=\Delta+\langle D_-\rangle$ and
+$c_-\geq c_+$ to sum (3.S3), proving (3.S1). No expectation is passed
+through nonlinear acceptance.
 
-Summing over all stably alive walkers and both swarms:
-
-$$
-\mathbb{E}\left[\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{1}{4}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 + C_{\text{jitter}} \sum_{i \in I_{11}} (p_{1,i} + p_{2,i})
-
-$$
-
-**Applying the Keystone Lemma with explicit normalization:**
-
-The Keystone Lemma (8.1.1) states:
-
-$$
-\frac{1}{N}\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq \chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)
-
-$$
-
-Multiplying both sides by $N$ to convert from N-normalized to un-normalized form:
-
-$$
-\sum_{i \in I_{11}} (p_{1,i} + p_{2,i})\|\Delta\delta_{x,i}\|^2 \geq N \left[\chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)\right]
-
-$$
-
-Substituting this into the first term above (with factor $-\frac{1}{4}$):
-
-$$
-\leq -\frac{1}{4} \cdot N \left[\chi(\epsilon) V_{\text{struct}} - g_{\max}(\epsilon)\right] + C_{\text{jitter}} \cdot N = -\frac{N\chi(\epsilon)}{4} V_{\text{struct}} + \frac{Ng_{\max}(\epsilon)}{4} + C_{\text{jitter}} N
-
-$$
-
-Factoring out $N$ for clarity:
-
-$$
-\leq N \left[-\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{jitter}}\right]
-
-$$
-
-Dividing by $N$ to match the variance normalization:
-
-$$
-\mathbb{E}_{\text{clone}}\left[\frac{1}{N}\sum_{i \in I_{11}} \sum_{k=1,2} \left(\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2\right)\right] \leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{jitter}}
-
-$$
-
-**Case 2: Walker persists in both swarms**
-
-For walkers that persist in both swarms, their centered positions change only due to barycenter shifts:
-
-$$
-\|\delta'_{x,k,i}\|^2 - \|\delta_{x,k,i}\|^2 = O(\|\mu'_{x,k} - \mu_{x,k}\|^2)
-
-$$
-
-The barycenter shift is bounded by the number of cloning events, yielding a bounded contribution $C_{\text{pers}}$.
-
-Combining both cases and absorbing the bounded jitter term into $C_{\text{pers}}$ yields the stated bound.
-
-**Q.E.D.**
+For the refined bound, the same two sign cases instead give
+$b_{ij}-b_{ji}\geq
+w_{ij}[a_{HL}(D_{ij})_+-b_{HL}(D_{ij})_-]$.
+Average with $P_w$ and apply
+$\mathbb E_wD_-\leq(\sqrt{\Delta_w^2+s_w^2}-\Delta_w)/2$.
+If $b_{HL}<a_{HL}$, its coefficient in
+$a_{HL}\Delta_w+(a_{HL}-b_{HL})\mathbb E_wD_-$ is nonnegative, so
+discarding that last term proves the positive-part convention in (3.S2).
+This accounts for both possible orders of the coefficients. $\square$
 :::
 
-:::{prf:lemma} Bounded Contribution from Dead Walker Revival
+:::{prf:corollary} Collective positional drift with both flow directions retained
+:label: cor-cloning-signed-collective-drift
+
+For an all-alive input, orient each unordered pair of the same geometric
+clusters so that $e_H\geq e_L$. With the notation of (3.F6)--(3.F8),
+
+$$
+\begin{aligned}
+\mathbb E[\Delta V_{\mathrm{Var},x}\mid S,\mathbf F]
+\leq{}&-\sum_{\{H,L\}}(e_H-e_L)
+ \max\{\mathcal L_{HL},\mathcal L^w_{HL}\}
++\mathcal R_{\rm cl}\\
+&-|\bar t|^2-\frac1{N^2}\sum_i a_i
++\left(1-\frac1N\right)d j^2\bar p .                    \tag{3.S4}
+\end{aligned}
+$$
+
+The signed remainder may be retained or bounded by
+$|\mathcal R_{\rm cl}|\leq4D_xD_c\bar p$.
+The coefficients in (3.S1) sum to at most $k/(2N)$ over all unordered
+cluster pairs. No factor from the population size or the number of
+clusters is added. The bounds hold for every retained realization and
+can be averaged over its actual measurement law, keeping negative lower
+bounds in the sum. For a nonempty partially alive input, (3.F10) gives
+the additional revival injection exactly.
+
+*Proof.* The two directed centroid terms for a pair combine as
+$-(e_H-e_L)(B_{HL}-B_{LH})$. Apply (3.S1) and (3.S2), then use (3.F6)
+and (3.F7). For a partition of $k$ labels,
+$\sum_{\{H,L\}}|H||L|=(k^2-\sum_H|H|^2)/2\leq k(k-1)/2$;
+divide by $N(k-1)$. Conditional expectation proves the final assertion.
+$\square$
+:::
+
+:::{prf:proposition} Revival contribution to the alive variance
+:label: prop-cloning-revival-cluster-flux
+
+For a nonempty alive pool, write $\mu_A=|\mathcal A|^{-1}\sum_{i\in\mathcal A}x_i$ and
+$$
+V_A(S)=\frac1N\sum_{i\in\mathcal A}|x_i-\mu_A|^2.
+$$
+All proposal slots are alive after mandatory revival. The exact change from the entering alive-only variance to the proposal variance is
+$$
+\begin{aligned}
+\mathbb E[V_A(S')-V_A(S)\mid S,\mathbf F]
+={}&\frac1N\sum_{i\in\mathcal A,j\in\mathcal A}
+ b_{ij}\bigl(|x_j-\mu_A|^2-|x_i-\mu_A|^2\bigr)\\
+&+\frac1N\sum_{i\notin\mathcal A,j\in\mathcal A}
+ b_{ij}|x_j-\mu_A|^2
+ +d j^2\bar p\\
+&-|\bar m-\mu_A|^2-\frac1{N^2}\sum_i c_i.
+\end{aligned}
+\tag{3.F10}
+$$
+**Proof.** Expand the proposal variance around the fixed entering alive center $\mu_A$. Its expected uncentered second moment is the entering alive second moment plus the two displayed donor sums and $d j^2\bar p$. Subtract $\mathbb E|\bar X'-\mu_A|^2=|\bar m-\mu_A|^2+N^{-2}\sum_i c_i$. $\square$
+
+The second donor sum is the exact revival injection into this alive-only observable. Its upper bound is $D_x^2(N-|\mathcal A|)/N$. Equations (3.F1), (3.F3), and the algebra of (3.F6) remain valid for full-slot entering variance when retained dead coordinates are included. In that case (3.F9) applies only to live-live edges: unconditional revival edges do not follow a live fitness order. A physical cluster remainder involving unbounded retained dead coordinates requires their actual moments, not an invented compact-support claim. Formula (3.F10) avoids that difficulty for the alive-only observable while preserving their influence on sampling. If $\mathcal A=\varnothing$, the transition is extinction and no donor, center $\mu_A$, or revival law is introduced.
+:::
+
+:::{prf:theorem} Complete measurement-averaged cloning balance
+:label: thm-cloning-unconditional-collective-balance
+
+Fix a nonextinct entering marked swarm $S$. Let $k\geq1$ be its alive count,
+$\mu_A$ and $u_A$ its alive position and velocity means, and keep the
+chapter's geometric partition of the alive slots. Define
+$$
+V_{A,x}=\frac1N\sum_{i\in\mathcal A}|x_i-\mu_A|^2,
+\qquad
+V_{A,v}=\frac1N\sum_{i\in\mathcal A}|v_i-u_A|^2.
+$$
+A prime denotes the complete cloning proposal, after mandatory revival,
+position jitter, and the prescribed shared component rotations. The
+following expectations use the actual measurement-companion law conditional
+on $S$. In particular,
+$$
+\beta_{ij}(S)=\mathbb E_{\mathbf F\mid S}b_{ij}(S,\mathbf F),
+\qquad \bar\pi(S)=\frac1N\sum_{i,j}\beta_{ij}(S).
+$$
+For $k\geq2$, this expectation is the finite integral
+$$
+\mathbb E_{\mathbf F\mid S}f(\mathbf F)
+=\sum_{(j_i)_{i\in\mathcal A}}
+ \left[\prod_{i\in\mathcal A}K^{\rm meas}_{ij_i}(S)\right]
+ f\bigl(\mathbf F(S,(j_i)_{i\in\mathcal A})\bigr),       \tag{3.U1}
+$$
+where $j_i\ne i$ are eligible measurement companions and every fitness
+normalizer is recomputed from the whole sampled vector in that summand.
+For $k=1$, the canonical singleton measurement convention is deterministic.
+
+Put $a_i=\mathbb E[|Y_i-m_i|^2\mid S,\mathbf F]$, where $Y_i$ is the
+pre-jitter copied-or-retained position and $m_i$ its conditional mean.
+Thus $c_i=a_i+d j^2p_i$ in
+(3.F1). Define the two exact revival terms
+$$
+R_x(S)=\frac1N\sum_{i\notin\mathcal A,j\in\mathcal A}
+ \beta_{ij}|x_j-\mu_A|^2,
+$$
+$$
+R_v(S)=\frac1N\sum_{i\notin\mathcal A}|v_i-u_A|^2
+ -\left|\frac1N\sum_{i\notin\mathcal A}(v_i-u_A)\right|^2.
+$$
+If eligible positions have diameter $D_x$ and all retained velocities are
+bounded by $V_{\max}$, then
+$$
+0\leq R_x\leq D_x^2\frac{N-k}{N},\qquad
+0\leq R_v\leq4V_{\max}^2\frac{N-k}{N}.
+$$
+For the actual accepted components, let
+$$
+\mathcal E_C=\frac1N\sum_C\sum_{i\in C}|v_i-\bar v_C|^2.
+$$
+Orient unordered geometric-cluster pairs by $e_H\geq e_L$, using the
+alive center $\mu_A$. For $0\leq\alpha\leq1$ and any fixed velocity weight $\lambda_v\geq0$,
+define the signed quantity
+$$
+\begin{aligned}
+\mathscr D(S)={}&
+\sum_{\{H,L\}}(e_H-e_L)
+\frac1N\sum_{i\in H,j\in L}(\beta_{ij}-\beta_{ji})
+-\mathbb E\mathcal R_{\rm cl}\\
+&+\mathbb E|\bar m-\mu_A|^2
++\frac1{N^2}\sum_i\mathbb E a_i
++\lambda_v(1-\alpha^2)\mathbb E\mathcal E_C .
+\end{aligned}
+$$
+Then the complete unconditional proposal balance is exactly
+$$
+\boxed{
+\mathbb E[\Delta(V_{A,x}+\lambda_vV_{A,v})\mid S]
+=-\mathscr D(S)
++\left(1-\frac1N\right)d j^2\bar\pi(S)
++R_x(S)+\lambda_vR_v(S).}                              \tag{3.U2}
+$$
+The expectation of $\mathcal E_C$ additionally integrates actual donor
+choices and gates. Its energy identity is pathwise in the shared rotations.
+No independence of collision velocities is used.
+
+For $k\geq2$, the signed quantity has the proved lower bound obtained by
+replacing each averaged directed-flow difference by
+$\mathbb E\max\{\mathcal L_{HL},\mathcal L^w_{HL}\}$ from (3.S1)--(3.S2).
+One explicit bound involving unconditional retained-fitness moments is
+$$
+\begin{aligned}
+M_{HL}&=\frac1{|H||L|}\sum_{i\in H,j\in L}\mathbb E(F_j-F_i),\\
+T_{HL}&=\frac1{|H||L|}\sum_{i\in H,j\in L}\mathbb E[(F_j-F_i)^2],\\
+\frac1N\sum_{i\in H,j\in L}(\beta_{ij}-\beta_{ji})
+&\geq\frac{|H||L|}{N(k-1)}
+\left[c_+M_{HL}-\frac{c_--c_+}{2}
+ (\sqrt{T_{HL}}-M_{HL})\right].                        \tag{3.U3}
+\end{aligned}
+$$
+Both signs are retained. The averaging coefficients sum to at most
+$k/(2N)$, the positional remainder obeys
+$|\mathbb E\mathcal R_{\rm cl}|\leq4D_xD_c\bar\pi$, and the revival
+bounds contain only the dead fraction. These estimates introduce no growing
+factor of $N$. The proposal is dissipative at a given input precisely when
+the signed left contribution in (3.U2) exceeds its displayed jitter and
+revival injections; (3.U3) is a sufficient calculable lower bound, not an
+assumption that every input has that sign.
+:::
+
+:::{prf:proof}
+Independence of the entering measurement-companion draws gives (3.U1).
+This independence is used for their innovations, not for fitnesses after
+shared normalizers are computed. In each summand the nonlinear acceptance
+is evaluated before integration.
+
+Apply (3.F10), use $c_i=a_i+d j^2p_i$, and average over the same measurement
+law. The live-live flux has exactly the geometric decomposition (3.F7)
+around $\mu_A$. The dead-row donor law does not depend on sampled fitness;
+it gives $R_x$ directly. The covariance subtraction remains
+$\mathbb E|\bar m-\mu_A|^2$, which includes fluctuations of the mean caused
+by the shared fitness statistics. It is not replaced by
+$|\mathbb E\bar m-\mu_A|^2$.
+
+For velocities, each actual component conserves its full-slot mean and
+multiplies its relative energy by $\alpha^2$. Consequently its full-slot
+variance changes by $-(1-\alpha^2)\mathcal E_C$. Expanding the entering
+full-slot variance about $u_A$ shows that its difference from $V_{A,v}$ is
+exactly $R_v$. Cauchy--Schwarz gives
+$$
+\left|\frac1N\sum_{i\notin\mathcal A}(v_i-u_A)\right|^2
+\leq\frac{N-k}{N}\,
+\frac1N\sum_{i\notin\mathcal A}|v_i-u_A|^2,
+$$
+so $R_v\geq0$; the displayed upper bounds follow from eligible diameter
+and the retained velocity cap. Adding the two exact identities proves
+(3.U2), including revived recipients' frozen pre-collision velocities.
+
+Finally average the pointwise inequality (3.S3). Applied to the joint
+finite measure consisting of the actual measurement law and the arithmetic
+sum over $H\times L$, Cauchy--Schwarz yields
+$\mathbb E\langle|F_j-F_i|\rangle\leq\sqrt{T_{HL}}$.
+Using $D_-=(|D|-D)/2$ gives (3.U3). This is averaging after the accepted-edge
+bound, not replacing a donor law or passing expectation through acceptance.
+The coefficient and remainder estimates were proved in (3.F8) and (3.S4).
+$\square$
+:::
+
+:::{prf:proposition} Two populated geometric clusters with unequal sampled fitness
+:label: prop-cloning-two-cluster-noise-balance
+
+In the canonical one-dimensional quadratic configuration, take $N=2M$,
+$M\geq2$, with $M$ alive slots at $+a$, $M$ at $-a$, all velocities zero,
+and $0<a<2$. Retain the canonical position jitter $j=0.1$ and every
+measurement, donor, gate, and collision operation. Put
+$$
+\ell=\frac{4a}{2+a},\quad
+w=e^{-\ell^2/8},\quad Z=M-1+Mw,\quad q=\frac{Mw}{Z},
+$$
+$$
+\delta=\sqrt{\ell^2+10^{-6}}-10^{-3},\quad
+s_{\max}=\sqrt{\delta^2/4+0.1^2},\quad
+A_0=\min\left\{1,
+\frac{1.1\tanh[\delta/(2s_{\max})]}{1.21+10^{-6}}\right\}.
+$$
+The full measurement-averaged cloning drift obeys
+$$
+\boxed{
+\mathbb E[\Delta V_{\mathrm{Var},x}\mid S]
+\geq j^2\left(1-\frac1N\right)A_0q(1-q)
+-\frac{4a^2}{N}q^2(1-q^2).}                            \tag{3.U4}
+$$
+At $a=0.5$, $N=128$, its right side is greater than $0.0002854$.
+The probability that all retained fitness values tie is
+$q^N+(1-q)^N<1.7\times10^{-37}$. Thus the positive averaged drift here
+occurs with nontrivial fitness selection, not solely in an equal-fitness
+configuration. It remains a statement about internal positional variance,
+not a contradiction to an offset-bearing Keystone inequality or to
+convergence of coupled structural error under the complete update.
+:::
+
+:::{prf:proof}
+The two sites have equal quadratic reward. Their rescaled reward factor is
+therefore exactly $1.1$. Every slot measures an opposite-site companion
+with probability $q$, and a same-site companion otherwise. These choices
+are independent conditional on the physical input, since each site has
+$M-1$ same-site eligible companions and $M$ opposite-site companions.
+Thus the numbers $K_+,K_-$ of high-diversity measurements at the two sites
+are independent $\operatorname{Bin}(M,q)$ variables.
+
+Let $K=K_++K_-$ and $\theta=K/N$. When $0<K<N$, retained fitness has the
+two distinct values
+$$
+F_H=1.1g\left(\frac{(1-\theta)\delta}{s_\theta}\right),\quad
+F_L=1.1g\left(-\frac{\theta\delta}{s_\theta}\right),\quad
+s_\theta=\sqrt{\theta(1-\theta)\delta^2+0.1^2},
+$$
+where $g(z)=1.1+\tanh(z/2)$. Exactly the low-fitness recipients can accept,
+and their acceptance conditional on choosing a high-fitness donor is
+$$
+A(K)=\min\{1,(F_H-F_L)/(F_L+10^{-6})\}.
+$$
+Set $A(0)=A(N)=0$ for the tied cases. For $u,v\geq0$,
+$\tanh u+\tanh v\geq\tanh(u+v)$, by the addition formula. Since
+$s_\theta\leq s_{\max}$ and $F_L\leq1.21$, this gives
+$A(K)\geq A_0$ whenever $0<K<N$.
+
+Write $\beta=w/Z=q/M$. A low-fitness slot at $+a$ has conditional mean
+position displacement $-2aA(K)\beta K_-$, while a low-fitness slot at
+$-a$ has displacement $2aA(K)\beta K_+$. Summing these actual displacements
+before estimating them gives the exact cancellation
+$$
+\bar t=aA(K)\beta(K_+-K_-).
+$$
+Using $A\leq1$ and the independent binomial variance,
+$$
+\mathbb E|\bar t|^2
+\leq a^2\beta^2\,2Mq(1-q)
+=\frac{4a^2}{N}q^3(1-q).
+$$
+For a low-fitness recipient at $+a$, the pre-jitter position changes sites
+with probability $c_-=A(K)\beta K_-$, so its copy variance is
+$4a^2c_-(1-c_-)\leq4a^2\beta K_-$. Multiply by its count $M-K_+$,
+apply the analogous formula at $-a$, and use independence of $K_+,K_-$:
+$$
+\frac1{N^2}\sum_i\mathbb E a_i
+\leq\frac{4a^2\beta}{N^2}\,2M^2q(1-q)
+=\frac{4a^2}{N}q^2(1-q).
+$$
+
+For each distinct ordered pair, its measurement labels are independent
+Bernoulli $q$. Its probability of a low-fitness recipient and high-fitness
+donor is $q(1-q)$; on this event $0<K<N$ and $A(K)\geq A_0$.
+Summing the actual deterministic normalized donor probabilities therefore
+gives $\mathbb E\bar p\geq A_0q(1-q)$.
+
+Every entering squared radius is $a^2$, so the signed radius flux in
+(3.F6) is identically zero for every retained fitness vector. Substituting
+the preceding three estimates into the exact identity (3.F6) proves (3.U4).
+All component velocities remain zero, irrespective of component membership,
+restitution, or Haar rotations. The numerical lower bound follows by
+substitution: $q=0.483942612969\ldots$ and
+$A_0=0.680668094688\ldots$ at $a=0.5,N=128$.
+Finally all fitnesses tie exactly when all measurements are low or all are
+high, whose probabilities are $(1-q)^N$ and $q^N$.
+$\square$
+:::
+
+:::{prf:lemma} The coupled structural increment keeps its cross-swarm term
+:label: lem-cloning-coupled-error-not-internal-variance
+
+Fix two entering full-slot populations and a pairing of their labels. Write
+$\delta_{1,i}=x_{1,i}-\bar x_1$,
+$\delta_{2,i}=x_{2,i}-\bar x_2$, and define the paired centered positional
+cost and cross-swarm term
+$$
+E_x=\frac1N\sum_i|\delta_{1,i}-\delta_{2,i}|^2,
+\qquad C_x=\frac1N\sum_i\delta_{1,i}\cdot\delta_{2,i}.
+$$
+For every coupling $\Gamma$ of the two complete cloning proposal kernels,
+$$
+\boxed{
+\mathbb E_\Gamma\Delta E_x
+=H_x(S_1)+H_x(S_2)
+-2\bigl(\mathbb E_\Gamma C_x'-C_x\bigr),}               \tag{3.U5}
+$$
+where $H_x$ is the exact full-slot internal-variance drift. Thus the
+measurement-averaged single-swarm calculation determines the first two
+terms, but it does not determine the coupling-dependent cross-swarm term.
+For alive-only entering variance, the corresponding revival conversion
+must first be made as in (3.F10); it cannot be silently removed.
+
+*Proof.* The identity
+$E_x=V_{\mathrm{Var},x}(S_1)+V_{\mathrm{Var},x}(S_2)-2C_x$
+holds before and after the proposal. Take its difference and expectation.
+The first two output expectations depend only on the prescribed marginal
+kernels, whereas $\mathbb E_\Gamma C_x'$ depends on the chosen coupling.
+For identical entering populations, coupling every actual measurement,
+donor, gate, component rotation, and jitter identically gives identical
+outputs. Hence $E_x'=E_x=0$ pathwise. In this case
+$C_x'=V_{\mathrm{Var},x}(S_1')$, even if that internal variance increases.
+$\square$
+
+This distinction preserves the target of the Keystone estimate: its paired
+structural errors must be inserted into the complete coupled increment
+{prf:ref}`thm-cloning-incremental-cluster-balance`. A signed internal-variance
+calculation, whether favorable or unfavorable, does not replace that
+increment. An optimal output matching may lower a cost established under
+a chosen valid coupling; it does not authorize dropping the cross-swarm
+term of that coupling.
+:::
+
+::::{prf:remark} Component growth and the combined affine estimate
+:label: rem-component-growth-combined-drift
+
+The following calculations concern $V_{\rm struct}$, a component of
+$V_W=V_{\rm loc}+V_{\rm struct}$. The combined estimate in
+{prf:ref}`thm-synergistic-foster-lyapunov-preview` instead concerns
+$$
+V_{\rm total}=V_W+c_V(V_{\mathrm{Var},x}+\lambda_v V_{\mathrm{Var},v})+c_BW_b,
+\qquad
+QV_{\rm total}-V_{\rm total}\le-\kappa_*V_{\rm total}+C_*.
+$$
+Its cloning input for $V_W$ is a bounded-expansion estimate with an additive
+constant. Neither a negative cloning increment of $V_{\rm struct}$ nor
+zero-offset contraction is a premise of this composition. In particular, a
+positive component increment does not compare the full left-hand side with
+$-\kappa_*V_{\rm total}+C_*$. The operator checks below constrain stronger
+componentwise claims while leaving the combined estimate's stated target
+and offsets intact.
+::::
+
+::::{prf:proposition} Positive cloning pressure can increase the actual structural error
+:label: prop-cloning-macroscopic-structural-expansion
+
+For the canonical one-dimensional Euclidean Gas cloning stage with quadratic
+reward $R(x)=-x^2/2$, there are two all-alive four-slot swarms with nonconstant
+positions and unequal retained fitness for which every coupling of their actual
+cloning outputs has a strictly positive expected structural-error increment.
+The increase is macroscopic and includes the specified jitter and component
+collision mechanism.
+
+Take zero entering velocities and
+$$
+x^A=(-3/2,-3/2,-3/2,1),\qquad x^B=x^A/100.
+$$
+Their barycenter-centered distributions are positive dilations of each other.
+Their monotone pairing is optimal, and therefore
+$$
+V_{\rm struct}(A,B)=(99/100)^2\frac{75}{64}=1.1485546875.
+\tag{3.X1}
+$$
+For both swarms, every one of the 81 measurement vectors gives nonconstant
+retained fitness. The singleton has a strictly larger reward factor than the
+three equal majority positions, and its measurement is always a far one. If
+the majority measurements include both near and far values, their diversity
+factors differ. If all are far, the reward factors distinguish the singleton;
+if all are near, both factors favor it. No equal-fitness event is excluded.
+
+Every component velocity remains zero under its actual shared orthogonal
+rotation, so the hypocoercive structural cost reduces exactly to positional
+squared Wasserstein distance throughout this cloning stage.
+
+Here is a finite expression for its two marginal output second moments, with
+all measurement randomness and empirical standardization retained. For each
+swarm, set
+$$
+z_i=\frac{2x_i}{2+|x_i|},\quad
+D_{ij}=\sqrt{(z_i-z_j)^2+10^{-6}},\quad
+w_{ij}=\begin{cases}e^{-(z_i-z_j)^2/8},&j\ne i,\\0,&j=i,\end{cases}
+\quad P_{ij}=\frac{w_{ij}}{\sum_\ell w_{i\ell}}.
+$$
+For $\operatorname{std}(y)_i=(y_i-\bar y)/\sqrt{\frac14\sum_\ell(y_\ell-\bar y)^2+.01}$
+and $g(u)=.1+2/(1+e^{-u})$, enumerate the $3^4=81$ actual measurement vectors
+$m=(m_1,\ldots,m_4)$ with $m_i\ne i$. Their exact probabilities and retained
+fitnesses are
+$$
+\omega_m=\prod_iP_{i m_i},\qquad
+F_i(m)=g(\operatorname{std}(-x^2/2)_i)
+       g(\operatorname{std}(D_{1m_1},\ldots,D_{4m_4})_i).
+$$
+Conditional on this entire vector, put
+$$
+b_{ij}(m)=P_{ij}\min\left\{1,
+ \frac{(F_j(m)-F_i(m))_+}{F_i(m)+10^{-6}}\right\},\quad
+p_i=\sum_jb_{ij},\quad
+ t_i=\sum_j b_{ij}(x_j-x_i),
+$$
+$$
+a_i=\sum_jb_{ij}(x_j-x_i)^2-t_i^2,\quad
+L_m=\frac14\sum_{i,j}b_{ij}
+ \big[(x_j-\bar x)^2-(x_i-\bar x)^2\big].
+$$
+The frozen-copy rule and independent recipient jitters give exactly
+$$
+\mathbb E\operatorname{Var}(x')
+=\operatorname{Var}(x)+\sum_m\omega_m
+\left[L_m-\left(\frac14\sum_i t_i\right)^2
+-\frac1{16}\sum_i a_i+\frac3{16}(.1)^2\sum_i p_i\right].
+\tag{3.X2}
+$$
+This expression integrates donors and gates through their actual row kernels;
+it does not replace the sampled fitness inside nonlinear acceptance.
+
+Directed rational interval evaluation of (3.X2) gives
+$$
+1.31954463969802<\mathbb E\operatorname{Var}(x^{A\prime})
+ <1.31954463969803,
+$$
+$$
+.00035711824482<\mathbb E\operatorname{Var}(x^{B\prime})
+ <.00035711824483.
+\tag{3.X3}
+$$
+The interval certificate uses denominator $10^{40}$ with outward rounding for
+each rational operation, integer square-root bounds, and dyadic reduction of
+positive exponential arguments to $[0,1]$. On that interval it sums the Taylor
+series through degree 80 and bounds the remainder by $3u^{81}/81!$;
+$e<3$ proves the latter bound. Negative exponentials are enclosed by taking
+reciprocals. Thus (3.X3) is a bound on the finite analytic expression, not a Monte
+Carlo confidence interval.
+
+For any coupling $\Gamma$ of the two actual outputs, the second-moment lower
+bound for Wasserstein distance and Cauchy--Schwarz give
+$$
+\begin{aligned}
+\mathbb E_\Gamma V_{\rm struct}'
+&\ge\mathbb E_\Gamma
+ \left(\sqrt{\operatorname{Var}(x^{A\prime})}
+       -\sqrt{\operatorname{Var}(x^{B\prime})}\right)^2\\
+&\ge\left(\sqrt{\mathbb E\operatorname{Var}(x^{A\prime})}
+       -\sqrt{\mathbb E\operatorname{Var}(x^{B\prime})}\right)^2
+ >1.27648593291590.
+\end{aligned}
+$$
+Consequently
+$$
+\boxed{\mathbb E_\Gamma V_{\rm struct}'-V_{\rm struct}>.12793124541590>.12.}
+\tag{3.X4}
+$$
+The same exact balance splits swarm A's internal-variance increment into a
+selection contribution in $(.14532737180918,.14532737180920)$ and a positive
+jitter contribution in $(.00234226788882,.00234226788885)$. Selection itself
+produces the macroscopic expansion: copying a fitter minority increases its
+population mass toward balance, which increases the spread of these two
+spatial groups. The signed radius flux is positive, despite positive cloning
+pressure. Neither shared collision rotations nor a different cross-swarm
+coupling can reverse (3.X4). $\square$
+::::
+
+::::{prf:proposition} No globally nonvacuous affine structural contraction for the cloning stage
+:label: prop-cloning-no-global-affine-structural-contraction
+
+In the same canonical one-dimensional algorithm, there are no constants
+$\kappa>0$ and $C<4\kappa$, independent of population size, such that a coupling
+of the actual cloning outputs satisfies
+$$
+\mathbb E V_{\rm struct}'-V_{\rm struct}\le-\kappa V_{\rm struct}+C
+\tag{3.X5}
+$$
+for every pair of all-alive inputs with zero velocities. This statement concerns
+the cloning stage; it makes no assertion against contraction after the declared
+BAOAB, cap, and terminal-boundary stages.
+
+**Proof.** The maximum entering centered positional Wasserstein error on
+$[-2,2]$ is four. To see this, let $f,g$ be the nondecreasing quantile functions
+of two entering position laws. For $u<v$, both increments $f(v)-f(u)$ and
+$g(v)-g(u)$ lie in $[0,4]$. Hence the oscillation of $f-g$ is at most four.
+The centered squared Wasserstein distance is $\operatorname{Var}(f-g)$, which
+is at most four by the variance-range inequality. Balanced atoms at $\pm2$
+versus a single atom attain the bound; interior versions approach it.
+
+Use the balanced $N=2M$ family of
+{prf:ref}`prop-cloning-two-cluster-noise-balance` with positions $\pm a$,
+$1/2\le a<2$, and zero velocities. Its constants obey
+$$
+q(1-q)\ge2/9,\qquad q^2(1-q^2)\le20/81,
+\qquad A_0(a)\ge A_*=A_0(1/2)>0.
+$$
+The proved actual cloning balance (3.U4), with the prescribed $j=.1$, gives
+$$
+\mathbb E\operatorname{Var}(x')-a^2
+\ge\frac{2j^2A_*}{9}\left(1-\frac1N\right)-\frac{320}{81N}.
+$$
+For any even
+$$
+N\ge2+\frac{320}{9j^2A_*},
+$$
+this is at least $j^2A_*/9>0$, uniformly over $a\in[1/2,2)$.
+The second swarm, with every position and velocity zero, is unchanged by its
+cloning stage: all its retained fitnesses agree, and there is no revival.
+Its centered law is the deterministic atom at zero. Thus the actual structural
+error equals $a^2$ before cloning and $\operatorname{Var}(x')$ afterward,
+independently of the coupling. Choose $a^2>C/\kappa$ sufficiently near four.
+The left side of (3.X5) is positive and its right side negative, a contradiction.
+
+This conclusion is not confined to exactly monomorphic comparison swarms.
+For fixed finite $N$, give the comparison positions a nonconstant perturbation
+of magnitude $\epsilon$. All of the actual finite measurement and donor
+probabilities and clipped acceptance probabilities are continuous in these
+positions; the positive regularizers keep their denominators nonzero. At
+$\epsilon=0$ the acceptance probabilities vanish, so the perturbed comparison
+output variance tends to zero, including its actual jitter contribution.
+The second-moment inequality used in (3.X4) shows that the strictly positive
+structural increment persists for sufficiently small positive $\epsilon$.
+The incoming structural error also converges to $a^2$. Consequently both
+inputs can have nonconstant positions while retaining the contradiction.
+
+A global affine upper bound with $C\ge4\kappa$ is not contradicted, but it
+has no strictly negative drift region on this class of entering structural
+errors. The false inference is the deduction of a signed structural
+contraction from positive cloning pressure alone. Its replacement is the exact
+signed balance and the mechanism exhibited above; a full-update contraction
+argument must establish the contribution of the remaining actual stages.
+$\square$
+::::
+
+::::{prf:proposition} Canonical full-step structural expansion at unit velocity diffusion
+:label: prop-canonical-fullstep-structural-expansion
+
+Continue the two four-slot inputs of
+{prf:ref}`prop-cloning-macroscopic-structural-expansion` through the actual
+canonical quadratic BAOAB update, with $h=.04$, $\gamma=1$, velocity-noise
+factor $B=1$, position diffusion $.1$, velocity cap two, and terminal absorption
+at $[-2,2]$. Use $Q(x,v)=x^2+v^2+.1xv$. For every coupling of the two separately nonextinction-conditioned
+one-step output kernels,
+$$
+\boxed{\mathbb E V_{\rm struct}'-V_{\rm struct}>.08.}
+\tag{3.X6}
+$$
+This rules out zero-offset one-step structural contraction at this canonical
+parameter choice. It does not assert that the original sufficiently-strong-
+diffusion regime fails, nor contradict an affine estimate allowing an offset
+larger than the observed increment.
+
+**Proof.** Write $X_i$ for the actual cloned position, including its prescribed
+jitter. All frozen component velocities are zero. With
+$$
+c=.02,\quad a=e^{-.04},\quad q^2=(1-e^{-.08})/2,\quad s=.02,
+\quad t=1-c^2(1+a),\quad \nu=c^2q^2+s^2,
+$$
+the actual quadratic B1--A1--O--A2 stages and final position noise give the
+exact preboundary position
+$$
+\widehat x_i=tX_i+cq\xi_i+s\zeta_i.
+$$
+The recomputed B2 force and the velocity cap do not change this position.
+Every $\xi_i,\zeta_i$ here is the declared independent row innovation.
+Consequently the preboundary empirical variances have exact means
+$$
+M_A=t^2\mathbb E\operatorname{Var}(X^A)+\tfrac34\nu,
+\qquad M_B=t^2\mathbb E\operatorname{Var}(X^B)+\tfrac34\nu.
+\tag{3.X7}
+$$
+The finite interval certificate gives
+$1.31778710461037<M_A<1.31778710461038$ and
+$.00066809082559<M_B<.00066809082561$.
+
+Conditional on the entire measurement, donor, and gate plan, every
+$\widehat x_i$ is Gaussian, with mean equal to $t$ times its frozen source
+position and variance at most $t^2(.1)^2+\nu<.0105$. Source magnitudes are at
+most $1.5$ in A and $.015$ in B; also $0<t<1$. Thus Gaussian Chernoff bounds
+and the union bound over these four slots give
+$$
+\mathbb P(E_A^c)\le8e^{-(.5)^2/(2\cdot.0105)}<.000055=:\delta_A,
+$$
+$$
+\mathbb P(E_B^c)\le8e^{-(1.985)^2/(2\cdot.0105)}<10^{-30}=:\delta_B,
+\tag{3.X8}
+$$
+where $E_s$ is the event that all four terminal positions are alive. These
+bounds hold after integrating the actual frozen plan. No population-uniform
+minorization is involved in this fixed-four-slot counterexample.
+
+Let $V_s=\operatorname{Var}(\widehat x^s)$ before the boundary. For A,
+$$
+\mathbb E V_A^2\le\frac14\sum_i\mathbb E\widehat x_i^4
+\le1.5^4+6(1.5)^2(.0105)+3(.0105)^2<5.205.
+$$
+The first inequality follows successively from
+$V_A\le\frac14\sum_i\widehat x_i^2$ and Jensen. On $E_A$ the alive-normalized
+variance equals $V_A$. On other surviving patterns it is nonnegative.
+Therefore, writing $H_s$ for nonextinction and retaining its normalization,
+$$
+\mathbb E[\operatorname{Var}_{\mathcal A'}(x^{A\prime})\mid H_A]
+\ge\mathbb E[V_A\mathbf1_{E_A}]
+\ge M_A-\sqrt{5.205\,\delta_A}=:L_A.
+\tag{3.X9}
+$$
+Indeed $\mathbb P(H_A)\le1$, and Cauchy--Schwarz bounds the discarded second
+moment. For B every surviving empirical position law on $[-2,2]$ has variance
+at most four. Since $\mathbb P(H_B)\ge\mathbb P(E_B)\ge1-\delta_B$,
+$$
+\mathbb E[\operatorname{Var}_{\mathcal A'}(x^{B\prime})\mid H_B]
+\le\frac{M_B+4\delta_B}{1-\delta_B}=:U_B.
+\tag{3.X10}
+$$
+These are bounds for each exact survival-conditioned marginal, so they remain
+valid under every coupling of those marginals.
+
+Finally
+$$
+Q(x,v)=\tfrac{399}{400}x^2+(v+.05x)^2
+\ge\tfrac{399}{400}x^2.
+$$
+Projection to positions, followed by the second-moment bound and
+Cauchy--Schwarz as in (3.X4), gives
+$$
+\mathbb E V_{\rm struct}'
+\ge\frac{399}{400}\left(\sqrt{L_A}-\sqrt{U_B}\right)^2
+>V_{\rm struct}+.08.
+$$
+The last strict inequality is verified by the same outward-rounded rational
+certificate as (3.X3); all tail bounds in (3.X8)--(3.X10) are included in it.
+No force, noise, collision, capping, or boundary stage is replaced. $\square$
+::::
+
+:::{prf:example} An unchanged walker and a contracting cloud
+:label: ex-cloning-moving-barycenter
+
+Take three alive walkers in dimension one with positions $(-a,0,a)$, zero velocities, and the canonical quadratic reward $r(x)=-x^2/2$, where $0<a<2$. Use the canonical comparison radius $2$, measurement and donor bandwidths $2$, positive logistic maps $g(z)=2/(1+e^{-z})+0.1$, unit fitness exponents, variance floors $0.1$, and the declared positive diversity-distance floor. Let $E$ be the retained measurement event that both endpoints measure the center. The center necessarily measures an endpoint. All three diversity measurements are equal on $E$, so their rescaled diversity factors are exactly $1.1$.
+
+Write
+$$
+\delta_1=\frac{2a}{2+a},\quad \delta_2=2\delta_1=\frac{4a}{2+a},\quad
+w_1=e^{-\delta_1^2/8},\quad w_2=e^{-\delta_2^2/8},\quad
+\theta=\frac{w_1}{w_1+w_2}.
+$$
+The metric first squashes each position separately: it compares $S_2(x_i)-S_2(x_j)$, not $S_2(x_i-x_j)$. Thus $\Pr(E\mid S)=\theta^2>0$. With $s_r=\sqrt{a^4/18+0.1^2}$, the retained fitnesses are
+$$
+F_0=1.1g\!\left(\frac{a^2}{3s_r}\right),\qquad
+F_-=F_+=1.1g\!\left(-\frac{a^2}{6s_r}\right),\qquad F_0>F_-.
+$$
+The central row has $p_0=0$. Each endpoint independently copies the center with probability
+$$
+q=\theta\min\left\{1,\frac{F_0-F_-}{p_{\max}(F_-+\varepsilon_{\rm clone})}\right\}\in(0,1).
+$$
+No endpoint-to-endpoint proposal is accepted because their retained fitnesses tie. Write $A_-,A_+$ for the independent Bernoulli $q$ decisions. The center persists at zero, while
+$$
+\bar X'=\frac{a(A_--A_+)+j(A_-\zeta_-+A_+\zeta_+)}3.
+$$
+Therefore
+$$
+\boxed{\mathbb E\bigl[|X_0'-\bar X'|^2\mid S,E\bigr]
+=\frac{2a^2q(1-q)+2j^2q}{9}>0.}
+\tag{3.F11}
+$$
+The entering central squared centered position is zero. A row estimate consisting only of a negative term multiplied by its own cloning probability and a remainder multiplied by that same probability has right side zero here, irrespective of the numerical remainder. Equation (3.F11) supplies an exact contradiction to that row inference at nonzero canonical jitter. It is caused by the moving barycenter, not a change of collision algorithm.
+
+There is also an unconditional test of a jitter-only remainder. Couple two identical entering swarms, so the central inter-swarm discrepancy is zero. For every retained measurement realization its post-step squared centered position is nonnegative. Averaging (3.F11) over the positive-probability event gives
+$$
+\mathbb E\bigl[|X_0'-\bar X'|^2\mid S\bigr]
+\ge \theta^2\frac{2a^2q(1-q)}9>0,
+\tag{3.F12}
+$$
+independently of $j$. Consequently a bound with right side $p_0 C_{\rm jitter}$ and a uniform $C_{\rm jitter}=O(j^2)$ fails as positive $j\downarrow0$. At $j=0$ its right side is zero. This does not contradict a collective Keystone inequality with an explicitly derived geometric offset: its purpose is to identify the exact invalid individual inference and the missing barycenter terms.
+
+For example, at $a=0.1$, $p_{\max}=1$, and $\varepsilon_{\rm clone}=10^{-6}$, independent elementary evaluation gives
+$$
+\theta=0.500850339316,\quad
+F_0=1.22832654693,\quad F_-=1.20083609058,\quad
+q=0.0114658387064,
+$$
+$$
+\frac{2a^2q(1-q)}9=2.51874961093\times10^{-5},\qquad
+\theta^2\frac{2a^2q(1-q)}9=6.31831015805\times10^{-6}.
+$$
+These numbers evaluate the exact formulas; no simulated trajectory is substituted for an analytic argument.
+
+The collective variance on the same conditional event illustrates why the individual and collective claims must be separated. Since the entering variance is $2a^2/3$,
+$$
+\boxed{\mathbb E[\Delta V_{\mathrm{Var},x}\mid S,E]
+=-\frac{2a^2q(4-q)}9+\frac{4qj^2}9.}
+\tag{3.F13}
+$$
+Indeed, the expected uncentered second moment is $2a^2(1-q)/3+2qj^2/3$; subtract (3.F11), the expected squared barycenter, and then subtract the entering variance. Thus this collective conditional drift is strictly negative whenever $j^2<a^2(4-q)/2$, including $a=j=0.1$. A persisting central row can acquire positive centered variance at the same time that the cloud's collective variance decreases. This is a direct reason to repair the individual inference by the collective signed balance rather than infer failure of the geometric-cluster strategy.
+:::
+
+:::{prf:theorem} Positional reset bound and exact drift
+:label: thm-positional-variance-contraction
+
+Suppose eligible input positions lie in a domain of finite diameter $D_x$. For the actual cloning proposal, with every dead slot revived and every accepted slot receiving Gaussian jitter,
+
+$$
+\mathbb E V_{\mathrm{Var},x}(S')
+\leq \frac{D_x^2}{2}+\left(1-\frac1N\right)d\sigma_x^2=:B_x.
+$$
+
+Consequently $\mathbb E\Delta V_{\mathrm{Var},x}\leq-V_{\mathrm{Var},x}+B_x$. For two swarms the offset is $2B_x$. This is an $N$-uniform reset estimate, independent of a Keystone constant or a favorable donor direction.
+
+The exact drift remains the computable integral
+
+$$
+H_x(S)=\mathbb E_{\mathbf F}\left[
+\frac1N\sum_i|m_i-\bar m|^2+
+\left(1-\frac1N\right)\frac1N\sum_i\operatorname{tr}\Sigma_i\right]
+-V_{\mathrm{Var},x}(S).
+$$
+
+*Proof.* Conditional on all donor decisions, write $X_i'=Y_i+\sigma_xA_i\zeta_i$, where $Y_i$ is an eligible input position, whether retained or copied, and $A_i$ is the acceptance indicator. The pairwise identity gives
+
+$$
+\frac1N\sum_i|Y_i-\bar Y|^2
+=\frac1{2N^2}\sum_{i,j}|Y_i-Y_j|^2\leq\frac{D_x^2}{2}.
+$$
+
+Independent centered jitters add exactly $(1-1/N)d\sigma_x^2N^{-1}\sum_iA_i$ to the expected variance. Since $\sum_iA_i\leq N$, averaging gives the bound. The exact formula is {prf:ref}`lem-variance-change-decomposition`. $\square$
+
+The reset bound does not predict monotone shrinkage of every bounded cloud: its offset can cover the entire input variance range. A smaller offset or a rate tied to measured selection pressure requires a bound on the actual donor terms in $H_x$. The theorem supplies the statewise estimate needed for moment control without asserting that stronger property.
+:::
+
+:::{prf:example} A canonical cloud whose expected positional variance increases
+:label: ex-cloning-position-spreading
+
+Take four alive one-dimensional walkers at $(0,0,0,a)$, with zero velocities, $a=0.1$, and $U(x)=x^2/2$. Use the canonical comparison radii $R_x=R_v=2$, both Gaussian widths $2$, global standardization floors $0.1$, diversity distance floor $0.001$, logistic amplitude $2$ and floor $0.1$ in both channels, unit fitness exponents, $p_{\max}=1$, and $\varepsilon_{\rm clone}=10^{-6}$. These are the canonical measurement and acceptance settings.
+
+Condition first on the measurement event where each zero-position row selects another zero-position row. The isolated row necessarily measures a zero-position row. With $\delta=2a/(2+a)$ and $w=e^{-\delta^2/8}$, the frozen fitnesses and accepted edge probability are
+
+$$
+F_0=1.09668913465,\qquad F_a=1.53107680787,\qquad
+q=\frac{w}{2+w}\frac{F_a-F_0}{F_0+10^{-6}}=0.131930125086.
+$$
+
+Each zero-position row independently copies the isolated donor with probability $q$; the isolated donor persists. Before jitter, the number at $a$ is $M=1+\operatorname{Bin}(3,q)$, giving
+
+$$
+\mathbb E V_{\mathrm{Var},x}(S')=
+\frac{(3+3q-6q^2)a^2}{16},\qquad
+V_{\mathrm{Var},x}(S)=\frac{3a^2}{16}.
+$$
+
+Its drift is positive because $0<q<1/2$. The actual jitter adds $9q\sigma_x^2/16$ to that conditional expectation.
+
+The unconditional calculation is also finite. Enumerate the eight vectors $b\in\{0,1\}^3$ specifying which zero rows measure the isolated row. Their probabilities are
+
+$$
+P(b)=\prod_{i=1}^3\left(\frac{w}{2+w}\right)^{b_i}
+\left(\frac2{2+w}\right)^{1-b_i}.
+$$
+
+For each vector, compute the four sampled fitnesses, their actual accepted-edge probabilities, and the row-law variance in {prf:ref}`lem-variance-change-decomposition`; then sum with these weights. This gives expected variance $0.00200927153569$ before jitter and $0.00297011744615$ with the canonical $\sigma_x=0.1$, compared with input variance $0.001875$. Thus the unconditional expected drift is positive, including the complete measurement law. The reset bound above remains valid. A theorem asserting unconditional monotone positional contraction would be false for this actual configuration.
+:::
+
+:::{prf:lemma} Revival variance with the actual Gaussian jitter
 :label: lem-dead-walker-revival-bounded
 
-The contribution to variance from revived dead walkers is bounded:
+Suppose eligible input positions lie in a domain of diameter $D_x$. For each input dead slot $i$, the cloning proposal satisfies
 
 $$
-\mathbb{E}_{\text{clone}}\left[\sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})}\right] \leq \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot D_{\text{valid}}^2
-
+\mathbb E|X_i'-\bar X'|^2\leq D_x^2+d\sigma_x^2.
 $$
 
-where $D_{\text{valid}}$ is the diameter of the valid domain.
+Consequently its total $N$-normalized contribution is at most
+$|\mathcal D|(D_x^2+d\sigma_x^2)/N$. For two swarms, sum the two dead counts.
+
+*Proof.* Condition on all donor decisions. Write $X_i'=Y_i+\sigma_x A_i\zeta_i$, where every $Y_i$ is an eligible input position and $A_i$ is its acceptance indicator. Thus $|Y_i-\bar Y|\leq D_x$. The centered Gaussian term has expected squared norm
+
+$$
+d\sigma_x^2\left[(1-2/N)A_i+N^{-2}\sum_j A_j\right]
+\leq d\sigma_x^2
+$$
+
+for $N\geq2$; for $N=1$ the centered position is zero. Its cross term has mean zero. Add the deterministic bound and average the decisions. There is no rejection, projection, or bounded Gaussian support in this calculation. $\square$
 :::
 
-:::{prf:proof}
-**Proof.**
-
-The proof establishes an upper bound on the variance contribution from dead walker revival by carefully analyzing the geometry of centered positions after cloning.
-
-**Step 1: Cloning behavior of dead walkers.**
-
-By {prf:ref}`lem-dead-walker-clone-prob`, every dead walker has zero fitness potential and therefore receives the maximum cloning score. Consequently, every dead walker clones with probability 1 under the cloning decision rule.
-
-When a dead walker $i \in \mathcal{D}(S_k)$ clones, it selects a companion $c_i \in \mathcal{A}(S_k)$ from the alive set and receives a new position:
-
-$$
-x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x
-
-$$
-
-where $\zeta_i^x \sim \mathcal{N}(0, I_d)$ is the standard Gaussian jitter and $\sigma_x > 0$ is the position jitter scale.
-
-**Step 2: Bounding the centered position after revival.**
-
-After cloning, all walkers are alive, and the swarm has a new barycenter $\mu'_{x,k}$ computed over all $N$ walkers. The centered position of the revived walker $i$ is:
-
-$$
-\delta'_{x,k,i} = x'_{k,i} - \mu'_{x,k}
-
-$$
-
-To bound $\|\delta'_{x,k,i}\|^2$, we use the triangle inequality:
-
-$$
-\begin{aligned}
-\|\delta'_{x,k,i}\| &= \|x'_{k,i} - \mu'_{x,k}\| \\
-&\leq \|x'_{k,i}\| + \|\mu'_{x,k}\|
-\end{aligned}
-
-$$
-
-**Step 2.1: Bounding the new position $\|x'_{k,i}\|$.**
-
-The new position is:
-
-$$
-x'_{k,i} = x_{k,c_i} + \sigma_x \zeta_i^x
-
-$$
-
-Since $c_i \in \mathcal{A}(S_k)$, we have $x_{k,c_i} \in \mathcal{X}_{\text{valid}}$. The position jitter $\sigma_x \zeta_i^x$ is typically small (bounded in expectation), and the cloning mechanism includes an implicit or explicit check to ensure $x'_{k,i} \in \mathcal{X}_{\text{valid}}$ (either through rejection sampling or projection).
-
-Therefore, $x'_{k,i} \in \mathcal{X}_{\text{valid}}$, which implies:
-
-$$
-\|x'_{k,i}\| \leq \sup_{x \in \mathcal{X}_{\text{valid}}} \|x\| \leq D_{\text{valid}}
-
-$$
-
-where $D_{\text{valid}} := \text{diam}(\mathcal{X}_{\text{valid}})$ is the spatial diameter of the valid domain (assuming the origin is chosen appropriately, or using a more careful bound relative to a fixed reference point).
-
-**Step 2.2: Bounding the new barycenter $\|\mu'_{x,k}\|$.**
-
-The new barycenter is:
-
-$$
-\mu'_{x,k} = \frac{1}{N} \sum_{j=1}^{N} x'_{k,j}
-
-$$
-
-Since all post-cloning positions satisfy $x'_{k,j} \in \mathcal{X}_{\text{valid}}$, and $\mathcal{X}_{\text{valid}}$ is convex (a standard assumption), the barycenter as a convex combination also satisfies $\mu'_{x,k} \in \mathcal{X}_{\text{valid}}$. Therefore:
-
-$$
-\|\mu'_{x,k}\| \leq D_{\text{valid}}
-
-$$
-
-**Step 2.3: Combining bounds via triangle inequality.**
-
-Substituting the bounds from Steps 2.1 and 2.2:
-
-$$
-\|\delta'_{x,k,i}\| \leq \|x'_{k,i}\| + \|\mu'_{x,k}\| \leq D_{\text{valid}} + D_{\text{valid}} = 2D_{\text{valid}}
-
-$$
-
-Squaring both sides:
-
-$$
-\|\delta'_{x,k,i}\|^2 \leq (2D_{\text{valid}})^2 = 4D_{\text{valid}}^2
-
-$$
-
-This bound holds for every revived dead walker.
-
-**Step 3: Summing over all dead walkers in swarm $k$.**
-
-The total contribution to variance from dead walkers in swarm $k$ is:
-
-$$
-\Delta V_{\text{Var},x}^{(k,\text{status})} = \frac{1}{N} \sum_{i \in \mathcal{D}(S_k)} \|\delta'_{x,k,i}\|^2
-
-$$
-
-Using the bound from Step 2.3 for each term:
-
-$$
-\Delta V_{\text{Var},x}^{(k,\text{status})} \leq \frac{1}{N} \sum_{i \in \mathcal{D}(S_k)} 4D_{\text{valid}}^2 = \frac{4|\mathcal{D}(S_k)|}{N} D_{\text{valid}}^2
-
-$$
-
-**Step 4: Summing over both swarms and taking expectation.**
-
-The total status change contribution across both swarms is:
-
-$$
-\sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})} \leq \frac{4D_{\text{valid}}^2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)|
-
-$$
-
-Since this bound is deterministic (it holds for any realization of the cloning process), it also holds in expectation:
-
-$$
-\mathbb{E}_{\text{clone}}\left[\sum_{k=1,2} \Delta V_{\text{Var},x}^{(k,\text{status})}\right] \leq \frac{4D_{\text{valid}}^2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)|
-
-$$
-
-Rewriting with the factor of 2:
-
-$$
-= \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot 2D_{\text{valid}}^2 \leq \frac{2}{N} \sum_{k=1,2} |\mathcal{D}(S_k)| \cdot 4D_{\text{valid}}^2
-
-$$
-
-Actually, the original bound stated $2/N \cdot \ldots \cdot D_{\text{valid}}^2$, which would require a bound of $2D_{\text{valid}}^2$ per walker. Our derivation gives $4D_{\text{valid}}^2$, which is a factor of 2 larger but still correct as an upper bound.
-
-The stated lemma uses a slightly tighter constant, which can be justified by a more careful analysis of the centered position geometry. The key point is that the bound is $O(|\mathcal{D}(S_k)|/N)$, which is the essential scaling for the drift analysis.
-
-**Conclusion:**
-
-The contribution from dead walker revival is bounded by a term proportional to the number of dead walkers divided by $N$, multiplied by the square of the domain diameter. This is a deterministic upper bound that holds for all states.
-
-**Q.E.D.**
-:::
-
-:::{prf:proof}
-**Proof of {prf:ref}`thm-positional-variance-contraction`.**
-
-Combining Lemmas 10.3.4 and 10.3.5:
-
-$$
-\begin{aligned}
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &= \sum_{k=1,2} \mathbb{E}[\Delta V_{\text{Var},x}^{(k,\text{alive})} + \Delta V_{\text{Var},x}^{(k,\text{status})}] \\
-&\leq -\frac{\chi(\epsilon)}{4} V_{\text{struct}} + \frac{g_{\max}(\epsilon)}{4} + C_{\text{pers}} + \frac{8 D_{\text{valid}}^2}{N} \sum_{k} |\mathcal{D}(S_k)|
-\end{aligned}
-
-$$
-
-**Step 1: Relate $V_{\text{struct}}$ to $V_{\text{Var},x}$**
-
-From {prf:ref}`lem-sx-implies-variance`, if the structural error satisfies $V_{\text{struct}} \geq c_{\text{struct}} V_{\text{Var},x}$ for some N-independent $c_{\text{struct}} > 0$ (e.g., $c_{\text{struct}} = \frac{1}{2}$ when both swarms have similar numbers of alive walkers), then:
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\frac{\chi(\epsilon)}{4} c_{\text{struct}} V_{\text{Var},x} + C_{\text{total}}
-
-$$
-
-where $C_{\text{total}}$ absorbs all bounded terms.
-
-**Step 2: Express as geometric contraction**
-
-Define:
-
-$$
-\kappa_x := \frac{\chi(\epsilon)}{4} c_{\text{struct}}
-
-$$
-
-After rescaling and using the fact that $V_{\text{Var},x}$ is $N$-normalized (so the $N$-factors cancel in the Keystone bound):
-
-$$
-\mathbb{E}_{\text{clone}}[V_{\text{Var},x}(S')] \leq (1 - \kappa_x) V_{\text{Var},x}(S) + C_x
-
-$$
-
-The constant $\kappa_x > 0$ is independent of $N$ due to the N-uniformity of the Keystone Lemma.
-
-**Q.E.D.**
-:::
-
-:::{prf:theorem} Bounded Velocity Variance Expansion from Cloning
+:::{prf:theorem} Velocity dissipation and bounded revival expansion
 :label: thm-velocity-variance-bounded-expansion
 
-There exists a state-independent constant $C_v < \infty$ such that for any swarm ({prf:ref}`def-swarm-and-state-space`) $S$:
+For two input swarms with all retained velocities bounded by $V_{\max}$, let $D_k$ be their dead counts and let $\mathcal E_{C,k}$ be the normalized relative component energy defined in {prf:ref}`prop-bounded-velocity-expansion`. Then
 
 $$
-\mathbb{E}_{\text{clone}}[V_{\text{Var},v}(S')] \leq V_{\text{Var},v}(S) + C_v
-
+\Delta V_{\mathrm{Var},v}
+=R_v(S_1)+R_v(S_2)-(1-\alpha^2)(\mathcal E_{C,1}+\mathcal E_{C,2})
+\leq\frac{4(D_1+D_2)}N V_{\max}^2\leq8V_{\max}^2.
 $$
 
-Equivalently, the one-step drift satisfies:
+The bound is pathwise for the cloning proposal. For a single swarm its uniform offset is $4V_{\max}^2$. If both inputs are all alive, $C_v=0$ is valid and the displayed dissipation is exact.
 
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
-
-$$
-
+*Proof.* Sum {prf:ref}`prop-bounded-velocity-expansion` over the two swarms. $\square$
 :::
 
-:::{prf:proof}
-**Proof.**
-
-The proof analyzes how the inelastic collision model affects velocity variance.
-
-**Step 1: Velocity domain boundedness**
-
-By construction, algorithmic velocities are squashed by $\psi_v$, so
-
-$$
-\|v_i\| \leq V_{\max} := V_{\mathrm{alg}}.
-
-$$
-
-This bound is state-independent and follows directly from the velocity cap.
-
-**Step 2: Per-walker velocity change**
-
-When walker $i$ participates in an $(M+1)$-particle inelastic collision, its velocity changes from $v_i$ to:
-
-$$
-v'_i = V_{\text{COM}} + \alpha_{\text{restitution}} \cdot R_i(u_i)
-
-$$
-
-where $u_i = v_i - V_{\text{COM}}$ and $R_i$ is a random rotation.
-
-The squared velocity change is bounded:
-
-$$
-\|v'_i - v_i\|^2 = \|\alpha_{\text{restitution}} \cdot R_i(u_i) - u_i\|^2 \leq (\alpha_{\text{restitution}} + 1)^2 \|u_i\|^2
-
-$$
-
-Since $\|u_i\| \leq 2V_{\max}$ (difference of two bounded velocities):
-
-$$
-\|v'_i - v_i\|^2 \leq 4(\alpha_{\text{restitution}} + 1)^2 V_{\max}^2
-
-$$
-
-**Step 3: Variance change decomposition**
-
-The velocity variance changes due to:
-
-1. **Direct velocity resets** for cloned walkers (bounded by Step 2)
-2. **Barycenter shift** affecting centered velocities (bounded by total momentum conservation)
-3. **Random rotations** redistributing kinetic energy (bounded by elastic limit)
-
-Each contribution is bounded by constants depending only on $V_{\max}$, $\alpha_{\text{restitution}}$, and $N$.
-
-**Step 4: Total bounded expansion**
-
-By Proposition {prf:ref}`prop-bounded-velocity-expansion`, summing the direct reset, barycenter shift, and status-change contributions yields $\Delta V_{\text{Var},v} \le f_{\text{clone}} \cdot \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$. Since $f_{\text{clone}} \le 1$, we obtain the explicit uniform bound:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2 =: C_v
-
-$$
-
-This constant is **state-independent** and **$N$-independent** (the $N$ cancels in the normalization).
-
-**Q.E.D.**
-:::
-
-:::{prf:remark} Synergistic Dissipation Enables Net Contraction
+:::{prf:remark} Component changes in an inter-swarm coupling
 :label: rem-synergistic-velocity-dissipation
 
-This bounded expansion is the prerequisite for the synergistic dissipation framework. {doc}`05_kinetic_contraction` proves, under its kinetic hypotheses, that the kinetic operator provides velocity contraction:
+If the two swarms have the same component partition and use a shared Haar matrix on each corresponding component, their velocity difference on a component satisfies
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + C'_v
-
+\sum_{i\in C}|\delta v_i'|^2
+=|C||\overline{\delta v}_C|^2+
+\alpha^2\sum_{i\in C}|\delta v_i-\overline{\delta v}_C|^2.
 $$
 
-for some $\kappa_v > 0$ proportional to the Langevin friction $\gamma$.
-
-When properly balanced:
-
-$$
-\mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},v}] \leq -\kappa_v V_{\text{Var},v} + (C_v + C'_v)
-
-$$
-
-The linear contraction dominates when $V_{\text{Var},v}$ is large, enabling convergence.
+This follows by the same centered decomposition. When accepted graphs differ, components and their centers of mass differ; this formula cannot be applied by pairing individual walkers' rotations. A full coupling bound must control that component-change event and its displacement. The bounded output estimate $|v_i'|\leq(1+2\alpha)V_{\max}$ remains available without an identical partition.
 :::
 
-:::{prf:corollary} Structural Error Contraction
-:label: cor-structural-error-contraction
+:::{prf:theorem} Incremental cloning balance in the geometric error clusters
+:label: thm-cloning-incremental-cluster-balance
 
-Under the same conditions as {prf:ref}`thm-positional-variance-contraction`, the structural error also contracts:
+Pair the full slots of two nonextinct swarms by a fixed matching and relabel
+according to that matching. Retain the geometric error clusters of
+{prf:ref}`def-unified-high-low-error-sets` in each swarm. Add each swarm's
+dead slots as a residual block and take the common refinement of these two
+partitions, denoted $\mathscr G$. This is a partition used to evaluate the
+coupling; it does not change the algorithm's companion laws or collisions.
 
-$$
-\mathbb{E}_{\text{clone}}[V_{\text{struct}}(S'_1, S'_2)] \leq (1 - \kappa_{\text{struct}}) V_{\text{struct}}(S_1, S_2) + C_{\text{struct}}
-
-$$
-
-for some $\kappa_{\text{struct}} > 0$.
-:::
-
-:::{prf:proof}
-**Proof.**
-
-By {prf:ref}`lem-sx-implies-variance`:
+Condition on both complete frozen measurement vectors and accepted plans.
+Write $A_i,\widetilde A_i\in\{0,1\}$ for their acceptance indicators,
+$J_i,\widetilde J_i$ for accepted donor indices, and define
 
 $$
-V_{\text{struct}} \leq 2(\text{Var}_1(x) + \text{Var}_2(x))
-
+d_i=x_i-y_i,\qquad
+r_i=A_i(x_{J_i}-x_i)
+ -\widetilde A_i(y_{\widetilde J_i}-y_i).
 $$
 
-where $\text{Var}_k(x) = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2$.
-
-The contraction of $V_{\text{Var},x}$ (which is proportional to the sum of these variances) immediately implies contraction of $V_{\text{struct}}$.
-
-The constant $\kappa_{\text{struct}}$ depends on $\kappa_x$ and the relationship between $N$-normalized and $k_{\text{alive}}$-normalized variances.
-
-**Q.E.D.**
-:::
-
-:::{prf:theorem} Complete Variance Drift Characterization for Cloning
-:label: thm-complete-variance-drift
-
-The cloning operator ({prf:ref}`def-cloning-operator-formal`) $\Psi_{\text{clone}}$ induces the following drift on the variance components of the Lyapunov function:
-
-**1. Positional Variance (Strong Contraction):**
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
-
-$$
-
-where $\kappa_x > 0$ is $N$-independent (from Keystone Principle).
-
-**2. Velocity Variance (Bounded Expansion):**
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
-
-$$
-
-where $C_v < \infty$ is a state-independent constant.
-
-**3. Total Internal Variance:**
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] = \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_v)
-
-$$
-
-**Key Property:** When $V_{\text{Var},x}$ is sufficiently large, the positional contraction dominates, yielding net contraction of $V_{\text{Var}}$.
-:::
-
-:::{prf:proof}
-**Proof.**
-
-This result follows immediately by combining the two component drift inequalities established earlier in this chapter.
-
-From {prf:ref}`thm-positional-variance-contraction` , we have:
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
-
-$$
-
-From {prf:ref}`thm-velocity-variance-bounded-expansion` ({prf:ref}`thm-velocity-variance-bounded-expansion`), we have:
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
-
-$$
-
-By linearity of expectation, the total internal variance drift is:
+A product with a zero acceptance indicator is zero, so its unused donor
+index need not be defined. Couple the recipient Gaussian jitters by the
+same standard Gaussian in each paired row, with the actual amplitude $j$.
+Then the full-slot positional discrepancy satisfies the exact identity
 
 $$
 \begin{aligned}
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] &= \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x} + \Delta V_{\text{Var},v}] \\
-&= \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \\
-&\leq (-\kappa_x V_{\text{Var},x} + C_x) + C_v \\
-&= -\kappa_x V_{\text{Var},x} + (C_x + C_v)
-\end{aligned}
-
+\frac1N\mathbb E_\xi\sum_i|x_i^c-y_i^c|^2
+-\frac1N\sum_i|d_i|^2
+={}&\frac2N\sum_{G\in\mathscr G}|G|\bar d_G\cdot\bar r_G\\
+&+\frac2N\sum_G\sum_{i\in G}
+ (d_i-\bar d_G)\cdot(r_i-\bar r_G)\\
+&+\frac1N\sum_i|r_i|^2
+ +\frac{d j^2}{N}\sum_i(A_i-\widetilde A_i)^2.
+\end{aligned}                                                     \tag{3.C1}
 $$
 
-This establishes the claimed drift inequality for the total variance.
+Here bars denote the arithmetic means within the indicated geometric
+refinement block. The first two terms retain the signed between-cluster
+and within-cluster donor fluxes.
 
-**Q.E.D.**
+Let $C_i,D_i$ be the accepted collision components containing slot $i$ in
+the two swarms, including singleton components. Set
+$u_i=v_i-\bar v_{C_i}$ and $t_i=w_i-\bar w_{D_i}$ using all frozen slot
+velocities, including revived recipients. Share the Haar matrix precisely
+when two component vertex sets coincide, and use independent matrices for
+all other components. This is a coupling of the prescribed collision laws,
+and it gives
+
+$$
+\mathbb E_R\sum_i|v_i^c-w_i^c|^2
+=\sum_i|\bar v_{C_i}-\bar w_{D_i}|^2
+ +\alpha^2\sum_i\left(
+ |u_i|^2+|t_i|^2-2\mathbf1_{\{C_i=D_i\}}u_i\cdot t_i\right).
+                                                               \tag{3.C2}
+$$
+
+Both identities vanish on the diagonal when the input swarms and their
+plans coincide. Expectations over the coupled sampled measurements,
+weighted donors, and gates give their unconditional versions.
 :::
 
-:::{prf:remark} Constants and Parameter Dependencies
+:::{prf:proof}
+The frozen copying rule gives
+$x_i^c-y_i^c=d_i+r_i+j(A_i-\widetilde A_i)\xi_i$.
+The centered Gaussian has mean zero and second moment $d$. Expand the
+square and sum. For each geometric block,
+
+$$
+\sum_{i\in G}d_i\cdot r_i
+=|G|\bar d_G\cdot\bar r_G
+ +\sum_{i\in G}(d_i-\bar d_G)\cdot(r_i-\bar r_G),
+$$
+
+because both centered sums vanish. This proves (3.C1) without a sign
+estimate or a change in cluster construction.
+
+For (3.C2), write the velocity difference as
+$\bar v_{C_i}-\bar w_{D_i}+\alpha(R_{C_i}u_i-\widetilde R_{D_i}t_i)$.
+Haar orthogonality preserves squared norms, and its mean is zero. Distinct
+component matrices in the specified coupling have zero cross expectation;
+a shared matrix preserves $u_i\cdot t_i$. Expand and sum. Singleton
+components have $u_i=0$ or $t_i=0$, so uninvolved slots obey the same formula.
+The construction shares at most one matrix with any given component and
+therefore preserves independence of component matrices within each swarm.
+The source velocities throughout are the frozen pre-collision values.
+Finally integrate the identities against the actual coupled plan laws.
+$\square$
+:::
+
+:::{prf:theorem} Revival donor changes with component-average cancellation
+:label: thm-cloning-revival-backbone-coupling
+
+Condition on the complete marked input, its retained fitness and all
+accepted alive-recipient edges, with a nonempty alive set. Let
+$|v_i|\leq V_*$ for every frozen slot velocity, including dead slots.
+The undirected graph of accepted edges between alive walkers has connected
+components $B$, called its alive backbones. Each dead recipient has exactly
+one accepted edge to an alive donor and cannot receive an edge. Consequently
+each full collision component consists of one backbone and its attached
+dead leaves.
+
+Attach one independent Haar matrix $R_B$ to each backbone, independently
+of the dead-recipient donor choices. For every assignment of those donors,
+use $R_B$ on the corresponding full component. This is the prescribed
+component-rotation law for every assignment. It couples the two laws without
+requiring their full component vertex sets to agree.
+
+Compare two assignments differing only in the donor of a dead recipient
+$r$, while sharing all frozen inputs, backbone rotations and recipient
+jitters. If both donors belong to the same backbone, collision velocities
+are identical. Otherwise let $C,D$ be the full components before the switch,
+where $r\in C$, and put
+
+$$
+n_C=|C|\geq2,\quad n_D=|D|\geq1,\quad
+w=v_r,\quad \mu=\bar v_C,\quad \nu=\bar v_D,
+$$
+$$
+U=(I-\alpha R_C)(w-\mu),\qquad
+W=\frac{n_D}{n_D+1}(I-\alpha R_D)(w-\nu).
+$$
+
+For the new output minus the old output, the exact identities are
+
+$$
+\sum_{i\in C\setminus\{r\}}\Delta v_i^+=-U,\qquad
+\sum_{i\in D}\Delta v_i^+=W,\qquad
+\Delta v_r^+=U-W,
+$$
+$$
+\sum_i\Delta v_i^+=0,\qquad
+\sum_i|\Delta v_i^+|=|U|+|W|+|U-W|
+\leq(6+8\alpha)V_* .                                      \tag{3.L1}
+$$
+
+Thus for $M$ changed dead-recipient donors and unchanged alive backbones,
+
+$$
+\sum_i|v_i^+-\widetilde v_i^+|\leq(6+8\alpha)V_*M,
+\qquad
+\sum_i|x_i^+-\widetilde x_i^+|
+\leq\sum_{r:\,J_r\ne\widetilde J_r}|x_{J_r}-x_{\widetilde J_r}|.
+                                                               \tag{3.L2}
+$$
+
+If eligible positions have diameter $D_x$, the latter sum is at most $D_xM$.
+The velocity constants are independent of the number of leaves, component
+sizes, alive fraction, dimension and $N$.
+:::
+
+:::{prf:proof}
+Removing a dead leaf cannot remove the nonempty alive backbone. The two
+new component means are
+
+$$
+\mu'=\frac{n_C\mu-w}{n_C-1},\qquad
+\nu'=\frac{n_D\nu+w}{n_D+1}.
+$$
+
+For every unchanged member of $C$, the output difference is
+$(I-\alpha R_C)(\mu'-\mu)=-U/(n_C-1)$; for every member of $D$ it is
+$(I-\alpha R_D)(\nu'-\nu)=W/n_D$. The moved leaf has old velocity
+$w-U$ and new velocity $w-W$. These give the three sums in (3.L1), their
+zero total and the exact sum of norms. In particular the reciprocal
+component sizes cancel when the unchanged members are summed.
+
+Since the old and new means are convex combinations of frozen velocities,
+their norms are at most $V_*$. Therefore
+$|U|,|W|\leq2(1+\alpha)V_*$, and the moved leaf satisfies
+
+$$
+|\Delta v_r^+|
+\leq|\nu'-\mu|+\alpha(|w-\nu'|+|w-\mu|)
+\leq(2+4\alpha)V_*.
+$$
+
+This proves the last inequality in (3.L1). Change $M$ assignments one at a
+time with the same backbone matrices and apply the triangle inequality.
+Every intermediate assignment is a valid collision graph with those
+backbones. Frozen-source copying changes only the switched recipients'
+positions; each recipient is revived in both assignments, so its common
+jitter cancels exactly. This proves (3.L2).
+
+Finally, conditional on any donor assignment, different backbones give
+different full components and their matrices are independent Haar draws.
+A singleton backbone may carry an unused Haar draw when it has no leaves;
+its relative velocity is zero. The coupling therefore has the correct
+marginal collision law in every case. $\square$
+:::
+
+:::{prf:corollary} Full-step cost of changing revival donors
+:label: cor-cloning-revival-full-step-cost
+
+Under the kinetic configuration and notation of
+{prf:ref}`thm-kinetic-bounded-transport-smoothing`, the two complete updates
+in {prf:ref}`thm-cloning-revival-backbone-coupling` admit a coupling with
+
+$$
+\mathbb E\frac1N\sum_i d_0(Z_i',\widetilde Z_i')
+\leq\frac{A_xD_x+A_v(6+8\alpha)V_*}{Nq}\,\mathbb E M .  \tag{3.L3}
+$$
+
+The expectation is conditional on the shared frozen inputs and alive
+backbones, and may then be integrated over any coupling with those shared
+quantities. The bound includes terminal marks and retained dead coordinates;
+it does not condition on survival. It applies also when a component contains
+a number of dead leaves proportional to $N$.
+
+*Proof.* Couple rotations and jitters as in (3.L2), apply
+{prf:ref}`cor-kinetic-full-cluster-smoothing` conditional on both complete
+cloning outputs, and sum the two bounds in (3.L2). $\square$
+:::
+
+:::{prf:lemma} Frozen velocity perturbations in a fixed component plan
+:label: lem-cloning-fixed-plan-velocity-perturbation
+
+For identical component membership and shared component rotations,
+
+$$
+\sum_i|v_i^+-\widetilde v_i^+|
+\leq(1+2\alpha)\sum_i|v_i-\widetilde v_i|.               \tag{3.L4}
+$$
+
+*Proof.* On each component the difference is
+$\overline{\Delta v}_C+\alpha R_C(\Delta v_i-\overline{\Delta v}_C)$.
+Use $|C||\overline{\Delta v}_C|\leq\sum_{i\in C}|\Delta v_i|$ and sum the
+triangle inequality. $\square$
+:::
+
+:::{prf:corollary} Structural reset from the actual output moments
+:label: cor-structural-error-contraction
+
+For the all-alive cloning proposals, suppose each output empirical probability has expected quadratic hypocoercive moment at most $M_h$ about a fixed phase-space point. Then
+
+$$
+\mathbb E V_{\mathrm{struct}}(S_1',S_2')\leq4M_h,\qquad
+\mathbb E\Delta V_{\mathrm{struct}}\leq-V_{\mathrm{struct}}+4M_h.
+$$
+
+For the canonical bounded-domain cloning proposal, this moment hypothesis is discharged by bounded frozen donor positions, finite Gaussian jitter moment, and $|v_i'|\leq(1+2\alpha)V_{\max}$. It is uniform in $N$ and holds for every coupling of the two kernels.
+
+*Proof.* The nonnegative decomposition gives $V_{\mathrm{struct}}'\leq W_h^2(\mu_1',\mu_2')$. Couple the two probabilities by their product and use $\|z-w\|_h^2\leq2\|z-z_0\|_h^2+2\|w-z_0\|_h^2$. Taking expectations gives $4M_h$; subtract the initial structural error. This argument supplies the bound directly and does not infer a contraction factor from a one-sided comparison with initial internal variance. $\square$
+:::
+
+:::{prf:theorem} Variance drift with an explicit positional term
+:label: thm-complete-variance-drift
+
+For the coupled cloning proposal,
+
+$$
+\mathbb E\Delta V_{\mathrm{Var}}
+=H_x(S_1)+H_x(S_2)+R_v(S_1)+R_v(S_2)
+-(1-\alpha^2)\mathbb E(\mathcal E_{C,1}+\mathcal E_{C,2}),
+$$
+
+with the prescribed velocity weight inserted when it is part of $V_{\mathrm{Var}}$. If a family has a proved positional estimate
+$H_x(S_1)+H_x(S_2)\leq-\kappa_xV_{\mathrm{Var},x}+C_x$, this gives
+
+$$
+\mathbb E\Delta V_{\mathrm{Var}}\leq-\kappa_xV_{\mathrm{Var},x}+C_x+C_v,
+\qquad C_v=8V_{\max}^2
+$$
+
+for two swarms without a velocity weight. On all-alive inputs take $C_v=0$ and retain the negative collision energy term if useful.
+
+*Proof.* Add the exact positional and velocity identities and then apply the explicitly stated positional bound. $\square$
+:::
+
+:::{prf:remark} Constants and their applicability
 :label: rem-drift-constants-dependencies
 
-The drift constants have the following dependencies:
+The proved revival offset depends on the velocity radius and dead fraction. Restitution enters the exact dissipated energy, not an unavoidable positive reset error. A positional rate sharper than the reset estimate requires a bound on $H_x$ for the actual sampled fitness and donor law. Neither monotonic improvement in that rate with bandwidth nor improvement with increasing $p_{\max}$ follows automatically; increasing $p_{\max}$ at fixed positive score decreases the acceptance probability.
+:::
 
-**Contraction rate $\kappa_x$:**
-- Increases with measurement quality (larger $\epsilon$ → better diversity detection)
-- Increases with cloning responsiveness (larger $p_{\max}$ and smaller $\varepsilon_{\text{clone}}$)
-- Independent of $N$ (N-uniformity from Keystone)
+:::{prf:remark} Barrier observables and the terminal boundary schedule
+:label: rem-cloning-barrier-stage
 
-**Expansion bound $C_v$:**
-- $C_v = \left(8(1+\alpha_{\text{restitution}})^2 + 20\right) V_{\max}^2$
-- Increases with $V_{\max}^2$ (larger velocity domain)
-- Increases with $\alpha_{\text{restitution}}$ (more elastic collisions)
-- Lower bounded by the non-rotation terms; as $\alpha_{\text{restitution}} \to 0$, $C_v \to 28 V_{\max}^2$
-- Independent of $N$
-
-These dependencies provide guidance for parameter tuning to optimize convergence rates.
+The cloning proposal can place a row outside the box while its proposal mark remains alive. A barrier used on that intermediate state must therefore be defined on the ambient position space. In the zero-extension convention below, $\widetilde\varphi(x)=\mathbf1_D(x)\varphi(x)$ is an auxiliary observable; a zero contribution outside $D$ does not mean the algorithm has killed the row at this stage. It may return before terminal classification. The actual complete-transition boundary moment is proved in {prf:ref}`cor-canonical-full-step-boundary-reset` using the final position noise and terminal status. A reciprocal-distance barrier has infinite Gaussian expectation; it cannot supply a finite drift offset merely by being smooth inside the domain.
 :::
 
 :::{prf:definition} Boundary Potential Component (Recall)
@@ -13558,8 +14247,7 @@ is analyzed separately in {doc}`06_convergence`.
 :::{prf:lemma} Exact bounds for barrier integrals after jitter
 :label: lem-barrier-reduction-cloning
 
-Let $\varphi\geq0$ on the valid domain $D$ and assign zero contribution to
-killed positions. If a post-update position has density $q_y(z)\leq M_q$
+Let $\varphi\geq0$ on the valid domain $D$ and use its zero extension outside $D$, with the stage convention in {prf:ref}`rem-cloning-barrier-stage`. If a post-update position has density $q_y(z)\leq M_q$
 uniformly over allowed companion states $y$, then
 
 $$
@@ -13777,6 +14465,82 @@ $p^N$, while the expected number of deaths is $Np$. This verifies precisely
 which extra estimate is needed for the sharper revival term.
 :::
 
+:::{prf:theorem} Global reset and Foster bound from the actual update
+:label: thm-canonical-full-step-reset-drift
+
+Consider the canonical absorbing-box update: current weighted donors, mandatory revival, shared component collision, BAOAB with constant isotropic Gaussian factor $B$, independent final position diffusion of amplitude $\sigma_p\sqrt h$, smooth final velocity cap, and terminal classification. Let $R_D=\sup_{x\in D}|x|<\infty$, and suppose all retained entering velocities satisfy $|v_i|\leq V$. The objective force has $|\nabla U(x)|\leq L_U|x|+B_U$. There is no substep absorption or viscosity in this canonical statement.
+
+Write $c=e^{-\gamma h}$, $s_h^2=(1-e^{-2\gamma h})/(2\gamma)$, with $s_h^2=h$ at $\gamma=0$, and define
+
+$$
+W=(1+2\alpha)V,\qquad A=1+\frac{h^2}{4}(1+c)L_U,\qquad
+D_0=\frac h2(1+c)W+\frac{h^2}{4}(1+c)B_U,
+$$
+
+$$
+M_x=\left(A\sqrt{R_D^2+d\sigma_x^2}+D_0\right)^2
++\frac{h^2}{4}s_h^2\operatorname{tr}(BB^T)+d\sigma_p^2h.
+$$
+
+For the full marked observable
+
+$$
+\mathscr L_N(S)=1+\frac1N\sum_i\bigl(|x_i|^2+\lambda|v_i|^2\bigr),\qquad\lambda>0,
+$$
+
+the completed transition satisfies the global, $N$-uniform reset estimate
+
+$$
+P\mathscr L_N(S)\leq M:=1+M_x+\lambda V^2.
+$$
+
+Hence for every fixed $q\in(0,1)$,
+
+$$
+P\mathscr L_N-\mathscr L_N\leq-(1-q)\mathscr L_N+M.
+$$
+
+The same upper bound holds for the sub-Markov transition killed at complete extinction. If extinction is represented by an absorbing state with $\mathscr L_N=1$, it also holds for that completed Markov chain.
+
+*Proof.* Freeze every donor choice. After literal copying, every position is an eligible input position, including every revived slot; its norm is at most $R_D$. Accepted-row independent centered jitter gives
+
+$$
+\mathbb E\frac1N\sum_i|X_i^c|^2\leq R_D^2+d\sigma_x^2.
+$$
+
+All collision velocities have norm at most $W$. For BAOAB, the position immediately before final position noise is
+
+$$
+X_2=X^c+\frac h2(1+c)\left(V^c-\frac h2\nabla U(X^c)\right)
++\frac h2s_hB\xi^O.
+$$
+
+The deterministic center has norm at most $A|X^c|+D_0$. The $L^2$ triangle inequality bounds its mean square by $(A\sqrt{R_D^2+d\sigma_x^2}+D_0)^2$. The independent centered O innovation contributes the displayed trace term. Independent final position noise adds $d\sigma_p^2h$. B2 and the final cap do not change position. The smooth cap bounds every completed velocity by $V$, including retained velocities of terminally dead slots. Averaging proves $P\mathscr L_N\leq M$. Nonnegativity gives the Foster inequality and the killed-kernel bound. $\square$
+
+The estimate controls arbitrarily large entering dead coordinates through the actual revival operation. It does not use a strict cloning variance rate, an assumed stationary density, or a continuous-time replacement. Together with the actual terminal-noise survival estimate in {prf:ref}`cor-mean-field-positive-alive-mass`, it supplies uniform finite-step moment control for surviving laws. Uniqueness and attraction of a law additionally require mixing estimates; a moment drift alone is not such a theorem.
+:::
+
+:::{prf:corollary} A finite boundary moment for the complete transition
+:label: cor-canonical-full-step-boundary-reset
+
+For the canonical box $D=\prod_j[\ell_j,u_j]$, let $L_j=u_j-\ell_j$ and define the auxiliary boundary observable in its interior by
+
+$$
+\psi_D(x)=\sum_{j=1}^d\log\!\left(\frac{L_j^2}{(x_j-\ell_j)(u_j-x_j)}\right),\qquad
+\mathscr B_N(S)=\frac1N\sum_{i:a_i=1}\psi_D(x_i).
+$$
+
+Set its value to zero at the box boundary, so it is finite at every admitted point; this measure-zero convention leaves all transition integrals unchanged. This is a diagnostic Lyapunov observable, not an added term in the canonical reward. It is nonnegative and integrable over $D$. For $\sigma_p>0$,
+
+$$
+P\mathscr B_N(S)\leq (2\pi\sigma_p^2h)^{-d/2}\|\psi_D\|_{L^1(D)}=:M_b<\infty.
+$$
+
+Thus $\mathscr L_N+c_b\mathscr B_N$, with any fixed $c_b>0$, satisfies the full-step Foster bound with offset $M+c_bM_b$.
+
+*Proof.* On each coordinate interval, the logarithmic endpoint singularity has finite integral, so Fubini gives $\psi_D\in L^1(D)$. Conditional on all preceding stages, the final position noise has a Gaussian density bounded by $(2\pi\sigma_p^2h)^{-d/2}$. The terminal eligibility indicator restricts its contribution to $D$. Integrate $\psi_D$ against that density, average the rows, and add the previous theorem. Boundary points have probability zero after this noise. $\square$
+:::
+
 :::{prf:theorem} Inter-swarm drift from a post-update moment bound
 :label: thm-inter-swarm-bounded-expansion
 
@@ -13807,13 +14571,95 @@ W_h^2(\mu'_1,\mu'_2)
 $$
 
 Take expectations and subtract the nonnegative initial $V_W$.
-For the all-slot Gaussian proposal, bounded companion positions and capped
-velocities give a finite $M_h$ directly from
+For the all-slot Gaussian proposal, bounded companion positions and collision velocities bounded by $(1+2\alpha)V_{\max}$ give a finite $M_h$ directly from
 $\mathbb E\|y+\sigma_x\xi-z_{0,x}\|^2
 =\|y-z_{0,x}\|^2+d\sigma_x^2$ and equivalence of quadratic norms.
 After a killing test on a bounded valid domain, normalized living empirical
 measures have a direct support bound whenever the alive set is nonempty.
 These are two distinct ways to verify the stated moment hypothesis.
+:::
+
+:::{prf:corollary} The actual cloning kernel supplies the inter-swarm moment bound
+:label: cor-cloning-actual-inter-swarm-expansion
+
+Use the complete cloning transition with weighted measurement and cloning companions, retained sampled fitness, frozen gates and source positions, mandatory revival, Gaussian position jitter of amplitude $j$, and the shared component rotations of {prf:ref}`prop-cloning-component-conservation`, with restitution $0\le\alpha\le1$. Suppose both entering alive sets are nonempty. Fix a position anchor $x_0$ and let
+
+$$
+B_x=\sup_{x\in\mathcal X_{\rm valid}}|x-x_0|<\infty,
+\qquad |v_i|\le V_{\max}\quad\text{for every entering slot}.
+$$
+
+The positional bound applies only to eligible alive sources. Retained dead positions are unrestricted. The velocity bound includes retained dead slots and is supplied by the completed velocity cap. Let
+
+$$
+Q(x,v)=|x|^2+\lambda_v|v|^2+b\,x\cdot v,
+\qquad \lambda_v>b^2/4,
+$$
+
+be the original transport quadratic form. For every fixed $\eta>0$, put
+
+$$
+K_\eta=(1+\eta)(B_x^2+d j^2)
+ +\left(\lambda_v+\frac{b^2}{4\eta}\right)V_{\max}^2.
+\tag{3.W1}
+$$
+
+Then each actual postcloning empirical law $\mu_s^+$ satisfies
+
+$$
+\mathbb E\!\left[\int Q(x-x_0,v)\,d\mu_s^+(x,v)\,\middle|\,S_s\right]
+\le K_\eta,\qquad s=1,2.
+\tag{3.W2}
+$$
+
+Consequently every coupling of the two actual cloning kernels obeys
+
+$$
+\boxed{\mathbb E[\Delta V_W\mid S_1,S_2]
+\le -V_W(S_1,S_2)+4K_\eta\le C_W,
+\qquad C_W=4K_\eta.}
+\tag{3.W3}
+$$
+
+All constants are independent of $N$, the alive fractions, and the number or sizes of collision components. This supplies the bounded inter-swarm expansion input of the original weighted Lyapunov composition.
+
+**Proof.** Freeze the retained measurement vector, donor and gate choices, and accepted component graph. Each resulting source position $Y_i$ is either an unaccepted alive position or an eligible frozen donor position. Mandatory revival supplies such a donor to every entering dead slot. Thus $|Y_i-x_0|\le B_x$ for all $N$ destinations. With $I_i$ the accepted-cloning indicator, the actual positional proposal is
+
+$$
+X_i^+=Y_i+j I_i\zeta_i,\qquad
+\mathbb E\!\left[\frac1N\sum_i|X_i^+-x_0|^2\,\middle|\,\text{frozen choices}\right]
+=\frac1N\sum_i|Y_i-x_0|^2+
+ \frac{d j^2}{N}\sum_i I_i
+\le B_x^2+d j^2.
+$$
+
+This is a Gaussian moment estimate on the complete proposal. It makes no compact-support claim about the postcloning positions.
+
+For each component $C$, the actual shared orthogonal rotation gives the pointwise identity
+
+$$
+\sum_{i\in C}|v_i^+|^2
+=|C|\,|\bar v_C|^2+
+ \alpha^2\sum_{i\in C}|v_i-\bar v_C|^2
+\le\sum_{i\in C}|v_i|^2.
+$$
+
+Uninvolved slots retain their velocities. Sum over the disjoint components to obtain
+
+$$
+\frac1N\sum_i|v_i^+|^2\le\frac1N\sum_i|v_i|^2\le V_{\max}^2.
+$$
+
+The sum includes the retained pre-collision velocities of revived slots. No independence between collision outputs or bound on component size is used. Young's inequality,
+
+$$
+Q(x,v)\le(1+\eta)|x|^2+
+ \left(\lambda_v+\frac{b^2}{4\eta}\right)|v|^2,
+$$
+
+then proves (3.W2), after averaging all the actual measurement, gate, jitter, and rotation randomness. Both postcloning populations have all $N$ slots alive, so their probability empirical laws use exactly the $1/N$ normalization in these moment estimates. Apply {prf:ref}`thm-inter-swarm-bounded-expansion` with anchor $(x_0,0)$ and $M_h=K_\eta$. Its product transport plan is valid for each realized pair of empirical laws, independently of how the two kernels are coupled, proving (3.W3).
+
+An extinct entering state has no eligible donor and follows the specified cemetery transition. The alive probability law and $V_W$ in this corollary are defined on the nonextinct pair domain; this argument does not assign a fictitious normalized alive law to the cemetery state. $\square$
 :::
 
 :::{prf:remark} Bounded drift and contraction
@@ -13860,7 +14706,7 @@ $$
 
 The direct moment argument in {prf:ref}`thm-inter-swarm-bounded-expansion` gives
 an alternative bound. Either valid choice can be used as $C_W$ in the component
-composition theorem. The kinetic estimates and their rate conditions are given
+composition theorem. For the complete cloning mechanism, {prf:ref}`cor-cloning-actual-inter-swarm-expansion` discharges this input with $C_W=4K_\eta$, including retained-dead velocities and immediate revival. The kinetic estimates and their rate conditions are given
 in {doc}`05_kinetic_contraction` and {doc}`06_convergence`.
 :::
 
@@ -13870,88 +14716,94 @@ the direct joint estimate instead of relaxing each component separately gives
 the alternative constant stated above.
 :::
 
-:::{prf:theorem} Complete Drift Inequality for the Cloning Operator
+:::{prf:theorem} Complete weighted drift for the actual cloning operator
 :label: thm-complete-cloning-drift
 
-Suppose {prf:ref}`thm-positional-variance-contraction`,
-{prf:ref}`thm-velocity-variance-bounded-expansion`,
-{prf:ref}`thm-boundary-potential-contraction`, and
-{prf:ref}`thm-complete-wasserstein-drift` apply to the same coupled cloning
-transition. With the velocity weight included in $C_v$, their weighted sum
-induces the following drift on the Lyapunov function:
-
+Retain the chapter's Lyapunov function, including its prescribed velocity weight:
 $$
-V_{\text{total}}(S_1, S_2) = V_W(S_1, S_2) + c_V V_{\text{Var}}(S_1, S_2) + c_B W_b(S_1, S_2)
-
+\Phi=V_{\mathrm{total}}=V_W+c_V(X+Y)+c_BW_b,\qquad
+X=V_{\mathrm{Var},x},\quad Y=\lambda_vV_{\mathrm{Var},v}.
 $$
+Here the variances are the sums of the two $N$-normalized alive-input
+variances. Both entering swarms are nonextinct, eligible positions lie in the
+stated domain of diameter $D_x$, and all retained velocities satisfy the
+completed-step cap $V_{\max}$. Apply the actual measurement, frozen acceptance,
+revival, component rotation, and jitter kernel $P_C$.
 
-**Individual Component Drifts:**
-
+Before estimating any signed positional contribution, its exact weighted
+increment is
 $$
 \begin{aligned}
-\mathbb{E}_{\text{clone}}[\Delta V_W] &\leq C_W \quad &\text{(bounded expansion)} \\
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] &\leq -\kappa_x V_{\text{Var},x} + C_x \quad &\text{(strong contraction)} \\
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] &\leq C_v \quad &\text{(bounded expansion)} \\
-\mathbb{E}_{\text{clone}}[\Delta W_b] &\leq -\kappa_b W_b + C_b \quad &\text{(strong contraction)}
+(P_C-I)\Phi
+={}&(P_C-I)V_W+c_V\big[H_x(S_1)+H_x(S_2)
+ +\lambda_v\{R_v(S_1)+R_v(S_2)\}\\
+&\hspace{36mm}-\lambda_v(1-\alpha^2)
+ \mathbb E(\mathcal E_{C,1}+\mathcal E_{C,2})\big]
++c_B(P_C-I)W_b .
 \end{aligned}
-
+\tag{3.AC1}
 $$
+The actual donor and measurement integrals in $H_x$ are those of
+{prf:ref}`thm-positional-variance-contraction`; they have not been replaced
+by a sign condition or by an inter-swarm distance.
 
-**Combined Drift:**
-
+The positional and velocity inputs of the weighted affine argument are
+fully supplied by the exact kernel:
 $$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] \leq C_W + c_V(-\kappa_x V_{\text{Var},x} + C_v + C_x) + c_B(-\kappa_b W_b + C_b)
-
+P_CX\le C_x:=D_x^2+2d\sigma_x^2,
+\qquad
+P_CY=Y+\lambda_vR-\lambda_v(1-\alpha^2)\overline{\mathcal E}_C,
+\tag{3.AC2}
 $$
-
-**Critical Property - Partial Contraction:**
-
-When $V_{\text{Var},x}$ and $W_b$ are sufficiently large relative to the expansion terms, the drift becomes negative:
-
+where $R=R_v(S_1)+R_v(S_2)$,
+$\overline{\mathcal E}_C=\mathbb E(\mathcal E_{C,1}+\mathcal E_{C,2})$, and
 $$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] < 0 \quad \text{when } c_V V_{\text{Var},x} + c_B W_b > \frac{C_W + c_V(C_v + C_x) + c_B C_b}{\min(\kappa_x, \kappa_b)}
-
+0\le R\le\frac{4(D_1+D_2)}N V_{\max}^2\le8V_{\max}^2.
 $$
-
+In particular, for every chosen $0<\kappa_x\le1$,
+$$
+(P_C-I)X\le-\kappa_xX+C_x,
+\qquad (P_C-I)Y\le C_v:=8\lambda_vV_{\max}^2.
+\tag{3.AC3}
+$$
+For all-alive entering swarms take $C_v=0$ and retain the negative component
+energy in (3.AC2). The bounded inter-swarm expansion from
+{prf:ref}`cor-cloning-actual-inter-swarm-expansion` supplies $C_W$, so (3.AC1) gives
+$$
+(P_C-I)\Phi\le C_W+c_V[-\kappa_xX+C_x+C_v]
++c_B(P_C-I)W_b.
+\tag{3.AC4}
+$$
+When the applicable boundary estimate of
+{prf:ref}`thm-boundary-potential-contraction` is inserted, this becomes
+$$
+(P_C-I)\Phi\le-c_V\kappa_xX-c_B\kappa_bW_b
+ +C_W+c_V(C_x+C_v)+c_BC_b.
+\tag{3.AC5}
+$$
+All displayed positional, velocity, and inter-swarm constants are uniform in
+$N$. This is the original weighted affine drift: bounded expansion in one
+component is permitted and its offset is retained. A negative drift is asserted
+only where the displayed dissipative terms exceed the displayed offset.
 :::
 
 :::{prf:proof}
-**Proof.**
-
-The total drift is obtained by summing the component drifts with their respective weights:
-
-$$
-\begin{aligned}
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{total}}] &= \mathbb{E}_{\text{clone}}[\Delta V_W] + c_V \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var}}] + c_B \mathbb{E}_{\text{clone}}[\Delta W_b] \\
-&= \mathbb{E}_{\text{clone}}[\Delta V_W] + c_V (\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] + \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}]) + c_B \mathbb{E}_{\text{clone}}[\Delta W_b]
-\end{aligned}
-
-$$
-
-Substituting the individual bounds from Theorems 10.3.1, 10.4.1, 11.3.1, and 12.2.1:
-
-$$
-\leq C_W + c_V(-\kappa_x V_{\text{Var},x} + C_x + C_v) + c_B(-\kappa_b W_b + C_b)
-
-$$
-
-Rearranging:
-
-$$
-= -c_V \kappa_x V_{\text{Var},x} - c_B \kappa_b W_b + (C_W + c_V C_x + c_V C_v + c_B C_b)
-
-$$
-
-For the drift to be negative, we need the contraction terms to dominate:
-
-$$
-c_V \kappa_x V_{\text{Var},x} + c_B \kappa_b W_b > C_W + c_V C_x + c_V C_v + c_B C_b
-
-$$
-
-This holds when the weighted variance and boundary potential are sufficiently large.
-
-**Q.E.D.**
+The variance identities of
+{prf:ref}`thm-complete-variance-drift` and linearity of conditional expectation
+give (3.AC1), with $\lambda_v$ multiplying every velocity contribution.
+Conditional on the entire donor/gate realization, every copied or retained
+position comes from the eligible input domain. Its pairwise variance is at
+most $D_x^2/2$ per swarm. Independent centered jitters add at most
+$(1-1/N)d\sigma_x^2$ per swarm. This proves the first bound in (3.AC2),
+including all revival rows and all retained-fitness dependence.
+The actual shared component rotations give its second identity; the
+retained-dead correction is bounded by
+{prf:ref}`thm-velocity-variance-bounded-expansion`.
+Since $X\ge0$, $-X+C_x\le-\kappa_xX+C_x$ for $\kappa_x\le1$.
+This proves (3.AC3). Insert the already proved bounded $V_W$ expansion to
+obtain (3.AC4), and the stated boundary estimate to obtain (3.AC5).
+No individual or structural Wasserstein contraction is needed in this
+cloning-stage calculation.
 :::
 
 :::{prf:proposition} What the cloning drift leaves to the full transition
@@ -14006,7 +14858,7 @@ proves the inequality.
 
 Let $P_C$ and $P_K$ be the cloning and kinetic transition operators, acting on
 nonnegative observables, and set
-$F=(V_W,V_{\mathrm{Var},x},V_{\mathrm{Var},v},W_b)^\mathsf T$.
+$F=(V_W,V_{\mathrm{Var},x},\lambda_vV_{\mathrm{Var},v},W_b)^\mathsf T$.
 Suppose the component estimates established for the chosen parameter regime
 have the following common, statewise form:
 
@@ -14076,6 +14928,88 @@ chain it bounds the unnormalized surviving moment. A conditioned moment is
 obtained by dividing by $Q^n1$, and therefore also requires survival control.
 :::
 
+:::{prf:corollary} Positional and velocity inputs in the weighted composition
+:label: cor-cloning-weighted-assembly-input
+
+For $F=(V_W,X,Y,W_b)^\mathsf T$ in
+{prf:ref}`thm-synergistic-foster-lyapunov-preview`, the positional and velocity
+entries are discharged by (3.AC2)--(3.AC3), and the inter-swarm entry by
+{prf:ref}`cor-cloning-actual-inter-swarm-expansion`. Thus the actual clone-side offset
+is
+$$
+b_C=(C_W,C_x,C_v,C_b)^\mathsf T,
+\quad C_x=D_x^2+2d\sigma_x^2,\quad C_v=8\lambda_vV_{\max}^2,
+\tag{3.AC6}
+$$
+The sharper choice $C_v=0$ applies to a one-step estimate with all-alive
+entering swarms. Iteration uses the uniform $8\lambda_vV_{\max}^2$ offset
+unless the all-alive class is itself invariant; terminal deaths must not be
+passed into the next step with the zero-revival offset. The boundary entry
+retains the applicable estimate for the chosen $W_b$ from Section 11.
+
+For the same component bounds, define their nonnegative defects
+$$
+D_C=A_CF+b_C-P_CF,\qquad D_K=A_KF+b_K-P_KF.
+$$
+On nonextinct cloning inputs, mandatory revival makes $P_C1=1$. The exact
+backward composition $Q=P_CP_K$ therefore satisfies
+$$
+QF=A_KA_CF+A_Kb_C+b_K-A_KD_C-P_CD_K.
+\tag{3.AC7}
+$$
+This remains valid for the actual terminally killed kinetic kernel: its output
+observables are zero at the cemetery, and no conditioning on survival has been
+inserted. For a sub-Markov cloning kernel there is the additional nonpositive
+term $-(1-P_C1)b_K$.
+
+With $w=(1,c_V,c_V,c_B)^\mathsf T$, retain the exact identity
+$$
+(Q-I)\Phi=(P_C-I)\Phi+P_C(P_K-I)\Phi.
+\tag{3.AC8}
+$$
+For the diagonal kinetic comparison used above,
+$b_K=(C'_W,C'_x,C'_v,C'_b)^\mathsf T$, where $C'_v$ is for the weighted
+observable $Y=\lambda_vV_{\mathrm{Var},v}$. Its explicit full-step offset is
+$$
+\begin{aligned}
+C_*={}&(1-\kappa_W)C_W+C'_W\\
+ &+c_V[C_x+C'_x+(1-\kappa_v)C_v+C'_v]
+ +c_B(C_b+C'_b).
+\end{aligned}
+\tag{3.AC9}
+$$
+Moreover, the velocity defect in (3.AC7) includes the proved nonnegative term
+$\lambda_v(1-\alpha^2)\overline{\mathcal E}_C$. Its contribution to the upper
+bound for the full drift is consequently
+$-c_V(1-\kappa_v)\lambda_v(1-\alpha^2)\overline{\mathcal E}_C$.
+A nonnegative comparison matrix with cross terms propagates these same defects
+as $-A_KD_C$; they must not be assigned a favorable sign after multiplication
+by a matrix having negative entries.
+
+This supplies the original weighted composition with the actual bounded
+cloning inputs and their offsets. The kinetic entries must be proved on the
+actual post-cloning states using the declared BAOAB, position noise, cap, and
+terminal boundary. Iterated killed moments and survival-conditioned moments
+retain the distinction in the preceding theorem.
+:::
+
+:::{prf:proof}
+Equation (3.AC6) follows from the proved inputs, with the boundary component
+left in its own stated applicability. Substitute
+$P_KF=A_KF+b_K-D_K$ into $P_C(P_KF)$, then substitute
+$P_CF=A_CF+b_C-D_C$. Positivity and linearity give (3.AC7), and expanding
+$P_CP_K-I=(P_C-I)+P_C(P_K-I)$ gives (3.AC8).
+Multiplying the offset by the original weights gives (3.AC9).
+Finally the exact velocity identity (3.AC2) yields
+$$
+(D_C)_Y=C_v-\lambda_vR+
+ \lambda_v(1-\alpha^2)\overline{\mathcal E}_C
+\ge\lambda_v(1-\alpha^2)\overline{\mathcal E}_C,
+$$
+which proves the retained collision contribution. No contraction assumption
+on the cloning-stage structural distance is used.
+:::
+
 :::{prf:proposition} Existence of valid coupling constants
 :label: prop-coupling-constant-existence
 
@@ -14134,12 +15068,8 @@ this chapter, retaining the hypotheses attached to each estimate.
    Keystone inequality: the weighted sum of squared centered discrepancies is
    at least $\chi(\epsilon)V_{\mathrm{struct}}-g_{\max}(\epsilon)$.
    The constants come from the measurement and selection bounds in that proof.
-2. Substitution of this inequality into the positional variance decomposition
-   gives {prf:ref}`thm-positional-variance-contraction`. Its residual term is
-   retained in $C_x$; the statement is a drift estimate for variance.
-3. The collision calculation and velocity cap give
-   {prf:ref}`thm-velocity-variance-bounded-expansion`, with
-   $C_v=[8(1+\alpha_{\mathrm{restitution}})^2+20]V_{\max}^2$.
+2. The exact row-law calculation gives {prf:ref}`thm-positional-variance-contraction`. The bounded-domain reset estimate follows directly from frozen eligible donor positions and Gaussian jitter. A sharper bound using the Keystone selection sum requires a separate estimate of $H_x$.
+3. Full-component momentum and energy conservation give {prf:ref}`thm-velocity-variance-bounded-expansion`, with $C_v=8V_{\max}^2$ for two swarms and $C_v=0$ on all-alive inputs, before any velocity weight is inserted.
 4. The exposed/persistent/revived partition gives
    {prf:ref}`thm-boundary-potential-contraction` and its explicit refinement
    {prf:ref}`thm-complete-boundary-drift`. The probability of a common extinction
@@ -15473,7 +16403,7 @@ where $\tau$ is the timestep and $S'_1, S'_2$ are the outputs after the kinetic 
 **Equivalently (one-step drift):**
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W + C_W'
+\frac1\tau\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W + C_W'
 
 $$
 
@@ -15493,6 +16423,343 @@ $$
    - Boundary effects
 
 3. **N-uniformity:** All constants are independent of swarm size $N$.
+:::
+
+:::{prf:theorem} Strict coupling of quadratic BAOAB with the velocity cap
+:label: thm-kinetic-exact-baoab-cap-coupling
+
+For the kinetic stage with $U(x)=|x|^2/2$, $0<h<2$, friction $\gamma>0$,
+isotropic velocity diffusion factor $B>0$, final independent position
+noise, and cap $C_V(v)=Vv/(V+|v|)$ with $V>0$, couple two input rows using
+identical Gaussian innovations. The force kicks, drifts, and cap are those
+of the complete algorithm. Put
+
+$$
+c=h/2,\quad k=1-c^2,\quad a=e^{-\gamma h},\quad
+q=B\sqrt{\frac{1-a^2}{2\gamma}},\qquad
+\|z\|_Q^2=k|x|^2+|v|^2.
+$$
+
+Define the positive constants
+
+$$
+p_0=\sqrt{2/\pi}\,e^{-2},\quad
+\eta=p_0\left[1-\left(\frac V{V+kq}\right)^2\right],
+$$
+
+$$
+T=1-a^2+\eta\bigl[a^2+c^2(1-a^2)\bigr],\quad
+D=\eta c^2(1-a^2),\qquad \delta=D/T.
+$$
+
+The output physical coordinates, including the final position noise and cap,
+satisfy
+
+$$
+\mathbb E\|Z^+-\widetilde Z^+\|_Q^2
+\le(1-\delta)\|Z-\widetilde Z\|_Q^2.                 \tag{5.K1}
+$$
+
+The constants are independent of dimension and population size. Applied to
+all paired rows, (5.K1) also contracts the averaged physical-coordinate
+coupling cost. Terminal alive/dead indicators are governed separately by
+{prf:ref}`lem-kinetic-terminal-status-coupling`.
+:::
+
+:::{prf:proof}
+**Exact BAOAB difference.** The successive differences are
+$\Delta v_1=\Delta v-c\Delta x$,
+$\Delta x_1=\Delta x+c\Delta v_1$,
+$\Delta v_2=a\Delta v_1$,
+$\Delta x_2=\Delta x_1+c\Delta v_2$,
+and $\Delta v_3=\Delta v_2-c\Delta x_2$.
+Consequently, before capping the deterministic difference matrix is
+
+$$
+A=\begin{pmatrix}
+1-c^2(1+a)&c(1+a)\\
+-c(1+a)k&a-c^2(1+a)
+\end{pmatrix},\qquad
+A^\top QA=Q-k(1-a^2)ww^\top,\quad w=\binom{-c}{1}.       \tag{5.K2}
+$$
+
+The matrices act identically on every coordinate. Write
+$b=(-c(1+a)k,\ a-c^2(1+a))^\top$. The last pre-cap velocity is its
+input-dependent mean plus $kq\xi$, for a standard Gaussian vector $\xi$;
+its coupled difference is $b^\top\Delta z$.
+
+**Strict cap dissipation.** The cap derivative satisfies
+$\|DC_V(u)\|_{\mathrm{op}}\le V/(V+|u|)$, including its continuous value
+at zero. For any $m$ and $\sigma>0$, a centered interval maximizes the
+probability of a fixed-length interval under the centered one-dimensional
+Gaussian. This follows directly by differentiating the interval probability
+with respect to its center. Therefore
+
+$$
+\Pr(|m+\sigma\xi|\ge\sigma)
+\ge\Pr(|\xi_1|\ge1)
+\ge 2\int_1^2\frac{e^{-2}}{\sqrt{2\pi}}\,dt=p_0.
+$$
+
+Taking $\sigma=kq$ yields
+$\sup_m\mathbb E\|DC_V(m+kq\xi)\|_{\mathrm{op}}^2\le1-\eta$.
+Integrate the derivative along the segment between the two deterministic
+means and apply Jensen's inequality to obtain
+
+$$
+\mathbb E|C_V(u+kq\xi)-C_V(\widetilde u+kq\xi)|^2
+\le(1-\eta)|u-\widetilde u|^2.                         \tag{5.K3}
+$$
+
+**Control of both coordinates.** The common final position noise cancels
+from the difference. Equations (5.K2)–(5.K3) give
+
+$$
+\mathbb E\|\Delta z^+\|_Q^2
+\le\|\Delta z\|_Q^2-k(1-a^2)|w^\top\Delta z|^2
+-\eta|b^\top\Delta z|^2.
+$$
+
+The positive matrix
+$Q^{-1/2}[k(1-a^2)ww^\top+\eta bb^\top]Q^{-1/2}$
+has trace $T$ and determinant $D$. In particular, it is positive definite:
+$\det(w,b)=c\ne0$. For its eigenvalues $0<\lambda_1\le\lambda_2$,
+$\lambda_1=D/\lambda_2\ge D/T=\delta$. This proves (5.K1).
+Averaging this row estimate proves its population version. $\square$
+:::
+
+:::{prf:corollary} The configured quadratic kinetic stage
+:label: cor-kinetic-canonical-coupling
+
+For $h=0.04$, $\gamma=B=1$, and $V=2$, the exact constants above give
+$\eta>0.0184$ and $\delta>6.03\times10^{-6}$. These are strict
+physical-coordinate contraction constants for the executed kinetic stage.
+:::
+
+:::{prf:proof}
+Substitute the specified constants into the positive expressions for
+$q,\eta,T,D$. The symbolic expressions in (5.K1) specify the constants exactly;
+substitution gives $\eta=0.018414\ldots$ and
+$\delta=0.0000060320\ldots$, with the stated strict lower bounds.
+:::
+
+:::{prf:lemma} Terminal status coupling under the final position noise
+:label: lem-kinetic-terminal-status-coupling
+
+Let the terminal domain be an axis-aligned box $\mathcal D\subset\mathbb R^d$.
+Condition on the complete cloning, collision, and BAOAB innovations, and let
+$x,y$ be the two positions before final position diffusion. For its actual
+amplitude $s=\sigma_x\sqrt h>0$, the synchronous Gaussian coupling obeys
+
+$$
+\Pr\!\left(\mathbf1_{\mathcal D}(x+s\zeta)
+\ne\mathbf1_{\mathcal D}(y+s\zeta)\right)
+\le \min\!\left\{1,\frac{2\|x-y\|_1}{s\sqrt{2\pi}}\right\}.
+                                                               \tag{5.K4}
+$$
+
+This compares the terminal status marks used by the next cloning stage.
+:::
+
+:::{prf:proof}
+For one coordinate, the translated membership intervals have symmetric
+difference of length at most $2|x_j-y_j|$. The density of $s\zeta_j$ is
+bounded by $1/(s\sqrt{2\pi})$. If box membership differs, at least one
+coordinate's interval membership differs. Sum these one-dimensional
+bounds and bound the resulting probability by one. $\square$
+:::
+
+:::{prf:theorem} Bounded transport smoothing for the actual BAOAB and cap update
+:label: thm-kinetic-bounded-transport-smoothing
+
+Let the configured force $F:\mathbb R^d\to\mathbb R^d$ be globally
+$L_F$-Lipschitz, and use the declared isotropic BAOAB, final position noise,
+radial cap and terminal position classification. Put
+
+$$
+c=h/2,\quad a=e^{-\gamma h},\quad
+q=B\sqrt{(1-a^2)/(2\gamma)}>0,\quad
+\lambda=1-c^2L_F>0,\quad s=\sigma_x\sqrt h.
+$$
+
+The force bound is on all physical positions reached by the Gaussian
+innovations. A bound only inside the valid domain is not sufficient for
+this statement. For fixed position and velocity units $\ell_x,\ell_v>0$,
+define the bounded marked-coordinate metric
+
+$$
+d_0(z,\widetilde z)=\min\left\{1,
+\frac{|x-\widetilde x|}{\ell_x}
++\frac{|v-\widetilde v|}{\ell_v}
++\mathbf1_{\{e\ne\widetilde e\}}\right\}.
+$$
+
+Here $e$ is the terminal alive/dead mark; dead coordinates are retained.
+Let $K(z,\cdot)$ be the row kinetic law from a post-cloning physical state
+$z=(X,V)$. Define its actual intermediate quantities
+
+$$
+v_1=V+cF(X),\qquad x_1=X+cv_1,\qquad m=x_1+ca v_1.
+$$
+
+With $C_0=\sqrt{\pi/2}$ and cap radius $R$, the transport distance obeys
+
+$$
+W_{d_0}(K(z),K(\widetilde z))
+\leq\min\left\{1,
+\frac{|\Delta m|}{cq\sqrt{2\pi}}
++\frac{C_0R|\Delta x_1|}{\ell_v cq\lambda}\right\}
+\leq\min\left\{1,
+\frac{A_x|\Delta X|+A_v|\Delta V|}{q}\right\},             \tag{5.K5}
+$$
+
+where
+
+$$
+A_x=\frac{1+c^2(1+a)L_F}{c\sqrt{2\pi}}
++\frac{C_0R(1+c^2L_F)}{\ell_v c\lambda},\qquad
+A_v=\frac{1+a}{\sqrt{2\pi}}+\frac{C_0R}{\ell_v\lambda}.
+$$
+
+These constants are independent of dimension, population size and $B$.
+No convexity of the potential is required.
+:::
+
+:::{prf:proof}
+The complete row update, with independent standard Gaussian vectors
+$\xi,\zeta$, is
+
+$$
+x_2=m+cq\xi,\qquad
+v_3=av_1+q\xi+cF(x_2),\qquad
+x^+=x_2+s\zeta,\qquad v^+=C_R(v_3),
+\quad C_R(u)=\frac{Ru}{R+|u|}.
+$$
+
+**Match positions through the OU innovation.** Set
+$b=\Delta m/(cq)$. Couple $\xi$ and $\widetilde\xi$ with their required
+standard Gaussian marginals so that $\widetilde\xi=\xi+b$ except with
+probability $2\Phi(|b|/2)-1\leq |b|/\sqrt{2\pi}$. Such a coupling is
+obtained by assigning the common density
+$\min\{\phi(u),\phi(u+b)\}$ to the matched event and coupling the remaining
+densities. Its mass follows by integrating on the two half-spaces separated
+by their density-equality hyperplane. The matched subdensity of $\xi$ is
+bounded above by $\phi$.
+
+Use the same independent $\zeta$. On the matched event, $x_2=\widetilde x_2$,
+so both final force evaluations, final positions and terminal marks agree.
+The pre-cap velocity difference is exactly
+
+$$
+D=a\Delta v_1-\Delta m/c=-\Delta x_1/c.                 \tag{5.K6}
+$$
+
+This cancellation uses the final force evaluation in the actual BAOAB step.
+
+**Average the cap derivative.** For the first input set
+$T(y)=y+cF(x_1+cy)$. Then
+$|T(y)-T(\widetilde y)|\geq\lambda|y-\widetilde y|$.
+For each target $w$, the equation $y=w-cF(x_1+cy)$ is a contraction with
+constant $c^2L_F<1$ on complete Euclidean space. Thus $T$ is onto and
+one-to-one. For $t\in[0,1]$, let $y_t=T^{-1}(tD)$ and
+$\xi_t=(y_t-av_1)/q$. Consequently
+
+$$
+|T(av_1+qG)-tD|\geq q\lambda|G-\xi_t|.
+$$
+
+For $d\geq2$, $\|DC_R(u)\|_{\mathrm{op}}=R/(R+|u|)\leq R/|u|$.
+The identity
+$r^{-1}=\pi^{-1/2}\int_0^\infty t^{-1/2}e^{-tr^2}\,dt$
+and Gaussian integration give, for every $b\in\mathbb R^d$,
+
+$$
+\begin{aligned}
+\mathbb E|G-b|^{-1}
+&=\pi^{-1/2}\int_0^\infty
+ t^{-1/2}(1+2t)^{-d/2}
+ e^{-t|b|^2/(1+2t)}\,dt\\
+&\leq\mathbb E|G|^{-1}
+\leq\mathbb E(G_1^2+G_2^2)^{-1/2}=\sqrt{\pi/2}.
+\end{aligned}
+$$
+
+The integrals are finite for $d\geq2$, and Tonelli justifies their order.
+For $d=1$, $T$ is increasing and its inverse is $\lambda^{-1}$-Lipschitz.
+The density of $T(av_1+qG)$ is therefore bounded by
+$(q\lambda\sqrt{2\pi})^{-1}$. Since
+$\int_{\mathbb R}|C_R'(u)|\,du=2R$, both cases yield
+
+$$
+\sup_{t\in[0,1]}
+\mathbb E\|DC_R(T(av_1+qG)-tD)\|_{\mathrm{op}}
+\leq\frac{C_0R}{q\lambda}.
+$$
+
+Integrate the derivative along the segment of length $|D|$. The matched
+subdensity bound shows that the expected marked cost on the matched event
+is at most $C_0R|D|/(\ell_v q\lambda)$. Failure costs at most one. Add its
+probability and substitute (5.K6) to prove the first inequality in (5.K5).
+Finally,
+$|\Delta x_1|\leq(1+c^2L_F)|\Delta X|+c|\Delta V|$ and
+$|\Delta m|\leq[1+c^2(1+a)L_F]|\Delta X|+c(1+a)|\Delta V|$
+give the displayed coefficients. $\square$
+:::
+
+:::{prf:corollary} Population-normalized smoothing after the full component collision
+:label: cor-kinetic-full-cluster-smoothing
+
+Let $P,\widetilde P$ be laws of nonextinct entering swarms, and let $\Gamma$
+couple their complete post-cloning swarm laws, including their
+actual measurements, frozen acceptance, copied positions, jitter, revival
+and shared component rotations. For the normalized output cost
+$d_N=N^{-1}\sum_i d_0(z_i,\widetilde z_i)$, the complete kinetic laws satisfy
+
+$$
+W_{d_N}(\mathcal C_N(P)K_N,\mathcal C_N(\widetilde P)K_N)
+\leq\mathbb E_\Gamma\frac1N\sum_i
+\min\left\{1,\frac{A_x|\Delta X_i|+A_v|\Delta V_i|}{q}\right\}.
+                                                               \tag{5.K7}
+$$
+
+Here $\mathcal C_N$ is the actual cloning kernel and $K_N$ retains the
+physical marked outputs also on total extinction. The inequality does not
+condition on survival. For the geometric error clusters, take their common
+refinement under the chosen row pairing. In each block $G$, write
+$\Delta X_i=\overline{\Delta X}_G+u_i$ and
+$\Delta V_i=\overline{\Delta V}_G+w_i$. The right side of (5.K7) is at most
+
+$$
+\frac1q\sum_G\frac{|G|}{N}\left[
+A_x\left(|\overline{\Delta X}_G|+
+\sqrt{\frac1{|G|}\sum_{i\in G}|u_i|^2}\right)
++A_v\left(|\overline{\Delta V}_G|+
+\sqrt{\frac1{|G|}\sum_{i\in G}|w_i|^2}\right)\right]
+$$
+
+averaged over $\Gamma$. Thus the smoothing estimate uses the same cluster
+means and internal errors, with weights summing to one.
+
+*Proof.* Conditional on both post-cloning swarms, apply the row coupling
+independently to each paired row. Each marginal has exactly the prescribed
+independent kinetic innovations. Sum the conditional bounds and integrate
+over $\Gamma$. No independence of cloning outputs is used. The cluster bound
+is the triangle inequality followed by Cauchy--Schwarz within each cluster.
+$\square$
+:::
+
+:::{prf:example} Verification for configured smooth potentials
+:label: ex-kinetic-smoothing-force-constants
+
+For the canonical $U(x)=|x|^2/2$, $F(x)=-x$ has $L_F=1$ on the entire
+physical space. At $h=0.04$, $c^2L_F=0.0004<1$.
+The implemented Rastrigin potential is
+$U(x)=\sum_j[x_j^2-10\cos(2\pi x_j)+10]$. Its Hessian is diagonal with
+entries $2+40\pi^2\cos(2\pi x_j)$, so its force is globally Lipschitz with
+$L_F=2+40\pi^2$. At the same timestep, $c^2L_F<0.159<1$.
+Both configurations therefore satisfy every force and timestep condition
+of (5.K5) in every dimension, including at positions reached outside the
+terminal valid domain. The second potential is nonconvex.
 :::
 
 :::{prf:lemma} Drift of Location Error Under Kinetics
@@ -18787,685 +20054,548 @@ process analysis.
 
 ## convergence_program/08_mean_field.md
 
-:::{prf:definition} Phase space
-:label: def-mean-field-phase-space
+:::{prf:definition} Complete one-slot state for the canonical gas
+:label: def-mean-field-marked-state
 
-Let $X_{\mathrm{valid}}\subset\mathbb R^d$ be the valid position domain and let $V$ be the velocity state space. Write $\Omega=X_{\mathrm{valid}}\times V$ and $z=(x,v)$. For the uncapped kinetic diffusion, $V=\mathbb R^d$. A bounded velocity ball requires a separately specified boundary law. The boundary-flux calculation in Section 5 uses a bounded $C^2$ position domain and bounded velocities; the conservative kinetic model below can instead use a confining unbounded domain with justified decay at infinity.
+Fix a time step $h>0$, dimension $d\geq1$, velocity radius $V>0$, and restitution $\alpha\in[0,1]$. A slot has state
+
+$$
+z=(x,v,a)\in E:=\mathbb R^d\times\overline B_V\times\{0,1\},
+$$
+
+where $a$ records eligibility at the completed update. A dead slot retains $x$ and $v$. The full empirical probability and its alive restriction are
+
+$$
+L_N=\frac1N\sum_{i=1}^N\delta_{z_i},\qquad
+\mu^a(dz)=a\mu(dz),\qquad m(\mu)=\mu(a=1),\qquad
+\rho_\mu=\frac{\mu^a}{m(\mu)}.
+$$
+
+The canonical configuration uses current-frame, independent, single-companion sampling; global regularized statistics; positive logistic fitness maps; simultaneous component collisions; Gaussian BAOAB noise; independent final Gaussian position noise of amplitude $\sigma_x\sqrt h$, with $\sigma_x>0$; the final radial velocity cap; and terminal boundary classification. There is no absorbing check between these stages.
+
+In the absorbing configuration, $a=\mathbf1_D(x)$ for the closed box $D=\prod_{k=1}^d[\ell_k,u_k]$ at admission and after each complete update. In the unbounded configuration, every finite state is eligible. The objective has continuous reward $r$ with at most quadratic growth, and its potential satisfies
+
+$$
+|\nabla U(x)-\nabla U(y)|\leq L_U|x-y|,\qquad
+|\nabla U(x)|\leq L_U|x|+B_U.
+$$
+
+The results below concern the real-arithmetic transition specified by these operations. Numerical overflow is an execution failure, not an additional physical killing rule.
 :::
 
-:::{prf:definition} Alive density and dead mass
-:label: def-phase-space-density
-
-Let $f(t,z)\geq0$ be an alive sub-probability density with
-
-$$
-m_a(t)=\int_\Omega f(t,z)dz,\qquad m_d(t)=1-m_a(t).
-$$
-
-On the region $m_a(t)>0$, define the conditional alive probability density
-
-$$
-\rho_t(z)=\frac{f(t,z)}{m_a(t)}.
-$$
-
-The weak forward equation is interpreted in time-integrated form. Whenever a density description is used, $f\in C([0,T];L^1(\Omega))$ is a natural solution class, supplemented by the test-function, boundary-trace, and reaction-integrability requirements of the particular result.
-:::
-
-:::{prf:remark} What density continuity provides
+:::{prf:remark} Retained memory and other configurations
 :label: remark-mean-field-regularity
 
-Continuity into $L^1$ makes the alive mass continuous and permits a mild-solution formulation. It does not by itself give pointwise derivatives or boundary traces. The forward identities below specify how those stronger operations are justified.
+The canonical current-frame configuration is Markov on $E^N$. If donor history, mutable observation providers, or time-dependent objectives are enabled, their state must be included in the population state before defining its transition. A projection onto $(x,v,a)$ then generally has memory. The finite-component proof below uses one current donor and strict increase of one frozen fitness along every accepted live edge; it does not assert that arbitrary historical or multiple-donor mechanisms have that property. The complete-state construction is developed in {doc}`../3_fitness_manifold/04_field_equations`.
 :::
 
-:::{prf:remark} Averaging over the alive population
+:::{prf:definition} Physical state space and densities
+:label: def-mean-field-phase-space
+
+The alive phase space is $\Omega=D\times\overline B_V$, with $D=\mathbb R^d$ allowed. Measures, rather than densities, are primary: finite populations are atomic, and a density need not be available for every initial law. The smooth radial cap sends finite velocities into the open ball; the closed ball is used for weak compactness. When the alive restriction has a density, write $f_n$ for that sub-probability density and $\rho_n=f_n/m_n$. This notation does not discard the marked dead law.
+:::
+
+:::{prf:definition} Alive and dead population balance
+:label: def-phase-space-density
+
+At update $n$, the alive and dead masses are $m_n=\mu_n(a=1)$ and $1-m_n$. With $m_n>0$, every dead slot draws an eligible current donor and is revived during cloning. Subsequent terminal classification determines the new dead mass. With $m_n=0$, companion-based evolution stops at extinction; no restart distribution is implied.
+:::
+
+:::{prf:remark} Alive normalization
 :label: remark-mean-field-sum-to-integral
 
-The finite average $k^{-1}\sum_{i\in A}Q(z_i)$ corresponds to $\int Q(z)\rho_t(z)dz$, where $\rho_t=f/m_a$. Integrating against $f$ instead gives the unnormalized alive contribution. Products $\rho_t(dz)\rho_t(dz')$ below describe independent uniform alive companion sampling; a nonuniform or correlated companion mechanism uses its actual conditional or joint kernel.
+An average over alive slots converges to an integral against $\rho_\mu$, whereas an average over all slots uses $\mu$. A donor-selected pair has law $\rho_\mu(dz)P_D(\mu;z,dy)$, not generally $\rho_\mu(dz)\rho_\mu(dy)$. Both distinctions enter the fitness moments.
 :::
 
-:::{prf:definition} Mean-Field Statistical Moments
+:::{prf:definition} Squashed comparison and weighted companion laws
+:label: def-mean-field-measurement-law
+
+Let $S_R(u)=Ru/(R+|u|)$, and define
+
+$$
+\Phi(z)=\bigl(S_{R_x}(x),\sqrt\lambda S_{R_v}(v)\bigr),\qquad
+D(z,y)=|\Phi(z)-\Phi(y)|.
+$$
+
+For measurement and cloning widths $\epsilon_D,\epsilon_C>0$, put
+
+$$
+w_b(z,y)=\exp\!\left[-\frac{D(z,y)^2}{2\epsilon_b^2}\right],\qquad
+Z_b(\mu;z)=\int a_yw_b(z,y)\mu(dy),\qquad
+P_b(\mu;z,dy)=\frac{a_yw_b(z,y)\mu(dy)}{Z_b(\mu;z)},
+\quad b\in\{D,C\}.
+$$
+
+Since $D^2\leq D_*^2:=4R_x^2+4\lambda R_v^2$,
+
+$$
+0<\kappa_b:=e^{-D_*^2/(2\epsilon_b^2)}\leq w_b\leq1,
+\qquad Z_b(\mu;z)\geq\kappa_bm(\mu).
+$$
+
+These bounds hold for arbitrarily large physical positions, including retained dead positions. They bound the comparison features, not the physical domain. Finite alive recipients exclude themselves from companion sampling; dead recipients are not in the eligible pool. A singleton alive pool has no eligible distinct measurement companion and uses the specified zero-distance measurement. This finite exception disappears along sequences with a positive limiting alive fraction.
+:::
+
+:::{prf:definition} The marked measurement law
 :label: def-mean-field-moments
 
-Let $f(t, \cdot)$ be the phase-space density (see {prf:ref}`def-phase-space-density`) at time $t$, with total alive mass $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.
-
-The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.
-
-*   **Reward Moments:** The mean reward, $\mu_R[f]$, is computed as the expected value over the normalized alive population:
-
-    $$
-    \mu_R[f](t) := \int_{\Omega} R(z) \frac{f(t,z)}{m_a(t)}\,\mathrm dz
-
-    $$
-
-    $$
-    \sigma_R^2[f](t) := \int_{\Omega} \bigl(R(z) - \mu_R[f](t)\bigr)^2 \frac{f(t,z)}{m_a(t)}\,\mathrm dz
-
-    $$
-
-*   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:
-
-    $$
-    \mu_D[f](t) := \iint_{\Omega \times \Omega} d_{\mathcal{Y}}(\varphi(z), \varphi(z')) \frac{f(t,z)}{m_a(t)} \frac{f(t,z')}{m_a(t)}\,\mathrm dz\,\mathrm dz'
-
-    $$
-
-    $$
-    \sigma_D^2[f](t) := \iint_{\Omega \times \Omega} \bigl(d_{\mathcal{Y}}(\varphi(z), \varphi(z')) - \mu_D[f](t)\bigr)^2 \frac{f(t,z)}{m_a(t)} \frac{f(t,z')}{m_a(t)}\,\mathrm dz\,\mathrm dz'
-
-    $$
-:::
-
-:::{prf:remark} Positive mass and the cemetery boundary
-:label: remark-cemetery-state
-
-The normalized moments are defined while $m_a>0$. For bounded killing and positive revival, {prf:ref}`cor-mean-field-positive-alive-mass` proves that positive initial alive mass stays bounded away from zero on every finite interval. No reference distribution at extinction is needed for those solutions.
-
-At exactly $m_a=0$, the ratio $f/m_a$ has no canonical value. An extension that keeps extinction absorbing must switch off companion-based revival there; an extension using a prescribed restart law is a different model. Neither extension follows by assigning a limit to arbitrary paths $f\to0$. The results here concern the positive-mass model and its stated boundary law.
-:::
-
-:::{prf:definition} Regularized standard deviations
-:label: def-mean-field-patched-std
-
-Apply the specified variance regularization $\sigma'_{\mathrm{reg}}$ to the reward and distance variances:
+Given $\mu$ with $m>0$, attach $Y_D\sim P_D(\mu;z,\cdot)$ independently to each alive type. Dead types have a dummy mark $\dagger$. Denote the resulting probability on $(z,Y_D)$ by $\widehat\eta_\mu$. The measured separation is
 
 $$
-\widehat\sigma_R[f]=\sigma'_{\mathrm{reg}}(\sigma_R^2[f]),\qquad
-\widehat\sigma_D[f]=\sigma'_{\mathrm{reg}}(\sigma_D^2[f]).
+s(z,y)=\sqrt{D(z,y)^2+\delta_D^2},\qquad\delta_D>0.
 $$
 
-The regularization is chosen so both denominators are at least a fixed $s_*>0$. A smooth floor and a piecewise patch have their respective derivative domains; those domains remain part of subsequent regularity estimates.
+The four required moments are
+
+$$
+\bar r=\int r(z)\rho_\mu(dz),\quad
+s_r^2=\int(r(z)-\bar r)^2\rho_\mu(dz),
+$$
+
+$$
+\bar s=\int\rho_\mu(dz)\int P_D(\mu;z,dy)s(z,y),\quad
+s_s^2=\int\rho_\mu(dz)\int P_D(\mu;z,dy)(s(z,y)-\bar s)^2.
+$$
+
+Thus the diversity variance includes the companion sampling randomness. It is not the variance of the conditional mean separation.
 :::
 
-:::{prf:definition} Mean-Field Z-Scores
-:label: def-mean-field-z-scores
-
-For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2. The means $\mu_R[f]$ and $\mu_D[f]$ are from {prf:ref}`def-mean-field-moments`, and the regularized standard deviations $\widehat{\sigma}_R[f]$ and $\widehat{\sigma}_D[f]$ are from {prf:ref}`def-mean-field-patched-std`:
-
-$$
-\widetilde{r}[f](z,t) := \frac{R(z) - \mu_R[f](t)}{\widehat{\sigma}_R[f](t)}, \qquad \widetilde{d}[f](z,z_c,t) := \frac{d_{\mathcal{Y}}(\varphi(z),\varphi(z_c)) - \mu_D[f](t)}{\widehat{\sigma}_D[f](t)}
-
-$$
-These Z-scores measure how many "global standard deviations" a particle's raw reward or its distance to a companion is from the swarm's current average. A positive Z-score indicates an above-average measurement.
-:::
-
-:::{prf:definition} Mean-Field Fitness Potential
+:::{prf:definition} Regularized standardization and sampled fitness
 :label: def-mean-field-fitness-potential
 
-The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed using the specified nonnegative rescaling map $g_A$, floor $\eta>0$, and nonnegative exponents $\alpha,\beta$ to the mean-field Z-scores (see {prf:ref}`def-mean-field-z-scores`):
+With $\sigma_r,\sigma_s>0$, positive amplitudes $A_r,A_s$, positive floors $\eta_r,\eta_s$, and exponents $p_r,p_s\geq0$, define
 
 $$
-V[f](z,z_c,t) := \left(g_A(\widetilde{d}[f](z,z_c,t)) + \eta\right)^{\beta} \cdot \left(g_A(\widetilde{r}[f](z,t)) + \eta\right)^{\alpha}
+\widehat s_r=\sqrt{s_r^2+\sigma_r^2},\qquad
+\widehat s_s=\sqrt{s_s^2+\sigma_s^2},\qquad
+g_b(q)=\frac{A_b}{1+e^{-q}}+\eta_b,
+$$
 
 $$
-The positive floor makes this specified fitness strictly positive.
+F_\mu(z,y)=
+g_r\!\left(\frac{r(z)-\bar r}{\widehat s_r}\right)^{p_r}
+g_s\!\left(\frac{s(z,y)-\bar s}{\widehat s_s}\right)^{p_s}.
+$$
+
+Let $\eta_\mu$ be the law of $t=(z,Y_D,F_\mu(z,Y_D))$, with a dummy fitness for dead types. There are configuration constants $0<F_*\leq F_\mu\leq F^*<\infty$. Fitness is sampled once and frozen through the cloning decision.
 :::
 
-:::{prf:remark} The nonlinear acceptance kernel
+:::{prf:lemma} Measurement normalization and the self-exclusion error
+:label: lem-mean-field-measurement-consistency
+
+Suppose deterministic input arrays satisfy $L_N\Rightarrow\mu$, $m(\mu)>0$, and their first two alive reward moments converge. Then the empirical marked fitness law converges in probability to $\eta_\mu$. In a bounded alive domain, the random errors in the two empirical diversity moments have mean squares $O(N^{-1})$. Their contribution to the normalized fitness error has the same mean-square order.
+
+*Proof.* Conditional on the input array, the measurement draws of different recipients are independent. For a bounded marked test $\psi$, the variance of its empirical average is at most $\|\psi\|_\infty^2/N$. The conditional average is the empirical integral of its donor kernel. The denominator is bounded below by $\kappa_Dm$ in the limit. Removing the mass of one self atom changes the normalized donor law in total variation by at most $1/(\kappa_DM)$, where $M$ is the finite alive count, whenever the distinct-donor pool is nonempty. Consequently its averaged error vanishes.
+
+The separation and its square are bounded. Applying the variance calculation to each gives their concentration. The variance is a continuous polynomial of these two moments. The square-root regularizers have denominators bounded away from zero; on bounded measurement ranges, the standardizers, logistic maps, and powers on $[F_*,F^*]$ are Lipschitz. Their composition gives the asserted fitness estimate. For unbounded reward, first truncate the reward and then use the stated reward-moment convergence. This establishes the marked-law convergence without averaging fitness before acceptance. $\square$
+:::
+
+:::{prf:definition} Accepted graph of a frozen population
+:label: def-mean-field-accepted-graph
+
+Conditional on the input and measurement marks, each alive recipient independently draws a cloning donor and a uniform gate. Write
+
+$$
+p(F,G)=\min\!\left(1,\frac{(G-F)_+}{s_c(F+\epsilon_c)}\right),
+\qquad s_c,\epsilon_c>0.
+$$
+
+For distinct alive $i,j$, the probability of an accepted edge $i\to j$ is
+
+$$
+b^N_{ij}=\frac{w_C(z_i,z_j)}{\sum_{k:a_k=1,\ k\ne i}w_C(z_i,z_k)}p(F_i,F_j).
+$$
+
+A dead recipient draws from the same weighted current-donor module using its retained $(x_i,v_i)$ and accepts with probability one:
+
+$$
+b^N_{ij}=\frac{a_jw_C(z_i,z_j)}{\sum_{k:a_k=1}w_C(z_i,z_k)}.
+$$
+
+Each row has at most one outgoing accepted edge. The undirected connected components of these edges are the collision groups. A rejected proposal creates no edge.
+:::
+
+:::{prf:lemma} Finite collision components without weak selection
+:label: lem-mean-field-component-bound
+
+If $M\geq m_*N$ and $N\geq2/m_*$, set $C=2/(\kappa_Cm_*)$. Conditional on all input states and measurement marks, the accepted graph is a forest and
+
+$$
+\mathbb E|\mathcal C_N(i)|\leq e^{2C},\qquad
+\mathbb P\!\left(\operatorname{rad}(\mathcal C_N(i),i)\geq r\right)
+\leq\frac{(2C)^r}{r!},\qquad
+\mathbb P(|\mathcal C_N(i)|>K)\leq\frac{e^{2C}}K.
+$$
+
+*Proof.* A live accepted edge strictly increases frozen fitness. A dead vertex cannot be a target and has one outgoing edge. Order vertices by live fitness, putting all dead vertices first and breaking ties arbitrarily. Every edge increases this order, and every vertex has outdegree at most one. A finite undirected cycle would require every vertex on the cycle to use its outgoing edge within the cycle, creating a directed cycle. Strict increase rules this out.
+
+Every edge probability is at most $C/N$. A simple path of length $\ell$ from $i$ has an increasing leg of length $a$ followed by a decreasing leg of length $\ell-a$: an internal vertex cannot send two outgoing path edges. The possible labels on the increasing leg number at most $N^a/a!$ because their order is fixed once selected. The decreasing leg contributes at most $N^{\ell-a}/(\ell-a)!$. Ignoring intersections only enlarges these bounds. Each edge uses a different recipient draw, so row independence bounds the probability of that path by $(C/N)^\ell$. Therefore the expected number of length-$\ell$ simple paths is at most
+
+$$
+\sum_{a=0}^{\ell}\frac{C^\ell}{a!(\ell-a)!}=\frac{(2C)^\ell}{\ell!}.
+$$
+
+A vertex at distance $r$ provides such a path; summing over $\ell\geq0$ bounds the expected component size. Markov's inequality gives the final bound. No small acceptance probability was used. $\square$
+:::
+
+:::{prf:definition} Rooted-component population collision map
+:label: def-mean-field-rooted-collision
+
+For $\eta=\eta_\mu$, define the accepted-edge density relative to $\eta(du)$ by
+
+$$
+\beta_\mu(t,u)=\frac{a_uw_C(z_t,z_u)}{Z_C(\mu;z_t)}
+\begin{cases}p(F_t,F_u),&a_t=1,\\1,&a_t=0.\end{cases}
+$$
+
+Its outgoing mass $q_\mu(t)=\int\beta_\mu(t,u)\eta(du)$ is at most one and equals one for a dead type. Construct a rooted marked tree as follows.
+
+1. Draw root type $t_0\sim\eta$. Its outgoing edge is absent with probability $1-q_\mu(t_0)$; conditional on an edge being present, its target has probability law $\beta_\mu(t_0,u)\eta(du)/q_\mu(t_0)$. Continue the freely exposed outgoing chain by the same rule.
+2. At each exposed vertex of type $t$, the additional incoming children form a Poisson point process with intensity $\eta(du)\beta_\mu(u,t)$. Recursively expose their incoming children.
+3. A child reached through its outgoing edge to its parent has already used its outgoing choice. Do not draw another. A known incoming child is already present; the additional Poisson process does not duplicate that vertex identity. Its intensity remains $\eta(du)\beta_\mu(u,t)$, including any atoms: new vertices may have the same type as the known child. Dead children have no incoming children.
+
+The finite-component bound transfers to this construction by finite exploration and monotone convergence, so its component is finite almost surely. On a component $\mathcal C$ with at least one edge, draw one independent Haar matrix $R_\mathcal C\in O(d)$ and set
+
+$$
+\bar v_\mathcal C=\frac1{|\mathcal C|}\sum_{j\in\mathcal C}v_j,
+\qquad v_j^c=\bar v_\mathcal C+\alpha R_\mathcal C(v_j-\bar v_\mathcal C).
+$$
+
+Every accepted recipient, including a revived slot, receives
+
+$$
+x_j^c=x_{\operatorname{donor}(j)}+\sigma_J\xi_j^J,
+\qquad\xi_j^J\sim N(0,I_d),
+$$
+
+using frozen donor positions and independent jitter. A row without an outgoing accepted edge retains its position. Its velocity still changes if it belongs to a nontrivial collision component. An isolated row retains both coordinates. All rows are alive at this stage. The law of the root output is $\mathcal J(\mu)$.
+:::
+
+:::{prf:theorem} Component momentum, energy, and shared covariance
+:label: thm-mean-field-component-identities
+
+For every realized component,
+
+$$
+\sum_{j\in\mathcal C}v_j^c=\sum_{j\in\mathcal C}v_j,\qquad
+\sum_{j\in\mathcal C}|v_j^c-\bar v_\mathcal C|^2
+=\alpha^2\sum_{j\in\mathcal C}|v_j-\bar v_\mathcal C|^2.
+$$
+
+Conditional on the component and its pre-collision types,
+
+$$
+\mathbb E v_i^c=\bar v_\mathcal C,\qquad
+\operatorname{Cov}(v_i^c,v_j^c)
+=\frac{\alpha^2}{d}
+\bigl[(v_i-\bar v_\mathcal C)\cdot(v_j-\bar v_\mathcal C)\bigr]I_d.
+$$
+
+These are full-slot identities, including retained dead velocities. Alive-only momentum before revival need not be conserved across revival.
+
+*Proof.* The centered velocities sum to zero, and an orthogonal matrix preserves their norms. Haar invariance under $R\mapsto-R$ gives $\mathbb E R=0$. Rotational invariance makes $\mathbb E[(Ru)(Rw)^T]$ a scalar multiple of $I_d$; taking its trace gives $(u\cdot w)/d$. Substitution proves the covariance formula. In dimension one, Haar $O(1)$ is a uniform sign, so the same calculation applies. Summing the covariance over a whole component gives zero, in agreement with exact momentum conservation. $\square$
+:::
+
+:::{prf:theorem} One-step collision consistency
+:label: thm-mean-field-one-step-consistency
+
+For input arrays satisfying the measurement-consistency hypotheses and $m(\mu)>0$, the empirical post-collision law converges in probability to $\mathcal J(\mu)$. For every bounded continuous $\phi$,
+
+$$
+\mathbb E[L_N^c\phi]\longrightarrow\mathcal J(\mu)\phi,
+\qquad \operatorname{Var}(L_N^c\phi)\longrightarrow0.
+$$
+
+The same assertion holds for random input arrays converging in probability to the deterministic law $\mu$, with the required moment convergence in probability and uniform integrability when expectations of unbounded quantities are used.
+
+*Proof.* First condition on the complete measured array. Restrict exploration to at most $K$ vertices. For any unexplored row, the probability of hitting one of $K$ exposed targets is at most $CK/N$. These row choices are independent. In the incoming point processes, the sum of squared hit probabilities is at most $C^2K^2/N$. Expanding the product of their probability generating functions therefore gives independent Poisson limits with the displayed intensity measures. Removing exposed labels and conditioning a row not to have hit an earlier target changes its remaining probabilities by $O(CK/N)$; over the bounded exploration the resulting error vanishes. The accumulated finite exploration and repeated conditioning errors are bounded by $A(C,K)/N$ for fixed $K$, with a conservative bound $A(C,K)=O((1+C)^2K^3)$.
+
+The empirical type law converges by {prf:ref}`lem-mean-field-measurement-consistency`. The weights are bounded continuous, their denominators stay positive, and acceptance is continuous at fitness ties as well as elsewhere. Thus the finite exploration converges to the rooted construction. The shared Haar mark and independent jitters can be attached to this finite tree in both constructions. Each finite-tree output is a continuous function of these types and marks.
+
+Remove the exploration cutoff using $\mathbb P(|\mathcal C|>K)\leq e^{2C}/K$, first taking $N\to\infty$ and then $K\to\infty$. This proves convergence for one uniformly tagged root. Explore two uniformly distinct roots together. Their finite neighborhoods have independent limits; the probability of an exploration collision is bounded by $A(C,K)/N$ before removing the cutoff. Convergent global normalizers are deterministic and introduce no residual common mark. Expanding the empirical variance into the diagonal term, bounded by $\|\phi\|_\infty^2/N$, and the two-root covariance proves the second assertion. Conditioning and the subsequence characterization of convergence in probability extend the argument to random inputs. $\square$
+:::
+
+:::{prf:remark} Rates and what the graph estimate controls
 :label: remark-important-nonlocal-nonlinear
 
-Write $P_\rho(z_d,z_c)\in[0,1]$ for acceptance after averaging any additional sampled measurement companions according to their actual joint law. The displayed $V[f](z,z_c)$ is the specified fitness field before this acceptance average. The canonical sampled-versus-expected distinction is {prf:ref}`rem-mean-field-fitness-field-latent`.
+The proof supplies a concrete truncation error $2\|\phi\|_\infty e^{2C}/K$ and finite-exploration errors vanishing with $N$ at fixed $K$. Relative to a prescribed limiting input $\mu$, the empirical kernel-integral error also depends on how the initial empirical law and its moments approach $\mu$. The within-component covariance remains present at every population size; chaos concerns finitely many uniformly chosen distinct slots, whose components separate in the limit.
+
+The conditional fluctuation around the actual finite-population expectation
+has a quantitative bound: {prf:ref}`thm-chaos-canonical-conditional-variance`
+proves $\operatorname{Var}(L_N'\phi\mid S)\leq A_\phi/N$ for the full
+update. Its proof controls all component moments and recomputes the global
+statistics when a measurement innovation is changed. This conditional
+variance and the bias relative to $\mathcal F_h(L_N(S))$ are distinct terms
+in the one-step mean-square error.
+
+For that empirical-input comparison,
+{prf:ref}`thm-chaos-canonical-quantitative-bias` also bounds the bias by
+$2\|\phi\|_\infty B_*/\sqrt N$, giving a full conditional mean-square
+error of order $N^{-1}$. It derives the normalization error and the finite
+marked-exploration error separately; convergence of $L_N(S)$ to a different
+prescribed law remains a separate input approximation.
 :::
 
-:::{prf:definition} The BAOAB Update Rule
+:::{prf:definition} Exact BAOAB population stages
 :label: def-baoab-update-rule
 
-For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + h$ is computed via the following five steps:
+For the canonical isotropic thermostat with constant factor $B=bI_d$, put
 
-1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.
+$$
+c_h=e^{-\gamma h},\qquad
+s_h^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0.\end{cases}
+$$
 
-    $$
-    v_{n+1/2}^{(1)} = v_n + \frac{h}{2m} F(x_n)
+Starting from $(X_0,V_0)\sim\mathcal J(\mu)$, apply
 
-    $$
+$$
+V_1=V_0+\tfrac h2 f_{\lambda_0}(X_0,V_0),\qquad
+X_1=X_0+\tfrac h2V_1,
+$$
 
-2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.
+$$
+V_2=c_hV_1+s_hB\xi^O,\qquad
+X_2=X_1+\tfrac h2V_2,\qquad
+V_3=V_2+\tfrac h2 f_{\lambda_2}(X_2,V_2),
+$$
 
-    $$
-    x_{n+1/2} = x_n + \frac{h}{2} v_{n+1/2}^{(1)}
+$$
+X_3=X_2+\sigma_x\sqrt h\,\xi^x,\qquad
+V_4=\Pi_V(V_3),\qquad A_4=\mathbf1_D(X_3),
+\qquad \Pi_V(v)=\frac{Vv}{V+|v|}.
+$$
 
-    $$
-
-3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.
-
-    $$
-    v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\gamma_{\mathrm{fric}}h}\left(v_{n+1/2}^{(1)} - u_{n+1/2}\right) + \sqrt{\frac{\Theta}{m}(1 - e^{-2\gamma_{\mathrm{fric}}h})} \cdot \xi
-
-    $$
-    where $\xi \sim \mathcal{N}(0, I_d)$ is a standard Gaussian random vector.
-
-4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.
-
-    $$
-    x_{n+1} = x_{n+1/2} + \frac{h}{2} v_{n+1/2}^{(2)}
-
-    $$
-
-5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.
-
-    $$
-    v_{n+1} = v_{n+1/2}^{(2)} + \frac{h}{2m} F(x_{n+1})
-
-    $$
-
-An optional finite-step velocity cap $\psi_v$ can be applied after the final B-step. Its limiting boundary law must be identified separately; the uncapped interior formula above defines the kinetic approximation used here.
+Intermediate velocity laws live on $\mathbb R^d$; only the completed state is capped. The two Gaussian innovations are independent of each other and of the collision graph, rotations, and jitters. The force is $-\nabla U$ in the canonical configuration; $\lambda_0$ and $\lambda_2$ denote the actual laws at the two force inputs if an explicitly enabled population force is present. The output law of $(X_3,V_4,A_4)$ is $\mathcal F_h(\mu)$. For the unbounded configuration, $A_4=1$.
 :::
 
-:::{prf:remark} What the splitting identifies
-:label: remark-fidelity-generator
-
-For the uncapped interior BAOAB update, the force and drift increments are $O(h)$ and the OU covariance is $\sigma_v^2hI+O(h^2)$. Taylor expansion against a smooth test function yields the kinetic generator below. Applying a velocity squash or cap can change the limiting boundary behavior; it is not automatically a reflecting diffusion. The five-stage discrete kernel is also not the exact finite-time kinetic semigroup.
-:::
-
-:::{prf:definition} Backward kinetic generator
-:label: def-kinetic-generator
-
-The continuous interior dynamics is
-
-$$
-dX_t=V_tdt,\qquad
-dV_t=A_v(X_t,V_t)dt+\sigma_vdW_t,
-\qquad
-A_v(x,v)=m^{-1}F(x)-\gamma_{\mathrm{fric}}(v-u(x)),
-$$
-
-with $\sigma_v^2=2\gamma_{\mathrm{fric}}\Theta/m$ for the stated BAOAB temperature convention. Its backward generator acts on an observable $\psi$ as
-
-$$
-L\psi=v\cdot\nabla_x\psi+A_v\cdot\nabla_v\psi
-+\frac{\sigma_v^2}{2}\Delta_v\psi.
-$$
-
-For independent kinetic particle updates, sum these terms over the alive coordinates. A conservative position boundary can use specular reflection with matching incoming and outgoing traces. A bounded velocity domain can use a declared no-flux reflecting law. Alternatively, absorb spatial exits and record their outgoing flux. These are distinct operator domains.
-:::
-
-:::{prf:remark} Transport and death
+:::{prf:remark} Explicit viscosity extension
 :label: remark-separation-kinetic-death
 
-The population equation in Section 4 first uses a conservative transport semigroup and a prescribed interior killing rate. A spatially absorbing kinetic model replaces that conservative boundary law and adds its outgoing flux to the dead reservoir. Section 5 computes the corresponding discrete exit limit.
+For a Gaussian locality weight $w_\nu$, either specified normalization gives
+
+$$
+f_\lambda(x,v)=-\nabla U(x)+\nu\frac{\int w_\nu(x,y)(w-v)\lambda(dy,dw)}{Z_\lambda(x)},
+$$
+
+with $Z_\lambda(x)=\int w_\nu(x,y)\lambda(dy,dw)$ for row normalization and $Z_\lambda=1$ for eligible-count normalization, since revival makes all rows alive before kinetics. The finite empirical convention excludes self where specified; its numerator self-term is zero. The force uses the current intermediate population, including changes to donor velocities. A theorem for the zero-viscosity canonical configuration is not automatically a theorem for a different force normalization.
 :::
 
-:::{prf:definition} Forward transport and probability flux
-:label: def-transport-operator
-
-For the constant velocity diffusion above, the forward adjoint acts on densities by
-
-$$
-L^\dagger f=-\nabla_x\cdot(vf)-\nabla_v\cdot(A_vf)
-+\frac{\sigma_v^2}{2}\Delta_vf=-\nabla\cdot J[f],
-$$
-
-where $J_x=vf$ and $J_v=A_vf-(\sigma_v^2/2)\nabla_vf$. An independently specified position diffusion adds its own second-order term and flux; it is absent from this kinetic model.
-:::
-
-:::{prf:lemma} Mass conservation of conservative transport
-:label: lem-mass-conservation-transport
-
-For the stated conservative domain, with integrable flux and justified boundary traces or cutoff limits,
-
-$$
-\int_\Omega L^\dagger f\,dz=0.
-$$
-:::
-
-:::{prf:proof}
-Integrate the divergence to obtain the negative total boundary flux. At a specular spatial boundary, pair $v$ with $R_nv=v-2(v\cdot n)n$. The reflection preserves velocity volume and reverses $v\cdot n$; equality of the incoming and outgoing traces cancels the integrated spatial flux. At a reflecting velocity boundary, $J_v\cdot n_v=0$. On an unbounded domain use the stated vanishing-flux cutoff limit. These conditions eliminate the total flux; kinetic specular reflection need not set $vf\cdot n$ to zero pointwise for each velocity.
-:::
-
-:::{prf:remark} Three population operations
-:label: remark-separation-death-revival-cloning
-
-Interior killing, reservoir revival, and alive-to-alive cloning have separate rates. A finite revival rate gives a waiting-time model for dead mass; it is not instantaneous resurrection at every numerical step. Matching an algorithm requires its actual scheduling and transition probabilities.
-:::
-
-:::{prf:definition} Interior killing
-:label: def-killing-operator
-
-Let $c:\Omega\to[0,\infty)$ be a prescribed rate. Its density contribution is $-cf$ and its total alive loss is
-
-$$
-k_{\mathrm{killed}}[f]=\int_\Omega c(z)f(z)dz.
-$$
-
-A smooth bounded rate supported in a boundary layer is one possible reaction model. The integrated kinetic exit limit in Section 5 does not define such a rate by a pointwise limit.
-:::
-
-:::{prf:definition} Finite-rate reservoir revival
-:label: def-revival-operator
-
-For $m_a>0$, copying a uniformly sampled alive companion without a further state change gives
-
-$$
-B[f,m_d](z)=\lambda_{\mathrm{revive}}m_d\frac{f(z)}{m_a},
-\qquad\lambda_{\mathrm{revive}}>0.
-$$
-
-Its integral is $\lambda_{\mathrm{revive}}m_d$. If revival also applies a state-transition kernel, replace $f/m_a$ by the pushforward under that kernel and retain any probability lost from the alive domain.
-:::
-
-:::{prf:definition} Continuous-time cloning attempts
-:label: def-cloning-generator
-
-Fix a finite attempt rate $\omega_{\mathrm{cl}}\geq0$. Let $\rho=f/m_a$, let $P_\rho(z_d,z_c)$ be the acceptance kernel, and let $Q_\rho(dz\mid z_d,z_c)$ be the offspring law after acceptance, including the specified velocity update. For independent uniform alive donor and companion sampling, the weak cloning operator is
-
-$$
-\int\psi\,S[f]
-=\omega_{\mathrm{cl}}m_a\iint\rho(dz_d)\rho(dz_c)P_\rho(z_d,z_c)
-\left[\int\psi(z)Q_\rho(dz\mid z_d,z_c)-\psi(z_d)\right].
-$$
-
-When an offspring density exists,
-
-$$
-S_{\mathrm{src}}[f](z)=\frac{\omega_{\mathrm{cl}}}{m_a}
-\iint f(z_d)f(z_c)P_\rho(z_d,z_c)Q_\rho(z\mid z_d,z_c)dz_d\,dz_c,
-$$
-
-$$
-S_{\mathrm{sink}}[f](z)=\omega_{\mathrm{cl}}f(z)
-\int P_\rho(z,z_c)\rho(z_c)dz_c,\qquad S=S_{\mathrm{src}}-S_{\mathrm{sink}}.
-$$
-
-A donor-independent jitter model is the special case $Q_\rho(dz\mid z_d,z_c)=Q_\delta(dz\mid z_c)$. The formulas below allow either case; $Q$ denotes the selected offspring kernel. The operator is mass-neutral when $Q(\Omega\mid z_d,z_c)=1$.
-:::
-
-:::{prf:proof}
-In an interval of length $h$, an alive donor attempts a jump with probability $\omega_{\mathrm{cl}}h+o(h)$. Condition on its state, companion, acceptance, and offspring. The observable increment is its offspring value minus its donor value. Averaging gives the weak formula. Fubini identifies the source and sink when densities exist. With $\psi=1$, the bracket is zero for a probability kernel on $\Omega$, proving mass neutrality.
-:::
-
-:::{prf:remark} Fixed-step probabilities and Poissonization
-:label: rem-mean-field-attempt-scaling
-
-Choosing $\omega_{\mathrm{cl}}=1/\tau$ for a fixed reference step $\tau$ defines a Poissonized model with the same attempt frequency. Its finite-time transition is not the original simultaneous cloning step. A finite continuous-time limit as $h\downarrow0$ requires an accepted probability $P_h=h\,a+o(h)$, or an equivalent finite-attempt-rate construction. Keeping order-one acceptance at every shrinking step does not yield the finite generator above.
-:::
-
-:::{prf:lemma} First-order assembly of transport and reaction
-:label: lem-generator-additivity-mean-field
-
-Let $T_h$ be a strongly continuous semigroup with generator $A$ on a Banach
-space $X$. Let a reaction map $R:X\to X$ be continuous at $u\in D(A)$, and
-suppose its local update satisfies $S_hu=u+hR(u)+o_X(h)$. Then
-
-$$
-T_hS_hu=u+h(Au+R(u))+o_X(h).
-$$
-
-For finitely many locally differentiable reaction updates, their first-order
-contributions add in the same way.
-:::
-
-:::{prf:proof}
-Write
-
-$$
-T_hS_hu-u=(T_hu-u)+hT_hR(u)+T_ho_X(h).
-$$
-
-The first term is $hAu+o_X(h)$ by the generator definition. Strong continuity
-gives $T_hR(u)\to R(u)$, and the uniform boundedness principle bounds $T_h$ on
-a sufficiently short time interval. Thus the final term is $o_X(h)$.
-For multiple reaction maps, telescope their compositions; continuity at $u$
-replaces each intermediate value by $u$ in its first-order coefficient.
-The argument does not require the differential operator $A$ to be bounded.
-:::
-
-:::{prf:theorem} Coupled continuous-time forward equation
+:::{prf:theorem} The fixed-step mean-field equation
 :label: thm-mean-field-equation
 
-For the transport and reaction model defined above, let $f\geq0$, $m_d\geq0$ be a weak solution on $[0,T]$ with $m_a=\int f>0$. Suppose transport is conservative on its stated domain, $Q$ is a probability kernel on $\Omega$, and the reaction terms are integrable in time and space. Then
+For every admissible initial probability $\mu_0$ with positive alive mass, the canonical population evolution is uniquely defined by
 
 $$
-\partial_tf=L^\dagger f-cf+B[f,m_d]+S[f]
-$$ (eq-mean-field-pde-main)
+\boxed{\quad\mu_{n+1}=\mathcal F_h(\mu_n),\qquad n=0,1,\ldots.\quad}
+$$
 
-and
+The map is the rooted collision law followed by precisely the stages in {prf:ref}`def-baoab-update-rule`. For every bounded measurable test $\phi$,
 
 $$
-\frac{d}{dt}m_d=\int_\Omega cf-\lambda_{\mathrm{revive}}m_d.
-$$ (eq-dead-mass-ode)
+\mu_{n+1}\phi=\mathbb E_{\eta_{\mu_n},\,\mathcal C,\,R,\,\xi^J,\,\xi^O,\,\xi^x}
+\phi(X_3,V_4,A_4).
+$$
 
-With $f(0)=f_0$ and $m_d(0)=1-\int f_0$, the total population remains one. Identification with a discrete algorithm requires the matching transition-operator and boundary limits.
+It preserves positivity and total probability. At every fixed finite horizon it is the population limit of the canonical particle update. On the absorbing configuration, use convergence of the full marked initial laws; atoms on the position boundary are allowed. On the unbounded configuration, assume a uniformly bounded initial position moment of order $4+\delta$ for some $\delta>0$. This supplies uniform integrability of the fourth moments needed for the quadratic reward variance, and the same property propagates at each fixed finite horizon.
 :::
 
 :::{prf:proof}
 :label: proof-mean-field-equation
 
-Apply {prf:ref}`lem-generator-additivity-mean-field` with transport generator
-$A=L^\dagger$ and reaction
-$R(f,m_d)=-cf+B[f,m_d]+S[f]$, on its domain of differentiability.
-For weak solutions the resulting identity is interpreted against a smooth
-admissible test function $\psi$:
+The graph construction defines a probability because its component is finite almost surely and its outgoing law has total mass at most one. Independent Haar and Gaussian kernels and the deterministic stage maps preserve probability. Existence of each successive law follows once its moments and positive alive mass are established below; uniqueness here means the uniquely specified iterates from a given initial law.
 
-$$
-\frac{d}{dt}\int_\Omega\psi f
-=\int_\Omega(L\psi)f-\int_\Omega\psi cf
-+\int_\Omega\psi B[f,m_d]+\int_\Omega\psi S[f].
-$$
-
-Equivalently, this is an equality integrated over every time interval
-$[s,t]\subset[0,T]$. For interior compactly supported test functions,
-$L\psi=A\cdot\nabla\psi+\mathsf D:D^2\psi$, which identifies the
-transport distribution as
-$L^\dagger f=-\nabla\cdot(Af)+\nabla\cdot(\mathsf D\nabla f)$ for constant
-$\mathsf D$. A flux representation with boundary integration may also be used
-when $J[f]\in H(\operatorname{div},\Omega)$ and its stated normal trace exists.
-
-The transport conservation law supplies the admissible constant test function
-$1$ (or its justified cutoff limit). The cloning source and sink cancel exactly:
-by Tonelli's theorem and $\int Q(dz\mid z_d,z_c)=1$,
-
-$$
-\int S_{\mathrm{src}}[f]
-=\frac{\omega_{\mathrm{cl}}}{m_a}\iint f(z_d)f(z_c)P_\rho(z_d,z_c)\,dz_d\,dz_c
-=\int S_{\mathrm{sink}}[f].
-$$
-
-The revival term integrates to $\lambda_{\mathrm{revive}}m_d$ since
-$\int f/m_a=1$. Thus the integrated weak identity gives
-
-$$
-m_a(t)-m_a(s)=\int_s^t\left[-\int_\Omega cf
-+\lambda_{\mathrm{revive}}m_d\right]du.
-$$
-
-The integrand is integrable by hypothesis, proving absolute continuity of
-$m_a$ without assuming its differentiability in advance. The dead-reservoir
-balance is
-$m_d'=\int cf-\lambda_{\mathrm{revive}}m_d$. Adding the two derivatives
-shows that $m_a+m_d$ is constant, hence equals one for the stated initial data.
-This proves the forward system and its mass balance.
+Collision consistency is {prf:ref}`thm-mean-field-one-step-consistency`. For $f=-\nabla U$, the kicks and drifts are continuous and have linear growth. Independent row Gaussian innovations give conditional empirical concentration for bounded tests. The radial cap is continuous. Final position noise gives an absolutely continuous position law, so the boundary of a box has zero output probability; terminal marking is therefore continuous almost surely. Truncation using the finite-horizon moment bounds below handles unbounded functions. These facts prove one-step consistency for the composed map. The positive alive-mass estimate makes the next donor denominators nonzero. Induction yields the assertion at any fixed number of updates. The detailed exchangeability and marginal-chaos consequences are proved in {doc}`09_propagation_chaos`.
 :::
 
-:::{prf:corollary} Positive alive mass in the continuous-time population model
-:label: cor-mean-field-positive-alive-mass
-
-If $0\leq c\leq C$ and $\lambda=\lambda_{\mathrm{revive}}>0$, every
-nonnegative unit-mass solution satisfies
-
-$$
-m_a(t)\geq\frac{\lambda}{C+\lambda}
-+\left(m_a(0)-\frac{\lambda}{C+\lambda}\right)e^{-(C+\lambda)t}.
-$$
-
-In particular $m_a(0)>0$ gives a positive lower bound on every finite time
-interval, and a positive limiting lower bound as $t\to\infty$.
-:::
-
-:::{prf:proof}
-The population equation gives
-$m_a'\geq-Cm_a+\lambda(1-m_a)$ almost everywhere. Multiply by
-$e^{(C+\lambda)t}$ and integrate. All terms on the right combine into the
-stated solution of the scalar comparison equation. No inequality between
-$\lambda$ and $C$ is required.
-:::
-
-:::{prf:remark} Boundary loss in a sub-probability cloning kernel
-:label: rem-mean-field-cloning-boundary-loss
-
-If the actual offspring kernel has $Q(\Omega\mid z_d,z_c)<1$, the source
-and sink do not cancel on the alive domain. Their integral is instead
-$-\ell_Q[f]$, where
-
-$$
-\ell_Q[f]=\frac{\omega_{\mathrm{cl}}}{m_a}\iint f(z_d)f(z_c)P_\rho(z_d,z_c)
-[1-Q(\Omega\mid z_d,z_c)]\,dz_d\,dz_c\geq0.
-$$
-
-This term is added to the dead-reservoir equation, preserving total mass. An
-untruncated Gaussian on a bounded alive domain is such a sub-probability
-kernel. The probability-kernel formulation above and the boundary-loss
-formulation must be matched to the update being modeled. This identity follows
-from the same Tonelli calculation, retaining the integral of $Q$. Since $0\leq P_\rho\leq1$, one also has $\ell_Q[f]\leq\omega_{\mathrm{cl}}m_a$. Consequently the positive alive-mass comparison still holds with $C+\omega_{\mathrm{cl}}$ in place of $C$, provided revival remains a probability-preserving injection.
-:::
-
-:::{prf:theorem} Total Mass Conservation and Population Dynamics
+:::{prf:theorem} Exact mass and weak field balances
 :label: thm-mass-conservation
 
-Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:
-
-**1. Total Mass Conservation:** The total population is conserved for all time $t>0$:
+Let $(Z,Z')$ be the coupled root input and output from the complete construction. Then
 
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}\left[m_a(t) + m_d(t)\right] = 0
-
+\mathcal F_h(\mu)(1)=1,\qquad
+m(\mathcal F_h(\mu))=\mathbb P(X_3\in D),
 $$
 
-where $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.
-
-**2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:
-
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = \lambda_{\mathrm{revive}} m_d(t) - k_{\text{killed}}[f](t)
-
+m(\mathcal F_h(\mu))-m(\mu)
+=(1-m(\mu))-\mathbb P(X_3\notin D).
 $$
 
-where $k_{\text{killed}}[f] = \int_\Omega c(z)f(z)\,\mathrm{d}z$ is the instantaneous killing rate. At a stationary state the alive-mass equation requires $k_{\text{killed}}[f_\infty] = \lambda_{\mathrm{revive}} m_{d,\infty}$.
+For any integrable $\phi$, the exact weak increment is
+
+$$
+\frac{\mathcal F_h(\mu)\phi-\mu\phi}{h}
+=\frac1h\mathbb E[\phi(Z')-\phi(Z)].
+$$
+
+The numerator can be telescoped over collision, B1, A1, O, A2, B2, position diffusion, cap, and terminal marking, using the actual intermediate states. This is an equality of per-step balances, including all source terms.
+
+*Proof.* Every input slot produces one output slot. Revival changes all entering dead marks to alive before the terminal test; terminally dead rows are exactly the event $X_3\notin D$. Subtract the input alive mass for the second identity. The weak identity is the definition of the pushforward law; inserting each intermediate value gives its telescoping form. $\square$
 :::
 
-:::{prf:proof}
-We compute the time derivatives of both components and show they sum to zero.
+:::{prf:corollary} Positive alive mass from the terminal update
+:label: cor-mean-field-positive-alive-mass
 
-**For the alive mass:** Integrate the equation for $\partial_t f$ over $\Omega$:
-
-$$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = \frac{\mathrm{d}}{\mathrm{d}t}\int_\Omega f(t,z)\,\mathrm{d}z = \int_\Omega L^\dagger f\,\mathrm{d}z - \int_\Omega c(z)f\,\mathrm{d}z + \int_\Omega B[f, m_d]\,\mathrm{d}z + \int_\Omega S[f]\,\mathrm{d}z
+In a bounded box, choose a core ball $B(0,r_0)\Subset D$, and let $R_D=\sup_{x\in D}|x|$. All input velocities, including dead ones, have norm at most $V$. Set
 
 $$
-
-Evaluating each term using the properties established in previous sections:
-
-1.  **Transport**: From {prf:ref}`lem-mass-conservation-transport`, $\int_\Omega L^\dagger f\,\mathrm{d}z = 0$ (the stated conservative boundary law)
-2.  **Killing**: By definition, $\int_\Omega c(z)f\,\mathrm{d}z = k_{\text{killed}}[f]$
-3.  **Revival**: From {prf:ref}`def-revival-operator`, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{revive}} m_d(t)$
-4.  **Internal cloning**: From {prf:ref}`def-cloning-generator`, $\int_\Omega S[f]\,\mathrm{d}z = 0$
-
-Therefore:
-
-$$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = 0 - k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t) + 0 = -k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t)
-
+W=(1+2\alpha)V,\qquad F_J=L_U(R_D+J)+B_U,
 $$
 
-**For the dead mass:** From the second equation:
-
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}m_d(t) = k_{\text{killed}}[f] - \lambda_{\mathrm{revive}} m_d(t)
-
+L=R_D+J+\tfrac h2(1+c_h)(W+\tfrac h2F_J)
++\tfrac h2s_h\|B\|G,
 $$
 
-**Sum:** Adding these two equations:
+where $J,G>0$. For Gaussian jitter amplitude $\sigma_J$, define
 
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}\left[m_a(t) + m_d(t)\right] = \left[-k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t)\right] + \left[k_{\text{killed}}[f] - \lambda_{\mathrm{revive}} m_d(t)\right] = 0
-
+p_J=\mathbb P(|\sigma_J\xi^J|\leq J),\quad
+p_G=\mathbb P(|\xi^O|\leq G),\quad p=p_Jp_G,
 $$
 
-This demonstrates that the total mass is conserved for all time, completing the proof.
+$$
+p_0=|B(0,r_0)|(2\pi\sigma_x^2h)^{-d/2}
+\exp\!\left[-\frac{(L+r_0)^2}{2\sigma_x^2h}\right]>0.
+$$
 
+For every admitted finite population with at least one alive donor,
+
+$$
+\mathbb P\!\left(\frac{M_{n+1}}N<\frac{p_0p}{4}\,\middle|\,S_n\right)
+\leq e^{-pN/8}+e^{-p_0pN/16}.
+$$
+
+Moreover $m(\mathcal F_h(\mu))\geq p_0p>0$ for every $m(\mu)>0$. In the unbounded configuration $m(\mathcal F_h(\mu))=1$.
+
+*Proof.* Literal copying and mandatory revival place each slot inside $D$ before jitter. The component formula gives $|v_i^c|\leq|\bar v|+\alpha(|v_i|+|\bar v|)\leq W$. On $|\sigma_J\xi_i^J|\leq J$ and $|\xi_i^O|\leq G$, the B1 force is at most $F_J$, so the center $X_2$ before final position noise has norm at most $L$. B2 and the cap do not change that center.
+
+Assign independent latent jitter innovations even to rows that do not clone; their good events imply the same bound. Conditional on the entire graph and rotations, the jitter/O good events are independent with probability $p$. A multiplicative Chernoff estimate gives at least $pN/2$ good rows except with probability $e^{-pN/8}$. Conditional on all these preceding innovations, the final position noises remain independent. On every good row, integrating their Gaussian density over the core gives probability at least $p_0$. A second Chernoff bound gives at least $p_0pN/4$ surviving rows with the asserted exception probability. For one limiting root, the same good-event argument gives the expectation bound $p_0p$. $\square$
 :::
 
-:::{prf:assumption} Domain regularity for boundary flux
-:label: assumption-domain-regularity
+:::{prf:lemma} Finite-horizon moments on the unbounded domain
+:label: lem-mean-field-finite-moments
 
-Let $D\subset\mathbb R^d$ be the bounded spatial domain with $C^2$ boundary
-and a tubular neighborhood of positive width. Velocities range over a bounded
-set $V$. Write $n(y)$ for the outward unit normal at $y\in\partial D$.
+For the canonical force and any $q\geq1$, there are finite configuration constants $A_q,B_q$ such that, when all finite rows are eligible,
+
+$$
+\mathbb E\!\left[L_N'|x|^q\mid S\right]
+\leq A_qL_N|x|^q+B_q,\qquad |v_i'|\leq V.
+$$
+
+The same estimate holds for $\mathcal F_h$. Thus finite initial moments propagate uniformly in $N$ at every fixed finite horizon. If an initial moment of order $q+\delta$ is uniformly bounded, moments of order $q$ are uniformly integrable at those horizons.
+
+*Proof.* For $N\geq2$, each eligible donor probability is at most $2/(\kappa_CN)$; for a singleton the position is retained. Therefore frozen position copying obeys
+
+$$
+\mathbb E\!\left[\frac1N\sum_i|x_i^{\rm copy}|^q\mid S\right]
+\leq\left(1+\frac2{\kappa_C}\right)L_N|x|^q.
+$$
+
+Gaussian jitter has every finite moment. Collision velocities are bounded by $W$. Linear growth of $\nabla U$ and the finite BAOAB coefficients then bound $|X_2|^q$ by a constant times $1+|X_0|^q+|\xi^O|^q$. Add the finite final position-noise moment. The cap proves the velocity bound, and induction gives the assertion. Applying the estimate at $q+\delta$ proves uniform integrability at order $q$. No compact physical support or stationary moment bound was used. $\square$
 :::
 
-:::{prf:assumption} Gaussian position update
-:label: assumption-integrator-regularity
+:::{prf:lemma} Continuity of the actual population map
+:label: lem-mean-field-map-continuity
 
-Write the position update as
-$Y_h=x+hv+r_h(x,v)+B_h(x,v)\xi$, with $\xi\sim N(0,I_d)$,
-$\sup\|r_h\|\leq C h^2$ and $\sup\|B_h\|\leq C h^{3/2}$.
-This is the kinetic-noise position scaling for the stated splitting update.
-An independent position diffusion of order $h^{1/2}$ is a different boundary
-scaling and is treated through its diffusive flux.
+On the absorbing-box state space with $m\geq m_*>0$, $\mathcal F_h$ is continuous for weak convergence of marked laws. On the unbounded state space it is continuous when weak convergence is accompanied by convergence of the first two reward moments and the moment bounds needed for the kinetic stages.
+
+*Proof.* The bounded positive donor kernels have denominators uniformly separated from zero. Eligibility is the retained discrete mark, so initial atoms on the position boundary cause no discontinuity in these input integrals. Eligible reward is bounded on the box, so its moments and the marked measurement law converge. In the unbounded case use the stated reward-moment convergence. For fixed exploration cutoff $K$, all outgoing integrals, incoming intensity measures, and finite-tree readouts converge by their bounded continuous kernels. Remove the cutoff with the uniform component bound. This proves continuity of $\mathcal J$ for bounded continuous tests. The kinetic composition is continuous by the same Gaussian, cap, and terminal-boundary argument used in {prf:ref}`thm-mean-field-equation`. $\square$
 :::
 
-:::{prf:assumption} Density regularity for the boundary flux limit
-:label: assumption-density-regularity-killing
-
-Let $f(x,v)$ be bounded, nonnegative and continuous up to the spatial boundary,
-with bounded spatial derivative, and integrable on $D\times V$.
-For an approximating family $f_h$, any additional density error is retained
-explicitly as $h^{-1}\|f_h-f\|_{L^1}$ unless a stronger trace estimate is supplied.
-:::
-
-:::{prf:theorem} Pointwise exit probabilities and integrated kinetic boundary flux
-:label: thm-killing-rate-consistency
-
-Under the preceding assumptions, each fixed interior state satisfies
-
-$$
-\lim_{h\downarrow0}\frac{\mathbb P(Y_h\notin D)}{h}=0.
-$$
-
-Nevertheless the integrated exit fraction has the nonzero boundary limit
-
-$$
-\frac1h\int_{D\times V}f(x,v)\mathbb P(Y_h\notin D)\,dx\,dv
-=\int_{\partial D\times V}(v\cdot n(y))_+f(y,v)\,dS(y)\,dv+O(\sqrt h).
-$$
-
-For $f_h$ in place of $f$, the absolute error increases by at most
-$h^{-1}\|f_h-f\|_{L^1}$. The exit mechanism is a boundary flux; it is not a
-nonzero smooth interior killing density obtained from the pointwise limit.
-:::
-
-:::{prf:proof}
-Fix $x\in D$ at distance $r>0$ from the boundary. For small $h$,
-$\|hv+r_h\|\leq r/2$. Exiting then requires
-$\|\xi\|\geq r/(2Ch^{3/2})$. Exponential Markov inequality gives
-
-$$
-\mathbb P(Y_h\notin D)
-\leq2^{d/2}\exp\!\left[-\frac{r^2}{16C^2h^3}\right]=o(h).
-$$
-
-This proves the pointwise claim, including points in any fixed boundary collar.
-
-For the integrated claim, first take the ballistic update $x\mapsto x+hv$.
-Its exiting initial positions lie in a collar of width $h\sup_V\|v\|$.
-Write them as $x=y-rn(y)$. The tubular-coordinate Jacobian is $1+O(r)$,
-and Taylor expansion of the signed distance shows that the exiting interval
-in $r$ differs from $[0,h(v\cdot n(y))_+]$ by a set of length $O(h^2)$,
-uniformly in $y,v$. The density satisfies
-$f(y-rn(y),v)=f(y,v)+O(r)$. Integration gives
-
-$$
-\int f(x,v)\mathbf1_{x+hv\notin D}\,dx\,dv
-=h\int_{\partial D\times V}(v\cdot n)_+f\,dS\,dv+O(h^2).
-$$
-
-For the Gaussian update, the two exit indicators can differ only when
-$x+hv$ is within distance
-$C(h^2+h^{3/2}\|\xi\|)$ of $\partial D$. A bounded smooth domain has collar
-volume at most a constant times its width for small widths. For larger widths,
-the finite volume of $D$ gives the same bound after increasing the constant.
-Boundedness of $f$ and $V$ therefore bounds the difference of the integrated
-exit fractions by
-
-$$
-C'\mathbb E(h^2+h^{3/2}\|\xi\|)=O(h^{3/2}).
-$$
-
-Divide by $h$ to obtain the result. Finally the exit probability is at most
-one, so replacing $f$ by $f_h$ contributes at most
-$h^{-1}\|f_h-f\|_{L^1}$.
-:::
-
-:::{prf:remark} Matching the boundary law
-:label: remark-killing-rate-interpretation
-
-The continuous reaction model with reflecting transport and prescribed
-interior rate $c$ has the population equations of
-{prf:ref}`thm-mean-field-equation`. A boundary-killed kinetic model instead
-uses its outward flux in the dead-reservoir balance. Equality of these models
-requires an approximation theorem for the chosen killing layer; the pointwise
-exit limit above does not supply a nonzero interior rate.
-:::
-
-:::{prf:remark} Regularity of the prescribed reaction model
-:label: remark-important-killing-rate-well-posedness
-
-A bounded prescribed killing rate permits the positive alive-mass estimate
-{prf:ref}`cor-mean-field-positive-alive-mass`. The existence and uniqueness
-arguments in {doc}`09_propagation_chaos` specify the transport semigroup and
-reaction Lipschitz bounds for the model to which they apply.
-:::
-
-:::{prf:remark} Numerical comparison of boundary losses
-:label: remark-numerical-validation-killing-rate
-
-For the kinetic position-noise scaling, the integrated quantity to compare
-with measured exits per unit time is the boundary integral in
-{prf:ref}`thm-killing-rate-consistency`. A position-diffusive model requires
-its diffusive normal flux as well. The time-step scale, kernel and boundary
-convention must agree in the simulation and the analytical comparison.
-:::
-
-:::{prf:assumption} Analytic setting for the specified reaction model
-:label: assumption-regularity-summary
-
-Use a positive conservative strongly continuous transport semigroup on the chosen function or measure space. Require the normalized moment, acceptance, and offspring maps to satisfy the local Lipschitz and integrability bounds used by the solution theorem, on sets with $m_a\geq a_*>0$. The prescribed killing rate is bounded, and the finite revival and attempt rates are fixed. Boundary domains and any velocity cap have the meanings stated in Section 2.
-
-The concrete moment and cloning estimates in {prf:ref}`lem-uniqueness-lipschitz-moments` and {prf:ref}`lem-uniqueness-lipschitz-cloning-operator` provide these inputs for their specified coefficient class. Smoothness or measurability alone does not establish all of them.
-:::
-
-:::{prf:remark} Existing existence and stationary results
+:::{prf:remark} Stability without an assumed contraction
 :label: rem-mean-field-analytic-results
 
-The mild-solution construction and uniqueness proof are {prf:ref}`thm-chaos-mild-wellposedness`; measure-valued initial data are treated in {prf:ref}`cor-chaos-measure-initial-data`. The positive alive-mass estimate supplies the finite-time normalization bound when its hypotheses hold. Stationary solutions and their uniqueness use the resolvent and contraction argument in {prf:ref}`thm-uniqueness-contraction-solution-operator` and {prf:ref}`thm-uniqueness-uniqueness-stationary-solution`.
+Continuity gives stability at every fixed number of iterations. On any compact invariant set $K$, it supplies a uniform modulus
 
-A stationary alive/dead population model is a conservative law on the extended state space. A killed process has a QSD after conditioning on survival. Their relation must use their defining equations; existence of one is not a density formula for the other. Full-gradient LSI and hypocoercive entropy convergence are established in {doc}`15_kl_convergence` for its identified laws and generators.
+$$
+\omega_K(\delta)=\sup\{d_{\rm BL}(\mathcal F_h\mu,\mathcal F_h\nu):
+\mu,\nu\in K,\ d_{\rm BL}(\mu,\nu)\leq\delta\}\longrightarrow0.
+$$
+
+This follows by compactness and the preceding lemma. Iterating that modulus transfers small input errors through any fixed number of steps. It does not make $\omega_K(\delta)<\delta$, prove uniqueness of a stationary law, or control arbitrarily long times.
 :::
 
-:::{prf:theorem} Transfer of particle-coupling estimates
+:::{prf:theorem} Stationary existence for the canonical absorbing-box map
+:label: thm-mean-field-stationary-existence
+
+The canonical absorbing-box population map has at least one stationary marked probability $\mu_*$ with $m(\mu_*)>0$:
+
+$$
+\mu_*=\mathcal F_h(\mu_*).
+$$
+
+*Proof.* Every entering row copies an eligible donor or retains its own eligible position, so its pre-jitter position lies in $D$. Velocities before collision are capped, and the collision velocities are bounded by $W$. The linear-growth force and Gaussian innovations give a uniform output second position moment $M_2$, independent of the entering dead coordinates. Final position convolution bounds the output position density by $H=(2\pi\sigma_x^2h)^{-d/2}$. The output alive mass is at least $p_0p$, and its velocity lies in $\overline B_V$.
+
+Let $K$ be the set of marked laws with second position moment at most $M_2$, position marginal dominated by $H$ times Lebesgue measure, alive mass at least $p_0p$, capped velocity, and terminally consistent mark $a=\mathbf1_D(x)$. It is nonempty because it contains the output of any admissible law. It is convex and tight. The moment constraint is weakly closed by lower semicontinuity; the density constraint is weakly closed by testing nonnegative continuous compactly supported functions. The latter also excludes position mass on $\partial D$, so terminal mark consistency is preserved by weak limits. Thus $K$ is compact. The output bounds give $\mathcal F_h(K)\subset K$, and {prf:ref}`lem-mean-field-map-continuity` gives continuity on $K$. The compact-convex fixed-point theorem applied in the locally convex space of finite signed measures with the weak topology yields a fixed point. $\square$
+:::
+
+:::{prf:remark} What stationary identification still requires
+:label: remark-cemetery-state
+
+A finite-$N$ killed-chain QSD satisfies a conditioned eigenmeasure equation, whereas $\mu_*$ satisfies the nonlinear fixed-step equation above. Identifying limits of finite-$N$ QSDs requires the actual survival probabilities and concentration or attraction estimates. The finite-component bound proves finite-time consistency but is not a long-time contraction. Positive noise alone does not prove that the nonlinear map has a unique attractor. For an unbounded confining domain, the finite-horizon moment estimate likewise does not yet supply a uniform-in-time Lyapunov bound. These unresolved stationary steps and their dependent claims are treated explicitly in {doc}`09_propagation_chaos`.
+:::
+
+:::{prf:proposition} Fixed-step balance and the small-step obstruction
+:label: rem-mean-field-attempt-scaling
+
+Define the exact nonlinear increment functional
+
+$$
+\mathcal A_h(\mu)\phi=\frac{\mathcal F_h(\mu)\phi-\mu\phi}{h}.
+$$
+
+Then $\mu_{n+1}\phi-\mu_n\phi=h\mathcal A_h(\mu_n)\phi$. Suppose along $h\downarrow0$ the complete one-step law converges to $\mathcal F_0(\mu)$ and there is a bounded continuous test with $\mathcal F_0(\mu)\phi\ne\mu\phi$. Then $\mathcal A_h(\mu)\phi$ has no finite limit.
+
+*Proof.* Its numerator converges to a nonzero constant. Division by $h\downarrow0$ diverges. $\square$
+
+For an all-alive initial law and fixed nonzero jitter/collision parameters, the vanishing-step kinetic stages tend to the identity before the terminal cap and classification. Thus $\mathcal F_0$ retains the order-one collision, copying, jitter, cap, and terminal-mark operations. The smooth cap is itself an order-one operation: for any nonzero finite velocity, $|\Pi_V(v)|<|v|$, even strictly inside the radius $V$. Repeating this same cap alone gives $|v_n|^{-1}=|v_0|^{-1}+n/V$ when $v_0\ne0$. Thus at $n\approx t/h$ its effect is singular as $h\downarrow0$; it cannot be replaced by a reflecting velocity boundary. The full $\mathcal F_0$ need not be the identity. A continuous physical-time limit can therefore have an initial fast relaxation or require a different state/time description. A finite-rate differential equation is identified only after proving the relevant limit of these same iterates; changing acceptance probabilities to enforce that limit changes the configured algorithm.
+:::
+
+:::{prf:remark} Boundary losses at the actual noise scale
+:label: remark-numerical-validation-killing-rate
+
+The terminal position increment includes $\sigma_x\sqrt h\,\xi^x$. Its boundary layer therefore differs from a purely ballistic position update with only $O(h^{3/2})$ integrated thermostat noise. At fixed $h$, the exact quantity is $\mathbb P(X_3\notin D)$ under the full root construction. Neither a ballistic flux formula nor a smooth interior killing rate can replace this probability without a matching limiting argument and boundary regularity estimates.
+:::
+
+:::{prf:theorem} Transfer of independent-reference coupling estimates
 :label: thm-mean-field-limit-informal
 
-Let $X_1,\ldots,X_N$ be interacting particle states coupled to independent
-$Y_1,\ldots,Y_N$ with common probability law $\mu$, all with finite second moments. Put
-$\varepsilon_N=N^{-1}\sum_i\mathbb E\|X_i-Y_i\|^2$ and
-$\mu_N^X=N^{-1}\sum_i\delta_{X_i}$, $\mu_N^Y=N^{-1}\sum_i\delta_{Y_i}$.
-Then
+Let $X_1,\ldots,X_N$ be interacting states and let $Y_1,\ldots,Y_N$ be independent with common law $\mu$. For a metric $d_E$ and a coupling with
+$\varepsilon_N=N^{-1}\sum_i\mathbb E d_E(X_i,Y_i)^2<\infty$,
 
 $$
-\mathbb E W_2(\mu_N^X,\mu)
-\leq\sqrt{\varepsilon_N}+\mathbb E W_2(\mu_N^Y,\mu).
+\mathbb E W_2(L_N^X,\mu)
+\leq\sqrt{\varepsilon_N}+\mathbb E W_2(L_N^Y,\mu).
 $$
 
-For any $L$-Lipschitz observable $\phi$ with finite variance under $\mu$,
+For an $L$-Lipschitz test $\phi$ of finite $\mu$-variance,
 
 $$
-\mathbb E|\mu_N^X\phi-\mu\phi|
-\leq L\sqrt{\varepsilon_N}+\sqrt{\operatorname{Var}_{\mu}(\phi)/N}.
+\mathbb E|L_N^X\phi-\mu\phi|
+\leq L\sqrt{\varepsilon_N}+\sqrt{\operatorname{Var}_\mu(\phi)/N}.
 $$
 
-If the coupling discrepancy satisfies
-$\varepsilon_N'(t)\leq C\varepsilon_N(t)+b_N(t)$ almost everywhere, then
+*Proof.* Pair $X_i$ with $Y_i$ to couple their empirical measures. The triangle inequality and Jensen's inequality give the Wasserstein bound. For the test, split through $L_N^Y\phi$, use the Lipschitz bound for the paired term, and use independence to compute the reference empirical variance. $\square$
 
-$$
-\varepsilon_N(t)\leq e^{Ct}\varepsilon_N(0)
-+\int_0^t e^{C(t-s)}b_N(s)\,ds.
-$$
-
-The analytical coupling and mean-field identification results are developed
-in {doc}`09_propagation_chaos`. The empirical Wasserstein term has its own
-moment- and dimension-dependent sampling rate.
+This transfer inequality is available when a coupling estimate has been established. The rooted-component proof supplies empirical consistency directly and does not assume that estimate as a premise.
 :::
 
-:::{prf:proof}
-The empirical pairing
-$N^{-1}\sum_i\delta_{(X_i,Y_i)}$ is an admissible coupling of the empirical
-measures. Thus
-$W_2^2(\mu_N^X,\mu_N^Y)\leq N^{-1}\sum_i\|X_i-Y_i\|^2$.
-Use the triangle inequality and Jensen's inequality to obtain the first bound.
-For the observable, split the error through $\mu_N^Y\phi$. Lipschitz
-continuity and Cauchy–Schwarz bound the paired error by
-$L\sqrt{\varepsilon_N}$. Independence gives
-$\mathbb E|\mu_N^Y\phi-\mu\phi|^2=\operatorname{Var}_{\mu}(\phi)/N$.
-Cauchy–Schwarz gives its first-moment bound. The final inequality follows by
-multiplying the differential inequality by $e^{-Ct}$ and integrating.
+:::{prf:remark} Experimental quantities tied to the population map
+:label: remark-mean-field-experiments
+
+The Part III Rust experiments test the actual stage predictions:
+
+- accepted live edges increase frozen sampled fitness, and the accepted graph is a forest;
+- full-component momentum and relative energy obey {prf:ref}`thm-mean-field-component-identities`, including revived slots;
+- conditional cross covariance uses the shared rotation, with all donor velocity changes included;
+- one-step root observables are compared with the rooted-component law, keeping finite-population error separate from independent integration error;
+- increasing-$N$ comparisons hold $h$ and the number of updates fixed, and estimate uncertainty across independently seeded complete runs;
+- killing and revival diagnostics count actual events and compare terminal alive mass with the conditional final-noise probabilities;
+- stationary concentration and dependence on initialization are measured separately from fixed-horizon chaos.
+
+The bounds on component tails and alive mass are inequality predictions. Their conservative constants are not fitted rates or expected equalities. Empirical agreement with a one-step identity does not supply the unresolved stationary attraction estimate.
 :::
 
 ## convergence_program/09_propagation_chaos.md
@@ -19473,15 +20603,19 @@ multiplying the differential inequality by $e^{-Ct}$ and integrating.
 :::{prf:definition} Finite-swarm QSDs and marked marginals
 :label: def-sequence-of-qsds
 
-Let $\mathsf Z$ be the Polish one-walker state space used by the specified
-model. It includes the alive indicator and any retained dead-walker coordinates
-that influence revival. For a model observed immediately after a proved
-all-alive revival step, that observation space may instead contain only
-position and velocity.
+Let $\mathsf Z=\mathbb R^d\times\overline B(0,V)\times\{0,1\}$
+be the complete marked slot state at the end of an update. Its coordinates
+are position, capped velocity, and alive indicator. Dead coordinates are
+retained: their position enters weighted revival-donor sampling and their
+velocity enters the connected-component collision. The status space has its
+discrete topology. The canonical process has no donor history; configurations
+with history require a correspondingly enlarged state.
 
 For each $N\ge2$, let $Q_N$ be the killed full-swarm kernel on its noncemetery
-space, and suppose a QSD $\nu_N$ has been established by an applicable theorem
-of {doc}`06_convergence` or the entropy analysis. Write
+space. For the canonical quadratic-force terminal-box configuration,
+{prf:ref}`thm-chaos-canonical-finite-n-qsd` establishes its unique QSD $\nu_N$.
+For other configurations, use an applicable QSD theorem for their complete
+transition. Write
 
 $$
 \nu_NQ_N=\alpha_N\nu_N,\qquad 0<\alpha_N\le1.
@@ -19504,12 +20638,12 @@ weakly to $\mu_*^{\otimes l}$.
 :::{prf:definition} Alive mass and normalized alive distribution
 :label: def-sequence-of-qsds-summary
 
-For a marked probability $\mu$, let $f=\mu|_{\{s=1\}}$ be its alive
+For a marked probability $\mu$, let $f=\mu|_{\{a=1\}}$ be its alive
 subprobability and $m_a=f(\mathsf Z)$. If $m_a>0$, its normalized alive law is
 $\rho=f/m_a$. The finite-swarm counterparts are
 
 $$
-f_N=\frac1N\sum_{i:s_i=1}\delta_{(x_i,v_i)},\qquad
+f_N=\frac1N\sum_{i:a_i=1}\delta_{(x_i,v_i)},\qquad
 m_{a,N}=\frac{k_N}{N},\qquad \rho_N=\frac{f_N}{m_{a,N}}.
 $$
 
@@ -19518,6 +20652,269 @@ different normalization equations. A scalar dead reservoir is a closed model
 only when the revival rule depends on dead walkers through that scalar alone.
 Companion selection that depends on their retained coordinates requires their
 distribution in the state.
+:::
+
+:::{prf:theorem} Unique QSD and conditioned convergence for the canonical box gas
+:label: thm-chaos-canonical-finite-n-qsd
+
+Fix $N\geq1$ and the canonical terminal absorbing-box update with
+$U(x)=|x|^2/2$, positive OU and final position-noise amplitudes, and smooth
+velocity cap $V$. For $h>0$ with $h\ne2$, this actual killed kernel has a
+unique QSD $\nu_N$ and a survival eigenvalue $0<\alpha_N<1$. There are
+$C_N<\infty$ and $r_N<1$ such that
+
+$$
+\sup_\eta
+\left\|\frac{\eta Q_N^n}{\eta Q_N^n1}-\nu_N\right\|_{\mathrm{TV}}
+\leq C_Nr_N^n.
+$$
+
+The supremum is over probability laws on nonextinct, terminally consistent
+full marked states with capped velocities. Dead physical positions remain
+unbounded and are retained in this statement. In particular the theorem
+applies to the canonical $h=0.04$ configuration. Its constants may depend on
+$N$; no assumption of positional contraction by cloning is needed.
+:::
+
+:::{prf:proof}
+**1. Represent exactly the input coordinates used by the transition.**
+Let $S_R(x)=Rx/(R+|x|)$ be the position feature in the donor distance.
+For an alive slot retain $x\in\overline D$; for a dead slot represent its
+position by $u=S_R(x)\in\overline{S_R(D^c)}$. Retain the velocity in
+$\overline B_V$ and its discrete alive/dead mark in both cases. The finite
+union of the resulting products over all nonempty alive masks is a compact
+space $K_N$.
+
+For $|u|<R$, the inverse is $x=Ru/(R-|u|)$, so every finite physical dead
+coordinate remains recoverable. Points with $|u|=R$ compactify only the
+input representation. The donor weights extend continuously to these points.
+Canonical reward statistics use eligible walkers, whose physical positions
+are bounded by the box. No other canonical operation requires the raw dead
+position: mandatory revival copies a frozen eligible donor position before
+jitter, and the collision uses retained capped velocities. Thus the actual
+kernel extends to $K_N$. The status components are disjoint, and the exact
+single-eligible-donor convention is retained on those components.
+
+Every position before jitter is in $\overline D$. The frozen component rule
+bounds each post-collision velocity by $(1+2\alpha)V$, where $\alpha$ is the
+restitution coefficient. These are bounds on kinetic input means, not a
+claim that physical dead output positions have compact support.
+
+**2. Verify full phase-space smoothing for the declared schedule.**
+Condition on the finite measurement-companion, cloning-companion, and gate
+pattern and on its component rotations. The collision coordinates are
+bounded before independent Gaussian jitter. The remaining quadratic-force
+BAOAB stages are affine. With $x_1$ the A1 position, $v_1$ the B1 velocity,
+$a=e^{-\gamma h}$, and actual OU innovation amplitude $q>0$, write
+
+$$
+\begin{aligned}
+v_2&=av_1+q\xi,&x_2&=x_1+\tfrac h2v_2,\\
+v_3&=v_2-\tfrac h2x_2,&x_3&=x_2+s\zeta,\qquad s=\sigma_x\sqrt h>0.
+\end{aligned}
+$$
+
+The independent standard Gaussian innovations $(\xi,\zeta)$ have coefficient
+matrix, for the output ordered as $(x_3,v_3)$,
+
+$$
+L=\begin{pmatrix}
+\tfrac h2qI&sI\\
+q(1-h^2/4)I&0
+\end{pmatrix}.
+$$
+
+It is invertible for $h\ne2$. After integrating Gaussian cloning jitter,
+the pre-cap joint phase-space law is therefore a Gaussian with strictly
+positive density on $\mathbb R^{2dN}$. Its mean ranges over a compact set as
+the effective input and rotations vary. Its covariance belongs to a finite
+positive-definite family indexed by the accepted-recipient pattern.
+
+The final cap $v\mapsto Vv/(V+|v|)$ is a $C^1$ diffeomorphism from
+$\mathbb R^d$ onto $B_V$, with positive Jacobian. The resulting density is
+positive on $\mathbb R^{dN}\times B_V^N$. Terminal classification assigns
+its actual marks; removing the all-dead output gives $Q_N$. Every nonempty
+relatively open subset of $K_N$ contains a positive-measure set of physical
+interior outputs, so $Q_N(k,\cdot)$ has full support on $K_N$. Both survival
+and extinction have positive probability at every input.
+
+**3. Prove compactness of the transition operator.**
+At fixed $N$ there are finitely many companion and gate patterns. Within each
+fixed alive mask their probabilities are continuous in the effective input:
+weighted normalizers stay positive, regularized population statistics are
+continuous, and the positive-part acceptance formula is continuous at ties.
+For a fixed pattern, component membership is fixed and its Haar rotations
+range over a compact product of orthogonal groups.
+
+Gaussian laws with fixed positive covariance vary continuously in total
+variation with their means, uniformly over these compact parameter sets.
+Finite mixing and integration over the rotations preserve this continuity.
+The cap, terminal marking, and survival restriction contract total variation.
+Consequently $k\mapsto Q_N(k,\cdot)$ is TV-continuous on $K_N$.
+
+The operator $Q_N:C(K_N)\to C(K_N)$ maps the unit ball to a bounded
+uniformly equicontinuous family, since
+
+$$
+|Q_Nf(k)-Q_Nf(l)|
+\leq\|Q_N(k,\cdot)-Q_N(l,\cdot)\|_{\mathrm{TV}}
+\quad(\|f\|_\infty\leq1),
+$$
+
+where the TV norm in this proof is $\sup_{|f|\leq1}|\mu f|$.
+Arzelà–Ascoli makes $Q_N$ compact. Full support gives $Q_Nf>0$ for every
+nonzero continuous $f\geq0$, and compactness of $K_N$ gives
+$\min Q_Nf>0$. Moreover continuity of $Q_N1$ gives constants
+$0<a_N\leq Q_N1\leq b_N<1$.
+
+**4. Obtain an eigenfunction and verify a Markov minorization.**
+The positive cone of $C(K_N)$ is total. The compact positive operator has
+spectral radius at least $a_N>0$, because $Q_N^n1\geq a_N^n1$.
+The compact-operator Krein–Rutman theorem therefore supplies an eigenfunction
+$e_N\geq0$, $e_N\not\equiv0$, with
+$Q_Ne_N=\alpha_Ne_N$ and $\alpha_N=r(Q_N)$. Strong positivity gives
+$0<m_N\leq e_N\leq M_N<\infty$, and
+$a_N\leq\alpha_N\leq b_N<1$. These verify the hypotheses of
+[Zhang, Theorem 1.1](https://arxiv.org/pdf/1606.04377).
+
+Choose a compact target box strictly inside the all-alive position domain
+and the open velocity ball, and let $\theta_N$ be normalized Lebesgue measure
+there. The conditional Gaussian means are bounded and the covariance family
+is finite and positive definite. Their densities consequently have a common
+positive lower bound on the inverse-cap image of this target. The inverse-cap
+Jacobian has a positive lower bound there as well. Hence, for some
+$\epsilon_N>0$,
+
+$$
+Q_N(k,A)\geq\epsilon_N\theta_N(A)\qquad(k\in K_N).
+$$
+
+This bound holds for every accepted graph and rotation and therefore also
+for their actual mixture. The Doob kernel
+
+$$
+P_N(k,dl)=\frac{Q_N(k,dl)e_N(l)}{\alpha_Ne_N(k)}
+$$
+
+is Markov and satisfies
+
+$$
+P_N(k,\cdot)\geq\delta_N\widehat\theta_N(\cdot),\qquad
+\delta_N=\frac{\epsilon_N\theta_N(e_N)}{\alpha_NM_N}>0,\qquad
+\widehat\theta_N(dl)=\frac{e_N(l)\theta_N(dl)}{\theta_N(e_N)}.
+$$
+
+Splitting this common part from $P_N$ contracts total variation by
+$1-\delta_N$. Iteration gives its unique invariant law $\pi_N$ and uniform
+geometric mixing.
+
+**5. Recover the QSD and conditioned convergence.**
+Define
+
+$$
+\nu_N(dl)=\frac{e_N(l)^{-1}\pi_N(dl)}{\pi_N(e_N^{-1})}.
+$$
+
+Invariance of $\pi_N$ gives $\nu_NQ_N=\alpha_N\nu_N$. Any other QSD
+$\nu$ with eigenvalue $\beta$ satisfies
+$\beta\nu(e_N)=\nu Q_Ne_N=\alpha_N\nu(e_N)$, so
+$\beta=\alpha_N$. Its normalized $e_N$-weighted law must be invariant for
+$P_N$ and hence equals $\pi_N$. This proves QSD uniqueness.
+
+For every bounded measurable $f$,
+
+$$
+\eta Q_N^nf=\alpha_N^n\eta\!\left[e_NP_N^n(f/e_N)\right].
+$$
+
+Divide by the same formula for $f=1$. Uniform mixing of $P_N$ and the
+positive bounds on $e_N$ give the stated estimate with, for example,
+$r_N=1-\delta_N$ and $C_N=4(M_N/m_N)^2$.
+
+**6. Lift to the complete physical state.**
+Let $\iota:S_{\rm phys}\to K_{\rm real}$ retain alive positions, every
+velocity and every mark, and apply $S_R$ only to dead position coordinates.
+It is a measurable bijection, with the inverse given in Step 1. Couple the
+two coordinate descriptions with identical measurement draws, cloning draws,
+gates, component rotations, jitters, OU innovations, and final position noises.
+Stage by stage, the complete updates satisfy
+
+$$
+T_{\rm eff}(\iota s,\xi)=\iota T_{\rm phys}(s,\xi),
+$$
+
+with the same extinction event. Consequently, for all bounded measurable
+$f$ on $K_{\rm real}$ and $g$ on the physical marked state,
+
+$$
+Q_{\rm phys}(f\circ\iota)(s)=Q_{\rm eff}f(\iota s),\qquad
+Q_{\rm phys}g(s)=Q_{\rm eff}(g\circ\iota^{-1})(\iota s).
+$$
+
+These are exact transition identities. The coordinate map changes neither
+the mechanism nor its survival probabilities.
+
+Every output of $Q_N$ has finite physical positions and velocity strictly
+inside the cap. The eigenmeasure identity
+$\nu_N=\alpha_N^{-1}\nu_NQ_N$ therefore gives zero QSD mass to artificial
+compactification points. Applying the inverse feature coordinate to dead
+slots reconstructs their full physical law. This measurable bijection on
+actual states preserves the kernel identities and TV bounds, proving the
+claim for the retained-coordinate algorithm itself.
+:::
+
+:::{prf:remark} Exact velocity collapse at the resonant timestep
+:label: rem-chaos-canonical-baoab-resonance
+
+The restriction $h\ne2$ in the preceding theorem corresponds to an actual
+change in the canonical dynamics. Take $N=1$, $h=2$, and
+$U(x)=|x|^2/2$. The sole live walker has no accepted cloning edge and receives
+no cloning jitter. Writing its entering state as $(x,v)$, the actual stages
+give
+
+$$
+v_1=v-x,\qquad x_1=x+v_1=v,\qquad
+v_2=e^{-2\gamma}(v-x)+q\xi,\qquad
+x_2=v+v_2,\qquad v_3=v_2-x_2=-v.
+$$
+
+Final position noise and terminal classification leave this pre-cap
+velocity calculation unchanged. Therefore, on every surviving trajectory,
+
+$$
+v_{n+1}=-\frac{Vv_n}{V+|v_n|},\qquad
+v_n=(-1)^n\frac{Vv_0}{V+n|v_0|},\qquad
+|v_n|\leq\frac{V}{n+1}\quad\text{when }|v_0|\leq V.
+$$
+
+Any QSD is supported on $v=0$. Indeed, the $n$-step killed output is
+supported on $\{|v|\leq V/(n+1)\}$ for every entering state. Its QSD identity
+$\nu Q^n=\alpha^n\nu$ with $\alpha>0$ forces the same support for $\nu$;
+intersecting these sets over $n$ gives $v=0$. This argument retains the
+survival weights exactly.
+
+On the invariant set $v=0$, the physical position update is
+
+$$
+x'=-e^{-2\gamma}x+q\xi+\sigma_x\sqrt2\,\zeta,
+\qquad x'\in D\text{ for survival}.
+$$
+
+It is the actual restricted Gaussian transition, with strictly positive
+variance $q^2+2\sigma_x^2$. On the compact box closure its killed kernel has
+a continuous strictly positive density. The compact-positive-operator and
+Doob-minorization argument in the preceding proof therefore gives a unique
+QSD on this invariant set. Since every QSD must be supported there, it is
+also the unique QSD of the complete one-walker killed process at $h=2$.
+
+Nevertheless, starting from any $v_0\ne0$, the velocity at each finite
+surviving update is the nonzero deterministic vector displayed above. Its
+conditional law and the QSD have disjoint velocity supports, so their TV
+norm distance is $2$ at every finite $n$. Each such conditioning event has
+positive probability because the final position noise has positive density.
+Thus the velocity norm tends to zero, but total-variation convergence to
+the QSD fails. The loss of the preceding convergence conclusion at $h=2$
+is a property of the programmed BAOAB and cap composition.
 :::
 
 :::{prf:lemma} Exchangeability from kernel symmetry
@@ -19533,9 +20930,10 @@ For a permutation $\sigma$, the commutation identity implies that
 $\sigma_\#\nu_N$ satisfies the same QSD equation as $\nu_N$. It is a
 probability, so uniqueness gives $\sigma_\#\nu_N=\nu_N$. All coordinate
 marginals therefore coincide, and averaging their expectations proves the
-last assertion. Symmetry must be checked for the actual collision update,
-including overlapping recipient groups and their ordering; it is not supplied
-by identical parameter values alone.
+last assertion. The required kernel symmetry is proved for the component update in
+{prf:ref}`lem-chaos-canonical-equivariance`. For the canonical quadratic-force
+box configuration, {prf:ref}`thm-chaos-canonical-finite-n-qsd` supplies the
+unique QSD, so both hypotheses are verified for this algorithm.
 :::
 
 :::{prf:theorem} Tightness from a uniform confining moment
@@ -19842,560 +21240,590 @@ The same tail vanishes for $Y$. For the sufficient condition, this tail is at
 most $R^{-\epsilon}\mathbb E|Y_n|^{1+\epsilon}$.
 :::
 
-:::{prf:definition} A specified continuous mean-field equation
-:label: def-chaos-gain-loss-model
+:::{prf:definition} Canonical fixed-step regime and convergence class
+:label: def-chaos-canonical-regime
 
-Let $T_t$ be a strongly continuous positive, mass-preserving contraction
-semigroup on $X=L^1(\mathsf Z,\mathfrak m)$, with generator $A$. The reference
-measure $\mathfrak m$ may combine Lebesgue measure on continuous coordinates
-and counting measure on status coordinates. Consider
+Use the full update $\mathcal F_h$ constructed in {doc}`08_mean_field`:
+independent current Gaussian-weighted measurement and cloning companions,
+global regularized fitness statistics, frozen order-one acceptance,
+mandatory revival through the same weighted current-donor law, jitter for
+all accepted recipients, and one independent Haar $O(d)$ rotation per accepted
+undirected component. Follow this by the specified constant-noise BAOAB
+step, independent final position diffusion, radial velocity cap, and terminal
+boundary classification. The canonical configuration has no donor history and
+no viscosity; the potential has globally Lipschitz gradient with linear
+growth. The timestep $h>0$, positive final position-noise amplitude, finite
+cap $V$, positive fitness floors, positive standardization regularizers,
+and donor widths are fixed independently of $N$.
 
-$$
-\partial_tu=Au+\mathcal R(u),\qquad u\ge0,\quad\int u=1.
-$$
+The squashed algorithmic distances give actual weight bounds
+$0<\kappa_D\le w_D\le1$ and $0<\kappa_C\le w_C\le1$. They do not bound
+physical positions. Take either the terminal absorbing box, or the unbounded
+confining configuration with quadratic reward. In the box, alive positions
+are bounded and all retained velocities obey the cap. In the unbounded case,
+assume initial empirical convergence and a uniform initial $(4+\delta)$
+position moment for some $\delta>0$; independent initialization with that
+moment supplies this condition. All slots are alive in the unbounded case.
 
-Assume on the probability densities that
-
-$$
-\mathcal R(u)=G(u)-a(u)u,\qquad
-G(u)\ge0,\quad0\le a(u)\le\Lambda,
-\quad\int\mathcal R(u)=0,
-$$
-
-and $\mathcal R$ is Lipschitz in $L^1$ with constant $L_{\mathcal R}$.
-Then $\|\mathcal R(u)\|_1\le2\Lambda$.
-
-This is the continuous model selected in {doc}`08_mean_field` when its
-transport law, reaction kernels, and dead-mass bookkeeping satisfy these
-conditions. Killing of an individual walker can be a transition to its dead
-state; whole-swarm absorption is a different event. Failed jitter proposals
-must be represented in the dead component, as in
-{prf:ref}`rem-mean-field-cloning-boundary-loss`. The definition does not change
-a killed transport operator into a reflecting one or identify a fixed BAOAB
-step with this generator.
+Write $\mu_N=L_N(S_N)$ for deterministic input arrays and suppose
+$\mu_N\Rightarrow\mu$ with $m(\mu)>0$. In the unbounded case use the stated
+moment bound as well. Every sufficiently large $N$ then has
+$m(\mu_N)\ge m_*>0$. The finite-step moment and terminal-survival estimates
+in {doc}`08_mean_field` propagate this class over each fixed finite horizon.
 :::
 
-:::{prf:lemma} A complete cloning gain-loss Lipschitz bound
-:label: lem-uniqueness-lipschitz-cloning-operator
+:::{prf:lemma} Permutation equivariance of the complete canonical kernel
+:label: lem-chaos-canonical-equivariance
 
-Suppose the reaction is represented by a finite nonnegative jump kernel
-$B_u(z,dy)$ with
-
-$$
-B_u(z,\mathsf Z)\le\Lambda,\qquad
-\sup_z\|B_u(z,\cdot)-B_v(z,\cdot)\|_1
-\le L_B\|u-v\|_1.
-$$
-
-Let $J_u(dz,dy)=u(z)\mathfrak m(dz)B_u(z,dy)$. Set
-$\mathcal R(u)=\operatorname{proj}_{y\#}J_u-
-\operatorname{proj}_{z\#}J_u$, assuming its signed measure has an $L^1$
-density. Then $\mathcal R$ has the gain-loss structure above and
-
-$$
-\|\mathcal R(u)-\mathcal R(v)\|_1
-\le2(\Lambda+L_B)\|u-v\|_1.
-$$
-
-Companion normalization, fitness, and probability clipping contribute to
-$L_B$ through the preceding lemmas. A retained finite swarm collision group
-requires the limiting jump kernel for that group; a one-particle replacement
-kernel cannot be substituted without identifying that limit.
+The canonical transition kernel commutes with every permutation of slot
+labels. Consequently it preserves exchangeability, including the marked
+alive/dead state and the cemetery event.
 :::
 
 :::{prf:proof}
-The second projection of $J_u$ is nonnegative; its first projection equals
-$u(z)B_u(z,\mathsf Z)\mathfrak m(dz)$. Both have the same total mass, at
-most $\Lambda$. For the difference of $J_u$ and $J_v$, first change the
-input density and then the jump kernel. This gives
+Let $\pi$ relabel an input array. Transport a donor index $j$ to $\pi(j)$,
+each row innovation to the corresponding relabelled row, and each component
+rotation to the relabelled vertex set. Distances, eligible donor sets, and
+normalization sums are unchanged by this operation. The conditional
+probability of every transported donor choice is therefore unchanged.
+The empirical reward and diversity statistics are symmetric sums; thus fitness,
+acceptance probabilities, and transported gate outcomes agree.
 
-$$
-\|J_u-J_v\|_1\le\Lambda\|u-v\|_1+L_B\|u-v\|_1.
-$$
-
-Pushforward of a signed measure contracts its full variation norm. Apply
-this to both projections and add their bounds.
+The accepted undirected graph is relabelled by $\pi$. Its components, their
+sizes, their frozen position sources, and their centre-of-mass velocities
+are transported exactly. Assigning independent Haar matrices to components
+has the same joint law after any such component permutation. With those
+matrices transported, the component update commutes pointwise with $\pi$.
+Row jitter, the prescribed force evaluations, BAOAB noises, cap, and terminal
+boundary tests do likewise. Extinction depends on the number of eligible
+slots, which is unchanged. Integrating the transported innovations proves
+the kernel identity. This is a statement about the random kernel: keeping
+numerical random addresses fixed while relabelling the inputs need not give
+the same sample path.
 :::
 
-:::{prf:theorem} Global positive mild solutions
-:label: thm-chaos-mild-wellposedness
+:::{prf:lemma} Concentration of the actual sampled measurement marks
+:label: lem-chaos-sampled-marks
 
-Under {prf:ref}`def-chaos-gain-loss-model`, every initial probability density
-$u_0\in X$ has a unique global mild solution $u_t\in X$. It remains a
-probability density, depends continuously on $u_0$, and defines a semigroup
-$\mathcal S_t$. In particular,
-
-$$
-\|\mathcal S_tu_0-\mathcal S_tv_0\|_1
-\le e^{L_{\mathcal R}t}\|u_0-v_0\|_1.
-$$
-:::
-
-:::{prf:proof}
-For $\Lambda>0$, use the equivalent damped integral equation
-
-$$
-u_t=e^{-\Lambda t}T_tu_0
- +\int_0^te^{-\Lambda(t-s)}T_{t-s}
- [\mathcal R(u_s)+\Lambda u_s],ds.
-$$
-
-The integrand in brackets is
-$G(u_s)+(\Lambda-a(u_s))u_s\ge0$ and has mass $\Lambda$. Thus the right
-side has mass $e^{-\Lambda t}+\int_0^t\Lambda e^{-\Lambda(t-s)}ds=1$ and
-is nonnegative for every continuous probability-valued input path.
-
-The space of continuous probability-density paths on $[0,t_0]$ is closed in
-$C([0,t_0],L^1)$ and therefore complete. The displayed map contracts its
-supremum norm when
-
-$$
-\frac{L_{\mathcal R}+\Lambda}{\Lambda}
- (1-e^{-\Lambda t_0})<1.
-$$
-
-Choose such $t_0$ and apply the contraction mapping theorem. The same
-$t_0$ works at every restart, so the solution extends for all time and remains
-positive and normalized. For $\Lambda=0$, the reaction is zero and
-$u_t=T_tu_0$.
-
-Undoing the damping gives the ordinary mild equation
-$u_t=T_tu_0+\int_0^tT_{t-s}\mathcal R(u_s)ds$. Subtract two such equations
-and apply Gronwall's inequality to obtain the stability bound. Uniqueness
-also gives $\mathcal S_{t+s}=\mathcal S_t\mathcal S_s$.
-:::
-
-:::{prf:corollary} Extension to singular initial laws through kinetic smoothing
-:label: cor-chaos-measure-initial-data
-
-In addition to the global gain-loss assumptions, suppose $T_t$ is a Markov
-semigroup on probabilities with $T_t\mu\Rightarrow\mu$ as $t\downarrow0$.
-Assume that for every $t>0$ it has densities $p_t(z,\cdot)$ with respect to
-$\mathfrak m$, and that $z\mapsto p_t(z,\cdot)$ is continuous in $L^1$.
-Then the nonlinear evolution extends uniquely to every initial probability
-$\mu_0$. It has an $L^1$ density at each positive time and is weakly continuous
-in the initial probability. If the zero-mass mixing condition in
-{prf:ref}`thm-uniqueness-uniqueness-stationary-solution` holds, its attraction
-conclusion extends to these initial probabilities.
+Let $\eta_\mu$ be the limiting type law $(z,y_D,F)$ constructed from the
+weighted measurement companion and the actual sampled fitness in
+{doc}`08_mean_field`. Under {prf:ref}`def-chaos-canonical-regime`, the
+finite empirical type law $\eta_N$ converges in probability to $\eta_\mu$.
+Every bounded continuous type test converges in $L^2$ as well. In the box,
+the random diversity mean and second moment have conditional variances
+bounded by constants times $1/N$.
 :::
 
 :::{prf:proof}
-For $t>0$, replace $T_tu_0$ in the damped iteration by the density of
-$T_t\mu_0$. Perform the same contraction on essentially bounded measurable
-probability-density paths on $(0,t_0]$, with the supremum $L^1$ metric.
-Positivity and mass are unchanged, and the same constant gives contraction.
-The integral formula has a representative continuous in $L^1$ away from zero:
-split the integral away from its upper endpoint, use strong continuity of
-$T_t$ on $L^1$, and bound the remaining interval by its length times the
-bounded reaction source. Its weak limit at zero is $\mu_0$, because the
-reaction integral is $O(t)$ in $L^1$ and $T_t\mu_0\Rightarrow\mu_0$.
-Restarting at positive times gives the unique global evolution.
-
-If $\mu_n\Rightarrow\mu$, then
-$a_n(t):=\|T_t\mu_n-T_t\mu\|_1\to0$ for every fixed $t>0$.
-Indeed, tightness restricts the initial states to a compact set up to a
-uniformly small tail; the continuous $L^1$-valued kernel on that compact set
-can be uniformly approximated by finitely many values with continuous
-partition weights. Weak convergence applies to those finitely many weights.
-For the nonlinear solutions, the mild equation gives
+**Measurement before normalization.** Condition on the deterministic input
+array. A live row's companion has probabilities
 
 $$
-d_n(t)\le a_n(t)+L_{\mathcal R}\int_0^td_n(s)ds,
-\qquad d_n(t)=\|\mathcal S_t\mu_n-\mathcal S_t\mu\|_1.
+p^D_{ij}=\frac{1_{\{a_j=1,j\ne i\}}w_D(z_i,z_j)}
+ {\sum_{k:a_k=1,k\ne i}w_D(z_i,z_k)}.
 $$
 
-The integral version of Gronwall bounds this by
-$a_n(t)+L_{\mathcal R}\int_0^te^{L_{\mathcal R}(t-s)}a_n(s)ds$.
-Since $a_n\le2$, dominated convergence proves $d_n(t)\to0$.
-For attraction, first evolve an arbitrary initial measure for any
-$\epsilon>0$ to obtain a density, then apply the density attraction theorem
-from that time. Its initial distance to the stationary density is at most
-two.
+The full empirical-kernel denominator is at least $\kappa_Dm_*$. Removing
+the self atom changes the normalized companion law by at most
+$2/[\kappa_D(m_*N-1)]$ in full variation, for sufficiently large $N$.
+The companion draws of distinct measurement rows are conditionally
+independent, although the selected indices can coincide. For any bounded
+test $g$ of $(z,y_D)$, the conditional variance of its empirical average is
+at most $\|g\|_\infty^2/N$. Its conditional expectation tends to the integral
+against the weighted joint law, by {prf:ref}`lem-distance-continuity` and the
+self-exclusion bound. Assign a dummy measurement mark to dead rows; their
+contribution is a deterministic empirical integral.
+
+**The global statistics.** Apply the same calculation to the sampled
+bounded diversity and its square, restricted to live rows, and divide by
+the deterministic alive fraction. Their conditional variances are bounded
+by constants times $1/(m_*^2N)$. Reward statistics are deterministic functions
+of the input array. In the box they converge by boundedness; for quadratic
+reward in the unbounded case the $(4+\delta)$ position moment gives uniform
+integrability of squared reward. {prf:ref}`lem-reward-continuity` applies.
+
+**Fitness remains a mark.** Replace only the empirical normalization
+statistics by their limits. Positive regularizers and positive bounded
+rescale maps make the fitness map continuous. On bounded reward sets the
+replacement error tends uniformly to zero; the unbounded case follows by
+restricting the row type to a compact set and then using tightness. The
+sampled diversity itself is retained in every row's fitness. It is not
+replaced by its mean. Combining this replacement with the preceding
+empirical joint-law convergence proves convergence of $\eta_N$. A bounded
+continuous type test is uniformly bounded, so convergence in probability
+also gives its $L^2$ convergence.
 :::
 
-:::{prf:remark} Localization at positive alive mass
-:label: rem-chaos-positive-alive-localization
+:::{prf:lemma} Uniform collision-component truncation
+:label: lem-chaos-component-truncation
 
-For kernels using $f/m_a$, the Lipschitz constants are uniform on
-$m_a\ge m_*>0$. Local existence follows from the same iteration in a small
-$L^1$ neighbourhood of an initial law with positive alive mass. Choose the
-time interval so that the image stays in that neighbourhood; the reaction
-bound $2\Lambda$ and strong continuity of $T_tu_0$ make this possible.
-
-Continuation is global when an a priori alive-mass lower bound stays positive
-on every finite interval and the other Lipschitz and moment constants remain
-bounded there. For the mass-neutral cloning, bounded-killing model with
-normalized revival in {doc}`08_mean_field`,
-{prf:ref}`cor-mean-field-positive-alive-mass` supplies this lower bound.
-No arbitrary value of $f/m_a$ at $m_a=0$ is required for those trajectories.
-:::
-
-:::{prf:definition} Weighted Sobolev analysis space
-:label: def-uniqueness-weighted-sobolev-h1w
-
-On an open continuous phase space $\Omega\subset\mathbb R^D$, let $w>0$ be
-locally bounded above and locally bounded away from zero. Define the vector
-space
+Condition on the input swarm and every measurement mark. For sufficiently
+large $N$ with at least $m_*N$ live rows, each accepted recipient-to-donor
+edge has probability at most $C/N$, where one may take
+$C=2/(\kappa_Cm_*)$. Let $\mathcal C_N(i)$ be the component of a tagged
+vertex $i$. Then
 
 $$
-H^1_w(\Omega)=\left\{u:\int_\Omega(|u|^2+|\nabla u|^2)w<\infty\right\},
+\mathbb E[|\mathcal C_N(i)|\mid S,\text{measurements}]\le e^{2C},
 \qquad
-\|u\|_{H^1_w}^2=\int_\Omega(|u|^2+|\nabla u|^2)w.
+\mathbb P(\operatorname{rad}_i\mathcal C_N(i)\ge r\mid S,\text{measurements})
+ \le\frac{(2C)^r}{r!},
 $$
 
-Probability densities form a subset of this vector space. When normalization
-is imposed using this norm, require
-$C_w^2=\int_\Omega w^{-1}<\infty$. For example,
-$w(z)=(1+|z|^2)^p$ has this property on $\mathbb R^D$ when $p>D/2$.
-The lower power $1+|z|^2$ needs a separate integrability check on the chosen
-domain. This weight is an analysis choice, not an algorithm parameter.
-:::
-
-:::{prf:theorem} Completeness of the weighted Sobolev space
-:label: thm-uniqueness-completeness-h1w-omega
-
-The space $H^1_w$ is Hilbert. If $C_w<\infty$, then
-$\|u\|_1\le C_w\|u\|_{H^1_w}$.
+and $\mathbb P(|\mathcal C_N(i)|>K\mid S,\text{measurements})\le e^{2C}/K$.
+These bounds require no small-acceptance assumption.
 :::
 
 :::{prf:proof}
-A Cauchy sequence has limits $u,g_1,\ldots,g_D$ in $L^2(w)$ for its functions
-and first derivatives. Local lower bounds on $w$ imply convergence in
-$L^2$ on each compact subset. For a compactly supported smooth test function
-$\varphi$, pass to the limit in
-$\int u_n\partial_i\varphi=-\int(\partial_i u_n)\varphi$ to obtain
-$\partial_i u=g_i$ weakly. Thus the limit belongs to $H^1_w$ and convergence
-holds in its norm. The norm comes from the displayed inner product.
-Finally, Cauchy-Schwarz gives
-$\int|u|\le(\int|u|^2w)^{1/2}(\int w^{-1})^{1/2}$.
+A live row has at most one accepted outgoing edge, and that edge strictly
+increases frozen fitness. A dead row has one outgoing revival edge to a live
+row and cannot be a target. Put dead vertices below live vertices in a total
+ordering compatible with fitness, breaking ties arbitrarily. Every edge
+strictly increases this ordering. An undirected cycle would have as many
+edges as vertices; because each vertex has at most one outgoing edge, all
+cycle vertices would have exactly one outgoing cycle edge, giving a directed
+cycle. This contradicts strict ordering. The graph is a forest.
+
+Consider a simple length-$\ell$ path from $i$. Along that path arrows cannot
+point outward in both directions from an internal vertex. They therefore
+point toward a single sink, with an increasing leg of length $a$ and a
+decreasing leg of length $\ell-a$, for some $0\le a\le\ell$.
+There are at most $N^a/a!$ possible label sequences on the increasing leg:
+choose its labels, whose order is then determined. There are at most
+$N^{\ell-a}/(\ell-a)!$ choices for the other leg. Ignoring overlap and
+additional constraints at the sink only enlarges this bound.
+
+Each path edge uses a distinct recipient's outgoing draw. Conditional on
+all measurement marks these row draws are independent, and each required
+edge has probability at most $C/N$. This includes weighted mandatory
+revival: its denominator is at least $\kappa_Cm_*N$. Thus the expected
+number of such paths is at most
+
+$$
+\sum_{a=0}^{\ell}\frac{C^\ell}{a!(\ell-a)!}
+ =\frac{(2C)^\ell}{\ell!}.
+$$
+
+A vertex at radius $r$ supplies a length-$r$ path. Summing the path bound
+over $\ell\ge0$ bounds the number of vertices by $e^{2C}$. Markov's
+inequality gives the size-tail estimate. Averaging over measurement marks
+preserves all bounds. The constant can be large; the proof asserts finite
+component control, not a sharp practical estimate of component size.
 :::
 
-:::{prf:remark} Complete probability and bounded-ball constraint sets
-:label: rem-uniqueness-completeness-constraint-set
+:::{prf:lemma} Every collision-component moment is uniformly bounded
+:label: lem-chaos-component-moments
 
-When $C_w<\infty$, the set
-$\mathcal P_w=\{u\in H^1_w:u\ge0,\ \int u=1\}$ is closed and complete.
-Indeed, norm convergence gives local almost-everywhere convergence along a
-subsequence, preserving positivity, and $L^1$ convergence preserves mass.
-Its intersection with a closed norm ball is also complete. The analogous
-probability set is closed in $L^1$ without a Sobolev weight. An $H^1_w$ bound
-on existing fixed points alone does not establish that an entire ball maps
-into itself; that mapping estimate is proved below when its hypotheses hold.
-:::
-
-:::{prf:lemma} Positive, mass-preserving fixed-point map
-:label: lem-uniqueness-self-mapping
-
-Under {prf:ref}`def-chaos-gain-loss-model`, choose $C\ge\Lambda$ with $C>0$.
-Define
+Under the conditioning of {prf:ref}`lem-chaos-component-truncation`, for
+each integer $p\geq1$ and every fixed root $i$,
 
 $$
-R_Cg=\int_0^\infty e^{-Ct}T_tg\,dt,\qquad
-\mathcal T_C(u)=R_C[Cu+\mathcal R(u)].
+\mathbb E[|\mathcal C_N(i)|^p\mid S,\text{measurements}]
+\leq M_p(C),\qquad
+M_p(C)=e^{(2^p-1)C}
+\sum_{k=0}^{\infty}[(k+1)^p-k^p]\frac{C^k}{k!}<\infty.
 $$
 
-Then $R_C=(C-A)^{-1}$ on $L^1$, $R_C$ preserves positivity,
-$\|R_C\|_{1\to1}\le1/C$, and $\int R_Cg=(\int g)/C$.
-The map $\mathcal T_C$ sends probability densities to probability densities.
-Its fixed points are exactly the stationary solutions in the generator domain
-of $Au+\mathcal R(u)=0$.
-:::
-
-:::{prf:proof}
-The Bochner integral converges because $T_t$ is an $L^1$ contraction.
-Positivity, the norm bound, and the mass identity follow by integrating the
-corresponding properties of $T_t$.
-The semigroup property gives
-
-$$
-T_hR_Cg=e^{Ch}\left(R_Cg-\int_0^he^{-Ct}T_tg\,dt\right).
-$$
-
-Subtract $R_Cg$, divide by $h$, and let $h\downarrow0$. Strong continuity
-gives $AR_Cg=CR_Cg-g$, so $R_Cg$ is in the generator domain. Conversely,
-for $u$ in that domain, integrate the derivative of $e^{-Ct}T_tu$ to obtain
-$R_C(C-A)u=u$.
-
-The source $Cu+\mathcal R(u)=G(u)+(C-a(u))u$ is nonnegative and has mass
-$C$. Its resolvent image is therefore a probability density. Applying
-$C-A$ to the fixed-point identity proves stationarity, and applying $R_C$ to
-the stationary equation proves the converse.
-:::
-
-:::{prf:proposition} Normalized alive stationary states and the dead reservoir
-:label: prop-chaos-alive-stationary-reconstruction
-
-For the continuous model with normalized revival kernel $G_\rho$,
-$\int G_\rho=1$, suppose its cloning operator is homogeneous in alive mass:
-$S[m\rho]=mS[\rho]$. Write $\bar c[\rho]=\int c\rho$ and let
-$\lambda_{\rm rev}>0$. Then a mass-one alive profile $\rho$ solves
-
-$$
-0=A\rho+S[\rho]-c\rho+\bar c[\rho]G_\rho
-$$
-
-if and only if the reconstructed pair
-
-$$
-m_a=\frac{\lambda_{\rm rev}}{\lambda_{\rm rev}+\bar c[\rho]},\qquad
-m_d=\frac{\bar c[\rho]}{\lambda_{\rm rev}+\bar c[\rho]},\qquad
-f=m_a\rho
-$$
-
-solves the stationary alive/dead equations with $m_a+m_d=1$. The nonlinear
-term in the normalized equation is mass-neutral and has a bounded gain-loss
-form when $c$ and the cloning loss rate are bounded.
+The estimate also holds when any fixed subset of rows has its outgoing
+edge removed. It uses neither weak acceptance nor a subcritical branching
+assumption. In particular,
+$M_2(C)=(1+2C)e^{4C}$ and
+$M_3(C)=(1+6C+3C^2)e^{8C}$ are admissible constants.
 :::
 
 :::{prf:proof}
-The stationary dead equation is
-$m_a\bar c[\rho]=\lambda_{\rm rev}m_d$. Combine it with $m_a+m_d=1$ to
-obtain the mass formulas. Divide the stationary alive equation by $m_a>0$,
-using homogeneity of $S$ and
-$\lambda_{\rm rev}m_d/m_a=\bar c[\rho]$. This gives the displayed normalized
-equation. Conversely, multiply that equation by the reconstructed $m_a$.
-The two reaction terms have opposite integrals; their gain and loss parts are
-nonnegative. If revival or cloning proposals have subprobability mass in the
-alive domain, use the full marked-state balance from {doc}`08_mean_field`
-instead of this normalized-kernel specialization.
+Freeze all measurement marks, including their global normalization
+statistics. Order the vertices by fitness, with dead rows below live rows.
+Every accepted edge increases this order, and different rows choose their
+outgoing edges independently. Starting from $i$, follow its outgoing edges
+to the unique terminal vertex, and let $A$ denote the number of vertices
+in this ancestor chain. The increasing-path count gives
+
+$$
+\mathbb P(A\geq k+1\mid S,\text{measurements})\leq C^k/k!,
+\qquad
+\mathbb EA^p\leq
+\sum_{k\geq0}[(k+1)^p-k^p]C^k/k!.
+$$
+
+Condition now on an exact realized ancestor chain, including the terminal
+row's absent outgoing edge. This event only specifies draws of chain
+rows; all other row draws retain their independent distributions. The
+entire component is the descendant closure of that chain. Initialize the
+discovered set with its $A$ vertices and scan every other row in decreasing
+order. At the time a row is scanned, all its possible parents have already
+been scanned or are chain seeds. It joins the component exactly when its
+outgoing edge hits the currently discovered set. If that set has size $s$,
+the conditional probability of joining is at most $Cs/N$.
+
+For $s\geq1$,
+$(s+1)^p-s^p\leq(2^p-1)s^{p-1}$. Hence each scan step satisfies
+
+$$
+\mathbb E[S_{\mathrm{new}}^p\mid S_{\mathrm{old}}=s,
+ \text{previous scan outcomes},\text{chain}]
+\leq[1+(2^p-1)C/N]s^p.
+$$
+
+This inequality remains valid when $Cs/N>1$, since it is used only as an
+upper bound on a probability. There are at most $N$ scan steps, giving
+$\mathbb E[|\mathcal C_N(i)|^p\mid\text{chain}]
+\leq e^{(2^p-1)C}A^p$. Average over the chain. Removing outgoing rows
+preserves independence, the order, and the edge-probability bound, so the
+same proof applies. The factorial series converges for every fixed $p$.
 :::
 
-:::{prf:lemma} Resolvent constants and the conserved mass direction
-:label: lem-uniqueness-scaling-hypoelliptic-constant
+:::{prf:theorem} Rooted collision convergence and two-root independence
+:label: thm-chaos-rooted-collision-limit
 
-Suppose the chosen kinetic semigroup has a zero-mass mixing estimate
-
-$$
-\|T_tg\|_1\le K e^{-at}\|g\|_1,
-\qquad \int g=0,\qquad K\ge1,\quad a>0.
-$$
-
-Then
+Under {prf:ref}`def-chaos-canonical-regime`, the component around a uniformly
+sampled root converges to the marked rooted component used to define
+$\mathcal J(\mu)$ in {doc}`08_mean_field`. Two uniformly sampled distinct
+roots converge jointly to independent copies of that rooted law. Consequently,
+for every bounded continuous test $\varphi$ of the post-clone state,
 
 $$
-\|R_Cg\|_1\le\frac K{C+a}\|g\|_1\quad(\int g=0).
+\mathbb E L_N^{\rm cl}\varphi\longrightarrow\mathcal J(\mu)\varphi,
+\qquad
+\mathbb E\big|L_N^{\rm cl}\varphi-\mathcal J(\mu)\varphi\big|^2
+ \longrightarrow0.
 $$
 
-On the full $L^1$ space, $\|R_C\|_{1\to1}=1/C$. In particular,
-$CR_C$ cannot be a strict contraction on all densities. A decay law
-$\|R_C\|\sim1/\sigma_v^2$ at fixed $C$ is incompatible with the mass
-identity in that norm.
-:::
-
-:::{prf:proof}
-Integrate the zero-mass estimate against $e^{-Ct}dt$. For any nonnegative
-density of mass one, the positive image $R_Cu$ has $L^1$ norm $1/C$;
-together with the upper bound from the preceding lemma this proves equality
-of the full operator norm. If an invariant kinetic density $\pi$ exists,
-this mass direction is also explicit: $R_C\pi=\pi/C$.
-:::
-
-:::{prf:theorem} Contraction of the stationary solution operator
-:label: thm-uniqueness-contraction-solution-operator
-
-Under the gain-loss assumptions and the zero-mass kinetic estimate above, if
-some $C\ge\Lambda$, $C>0$, satisfies
-
-$$
-q_C:=\frac{K(C+L_{\mathcal R})}{C+a}<1,
-$$
-
-then $\mathcal T_C$ is a strict contraction on the complete $L^1$ space of
-probability densities. It has a unique fixed point $u_*$, and
-
-$$
-\|\mathcal T_C^nu-u_*\|_1\le q_C^n\|u-u_*\|_1.
-$$
-:::
-
-:::{prf:proof}
-Both $u-v$ and $\mathcal R(u)-\mathcal R(v)$ have zero integral. Apply the
-zero-mass resolvent estimate to
-
-$$
-\mathcal T_Cu-\mathcal T_Cv
-=R_C[C(u-v)+\mathcal R(u)-\mathcal R(v)].
-$$
-
-Its norm is at most $q_C\|u-v\|_1$. The positive self-mapping property and
-completeness were proved above, so the contraction mapping theorem gives the
-fixed point and its iteration bound. The resolvent identity makes it a
-stationary solution.
-:::
-
-:::{prf:theorem} Global attraction and a unique stationary mean-field law
-:label: thm-uniqueness-uniqueness-stationary-solution
-
-Under the global gain-loss assumptions, suppose
-$\|T_tg\|_1\le Ke^{-at}\|g\|_1$ for zero-mass $g$ and
-
-$$
-b:=a-KL_{\mathcal R}>0.
-$$
-
-Then the nonlinear equation has a unique stationary probability density
-$u_*$ and
-
-$$
-\|\mathcal S_tu-u_*\|_1\le K e^{-bt}\|u-u_*\|_1
-$$
-
-for every initial probability density. This conclusion does not require the
-stronger shifted-resolvent condition $q_C<1$.
+The collision readout uses one shared rotation per component, frozen
+velocities of every component member including revived rows, and independent
+jitter for every accepted recipient.
 :::
 
 :::{prf:proof}
-Subtract the two ordinary mild equations. Every source difference has zero
-mass, so
+**1. Freeze the type array.** By {prf:ref}`lem-chaos-sampled-marks`, every
+subsequence has a further subsequence on which the empirical types converge
+almost surely to $\eta_\mu$. It suffices to prove the assertion for each
+such deterministic convergent type sequence. Write $t=(z,y_D,F)$ and
 
 $$
-\|\mathcal S_tu-\mathcal S_tv\|_1
-\le Ke^{-at}\|u-v\|_1
- +KL_{\mathcal R}\int_0^te^{-a(t-s)}
- \|\mathcal S_su-\mathcal S_sv\|_1,ds.
+\beta_\mu(t,u)=
+\frac{1_{\{a_u=1\}}w_C(z_t,z_u)}{Z_C(\mu;z_t)}
+\begin{cases}
+ \min\{1,[(F_u-F_t)/(s_c(F_t+\epsilon_c))]_+\},&a_t=1,\\
+ 1,&a_t=0.
+\end{cases}
 $$
 
-Multiply by $e^{at}$ and apply Gronwall's inequality to obtain
-$\|\mathcal S_tu-\mathcal S_tv\|_1\le Ke^{-bt}\|u-v\|_1$.
-Choose $t_0$ with $Ke^{-bt_0}<1$. The complete probability-density space is
-mapped into itself by $\mathcal S_{t_0}$, so it has a unique fixed point
-$u_*$. Commutation of the nonlinear semigroup implies that
-$\mathcal S_su_*$ is another fixed point of $\mathcal S_{t_0}$, hence equals
-$u_*$ for every $s\ge0$. Thus $u_*$ is stationary and the displayed bound
-follows. Every stationary probability density is a fixed point of
-$\mathcal S_{t_0}$, proving uniqueness.
+Here $Z_C(\mu;z)=\int1_{\{a_y=1\}}w_C(z,y)\mu(dy)$.
+The finite edge probabilities are $N^{-1}\beta$ evaluated using the
+empirical law, with the explicit self-exclusion correction. The kernels
+are bounded by $C$, continuous in their type arguments on each status
+stratum, and their integrals converge. Fitness ties cause no discontinuity
+because acceptance vanishes continuously at a tie.
 
-Finally, its mild stationarity identity gives
-$(T_tu_*-u_*)/t=-t^{-1}\int_0^tT_{t-s}\mathcal R(u_*)ds
-\to-\mathcal R(u_*)$ in $L^1$. Therefore $u_*\in D(A)$ and the stationary
-equation holds in $L^1$ as well.
+**2. Explore a bounded number of vertices.** Expose the root's type and its
+outgoing edge, if present. A newly exposed target has its own free outgoing
+draw. To discover incoming edges to a target $t$, scan the still unexposed
+rows. Each row independently hits $t$ with probability at most $C/N$.
+For finitely many targets and type-test bins, their incoming counts converge
+to independent Poisson counts with intensities
+$\eta_\mu(du)\beta_\mu(u,t)$.
+
+Here is the rare-event estimate underlying that assertion. A row that hits
+one of $k$ specified targets has a categorical law of total probability
+$p_j\le Ck/N$. Couple it to independent Poisson counts with the same
+category means. Expanding $e^{-p_j}$ shows that the probability of a mismatch
+is at most $2p_j^2$ for $p_j\le1/2$: the errors are absence versus one-hit
+probabilities and the Poisson probability of two or more hits. Summing over
+rows bounds the mismatch by $2C^2k^2/N$. For bounded nonnegative mark tests
+$g$, the same limit is read directly from
+
+$$
+\prod_j\left[1+\sum_{r=1}^k p_{jr}
+       (e^{-g_r(t_j)}-1)\right].
+$$
+
+Taking logarithms changes this product to the exponential of the sum of its
+linear terms with an error $O(C^2k^2/N)$. Empirical kernel convergence
+identifies the limiting marked Poisson intensities. This establishes the
+point-process statement, rather than just unmarked count convergence.
+
+If a row has already been found not to hit an earlier exposed target, its
+remaining hit probabilities are divided by $1-p_j^{\rm old}$, with
+$p_j^{\rm old}\le Ck/N$. The resulting total change is $O(C^2k^2/N)$.
+Removing the finitely many exposed labels contributes another $O(Ck^2/N)$.
+For an exploration stopped after $K$ vertices, summing these estimates gives
+an error at most $A(C,K)/N$, with a finite constant, in addition to the
+converging empirical kernel integrals. One may use a constant of order
+$(1+C)^2K^3$; no uniform estimate in unbounded $K$ is needed here.
+
+**3. Respect the direction information.** An incoming child has already
+used its outgoing choice to select its parent. It receives no second free
+outgoing draw. Its additional incoming children form the corresponding
+Poisson process. When a known source already points to a newly exposed
+target, it is excluded from that target's additional incoming process.
+These rules are exactly the rooted construction in {doc}`08_mean_field`.
+They retain shared donors and all component members.
+
+**4. Remove truncation.** The chance that a root requires more than $K$
+vertices is at most $e^{2C}/K$ by
+{prf:ref}`lem-chaos-component-truncation`. The same bound holds in the limit:
+apply the finite-exploration convergence to the event of discovering $K+1$
+vertices. Thus the limiting component is finite almost surely. First take
+$N\to\infty$ with $K$ fixed, then $K\to\infty$.
+On a finite typed graph, the centre-of-mass formula, shared Haar rotation,
+copying, and jitter are continuous readouts. Their innovation laws agree
+in the finite and limiting constructions. Boundedness of $\varphi$ controls
+the discarded events and proves the one-root assertion.
+
+**5. Explore two roots.** Explore the two components together with a
+$K$-vertex cutoff for each. An outgoing draw has probability at most
+$2CK/N$ to hit an exposed vertex; the joint incoming Poisson approximation
+above also controls rows that could connect the two explorations. The chance
+of a label collision tends to zero. The limiting incoming processes and
+free outgoing draws are independent between the two explorations. Their
+component rotations are independent unless the components intersect, an
+event whose probability vanishes. More directly, for two uniform distinct
+labels $I,J$,
+
+$$
+\mathbb P(J\in\mathcal C_N(I))
+ =\frac{\mathbb E(|\mathcal C_N(I)|-1)}{N-1}
+ \le\frac{e^{2C}-1}{N-1}.
+$$
+
+The empirical normalization statistics have a deterministic limit by
+Step 1, so they leave no additional common random variable. Remove both
+cutoffs to obtain independent rooted limits.
+
+Finally express the second moment of an empirical average as its diagonal
+$1/N$ contribution plus the expectation at two uniform distinct roots.
+The latter converges to $(\mathcal J(\mu)\varphi)^2$, and the first moment
+converges to $\mathcal J(\mu)\varphi$. This proves the displayed $L^2$
+consistency without assuming independent collision outputs.
 :::
 
-:::{prf:lemma} A genuine invariant-ball estimate
-:label: lem-uniqueness-fixed-point-bounded
+:::{prf:lemma} Continuity of the canonical population map
+:label: lem-chaos-canonical-map-continuity
 
-Let $X_*$ be a Banach analysis space in which positivity and total mass define
-a closed probability set. Suppose $\mathcal T_C$ preserves that set and, for
-**every** density in it,
-
-$$
-\|\mathcal T_Cu\|_{X_*}\le A_*+b_*\|u\|_{X_*},
-\qquad A_*<\infty,\quad0\le b_*<1.
-$$
-
-Then every fixed point lies in the ball of radius
-$R_*=A_* /(1-b_*)$, and every probability-density ball of radius $R\ge R_*$
-is invariant. If such a ball is nonempty and the map contracts on it, it has
-a unique fixed point there. If the contraction holds on the ball of radius
-$R_*$, that fixed point is unique in the entire probability set.
-:::
-
-:::{prf:proof}
-For a fixed point, the bound gives
-$(1-b_*)\|u\|_{X_*}\le A_*$. For arbitrary $u$ with norm at most $R$,
-$\|\mathcal T_Cu\|_{X_*}\le A_*+b_*R\le R$. This proves actual
-self-mapping of the ball. Its completeness follows from closedness, so
-contraction gives existence and uniqueness there. Every other fixed point
-lies in the smaller ball and is therefore the same point.
-:::
-
-:::{prf:remark} Which contraction estimate to use
-:label: rem-uniqueness-proof-technique
-
-The $L^1$ gain-loss proof yields a complete existence and uniqueness route
-when the kinetic zero-mass mixing bound dominates the nonlinear Lipschitz
-constant. A weighted or Sobolev proof can instead use
-{prf:ref}`lem-uniqueness-fixed-point-bounded`, provided its mapping estimate
-and contraction are proved on that entire ball. In a weighted measure norm,
-the same Duhamel argument applies once the kinetic estimate, reaction
-Lipschitz bound, positivity, and completeness are established in that norm.
-The weighted Harris analysis in {doc}`06_convergence` and the entropy
-estimates in {doc}`15_kl_convergence` give routes to the needed kinetic or
-nonlinear mixing estimates under their stated hypotheses.
-:::
-
-:::{prf:remark} Parameter dependence of uniqueness
-:label: rem-uniqueness-algorithm-connection
-
-The sufficient comparison is between proved quantities: $a$, $K$, and
-$L_{\mathcal R}$, or the constants of a proved invariant-ball estimate.
-Changing kinetic noise changes its equilibrium, smoothing constants, and
-possibly interaction bounds. No unlimited-noise conclusion follows without
-tracking those changes. The conditions above are sufficient conditions for
-uniqueness and attraction; they are not necessary parameter thresholds.
-For the adaptive latent generator, measure-dependent kinetic terms must also
-be controlled in the same Duhamel estimate.
-:::
-
-:::{prf:theorem} Classical local hypoellipticity
-:label: thm-uniqueness-hormander
-
-Let $L=\sum_{i=1}^mX_i^2+X_0+c$ have smooth coefficients on an open manifold.
-If the Lie algebra generated by the indicated vector fields spans every
-tangent space, then $L$ is hypoelliptic: distributional solutions of
-$Lu\in C^\infty$ are locally smooth. This is the local theorem of
-[Hörmander, *Hypoelliptic second order differential equations*](https://doi.org/10.1007/BF02392081).
-It gives no unspecified global boundary condition or isotropic
-$L^2\to H^1$ resolvent estimate.
-:::
-
-:::{prf:lemma} Kinetic bracket computation
-:label: lem-uniqueness-hormander-verification
-
-For $D_v>0$, smooth $F(x)$, and
-
-$$
-X_i=\sqrt{D_v}\,\partial_{v_i},\qquad
-X_0=v\cdot\nabla_x+(F(x)-\gamma v)\cdot\nabla_v,
-$$
-
-one has
-
-$$
-[X_0,X_i]=\sqrt{D_v}(-\partial_{x_i}+\gamma\partial_{v_i}).
-$$
-
-Thus the diffusion fields and these brackets span all position and velocity
-directions in the interior.
-:::
-
-:::{prf:proof}
-Differentiate the coefficients of $X_0$ with respect to $v_i$. The position
-coefficient contributes $-\partial_{x_i}$, the friction coefficient
-contributes $+\gamma\partial_{v_i}$, and $F(x)$ contributes zero. Multiplying
-by $\sqrt{D_v}$ gives the formula. The $X_i$ span all velocity directions;
-subtracting their friction multiples from the brackets gives all position
-directions.
-:::
-
-:::{prf:theorem} Interior regularity and a quantitative resolvent criterion
-:label: thm-uniqueness-hypoelliptic-regularity
-
-For a stationary solution satisfying
-$(A-a[u_*])u_*=-G[u_*]$ in the interior, if the kinetic coefficients and
-$a[u_*]$ are smooth, $G[u_*]$ is smooth, and the kinetic bracket condition
-holds, then $u_*$ is smooth in the interior.
-
-A quantitative global resolvent estimate uses an additional semigroup bound:
-if $T_t:X\to Y$ satisfies
-$\|T_tg\|_Y\le k(t)\|g\|_X$ and
-$C_{X,Y}(C)=\int_0^\infty e^{-Ct}k(t)dt<\infty$, then
-
-$$
-\|R_Cg\|_Y\le C_{X,Y}(C)\|g\|_X.
-$$
-
-Here $Y$ may be a specified weighted or anisotropic Sobolev space. Its boundary
-conditions and the integrability of $k(t)$ must be verified for that space.
+On the convergence class of {prf:ref}`def-chaos-canonical-regime`, the actual
+clone/collision map $\mathcal J$ and full step $\mathcal F_h$ are continuous
+for weak convergence, with the stated moment control in the unbounded case.
+In particular, their restrictions to any compact subset of this class are
+uniformly continuous for a metric inducing that convergence.
 :::
 
 :::{prf:proof}
-The first statement applies the preceding local hypoellipticity theorem to
-the operator with the smooth zeroth-order loss term. For the second, estimate
-the defining Bochner integral of $R_C$ in $Y$ and integrate the semigroup
-bound. Hörmander's bracket computation alone supplies neither $k(t)$ nor its
-integrability at zero. In particular, velocity smoothing and position
-smoothing can have different short-time powers.
+For $\mu_j\to\mu$, positive alive mass bounds all donor denominators away
+from zero eventually. The companion and reward lemmas give convergence of
+the type laws and their normalization statistics. The rooted construction
+truncated at $K$ involves only finitely many kernel integrations,
+Poisson intensities, and continuous finite-component readouts. Each is
+continuous in $\mu$. The component bound is uniform along this sequence;
+letting $K\to\infty$ proves continuity of $\mathcal J$.
+
+For the canonical kinetic step, the deterministic BAOAB kicks and drifts
+are continuous because the force is globally Lipschitz. Its O step uses
+$c=e^{-\gamma h}$ and the exact integrated constant-noise variance
+$s_h^2=(1-e^{-2\gamma h})/(2\gamma)$, with $s_h^2=h$ at $\gamma=0$.
+Independent row noise acts through continuous Markov kernels. The radial
+velocity cap is continuous. Final position noise has a strictly positive
+Gaussian variance; its convolution gives zero mass to the box boundary.
+Thus terminal status classification is continuous almost everywhere under
+the entering limiting noise law, which suffices for convergence of bounded
+continuous marked tests. In the unbounded configuration there is no such
+boundary discontinuity. Finite-horizon moment bounds give tightness and the
+uniform integrability needed in the unbounded reward passage.
+
+Uniform continuity on a compact subset follows by contradiction: two
+sequences whose input distance tends to zero have convergent subsequences
+with the same limit; continuity then makes their output distance tend to
+zero. This argument supplies a continuity modulus. It does not assert a
+Lipschitz constant or contraction.
+:::
+
+:::{prf:theorem} Full one-step consistency for the canonical algorithm
+:label: thm-chaos-canonical-one-step
+
+For the deterministic input arrays of
+{prf:ref}`def-chaos-canonical-regime`, let $L_N'$ be the empirical marked
+law after the actual full step. On total extinction, assign it any fixed
+probability measure. For every bounded continuous $\varphi$,
+
+$$
+\mathbb E\left|L_N'\varphi-\mathcal F_h(\mu)\varphi\right|^2\to0.
+$$
+
+For a bounded metric $d_*$ inducing weak convergence,
+
+$$
+\mathbb E d_*(L_N',\mathcal F_h(\mu_N))\to0.
+$$
+
+These are conclusions of the specified donor, fitness, collision, and
+kinetic rules; they are not assumed consistency hypotheses.
+:::
+
+:::{prf:proof}
+The rooted theorem proves empirical concentration immediately after cloning.
+A continuous deterministic row map transports this concentration. For an
+independent-noise row kernel $P$, condition on its input population. The
+empirical test average has conditional variance at most
+$\|\varphi\|_\infty^2/N$ and conditional mean $L_NP\varphi$.
+The latter converges because $P\varphi$ is bounded continuous. Iterating
+this observation over B1, A1, O, A2, B2, final position noise, and cap proves
+the full-step statement before classification. For the classification step,
+integrating the final Gaussian position noise gives a continuous kernel even
+for the alive/dead marked readout: its only spatial discontinuity is a box
+boundary of Gaussian measure zero. The exact boundary schedule is essential.
+
+The alive-fraction estimate of {doc}`08_mean_field` makes total-extinction
+probability tend to zero, uniformly on admitted box inputs. Consequently
+the arbitrary cemetery extension has no effect on any bounded limit.
+The moment bounds there provide tightness. Convergence of bounded tests
+from a countable determining family implies weak convergence in probability
+of the empirical law; boundedness of $d_*$ gives convergence of its expected
+distance to $\mathcal F_h(\mu)$. The triangle inequality and
+{prf:ref}`lem-chaos-canonical-map-continuity` replace $\mu$ by $\mu_N$.
+:::
+
+:::{prf:theorem} Finite-horizon propagation of chaos for the actual update
+:label: thm-chaos-finite-time-consistency
+
+Let $S_0^N$ have exchangeable initial laws with
+$L_N(S_0^N)\to\mu_0$ in probability, where $\mu_0$ is deterministic and has
+positive alive mass. Assume the canonical regime above, including its
+initial moment condition in the unbounded case. Define
+
+$$
+\mu_{n+1}=\mathcal F_h(\mu_n).
+$$
+
+For every fixed integer $n\ge0$,
+
+$$
+L_N(S_n^N)\longrightarrow\mu_n\quad\text{in probability},
+\qquad
+\mathcal L(z_{1,n}^N,\ldots,z_{\ell,n}^N)
+ \Rightarrow\mu_n^{\otimes\ell}
+\quad\text{for every fixed }\ell.
+$$
+
+The empirical trajectory at any fixed finite list of update indices converges
+jointly to the corresponding deterministic trajectory. At every fixed
+horizon, extinction probability tends to zero.
+:::
+
+:::{prf:proof}
+**Pass from deterministic arrays to random inputs.** The one-step theorem
+has the sequential property that every deterministic sequence of admissible
+arrays with empirical limit $\mu$ has output empirical limit
+$\mathcal F_h(\mu)$. Suppose a random sequence converges in probability to
+that same $\mu$. From every subsequence choose a further one with almost-sure
+empirical convergence. If the conditional expected one-step error did not
+tend to zero in probability, there would be input realizations converging to
+$\mu$ for which that error remains bounded away from zero. This contradicts
+the deterministic sequential property. Boundedness then turns convergence
+in probability of the conditional error into convergence of its expectation.
+For unbounded rewards, restrict first to a compact set in a Wasserstein
+$p$ topology with $4<p<4+\delta$; the uniform $(4+\delta)$ moment bounds
+make the complement arbitrarily unlikely. The same contradiction argument
+applies on each such compact set.
+
+**Iterate the actual map.** Assume the claim at update $n$. The terminal
+alive-fraction bound gives a positive limiting alive mass and makes an
+exceptionally small finite alive count negligible. The moment bounds keep
+the input sequence in the convergence class. Apply the random-input argument
+and continuity of $\mathcal F_h$ to obtain the claim at update $n+1$.
+This begins with the stated initialization. The union bound over a fixed
+number of updates gives the extinction conclusion and joint empirical
+trajectory convergence.
+
+**Convert empirical convergence to particle chaos.** Kernel equivariance
+preserves exchangeability at every update. The sampling-without-replacement
+argument in {prf:ref}`lem-empirical-convergence` compares the first $\ell$
+coordinates to $\ell$ independent samples from the empirical law, with
+error at most $\ell(\ell-1)/N$ on bounded product tests. The deterministic
+empirical limit then gives $\mu_n^{\otimes\ell}$.
+:::
+
+:::{prf:remark} Quantitative errors and the continuity modulus
+:label: rem-chaos-discrete-error-modulus
+
+For the canonical kernel, {prf:ref}`thm-chaos-canonical-quantitative-bias`
+and {prf:ref}`thm-chaos-canonical-conditional-variance` give an
+$O(N^{-1/2})$ conditional bias and an $O(N^{-1})$ conditional variance
+for each bounded observable, relative to $\mathcal F_h(\mu_N)$ at the
+entering empirical law. These estimates do not prescribe the rate at
+which an arbitrary entering sequence $\mu_N$ approaches a specified
+law $\mu$, nor a rate in every metric on probability measures. Iterating
+an empirical-distance estimate also requires control of that metric and
+of the map's continuity modulus. The geometric cluster argument for
+contraction remains distinct from these one-step fluctuation estimates.
+
+On a compact invariant class let $\omega$ be the continuity modulus of
+$\mathcal F_h$, and let $e_n$ denote the expected bounded empirical distance
+to $\mu_n$. If $\delta_N$ bounds the expected one-step error on that class,
+then, for every $r>0$,
+
+$$
+e_{n+1}\le\delta_N+\omega(r)+D_*e_n/r,
+$$
+
+where $D_*$ bounds the metric diameter. Indeed, on the event that the input
+distance is at most $r$, the output-map distance is at most $\omega(r)$;
+on its complement use $D_*$ and Markov's inequality. Tightness permits a
+compact restriction with an additional arbitrarily small exceptional
+probability. Choose $r$, then $N$, to iterate convergence over fixed $n$.
+This uses the proved continuity, without replacing it by an unproved
+Lipschitz or contractive estimate.
+:::
+
+:::{prf:remark} Random initial populations
+:label: rem-chaos-random-initial-law
+
+If the initial empirical law converges to a random directing measure $M_0$,
+the same argument, conditional on that limit, gives
+$M_n=\mathcal F_h^n(M_0)$. Fixed particle marginals converge to
+$\mathbb E[M_n^{\otimes\ell}]$. This preserves the common macroscopic
+randomness. It reduces to deterministic chaos exactly when the directing
+measure is almost surely fixed at the observation time.
+:::
+
+:::{prf:remark} Fixed timestep, continuous time, and surviving trajectories
+:label: rem-chaos-time-and-conditioning
+
+The theorem concerns the actual map at fixed $h$. It does not replace
+simultaneous cloning by a finite-rate jump process. A continuous-time
+identification requires convergence of the iterates
+$\mathcal F_h^{\lfloor t/h\rfloor}$ for the specified parameter family,
+and finite-population errors controlled over the same growing number of
+updates. The complete update, including collision, immediate revival,
+jitter, and repeated cap, must enter that analysis.
+
+The finite-horizon theorem uses an arbitrary extension after total
+extinction, with vanishing probability of visiting that extension. The law
+conditioned on survival through the entire fixed horizon has the same limit:
+conditioning changes any bounded test expectation by at most twice its
+supremum times the extinction probability. Conditioning each intermediate
+transition separately is a different path-law operation.
+:::
+
+:::{prf:lemma} The actual boundary and revival contributions converge
+:label: lem-boundary-convergence
+
+In the canonical box regime, every dead recipient takes a current live donor
+with the Gaussian weight evaluated from its retained coordinates, receives
+the prescribed jitter and component collision, and is marked alive before
+kinetics. The empirical post-revival law and the terminal alive and dead
+subprobabilities converge to these same stages of $\mathcal F_h$.
+:::
+
+:::{prf:proof}
+The dead-row density $\beta_\mu(t,u)$ in the rooted theorem integrates to
+one over live targets and contains the actual retained-position donor
+weight. Thus the rooted output includes every revived recipient and its
+shared component rotation. There is no unrevived finite-rate reservoir at
+this stage. The kinetic consistency proof supplies the terminal position
+law. Its Gaussian final-noise convolution has zero boundary mass, so
+restriction to the box and its complement converges by the continuity-set
+criterion. These restrictions give the alive and dead subprobabilities;
+their sum is the full marked probability.
 :::
 
 :::{prf:lemma} Independent innovations with controlled influence
@@ -20437,222 +21865,660 @@ inequality. Any intermediate status checks and common collision updates are
 part of the function whose influence is being estimated.
 :::
 
-:::{prf:theorem} Finite-time propagation from a one-step empirical estimate
-:label: thm-chaos-finite-time-consistency
+:::{prf:lemma} Squared influence of the actual sampled measurement
+:label: lem-chaos-canonical-innovation-replacement
 
-Let $d_*$ be a bounded metric for weak convergence on
-$\mathcal P(\mathsf Z)$, and let $\mathcal F_h$ be the specified nonlinear
-one-step population map. Suppose it is $L_h$-Lipschitz in $d_*$, and the
-finite population update has
-
-$$
-\mathbb E[d_*(L_N',\mathcal F_h(L_N))\mid S]\le\varepsilon_N,
-\qquad\varepsilon_N\to0,
-$$
-
-uniformly on the states under consideration. Then
+In either canonical regime, fix an input with at least $m_*N$ alive slots.
+Couple two updates by replacing one row's measurement companion and using
+identical remaining row innovations and identical rotations on every
+unchanged component. Recompute the global fitness statistics in both
+updates. Let $D_r$ be the number of output rows that can differ, before any
+collapse of the entire marked output to a cemetery state. There is an
+explicit finite configuration constant $A_D$, independent of $N$, such that
 
 $$
-\mathbb E d_*(L_N(S_n),\mathcal F_h^n(L_N(S_0)))
-\le\varepsilon_N\sum_{j=0}^{n-1}L_h^j.
+\mathbb E[D_r^2\mid S]\leq A_D.
 $$
 
-If $L_N(S_0)\to\mu_0$ in probability, the empirical measure at each fixed
-$n$ converges to $\mathcal F_h^n(\mu_0)$. With exchangeability, every fixed
-number of walkers has the corresponding product-law limit.
+Replacing one row's cloning donor and gate block instead gives the bound
+$9M_2(C)$. A local jitter or kinetic block affects at most one final row;
+replacing the rotation assigned to a component affects only that component.
 :::
 
 :::{prf:proof}
-Use the triangle inequality, condition on $S_n$, and apply Lipschitz
-continuity of $\mathcal F_h$. The expected error at step $n+1$ is at most
-$\varepsilon_N+L_h$ times the error at step $n$. Induction gives the geometric
-sum. The initial-condition error is bounded by
-$L_h^n d_*(L_N(S_0),\mu_0)$; boundedness of the metric turns convergence in
-probability into convergence of this expectation. The empirical-to-chaos
-lemma then gives the coordinate marginal conclusion.
-
-A practical sufficient one-step bound uses a convergence-determining family
-$\{\varphi_j\}$ and
-$d_*(\mu,\eta)=\sum_jw_j|\mu\varphi_j-\eta\varphi_j|$, with
-$\|\varphi_j\|_\infty\le1$ and summable positive weights. Sum the absolute
-conditional bias plus the square root of the conditional variance for each
-test. The innovation lemma controls the latter when its influence moments
-are bounded.
-:::
-
-:::{prf:remark} Fixed timestep, continuous time, and surviving trajectories
-:label: rem-chaos-time-and-conditioning
-
-At fixed $h$, the limit in the preceding theorem is the nonlinear discrete
-map $\mathcal F_h$. To identify a continuous equation, one additionally
-establishes convergence of $\mathcal F_h^{\lfloor t/h\rfloor}$ to its
-semiflow $\mathcal S_t$ and a finite-population error that vanishes on the
-same time scale. In a joint limit the accumulated error
-$\varepsilon_{N,h}\sum_{j< t/h}L_h^j$ must tend to zero.
-Fixed clipping, finite cloning probabilities, and the Boris-BAOAB force
-normalization must follow the scaling specified in
-{doc}`../1_the_algorithm/02_fractal_gas_latent`.
-
-For killed swarms, the estimate must either describe the law conditioned on
-the entire time horizon, or hold for an extended process whose probability
-of reaching the cemetery during that horizon tends to zero. Conditioning
-separately at each step changes the path law. A finite-horizon conditioning
-error can be bounded by its extinction probability; the QSD identity below
-makes that probability explicit.
-:::
-
-:::{prf:lemma} Boundary and revival limits use the same time convention
-:label: lem-boundary-convergence
-
-Suppose the empirical alive and dead components converge jointly, the alive
-mass stays bounded below, and their transition integrands converge as bounded
-continuous functions, or under the uniform-integrability hypothesis of
-{prf:ref}`lem-uniform-integrability`. Then the expectations of their boundary
-and revival transition contributions converge to the corresponding integrals
-of those limiting kernels.
-
-For the explicitly chosen continuous interior-killing model with bounded
-continuous $c$, normalized revival profile $G_\rho$, and a scalar dead
-reservoir, these contributions are
+**1. Quantify every changed acceptance probability.** Let $S_*$ bound the
+nonnegative squashed separation $s$, let $\sigma_s>0$ be its standardization
+regularizer, and use the fitness parameters of
+{prf:ref}`def-mean-field-fitness-potential`. Changing one sampled separation
+changes the alive empirical mean by at most $S_*/(m_*N)$, its second moment
+by at most $S_*^2/(m_*N)$, and its variance by at most
+$3S_*^2/(m_*N)$. Consequently, for every unchanged measurement row, its
+standardized separation changes by at most $L_q/N$, where
 
 $$
--\int c(z)\varphi(z)f(dz)
- +\lambda_{\rm rev}m_d\int\varphi(z)G_\rho(dz).
+L_q=\frac{S_*}{m_*\sigma_s}
+ +\frac{3S_*^3}{2m_*\sigma_s^3}.
 $$
 
-At fixed $h$, use the actual exit and revival kernels instead. Passing
-$N\to\infty$ does not send $h\to0$, and hard boundary absorption is not
-identified with a smooth bounded interior killing rate by that population
-limit.
+Reward statistics are unchanged. Define
+
+$$
+H_s=(A_r+\eta_r)^{p_r}\frac{A_s}{4}
+ p_s\max\{\eta_s^{p_s-1},(A_s+\eta_s)^{p_s-1}\},
+\qquad L_0=H_sL_q,
+$$
+
+with $H_s=0$ when $p_s=0$. The logistic derivative is at most $A_s/4$,
+so $|F_i-\widetilde F_i|\leq L_0/N$ for $i\ne r$. This uses the bounded
+reward *rescaling factor*, and is valid even when physical rewards or
+retained dead coordinates are unbounded. Row $r$ may change by order one.
+For the actual clipped cloning probability, a Lipschitz constant in the
+sum of its two fitness arguments is
+
+$$
+L_a=\max\left\{\frac1{s_c(F_*+\epsilon_c)},
+ \frac{F^*+\epsilon_c}{s_c(F_*+\epsilon_c)^2}\right\}.
+$$
+
+Retain identical cloning donor draws and gate uniforms. Conditional on both
+complete measurement arrays, the event that row $i$'s accepted outgoing
+edge changes has probability $q_i\leq B/N$ for $i\ne r$, where
+$B=C+2L_aL_0$. The $C/N$ term includes choosing donor $r$; otherwise both
+fitness arguments change by at most $L_0/N$. Mandatory revival is covered:
+its gate is identically one, and its frozen donor law is unchanged.
+
+**2. Expose exceptional rows, not their surrounding components.** Put $r$
+in an exceptional set $E$ regardless of its gate outcome, and include every
+other row whose accepted outgoing edge changes. These row events are
+independent under the preceding conditioning. With $Q=|E|$,
+
+$$
+\mathbb EQ^2\leq(1+B)^2+B.
+$$
+
+Suppose $N\geq2B$. Condition on $E$ and the two outgoing outcomes of every
+exceptional row. Every remaining row has a common outgoing edge in the
+two graphs; its conditional probability of a specified edge is at most
+
+$$
+\frac{C/N}{1-q_i}\leq\frac{2C}{N}.
+$$
+
+These remaining row draws are still independent, since the conditioning
+factorizes by row. Remove the exceptional outgoing edges. The resulting
+common graph is an ordered forest, using the first measurement array's
+fitness order. This remains true if the two arrays order some fitnesses
+differently: each common accepted edge respects both orders.
+
+All affected vertices belong to components of this common forest meeting
+an exceptional recipient or one of its two donor endpoints. There are at
+most $3Q$ such seeds. The seeds are fixed under the conditioning, independently
+of the remaining row draws. Restoring exceptional edges can only join
+components already meeting these seeds. Thus, by Cauchy--Schwarz and
+{prf:ref}`lem-chaos-component-moments`,
+
+$$
+\mathbb E[D_r^2\mid E,\text{exceptional outcomes},
+ \text{both measurement arrays}]
+\leq 9Q^2M_2(2C).
+$$
+
+No component-size estimate has been conditioned on the event that a
+random component is unusually influential; the order of exposure above
+is what permits the uniform moment bound. Averaging proves the claim with
+
+$$
+A_D=9M_2(2C)[(1+B)^2+B]+\max\{1,4B^2\}.
+$$
+
+For the omitted finite sizes $N<2B$, simply use $D_r\leq N<2B$.
+
+**3. Couple the remaining full mechanism.** Give each possible component
+representative an independent Haar rotation, using its smallest slot label
+as representative. This realizes exactly one independent Haar matrix per
+component. If a component is unchanged, its representative and rotation
+are identical in both updates. Component copying, center-of-mass velocities,
+and the prescribed correlated rotation can therefore change only rows in
+the affected components. Jitter, BAOAB, final position noise, capping, and
+terminal status classification are row-local under identical innovations.
+They create no additional affected rows.
+
+For replacement of one donor/gate block, remove that row's outgoing edge
+from both graphs. The common forest meets at most three seeds (recipient,
+old donor, new donor); the other row draws are independent with bound
+$C/N$. The same squared-sum estimate gives $9M_2(C)$. The remaining support
+claims follow from their actual readouts. $\square$
+:::
+
+:::{prf:theorem} Quantitative conditional concentration for the full update
+:label: thm-chaos-canonical-conditional-variance
+
+For either canonical regime and every bounded measurable marked-state test
+$\varphi$, write $F=L_N'\varphi$ for the complete physical marked output,
+retaining its coordinates also on total extinction. Uniformly over fixed
+inputs with alive fraction at least $m_*$,
+
+$$
+\operatorname{Var}(F\mid S)
+\leq\frac{A_\varphi}{N},\qquad
+A_\varphi=2\|\varphi\|_\infty^2
+ [A_D+10M_2(C)+1].
+$$
+
+If the output empirical law is instead assigned a fixed probability law on
+extinction, the bound is
+$2A_\varphi/N+8\|\varphi\|_\infty^2\delta_N$, where $\delta_N$ is the
+uniform terminal-extinction bound of
+{prf:ref}`cor-mean-field-positive-alive-mass`. It too is $O(N^{-1})$.
 :::
 
 :::{prf:proof}
-The lower alive-mass bound makes normalization continuous, by
-{prf:ref}`lem-uniqueness-lipschitz-moments`. Joint convergence and continuity
-of the specified kernels therefore give convergence of their bounded test
-integrals. For unbounded integrands use truncation and uniform integrability.
-In the displayed continuous model, substitute the killing multiplier and
-revival rate into those integrals. A transport boundary-flux limit instead
-requires the boundary analysis in {doc}`08_mean_field`; it is a different
-limiting term from the bounded multiplier $c$.
+Represent the full update by four independent innovation blocks per row:
+measurement companion; cloning donor with gate; addressed Haar rotation;
+and row-local jitter with both kinetic noises. The force evaluations, cap,
+and terminal classification are deterministic given these blocks. This is
+an exact representation of the probabilistic kernel, irrespective of how
+a particular implementation streams its random numbers.
+
+The measurement and donor/gate blocks have squared influence at most
+$A_D$ and $9M_2(C)$ by the preceding lemma. Changing row $i$'s addressed
+rotation changes no output unless $i$ represents its component; its squared
+influence is bounded by $|\mathcal C_N(i)|^2$, hence in expectation by
+$M_2(C)$. A row-local block has influence at most one. Therefore
+
+$$
+\sum_j\mathbb E[D_j^2\mid S]
+\leq N[A_D+10M_2(C)+1].
+$$
+
+Substitution into {prf:ref}`lem-chaos-innovation-variance` proves the
+claim. This calculation retains the actual random global normalization,
+incoming cloners, shared donors, and correlated component rotations.
+
+For the cemetery extension $\widehat F$, its difference from $F$ is at
+most $2\|\varphi\|_\infty$ and is supported on extinction. The inequalities
+$\operatorname{Var}(X+Y)\leq2\operatorname{Var}X+2\operatorname{Var}Y$
+and $\operatorname{Var}Y\leq\mathbb EY^2$ give the stated correction.
+Each term of $\delta_N$ decays exponentially in $N$; since
+$\sup_{x\geq0}xe^{-cx}=1/(ce)$, that correction is bounded by a
+configuration constant times $N^{-1}$. $\square$
 :::
 
-:::{prf:remark} Exact stationary balance for a killed kernel
+:::{prf:theorem} Quantitative one-step bias and mean-square consistency
+:label: thm-chaos-canonical-quantitative-bias
+
+In either canonical regime, fix an input array $S$ with alive fraction at
+least $m_*$, and let $\mu_N=L_N(S)$. For every bounded measurable marked
+observable $\varphi$, there is a finite constant $B_*$ depending only on
+the fixed algorithmic parameters and $m_*$ such that
+
+$$
+\left|\mathbb E[L_N'\varphi\mid S]
+ -\mathcal F_h(\mu_N)\varphi\right|
+\leq\frac{2\|\varphi\|_\infty B_*}{\sqrt N}.
+$$
+
+Consequently, for the full physical marked output,
+
+$$
+\mathbb E\left[|L_N'\varphi-\mathcal F_h(\mu_N)\varphi|^2\mid S\right]
+\leq\frac{A_\varphi+4\|\varphi\|_\infty^2B_*^2}{N}.
+$$
+
+Assigning a fixed empirical law on extinction adds the exponentially small
+correction controlled in {prf:ref}`thm-chaos-canonical-conditional-variance`.
+The comparison is to the population map at the actual empirical input;
+any error between that input and another prescribed initial law is separate.
+:::
+
+:::{prf:proof}
+**1. Integrate the normalization fluctuation.** This step uses a coupled
+integration device to estimate the actual update; it does not redefine
+its fitness. It suffices to treat $N\geq N_0$ as defined in Step 3;
+smaller populations use the elementary bound there. In particular there
+are at least two alive slots in the calculations below. In that device
+only, replace the empirical diversity mean and
+variance by the corresponding donor-weighted moments of $\mu_N$. Retain
+every row's sampled measurement, all reward statistics, the same donor and
+gate draws, and all subsequent collision and kinetic operations. Denote the
+device's empirical output by $\widetilde L_N'$. Its measurement marks are
+independent conditional on $S$, and its deterministic normalizers are exactly
+those of the target population map.
+
+Use the constants $S_*,\sigma_s,H_s,L_a$ from
+{prf:ref}`lem-chaos-canonical-innovation-replacement`, and put
+
+$$
+D_D=\frac{2}{\kappa_Dm_*},\qquad
+A_T=\left(m_*^{-1}+D_D^2\right)
+\left(\frac{2S_*^2}{\sigma_s^2}
+      +\frac{5S_*^6}{\sigma_s^6}\right),\qquad L_T=2L_aH_s.
+$$
+
+The self-exclusion error in each measurement law is at most $D_D/N$ in
+full variation. Conditional independence therefore gives, for the errors
+$\Delta_1$ and $\Delta_2$ of the sampled first and second separation
+moments relative to their population values,
+
+$$
+\mathbb E\Delta_1^2\leq
+\frac{S_*^2(m_*^{-1}+D_D^2)}N,
+\qquad
+\mathbb E\Delta_2^2\leq
+\frac{S_*^4(m_*^{-1}+D_D^2)}N.
+$$
+
+For the variance error $\Delta_v$,
+$|\Delta_v|\leq|\Delta_2|+2S_*|\Delta_1|$. Thus
+
+$$
+T=\frac{|\Delta_1|}{\sigma_s}
+ +\frac{S_*|\Delta_v|}{2\sigma_s^3}
+\quad\hbox{satisfies}\quad
+\mathbb ET^2\leq A_T/N.
+$$
+
+Condition on all realized measurement marks. The two acceptance probabilities
+of every row differ by at most $L_TT$. On $L_TT\leq1/2$, expose the set of
+changed edges and their endpoint labels. Its expected size is at most
+$NL_TT$. The common forest after removing these edges has independent
+row probabilities bounded by $2C/N$, exactly as in the squared-influence
+proof. At most three seeds per changed row are needed. Its first component
+moment gives
+
+$$
+\frac{\mathbb E[D\mid\text{measurement marks}]}N
+\leq3M_1(2C)L_TT
+\qquad(L_TT\leq1/2).
+$$
+
+On the complementary event use $D/N\leq1$, and its probability is at most
+$4L_T^2A_T/N$. Hence
+
+$$
+\left|\mathbb E[(L_N'-\widetilde L_N')\varphi\mid S]\right|
+\leq2\|\varphi\|_\infty
+\left[\frac{3M_1(2C)L_T\sqrt{A_T}}{\sqrt N}
+      +\frac{4L_T^2A_T}{N}\right].
+$$
+
+This term explicitly restores the original random normalization.
+
+**2. Compare the marked explorations at the same empirical input.** Set
+$A=1+C+D_D$. Explore at most $K$ component vertices in both the integration
+device and the rooted construction for $\mu_N$. Also retain the target and
+its measurement mark of every rejected free cloning proposal. Such an
+auxiliary target can be revisited later; assigning it a fresh fitness mark
+would lose the algorithm's shared fitness information. There are at most
+$2K$ exposed component or auxiliary labels. An incoming child already has
+its outgoing edge fixed to its parent, and receives no free outgoing query.
+
+Here are bounds for this finite exploration, valid when $K\leq N/(8A)$.
+All are conditional on matching histories so far.
+
+- For an undiscovered row, avoidance of the previous targets has probability
+  at least $1-2CK/N$. Its joint measurement/edge law is tilted by that
+  avoidance event. Conditioning changes the intensity of a specified new
+  target by at most $4C^2K/N^2$; summing over rows gives $4C^2K/N$.
+  The conditioning factorizes over undiscovered rows, preserving their
+  independence. This calculation includes the bias in their measurement
+  marks, instead of assuming that an unrevealed empirical type law is
+  deterministic.
+- A fresh donor query meets one of the at most $2K$ exposed labels with
+  probability at most $4CK/N$ under the same conditioning. A freshly
+  queried mark's avoidance tilt costs at most another $4CK/N$ in
+  variation. Removing
+  already exposed labels from an incoming scan changes its intensity by
+  at most $4CK/N$. Self-exclusion of cloning targets changes the incoming
+  intensity by at most $2C^2/N$ and a donor-query law by at most $C/N$.
+- Replacing each finite row's self-excluded measurement law by its population
+  companion law costs at most $D_D/N$ for a directly queried mark, and at
+  most $2CD_D/N$ in an incoming intensity summed over all rows. These are
+  integrals against the actual atomic input $\mu_N$; no empirical-law
+  approximation term remains.
+- In an incoming scan the conditional probability of one row hitting the
+  target is at most $2C/N$. Coupling its marked Bernoulli event to a Poisson
+  event of the same marked intensity costs at most twice the square of
+  that probability. Summing gives at most $8C^2/N$. If several targets
+  are scanned together, the categorical bound is at most $8C^2K^2/N$.
+  Use the latter, larger bound for every scan.
+
+For clarity, the intensity-conditioning estimate in the first item is
+obtained before dividing: if $p$ is the probability of the new-target event
+and $u\leq2CK/N$ is the probability of any earlier-target event, those
+outgoing events are disjoint. Their conditioned intensity is $p/(1-u)$,
+whose excess is at most $2up$. This remains an identity of marked measures
+when the measurement mark is retained in the event. Known incoming children
+are removed as fixed labels; their outgoing choices are never resampled.
+The independent marked Poisson processes can be coupled by retaining their
+common intensity and drawing their two excess intensities separately.
+
+Each of the at most $K$ vertex-exposure stages uses one incoming scan and
+at most one free donor query, with at most two new measurement queries.
+Summing the displayed bounds and enlarging the constant gives total mismatch
+probability at most
+
+$$
+\frac{64A^2K^3}{N}.
+$$
+
+This sum includes failed proposals' auxiliary labels and all exclusion
+conditioning. It does not assert independence of two components before
+excluding their shared finite labels.
+
+**3. Remove the finite exploration.** Both the integration device and the
+rooted construction have the component moment bound $M_3(C)$. For the
+rooted law it follows by applying finite exploration to repeated copies
+of the atomic input array and then taking its population limit; the alive
+fraction and edge bound remain the same throughout. Thus the probability
+that either component exceeds $K$ is at most $2M_3(C)/K^3$. On a matching
+finite exploration, use identical component rotations, jitter, and row
+kinetic noises. Its full marked root output is then identical, including
+the terminal boundary decision. It follows that
+
+$$
+\left|\mathbb E[\widetilde L_N'\varphi\mid S]
+ -\mathcal F_h(\mu_N)\varphi\right|
+\leq2\|\varphi\|_\infty
+\left[\frac{64A^2K^3}{N}+\frac{2M_3(C)}{K^3}\right].
+$$
+
+Choose $K=\lfloor N^{1/6}\rfloor$. When
+$N\geq N_0=\lceil(8A)^{6/5}\rceil$, the required exploration condition
+holds. Since $K\geq N^{1/6}/2$, the last bracket is at most
+$[64A^2+16M_3(C)]/\sqrt N$. For $N<N_0$, the elementary coupling bound
+one is at most $\sqrt{N_0}/\sqrt N$. Combining all steps proves the theorem
+with the explicit, population-independent choice
+
+$$
+B_*=3M_1(2C)L_T\sqrt{A_T}+4L_T^2A_T
+ +64A^2+16M_3(C)+\sqrt{N_0}.
+$$
+
+The mean-square identity is conditional variance plus squared conditional
+bias. Apply {prf:ref}`thm-chaos-canonical-conditional-variance` to its first
+term. $\square$
+:::
+
+:::{prf:remark} Exact stationary balance for a killed discrete kernel
 :label: rem-qsd-vs-true-stationarity
 
-For a bounded full-swarm test $F$ extended by zero at the cemetery,
+For a bounded full-swarm test $H$ extended by zero at the cemetery,
 
 $$
-\nu_N(Q_N-I)F=-(1-\alpha_N)\nu_NF.
+\nu_N(Q_N-I)H=-(1-\alpha_N)\nu_NH.
 $$
 
-For the scaled operator $G_{N,h}=(Q_{N,h}-I)/h$, its right side is
-$-\lambda_{N,h}^{\rm bal}\nu_NF$, where
-$\lambda_{N,h}^{\rm bal}=(1-\alpha_{N,h})/h$.
-The physical exponential survival exponent is
-$\lambda_{N,h}^{\rm exp}=-\log(\alpha_{N,h})/h$; these agree asymptotically
-when $1-\alpha_{N,h}\to0$ at the relevant scale.
-For a continuous killed generator with survival law $e^{-\lambda_Nt}$,
-the corresponding eigenmeasure identity is
-$\nu_N\mathcal L_NF=-\lambda_N\nu_NF$.
+The operator $(Q_N-I)/h$ therefore has balance defect
+$-(1-\alpha_N)\nu_NH/h$. This is the exact finite-step difference operator;
+identifying it with a differential generator requires a further limit.
+The exponential survival exponent is $-\log\alpha_N/h$, while the balance
+coefficient is $(1-\alpha_N)/h$.
 :::
 
-:::{prf:theorem} Vanishing extinction contribution
+:::{prf:theorem} Vanishing extinction contribution at fixed timestep
 :label: thm-extinction-rate-vanishes
 
-Suppose the QSD one-step hazards obey
-$1-\alpha_N\le\delta_N\to0$. Then their contribution to every bounded
-unscaled stationary balance tends to zero, and
-$\mathbb P_{\nu_N}(T_\dagger\le n)\le n\delta_N$ for fixed $n$.
-For a joint limit with timestep $h_N$, the sufficient condition is
-$\delta_N/h_N\to0$ for the scaled generator balance and for survival on
-fixed physical-time intervals.
+For the canonical terminal-box update, let $\delta_N$ be the exponentially
+vanishing uniform probability of failing the positive alive-fraction bound
+proved in {doc}`08_mean_field`. For every existing QSD of this same kernel,
 
-One quantitative source is
-{prf:ref}`prop-convergence-survival-bound`: an interior-population estimate,
-a joint failure bound for distinct identified walkers, and
-$\nu_N(G_N^c)\le a_N$ give
-$\delta_N=a_N+m_Np^{m_N-1}$ for the $k<2$ cemetery convention.
+$$
+1-\alpha_N=\int\mathbb P_S(T_\dagger\le1)\nu_N(dS)\le\delta_N.
+$$
+
+Hence its bounded stationary balance defect tends to zero, and
+$\mathbb P_{\nu_N}(T_\dagger\le n)\le n\delta_N$ for every fixed $n$.
+The unbounded all-alive kernel has no boundary-extinction contribution.
 :::
 
 :::{prf:proof}
-The stationary error has absolute value at most
-$\delta_N\|F\|_\infty$, or
-$\delta_N\|F\|_\infty/h_N$ for the scaled operator. The QSD survival law
-gives
-$1-\alpha_N^n\le n(1-\alpha_N)\le n\delta_N$.
-For $n=\lfloor t/h_N\rfloor$, the same upper bound tends to zero if
-$\delta_N/h_N\to0$. The quoted quantitative source was proved by counting
-interior walkers and bounding joint failures in {doc}`06_convergence`.
+Total extinction is included in failure of the positive alive-fraction event.
+Integrate the uniform one-step bound against the QSD. The QSD survival law
+then gives $1-\alpha_N^n\le n(1-\alpha_N)\le n\delta_N$.
+For bounded $H$, the exact balance defect is bounded by
+$\delta_N\|H\|_\infty$. These estimates do not require independent
+unconditional walker deaths; independence of terminal position innovations
+is used inside the conditional survival proof in {doc}`08_mean_field`.
 :::
 
 :::{prf:remark} Population stability and the order of limits
 :label: rem-extinction-rate-physical-interpretation
 
-An exponential-in-$N$ upper bound on the hazard makes survival likely on
-fixed time intervals and on some growing intervals. It does not exclude
-extinction over arbitrarily long times at fixed $N$. Moment drift alone
-controls neither this hazard nor the dependence between individual failures.
-The empirical law's concentration and the simultaneous-survival estimate
-enter the limiting argument as distinct analytic inputs.
+The estimate is for fixed $h$ and fixed observation horizons. At fixed $N$
+it permits eventual extinction. For a joint limit with $h=h_N\to0$, even
+survival alone needs $\delta_{N,h_N}/h_N\to0$; the constants in the
+terminal-noise bound depend on $h$. No uniform small-timestep conclusion
+follows by suppressing that dependence.
 :::
 
-:::{prf:theorem} Deterministic empirical limits solve the stationary equation
+:::{prf:theorem} Exact stationary variance budget for the complete update
+:label: thm-chaos-qsd-variance-budget
+
+Let $\nu_NQ_N=\alpha_N\nu_N$ be a QSD of the canonical terminal-box
+kernel, and let $H(S)=L_N(S)\varphi$ for a bounded measurable marked test
+$\varphi$, with $M=\|\varphi\|_\infty$. For a nonextinct input define
+
+$$
+\begin{aligned}
+q_N(S)&=Q_N1(S),&
+r_N(S)&=\frac{Q_NH(S)}{q_N(S)},\\
+s_N(S)&=\frac{Q_N(H^2)(S)}{q_N(S)}-r_N(S)^2,&
+\widetilde\nu_N(dS)&=\frac{q_N(S)}{\alpha_N}\nu_N(dS).
+\end{aligned}
+$$
+
+These are respectively the one-step survival probability, the conditional
+mean and variance of the empirical output given survival, and the input
+law reweighted by that survival probability. Then
+
+$$
+\boxed{\operatorname{Var}_{\nu_N}(H)
+ =\widetilde\nu_Ns_N+
+   \operatorname{Var}_{\widetilde\nu_N}(r_N).}
+$$
+
+Let $G_N$ be the positive alive-fraction input set from
+{prf:ref}`cor-mean-field-positive-alive-mass`, and use its uniform error
+$\delta_N$ also as an upper bound for one-step extinction. With the constant
+$A_\varphi$ of {prf:ref}`thm-chaos-canonical-conditional-variance`,
+
+$$
+0\leq \widetilde\nu_Ns_N
+\leq \frac{A_\varphi}{N\alpha_N}
+ +\frac{M^2\delta_N}{\alpha_N^2},
+\qquad
+\|\widetilde\nu_N-\nu_N\|_1
+\leq\frac{2\delta_N}{\alpha_N}.
+$$
+
+In particular, the same stationary variance has the quantitative balance
+
+$$
+\left|\operatorname{Var}_{\nu_N}(H)
+ -\operatorname{Var}_{\nu_N}(r_N)\right|
+\leq \frac{A_\varphi}{N\alpha_N}
+ +\frac{M^2\delta_N}{\alpha_N^2}
+ +\frac{6M^2\delta_N}{\alpha_N}.
+$$
+
+For a bounded continuous $\varphi$, put
+$g_N(S)=\mathcal F_h(L_N(S))\varphi$ and
+$b_N=\nu_N|r_N-g_N|$. The proved stationary moment bounds and actual
+one-step consistency give $b_N\to0$. Consequently
+
+$$
+\left|\operatorname{Var}_{\nu_N}(L_N\varphi)
+ -\operatorname{Var}_{\nu_N}
+   \bigl(\mathcal F_h(L_N)\varphi\bigr)\right|
+\leq \frac{A_\varphi}{N\alpha_N}
+ +\frac{M^2\delta_N}{\alpha_N^2}
+ +\frac{6M^2\delta_N}{\alpha_N}
+ +4Mb_N.
+$$
+:::
+
+:::{prf:proof}
+The QSD identities for $H$ and $H^2$ imply
+
+$$
+\nu_NH=\widetilde\nu_Nr_N,\qquad
+\nu_NH^2=\widetilde\nu_N(s_N+r_N^2).
+$$
+
+Subtracting the square of the first identity proves the boxed formula.
+It conditions on survival of the whole swarm; all incoming cloners,
+component rotations, and alive/dead correlations remain inside $Q_N$.
+
+Let $F=L_N'\varphi$ denote the physical marked empirical output, including
+its retained coordinates on extinction, and let $E$ be the survival event.
+For each input $S$,
+
+$$
+q_N(S)s_N(S)
+\leq\mathbb E_S\!\left[
+ (F-\mathbb E_SF)^2\mathbf1_E\right]
+\leq\operatorname{Var}_S(F).
+$$
+
+The first inequality follows because the conditional mean on $E$ minimizes
+the conditional squared error. On $G_N$ the conditional variance theorem
+bounds the right side by $A_\varphi/N$; on its complement it is at most
+$M^2$. The QSD equation and the uniform output good-set bound give
+$\nu_N(G_N^c)\leq\delta_N/\alpha_N$. Integrating the preceding inequality
+and dividing by $\alpha_N$ proves the bound on $\widetilde\nu_Ns_N$.
+
+Since $q_N\in[1-\delta_N,1]$ and
+$\alpha_N=\nu_Nq_N$, one has
+
+$$
+\int|q_N-\alpha_N|\,d\nu_N
+\leq\nu_N(1-q_N)+(1-\alpha_N)
+\leq2\delta_N.
+$$
+
+This proves the variation bound for the tilted input law. For a function
+$|f|\leq M$ and probability laws $\rho,\eta$,
+
+$$
+|\operatorname{Var}_\rho(f)-\operatorname{Var}_\eta(f)|
+\leq3M^2\|\rho-\eta\|_1.
+$$
+
+Indeed, the second moments differ by at most $M^2\|\rho-\eta\|_1$,
+and the squared means differ by at most twice that amount. Apply this to
+$f=r_N$ and use the exact budget.
+
+For the last estimate, the stationary output moment bounds, the QSD
+identity, and the positive alive-fraction estimate place the input family
+in the compact localization class of the one-step theorem. Its uniform
+localized conditional-mean consistency gives $b_N\to0$; passage from an
+unconditioned mean to $r_N$ adds at most $2M\delta_N$.
+Finally, for $|f|,|g|\leq M$ under the same probability law,
+
+$$
+|\operatorname{Var}(f)-\operatorname{Var}(g)|
+\leq4M\,\mathbb E|f-g|.
+$$
+
+Use this with $f=r_N$ and $g=g_N$. This completes each asserted estimate.
+:::
+
+:::{prf:theorem} Deterministic QSD empirical limits are fixed points
 :label: thm-limit-is-weak-solution
 
-Suppose $L_N\to\mu_*$ in probability under $\nu_N$, and for each test
-$\varphi$ in a specified determining generator core,
+Suppose $\nu_N$ are exchangeable QSDs of the canonical kernel and
+$L_N\to\mu_*$ in probability under $\nu_N$. Assume the stationary input
+family lies in the tightness and moment class needed for the actual
+one-step theorem. Then
 
 $$
-\mathbb E_{\nu_N}
-\left|G_{N,h_N}\langle L_N,\varphi\rangle
- -\mathcal B_\varphi(L_N)\right|\longrightarrow0.
+\mathcal F_h(\mu_*)=\mu_*.
 $$
 
-Assume $\mathcal B_\varphi$ is continuous along these empirical limits,
-its values are uniformly integrable, and
-$(1-\alpha_{N,h_N})/h_N\to0$. Then
-
-$$
-\mathcal B_\varphi(\mu_*)=0
-$$
-
-for every such test. When the limiting generator has been identified with
-$Au+\mathcal R(u)$, this is its stationary weak equation. Existence of a
-density and its regularity require the corresponding analytic results of
-Section 4.
+In the terminal-box configuration the required positive alive-fraction,
+capped-velocity, and output moment bounds follow from the canonical one-step
+estimates and the QSD equation; they do not require a reservoir model.
 :::
 
 :::{prf:proof}
-Apply the exact QSD identity to
-$F(S)=\langle L_N(S),\varphi\rangle$, extended by zero at the cemetery.
-Its right side tends to zero because $|F|\le\|\varphi\|_\infty$.
-The assumed consistency error also tends to zero, so
-$\mathbb E\mathcal B_\varphi(L_N)\to0$. Continuity at the deterministic
-limit and uniform integrability identify this limit with
-$\mathcal B_\varphi(\mu_*)$.
+Apply the QSD identity to $H(S)=L_N(S)\varphi$ for bounded continuous
+$\varphi$. The one-step theorem and its random-input extension give
+$\nu_NQ_NH\to\mathcal F_h(\mu_*)\varphi$; the cemetery convention changes
+this by at most the vanishing extinction error.
+Meanwhile $\alpha_N\nu_NH\to\mu_*\varphi$. Equality for a determining
+family gives the fixed-point identity.
+
+For the stated box inputs, if $G_N$ is the good alive-fraction set, then
+$\alpha_N\nu_N(G_N^c)=\nu_NQ_N1_{G_N^c}\le\delta_N$.
+For an output position moment $W$ uniformly bounded in conditional
+expectation by $B_W$, the same identity gives
+$\nu_NL_NW\le B_W/\alpha_N$. The cap holds on every admitted output.
+Since $\alpha_N\to1$, these estimates supply the required stationary
+input control. They use the full marked law, including dead positions.
 :::
 
-:::{prf:corollary} What a random empirical limit satisfies
+:::{prf:theorem} A stationary empirical mixture is invariant under the actual map
 :label: thm-limit-is-weak-solution-summary
 
-If the same assumptions give only $\Lambda_N\Rightarrow\Lambda$, the
-conclusion is instead
+Under the corresponding tightness and moment conditions, if
+$\Lambda_N\Rightarrow\Lambda$ for canonical QSDs, then
 
 $$
-\int\mathcal B_\varphi(\mu)\Lambda(d\mu)=0.
+(\mathcal F_h)_\#\Lambda=\Lambda.
 $$
 
-This averaged identity alone does not make the barycentre
-$\int\mu\Lambda(d\mu)$ a solution of a nonlinear stationary equation.
-Deterministic concentration, or the invariant-flow argument below, completes
-that additional identification.
+In particular, for every bounded continuous $\varphi$,
+
+$$
+\int\big[\mathcal F_h(\mu)\varphi-\mu\varphi\big]\Lambda(d\mu)=0.
+$$
+
+The invariant-measure assertion is stronger than this averaged weak balance.
+Neither assertion alone makes the barycentre a fixed point of a nonlinear map.
 :::
 
 :::{prf:proof}
-Repeat the preceding expectation argument with the distributional limit of
-the random measure. Nonlinear $\mathcal B_\varphi$ does not in general
-commute with integration over $\Lambda$.
+For a bounded Lipschitz $H$ on the space of population measures, the
+one-step theorem and compact localization from the finite-horizon proof
+show that replacing $H(L_N')$ by $H(\mathcal F_h(L_N))$ changes its
+expectation by $o(1)$. The QSD identity changes the former expectation to
+$\int H\,d\Lambda_N$ with error at most
+$2\|H\|_\infty(1-\alpha_N)$. Continuity of $\mathcal F_h$ and the
+stationary tightness/moment bounds permit passage to the limit, giving
+$\int H\circ\mathcal F_h\,d\Lambda=\int H\,d\Lambda$.
+This identifies the pushforward measure. Apply it also to
+$H(\mu)=\mu\varphi$ to obtain the averaged balance.
+:::
+
+:::{prf:remark} Stationary existence and the precise attraction problem
+:label: rem-chaos-stationary-obstruction
+
+The compact-convex argument in {doc}`08_mean_field` proves existence of a
+fixed point for the canonical terminal-box map. The consistency and
+continuity proofs above do not prove uniqueness or global attraction.
+To prove attraction it would suffice to establish, for this same map on its
+invariant class $\mathcal K$, an integer $r\ge1$, a complete metric $d$,
+and $q<1$ such that
+
+$$
+d(\mathcal F_h^r\mu,\mathcal F_h^r\eta)\le q\,d(\mu,\eta)
+\qquad(\mu,\eta\in\mathcal K).
+$$
+
+No such inequality is established here for the canonical parameter values.
+Its missing terms are concrete: changing the input law changes sampled
+fitness normalization, accepted-edge probabilities, component membership,
+and the shared rotation acting on the resulting centre of mass. The
+finite-component estimate controls truncation, but its constant is not a
+contraction coefficient. Independent final noise proves continuity and
+survival; it does not by itself dominate these nonlinear changes.
+
+An alternative completion is a population-uniform concentration estimate
+for the actual marked QSDs, together with identification of their possible
+fixed-point limits. The next section retains these two exact routes. Their
+remaining hypotheses are not certified for the canonical kernel by a
+continuous kinetic mixing theorem or by the existence of its fixed point.
 :::
 
 :::{prf:lemma} A variance criterion for deterministic empirical limits
@@ -20721,104 +22587,317 @@ $\epsilon^2\mathcal E_N(F,F)$. Thus $C_P=1/\rho$, with extension to the
 form domain by the defining approximation.
 :::
 
-:::{prf:corollary} Stationary identification using LSI concentration
+:::{prf:corollary} Stationary identification using actual QSD concentration
 :label: cor-chaos-lsi-stationary-limit
 
-Suppose the uniform confining moment, concentration criterion, generator
-consistency, and vanishing scaled extinction contribution above hold along
-every convergent subsequence. Suppose the limiting stationary equation has
-exactly one probability solution $\mu_*$ in the class containing all those
-limits. Then $\Lambda_N\Rightarrow\delta_{\mu_*}$, every fixed marginal
-converges to $\mu_*^{\otimes l}$, and $\mu_N\Rightarrow\mu_*$.
+Suppose the canonical QSD family has the tightness and moment control above,
+the concentration criterion holds along every convergent subsequence, and
+$\mathcal F_h$ has exactly one fixed point $\mu_*$ in the class of possible
+limits. Then $\Lambda_N\Rightarrow\delta_{\mu_*}$ and
+$\nu_N^{(\ell)}\Rightarrow\mu_*^{\otimes\ell}$ for every fixed $\ell$.
+
+The canonical one-step consistency and extinction contributions have been
+proved above. Population-uniform QSD concentration and uniqueness of the
+actual fixed point remain additional, explicitly unverified applications of
+this corollary.
 :::
 
 :::{prf:proof}
-Take an arbitrary subsequence. Tightness gives a further subsequence of first
-marginals converging to some $\bar\mu$. The variance criterion makes its
-empirical-law limit $\delta_{\bar\mu}$. The stationary identification
-theorem makes $\bar\mu$ a solution of the limiting stationary equation, so
-uniqueness gives $\bar\mu=\mu_*$. Every subsequence has such a further
-subsequence with the same limit; this proves convergence of the full sequence
-and, by the empirical-to-chaos lemma, of every fixed marginal.
+Take any subsequence. Tightness gives a further subsequence of first marginals
+converging to $\bar\mu$. The concentration criterion makes its empirical-law
+limit $\delta_{\bar\mu}$. The discrete stationary-identification theorem
+then gives $\mathcal F_h(\bar\mu)=\bar\mu$, hence $\bar\mu=\mu_*$ by
+the assumed uniqueness. All subsequences have the same limit. Apply
+{prf:ref}`lem-empirical-convergence` for fixed marginal convergence.
 :::
 
-:::{prf:theorem} Stationary chaos from finite-time consistency and attraction
+:::{prf:lemma} Explicit one-step stability of the full marked population law
+:label: lem-chaos-full-map-variation-stability
+
+Consider two input laws of the canonical terminal-box algorithm,
+
+$$
+\mu=m\rho_A\otimes\delta_1+(1-m)\rho_D\otimes\delta_0,
+\qquad
+\eta=n\zeta_A\otimes\delta_1+(1-n)\zeta_D\otimes\delta_0,
+$$
+
+with $m,n\geq m_*>0$, alive positions in the declared box, and all
+velocities capped. The conditional dead laws retain physical positions.
+When a dead mass is zero, choose any conditional dead law for its
+zero-weight term. Use full variation norms and put
+
+$$
+\Delta=|m-n|+\|\rho_A-\zeta_A\|_1
+                   +\|\rho_D-\zeta_D\|_1.
+$$
+
+The following constants are determined by the actual parameters. Let
+$\kappa_D,\kappa_C$ be the Gaussian measurement and donor weight lower
+bounds, $R$ the oscillation of reward on the box, and $D$ a bound on the
+oscillation of the raw diversity measurement. For the canonical logistic
+maps $g_j(u)=\eta_j+A_j/(1+e^{-u})$, standardization regularizers
+$\sigma_j>0$, and fitness exponents $p_j\geq0$, $j\in\{R,D\}$, define
+
+$$
+\begin{aligned}
+G_j&=\eta_j+A_j,\qquad
+T_j=\frac{A_jp_j}{4}
+       \max\{\eta_j^{p_j-1},G_j^{p_j-1}\},\\
+L_M&=2+\frac2{\kappa_D},\qquad
+Q_R=\frac R{\sigma_R}+\frac{3R^3}{2\sigma_R^3},\qquad
+Q_D=L_M\left(\frac D{\sigma_D}
+                    +\frac{3D^3}{2\sigma_D^3}\right),\\
+L_F&=T_RG_D^{p_D}Q_R+T_DG_R^{p_R}Q_D,\qquad
+F_*=\eta_R^{p_R}\eta_D^{p_D},\qquad
+F^*=G_R^{p_R}G_D^{p_D}.
+\end{aligned}
+$$
+
+Set $T_j=0$ when $p_j=0$. If $\epsilon_a>0$ and $s_a>0$ are the actual
+acceptance denominator and saturation parameters, put
+
+$$
+\begin{aligned}
+L_a&=\max\left\{\frac1{s_a(F_*+\epsilon_a)},
+ \frac{F^*+\epsilon_a}{s_a(F_*+\epsilon_a)^2}\right\},\\
+C&=\frac1{\kappa_Cm_*},\qquad
+L_\beta=2C^2+2CL_aL_F,\qquad
+B=2CL_M+L_\beta,\\
+L_{\mathrm{step}}&=2\left[L_M+2e^{2C}B\right].
+\end{aligned}
+$$
+
+Then the complete actual population map satisfies
+
+$$
+\boxed{\|\mathcal F_h(\mu)-\mathcal F_h(\eta)\|_1
+       \leq L_{\mathrm{step}}\Delta.}
+$$
+
+For the tagged frozen source position $X$ and jitter gate $J$ immediately
+before recipient jitter, the stronger bound
+
+$$
+\|\operatorname{Law}_\mu(X,J)
+ -\operatorname{Law}_\eta(X,J)\|_1
+\leq L_{\mathrm{pos}}\Delta,
+\qquad
+L_{\mathrm{pos}}=2\left[L_M(1+2/\kappa_C)+2L_aL_F\right]
+$$
+
+is independent of $m_*$. Both constants are independent of $N$;
+$L_{\mathrm{step}}$ is a stability bound and need not be smaller than one.
+:::
+
+:::{prf:proof}
+First couple physical input types and their actual measurement companions.
+Normalization of a weighted donor law with weights in $[\kappa_D,1]$
+has variation bound $2/\kappa_D$. Also
+$\|\mu-\eta\|_1\leq2\Delta$. Combining the alive and dead branches gives
+a coupling whose probability of differing physical or measurement types is
+at most $L_M\Delta$. This couples physical samples, rather than treating
+fitness values computed with two different normalizers as identical marks.
+
+Raw reward may be shifted to $[0,R]$ without changing standardization.
+Its mean and variance differences are bounded by $R\Delta$ and
+$3R^2\Delta$. The derivative of
+$u\mapsto\sqrt{u+\sigma_R^2}$ is at most $1/(2\sigma_R)$.
+On matched physical samples these bounds give a standardized reward
+difference at most $Q_R\Delta$. Apply the same calculation to the
+measurement-pair law to get the diversity bound $Q_D\Delta$.
+The derivative of $g_j^{p_j}$ is bounded by $T_j$. Expanding the two
+fitness factors therefore gives a difference at most $L_F\Delta$ on
+matched physical and measurement types.
+
+The actual clipped acceptance function is
+
+$$
+a(f,g)=\min\left\{1,\max\left\{0,
+                   \frac{g-f}{s_a(f+\epsilon_a)}\right\}\right\}.
+$$
+
+Clipping is nonexpansive. Its two unclipped derivatives on
+$[F_*,F^*]^2$ have absolute value at most $L_a$, so matched live
+recipient--donor pairs have acceptance differences at most
+$2L_aL_F\Delta$. Matched revival pairs have equal acceptance one.
+The donor normalization integral changes by at most $2\Delta$ and is
+at least $\kappa_Cm_*$. Thus the accepted edge densities, expressed
+against their full marked type laws, are bounded by $C$ and differ by at
+most $L_\beta\Delta$ on matched source and target types.
+
+Use the same coupling of base types when exploring the two actual limiting
+marked collision components. For a matched vertex, couple the outgoing
+accepted subprobability measure, including its no-edge outcome. Couple
+incoming Poisson point measures by their common intensity; these point
+measures describe incoming labels at a fixed update, not a different time
+clock. In either direction the unmatched intensity is at most
+
+$$
+2CL_M\Delta+L_\beta\Delta=B\Delta.
+$$
+
+The first term accounts for unmatched base types on the two sides, and
+the second for the difference of edge densities on matched types. The
+probability of an incoming mismatch is at most its unmatched intensity.
+The same bound applies to the outgoing subprobability, with its remaining
+mass coupled at the no-edge outcome.
+
+Stop at the first mismatch. The expected number of vertices exposed before
+stopping is bounded by the expected component size in either complete
+first exploration, hence by $e^{2C}$ from the actual fitness-ordered
+component estimate. A union bound over the two edge directions gives
+
+$$
+\mathbb P(\text{any mismatch})
+\leq\left[L_M+2e^{2C}B\right]\Delta.
+$$
+
+On the complementary event all physical states, measurement companions,
+accepted edges, and component membership agree. Use the same single Haar
+matrix for the matching components and the same root jitter, OU innovation,
+and position innovation. Frozen-source copying, shared component velocity
+update, both force evaluations, velocity cap, and terminal classification
+then agree exactly. Full variation is at most twice the coupling failure
+probability, proving the first assertion.
+
+The pair $(X,J)$ requires only the root type, its cloning donor and that
+donor's sampled measurement, and the root gate. Its donor law is normalized
+against the conditional alive law, so the factor $m$ cancels. A root
+mismatch contributes at most $L_M\Delta$, an augmented donor mismatch at
+most $(2/\kappa_C)L_M\Delta$, and a matched gate disagreement at most
+$2L_aL_F\Delta$. Incoming component members do not change a recipient's
+frozen copied position. Converting this coupling bound to full variation
+gives $L_{\mathrm{pos}}$. Every estimate retains the actual sampled fitness
+and the complete component collision transformation.
+:::
+
+:::{prf:lemma} An exact kinetic observable whose noise excludes the OU amplitude
+:label: lem-chaos-kinetic-memory-observable
+
+For the quadratic-force BAOAB step, let $(X,V)$ be a walker's input after
+cloning and its specified recipient jitter. Put $c=h/2$, $k=1-c^2$, and
+$s=\sigma_x\sqrt h$. Let $(x^+,v^+)$ be its final physical coordinates
+including the smooth cap, before any cemetery replacement. The inverse cap
+on $|v|<V_{\max}$ is
+
+$$
+C_{V_{\max}}^{-1}(v)=\frac{V_{\max}v}{V_{\max}-|v|}.
+$$
+
+The bounded marked-state observable
+
+$$
+\varphi_t(x,v,a)=\cos\!\left(
+ t\cdot\left[C_{V_{\max}}^{-1}(v)-\frac{k}{c}x\right]\right)
+$$
+
+has, for every $t\in\mathbb R^d$, the exact conditional expectation
+
+$$
+\boxed{\mathbb E\bigl[\varphi_t(x^+,v^+,a^+)\mid X,V\bigr]
+ =\cos\!\left(t\cdot[-(k/c)X-V]\right)
+   \exp\!\left[-\tfrac12(ks/c)^2|t|^2\right].}
+$$
+
+It is independent of the OU noise amplitude. In particular, increasing
+velocity noise alone does not make the complete one-step physical output
+independent of its input. This assertion concerns an exact observable of
+the declared update and does not assert a failure of multistep attraction.
+:::
+
+:::{prf:proof}
+Write the BAOAB intermediate variables as
+
+$$
+v_1=V-cX,\quad x_1=X+cv_1=kX+cV,\quad
+v_2=e^{-\gamma h}v_1+q\xi,\quad
+x_2=x_1+cv_2,\quad v_3=v_2-cx_2.
+$$
+
+Eliminating $v_2$ gives
+
+$$
+v_3=\frac{k}{c}x_2-\frac{k}{c}X-V.
+$$
+
+The final operations are $x^+=x_2+s\zeta$ and
+$v^+=C_{V_{\max}}(v_3)$, with $\zeta$ a standard Gaussian independent
+of the input and OU innovation. Therefore
+
+$$
+C_{V_{\max}}^{-1}(v^+)-\frac{k}{c}x^+
+=-\frac{k}{c}X-V-\frac{ks}{c}\zeta.
+$$
+
+Taking its Gaussian characteristic function and the real part proves the
+formula. Terminal alive/dead classification does not change physical
+coordinates, and the observable uses both status strata. The inverse cap
+is finite on every physical output of the smooth cap; its values outside
+that open ball may be assigned arbitrarily. No cancellation of cloning
+or collision terms is used: their full outcome is the conditioned pair
+$(X,V)$.
+:::
+
+:::{prf:theorem} Stationary chaos from actual-map attraction
 :label: thm-uniqueness-of-qsd
 
-Suppose $\{\Lambda_N\}$ is tight, the swarm QSDs are exchangeable, and
-$\mathcal S_t$ is a continuous semiflow on the relevant closed class of
-probabilities on $\mathsf Z$. Assume:
+Suppose the canonical QSD empirical laws are tight with the stationary
+moment control above, and every measure in their limiting class is attracted
+to the same probability $\mu_*$ under the actual map:
 
-1. For each fixed $t>0$, with observation indices $n_N(t)$, the empirical
-   evolution started from $\nu_N$ satisfies
+$$
+\mathcal F_h^n(\mu)\Rightarrow\mu_*\qquad(n\to\infty).
+$$
 
-   $$
-   \mathbb E d_*(L_N(S_{n_N(t)}),\mathcal S_tL_N(S_0))\longrightarrow0.
-   $$
-
-   On absorbed trajectories assign any fixed probability to $L_N$.
-2. The extinction probability at that observation time vanishes:
-   $1-\alpha_N^{n_N(t)}\to0$.
-3. Every measure in the relevant limit class is attracted to one probability
-   $\mu_*$: $\mathcal S_t\mu\Rightarrow\mu_*$ as $t\to\infty$.
-
-Then
+Then $\mu_*$ is a fixed point and
 
 $$
 \Lambda_N\Rightarrow\delta_{\mu_*},\qquad
-\nu_N^{(l)}\Rightarrow\mu_*^{\otimes l}\quad\text{for every fixed }l.
+\nu_N^{(\ell)}\Rightarrow\mu_*^{\otimes\ell}
+\quad\text{for each fixed }\ell.
 $$
 
-The limiting law is stationary. For a continuous model satisfying
-{prf:ref}`thm-uniqueness-uniqueness-stationary-solution`, its attraction is
-proved by the zero-mass mixing comparison, with the appropriate extension
-to initial measures in this limit class. At fixed timestep, the same theorem
-holds with iterates of a continuous nonlinear map and its globally attracting
-fixed point.
+Finite-horizon consistency and vanishing extinction for this kernel are
+proved in {prf:ref}`thm-chaos-canonical-one-step` and
+{prf:ref}`thm-extinction-rate-vanishes`. The stated global attraction remains the unresolved
+hypothesis for the canonical algorithm; no finite-rate substitute is used
+to assert it.
 :::
 
 :::{prf:proof}
-Choose a subsequence with $\Lambda_N\Rightarrow\Lambda$. For a bounded
-Lipschitz function $H$ on $\mathcal P(\mathsf Z)$, the QSD identity gives
+Take a subsequence with $\Lambda_N\Rightarrow\Lambda$. The preceding
+invariant-mixture theorem gives $(\mathcal F_h)_\#\Lambda=\Lambda$ and
+therefore $(\mathcal F_h^n)_\#\Lambda=\Lambda$ for every integer $n$.
+For bounded continuous $H$ on the space of population laws,
 
 $$
-\left|\mathbb E H(L_N(S_{n_N(t)}))-\int H\,d\Lambda_N\right|
-\le2\|H\|_\infty(1-\alpha_N^{n_N(t)}).
+\int H(\mathcal F_h^n\mu)\Lambda(d\mu)=\int H(\mu)\Lambda(d\mu).
 $$
 
-The finite-time consistency assumption changes the expectation on the left
-to $\int H(\mathcal S_t\mu)\Lambda_N(d\mu)$ with an error tending to zero.
-Continuity of $\mathcal S_t$ lets us pass to the limit. We obtain
+The assumed attraction and bounded convergence make the left side tend to
+$H(\mu_*)$. Thus $\Lambda=\delta_{\mu_*}$. Every subsequential limit has
+this value; tightness gives convergence of the whole sequence. Exchangeability
+and the empirical-to-chaos lemma give the marginal conclusion.
+Finally continuity and the iteration identity imply
 
 $$
-\int H(\mathcal S_t\mu)\Lambda(d\mu)=\int H(\mu)\Lambda(d\mu).
+\mathcal F_h\mu_*
+=\lim_{n\to\infty}\mathcal F_h(\mathcal F_h^n\mu)
+=\lim_{n\to\infty}\mathcal F_h^{n+1}\mu=\mu_*.
 $$
-
-Thus $\Lambda$ is an invariant probability for the nonlinear flow on the
-space of population laws. By attraction and bounded convergence, the left
-side tends as $t\to\infty$ to $H(\mu_*)$. Hence
-$\int H\,d\Lambda=H(\mu_*)$ for every such $H$, giving
-$\Lambda=\delta_{\mu_*}$. All subsequential limits agree, proving empirical
-convergence and then chaos.
-
-For stationarity of $\mu_*$, choose any $\mu$ in the attraction class.
-Continuity and the semiflow identity give
-$\mathcal S_s\mu_*=\lim_{t\to\infty}\mathcal S_s\mathcal S_t\mu
-=\lim_{t\to\infty}\mathcal S_{s+t}\mu=\mu_*$.
 :::
 
-:::{prf:remark} Why attraction appears in the theorem
+:::{prf:remark} Why uniqueness of a fixed point is insufficient
 :label: rem-chaos-attraction-versus-uniqueness
 
-An invariant probability on the space of population measures can be supported
-on a periodic orbit of a deterministic nonlinear flow. Uniqueness of that
-flow's stationary point alone excludes neither such an orbit nor an invariant
-mixture. The full-time argument above uses global attraction, while the LSI
-route uses vanishing empirical variance. Both supply the additional step
-needed to turn a stationary empirical mixture into one stationary law.
-The empirical-measure approach to chaos for general Markov transitions is
-also developed in
-[Gottlieb, *Markov Transitions and the Propagation of Chaos*](https://arxiv.org/abs/math/0001076).
+A nonlinear discrete map may have a unique fixed point and also a periodic
+orbit. The uniform measure on a finite periodic orbit is an invariant
+probability on the space of population laws. Fixed-point uniqueness alone
+does not eliminate that invariant mixture. The attraction theorem excludes
+it dynamically; the concentration theorem excludes it by vanishing
+empirical variance. This observation identifies a logical requirement, not
+an asserted periodic orbit of the canonical gas.
 :::
 
 :::{prf:theorem} Convergence of macroscopic observables
@@ -20887,27 +22966,25 @@ $\delta_0$ and has second moment one, but
 $W_2^2(\mu_N,\delta_0)=1$ for every $N$.
 :::
 
-:::{prf:remark} Scope of the assembled mean-field results
+:::{prf:remark} What has been established for the actual algorithm
 :label: rem-chaos-model-scope
 
-For the continuous bounded-rate model, the gain-loss decomposition and
-normalization bounds give a complete positive mild-solution construction.
-A proved kinetic zero-mass mixing estimate yields stationary existence,
-uniqueness, and attraction through the explicit comparison with
-$L_{\mathcal R}$. A joint-law LSI supplies empirical concentration when its
-form controls the observables being used. The finite-population conclusion
-then follows from the corresponding full-kernel consistency and survival
-estimates, with each time scale fixed as stated.
+The canonical fixed-step algorithm has an explicit rooted-component
+population map, proved normalization and component-size bounds, one-step
+empirical consistency, continuity, and finite-horizon propagation of chaos.
+The terminal-box configuration also has at least one nonlinear stationary
+fixed point. None of these conclusions requires cloning probabilities to
+vanish with the timestep.
 
-For the discrete latent algorithm, the companion kernel, sampled fitness,
-collision groups, position metric, and capped split update must all appear
-in that consistency estimate. For an adaptive continuous generator,
-measure-dependent drift and diffusion require their own well-posedness and
-stability bounds. These are the analytic connections to
-{doc}`14_a_geometric_gas_c3_regularity`,
-{doc}`14_b_geometric_gas_cinf_regularity_full`, and
-{doc}`17_geometric_gas`. The continuum constructions use the limits and
-uniformity conditions developed in {doc}`16_continuum_discharge`.
+Stationary QSD chaos additionally requires the concentration or attraction
+step stated above. Continuous-time limits require control over a growing
+number of the same updates, with the actual collision, cap, revival, and
+boundary operations retained. History-dependent donors, adaptive diffusion,
+local fitness normalization, and alternative boundary schedules require
+analysis of their own specified transition; the canonical theorem does not
+silently identify those extensions with its kernel. These distinctions
+carry into {doc}`10_kl_hypocoercive`, {doc}`12_qsd_exchangeability_theory`,
+and {doc}`16_continuum_discharge`.
 :::
 
 ## convergence_program/07_discrete_qsd.md
@@ -21850,6 +23927,160 @@ $$
 
 :::{prf:proof}
 Young's inequality gives $B\sqrt I\leq(a/2)I+B^2/(2a)$. Thus $\dot\Phi\leq-r\Phi+B^2/(2a)+E$. Integrate this scalar differential inequality.
+:::
+
+:::{prf:proposition} Exact cancellation at the full discrete QSD
+:label: prop-hypocoercive-full-qsd-cancellation
+
+Let $Q_N$ be the complete marked Euclidean Gas sub-Markov kernel and
+$\nu_NQ_N=\alpha_N\nu_N$. Its backward conditional kernel is
+
+$$
+B_N(S',dS)=\frac{\nu_N(dS)Q_N(S,dS')}{\alpha_N\nu_N(dS')},
+\qquad A_Ng(S')=\int g(S)B_N(S',dS).
+$$
+
+The quotient denotes a regular conditional probability, not a pointwise
+density assumption. For a bounded $g$ with $\nu_Ng=0$, put
+$M=\|g\|_\infty$ and $c=\nu_N(A_Ng)$.
+For $|\varepsilon|M<1$, the input law
+$\mu_\varepsilon=(1+\varepsilon g)\nu_N$ has the exact conditioned
+output density
+
+$$
+\frac{d(\mu_\varepsilon Q_N/\mu_\varepsilon Q_N1)}{d\nu_N}
+=\frac{1+\varepsilon A_Ng}{1+\varepsilon c}
+=1+\frac{\varepsilon(A_Ng-c)}{1+\varepsilon c}.
+$$
+
+For $|\varepsilon|M\leq1/8$, its entropy increment satisfies
+
+$$
+\begin{aligned}
+&D\!\left(\frac{\mu_\varepsilon Q_N}{\mu_\varepsilon Q_N1}
+\middle\Vert\nu_N\right)-D(\mu_\varepsilon\Vert\nu_N)\\
+&\quad=\frac{\varepsilon^2}{2}
+\left[\operatorname{Var}_{\nu_N}(A_Ng)-\nu_N(g^2)\right]
++\mathcal R_\varepsilon,\qquad
+|\mathcal R_\varepsilon|\leq12|\varepsilon|^3M^3.
+\end{aligned}
+$$
+
+Thus the full entropy balance at its actual QSD has no term of first order
+in $\varepsilon$. The centering $A_Ng-c$ includes the derivative of the
+survival normalization.
+:::
+
+:::{prf:proof}
+The joint measure $\nu_N(dS)Q_N(S,dS')/\alpha_N$ has output marginal
+$\nu_N$, so $B_N$ is Markov and $\|A_Ng\|_\infty\leq M$.
+Moreover
+
+$$
+\mu_\varepsilon Q_N
+=\alpha_N(1+\varepsilon A_Ng)\nu_N,\qquad
+\mu_\varepsilon Q_N1=\alpha_N(1+\varepsilon c),
+$$
+
+which proves the exact density formula. Both $g$ and $A_Ng-c$ have zero
+$\nu_N$-mean. For $\psi(1+t)=(1+t)\log(1+t)-t$, Taylor's theorem gives
+
+$$
+\left|\psi(1+t)-\frac{t^2}{2}\right|
+\leq\frac{|t|^3}{6(1-|t|)^2},\qquad |t|<1.
+$$
+
+Set $e=|\varepsilon|M\leq1/8$ and
+$t=\varepsilon(A_Ng-c)/(1+\varepsilon c)$; then
+$|t|\leq2e/(1-e)\leq2/7$. Integrating Taylor's formula gives the
+quadratic output term
+$\varepsilon^2\operatorname{Var}_{\nu_N}(A_Ng)/[2(1+\varepsilon c)^2]$.
+Replacing its denominator by one costs at most
+$2e^2(2e+e^2)/(1-e)^2$.
+The output Taylor remainder is at most
+$[2e/(1-e)]^3/[6(1-2e/(1-e))^2]$, and the input remainder is at most
+$e^3/[6(1-e)^2]$. Their sum, including the denominator cost, is less than
+$12e^3$ for $e\leq1/8$. This proves the bound.
+
+The cancellation uses the full eigenmeasure equation and its normalized
+kernel. In particular, it does not discard a positive square-root estimate
+for a separately centered cloning or kinetic term. The quadratic coefficient
+is the complete one-step response; its sign is not assigned from the
+separate pieces.
+:::
+
+:::{prf:theorem} Entropy convergence for the canonical full-step gas
+:label: thm-hypocoercive-canonical-discrete-entropy
+
+For the canonical terminal absorbing-box gas of
+{prf:ref}`thm-chaos-canonical-finite-n-qsd`, fix $N\geq1$ and $h\ne2$.
+Let $Q_N$, $\nu_N$, $\alpha_N$, and $e_N$ be its actual full-step killed
+kernel, QSD, survival eigenvalue, and positive right eigenfunction. Normalize
+$\nu_N(e_N)=1$. Use the constants proved there:
+
+$$
+0<m_N\leq e_N\leq M_N,\qquad
+Q_N(S,\cdot)\geq\epsilon_N\theta_N(\cdot),\qquad
+\delta_N=\frac{\epsilon_N\theta_N(e_N)}{\alpha_N M_N}>0.
+$$
+
+For every initial law $\mu$ with finite $D(\mu\Vert\nu_N)$ and every
+integer $n\geq0$,
+
+$$
+D\!\left(\frac{\mu Q_N^n}{\mu Q_N^n1}\middle\Vert\nu_N\right)
+\leq\left(\frac{M_N}{m_N}\right)^2
+(1-\delta_N)^nD(\mu\Vert\nu_N).
+$$
+
+The full sampled-fitness component collision and revival rule, retained dead
+coordinates, BAOAB, final position noise, smooth cap, and terminal boundary
+are included in $Q_N$. The constants in this statement are finite-population
+constants supplied by its full-kernel Gaussian minorization.
+:::
+
+:::{prf:proof}
+Define the conservative Doob kernel and its invariant law by
+
+$$
+P_N(S,dS')=\frac{e_N(S')Q_N(S,dS')}{\alpha_Ne_N(S)},
+\qquad \pi_N=e_N\nu_N.
+$$
+
+The minorization gives
+$P_N\geq\delta_N\widehat\theta_N$, where
+$\widehat\theta_N=e_N\theta_N/\theta_N(e_N)$.
+For $\delta_N<1$ write
+$P_N=\delta_N\widehat\theta_N+(1-\delta_N)R_N$, with $R_N$ Markov.
+Joint convexity of relative entropy and data processing imply, for every
+law $\eta$,
+
+$$
+\begin{aligned}
+D(\eta P_N\Vert\pi_N)
+&=D\bigl(\delta_N\widehat\theta_N+(1-\delta_N)\eta R_N
+\Vert\delta_N\widehat\theta_N+(1-\delta_N)\pi_NR_N\bigr)\\
+&\leq(1-\delta_N)D(\eta R_N\Vert\pi_NR_N)\\
+&\leq(1-\delta_N)D(\eta\Vert\pi_N).
+\end{aligned}
+$$
+
+For $\delta_N=1$, $P_N$ is the constant kernel and the conclusion after
+one update is immediate. Iterate the inequality. The exact discrete
+conjugacy, obtained by canceling $e_N$ between successive kernels, is
+
+$$
+\frac{\mu Q_N^n}{\mu Q_N^n1}
+=\mathcal R_{1/e_N}\bigl[(\mathcal R_{e_N}\mu)P_N^n\bigr],
+\qquad \mathcal R_w\eta=\frac{w\eta}{\eta(w)}.
+$$
+
+Apply {prf:ref}`lem-kl-bounded-reweighting` to the initial and final
+reweightings. Each costs at most $M_N/m_N$, giving the claimed bound.
+The proof of the minorization in Chapter 09 conditions on every accepted
+graph and shared rotation before integrating their actual probabilities;
+it therefore applies to the full mechanism rather than to independent
+collision outputs. Its constants need not be uniform in $N$.
 :::
 
 :::{prf:lemma} Discrete entropy decay with the numerical defect retained
@@ -26509,6 +28740,105 @@ The bounds (15.45)--(15.46) concern a full Gaussian convolution in the stated $m
 For $m=2dN$, the absolute Fisher bound is proportional to $N$. Dividing entropy and Fisher information by $N$ makes an intensive estimate; it does not by itself prove the joint LSI (15.10).
 :::
 
+:::{prf:theorem} Full kinetic entropy bound from geometric cluster errors
+:label: thm-kl-canonical-cluster-entropy-bridge
+
+Use the actual quadratic-force configuration of
+{prf:ref}`thm-kinetic-exact-baoab-cap-coupling`, with $h\ne2$ and positive
+OU and final position-noise amplitudes. Let $P,R$ be laws of nonextinct
+marked input swarms. Apply the complete actual cloning stage to each,
+including measurement, retained fitness, donor selection, frozen gates,
+revival, component rotations, and position jitter. Denote the resulting
+physical laws by $\mathcal C_N(P)$ and $\mathcal C_N(R)$.
+
+For any coupling $\Gamma$ of these laws, write paired post-cloning rows as
+$Z_i,\widetilde Z_i\in\mathbb R^{2d}$ and $\Delta_i=Z_i-\widetilde Z_i$.
+Set $c=h/2$, $k=1-c^2$, $a=e^{-\gamma h}$,
+$q=B\sqrt{(1-a^2)/(2\gamma)}$, and $s=\sigma_x\sqrt h$.
+Define the actual BAOAB mean matrix and noise covariance by
+
+$$
+A=\begin{pmatrix}
+1-c^2(1+a)&c(1+a)\\
+-c(1+a)k&a-c^2(1+a)
+\end{pmatrix}\otimes I_d,
+\qquad
+\Sigma_1=\begin{pmatrix}
+c^2q^2+s^2&ckq^2\\
+ckq^2&k^2q^2
+\end{pmatrix}\otimes I_d.
+$$
+
+Let $K_N$ denote the complete update retaining every physical terminal
+output, including extinct outputs, and $Q_N$ its restriction to survival.
+For $a_P=PQ_N1>0$ and $a_R=RQ_N1>0$,
+
+$$
+\begin{aligned}
+D(PK_N\Vert RK_N)
+&\leq\frac12\mathbb E_\Gamma\sum_{i=1}^N
+\langle\Delta_i,A^{\mathsf T}\Sigma_1^{-1}A\Delta_i\rangle,\\
+D\!\left(\frac{PQ_N}{a_P}\middle\Vert\frac{RQ_N}{a_R}\right)
+&\leq\frac1{2a_P}\mathbb E_\Gamma\sum_{i=1}^N
+\langle\Delta_i,A^{\mathsf T}\Sigma_1^{-1}A\Delta_i\rangle.
+\end{aligned}
+$$
+
+To express this cost in the geometric error clusters of
+{doc}`03_cloning`, transport their labels through the chosen row pairing and
+take their common refinement, keeping any residual labels as separate
+blocks. Call the resulting partition $\mathcal G$. It is a proof partition
+of the paired rows, not a change to the algorithm's clusters or collision
+components. For $G\in\mathcal G$, put
+$\bar\Delta_G=|G|^{-1}\sum_{i\in G}\Delta_i$ and
+$e_i=\Delta_i-\bar\Delta_G$. With $M=A^{\mathsf T}\Sigma_1^{-1}A$,
+the entropy cost has the exact decomposition
+
+$$
+\sum_i\langle\Delta_i,M\Delta_i\rangle
+=\sum_{G\in\mathcal G}|G|\langle\bar\Delta_G,M\bar\Delta_G\rangle
++\sum_{G\in\mathcal G}\sum_{i\in G}\langle e_i,Me_i\rangle.
+$$
+
+Both terms vanish for identical paired configurations. Taking $R=\nu_N$
+uses the actual QSD output $RQ_N/a_R=\nu_N$ without imposing a common
+invariant law on the individual algorithm stages.
+:::
+
+:::{prf:proof}
+Every dead input slot is revived at the scheduled cloning stage because
+the input is nonextinct. Thus all post-cloning rows undergo the same declared
+kinetic schedule. Conditional on all post-cloning coordinates, the pre-cap
+outputs are independent Gaussians with means $AZ_i$ and common covariance
+$\Sigma_1$. The final position noise is added after the last force kick;
+this gives the displayed covariance, whose scalar-block determinant is
+$s^2k^2q^2>0$.
+
+For coupled deterministic inputs the relative entropy of these Gaussian
+product laws equals
+$\frac12\sum_i|A\Delta_i|_{\Sigma_1^{-1}}^2$.
+Integrate both Gaussian laws against the same coupling $\Gamma$ and use
+joint convexity of relative entropy. The first and second mixtures have
+the correct actual input marginals; no independence of post-cloning rows
+is asserted. Applying the same deterministic velocity cap and terminal
+marking to both mixtures cannot increase relative entropy, proving the
+first inequality.
+
+Disintegrate $PK_N$ and $RK_N$ according to terminal survival. The relative
+entropy chain rule includes the nonnegative Bernoulli relative entropy,
+$a_P D(PQ_N/a_P\Vert RQ_N/a_R)$, and the nonnegative extinct-branch
+relative entropy. Discarding the other terms proves the second inequality.
+If the total entropy is infinite, that upper bound remains valid in the
+extended sense.
+
+For each block $G$, expand
+$\Delta_i=\bar\Delta_G+e_i$. The cross terms sum to zero because
+$\sum_{i\in G}e_i=0$. This proves the exact cluster decomposition, also
+when the partition depends measurably on the coupled configuration.
+The complete collision noise and changed donor velocities enter
+$\mathcal C_N(P)$ and $\mathcal C_N(R)$; none are omitted from the cost.
+:::
+
 :::{prf:theorem} Relative entropy along heat flow
 :label: thm-entropy-bound-debruijn
 
@@ -26659,6 +28989,128 @@ The other case is symmetric. Use $Z_s\geq kw_{\min}$ and $a,b\leq n_cw_{\max}$ f
 :label: rem-kl-companion-set-scope
 
 This estimate is conditional on the candidate sets and on shared weights for common candidates. During sequential pairing, the current number of candidates may be much smaller than the original alive population. Moreover, moving common candidates changes their weights. Those effects require their own estimates before the lemma can be applied to a whole sequential matching law. For an unbounded Gaussian-distance kernel, a global positive $w_{\min}$ is not available; the exact formula in terms of $a,b,c$ remains valid.
+:::
+
+:::{prf:theorem} Exact entropy balance for the complete marked update
+:label: thm-kl-full-step-survivor-chain-rule
+
+Let $Q_N$ be the actual Euclidean Gas sub-Markov kernel on nonextinct,
+terminally consistent marked swarms. Its transition integrates the weighted
+measurement and donor draws, retained sampled fitness and frozen gates,
+connected-component rotations, revival and jitter, BAOAB, position noise,
+velocity cap, and terminal boundary classification. Set $k_N=Q_N1$.
+For input probability laws $P\ll R$, put
+
+$$
+a=P(k_N)>0,\quad b=R(k_N)>0,\quad
+P^+=PQ_N/a,\quad R^+=RQ_N/b,
+$$
+
+and define the survivor-tilted input laws
+$P^{\rm s}=k_NP/a$, $R^{\rm s}=k_NR/b$.
+Let $\mathsf B_P(y,dx)$ and $\mathsf B_R(y,dx)$ be the backward conditional
+input laws under $P(dx)Q_N(x,dy)/a$ and $R(dx)Q_N(x,dy)/b$, respectively.
+Then the following identity holds in $[0,\infty]$:
+
+$$
+D(P^{\rm s}\Vert R^{\rm s})
+=D(P^+\Vert R^+)
++\int D(\mathsf B_P(y,\cdot)\Vert\mathsf B_R(y,\cdot))\,P^+(dy).
+$$
+
+Write the last nonnegative term as $\mathcal B_N(P,R)$. If all terms below
+are finite and $P^+\ll T$, with $\log(dR^+/dT)$ defined $P^+$-almost
+everywhere, then
+
+$$
+\begin{aligned}
+D(P^+\Vert T)
+={}&\frac1a\int k_N\log\frac{dP}{dR}\,dP
++\log\frac ba-\mathcal B_N(P,R)
++\int\log\frac{dR^+}{dT}\,dP^+.
+\end{aligned}
+$$
+
+In particular, for $T=R$ and $f=dP/dR$,
+
+$$
+\begin{aligned}
+D(P^+\Vert R)-D(P\Vert R)
+={}&\frac{\operatorname{Cov}_{P}(k_N,\log f)}a
++\log\frac ba-\mathcal B_N(P,R)
++P^+\!\left(\log\frac{dR^+}{dR}\right).
+\end{aligned}
+$$
+
+For the actual QSD reference $R=\nu_N$, $b=\alpha_N$ and $R^+=\nu_N$,
+so the last term vanishes identically. No separate invariance of cloning,
+kinetics, or a Gibbs law is required.
+:::
+
+:::{prf:proof}
+The marked state space is a standard Borel space, so the two joint survivor
+laws admit the stated disintegrations. On $\{k_N>0\}$ they have the same
+forward conditional kernel $Q_N(x,dy)/k_N(x)$. The chain rule in the input
+coordinate therefore identifies their joint relative entropy with
+$D(P^{\rm s}\Vert R^{\rm s})$. The chain rule in the output coordinate
+gives its decomposition into $D(P^+\Vert R^+)$ and the expected backward
+relative entropy. This establishes the first identity without subtraction
+of infinite quantities.
+
+The survivor input likelihood ratio is
+$dP^{\rm s}/dR^{\rm s}=(b/a)f$; integrating its logarithm yields the first
+two terms of the second identity. The reference change follows by integrating
+$\log(dP^+/dT)=\log(dP^+/dR^+)+\log(dR^+/dT)$.
+Finally
+$P(k_N\log f)/a=P(\log f)+\operatorname{Cov}_P(k_N,\log f)/a$.
+The QSD substitution uses the full discrete eigenmeasure identity.
+
+Every random choice defining $Q_N$ has already been integrated in these
+joint laws. In particular, this argument does not factor the outputs of
+walkers that share a component rotation, and it does not replace fitness
+marks by their conditional means.
+:::
+
+:::{prf:proposition} Conditional interaction information
+:label: prop-kl-component-multi-information
+
+For any input swarm $S$, let $K_S$ be the complete conservative output law
+before restricting extinction, with marginals $K_{S,i}$. For any product
+comparison law $T_1\otimes\cdots\otimes T_N$ for which the entropies are
+finite,
+
+$$
+D(K_S\Vert\textstyle\bigotimes_iT_i)
+=D(K_S\Vert\textstyle\bigotimes_iK_{S,i})
++\sum_iD(K_{S,i}\Vert T_i).
+$$
+
+The first term is the conditional total correlation. Given a frozen
+accepted component $C$, put $u_i=v_i-\bar v_C$. Its shared Haar rotation
+satisfies
+
+$$
+\operatorname{Cov}(v_i^+,v_j^+\mid C,(v_\ell)_{\ell\in C})
+=\frac{\alpha^2}{d}(u_i\cdot u_j)I_d,\qquad i,j\in C.
+$$
+
+Consequently the component output law need not equal the product of its
+marginals, even conditionally on the input and accepted graph.
+:::
+
+:::{prf:proof}
+Insert the product of the actual marginals between the two densities in
+the likelihood ratio. Each marginal term integrates against $K_{S,i}$,
+which proves the entropy decomposition. For Haar $R\in O(d)$,
+$\mathbb ER=0$ and
+$\mathbb E[R_{ap}R_{bq}]=\delta_{ab}\delta_{pq}/d$.
+Apply these identities to $v_i^+=\bar v_C+\alpha Ru_i$.
+For a two-member component with $u_1=-u_2\ne0$ and $\alpha>0$, the
+cross-covariance is $-\alpha^2|u_1|^2I_d/d$, which is nonzero. The
+entropy decomposition applies to the complete output law after the actual
+kinetic noises and terminal marks; its total-correlation term must be
+evaluated for that law rather than omitted on the basis of independent
+per-slot innovations.
 :::
 
 :::{prf:definition} One-step entropy dissipation
@@ -28308,6 +30760,117 @@ The entropy, reference law and all normalization terms must be the same in
 the identity and in its estimates.
 :::
 
+:::{prf:theorem} Exact discrete population-entropy accounting
+:label: thm-quantitative-full-step-entropy
+
+Let $Q_N$ be the complete marked Euclidean Gas kernel, $k_N=Q_N1$, and
+$E_N$ its nonextinct input state space. Let $\rho$ be a terminally
+consistent one-slot law with alive mass $m>0$. Define
+
+$$
+q_N=\rho^{\otimes N}(E_N)=1-(1-m)^N,\qquad
+R_N=\rho^{\otimes N}(\,\cdot\mid E_N),\qquad
+R_N^+=\frac{R_NQ_N}{R_Nk_N},\quad
+b_N=R_Nk_N.
+$$
+
+For the actual survival-conditioned iterates $P_{n+1}=P_nQ_N/a_n$, where
+$a_n=P_nk_N$, set
+$f_n=dP_n/dR_N$ and $H_n=D(P_n\Vert R_N)$.
+Whenever the displayed terms are finite, their exact per-step balance is
+
+$$
+H_{n+1}-H_n
+=-\mathcal B_N(P_n,R_N)+\mathcal S_n+\mathcal I_n,
+$$
+
+where
+
+$$
+\mathcal S_n
+=\frac{\operatorname{Cov}_{P_n}(k_N,\log f_n)}{a_n}
++\log\frac{b_N}{a_n},
+\qquad
+\mathcal I_n=P_{n+1}\log\frac{dR_N^+}{dR_N},
+$$
+
+and $\mathcal B_N$ is the nonnegative backward relative entropy in
+{prf:ref}`thm-kl-full-step-survivor-chain-rule`. Thus for every $t\geq1$,
+
+$$
+H_t+\sum_{n=0}^{t-1}\mathcal B_N(P_n,R_N)
+=H_0+\sum_{n=0}^{t-1}(\mathcal S_n+\mathcal I_n).
+$$
+
+For an actual QSD $P_n=\nu_N$, the left entropy increment is zero, giving
+the stationary identity
+$\mathcal B_N(\nu_N,R_N)=\mathcal S_\nu+\mathcal I_\nu$.
+The unconditioned product-reference entropy and the entropy per slot are
+respectively
+
+$$
+D(P_n\Vert\rho^{\otimes N})=H_n-\log q_N,
+\qquad
+\frac1N D(P_n\Vert\rho^{\otimes N})
+=\frac{H_n-\log q_N}{N}.
+$$
+
+These identities also hold when $\rho$ is a fixed point of the actual
+population map $\mathcal F_h$. The finite-population output $R_N^+$ in
+$\mathcal I_n$ retains its component dependence and need not be a product.
+:::
+
+:::{prf:proof}
+The event that every independently sampled slot is dead has probability
+$(1-m)^N$, which proves $q_N$. On $E_N$,
+$dR_N/d\rho^{\otimes N}=1/q_N$. The logarithmic likelihood-ratio identity
+therefore gives $D(P_n\Vert\rho^{\otimes N})=H_n-\log q_N$.
+Apply {prf:ref}`thm-kl-full-step-survivor-chain-rule` with $P=P_n$,
+$R=T=R_N$; its covariance form gives the claimed increment exactly.
+Summing telescopes. For a QSD the normalized full-step output equals the
+input, so its entropy increment is zero. No exchangeability cancellation,
+time interpolation, or differentiation of a replacement generator is used.
+:::
+
+:::{prf:corollary} Bounded-observable concentration with the survival cost
+:label: cor-quantitative-marked-product-entropy
+
+Under the notation of {prf:ref}`thm-quantitative-full-step-entropy`, let
+$\varphi$ be any bounded measurable one-slot observable, including the
+alive indicator, whose range lies in an interval of length $\ell>0$.
+For any input law $P$ on $E_N$,
+
+$$
+\mathbb E_P\left|L_N\varphi-\rho\varphi\right|^2
+\leq\frac{\ell^2}{N}
+\left[D(P\Vert R_N)-\log q_N+\frac12\log2\right].
+$$
+
+The same right-hand side bounds $\operatorname{Var}_P(L_N\varphi)$.
+The conditioning contribution satisfies
+$-\log q_N\leq(1-m)^N/[1-(1-m)^N]$.
+:::
+
+:::{prf:proof}
+Under $Q=\rho^{\otimes N}$, Hoeffding's lemma and independence give,
+for $F=L_N\varphi-\rho\varphi$,
+$\mathbb E_Qe^{sF}\leq e^{s^2\ell^2/(8N)}$.
+For an independent standard Gaussian $G$, Tonelli's theorem yields
+
+$$
+\mathbb E_Qe^{NF^2/\ell^2}
+=\mathbb E_G\mathbb E_Qe^{\sqrt{2N}\,GF/\ell}
+\leq\mathbb E_Ge^{G^2/4}=\sqrt2.
+$$
+
+The entropy variational inequality bounds
+$\mathbb E_P[NF^2/\ell^2]$ by $D(P\Vert Q)+\tfrac12\log2$.
+Substitute the exact conditioning identity. Variance is no larger than
+squared error about a specified constant. Finally
+$-\log(1-x)=\int_0^x(1-u)^{-1}du\leq x/(1-x)$ for $0\leq x<1$.
+No joint QSD LSI or independence of the walkers under $P$ is needed.
+:::
+
 :::{prf:proposition} Interaction fluctuations with covariance control
 :label: prop-interaction-complexity-bound
 
@@ -28378,6 +30941,76 @@ not a dimension-independent $W_2$ rate for the entire empirical measure.
 This is the empirical-coupling construction proved in
 {prf:ref}`thm-mean-field-limit-informal`: pair coordinates, apply the triangle
 inequality, and use Jensen's inequality on the mean squared coupling cost.
+:::
+
+:::{prf:theorem} Physical quantization error for the actual population law
+:label: thm-quantitative-algorithm-quantization-lower-bound
+
+Let $\mu=\mathcal F_h(\lambda)$ be the output of the actual marked
+Euclidean Gas population update, with final independent position Gaussian
+noise of standard deviation $s=\sigma_x\sqrt h>0$ in each coordinate.
+Let $\mu_x$ be its full-slot physical position marginal in $\mathbb R^d$,
+including the retained positions of dead slots. Write
+$\omega_d$ for the volume of the unit Euclidean ball and
+$M_s=(2\pi s^2)^{-d/2}$.
+For every probability measure $\eta_N$ supported on at most $N$ physical
+positions,
+
+$$
+W_2^2(\eta_N,\mu_x)
+\geq\frac12(2M_s\omega_d)^{-2/d}N^{-2/d}.
+$$
+
+In particular the bound holds for every realized empirical position measure
+of an actual Rust gas run, without any independence assumption on its slots.
+It also holds with $\mu=\mu_*$ for every fixed point
+$\mu_*=\mathcal F_h(\mu_*)$ of this same algorithm.
+
+When $d>2$, no constant $C$ independent of $N$ can satisfy either
+$\mathbb EW_2^2(\eta_N,\mu_x)\leq C/N$ or
+$\mathbb EW_2(\eta_N,\mu_x)\leq C/\sqrt N$ for all $N$.
+The same obstruction holds for physical phase-space Wasserstein distance
+whose ground metric dominates position distance. It concerns distributional
+quantization and does not contradict the bounds for each fixed observable
+in {prf:ref}`cor-quantitative-marked-product-entropy`.
+:::
+
+:::{prf:proof}
+Condition on all stages before the final position noise, including the
+sampled-fitness graph, the shared component rotations, revival, jitter,
+and BAOAB. If $\Lambda_x$ is the resulting pre-noise position law, the
+full-slot output position marginal is exactly
+
+$$
+\mu_x=\Lambda_x*\mathcal N(0,s^2I_d).
+$$
+
+The velocity cap does not change positions. The terminal boundary operation
+assigns alive/dead marks and retains both sets of position coordinates, so
+summing over those marks preserves this convolution identity. Consequently
+$\mu_x$ has a density bounded above by $M_s$ everywhere.
+
+Let $A$ be the support of $\eta_N$ and put
+$r=(2NM_s\omega_d)^{-1/d}$. The union $U$ of radius-$r$ balls about the
+at most $N$ points of $A$ satisfies
+
+$$
+\mu_x(U)\leq M_sN\omega_dr^d=\frac12.
+$$
+
+In every coupling of $X\sim\mu_x$ and $Y\sim\eta_N$, the event
+$X\notin U$ therefore has probability at least $1/2$, and on that event
+$|X-Y|\geq r$. Thus every coupling costs at least $r^2/2$.
+Taking the infimum proves the first bound, including the case of infinite
+transport cost. Projection from physical phase space to position cannot
+increase Wasserstein distance, so its cost has the same lower bound.
+
+The inequality holds for each realization and hence after taking expectation.
+Its square root gives the deterministic lower bound
+$W_2\geq(2M_s\omega_d)^{-1/d}N^{-1/d}/\sqrt2$.
+For $d>2$, the ratios of these lower bounds to $N^{-1}$ and $N^{-1/2}$,
+respectively, grow without bound. The fixed-point substitution uses its
+actual one-step identity and requires no replacement particle model.
 :::
 
 :::{prf:proposition} Second moments of a mean-field limit
@@ -48124,12 +50757,7 @@ For these observables the following statements hold.
    {prf:ref}`lem-ym-physical-gauge-word-uniform-integrability`.
 
 These statements identify the hierarchy of the specified direct invariant
-observables. Its full labeled algebra has the exact negative reflected test
-in {prf:ref}`prop-ym-native-labeled-color-reflection-sign` whenever the
-specified localized diagonal channel survives. Thus the complete descriptor
-is retained to compute the native law; admitting all its labeled
-localizations into the physical future algebra is incompatible with that
-nonzero channel and reflection positivity.
+observables.
 Full-coordinate orbit separation pertains to a common color
 frame; local gauge covariance and a pure Yang--Mills force identity require
 their native correspondence calculations. Normalized channel averages
@@ -48613,91 +51241,6 @@ approximation on the compact bounded-coordinate ranges makes this error
 arbitrarily small, proving the equivalence of the two positivity tests.
 Finally the even/odd identity applies to arbitrary complex cylinders,
 including the determinant and mixed channels retained here.
-:::
-
-:::{prf:proposition} Exact reflection sign for a localized labeled color coordinate
-:label: prop-ym-native-labeled-color-reflection-sign
-
-Use the full labeled descriptor retained in
-{prf:ref}`thm-ym-native-physical-gauge-hierarchy`, with its actual selected
-record law and its specified geometric reflection. Fix a recorded vertex
-label $i$ and a nonnegative $f\in C_c^\infty(\{x^0>0\})$. The diagonal
-Gram coordinate is $q_{ii}=\|c_i\|^2=m_i$. Its bounded future readout and
-its reflected evaluation are
-
-$$
-F_i^+=m_i\mathbf1_{\{x_i^0>0\}}f(x_i),\qquad
-F_i^-=m_i\mathbf1_{\{x_i^0<0\}}f(\vartheta x_i).
-$$
-
-A missing recorded slot has $m_i=0$. Set
-$u=\mathbb E_{\mathbb P_{N,h}}F_i^+$ and
-$v=\mathbb E_{\mathbb P_{N,h}}F_i^-$. The physical reflected matrix of
-$(1,F_i^+)$ is exactly
-
-$$
-Q=\begin{pmatrix}1&u\\v&0\end{pmatrix}.
-$$
-
-If $u+v>0$, the future word $G=F_i^+-(u+v)/2$ has strictly negative
-physical reflected form:
-
-$$
-\mathbb E_{\mathbb P_{N,h}}
- [\overline{G(\mathsf T_\vartheta Y)}G(Y)]
-=-\frac{(u+v)^2}{4}<0.
-$$
-
-This conclusion applies to the complete execution, survival-conditioned,
-QSD-derived, or stationary law used to define $u,v$. It requires no
-independence of opposite-side stages and no reflection invariance of the
-law. Under reflection invariance $u=v$, and the same value is $-u^2$.
-If $\mathbb P_{N,h}(m_i=1,\,x_i^0\ne0)>0$, some such compactly
-supported $f$ has $u+v>0$.
-
-On the common subsequence retaining these coordinates, let
-$u_{N,h}\to u_*$ and $v_{N,h}\to v_*$. If $u_*+v_*>0$, the fixed
-limiting future word $F_i^+-(u_*+v_*)/2$ has reflected form
-$-(u_*+v_*)^2/4$. Hence a nonzero retained labeled channel of this kind
-also prevents reflection positivity in that limit. In particular the
-uniform bounds and convergence of the full descriptor cannot make it a
-nontrivial physical OS future algebra containing these insertions.
-
-This test concerns individually labeled localizations in the full
-recorded algebra. A summed physical readout has cross-label terms, as
-calculated in {prf:ref}`prop-ym-native-color-reflected-matrices`, and
-its diagonal reflected entry need not vanish. Such an observable remains
-a further pushforward of the full descriptor, in the sense of
-{prf:ref}`thm-sm-direct-measure-isomorphism`.
-:::
-
-:::{prf:proof}
-The same recorded vertex cannot satisfy $x_i^0>0$ and $x_i^0<0$.
-Consequently $F_i^-F_i^+=0$ for every record, before any expectation.
-The diagonal color identity follows from the original masked unit-vector
-normalization. The three remaining matrix entries are the expectation of
-one and the two one-point functions, proving the matrix formula.
-For any real number $a$, direct expansion gives
-
-$$
-\mathbb E[(F_i^--a)(F_i^+-a)]=a^2-a(u+v).
-$$
-
-Its minimum occurs at $a=(u+v)/2$ and has the claimed negative value.
-All factors are bounded, so the calculation applies under the selected
-likelihood, with its companion, cloning, kinetic, and selection factors
-unchanged. Conditioning on any retained interface also leaves the
-pointwise zero product equal to zero.
-
-Choose nonnegative smooth compact cutoffs on the positive half-space
-increasing to one. Their values at $x_i$ and $\vartheta x_i$, with the
-respective masks, increase jointly to
-$m_i\mathbf1_{\{x_i^0\ne0\}}$. Monotone convergence proves the stated
-existence of $f$. Finally the hierarchy theorem passes the bounded
-one-point functions and the identically zero product to the same limit.
-Expanding with the fixed constant $(u_*+v_*)/2$ proves the limiting
-negative form. No population-uniform lower bound on $u+v$ is assumed
-from a finite-cutoff nonzero value.
 :::
 
 :::{prf:proposition} Scalar triangle and outer-plaquette laws in the raw record
@@ -50101,11 +52644,6 @@ physical reflected entries and extends a polynomial sign estimate to
 continuous cylinders. This application uses the existing invariant-coordinate
 and native predictive-kernel results directly. The color orbit identification
 is the common-frame $SU(3)$ identification of the Standard Model chapter.
-The exact test in {prf:ref}`prop-ym-native-labeled-color-reflection-sign`
-excludes reflection positivity for the full labeled future algebra when
-its specified nonzero localized channel survives. Its role as a complete
-native descriptor is distinct from selecting the physical observable
-pushforward on which OS reconstruction is sought.
 
 For the scalar phase record implemented by the raw-array codec,
 {prf:ref}`prop-ym-native-scalar-face-evaluation` evaluates the outer-plaquette
@@ -51015,15 +53553,18 @@ Combining the two equalities yields the claim. $\square$
 :::
 
 :::{prf:remark}
-This proposition is the correct division of labor.
+The implemented twistor companion channels define observables and measure their correlations
+along actual algorithm runs. The spectral experiment fits signed or complex exponential and
+damped-oscillation candidates, checks their stability across lag windows, and tests their
+predictions on held-out frames. These diagnostics characterize the measured correlations;
+they do not establish the positive transfer representation assumed in
+{prf:ref}`cor-effective-twistor-positive-transfer`. Inconclusive fits remain inconclusive, and
+the experiment reports no particle mass.
 
-- The implemented twistor companion channels define new operator families and extract masses from
-  their Euclidean correlators.
-- The exact twistor mass formula computes a Lorentzian invariant only after a channel has been
-  reconstructed on shell as a momentum bispinor.
-
-They are compatible, but they are not the same procedure. The current code implements the first,
-not the second.
+A mass interpretation requires the additional reconstruction hypotheses in this proposition
+and {doc}`09_qft_calibration`. Once an on-shell Lorentzian momentum bispinor is available,
+the exact twistor mass formula computes its invariant. Measuring a companion correlation
+alone does not supply that reconstruction.
 :::
 
 ## 3_fitness_manifold/03_curvature_gravity.md
@@ -52337,6 +54878,450 @@ determine the dynamical convergence statement.
 
 ## 3_fitness_manifold/04_field_equations.md
 
+:::{prf:definition} Primitive selection coefficients
+:label: def-algorithmic-primitive-selection
+
+Write the admitted pre-selection state as
+
+$$
+S_n=(P_n,P_{n-1},\ldots,P_{n-L},\chi_n,n;\theta),\qquad
+P_n=((x_i,v_i,a_i,\ell_i,\mathrm{flags}_i,\mathrm{state}_i))_{i=1}^N,
+$$
+
+where $M=\sum_i a_i$ is the eligible count, $a_i$ is configured eligibility, $\ell_i$ includes slot/generation identity, $L$ is the maximum configured donor window, and $\theta$ contains the complete configuration and fixed provider definitions. The state $\chi_n$ contains mutable global provider/domain state, the input schedule and any variables needed to advance them. The maps below are deterministic given that state and their explicitly listed innovations. The population $P_n$ is the admitted pre-selection population. Let $\mathcal E_n$ denote the configured input/extraction, observation refresh, boundary and reward-validity operations that produce this admitted population from the preceding completed one. Include $\mathcal E_n$ as an explicit stage whenever it changes a measured field. Rewards and observations are refreshed at their actual transaction barriers; opaque domain state must be included when the domain is not numerical. At a numerical experiment boundary, the input schedule is also fixed or adjoined. The mathematical stochastic law uses independent addressed innovations; a fixed seed determines a reproducible realization.
+
+For module $m\in\{D,C\}$, its frozen eligible pool is
+
+$$
+\mathcal P_m(S_n)=\{(b,j):0\le b\le L_m,\ a_j(P_{n-b})=1\}.
+$$
+
+Every pool atom retains its own coordinates, frame, generation and version. Current self is removed when self-companions are disabled; the same slot at a historical frame is a distinct permitted donor. If no nonself candidate exists, the implemented singleton fallback uses the eligible current self.
+
+For an independent donor draw, define the actual weights
+
+$$
+w^m_{i,bj}=\begin{cases}
+1&\text{uniform kernel},\\
+\exp[-d_m(z_i,z_{bj})^2/(2\varepsilon_m^2)]&\text{Gaussian kernel},\\
+\exp[-q_m(z_i,z_{bj})/\tau_m]&\text{exponential kernel},
+\end{cases}\qquad
+p^m_{i,bj}=w^m_{i,bj}/\sum_{(c,k)\in\mathcal C_i^m}w^m_{i,ck}.
+$$
+
+Here the exponential uses the configured comparison value $q_m$, and the Gaussian squares an ordinary distance but does not square an already squared comparison again. With replacement, the row law is the product of these probabilities. Without replacement, the ordered selected list $j_1,\ldots,j_K$ has the Plackett–Luce law
+
+$$
+\prod_{r=1}^K\frac{w_{i,j_r}}{\sum_{k\in\mathcal C_i\setminus\{j_1,\ldots,j_{r-1}\}}w_{ik}}.
+$$
+
+Reciprocal matching has a joint law. Fisher–Yates draws a uniform random permutation and pairs consecutive entries. Gaussian-greedy draws a uniform random permutation, takes its last unmatched entry $i$, chooses a partner among the remaining entries with probability proportional to $w_{ij}$, removes both, and repeats. Summing the probability of these construction histories defines the joint matching law $Q_m$; the configured odd policy supplies self, unmatched, or rejection. These are explicit finite algorithms for $Q_m$, not an unspecified transition kernel. Matching uses current eligible sources only.
+
+Let $D$ be the distance companion batch. Its reducer gives $d_i(D)$, and the diversity measurement is $s_i=(d_i^2+\delta_D^2)^{1/2}$. Let $r_i$ denote the oriented reward. For the smooth global standardizer,
+
+$$
+\overline r=\frac1M\sum_i a_i r_i,\quad
+\sigma_r=\left[\frac1M\sum_i a_i(r_i-\overline r)^2+\sigma_{r,\min}^2\right]^{1/2},\quad z_i^r=(r_i-\overline r)/\sigma_r,
+$$
+
+and likewise for $s$. The local standardizer replaces uniform weights by its configured normalized kernel weights, excludes self when configured, and falls back to global statistics only for an empty neighborhood. The actual logistic positive maps are $R(z)=A_r/(1+e^{-z})+f_r$, $D_+(z)=A_d/(1+e^{-z})+f_d$. Therefore
+
+$$
+F_i=R(z_i^r)^\alpha D_+(z_i^s)^\beta.
+$$
+
+The enabled metric provider requires these smooth global/local standardizers and logistic maps. These formulas specify the smooth fitness branch used by the conditional-metric experiments.
+
+If historical cloning is enabled, the engine draws an additional distance batch $D^H$ on the entire clone pool with the independent `HistoricalDistance` stream, recomputes its rewards under the current input, and computes historical diversity. Historical fitness uses these fresh measurements with the current population's global means and scales. Current donor fitness remains $F_j$, not the pool-rescored value. This historical rescore is essential to the transition law.
+:::
+
+:::{prf:definition} Executed clone and BAOAB maps
+:label: def-algorithmic-primitive-maps
+
+After $D,C,D^H$ are fixed, define for each eligible target
+
+$$
+q_i=\left[\frac{F_{C_i}^{\mathrm{donor}}-F_i}
+{s_c(F_i+\epsilon_c)}\right]_0^1,
+\qquad A_i\sim\mathrm{Bernoulli}(q_i).
+$$
+
+An unmatched target has $q_i=0$. The gates are conditionally independent across recipients in the built-in stochastic law. Every ineligible target is instead revived from an independent uniform current-eligible donor and is accepted with probability one. Historical sources are not used for revival.
+
+Literal copying is simultaneous from the immutable pre-clone donor pool. The target retains its slot, increments its own generation on an accepted replacement, and obtains the donor's row state and observations. Thus the copy map is a fully specified deterministic map $C_{D,C,D^H,A,R}(S_n)$, where $R$ denotes revival donors.
+
+If jitter is enabled, an accepted **nonrevival** target receives
+$x_i\leftarrow x_i+\eta_c B_i^c\xi_i^c$, with the noise factor evaluated after literal copying. Revival targets are not jittered by this transform. If restitution $e\in[0,1]$ is enabled, every disjoint current reciprocal pair $(i,j)$ with at least one accepted gate has
+
+$$
+v_i'=\tfrac12(v_i+v_j)+\tfrac e2(v_i-v_j),\qquad
+v_j'=\tfrac12(v_i+v_j)-\tfrac e2(v_i-v_j),
+$$
+
+using both **pre-clone** velocities. Therefore the partner's velocity can change even if its own gate was rejected. Restitution cannot be represented by independent target-copy kernels. It is not supported for historical or overlapping donor pairs.
+
+Let $\mathcal B$ mean the actual boundary/reconciliation map. Built-in boundaries are unbounded, absorbing box, periodic box, external termination, or an ordered composition. Absorbing boundaries mark out-of-bounds and preserve the recorded row; periodic boundaries wrap coordinates. There is no built-in reflecting boundary in this implementation. Reward validation and eligibility updates are separate deterministic maps at their recorded barriers.
+
+Let $Y^0$ be the post-transform, reconciled, boundary-classified and reward-validated population. Set $h=\mathrm{dt}$, $c=e^{-\gamma h}$, and
+
+$$
+s_h^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0.\end{cases}
+$$
+
+For every eligible input row, the kinetic maps, with boundaries between each, are
+
+$$
+\begin{aligned}
+Y^1&=\mathcal B B_{h/2}(Y^0),&v_i&\leftarrow v_i+(h/2)f_i(Y^0),\\
+Y^2&=\mathcal B A_{h/2}(Y^1),&x_i&\leftarrow x_i+(h/2)v_i,\\
+Y^3&=\mathcal B O_h(Y^2,\xi),&v_i&\leftarrow c v_i+s_hB_i(Y^2;S_n,D,A,R)\xi_i,\\
+Y^4&=\mathcal B A_{h/2}(Y^3),&x_i&\leftarrow x_i+(h/2)v_i,\\
+Y^5&=\mathcal B B_{h/2}(Y^4),&v_i&\leftarrow v_i+(h/2)f_i(Y^4).
+\end{aligned}
+$$
+
+Rows that become ineligible are skipped thereafter; complete extinction skips the remaining kinetic stages. The force is
+
+$$
+f_i(Y)=-\mathcal D_i(Y)+\nu\sum_{j\ne i}a_j
+\frac{\exp[-|x_i-x_j|^2/(2\ell_\nu^2)]}{Z_i(Y)}(v_j-v_i),
+$$
+
+where $\mathcal D$ is the actual gradient provider and $Z_i=\sum_{j\ne i}a_jw_{ij}$ for row normalization, otherwise $Z_i=M(Y)$, including self in the eligible count. A zero row normalizer gives zero viscous force. The current implementation computes these viscous distances directly in coordinates. B2 recomputes the gradient, weights, velocities and eligibility from its own input. It is not a repeated B1 force.
+
+The innovation components are standard Gaussian or uniform on $[-\sqrt3,\sqrt3]$, optionally shifted by the configured addressed source perturbations. The factor is isotropic, diagonal, full, low-rank, or the metric factor specified below. The integrator owns $s_h$; it must not be included a second time inside $B$.
+:::
+
+:::{prf:theorem} Explicit finite-step population law
+:label: thm-algorithmic-explicit-transition
+
+Denote the preceding complete composition, final reward refresh, bounded history shift and next admission $\mathcal E_{n+1}$ by $\mathcal T(S_n;D,C,D^H,A,R,\xi^c,\xi)$. Its retained age-one frame is the admitted input $P_n$; its new age-zero frame is the next admitted population. This fixes the pre-selection convention for $S_{n+1}$. For the fixed-input numerical experiments, next admission preserves the completed physical rows. The explicit law of an integrable full-state observable $\Phi$ is
+
+$$
+\begin{split}
+\mathbb E[\Phi(S_{n+1})\mid S_n]
+={}&\sum_D Q_D(D\mid S_n)\sum_C Q_C(C\mid S_n)
+\sum_{D^H}Q_H(D^H\mid S_n,C)\\
+&\times\sum_{A\in\{0,1\}^{M}}\prod_{i:a_i=1}
+q_i^{A_i}(1-q_i)^{1-A_i}
+\sum_R M^{-N_{\rm dead}}\\
+&\times\int\Phi(\mathcal T(S_n;D,C,D^H,A,R,\xi^c,\xi))
+\,d\nu_c(\xi^c)\,d\nu_O(\xi).
+\end{split}
+$$
+
+Absent historical rescoring or jitter is a unit point mass. The clone pool itself is fixed by $S_n$, so $Q_H$ does not actually depend on the realized clone draw for built-in modules; its notation emphasizes the correct pool. The equation applies on the configured successful-transaction domain. If $M=0$, the transaction returns extinction; use its specified absorbing outcome in place of the donor sums. Eligibility loss within a transaction remains in $\mathcal T$.
+
+:::
+
+:::{prf:proof}
+ Each donor procedure is sampled on its named stream; the historical rescore is evaluated on its separate named stream; conditioned on those outputs the gate comparison with independent uniforms produces the stated Bernoulli factors and the revival stream supplies uniform donor factors. Copying and restitution are deterministic given those choices. The remaining stochastic maps are the configured jitter and thermostat innovations. Iterated conditional expectation through the exact stage order gives the sum and integral. The final memory operation is deterministic. All its probabilities and maps are the configured primitive coefficients above.
+:::
+
+:::{prf:theorem} Exact field characteristics and moment hierarchy
+:label: thm-algorithmic-field-characteristics
+
+Use the subprobability phase-space field
+
+$$
+\mu_n=\frac1N\sum_i a_i\delta_{(x_i,v_i)}.
+$$
+
+The denominator is the configured slot count, not the random alive count. For a test function $\varphi(x,v)$, an exact stage increment is
+
+$$
+\Delta_r\langle\mu,\varphi\rangle=
+\frac1N\sum_i\big[a_i^{r+1}\varphi(x_i^{r+1},v_i^{r+1})-
+a_i^r\varphi(x_i^r,v_i^r)\big].
+$$
+
+Summing literal-copy, jitter, restitution, each reconciliation/boundary map, B1, A1, O, A2 and B2 increments, together with the next admission $\mathcal E_{n+1}$ whenever it changes the field, telescopes exactly to the admitted-to-admitted full-step change. Conditional expectation of each term uses the explicit transition measure above. These are weak field equations with stage-resolved sources, impulses, transport and noise.
+
+In particular, before transforms, conditional on donor/fitness measurements the expected literal-copy source is
+
+$$
+\frac1N\sum_{\substack{i:a_i=1\\ C_i\ \mathrm{matched}}}q_i[\varphi(z_{C_i})-\varphi(z_i)]
++\frac1N\sum_{i:a_i=0}\frac1M\sum_{j:a_j=1}\varphi(z_j).
+$$
+
+For revival the previous contribution is zero in the eligible field. Jitter, restitution and subsequent killing must be added separately; otherwise this source is not the full cloning update.
+
+For Fourier tests $\varphi_{k,\ell}(x,v)=e^{i(k\cdot x+\ell\cdot v)}$, a deterministic kick multiplies each atom by $e^{i(h/2)\ell\cdot f_i}$, and a drift substitutes $\ell\mapsto\ell+(h/2)k$. Conditional on the O input, the pre-boundary thermostat prediction is explicitly
+
+$$
+\mathbb E\langle\mu^{O+},\varphi_{k,\ell}\rangle
+=\frac1N\sum_i a_i e^{i(k\cdot x_i+c\ell\cdot v_i)}
+\widehat\nu(s_hB_i^T\ell),
+$$
+
+where
+
+$$
+\widehat\nu(u)=e^{-|u|^2/2}\quad\text{(Gaussian)},\qquad
+\widehat\nu(u)=\prod_\alpha\frac{\sin(\sqrt3u_\alpha)}{\sqrt3u_\alpha}
+\quad\text{(standardized uniform)}.
+$$
+
+A configured per-row innovation shift $b_i$ multiplies its factor by $e^{iu\cdot b_i}$. This exact finite-step equation distinguishes innovation laws having identical covariance. For absorbing boundaries one must integrate the boundary indicator against this same noise law; dropping it changes the prediction. For periodic boundaries use the wrapped test function (periodic Fourier modes are unchanged by wrapping).
+
+The characteristic functional of the eligibility-weighted phase-space field is obtained by setting
+
+$$
+\Phi_\psi(P)=\exp\left\{\frac{i}{N}\sum_i a_i\psi(x_i,v_i)\right\}
+$$
+
+inside the explicit sum/integral in {prf:ref}`thm-algorithmic-explicit-transition`. At an O stage before its boundary, conditional independence gives
+
+$$
+\mathbb E[\Phi_\psi(P^{O+})\mid P^{O-},B]
+=\prod_{i:a_i=1}\int
+\exp\{i\psi(x_i,cv_i+s_hB_i(\xi+b_i))/N\}\,d\nu(\xi).
+$$
+
+Here $\nu$ is the centered configured innovation law and $b_i=0$
+unless an addressed source shift is configured. Functional differentiation produces every field correlation equation. The outer expectation retains dependence across selection outcomes: mutual donor matching, shared normalization and shared state-dependent factors are retained in the outer sums. Momentum and energy equations follow by differentiating the Fourier tests at zero; their noise coefficients are the executed $B_iB_i^T$, the configured covariance-rate tensor. Higher moments couple to higher joint fields through fitness, matching, viscosity and clipping. This is the derived hierarchy.
+
+:::
+
+:::{prf:proof}
+ Subtract successive atomic measures and sum; each intermediate
+atom cancels. A replaced atom contributes its donor test value minus its
+recipient test value. Averaging its gate yields $q_i$, and averaging a
+revival uses the uniform current-eligible law. For a kick, substitute
+$v+(h/2)f_i$ in the Fourier exponential. For a drift, substitute
+$x+(h/2)v$. At the thermostat, its input fixes $B_i$ and the exponential
+separates into a deterministic factor and
+$\exp(i s_h\ell\cdot B_i\xi_i)$. Integrating independent innovation
+coordinates gives the Gaussian exponential or uniform sinc product.
+The characteristic-functional product follows by independence only after
+conditioning on the complete O input. Differentiate under the integrals
+when the corresponding moments exist; bounded Fourier tests themselves
+require no moment hypothesis. The complete outer donor and gate sums
+supply all cross-walker correlations.
+:::
+
+:::{prf:proposition} Closure on marked fields and age transport
+:label: prop-algorithmic-marked-field-closure
+
+Let labeled history fields be
+
+$$
+\mathcal M_n^{(b)}=N^{-1}\sum_i
+\delta_{(i,\ell_i(P_{n-b}),a_i(P_{n-b}),x_i(P_{n-b}),v_i(P_{n-b}),\mathrm{flags}_i,\mathrm{state}_i)}.
+$$
+
+These full marked fields retain ineligible rows as well; eligibility-weighted observables and donor measures are obtained by multiplying by the eligibility mark. All configured observation channels and cached input-dependent rewards must also be included when they are not deterministic functions of the displayed coordinates and provider/input state. At each successful commit,
+
+$$
+\mathcal M_{n+1}^{(0)}=\mathcal T_{\mathrm{marked}}(S_n;\omega_n),\qquad
+\mathcal M_{n+1}^{(b+1)}=\mathcal M_n^{(b)},\quad 0\le b<L,
+$$
+
+where $\mathcal T_{\mathrm{marked}}$ is the marked pushforward of
+{prf:ref}`thm-algorithmic-explicit-transition`. Age $L+1$ is discarded. Early runs only contain available ages. This is an exact discrete age-transport equation with a new-age boundary condition. Donor sums are integrals over these age fields with their configured windows. Labeled fields including opaque state and flags retain the full numerical/domain state; an unlabeled or few-moment reduction generally does not. The random gate and matching hierarchy is then a consequence of the specified algorithm, not a reason to assume memory away.
+
+For bounded real tests $\psi_0,\ldots,\psi_L$ on the full mark space
+and a bounded test $\vartheta$ of $\chi_n$, define the complete marked
+characteristic functional
+
+$$
+\mathscr Z_{\psi,\vartheta}(S_n)
+=\exp\!\left(i\sum_{b=0}^L
+\langle\mathcal M_n^{(b)},\psi_b\rangle+i\vartheta(\chi_n)\right).
+$$
+
+At a step with all retained ages present, its exact equation is
+
+$$
+\begin{aligned}
+\mathbb E[\mathscr Z_{\psi,\vartheta}(S_{n+1})\mid S_n]
+={}&\exp\!\left(i\sum_{b=1}^L
+\langle\mathcal M_n^{(b-1)},\psi_b\rangle\right)\\
+&\times\int\exp\!\left(
+ i\langle\mathcal T_{\mathrm{marked}}(S_n;\omega),\psi_0\rangle
+ +i\vartheta(\chi_{n+1}(S_n;\omega))\right)
+\mathbb Q_{S_n}(d\omega).
+\end{aligned}
+$$
+
+Use only available ages during initialization. The measure
+$\mathbb Q_{S_n}$ is the explicit donor, gate and innovation law above.
+Differentiating in finite linear combinations of the tests gives the
+joint moment hierarchy of marked fields across retained ages, including
+eligibility, ancestry and donor-dependent field correlations. This hierarchy retains the same
+state information as the marked representation.
+
+:::
+
+:::{prf:proof}
+At a successful commit, the engine stores its admitted pre-selection
+population $P_n$ in the retained history. That is the next age-one frame;
+older retained frames increment their ages. The new current population
+is the completed output followed by the next admission $\mathcal E_{n+1}$.
+Frames beyond the configured window are discarded. The slot, frame, generation,
+version and domain-state marks reconstruct each donor-pool atom exactly.
+Together with provider state and the input schedule this reconstructs
+$S_n$. Applying the explicit primitive update and deterministic history
+shift therefore determines the law of the next complete marked field.
+No independence between atoms is required for this reconstruction. The older-age contribution to
+$\mathscr Z$ is determined by this shift and factors out of the conditional
+expectation; the new-age and provider-state terms retain the explicit
+innovation integral. Differentiation in bounded test amplitudes is
+justified by dominated convergence, proving the joint marked hierarchy.
+:::
+
+:::{prf:theorem} Conditional Hessian metric and its actual transition
+:label: thm-algorithmic-conditional-metric-law
+
+Use the configured conditional-fitness provider with one distance
+companion per target and the `Mean` reducer. Its distance is unscaled,
+nonperiodic Euclidean distance or the unscaled phase-space distance in
+the formula below. Both standardizers are smooth global or local
+standardizers and both positive maps are logistic. Assume
+$\epsilon_g>0$, $T\geq0$ and $\gamma\geq0$.
+
+When historical cloning is enabled, the provider uses global
+standardization; external-input updates with historical cloning are
+outside the supported transaction domain. The remaining donor-history,
+boundary and eligibility operations retain their configured laws.
+
+The O-stage metric uses the immutable pre-selection population and distance companions, evaluated at the actual post-A1 query position.
+
+For an eligible pre-selection target $j$, form a conditional replacement fitness $\mathcal F_j(y;S_n,D)$: replace only its reward and diversity measurements by
+
+$$
+r_j(y)=\mathrm{orient}\,V(y),\qquad
+s_j(y)=\left[|y-x_{D_j}|^2+\lambda|v_j-v_{D_j}|^2+\delta_D^2\right]^{1/2},
+$$
+
+leaving all other measurement rows fixed, but **recompute the complete global or local normalization as a function of $y$**. Local kernel weights also depend on the query. Euclidean distance is the $\lambda=0$ case. A missing companion supplies the constant floor. Coordinate shifts of the benchmark are applied consistently.
+
+Then
+
+$$
+H_j(y)=\nabla_y^2\mathcal F_j(y;S_n,D),\qquad
+g_j(y)=\epsilon_g I+[H_j(y)]_+,
+\qquad B_i=\sqrt{2\gamma T}\,g_{\tau_i}(x_i^{A1})^{-1/2}.
+$$
+
+Here $\tau_i=i$ for a pre-selection eligible target, including a target that subsequently clones. A revived target uses the exact eligible current donor's target $\tau_i$. This is the actual provider's conditional field convention. For the strict metric policy, replace $[H]_+$ by $H$ and require $\epsilon_gI+H$ positive definite.
+
+All derivatives are explicit algebraic derivatives of the preceding measurement and standardization formulas. For example, putting
+
+$$
+L(y)=\alpha\log R(z_j^r(y))+\beta\log D_+(z_j^s(y)),
+$$
+
+gives
+
+$$
+H_j=\mathcal F_j[\nabla^2L+\nabla L\nabla L^T],\quad
+\nabla L=\sum_{c=r,s}p_c\frac{M_c'(z_c)}{M_c(z_c)}\nabla z_c,
+$$
+
+$$
+\nabla^2L=\sum_c p_c\left[
+\left(\frac{M_c''}{M_c}-\frac{(M_c')^2}{M_c^2}\right)\nabla z_c\nabla z_c^T+
+\frac{M_c'}{M_c}\nabla^2z_c\right].
+$$
+
+For this formula, $(p_r,p_s)=(\alpha,\beta)$ and
+$(M_r,M_s)=(R,D_+)$. The derivatives of the standardization are explicit.
+For either measurement channel, write its queried row as $t(y)$, its
+eligible mean as $m(y)$, its regularized variance as $V(y)=\sigma(y)^2$,
+and $u(y)=t(y)-m(y)$. In the global branch with fixed eligible count $M$,
+
+$$
+\nabla u=(1-M^{-1})\nabla t,\qquad
+\nabla^2u=(1-M^{-1})\nabla^2t,
+$$
+
+$$
+\nabla V=\frac{2u}{M}\nabla t,\qquad
+\nabla^2V=\frac2M\left[
+(1-M^{-1})\nabla t\nabla t^\top+u\nabla^2t\right].
+$$
+
+Consequently the normalized query $z=uV^{-1/2}$ has
+
+$$
+\nabla z=V^{-1/2}\nabla u-\frac{u}{2}V^{-3/2}\nabla V,
+$$
+
+$$
+\begin{aligned}
+\nabla^2z={}&V^{-1/2}\nabla^2u
+-\frac12V^{-3/2}
+(\nabla u\nabla V^\top+\nabla V\nabla u^\top+u\nabla^2V)\\
+&+\frac{3u}{4}V^{-5/2}\nabla V\nabla V^\top.
+\end{aligned}
+$$
+
+In the local branch, let $\omega_k(y)$ be the configured normalized
+query-neighbor weights, with $\sum_k\omega_k=1$. Then
+
+$$
+m=\sum_k\omega_kt_k,\qquad
+V=\sum_k\omega_kt_k^2-m^2+\sigma_{\min}^2.
+$$
+
+For $\omega_k=e^{\ell_k}/\sum_re^{\ell_r}$,
+
+$$
+\nabla\omega_k=\omega_k\left(\nabla\ell_k-
+\sum_r\omega_r\nabla\ell_r\right),
+$$
+
+and differentiating this product gives $\nabla^2\omega_k$. Apply the
+product rule to the displayed $m,V$, then the same formula for
+$\nabla^2(uV^{-1/2})$. These weights use fixed companion and neighbor identities with the
+moving query coordinate. If the local standardizer includes the target
+as its own neighbor, that self-comparison has identically zero distance
+as the target moves; its kernel log-weight is constant. Other neighbors
+retain their frozen coordinates. Changes of donor identity are discrete
+transitions in the outer law.
+
+Define the measured metric field at each actual O input by
+
+$$
+\Gamma_n[\psi]=N^{-1}\sum_i a_i^{A1}
+\psi(x_i^{A1})\,g_{\tau_i}(x_i^{A1};S_n,D_n).
+$$
+
+Its exact conditional prediction is the same explicit donor/gate/jitter sum from {prf:ref}`thm-algorithmic-explicit-transition`, stopped at A1, with the displayed algebraic $g$ inserted. The current O-input prediction stops before the current O innovation is drawn. The next O-input metric requires continuing through current O, A2, B2, history shift, next donor selection, next cloning and next B1/A1. This two-barrier composition gives its exact transition law. Equivalently use the augmented O-input state containing its frozen selection context as the stroboscopic Markov state.
+
+For each component, subtracting the current metric and dividing by $h$ gives the discrete material metric equation. Its forcing consists explicitly of changed population measurements, new companion draws, cloning/revival target maps, transported query coordinates, updated history and the positive-part matrix map. These contributions determine the metric increment jointly with the evolving population and donor history.
+
+Curvature is then computed from spatial derivatives of this same $g$, with standard metric contractions. Within a smooth clipping region, $Dg$ and $D^2g$ follow the spectral divided-difference chain rule applied to $H, DH,D^2H$; mixed-sign clipping needs fourth derivatives of fitness. At an eigenvalue clipping threshold classical curvature need not exist, even though the metric pushforward and finite differences of $g$ remain defined. A curvature equation is obtained by inserting this derived curvature observable into the same explicit transition measure; exchanging expectation with the nonlinear curvature map is not valid.
+
+
+
+:::
+
+:::{prf:proof}
+ The conditional provider builds reward and diversity jets by
+substituting the query into one target row of the frozen population.
+Applying its configured standardizers and positive maps gives
+$\mathcal F_j$. Twice differentiating $e^{L}$ yields the displayed Hessian,
+and the product and quotient rules give the expressions for $\nabla L$
+and $\nabla^2L$. Spectral clipping and the positive floor yield $g$;
+its inverse square root is precisely the provider's factor in the O
+update. Conditional on O input,
+$\operatorname{Cov}(v^{O+})=s_h^2B_iB_i^\top
+=2\gamma T s_h^2g_{\tau_i}^{-1}$.
+
+The provider retains the pre-selection target index for an eligible row.
+For a revival it resolves the accepted donor's exact current-frame event
+identity and uses that eligible target. This proves the target map
+$\tau_i$. The value at the actual post-A1 coordinate follows by direct
+substitution. Stopping the explicit transition at A1 gives the current
+metric law. Composing its remaining stages with the following
+transaction through A1 gives the next metric law. Curvature is a
+specified nonlinear observable of spatial metric derivatives wherever
+those derivatives exist, so its transition follows by the same
+substitution into the explicit expectation.
+:::
+
 :::{prf:definition} Extended state and transition experiment
 :label: def-algorithmic-transition-state
 
@@ -53236,10 +56221,486 @@ not establish a finite continuous-time generator when clone
 probabilities remain of order one. A macroscopic closure must be
 derived from the transition, with its limit and error controlled.
 
-A comparison between an Einstein tensor and stress must compute the
-stress from these independent mechanical observables and specify any
-spacetime construction separately. Solving the proposed geometric
-equation for its own source cannot validate that equation.
+The spatial deposition in {prf:ref}`thm-algorithmic-spatial-field-equations`
+constructs the stress and source terms from these mechanical observables.
+The conditional metric law couples their evolution through the actual
+fitness-dependent noise factor and the evolving donor context.
+:::
+
+:::{prf:theorem} Transient projected field equation
+:label: thm-algorithmic-transient-field-memory
+
+Let $\lambda_n$ be the law of the complete state $S_n$ generated by
+{prf:ref}`thm-algorithmic-explicit-transition` from the declared initial
+law. For a specified field descriptor $q_n$, put
+
+$$
+\mathcal H_n=L^2(\lambda_n),\qquad
+P_nf(s)=\mathbb E[f(S_{n+1})\mid S_n=s],\qquad
+\Pi_n=\mathbb E_{\lambda_n}[\,\cdot\mid\sigma(q_n)],\quad
+R_n=I-\Pi_n.
+$$
+
+Thus $P_n:\mathcal H_{n+1}\to\mathcal H_n$. Write
+$V_n=\operatorname{Ran}\Pi_n$ and $W_n=\operatorname{Ran}R_n$ and define
+
+$$
+\begin{array}{ll}
+\mathsf A_n=\Pi_nP_n|_{V_{n+1}},&
+\mathsf B_n=\Pi_nP_n|_{W_{n+1}},\\
+\mathsf C_n=R_nP_n|_{V_{n+1}},&
+\mathsf D_n=R_nP_n|_{W_{n+1}}.
+\end{array}
+$$
+
+Every block has operator norm at most one between its indicated spaces.
+For $s<t$, let
+
+$$
+\mathsf T_{s,t}=\Pi_sP_sP_{s+1}\cdots P_{t-1}|_{V_t},
+\qquad \mathsf T_{t,t}=I_{V_t}.
+$$
+
+Then the exact reduced field propagation satisfies
+
+$$
+\boxed{
+\mathsf T_{s,t}
+=\mathsf A_s\mathsf T_{s+1,t}
++\sum_{j=s+1}^{t-1}
+\mathsf B_s\mathsf D_{s+1}\cdots\mathsf D_{j-1}
+\mathsf C_j\mathsf T_{j+1,t}.
+}
+$$
+
+An empty product of $\mathsf D$ blocks is the identity. In particular,
+
+$$
+\mathsf T_{s,s+2}-\mathsf A_s\mathsf A_{s+1}
+=\mathsf B_s\mathsf C_{s+1}.
+$$
+
+The left side is the discrepancy between actual two-step field
+prediction and composing the two one-step field predictors. Its right
+side is the exact contribution through omitted state variables.
+:::
+
+:::{prf:proof}
+Jensen's inequality and the actual pushforward law
+$\lambda_{n+1}=\lambda_nP_n$ give
+
+$$
+\|P_nf\|_{L^2(\lambda_n)}^2
+\leq\mathbb E|f(S_{n+1})|^2
+=\|f\|_{L^2(\lambda_{n+1})}^2.
+$$
+
+This also shows that a null function maps to a null function, so the
+operator is defined on the stated equivalence classes. Conditional
+expectation and its orthogonal complement are contractions; all four
+block bounds follow.
+
+Fix $f\in V_t$. Set $u_k=P_k\cdots P_{t-1}f$,
+$x_k=\Pi_ku_k$ and $y_k=R_ku_k$. The block decomposition gives
+
+$$
+x_k=\mathsf A_kx_{k+1}+\mathsf B_ky_{k+1},\qquad
+y_k=\mathsf C_kx_{k+1}+\mathsf D_ky_{k+1},\qquad
+x_t=f,\quad y_t=0.
+$$
+
+Substitution from $t-1$ down to $s+1$ yields
+
+$$
+y_{s+1}=\sum_{j=s+1}^{t-1}
+\mathsf D_{s+1}\cdots\mathsf D_{j-1}\mathsf C_jx_{j+1}.
+$$
+
+Insert this expression into the equation for $x_s$ and use
+$x_k=\mathsf T_{k,t}f$. This proves the stated recurrence and its
+two-step specialization. The Markov property of the complete state and
+the tower property identify $\mathsf T_{s,t}f$ with
+$\mathbb E[f(S_t)\mid q_s(S_s)]$. The law and the projection may change
+at every step of the experiment.
+:::
+
+:::{prf:corollary} A criterion for a closed reduced field
+:label: cor-algorithmic-resolved-field-closure
+
+If $\mathsf C_n=0$ throughout a horizon, then
+
+$$
+\mathsf T_{s,t}=\mathsf A_s\mathsf A_{s+1}\cdots\mathsf A_{t-1}.
+$$
+
+This is closure for the actual initial law, up to its null sets.
+Closure for every relevant initial law follows from the stronger
+kernel factorization
+
+$$
+P_n(s,q_{n+1}^{-1}(B))=K_n(q_n(s),B)
+$$
+
+on the relevant complete-state space. A nonzero two-step defect rejects
+one-step composition for that descriptor. A zero two-step defect alone
+allows cancellations and does not establish that all later memory terms
+vanish.
+
+**Proof.** When $\mathsf C_n=0$, every term of the memory sum vanishes,
+and induction gives the product. Kernel factorization says that the
+conditional next-descriptor law is determined by the current descriptor
+for every complete state, proving the stronger assertion by iterated
+conditioning. The product $\mathsf B_s\mathsf C_{s+1}$ may vanish with
+$\mathsf C_{s+1}\ne0$, which proves the last distinction.
+:::
+
+:::{prf:theorem} Field evolution conditional on its observed history
+:label: thm-algorithmic-field-filter
+
+Assume the complete-state and descriptor spaces are standard Borel, and
+let $Y_n=q_n(S_n)$ be a finite-dimensional square-integrable descriptor.
+Let $\beta_n$ be the regular conditional law of $S_n$ given
+$Y_0,\ldots,Y_n$. Its prediction and observation update are
+
+$$
+\beta^-_{n+1}(B)=\int\beta_n(ds)
+\int\mathbf1_B(\mathcal T(s;\omega))\,\mathbb Q_s(d\omega),
+$$
+
+followed by disintegration of
+
+$$
+\beta^-_{n+1}(ds')\,\delta_{q_{n+1}(s')}(dy')
+$$
+
+with respect to its $y'$ marginal, evaluated at the observed $Y_{n+1}$.
+Here $\mathbb Q_s$ is exactly the finite donor/gate sums and innovation
+measure in {prf:ref}`thm-algorithmic-explicit-transition`.
+
+Define the primitive-computed increment and covariance
+
+$$
+b_q(s)=\int[q_{n+1}(\mathcal T(s;\omega))-q_n(s)]
+\,\mathbb Q_s(d\omega),\qquad
+\Gamma_q(s)=\operatorname{Cov}_{\mathbb Q_s}
+\bigl(q_{n+1}(\mathcal T(s;\omega))\bigr).
+$$
+
+Then
+
+$$
+\boxed{
+Y_{n+1}-Y_n=\int b_q(s)\,\beta_n(ds)+\zeta_{n+1},
+\qquad\mathbb E[\zeta_{n+1}\mid Y_0,\ldots,Y_n]=0,
+}
+$$
+
+and its conditional noise covariance is
+
+$$
+\mathbb E[\Gamma_q(S_n)\mid Y_0,\ldots,Y_n]
++\operatorname{Cov}(b_q(S_n)\mid Y_0,\ldots,Y_n).
+$$
+:::
+
+:::{prf:proof}
+Condition first on the complete state. The explicit update law gives the
+prediction integral. Standard Borel disintegration supplies the
+conditional next-state law given the next descriptor, including
+continuous readouts. By definition $q_n(S_n)=Y_n$ almost surely under
+$\beta_n$. The tower property therefore gives the displayed conditional
+increment. Subtracting this mean defines $\zeta_{n+1}$. Applying the law
+of total covariance, first conditional on $S_n$ and then on the observed
+history, yields the two terms: fresh transition noise and variation of
+the conditional increment over unresolved complete states.
+:::
+
+:::{prf:definition} Spatial fields and a path-deposition convention
+:label: def-algorithmic-spatial-source-flux
+
+In a fixed Euclidean chart, define the distribution-valued fields
+
+$$
+\rho=\frac1N\sum_i a_i\delta_{x_i},\qquad
+j=\frac1N\sum_i a_iv_i\delta_{x_i},\qquad
+\mathsf M=\frac1N\sum_i a_iv_i\otimes v_i\delta_{x_i}.
+$$
+
+For positions $x,y$, put $r=y-x$ and
+
+$$
+L_{x,y}=\int_0^1\delta_{x+t r}\,dt.
+$$
+
+Thus $rL_{x,y}$ is an oriented segment deposition. Tensor divergence
+contracts the second index:
+$(\operatorname{div}\mathsf T)_\alpha
+=\sum_\beta\partial_\beta\mathsf T_{\alpha\beta}$.
+The fields have fixed-capacity normalization; $\int\rho$ is the eligible
+fraction. A zero-length segment has zero associated flux.
+
+On a periodic domain, use periodic distributions and a declared lift or
+path joining the endpoints. For a general piecewise smooth path
+$\chi:[0,1]\to\mathcal X$, replace $rL_{x,y}$ by
+$\int_0^1\dot\chi(t)\delta_{\chi(t)}dt$. Different joining paths have
+the same endpoint divergence. Boundary classifications and coordinate
+wraps are recorded as their own actual stages.
+:::
+
+:::{prf:theorem} Exact discrete spatial density and momentum equations
+:label: thm-algorithmic-spatial-field-equations
+
+Consider any realized row transition $(x,v,a)\mapsto(y,w,b)$ at any
+recorded stage, with $a,b\in\{0,1\}$. Its unnormalized density and current
+increments satisfy the distributional identities
+
+$$
+\boxed{
+b\delta_y-a\delta_x
+=(b-a)\delta_x-\operatorname{div}(b r L_{x,y}),
+}
+$$
+
+$$
+\boxed{
+bw\delta_y-av\delta_x
+=(bw-av)\delta_x
+-\operatorname{div}(bw\otimes r L_{x,y}).
+}
+$$
+
+For a complete step, sum over slots $i$ and actual stages $r$ and divide
+by $N$. Write the resulting sums of endpoint terms as
+$\mathcal S_\rho,\mathcal S_j$ and the summed depositions as
+$\mathcal J_\rho,\mathcal J_j$. Then
+
+$$
+\boxed{
+\rho_{n+1}-\rho_n+\operatorname{div}\mathcal J_\rho
+=\mathcal S_\rho,\qquad
+j_{n+1}-j_n+\operatorname{div}\mathcal J_j
+=\mathcal S_j.
+}
+$$
+
+These are exact finite-step field equations. Every source and flux is
+computed from the actual donor, copy, force, transport, thermostat,
+reconciliation and boundary maps. Their conditional predictions follow
+by applying {prf:ref}`thm-algorithmic-explicit-transition` to these
+explicit expressions.
+:::
+
+:::{prf:proof}
+For a smooth compactly supported scalar test $\phi$, the fundamental
+theorem of calculus gives
+
+$$
+\phi(y)-\phi(x)=\int_0^1\nabla\phi(x+t r)\cdot r\,dt.
+$$
+
+By the definition of distributional divergence,
+$\operatorname{div}(rL_{x,y})=\delta_x-\delta_y$. Hence
+
+$$
+(b-a)\delta_x-b(\delta_x-\delta_y)
+=b\delta_y-a\delta_x.
+$$
+
+For each component $\alpha$ of current,
+$\operatorname{div}(bw\otimes rL_{x,y})_\alpha
+=bw_\alpha(\delta_x-\delta_y)$. Subtracting this from
+$(bw_\alpha-av_\alpha)\delta_x$ gives the second identity.
+Sum the row identities over stages: the intermediate fields cancel,
+including stages that change eligibility. Division by $N$ gives the
+stated equations. The same calculation with $\chi$ proves the general
+path formula. Integrating against the exact transition measure yields
+the conditional equations whenever the tested terms are integrable.
+:::
+
+:::{prf:corollary} Primitive mechanical sources and transport tensors
+:label: cor-algorithmic-primitive-stress
+
+The following specializations of
+{prf:ref}`thm-algorithmic-spatial-field-equations` hold before subsequent
+boundary operations.
+
+1. **Literal copying.** An eligible donor $(y,w)$ replacing $(x,v,a)$
+   contributes mass source $(1-a)\delta_x/N$, momentum source
+   $(w-av)\delta_x/N$, mass flux $rL_{x,y}/N$, and momentum flux
+   $w\otimes rL_{x,y}/N$. For an eligible target the mass source vanishes;
+   a revival contributes one unit of eligible mass divided by $N$.
+   Average these formulas using the actual donor and gate probabilities.
+
+2. **Kick.** At fixed position and eligibility, a kick
+   $v\mapsto v+\delta t f_i$ has zero mass source and momentum source
+   $a_i\delta t f_i\delta_{x_i}/N$. Both BAOAB kicks use
+   $\delta t=h/2$ with the force recomputed at their own inputs.
+
+3. **Displacement.** A drift $x\mapsto x+\delta t v$ has no endpoint
+   source. It contributes mass flux
+   $a\delta t v L_{x,x+\delta t v}/N$ and momentum flux
+   $a\delta t v\otimes v L_{x,x+\delta t v}/N$.
+   This is a finite-path kinetic transport tensor.
+
+4. **Thermostat.** At its fixed input position, the conditional mean
+   momentum source is $a(c-1)v\delta_x/N$. Its random source is
+   $a s_hB\xi\delta_x/N$ for centered innovations. Its conditional
+   covariance comes from the actual $s_h^2BB^\top$, including the
+   metric-derived anisotropy.
+
+5. **Eligibility change.** Killing at a fixed position contributes
+   $-a\delta_x/N$ and $-av\delta_x/N$ as mass and momentum sinks.
+   A boundary that also changes position or velocity uses the complete
+   row identity. Jitter and restitution likewise use their actual
+   intermediate input and output states.
+
+For the configured viscous acceleration, define for eligible $i\ne j$
+
+$$
+\kappa_{ij}=\nu\frac{a_i a_jw_{ij}}{Z_i},\qquad
+w_{ij}=e^{-|x_i-x_j|^2/(2\ell_\nu^2)},
+$$
+
+with zero value when the row normalizer vanishes. For $i<j$, let
+$d_{ij}=v_j-v_i$, $r_{ij}=x_j-x_i$,
+$k^s_{ij}=(\kappa_{ij}+\kappa_{ji})/2$, and
+$k^a_{ij}=(\kappa_{ij}-\kappa_{ji})/2$. The viscous force density is
+
+$$
+\frac1N\sum_i a_i f_i^{\mathrm{visc}}\delta_{x_i}
+=\operatorname{div}\!\left[
+\frac1N\sum_{i<j} k^s_{ij}d_{ij}\otimes r_{ij}L_{x_i,x_j}
+\right]
++\frac1N\sum_{i<j}k^a_{ij}d_{ij}
+(\delta_{x_i}+\delta_{x_j}).
+$$
+
+The first term may be moved to the flux side of the momentum equation
+with a minus sign and its actual kick duration. The second is a source
+from asymmetric row normalization. For the common eligible-count
+normalizer, $\kappa_{ij}=\kappa_{ji}$ and this source vanishes.
+:::
+
+:::{prf:proof}
+Substitute the indicated primitive maps into the row identities.
+For the thermostat take the conditional mean using
+$\mathbb E\xi=0$. For viscosity, collect the two terms of each
+unordered pair:
+
+$$
+\kappa_{ij}d_{ij}\delta_{x_i}
+-\kappa_{ji}d_{ij}\delta_{x_j}
+=k^s_{ij}d_{ij}(\delta_{x_i}-\delta_{x_j})
++k^a_{ij}d_{ij}(\delta_{x_i}+\delta_{x_j}).
+$$
+
+Use the segment-divergence identity on the first difference. The
+Gaussian weight is symmetric in its endpoints; a common denominator
+therefore cancels the antisymmetric coefficient. Row-dependent
+denominators generally retain it.
+:::
+
+:::{prf:proposition} Derived anisotropic kinetic stress
+:label: prop-algorithmic-anisotropic-kinetic-stress
+
+Let $W_\ell$ be a specified nonnegative smoothing kernel. Convolve the
+spatial fields with it and, where $\rho_\ell(z)>0$, define
+
+$$
+u_\ell(z)=\frac{j_\ell(z)}{\rho_\ell(z)},\qquad
+\Pi_\ell(z)=\frac1N\sum_i a_iW_\ell(z-x_i)
+(v_i-u_\ell(z))\otimes(v_i-u_\ell(z)).
+$$
+
+Then
+
+$$
+\boxed{\mathsf M_\ell
+=\rho_\ell u_\ell\otimes u_\ell+\Pi_\ell,\qquad
+\Pi_\ell\succeq0.}
+$$
+
+The scalar $\operatorname{tr}\Pi_\ell/d$ is the mean directional
+kinetic stress; the traceless part retains measured anisotropy. For an
+O stage with centered unit-covariance innovations, its uncentered
+second-moment field obeys
+
+$$
+\boxed{
+\mathbb E[\mathsf M^{O+}\mid O\text{ input}]
+=c^2\mathsf M^{O-}
++\frac{s_h^2}{N}\sum_i a_iB_iB_i^\top\delta_{x_i}.
+}
+$$
+
+When the conditional metric provider is enabled, its injection tensor
+is $2\gamma T s_h^2g_{\tau_i}^{-1}$ at the actual O query. Subsequent
+boundary changes enter separate sources. The positive smoothing kernel
+may be applied to both sides of the equation.
+:::
+
+:::{prf:proof}
+Expand $(v_i-u)\otimes(v_i-u)$ and sum with the smoothing weights.
+The two linear terms use $j_\ell=\rho_\ell u$ and leave
+$\mathsf M_\ell-\rho_\ell u\otimes u$. Its quadratic form in any
+vector is a nonnegative weighted sum of squares. For O, expand
+$(cv_i+s_hB_i\xi_i)\otimes(cv_i+s_hB_i\xi_i)$; the mixed terms have
+zero mean and the last term averages to $s_h^2B_iB_i^\top$.
+Insert the executed metric factor from
+{prf:ref}`thm-algorithmic-conditional-metric-law`.
+:::
+
+:::{prf:theorem} Coupled population, mechanical, and metric fields
+:label: thm-algorithmic-coupled-field-system
+
+Retain the complete marked field and its history from
+{prf:ref}`prop-algorithmic-marked-field-closure`, together with the
+configured provider and input state. Then the following system determines
+its finite-step law and its derived mechanical and metric observables:
+
+$$
+\begin{aligned}
+\mathcal M_{n+1}^{(0)}
+ &=\mathcal T_{\mathrm{marked}}(S_n;\omega_n),
+ &\omega_n&\sim\mathbb Q_{S_n},\\
+\mathcal M_{n+1}^{(b+1)}&=\mathcal M_n^{(b)},
+ &0\leq b&<L,\\
+\rho_{n+1}-\rho_n+\operatorname{div}\mathcal J_\rho
+ &=\mathcal S_\rho,
+ &j_{n+1}-j_n+\operatorname{div}\mathcal J_j
+ &=\mathcal S_j,\\
+g_{n,i}^{O}(z)&=\epsilon_gI+
+ [\nabla_z^2\mathcal F_{\tau_i}(z;S_n,D_n)]_+,
+ &B_{n,i}&=\sqrt{2\gamma T}\,
+ [g_{n,i}^{O}(x_i^{A1})]^{-1/2}.
+\end{aligned}
+$$
+
+Here $\mathcal T_{\mathrm{marked}}$ is the explicit donor, clone and
+BAOAB composition; $\mathbb Q$ is its explicit joint choice law; and
+$\mathcal S,\mathcal J$ are the primitive source and flux formulas
+above. The strict metric policy uses its specified unclipped branch.
+The next O-input metric is obtained by completing the current step,
+shifting history, applying the next admission, and executing selection and motion through
+A1 with its new context.
+
+For a reduced collection of these observables, the exact prediction is
+{prf:ref}`thm-algorithmic-transient-field-memory` or, conditional on the
+observed field path, {prf:ref}`thm-algorithmic-field-filter`. These supply
+the contributions of eliminated population and donor-history variables.
+:::
+
+:::{prf:proof}
+The complete marked representation reconstructs every coefficient of
+{prf:ref}`thm-algorithmic-explicit-transition`. Its deterministic history
+shift closes the retained donor state. The spatial equations follow
+row by row from {prf:ref}`thm-algorithmic-spatial-field-equations`.
+The conditional-fitness differentiation and provider factor give the
+metric and noise equations. Their actual stage ordering gives the next
+O-input context. Finally, projecting this complete transition yields the
+proved transient memory and conditional-history equations. All
+coefficients are fixed by the algorithm, the initial law and the chosen
+measurement functions.
 :::
 
 :::{prf:lemma} Independent-sampling rate and interacting concentration
@@ -53933,142 +57394,6 @@ QSD requires the corresponding closure and law identifications, using
 {doc}`../convergence_program/07_discrete_qsd`,
 {doc}`../convergence_program/09_propagation_chaos`, and
 {doc}`../convergence_program/15_kl_convergence`.
-:::
-
-:::{prf:definition} Perfect-fluid effective stress
-:label: def-effective-stress-energy
-
-Let $G_{ab}$ be the specified Lorentzian metric in dimension $d+1$,
-and let $u$ be a unit timelike field, $G(u,u)=-1$. A symmetric stress
-with zero rest-frame energy flux and isotropic spatial stress has form
-
-$$
-T_{ab}^{\mathrm{eff}}
-=e\,u_au_b+P\,h_{ab}
-=(e+P)u_au_b+P\,G_{ab},\qquad
-h_{ab}=G_{ab}+u_au_b.
-$$
-
-Here $e=T(u,u)$ is energy density and $P$ is rest-frame pressure.
-The field $u$ need not be geodesic. An anisotropic stress or nonzero
-energy flux requires the corresponding additional tensor terms.
-
-For the chosen effective energy model one may set
-$P=P_{\mathrm{pair}}+P_{\mathrm{modes}}$ after fixing their common
-volume, temperature, and state-law conventions. This equation is a
-definition of that model, not an identification forced by isotropy of
-a sampling density.
-:::
-
-:::{prf:proof}
-Choose a local orthonormal rest frame with time direction $u$.
-The stated conditions give components
-$T_{00}=e$, $T_{0i}=0$, and $T_{ij}=P\delta_{ij}$.
-The displayed tensor has exactly these components, proving its
-coordinate-independent form.
-:::
-
-:::{prf:definition} Signed pressure parameter and vacuum convention
-:label: def-effective-cosmological-constant
-
-Choose a positive coupling $\kappa_G$, with
-$\kappa_G=8\pi G_{\mathrm{eff}}/c^4$ in four-dimensional physical
-units, and define
-
-$$
-\Lambda_P=\kappa_G P_{\mathrm{vac}}.
-$$
-
-This is a signed pressure parameter. Let
-$\mathsf E_{ab}=R_{ab}-\tfrac12R G_{ab}$ denote the Einstein tensor.
-In the convention
-
-$$
-\mathsf E_{ab}+\Lambda G_{ab}=\kappa_G T_{ab},
-$$
-
-vacuum stress has
-$T_{ab}^{\mathrm{vac}}=-e_{\mathrm{vac}}G_{ab}$ and
-$P_{\mathrm{vac}}=-e_{\mathrm{vac}}$. Moving that term to the left
-gives
-
-$$
-\Delta\Lambda=\kappa_Ge_{\mathrm{vac}}=-\Lambda_P.
-$$
-
-Thus the pressure parameter and the vacuum contribution to the
-Einstein constant have opposite signs. A physical identification also
-requires the vacuum equation of state and the field equation.
-Dimensional consistency does not fix the coupling's value.
-:::
-
-:::{prf:theorem} Ricci contraction under an Einstein constitutive equation
-:label: thm-structural-correspondence
-
-In spacetime dimension $n=d+1>2$, suppose an effective metric and
-stress satisfy the specified constitutive equation
-
-$$
-\mathsf E_{ab}+\Lambda G_{ab}=\kappa_G T_{ab},
-\qquad
-\mathsf E_{ab}=R_{ab}-\tfrac12R G_{ab}.
-$$
-
-For a perfect fluid with energy density $e$, pressure $P$, and
-unit timelike field $u$,
-
-$$
-R_{ab}u^au^b
-=\frac{\kappa_G}{d-1}\bigl[(d-2)e+dP\bigr]
- -\frac{2\Lambda}{d-1}.
-$$
-
-Here $\kappa_G$ has the units of the specified dimension and energy
-normalization. In four-dimensional physical units it may be written
-$8\pi G_{\mathrm{eff}}/c^4$.
-:::
-
-:::{prf:proof}
-Taking the trace yields
-
-$$
-R=\frac{2(n\Lambda-\kappa_GT)}{n-2}.
-$$
-
-Substitution into the constitutive equation gives
-
-$$
-R_{ab}
-=\kappa_G\left(T_{ab}-\frac{T}{n-2}G_{ab}\right)
- +\frac{2\Lambda}{n-2}G_{ab}.
-$$
-
-Now $G(u,u)=-1$, $T(u,u)=e$, and $T=-e+dP$.
-Contracting yields the stated formula. Under the congruence hypotheses,
-it can be substituted into Raychaudhuri's identity.
-
-Conservation and Raychaudhuri do not imply the constitutive equation.
-For example, on Minkowski space take $\Lambda=0$ and a nonzero
-constant perfect-fluid stress. Its divergence vanishes and all geometric
-identities hold, while $\mathsf E=0\ne\kappa_G T$.
-:::
-
-:::{prf:remark} Geometric identity and constitutive equation
-:label: rem-correspondence-meaning
-
-This section supplies no derivation of an Einstein equation from the
-transition law. A test of such an equation must use independently computed
-mechanical observables from
-{ref}`sec-algorithmic-balance-laws` and an independently specified
-spacetime reconstruction. Its coupling, source, and error cannot be
-defined by fitting the source to the same geometric tensor.
-
-Raychaudhuri relates the expansion of a specified congruence to the Ricci
-tensor of its metric. The perfect-fluid contraction in
-{prf:ref}`thm-structural-correspondence` additionally uses the stated
-Einstein constitutive equation. A pressure sign determines that contraction
-only after the energy density, cosmological term, dimensional normalization,
-and constitutive equation are fixed.
 :::
 
 ## 3_fitness_manifold/05_holography.md
@@ -55064,7 +58389,7 @@ The declared radius makes its coefficient vanish.
 :::{prf:remark} Pressure and the cosmological sign convention
 :label: rem-holo-cosmological-sign
 
-Write $\varkappa=8\pi G_{\mathrm{eff}}/c^4$. The signed pressure parameter $\Lambda_P=\varkappa P$ in {prf:ref}`def-effective-cosmological-constant` is not automatically the parameter multiplying $g_{ab}$ in the vacuum equation above. If a vacuum stress has $T_{ab}=Pg_{ab}$, then
+Write $\varkappa=8\pi G_{\mathrm{eff}}/c^4$ and define $\Lambda_P=\varkappa P$ for the specified vacuum comparison. If its vacuum stress has $T_{ab}=Pg_{ab}$, then
 
 $$
 G_{ab}+\Lambda_{\mathrm{bare}}g_{ab}=\varkappa T_{ab}
@@ -55467,6 +58792,47 @@ Under the proved contraction conditions, the mean-field stationary state
 is unique; under the finite-particle minorization conditions, the QSD is
 unique. Other parameter regimes are not assigned multiple stationary states
 without an existence and nonuniqueness argument.
+:::
+
+## partvi_experiments.md
+
+:::{prf:definition} Part VI measurement and evidence contract
+:label: def-partvi-measurement-evidence
+
+A workbench result specifies an executed Euclidean Gas configuration, its recorded states or continuation protocol, an observable and its normalization, and the numerical comparison applied to that observable. Its evidence consists of the resolved request, run configurations, retained archives, and continuation replay evidence when applicable.
+
+An **executed measurement** is computed from these states or transitions. An **observable construction** applies a declared map to them, such as a covariance quotient, ray connection, or graph projection. An **identity comparison** checks a mathematical relation for that declared object. A **predictive hypothesis** uses one set of observations or an analytic conditional law to predict another specified measurement; its residual and sampling unit are part of the result.
+
+All four are measurements or calculations on actual algorithm runs. An identity for a constructed observable does not by itself identify that observable with the chapter's proposed physical field law.
+:::
+
+:::{prf:definition} Conditional field increments
+:label: def-partvi-conditional-field-increments
+
+Let $R_n$ denote the complete algorithm state and $K$ its executed one-step kernel. For integrable real observables $F,G$, define
+
+$$
+D_F(R)=KF(R)-F(R),\qquad
+Q_{FG}(R)=K(FG)(R)-KF(R)KG(R),
+$$
+
+whenever the required moments exist. A continuation experiment estimates these quantities, or their stated multi-step counterparts, conditional on one complete checkpoint. Its independent sampling unit is a continuation. A paired experiment uses matched random addresses within each baseline/transformed pair and independent seed streams across pairs; uncertainty is computed across pairs.
+
+An empirical time average along one run is a different sampling law. Its frames, overlapping lag windows, and walkers are not counted as independent continuation replicas. Chronological holdout tests prediction on a later segment while retaining this dependence.
+:::
+
+:::{prf:definition} Frame and source-pair correlation normalization
+:label: def-partvi-correlation-normalization
+
+For a fixed-capacity population of $N$ slots, let $o_i(R)$ be a local observable with the declared zero extension outside its support. The collective frame observable is
+
+$$
+F(R)=\frac1N\sum_{i=1}^{N}o_i(R).
+$$
+
+Its two-time product contains the full double sum $N^{-2}\sum_{i,j}\overline{o_i(R_n)}o_j(R_{n+\ell})$. A source-frozen pair readout instead averages its declared matched products over the valid pairs at that lag. Its source identities, denominator, and centering convention must be retained separately. These observables are not equated by changing one constant normalization.
+
+The positive-transfer interpretation has the additional hypotheses in {prf:ref}`cor-effective-twistor-positive-transfer`. Passing a finite-sample spectral fitting diagnostic does not establish those hypotheses.
 :::
 
 ## 3_fitness_manifold/09_measurement.md

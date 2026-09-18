@@ -1094,15 +1094,15 @@ export const metadata = [
   {
     "id": "III-01",
     "part": "III",
-    "title": "The executed population eligibility ledger",
+    "title": "Immediate revival and terminal boundary loss",
     "kind": "Rust engine experiment",
-    "question": "How many walkers are eligible before cloning and after the full update?",
-    "prediction": "Recorded eligibility and revival counts distinguish population replacement from survival.",
-    "explanation": "Recorded eligibility and revival counts distinguish population replacement from survival.",
+    "question": "How does scheduled revival replace dead slots before terminal absorption?",
+    "prediction": "Every admitted dead slot is revived; the final boundary independently determines its next status.",
+    "explanation": "Every admitted dead slot is revived; the final boundary independently determines its next status.",
     "controls": [
       {
         "key": "walkers",
-        "label": "Walkers",
+        "label": "Walkers N",
         "type": "select",
         "value": 64,
         "options": [
@@ -1111,12 +1111,44 @@ export const metadata = [
             "label": "16"
           },
           {
+            "value": 32,
+            "label": "32"
+          },
+          {
             "value": 64,
             "label": "64"
           },
           {
             "value": 128,
             "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
           }
         ]
       },
@@ -1167,35 +1199,72 @@ export const metadata = [
   {
     "id": "III-02",
     "part": "III",
-    "title": "Measure cloning frequency at a finite timestep",
+    "title": "Finite-step clone counts and their conditional law",
     "kind": "Rust engine experiment",
-    "question": "How does the observed number of copies compare with the sum of their probabilities?",
-    "prediction": "Conditional copy probabilities predict event counts for each executed update.",
-    "explanation": "Conditional copy probabilities predict event counts for each executed update.",
+    "question": "Do actual clone counts match the sum of their acceptance probabilities?",
+    "prediction": "Conditional clone-count mean is the sum of gate probabilities; variance is the sum of p(1-p).",
+    "explanation": "Conditional clone-count mean is the sum of gate probabilities; variance is the sum of p(1-p).",
     "controls": [
       {
-        "key": "h",
-        "label": "Timeline timestep",
+        "key": "walkers",
+        "label": "Walkers N",
         "type": "select",
-        "value": 0.025,
+        "value": 64,
         "options": [
           {
-            "value": 0.1,
-            "label": "0.1"
+            "value": 16,
+            "label": "16"
           },
           {
-            "value": 0.05,
-            "label": "0.05"
+            "value": 32,
+            "label": "32"
           },
           {
-            "value": 0.025,
-            "label": "0.025"
+            "value": 64,
+            "label": "64"
           },
           {
-            "value": 0.0125,
-            "label": "0.0125"
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
           }
         ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
       },
       {
         "key": "saturation",
@@ -1211,17 +1280,45 @@ export const metadata = [
   {
     "id": "III-03",
     "part": "III",
-    "title": "Collective fluctuations across executed runs",
+    "title": "Population-size scaling of collective fluctuations",
     "kind": "Rust engine experiment",
-    "question": "How do independently seeded population means fluctuate under selection?",
-    "prediction": "Within-population spread and across-run endpoint variance measure different sources of variation.",
-    "explanation": "Execute the selected initialization and selection settings on independent seeds. Compare population traces and endpoint means; the experiment does not assume independent walkers or display a permutation-calibrated pair test.",
+    "question": "How do independent-run fluctuations change with N at fixed update count?",
+    "prediction": "Chaotic initial data converge under the fixed-step population map; measure finite-N fluctuations across independent runs.",
+    "explanation": "Chaotic initial data converge under the fixed-step population map; measure finite-N fluctuations across independent runs.",
     "controls": [
       {
-        "key": "updates",
-        "label": "Observation update",
+        "key": "walkers",
+        "label": "Walkers N",
         "type": "select",
-        "value": 4,
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
         "options": [
           {
             "value": 1,
@@ -1232,39 +1329,27 @@ export const metadata = [
             "label": "4"
           },
           {
-            "value": 12,
-            "label": "12"
-          }
-        ]
-      },
-      {
-        "key": "initial",
-        "label": "Initial population",
-        "type": "select",
-        "value": "independent",
-        "options": [
-          {
-            "value": "independent",
-            "label": "Independent Gaussian"
+            "value": 16,
+            "label": "16"
           },
           {
-            "value": "shared",
-            "label": "Shared random displacement"
+            "value": 64,
+            "label": "64"
           }
         ]
       },
       {
-        "key": "selection",
-        "label": "Active reward exponent",
+        "key": "h",
+        "label": "Time step",
         "type": "range",
-        "value": 1,
-        "min": 0,
-        "max": 2,
-        "step": 0.25
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
       },
       {
         "key": "replicas",
-        "label": "Replicas per N and rule",
+        "label": "Independent runs per N",
         "type": "select",
         "value": 8,
         "options": [
@@ -1287,91 +1372,11 @@ export const metadata = [
   {
     "id": "III-04",
     "part": "III",
-    "title": "Finite-step generator and moment evolution",
+    "title": "Shared component collisions and conserved momentum",
     "kind": "Rust engine experiment",
-    "question": "Does the actual numerical process have stationary position moments?",
-    "prediction": "Measured increments divided by h identify the finite-step generator without substituting a continuous process.",
-    "explanation": "Measured increments divided by h identify the finite-step generator without substituting a continuous process.",
-    "controls": [
-      {
-        "key": "temperature",
-        "label": "OU temperature T",
-        "type": "range",
-        "value": 1,
-        "min": 0.2,
-        "max": 2,
-        "step": 0.2
-      }
-    ]
-  },
-  {
-    "id": "III-05",
-    "part": "III",
-    "title": "Measure fitness variation in the evolving support",
-    "kind": "Rust engine experiment",
-    "question": "Does the measured population settle into a narrow fitness range?",
-    "prediction": "The actual reward and diversity channels determine the observed fitness variation.",
-    "explanation": "The actual reward and diversity channels determine the observed fitness variation.",
-    "controls": [
-      {
-        "key": "ratio",
-        "label": "α / β",
-        "type": "range",
-        "value": 1,
-        "min": 0.25,
-        "max": 2,
-        "step": 0.25
-      }
-    ]
-  },
-  {
-    "id": "III-06",
-    "part": "III",
-    "title": "Surviving shape of the Brownian gas",
-    "kind": "Rust engine experiment",
-    "question": "How does the spatial distribution change under diffusion, selection and absorption?",
-    "prediction": "The plotted conditional distribution consists of the eligible walkers after executed updates.",
-    "explanation": "The plotted conditional distribution consists of the eligible walkers after executed updates.",
-    "controls": [
-      {
-        "key": "length",
-        "label": "Interval length L",
-        "type": "select",
-        "value": 1,
-        "options": [
-          {
-            "value": 1,
-            "label": "1"
-          },
-          {
-            "value": 2,
-            "label": "2"
-          },
-          {
-            "value": 4,
-            "label": "4"
-          }
-        ]
-      },
-      {
-        "key": "diffusivity",
-        "label": "Diffusivity D₀",
-        "type": "range",
-        "value": 0.5,
-        "min": 0.1,
-        "max": 1,
-        "step": 0.1
-      }
-    ]
-  },
-  {
-    "id": "III-07",
-    "part": "III",
-    "title": "Collective fluctuations with correlated initial states",
-    "kind": "Rust engine experiment",
-    "question": "How does shared initial information affect independent runs of the interacting gas?",
-    "prediction": "Across-run population means and within-run spread measure different fluctuations.",
-    "explanation": "Across-run population means and within-run spread measure different fluctuations.",
+    "question": "Does the full component transformation conserve momentum and contract relative energy?",
+    "prediction": "Each component conserves its full-slot momentum and multiplies relative kinetic energy by restitution squared.",
+    "explanation": "Each component conserves its full-slot momentum and multiplies relative kinetic energy by restitution squared.",
     "controls": [
       {
         "key": "walkers",
@@ -1379,74 +1384,6 @@ export const metadata = [
         "type": "select",
         "value": 64,
         "options": [
-          {
-            "value": 4,
-            "label": "4"
-          },
-          {
-            "value": 16,
-            "label": "16"
-          },
-          {
-            "value": 64,
-            "label": "64"
-          },
-          {
-            "value": 256,
-            "label": "256"
-          }
-        ]
-      },
-      {
-        "key": "correlation",
-        "label": "Shared-state strength ρ",
-        "type": "range",
-        "value": 1,
-        "min": 0,
-        "max": 1,
-        "step": 0.1
-      },
-      {
-        "key": "replicas",
-        "label": "Independent runs",
-        "type": "select",
-        "value": 8,
-        "options": [
-          {
-            "value": 4,
-            "label": "4"
-          },
-          {
-            "value": 8,
-            "label": "8"
-          },
-          {
-            "value": 16,
-            "label": "16"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "id": "III-08",
-    "part": "III",
-    "title": "Repeated labels in the actual donor sampler",
-    "kind": "Rust engine experiment",
-    "question": "How often do executed donor selections point to the same source?",
-    "prediction": "The collision statistic follows the actual donor law and its eligible source set.",
-    "explanation": "The collision statistic follows the actual donor law and its eligible source set.",
-    "controls": [
-      {
-        "key": "walkers",
-        "label": "Population labels N",
-        "type": "select",
-        "value": 64,
-        "options": [
-          {
-            "value": 8,
-            "label": "8"
-          },
           {
             "value": 16,
             "label": "16"
@@ -1466,21 +1403,403 @@ export const metadata = [
           {
             "value": 256,
             "label": "256"
-          },
-          {
-            "value": 512,
-            "label": "512"
           }
         ]
       },
       {
-        "key": "tuple",
-        "label": "Tuple length k (capped at N)",
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
         "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "restitution",
+        "label": "Restitution",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-05",
+    "part": "III",
+    "title": "Selection strength and the population trajectory",
+    "kind": "Rust engine experiment",
+    "question": "How does changing reward selection affect the full gas?",
+    "prediction": "Measure the actual nonlinear update with sampled fitness retained through acceptance.",
+    "explanation": "Measure the actual nonlinear update with sampled fitness retained through acceptance.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "ratio",
+        "label": "Reward exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0.1,
+        "max": 4,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-06",
+    "part": "III",
+    "title": "Gaussian terminal noise and boundary crossings",
+    "kind": "Rust engine experiment",
+    "question": "How does final position diffusion change survival and revival?",
+    "prediction": "The declared Gaussian position step determines terminal crossing probabilities from its actual input.",
+    "explanation": "The declared Gaussian position step determines terminal crossing probabilities from its actual input.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "diffusivity",
+        "label": "Position diffusivity",
+        "type": "range",
+        "value": 0.5,
+        "min": 0.05,
+        "max": 1,
+        "step": 0.05
+      },
+      {
+        "key": "box",
+        "label": "Absorbing half-width",
+        "type": "range",
+        "value": 1.1,
+        "min": 0.2,
+        "max": 3,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-07",
+    "part": "III",
+    "title": "Shared initial randomness and empirical mixtures",
+    "kind": "Rust engine experiment",
+    "question": "Does common initial information survive as N grows?",
+    "prediction": "An exchangeable initial mixture can retain a random population law.",
+    "explanation": "An exchangeable initial mixture can retain a random population law.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "replicas",
+        "label": "Independent runs per N",
+        "type": "select",
         "value": 8,
-        "min": 1,
-        "max": 32,
-        "step": 1
+        "options": [
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 8,
+            "label": "8"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          }
+        ]
+      },
+      {
+        "key": "correlation",
+        "label": "Shared-state strength",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
+      }
+    ]
+  },
+  {
+    "id": "III-08",
+    "part": "III",
+    "title": "Collision forests and tagged-walker dependence",
+    "kind": "Rust engine experiment",
+    "question": "How large are accepted collision components, and how often do two walkers share one?",
+    "prediction": "Strict fitness increase makes the current accepted graph a forest; its component dependence is measured directly.",
+    "explanation": "Strict fitness increase makes the current accepted graph a forest; its component dependence is measured directly.",
+    "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers N",
+        "type": "select",
+        "value": 64,
+        "options": [
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 32,
+            "label": "32"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          },
+          {
+            "value": 128,
+            "label": "128"
+          },
+          {
+            "value": 256,
+            "label": "256"
+          }
+        ]
+      },
+      {
+        "key": "updates",
+        "label": "Updates",
+        "type": "select",
+        "value": 16,
+        "options": [
+          {
+            "value": 1,
+            "label": "1"
+          },
+          {
+            "value": 4,
+            "label": "4"
+          },
+          {
+            "value": 16,
+            "label": "16"
+          },
+          {
+            "value": 64,
+            "label": "64"
+          }
+        ]
+      },
+      {
+        "key": "h",
+        "label": "Time step",
+        "type": "range",
+        "value": 0.04,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      },
+      {
+        "key": "restitution",
+        "label": "Restitution",
+        "type": "range",
+        "value": 0.5,
+        "min": 0,
+        "max": 1,
+        "step": 0.1
       }
     ]
   },
@@ -1753,11 +2072,36 @@ export const metadata = [
   {
     "id": "IV-07",
     "part": "IV",
-    "title": "Taylor coefficients of a recorded fitness field",
-    "question": "How accurately do conditional fitness derivatives predict a local displacement?",
-    "prediction": "The polynomial and direct field evaluation share the same recorded donor realization and normalization.",
-    "explanation": "The polynomial and direct field evaluation share the same recorded donor realization and normalization.",
+    "title": "Fitness sensitivity and companion fluctuations",
+    "question": "How do the reward landscape and companion choices change fitness?",
+    "prediction": "Fixed-assignment derivatives include every affected row; derivatives of mean fitness also include changing companion probabilities.",
+    "explanation": "Move one walker with companion identities fixed and compare the full production fitness with its Taylor prediction. Then average complete assignments at the same swarm: compare the companion spread, the fixed-probability response and the response when the donor law changes. The radius shrinks until two interleaved grids meet the requested error tolerance.",
     "controls": [
+      {
+        "key": "walkers",
+        "label": "Walkers (exact companion average)",
+        "type": "range",
+        "value": 4,
+        "min": 3,
+        "max": 5,
+        "step": 1
+      },
+      {
+        "key": "landscape",
+        "label": "Reward landscape",
+        "type": "select",
+        "value": "quadratic",
+        "options": [
+          {
+            "value": "quadratic",
+            "label": "Quadratic"
+          },
+          {
+            "value": "multiwell",
+            "label": "Rastrigin"
+          }
+        ]
+      },
       {
         "key": "order",
         "label": "Taylor order",
@@ -1769,12 +2113,32 @@ export const metadata = [
       },
       {
         "key": "radius",
-        "label": "Expansion radius",
+        "label": "Requested displacement radius",
         "type": "range",
         "value": 0.2,
         "min": 0.01,
         "max": 0.5,
         "step": 0.01
+      },
+      {
+        "key": "tolerance",
+        "label": "Scaled approximation tolerance",
+        "type": "select",
+        "value": 0.00001,
+        "options": [
+          {
+            "value": 0.001,
+            "label": "0.001"
+          },
+          {
+            "value": 0.00001,
+            "label": "0.00001"
+          },
+          {
+            "value": 1e-7,
+            "label": "0.0000001"
+          }
+        ]
       },
       {
         "key": "sigma",
@@ -1783,7 +2147,34 @@ export const metadata = [
         "value": 0.15,
         "min": 0.02,
         "max": 0.5,
-        "step": 0.02
+        "step": 0.01
+      },
+      {
+        "key": "rho",
+        "label": "Neighborhood and donor width",
+        "type": "range",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "alpha",
+        "label": "Reward exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
+      },
+      {
+        "key": "beta",
+        "label": "Diversity exponent",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 2,
+        "step": 0.1
       }
     ],
     "kind": "Rust engine experiment"
@@ -7209,9 +7600,9 @@ export const metadata = [
     "question": "Is the measured temporal reflection form positive?",
     "prediction": "Build a centered past/future bilinear matrix from consecutive same-epoch frame windows, symmetrize it explicitly, and display its eigenvalues and window count.",
     "explanation": "Change the number of modes and repeat seeds. A negative empirical eigenvalue identifies a quantity needing independent-run uncertainty; ordinary covariance positivity does not impose positivity on this different bilinear form.",
-    "validation": "Direct word quadratic form versus the explicit negative formula.",
+    "validation": "Reassemble the centered temporal reflected matrix from recorded windows and check its eigendecomposition.",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "target": "prop-ym-native-labeled-color-reflection-sign",
+    "target": "prop-ym-native-physical-reflection-calculation",
     "controls": [
       {
         "key": "walkers",
@@ -9975,11 +10366,11 @@ export const metadata = [
     "id": "VI-51",
     "experiment": 51,
     "part": "VI",
-    "title": "Complete mechanical balances and stress ingredients",
-    "question": "Which operations supply the measured mechanical increments?",
-    "prediction": "Resolve cloning, restitution, jitter, total-force work, thermostat, transport, boundary, and eligibility contributions using recorded stages. Compare exact balance ledgers with direct changes and retain the quantities needed for stress diagnostics.",
-    "explanation": "Use the complete force, including viscosity, in kick work. Compare these mechanical measurements with VI-45 metric evolution before proposing a stress relation. A fitted spatial curvature relation must predict independent data as well as the complete balances permit.",
-    "validation": "Stage budgets and independent Lorentz tensor contractions.",
+    "title": "Algorithm-derived field equations and mechanical sources",
+    "question": "Do the executed field increments obey the equations of the algorithm?",
+    "prediction": "Resolve every clone, force, transport, boundary and eligibility source for a spatial Fourier field. Integrate its thermostat contribution under the actual Gaussian or uniform innovation law and compare centered fluctuations with the predicted conditional covariance.",
+    "explanation": "Choose density, momentum, stress, energy or a phase-space characteristic. The spatial wave number selects the measurement scale. Deterministic kick and transport terms are independently reconstructed; the full field equation retains the other executed sources. The phase-space characteristic uses velocity wave number 0.75 in coordinate one.",
+    "validation": "Exact primitive field equations, independent analytic conditional moments and complete-run martingale checks.",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-stress-energy-tensor",
     "controls": [
@@ -10064,6 +10455,43 @@ export const metadata = [
             "label": "Uniform"
           }
         ]
+      },
+      {
+        "key": "field_observable",
+        "label": "Field observable",
+        "type": "select",
+        "value": "momentum",
+        "options": [
+          {
+            "value": "density",
+            "label": "density"
+          },
+          {
+            "value": "momentum",
+            "label": "momentum"
+          },
+          {
+            "value": "stress",
+            "label": "stress"
+          },
+          {
+            "value": "energy",
+            "label": "energy"
+          },
+          {
+            "value": "phase_space",
+            "label": "phase space"
+          }
+        ]
+      },
+      {
+        "key": "wave_number",
+        "label": "Spatial wave number",
+        "type": "range",
+        "value": 1,
+        "min": 0,
+        "max": 4,
+        "step": 0.25
       }
     ],
     "kind": "Rust engine experiment"

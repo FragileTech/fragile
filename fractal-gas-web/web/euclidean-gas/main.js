@@ -1,19 +1,42 @@
 import { GasClient } from "./client.js";
-import { BENCHMARKS, resolveConfig, frameMetrics } from "./config.js";
-import { PopulationRenderer, drawConvergence } from "./renderer.js";
+import {
+  alive,
+  benchmarkId,
+  benchmarkInfo,
+  benchmarkParameters,
+  catalogEntry,
+  dimensionFor,
+  dimensionLocked,
+  resolveConfig,
+  frameMetrics,
+} from "./config.js";
+import { drawConvergence } from "./renderer.js";
+import { MoleculeRenderer } from "./renderer3d.js";
+import { StageController } from "./stage.js";
+import { TrailBuffer } from "./trails.js";
+import { createView } from "./view.js";
 import { saveCheckpoint, loadCheckpoint } from "./storage.js";
 
 const $ = (id) => document.getElementById(id);
 const client = new GasClient();
 let config = null,
+  catalog = null,
+  info = null,
   frame = null,
-  renderer = null,
+  stage = null,
+  view = null,
+  molecule = null,
   selected = 0;
 let running = false,
   operation = false,
   pendingStep = null,
   records = [],
-  bestRecorded = null;
+  bestRecorded = null,
+  lastMetrics = null,
+  eligible = new Uint8Array(0),
+  drawPending = false,
+  stepMs = null;
+const trails = new TrailBuffer();
 const format = (x) =>
   x == null || !Number.isFinite(Number(x))
     ? "—"
@@ -28,7 +51,7 @@ const pause = async () => {
 };
 function controls() {
   const ready = !!frame && !operation;
-  const extinct = !!frame && frameMetrics(frame, config).alive === 0;
+  const extinct = !!frame && lastMetrics?.alive === 0;
   $("run").disabled = !ready || extinct;
   $("run").textContent = running ? "Pause" : "Run";
   $("step").disabled = !ready || extinct || running || !!pendingStep;
@@ -151,29 +174,128 @@ function inspector() {
     ["Uploaded", `${format(stats.uploaded_bytes / 1024)} KiB`],
     ["Downloaded", `${format(stats.downloaded_bytes / 1024)} KiB`],
     ["Largest batch", `${format(stats.peak_batch_elements)} elements`],
+    [
+      "Objective",
+      info.objectiveExecution === "host"
+        ? `host f64${info.problemId ? ` · ${info.problemId}` : ""}`
+        : "tensor graph",
+    ],
+    [
+      "Gradient",
+      {
+        graph: "analytic tensor graph",
+        zero: "zero",
+        host_central_difference: "host central differences (2d evaluations)",
+      }[info.gradientExecution],
+    ],
+    ...(info.objectiveExecution === "host"
+      ? [
+          [
+            "Host evaluations",
+            `${format(stats.host_reward_evaluations || 0)} reward · ${format(stats.host_gradient_evaluations || 0)} gradient`,
+          ],
+        ]
+      : []),
     ["Population version", String(p.version)],
   ]);
 }
-function draw() {
-  if (!frame || !renderer) return;
-  const axes = [Number($("x-axis").value), Number($("y-axis").value)];
-  renderer.update(
-    frame,
-    BENCHMARKS[config.benchmark].bounds,
-    axes,
-    selected,
-    config.gas.include_truncated,
-  );
+function moleculeView() {
+  const field = frame.population.observations.fields.positions,
+    d = config.dimensions,
+    active = !!info?.molecule && d % 3 === 0 && !!field;
+  $("molecule").hidden = !active;
+  if (!active) {
+    molecule?.dispose();
+    molecule = null;
+    return;
+  }
+  molecule ??= new MoleculeRenderer($("molecule-canvas"));
+  molecule.update(field.values.subarray(selected * d, (selected + 1) * d));
+}
+function viewNotes(settings) {
+  const flat = settings.view === "2d",
+    [x, y, z] = settings.axes,
+    d = config.dimensions;
+  $("z-axis-label").hidden = settings.view !== "spatial";
+  $("reset-camera").hidden = flat;
+  $("legend-best").hidden = flat;
+  $("legend-high-item").hidden = settings.color === "uniform";
+  const metric = settings.color === "fitness" ? "fitness" : "reward";
+  $("legend-low").textContent =
+    settings.color === "uniform" ? "Walker" : `Lower ${metric}`;
+  $("legend-high").textContent = `Higher ${metric}`;
+  $("stage-help").textContent = flat
+    ? "Click a walker to inspect · scroll to zoom"
+    : "Drag to orbit · right-drag to pan · scroll to zoom · click a walker";
+  $("view-caption").textContent =
+    `${info.label} · ${d}D state · ` +
+    (flat
+      ? `x${x + 1}, x${y + 1}`
+      : settings.view === "landscape"
+        ? `x${x + 1}, x${y + 1}, objective height (asinh scale)`
+        : `x${x + 1}, x${y + 1}${z < d ? `, x${z + 1}` : ", plane"}`);
+  $("slice-note").textContent = info.stochastic
+    ? "The surface shows the expected objective; walker rewards carry fresh observation noise at every evaluation."
+    : d > 2
+      ? "The surface fixes the other coordinates to the slice values. Walker heights and colors use their actual full-dimensional reward and may lie away from the slice."
+      : "The surface and walkers use the same objective and height transform.";
+  const links = stage.linkInfo;
+  $("links-note").hidden = flat || settings.links === "none";
+  if (links && !$("links-note").hidden)
+    $("links-note").textContent =
+      `Links show companions drawn during the last step at current slot positions · ${links.drawn} drawn` +
+      (links.skippedHistorical
+        ? ` · ${links.skippedHistorical} historical donors skipped`
+        : "") +
+      (links.capped ? " · large population: selected walker only" : "");
+  const render = flat || stage.renderMs == null ? null : stage.renderMs;
+  $("timing").textContent = [
+    stepMs == null ? null : `${stepMs.toFixed(1)} ms / step`,
+    render == null ? null : `${render.toFixed(1)} ms / render`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+function render() {
+  drawPending = false;
+  if (!frame || !stage) return;
+  const settings = view.settings();
+  stage.update(frame, settings, selected, trails);
   inspector();
   drawConvergence($("convergence"), records, $("chart-axis").value);
+  viewNotes(settings);
+  moleculeView();
+}
+// Coalesces step, selection and control changes into one frame.
+function draw() {
+  if (drawPending) return;
+  drawPending = true;
+  requestAnimationFrame(render);
+}
+function select(slot) {
+  selected = slot;
+  trails.track(selected);
+  draw();
 }
 function acceptFrame(next, reset = false) {
   frame = next;
-  const metrics = frameMetrics(frame, config);
+  const metrics = (lastMetrics = frameMetrics(frame, config));
   if (reset) {
     records = [];
     bestRecorded = null;
+    trails.clear();
+    trails.track(selected);
   }
+  const validity = frame.population.validity;
+  if (eligible.length !== validity.length)
+    eligible = new Uint8Array(validity.length);
+  for (let i = 0; i < validity.length; i++)
+    eligible[i] = alive(validity[i], config.gas.include_truncated) ? 1 : 0;
+  trails.push(frame, eligible, {
+    periodic: config.gas.boundary.kind === "periodic_box",
+    low: info.low,
+    high: info.high,
+  });
   if (metrics.best !== null)
     bestRecorded =
       bestRecorded === null
@@ -188,6 +310,15 @@ function acceptFrame(next, reset = false) {
   $("metric-best").textContent = format(metrics.best);
   $("metric-alive").textContent = `${metrics.alive} / ${config.walkers}`;
   $("metric-evals").textContent = format(frame.reward_evaluations);
+  const gap =
+    info.minimum != null &&
+    !info.stochastic &&
+    config.gas.fitness.direction === "minimize";
+  $("metric-gap-tile").hidden = !gap;
+  if (gap)
+    $("metric-gap").textContent = format(
+      bestRecorded === null ? null : bestRecorded - info.minimum,
+    );
   $("stage-loading").hidden = true;
   if (!metrics.alive) {
     running = false;
@@ -205,8 +336,18 @@ function fillForm(c) {
         : "gaussian"
       : module.law;
   const geometry = g.kinetic.noise.geometry;
+  const entry = catalogEntry(catalog, c.benchmark);
+  $("benchmark").value = benchmarkId(c.benchmark);
+  benchmarkFields(benchmarkParameters(entry, c.benchmark));
+  const [low, high] = entry.bounds;
+  const box = [c.initial_lower, c.initial_upper];
   const values = {
-    benchmark: c.benchmark,
+    "initial-box":
+      box[0] === low && box[1] === high
+        ? "domain"
+        : box[0] === Math.max(low, -1) && box[1] === Math.min(high, 1)
+          ? "unit"
+          : "custom",
     dimensions: c.dimensions,
     walkers: c.walkers,
     seed: g.seed,
@@ -239,35 +380,95 @@ function fillForm(c) {
   };
   for (const [id, value] of Object.entries(values))
     if ($(id)) $(id).value = value;
-  $("x-axis").replaceChildren();
-  $("y-axis").replaceChildren();
-  for (let i = 0; i < c.dimensions; i++)
-    for (const id of ["x-axis", "y-axis"]) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = `x${i + 1}`;
-      $(id).append(option);
-    }
-  $("x-axis").value = 0;
-  $("y-axis").value = 1;
-  $("view-caption").textContent =
-    `${BENCHMARKS[c.benchmark]?.label || c.benchmark} · ${c.dimensions}D state`;
   $("config-note").textContent =
     "Configuration applied. Changes require reset.";
 }
-async function landscape() {
-  if (!config || !frame) return;
-  const x = Number($("x-axis").value),
-    y = Number($("y-axis").value);
-  if (x === y) throw new Error("Choose different projection axes.");
-  const data = await client.request("landscape", {
-    x,
-    y,
-    resolution: 72,
-    center: Array(config.dimensions).fill(0),
+// Benchmark-specific inputs, generated from the engine catalog.
+function benchmarkFields(current) {
+  const entry = catalogEntry(catalog, $("benchmark").value);
+  const parameters = { ...benchmarkParameters(entry), ...current };
+  $("benchmark-parameters").replaceChildren(
+    ...entry.parameterFields.map((field) => {
+      const label = document.createElement("label"),
+        input = document.createElement("input");
+      Object.assign(input, {
+        id: `param-${field.key}`,
+        type: "number",
+        min: field.min,
+        max: field.max,
+        step: field.kind === "integer" ? 1 : "any",
+        required: true,
+        value: parameters[field.key],
+      });
+      input.dataset.parameter = field.key;
+      label.append(field.label, input);
+      return label;
+    }),
+  );
+  $("benchmark-parameters").hidden = !entry.parameterFields.length;
+  const dimensions = $("dimensions");
+  dimensions.readOnly = dimensionLocked(entry);
+  dimensions.value = dimensionFor(
+    entry,
+    formParameters(),
+    Number(dimensions.value) || 2,
+  );
+  $("benchmark-note").textContent = [
+    `Domain [${entry.bounds.join(", ")}]`,
+    entry.dimension
+      ? `${entry.dimension}D only`
+      : entry.dimensionRule
+        ? `dimension = ${entry.dimensionRule}`
+        : entry.dimensions
+          ? `dimensions ${entry.dimensions.join(", ")}`
+          : "",
+    entry.objective_execution === "host"
+      ? "objective evaluated on the host in f64 on every backend"
+      : "",
+    entry.gradient_cost ? `gradient costs ${entry.gradient_cost}` : "",
+    entry.reference || "",
+  ]
+    .filter(Boolean)
+    .join(" · ");
+}
+const formParameters = () =>
+  Object.fromEntries(
+    Array.from(
+      $("benchmark-parameters").querySelectorAll("[data-parameter]"),
+      (input) => [input.dataset.parameter, Number(input.value)],
+    ),
+  );
+function fillBenchmarks() {
+  const groups = new Map();
+  for (const entry of catalog.benchmarks) {
+    const name =
+      entry.suite === "bbob" ? `COCO BBOB · ${entry.group}` : entry.group;
+    if (!groups.has(name)) {
+      const group = document.createElement("optgroup");
+      group.label = name;
+      groups.set(name, group);
+    }
+    groups.get(name).append(new Option(entry.name, entry.id));
+  }
+  $("benchmark").replaceChildren(...groups.values());
+}
+// Adopts an initialized or restored run: domain, axes, slices, first frame.
+function adopt(result, home) {
+  config = result.config;
+  info = benchmarkInfo(config, catalog, result.objective);
+  frame = result.frame;
+  selected = 0;
+  fillForm(config);
+  stage.setDomain({
+    low: info.low,
+    high: info.high,
+    dimensions: config.dimensions,
+    minimum: info.minimum,
   });
-  renderer.landscape(data);
-  renderer.setLandscapeVisible($("landscape-toggle").checked);
+  view.configureAxes();
+  acceptFrame(result.frame, true);
+  render();
+  if (home) stage.home();
 }
 async function initialize(nextConfig) {
   await pause();
@@ -277,17 +478,13 @@ async function initialize(nextConfig) {
   $("engine-status").textContent = "Initializing Rust engine…";
   try {
     const result = await client.request("initialize", nextConfig);
-    config = result.config;
-    selected = 0;
-    fillForm(config);
-    acceptFrame(result.frame, true);
-    renderer.fit();
+    adopt(result, true);
     $("chart-note").textContent =
       "Teal: best recorded. Lavender: current mean. Landscape queries do not count as reward evaluations.";
     $("engine-status").textContent =
       `${config.gas.backend === "cpu" ? "WASM CPU" : "WebGPU hybrid"} · ${config.gas.precision}`;
     $("engine-status").title = result.device;
-    await landscape();
+    await view.refreshSurface(true);
   } finally {
     operation = false;
     if (frame && config)
@@ -302,9 +499,8 @@ async function stepOnce() {
   pendingStep = client
     .request("step", { count: 1 })
     .then((next) => {
+      stepMs = performance.now() - start;
       acceptFrame(next);
-      $("timing").textContent =
-        `${(performance.now() - start).toFixed(1)} ms / step`;
     })
     .finally(() => {
       pendingStep = null;
@@ -343,13 +539,10 @@ async function restore(bytes) {
   try {
     const copy = new Uint8Array(bytes);
     const result = await client.request("restore", copy.buffer, [copy.buffer]);
-    config = result.config;
-    selected = 0;
-    fillForm(config);
-    acceptFrame(result.frame, true);
+    adopt(result, false);
     $("engine-status").textContent =
       `${config.gas.backend === "cpu" ? "WASM CPU" : "WebGPU hybrid"} · ${config.gas.precision}`;
-    await landscape();
+    await view.refreshSurface(true);
     $("chart-note").textContent =
       "Trace starts at the restored checkpoint. Teal: best recorded. Lavender: current mean.";
   } finally {
@@ -361,14 +554,33 @@ $("configuration").addEventListener("submit", (event) => {
   event.preventDefault();
   safe(async () => {
     if (!$("configuration").reportValidity()) return;
-    const values = {};
+    const values = { parameters: formParameters() };
     for (const input of $("configuration").querySelectorAll("input,select"))
       values[input.id] = input.value;
-    await initialize(resolveConfig(config, values));
+    await initialize(resolveConfig(config, values, catalog));
   });
 });
 $("configuration").addEventListener("input", () => {
   $("config-note").textContent = "Pending changes — Apply & reset to use them.";
+});
+$("benchmark").addEventListener("change", () => {
+  benchmarkFields();
+  // Wide domains are explored from a uniform start, as in the Optimization Lab.
+  const [low, high] = catalogEntry(catalog, $("benchmark").value).bounds;
+  $("initial-box").value = high - low > 25 || low > -1 ? "domain" : "unit";
+});
+$("benchmark-parameters").addEventListener("input", () => {
+  const entry = catalogEntry(catalog, $("benchmark").value);
+  if (dimensionLocked(entry))
+    $("dimensions").value = dimensionFor(entry, formParameters(), 2);
+});
+$("dimensions").addEventListener("change", () => {
+  const entry = catalogEntry(catalog, $("benchmark").value);
+  $("dimensions").value = dimensionFor(
+    entry,
+    formParameters(),
+    Number($("dimensions").value) || 2,
+  );
 });
 $("kinetic").addEventListener("change", () => {
   if ($("kinetic").value === "baoab") {
@@ -400,25 +612,50 @@ $("step").addEventListener("click", () =>
   }),
 );
 $("reset").addEventListener("click", () => safe(() => initialize(config)));
-$("walker").addEventListener("input", () => {
-  selected = Number($("walker").value) || 0;
-  inspector();
-  draw();
-});
-for (const id of ["x-axis", "y-axis"])
+$("walker").addEventListener("input", () =>
+  select(Number($("walker").value) || 0),
+);
+for (const id of ["x-axis", "y-axis", "z-axis"])
   $(id).addEventListener("change", () =>
     safe(async () => {
-      if ($("x-axis").value === $("y-axis").value)
-        $(id === "x-axis" ? "y-axis" : "x-axis").value =
-          (Number($(id).value) + 1) % config.dimensions;
+      if (!config) return;
+      view.distinctAxes(id);
+      view.sliceControls();
       draw();
-      await landscape();
+      if (id !== "z-axis") await view.refreshSurface();
     }),
   );
-$("landscape-toggle").addEventListener("change", () =>
-  renderer.setLandscapeVisible($("landscape-toggle").checked),
+$("view").addEventListener("change", () =>
+  safe(async () => {
+    if (!frame) return;
+    render();
+    await view.refreshSurface();
+  }),
 );
-$("fit-view").addEventListener("click", () => renderer.fit());
+for (const id of [
+  "color-mode",
+  "point-size",
+  "surface-opacity",
+  "height-scale",
+  "links",
+  "trails",
+  "landscape-toggle",
+])
+  $(id).addEventListener("input", draw);
+$("resolution").addEventListener("change", () => view.refreshSurface());
+$("fit-view").addEventListener("click", () => stage.fit());
+$("reset-camera").addEventListener("click", () => stage.resetCamera());
+$("slice-from-best").addEventListener("click", () => {
+  if (frame) view.sliceFrom(view.best());
+});
+$("slice-from-selected").addEventListener("click", () => {
+  if (frame) view.sliceFrom(selected);
+});
+$("slice-reset").addEventListener("click", () => {
+  if (!frame) return;
+  view.resetSlice();
+  view.refreshSurface();
+});
 $("chart-axis").addEventListener("change", () =>
   drawConvergence($("convergence"), records, $("chart-axis").value),
 );
@@ -497,15 +734,45 @@ new ResizeObserver(() =>
 ).observe($("convergence"));
 window.addEventListener("pagehide", () => {
   client.dispose();
-  renderer?.dispose();
+  stage?.dispose();
+  molecule?.dispose();
 });
 
 await safe(async () => {
-  renderer = new PopulationRenderer($("stage"), (slot) => {
-    selected = slot;
-    draw();
+  const requested = new URLSearchParams(location.search).get("view");
+  if ([...$("view").options].some((option) => option.value === requested))
+    $("view").value = requested;
+  stage = new StageController($("stage"), select);
+  view = createView({
+    $,
+    client,
+    stage,
+    state: {
+      get config() {
+        return config;
+      },
+      get frame() {
+        return frame;
+      },
+      get info() {
+        return info;
+      },
+    },
+    redraw: draw,
+    fail: showError,
   });
   const defaults = await client.request("defaults");
+  catalog = defaults.catalog;
+  fillBenchmarks();
   config = defaults.config;
   await initialize(config);
+  window.euclideanGasLab = {
+    ready: true,
+    stage,
+    view,
+    trails,
+    get selected() {
+      return selected;
+    },
+  };
 });

@@ -38,6 +38,55 @@ These are conditional-expectation identities. A reduced field model becomes pred
 
 A full-step increment is the sum of its recorded stage increments. Its variance includes cross terms between stages and walkers. Cloning, common donors, killing and movement of a material observation point contribute to these measured increments. The stated normalization and cemetery extension are part of each observable.
 
+### Explicit field equations of the executed algorithm
+
+The [field-equations chapter](../docs/source/2_fractal_gas/3_fitness_manifold/04_field_equations.md) derives the finite-step transition by composing the actual donor laws, historical rescoring, clone gates, restitution, BAOAB primitives, boundaries and history admission. Its complete marked empirical field retains every row and its source identity; spatial moments inherit explicit source and flux equations from that transition.
+
+For a primitive row change $(x,v,a)\mapsto(y,w,b)$, with eligibility marks $a,b$, its density and momentum contributions satisfy
+
+$$\Delta\rho=(b-a)\delta_x-\nabla\!\cdot\!\left[b(y-x)\int_0^1\delta_{x+t(y-x)}dt\right],$$
+
+$$\Delta j=(bw-av)\delta_x-\nabla\!\cdot\!\left[bw\otimes(y-x)\int_0^1\delta_{x+t(y-x)}dt\right].$$
+
+Summing over rows with normalization $1/N$ and over executed stages gives the full field equations. The velocity second moment supplies an anisotropic stress. Clone transfers, row-normalized viscosity, thermal injection and eligibility changes supply their computed momentum sources. The metric is the configured spectral function of the differentiated conditional fitness; its next-stage evolution includes changing population statistics, immutable donor context and the next A1 query position. Projection onto fewer fields produces the derived transient memory recurrence, without a stationarity assumption.
+
+VI-51 evaluates these laws as Fourier fields for density, momentum, stress, energy or a phase-space characteristic. Rust integrates acceptance gates conditional on the actual donor candidates and rescored fitness, resolves exact historical sources, and computes conditional thermostat means and covariances for the executed Gaussian or standardized-uniform innovation law. Independent kick/transport reconstruction tests the deterministic primitives; the full stage sum retains boundary and eligibility sources.
+
+The [field-equation regression](crates/benchmarks/tests/algorithmic_field_equations.rs) uses 48 independent eight-step gas trajectories per innovation law, with dense correlated noise, source shifts, both viscosity normalizations and historical cloning. The successive stages of a trajectory remain dependent.
+
+| Check | Result |
+|---|---:|
+| Independent literal-copy and A/B residuals | below $2\times10^{-13}$ |
+| Recorded field-accounting residual | below $2\times10^{-13}$ |
+| Thermostat maximum absolute standardized accumulated innovation | 2.0881 |
+| Thermostat realized/predicted quadratic variation | 0.8570–1.2287 |
+| Clone maximum absolute standardized accumulated innovation | 1.9401 |
+| Clone realized/predicted quadratic variation | 0.9114–1.1564 |
+| Accepted historical copies, Gaussian / uniform | 706 / 719 |
+
+The [validation record](validation/field-equations.json) preserves the protocol and reported results. All 85 combinations of five field observables and the 17 quarter-step wave numbers from 0 through 4 pass archive recomputation, and all five browser views report both computed equations. Additional actual gas runs cover conditional-fitness metric noise, periodic boundaries, absorbing loss and revival. The checks reject modified clocks, noise samples/factors, donor incarnations, clone probabilities and missing required stages. Predictable fluctuation scales are martingale scales, not confidence bands for full-step forecasts. The clone calculation conditions on donor selection rather than integrating its outer randomness.
+
+The default seed-7, 96-update momentum-field run reports both equations available. Its recorded field-accounting residual is 4.16e-17, independent copy residual 2.50e-16 and independent kick/transport residual 2.78e-17. Accumulated clone and thermostat fluctuations divided by their predicted scales are −1.35 and −1.04.
+
+The field-accounting residual checks a telescoping sum of realized increments. Its conditional thermostat mean cancels algebraically against the defined innovation; that residual therefore does not validate the mean prediction. Independent copy and A/B checks, moment quadrature and trajectory ensembles provide the prediction tests. Kick reconstruction conditions on the recorded potential gradient and independently recomputes viscosity. Availability requires the actual ordered stage sequence and its provenance; recorded boundary extinction permits only the stages genuinely executed.
+
+Independent polynomial quadrature agrees with conditional means and all four real/imaginary covariance entries within $2\times10^{-12}$ for Gaussian and uniform innovations, low-rank and actual metric factors, source shifts, and friction $0$, $10^{-12}$ and $1.3$. Enumeration of all 256 gate patterns at actual eight-walker historical contexts independently verifies clone means and full covariance to the same tolerance. Both f32 and f64 execution are covered.
+
+Reproduce the metric ensemble with `ALGORITHMIC_GAS_FIELD_REPORT=/tmp/metric-field-review.json cargo test -p algorithmic-gas-benchmarks --test algorithmic_metric_field_predictions -- --nocapture`.
+
+The [metric-active ensemble report](validation/metric-field-review.json) retains 896 six-update trajectories: 128 Gaussian runs and three disjoint uniform batches of 128, 128 and 512 runs. Each run uses eight walkers, historical donors, viscosity and the actual fitness-metric provider. Recorded factor matrices change across updates. Independently reconstructing the metric from recorded fitness Hessians and checking $g(BB^\top)=2\gamma T I$ gives a maximum normalized residual $1.27\times10^{-12}$. Real, imaginary, sum and difference projections test the full complex covariance of clone and thermostat increments. Standard errors use complete trajectory sampling units.
+
+Finite ensembles produce visible discrepancies, retained here with their independent follow-ups:
+
+| Measurement | 128-run batch | Disjoint follow-up |
+|---|---:|---:|
+| Uniform thermostat energy imaginary mean, estimated-SE units | −3.120 | −0.041, 128 runs |
+| Uniform thermostat stress01 real+imag quadratic variation, measured/predicted | 0.8367 | 0.9591, 128 runs |
+| Uniform clone energy real+imag quadratic variation, measured/predicted | 0.7137 | 1.037736, 512 runs |
+| Uniform clone stress00 real+imag terminal variance, measured/predicted | 0.5485 | 0.956527, 512 runs |
+
+The notable deviations do not persist in those disjoint batches. In the 512-run batch, the largest absolute standardized discrepancy is 2.244, for clone quadratic variation; the thermostat mean, quadratic-variation and terminal-variance comparisons are each below 1.95 estimated standard errors. The fixed regression threshold is 4.5 estimated standard errors, a detection rule rather than a simultaneous confidence guarantee. The report preserves all 192 projection comparisons, the configurations, sample sizes, variances and standard errors. It supports agreement of the tested conditional equations without equating every finite-sample covariance estimate with its expectation.
+
 ### Correlations and spectral diagnostics
 
 A fixed-normalization frame mean and a source-frozen valid-pair statistic are different observables. For $F_t=N^{-1}\sum_i O_i(t)$, its correlation includes cross-walker products. The source-pair statistic retains particular relationships and a lag-dependent valid-pair denominator. VI-35 and VI-36 keep these definitions separate.
@@ -128,9 +177,7 @@ The comparisons below use seed 7 and 96 baseline updates. Continuation experimen
 
 For VI-22, increasing to 32 continuations per independent group gives residuals and standard errors of −0.334481 ± 0.510271 at seed 7, −0.683903 ± 0.564662 at seed 0, and −0.372993 ± 0.591304 at seed 516. Their absolute standardized residuals are 0.66, 1.21 and 0.63. The analytic thermostat momentum and energy residuals are within 1.33 predicted standard errors in each of these runs. The seed-7 extension includes the smaller sample, so it is a precision extension rather than an independent replication of that sample. The results are consistent with sampling variation and do not show a persistent drift-law discrepancy. [Requests and measured follow-up results](validation/lecture-review.json) preserve this check.
 
-The exact full recorded algebra also has a stronger obstruction than the noisy temporal-reflection diagnostic: the [localized labeled-color proposition](../docs/source/2_fractal_gas/2_fractal_set/05_yang_mills_noether.md#prop-ym-native-labeled-color-reflection-sign) gives a negative reflected expectation −(u+v)²/4 whenever the retained labeled localization has nonzero support. A fixed vertex cannot occupy both reflected half-spaces. Thus this particular full labeled algebra cannot supply the proposed positive physical reconstruction. Summed observables include cross-label terms and require their own analysis; the temporal VI-28 matrix tests a different reflected observable.
-
-VI-51 reports only executed mechanical stage ledgers and conditional thermostat moments. Its regression compares the ledger with the archive and rejects prescribed two-particle restitution values, prescribed Ricci contractions and constitutive-example residuals from the run result.
+VI-51 reports executed mechanical sources together with the conditional clone and thermostat field predictions above. Its archive regression excludes prescribed pair examples and prescribed Ricci contractions from the run result.
 
 The VI-39 scalar-curvature cross-check is under-resolved at spacing 0.002: the packed value is −2564.930957, while the coarse independent difference gives −3573.082250, a 39.3% discrepancy. That coarse stencil also crosses a spectral clipping surface. Refining the spatial probe on the same archived conditional field gives −2895.936228 at 0.001, −2649.973203 at 0.0005, −2568.362734 at 0.0001, −2564.965283 at 0.00001, and −2564.930585 at 0.000001. The error decreases approximately quadratically in the resolved range and reaches 1.45×10⁻⁷ relative error. This identifies a finite-difference resolution/support error rather than a discrepancy in the packed curvature formula for this state. The [refinement evidence](validation/lecture-review.json) preserves the measured sequence.
 
@@ -155,7 +202,7 @@ The following checks have completed for this implementation:
 - Field and QFT work: targeted native recorded-observable, geometry, complete paired-run and checkpoint-evidence checks exercise the new readouts. Their exact cases remain in the named test suites below.
 - Benchmark all-targets Clippy with warnings denied.
 
-The complete workspace run passed 293 tests. The native control sweep passed 258 Part V–VI seeded defaults and 1,455 individual control endpoints; the continuation follow-up passed 72 cases. Compiled and browser checks passed all 128 demos, evidence replay and all chapter embeds. The Theory build and portal assembly passed. The [lecture validation record](../fractal-gas-web/web/euclidean-gas/lecture/VALIDATION.md) gives the coverage. No claim of accelerator runtime parity follows from CPU/WASM checks.
+The workspace sweep passed 301 tests. The strengthened field checks pass nine field-equation tests, four stage-coverage tests and one metric-ensemble test. The native control sweep passed 258 Part V–VI seeded defaults and 1,455 individual control endpoints; the continuation follow-up passed 72 cases. Compiled and browser checks passed all 128 demos, evidence replay and all chapter embeds. The Theory build and portal assembly passed. The [lecture validation record](../fractal-gas-web/web/euclidean-gas/lecture/VALIDATION.md) gives the coverage. No claim of accelerator runtime parity follows from CPU/WASM checks.
 
 The applicable suites are `lecture_early`, `lecture_source_identity`, `lecture_field_geometry`, `lecture_fractal_observables`, `partvi_run_observables`, `lecture_qft_protocols`, `lecture_qft_evidence` and `lecture_registry`. Exact identities use numerical residuals; fitted physical hypotheses retain held-out errors and explicit interpretation limits.
 
@@ -215,7 +262,7 @@ Each entry links the chapter's concept to an observable of an actual run. The ma
 | VI-48 | Conditional BAOAB diffusion and heating | Run archive |
 | VI-49 | Velocity-mode energy and Parseval balance | Run archive |
 | VI-50 | Measured cloud and kinetic scales | Run archive |
-| VI-51 | Complete mechanical balances and stress ingredients | Run archive |
+| VI-51 | Algorithm-derived Fourier field equations, conditional clone/noise predictions and mechanical sources | Run archive |
 | VI-52 | Cuts by executed interaction channel | Run archive |
 | VI-53 | Empirical transition time asymmetry | Run archive |
 | VI-54 | Recorded interaction perimeter scan | Run archive |

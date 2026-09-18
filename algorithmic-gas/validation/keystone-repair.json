@@ -1,0 +1,272 @@
+{
+  "kind": "Rust verification of Keystone proof repair",
+  "configuration_provenance": [
+    "crates/benchmarks/tests/keystone_cluster_flux.rs",
+    "crates/benchmarks/tests/keystone_kinetic_coupling.rs"
+  ],
+  "timestep": 0.04,
+  "trajectory_engine": "algorithmic-gas Rust CPU f64",
+  "statistics_note": "Independent-run uncertainties within each cohort. Distinct studies are not pooled; some seed values are reused between different configurations.",
+  "three_walker": [
+    {
+      "seed_start": 120000,
+      "seed_stop_exclusive": 124096,
+      "runs": 4096,
+      "conditioned_runs": 1082,
+      "predicted": 0.012118592750985846,
+      "measured": 0.011824722360136198,
+      "standard_error": 0.00048564206001803513,
+      "aggregate_variance_drift": {
+        "predicted": -0.05874001349555654,
+        "measured": -0.05525453944462646,
+        "standard_error": 0.0018379222531125301
+      }
+    },
+    {
+      "seed_start": 130000,
+      "seed_stop_exclusive": 134096,
+      "runs": 4096,
+      "conditioned_runs": 1091,
+      "predicted": 0.012118592750985846,
+      "measured": 0.012702110794198534,
+      "standard_error": 0.0004918330915019859,
+      "aggregate_variance_drift": {
+        "predicted": -0.05874001349555654,
+        "measured": -0.060385315165202534,
+        "standard_error": 0.0018501926037814461
+      }
+    }
+  ],
+  "single_alive_giant_component": [
+    {
+      "walkers": 16,
+      "seed_start": 140000,
+      "seed_stop_exclusive": 140128,
+      "barycenter_mean": 0.24978270049870296,
+      "predicted_variance": 0.0005859375000000001,
+      "measured_variance": 0.0006585435010601385,
+      "variance_standard_error": 7.352997716462797e-05,
+      "velocity_mean_error": 0.0
+    },
+    {
+      "walkers": 32,
+      "seed_start": 141000,
+      "seed_stop_exclusive": 141128,
+      "barycenter_mean": 0.25046471929322006,
+      "predicted_variance": 0.00030273437500000005,
+      "measured_variance": 0.0002848680123448805,
+      "variance_standard_error": 3.7990488201724456e-05,
+      "velocity_mean_error": 1.9081958235744878e-17
+    },
+    {
+      "walkers": 64,
+      "seed_start": 142000,
+      "seed_stop_exclusive": 142128,
+      "barycenter_mean": 0.2513885045015104,
+      "predicted_variance": 0.00015380859375000003,
+      "measured_variance": 0.00014261259625562874,
+      "variance_standard_error": 1.9301619005714844e-05,
+      "velocity_mean_error": 6.938893903907228e-18
+    },
+    {
+      "walkers": 128,
+      "seed_start": 143000,
+      "seed_stop_exclusive": 143128,
+      "barycenter_mean": 0.2497180034171328,
+      "predicted_variance": 7.751464843750001e-05,
+      "measured_variance": 5.8794242133330794e-05,
+      "variance_standard_error": 9.727403229070576e-06,
+      "velocity_mean_error": 1.214306433183765e-17
+    },
+    {
+      "walkers": 256,
+      "seed_start": 144000,
+      "seed_stop_exclusive": 144128,
+      "barycenter_mean": 0.2503661747091674,
+      "predicted_variance": 3.890991210937501e-05,
+      "measured_variance": 3.715626972611737e-05,
+      "variance_standard_error": 4.8828500460885765e-06,
+      "velocity_mean_error": 1.8756697583999227e-17
+    }
+  ],
+  "collision_operator": {
+    "exact_cases": 63,
+    "dimensions": [
+      1,
+      2,
+      3
+    ],
+    "restitution": [
+      0,
+      0.5,
+      1
+    ],
+    "largest_population": 1024,
+    "largest_load": [
+      1023,
+      1
+    ],
+    "rotations": "Supplied deterministic orthogonal matrices; operator checks, not Haar sampling statistics."
+  },
+  "kinetic_coupling": {
+    "runs_per_configuration": 64,
+    "rows_per_run": 32,
+    "configurations": [
+      {
+        "potential": "Quadratic",
+        "dimension": 1,
+        "ou_scale": 16.0,
+        "mean_cost": 0.09943803,
+        "standard_error": 0.00316021,
+        "proved_bound": 0.22100318
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 1,
+        "ou_scale": 64.0,
+        "mean_cost": 0.03311973,
+        "standard_error": 0.00195075,
+        "proved_bound": 0.05525079
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 1,
+        "ou_scale": 256.0,
+        "mean_cost": 0.00857707,
+        "standard_error": 0.00082613,
+        "proved_bound": 0.0138127
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 2,
+        "ou_scale": 16.0,
+        "mean_cost": 0.1360832,
+        "standard_error": 0.00398144,
+        "proved_bound": 0.31765704
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 2,
+        "ou_scale": 64.0,
+        "mean_cost": 0.04090008,
+        "standard_error": 0.00211555,
+        "proved_bound": 0.07941426
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 2,
+        "ou_scale": 256.0,
+        "mean_cost": 0.01220019,
+        "standard_error": 0.00133646,
+        "proved_bound": 0.01985357
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 3,
+        "ou_scale": 16.0,
+        "mean_cost": 0.16426522,
+        "standard_error": 0.00466713,
+        "proved_bound": 0.3964372
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 3,
+        "ou_scale": 64.0,
+        "mean_cost": 0.04886277,
+        "standard_error": 0.00220386,
+        "proved_bound": 0.0991093
+      },
+      {
+        "potential": "Quadratic",
+        "dimension": 3,
+        "ou_scale": 256.0,
+        "mean_cost": 0.01586351,
+        "standard_error": 0.00164741,
+        "proved_bound": 0.02477732
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 1,
+        "ou_scale": 16.0,
+        "mean_cost": 0.09924835,
+        "standard_error": 0.00418266,
+        "proved_bound": 0.26349533
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 1,
+        "ou_scale": 64.0,
+        "mean_cost": 0.03227389,
+        "standard_error": 0.00203302,
+        "proved_bound": 0.06587383
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 1,
+        "ou_scale": 256.0,
+        "mean_cost": 0.00865151,
+        "standard_error": 0.00126051,
+        "proved_bound": 0.01646846
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 2,
+        "ou_scale": 16.0,
+        "mean_cost": 0.12975532,
+        "standard_error": 0.00451602,
+        "proved_bound": 0.37277099
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 2,
+        "ou_scale": 64.0,
+        "mean_cost": 0.04533869,
+        "standard_error": 0.00252324,
+        "proved_bound": 0.09319275
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 2,
+        "ou_scale": 256.0,
+        "mean_cost": 0.01281849,
+        "standard_error": 0.0013816,
+        "proved_bound": 0.02329819
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 3,
+        "ou_scale": 16.0,
+        "mean_cost": 0.1433203,
+        "standard_error": 0.00443535,
+        "proved_bound": 0.46353349
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 3,
+        "ou_scale": 64.0,
+        "mean_cost": 0.04931822,
+        "standard_error": 0.00247755,
+        "proved_bound": 0.11588337
+      },
+      {
+        "potential": "Rastrigin",
+        "dimension": 3,
+        "ou_scale": 256.0,
+        "mean_cost": 0.01351852,
+        "standard_error": 0.00139852,
+        "proved_bound": 0.02897084
+      }
+    ],
+    "paired_row_comparisons": 36864,
+    "matched_pairs": 36159,
+    "unmatched_pairs": 705,
+    "matched_terminal_exits": 1304,
+    "innovation_note": "Translated maximal Gaussian coupling supplied to actual Rust kinetic execution; each marginal retains the declared Gaussian law."
+  },
+  "validation": {
+    "rust_tests_passed": 5,
+    "strict_target_clippy": "passed",
+    "documentation_build": "succeeded with eight existing unresolved downstream references",
+    "full_stationary_theorem": "not established by these checks"
+  }
+}

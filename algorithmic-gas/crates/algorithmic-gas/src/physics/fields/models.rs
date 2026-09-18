@@ -490,8 +490,8 @@ fn crossover(r: &ExperimentRequest) -> Result<ExperimentResult> {
 fn budgets(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result<ExperimentResult> {
     let mut out = result(
         r,
-        "Mechanical balances and constitutive stress",
-        "Exact discrete energy/momentum observables, independent of geometric constitutive comparisons",
+        "Algorithm-derived field equations and mechanical sources",
+        "Recorded clone, force, transport and boundary sources with analytically integrated conditional thermostat fields",
     );
     if let Some(a) = archive
         && let Some(step) = a.steps.last()
@@ -574,6 +574,7 @@ fn budgets(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result<E
             }
         }
         out.notes.push("Stage budgets are computed from recorded eligibility and velocities; the source stage names identify any combined boundary operation.".into());
+        append_weak_field_equation(&mut out, r, a)?;
         return Ok(out);
     }
     let v = [p(r, "velocity", 1., -3., 3.), -0.6];
@@ -638,4 +639,228 @@ fn budgets(r: &ExperimentRequest, archive: Option<&RunArchive<f64>>) -> Result<E
     out.details["pair_fixture"] = json!({"preclone_velocities":v,"literal_velocities":literal,"transformed_velocities":after,"literal_delta":literal_delta,"transform_delta":after_energy-before_energy-literal_delta});
     out.details["constitutive_reference"] = json!({"kappa":1,"dimension":d,"energy":e,"pressure":pressure,"lambda":lambda,"scalar_curvature":scalar,"ricci_uu":ricci_uu,"vacuum_lambda_shift":-pressure});
     Ok(out)
+}
+
+fn append_weak_field_equation(
+    out: &mut ExperimentResult,
+    request: &ExperimentRequest,
+    archive: &crate::tracking::RunArchive<f64>,
+) -> Result<()> {
+    use crate::physics::field_evolution::{
+        WeakFieldObservable, clone_field_balance, weak_field_balance,
+    };
+    let crate::kinetic::KineticKind::Baoab { positions, .. } =
+        &archive.gas_config.kinetic.integrator
+    else {
+        out.details["weak_field_equation"] =
+            json!({"status":"unsupported","reason":"BAOAB stage evidence required"});
+        return Ok(());
+    };
+    let dimension = archive.steps[0]
+        .before
+        .observations
+        .field(positions)?
+        .row(0)?
+        .len();
+    let mut k = vec![0.; dimension];
+    k[0] = request.number("wave_number", 1.);
+    let observable = match request.text("field_observable", "momentum") {
+        "density" => WeakFieldObservable::Density { k },
+        "momentum" => WeakFieldObservable::Momentum { k, component: 0 },
+        "stress" => WeakFieldObservable::Stress { k, a: 0, b: 0 },
+        "energy" => WeakFieldObservable::KineticEnergy { k },
+        "phase_space" => {
+            let mut l = vec![0.; dimension];
+            l[0] = 0.75;
+            WeakFieldObservable::PhaseSpaceCharacteristic { k, l }
+        }
+        _ => {
+            return Err(crate::GasError::Configuration(
+                "unknown weak field observable".into(),
+            ));
+        }
+    };
+    let mut reports = Vec::new();
+    let mut clone_reports = Vec::new();
+    let mut clone_unsupported = Vec::new();
+    let mut clone_observed = Vec::new();
+    let mut clone_conditional = Vec::new();
+    let mut clone_residual_max: f64 = 0.;
+    let mut clone_cumulative = [0.; 2];
+    let mut clone_variation = [0.; 4];
+    let mut unsupported = Vec::new();
+    let mut cumulative = [0.; 2];
+    let mut variation = [0.; 4];
+    let mut residual_max: f64 = 0.;
+    let mut kinetic_residual_max: f64 = 0.;
+    let mut centered = Vec::new();
+    let mut centered_imaginary = Vec::new();
+    let mut positive_scale = Vec::new();
+    let mut negative_scale = Vec::new();
+    let mut observed = Vec::new();
+    let mut conditional = Vec::new();
+    for step in &archive.steps {
+        match clone_field_balance(archive, step, &observable) {
+            Ok(report) => {
+                clone_observed.push([report.step as f64, report.realized_increment[0]]);
+                clone_conditional.push([report.step as f64, report.conditional_increment[0]]);
+                for (i, total) in clone_cumulative.iter_mut().enumerate() {
+                    *total += report.martingale_increment[i];
+                    clone_residual_max =
+                        clone_residual_max.max(report.literal_copy_residual[i].abs());
+                }
+                for (total, value) in clone_variation.iter_mut().zip(report.martingale_covariance) {
+                    *total += value;
+                }
+                clone_reports.push(report);
+            }
+            Err(error) => {
+                clone_unsupported.push(json!({"step":step.report.step,"reason":error.to_string()}))
+            }
+        }
+        let report = match weak_field_balance(&archive.gas_config, step, &observable) {
+            Ok(report) => report,
+            Err(error) => {
+                unsupported.push(json!({"step":step.report.step,"reason":error.to_string()}));
+                continue;
+            }
+        };
+        for (i, total) in cumulative.iter_mut().enumerate() {
+            *total += report.martingale_increment[i];
+            residual_max = residual_max.max(report.field_equation_residual[i].abs());
+        }
+        for (total, value) in variation.iter_mut().zip(report.martingale_covariance) {
+            *total += value;
+        }
+        for stage in &report.stage_sources {
+            if let Some(residual) = stage.deterministic_law_residual {
+                kinetic_residual_max = kinetic_residual_max
+                    .max(residual[0].abs())
+                    .max(residual[1].abs());
+            }
+        }
+        let t = report.step as f64;
+        centered.push([t, cumulative[0]]);
+        centered_imaginary.push([t, cumulative[1]]);
+        positive_scale.push([t, variation[0].max(0.).sqrt()]);
+        negative_scale.push([t, -variation[0].max(0.).sqrt()]);
+        observed.push([t, report.thermostat_realized_increment[0]]);
+        conditional.push([t, report.thermostat_conditional_increment[0]]);
+        reports.push(report);
+    }
+    if !clone_reports.is_empty() {
+        plot(
+            out,
+            "Conditional field equation: cloning term",
+            "algorithm update",
+            "real Fourier-field increment",
+            vec![
+                line("Executed literal-copy increment", clone_observed),
+                line("Integrated acceptance-gate prediction", clone_conditional),
+            ],
+        );
+        metric(
+            out,
+            "Independent literal-copy field-law residual",
+            clone_residual_max,
+            "",
+        );
+        metric(
+            out,
+            "Accumulated real clone fluctuation",
+            clone_cumulative[0],
+            "",
+        );
+        metric(
+            out,
+            "Real clone predictable fluctuation scale",
+            clone_variation[0].max(0.).sqrt(),
+            "",
+        );
+    }
+    out.details["clone_field_equation"] = json!({
+        "status":if clone_reports.is_empty(){"unsupported"}else if clone_unsupported.is_empty(){"available"}else{"partial"},
+        "conditioning":"complete sampled donor candidates, source identities, rescored fitness and selected revival donor; independent acceptance gates integrated analytically",
+        "analyzed_updates":clone_reports.len(), "unsupported":clone_unsupported,
+        "martingale_sum":clone_cumulative,"predictable_covariance":clone_variation,
+        "reports":clone_reports,
+    });
+    if !reports.is_empty() {
+        plot(
+            out,
+            "Conditional field equation: thermostat term",
+            "algorithm update",
+            "real Fourier-field increment",
+            vec![
+                line("Executed thermostat increment", observed),
+                line("Integrated conditional prediction", conditional),
+            ],
+        );
+        plot(
+            out,
+            "Centered field fluctuations and predictable scale",
+            "algorithm update",
+            "Fourier field",
+            vec![
+                line("Accumulated real martingale", centered),
+                line("Accumulated imaginary martingale", centered_imaginary),
+                line("Positive real predictable scale", positive_scale),
+                line("Negative real predictable scale", negative_scale),
+            ],
+        );
+        let last = reports.last().unwrap();
+        plot(
+            out,
+            "Actual field sources in the final update",
+            "recorded stage transition",
+            "Fourier field",
+            vec![
+                line(
+                    "Real source",
+                    last.stage_sources
+                        .iter()
+                        .enumerate()
+                        .map(|(i, s)| [i as f64, s.increment[0]])
+                        .collect(),
+                ),
+                line(
+                    "Imaginary source",
+                    last.stage_sources
+                        .iter()
+                        .enumerate()
+                        .map(|(i, s)| [i as f64, s.increment[1]])
+                        .collect(),
+                ),
+            ],
+        );
+        metric(out, "Field accounting residual", residual_max, "");
+        metric(
+            out,
+            "Independent A/B field-law residual",
+            kinetic_residual_max,
+            "",
+        );
+        metric(
+            out,
+            "Accumulated real thermostat fluctuation",
+            cumulative[0],
+            "",
+        );
+        metric(
+            out,
+            "Real predictable fluctuation scale",
+            variation[0].max(0.).sqrt(),
+            "",
+        );
+    }
+    out.notes.push("The field accounting residual checks the sum of recorded increments. Independent copy and A/B residuals test the primitive maps; A/B reconstruction uses the recorded potential gradient and independently computes viscosity. Conditional mean and covariance predictions are tested by ensemble fluctuations. The weak field equation retains each realized clone, force, transport, boundary and eligibility source. Literal-copy gates are integrated conditional on actual candidates and rescored fitness, resolving immutable historical sources. The thermostat contribution is integrated under its actual innovation law; the plotted predictable scale belongs to its centered martingale and is not a confidence band for the full field increment.".into());
+    out.details["weak_field_equation"] = json!({
+        "status":if reports.is_empty(){"unsupported"}else if unsupported.is_empty(){"available"}else{"partial"},
+        "observable":observable,"fixed_capacity_normalization":true,
+        "analyzed_updates":reports.len(),"unsupported":unsupported,
+        "martingale_sum":cumulative,"predictable_covariance":variation,
+        "sampling_unit":"one complete executed gas trajectory; conditional martingale increments retain all preceding population and donor dependence",
+        "reports":reports,
+    });
+    Ok(())
 }

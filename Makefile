@@ -56,7 +56,7 @@ optimization-test: optimization-native optimization-web
 .PHONY: optimization-native optimization-web optimization-web-build optimization-lab optimization-test
 
 ALGORITHMIC_GAS_PORT ?= 8770
-.PHONY: algorithmic-gas-native algorithmic-gas-web algorithmic-gas-lab algorithmic-gas-test algorithmic-gas-targets
+.PHONY: algorithmic-gas-native algorithmic-gas-web algorithmic-gas-lab algorithmic-gas-test algorithmic-gas-browser-test algorithmic-gas-targets
 algorithmic-gas-native:
 	cd algorithmic-gas && cargo build --workspace --release --locked
 
@@ -72,6 +72,10 @@ algorithmic-gas-test:
 	cd algorithmic-gas && cargo clippy --workspace --all-targets --locked -- -D warnings
 	cd algorithmic-gas && cargo test --workspace --locked
 	npm --prefix fractal-gas-web run test:euclidean-gas
+
+# Requires `make algorithmic-gas-lab` serving on $(ALGORITHMIC_GAS_PORT).
+algorithmic-gas-browser-test:
+	LECTURE_BASE_URL=http://127.0.0.1:$(ALGORITHMIC_GAS_PORT) npm --prefix fractal-gas-web run test:euclidean-gas-browser
 
 algorithmic-gas-targets:
 	cd algorithmic-gas && cargo check -p algorithmic-gas-benchmarks --features wgpu --locked

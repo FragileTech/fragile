@@ -4,6 +4,7 @@ let gas = null;
 let module = null;
 let config = null;
 let queue = Promise.resolve();
+let catalog = null;
 const modules = new Map();
 
 async function load(profile) {
@@ -26,8 +27,13 @@ async function load(profile) {
   }
   return modules.get(profile);
 }
+// The objective catalog is a pure function of the engine build.
+async function objectives() {
+  catalog ??= (await load("cpu")).benchmark_catalog();
+  return catalog;
+}
 async function prepare(nextConfig) {
-  validateLabConfig(nextConfig);
+  validateLabConfig(nextConfig, await objectives());
   const gpu = nextConfig.gas.backend === "wgpu";
   if (gpu && nextConfig.gas.precision !== "f32")
     throw new Error(
@@ -102,7 +108,12 @@ async function handle({ id, type, payload }) {
       result = {
         config: JSON.parse(m.default_config()),
         capabilities: m.capabilities(),
+        catalog: await objectives(),
       };
+    } else if (type === "catalog") {
+      result = await objectives();
+    } else if (type === "objective_info") {
+      result = (await load("cpu")).objective_info(JSON.stringify(payload));
     } else if (type === "initialize") {
       const prepared = await prepare(payload);
       const next = await prepared.module.BrowserGas.create(
@@ -113,7 +124,12 @@ async function handle({ id, type, payload }) {
       module = prepared.module;
       config = JSON.parse(gas.config_json());
       const packed = transferFrame(gas.snapshot());
-      result = { config, device: prepared.device, frame: packed.frame };
+      result = {
+        config,
+        device: prepared.device,
+        frame: packed.frame,
+        objective: gas.objective_info(),
+      };
       transfers = packed.transfers;
     } else if (type === "restore") {
       const decoder = await load("cpu");
@@ -132,6 +148,7 @@ async function handle({ id, type, payload }) {
       result = {
         config,
         frame: packed.frame,
+        objective: gas.objective_info(),
         device: `${config.gas.backend === "cpu" ? "WASM CPU" : "WebGPU hybrid"} · restored`,
       };
       transfers = packed.transfers;
@@ -148,14 +165,17 @@ async function handle({ id, type, payload }) {
       } else if (type === "checkpoint") {
         result = gas.checkpoint();
         transfers = [result.buffer];
-      } else if (type === "landscape")
+      } else if (type === "landscape") {
         result = gas.landscape(
           payload.x,
           payload.y,
-          payload.resolution,
+          Math.max(2, Math.min(160, Math.round(payload.resolution))),
           payload.center,
         );
-      else throw new Error(`Unknown worker request: ${type}`);
+        // Nonfinite samples arrive as null; keep them nonfinite for display.
+        result.values = Float64Array.from(result.values, (v) => v ?? NaN);
+        transfers = [result.values.buffer];
+      } else throw new Error(`Unknown worker request: ${type}`);
     }
     self.postMessage({ id, ok: true, result }, transfers);
   } catch (error) {

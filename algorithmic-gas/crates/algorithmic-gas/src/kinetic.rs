@@ -15,6 +15,25 @@ use serde::{Deserialize, Serialize};
 pub struct QftExecutionConfig {
     pub viscosity: Option<ViscousForceConfig>,
     pub innovation_shifts: Vec<crate::noise::InnovationShift>,
+    /// Viscous coupling over the tessellation graph of the geometry stage.
+    pub graph_viscosity: Option<GraphViscosityConfig>,
+    /// Boris rotation of the B steps by the curl of the graph viscous force.
+    pub curl: Option<CurlRotationConfig>,
+}
+/// F_i = coefficient * sum_j w_ij (v_j - v_i) over tessellation neighbors, with
+/// the named edge weights of the geometry pipeline.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct GraphViscosityConfig {
+    pub coefficient: f64,
+    pub weights: String,
+}
+/// Each B step becomes quarter kick, Cayley rotation by
+/// A = beta_curl * (dt / 4) * curl(F_viscous), quarter kick.
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CurlRotationConfig {
+    pub beta_curl: f64,
 }
 /// Gaussian spatial graph: w_ij = exp(-|x_i-x_j|²/(2 bandwidth²)).
 /// Symmetric normalization divides by the eligible population, including self;
@@ -41,6 +60,26 @@ impl QftExecutionConfig {
         for s in &self.innovation_shifts {
             s.validate(rows, dimension)?;
         }
+        if let Some(v) = &self.graph_viscosity {
+            require(
+                v.coefficient.is_finite() && v.coefficient >= 0. && !v.weights.is_empty(),
+                "invalid graph viscosity coefficient/weights",
+            )?;
+            require(
+                self.viscosity.is_none(),
+                "dense and graph viscosity are mutually exclusive",
+            )?;
+        }
+        if let Some(c) = &self.curl {
+            require(
+                c.beta_curl.is_finite() && c.beta_curl >= 0.,
+                "invalid curl rotation strength",
+            )?;
+            require(
+                self.graph_viscosity.is_some(),
+                "curl rotation requires graph viscosity",
+            )?;
+        }
         Ok(())
     }
 }
@@ -66,9 +105,22 @@ pub enum KineticKind {
     Environment,
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[serde(default, deny_unknown_fields)]
 pub struct KineticOperator {
     pub integrator: KineticKind,
     pub noise: Noise,
+    /// Independent position Brownian diffusion after BAOAB, in length/sqrt(time).
+    pub position_diffusion: f64,
+    /// Final radial map v -> V v/(V+|v|), applied once per full update.
+    pub velocity_cap: Option<f64>,
+    pub boundary_schedule: KineticBoundarySchedule,
+}
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KineticBoundarySchedule {
+    #[default]
+    Substeps,
+    EndOfStep,
 }
 impl Default for KineticOperator {
     fn default() -> Self {
@@ -78,6 +130,9 @@ impl Default for KineticOperator {
                 amplitude: 0.05,
             },
             noise: Noise::default(),
+            position_diffusion: 0.,
+            velocity_cap: None,
+            boundary_schedule: KineticBoundarySchedule::Substeps,
         }
     }
 }
@@ -149,6 +204,8 @@ pub struct KineticContext<'a, T: Real> {
     pub include_truncated: bool,
     pub seed: u64,
     pub step: u64,
+    /// Neighbor graph and edge weights of the geometry stage, if any.
+    pub graph: Option<&'a crate::tessellation::GraphSnapshot<T>>,
     pub operators: Option<&'a dyn crate::operators::GasOperators<T>>,
     pub frozen_fitness: Option<crate::operators::FrozenFitnessContext<'a, T>>,
 }
@@ -285,8 +342,145 @@ fn recorded_force<T: Real>(
     Ok(config.filter(|c| c.coefficient > 0.).map(|_| total))
 }
 
+/// One B step over the tessellation graph: quarter kick, Cayley rotation by
+/// the curl of the viscous force, quarter kick with the viscous force
+/// re-evaluated at the rotated velocities. `duration` is the length of the B
+/// step (dt / 2). Returns `None` when graph viscosity is not configured.
+#[allow(clippy::too_many_arguments)]
+fn graph_kick<T: Real>(
+    p: &Population<T>,
+    positions: &str,
+    velocities: &str,
+    gradient: &TensorBatch<T>,
+    k: &KineticContext<'_, T>,
+    stage: &str,
+    duration: T,
+    cx: &mut ExecutionContext,
+) -> Result<Option<TensorBatch<T>>> {
+    use crate::tessellation::{
+        Parallelism,
+        forces::{GraphField, boris_rotate, curl, viscous_force},
+    };
+    let Some(qft) = k.frozen_fitness.as_ref().map(|f| &f.config.qft) else {
+        return Ok(None);
+    };
+    let Some(config) = &qft.graph_viscosity else {
+        return Ok(None);
+    };
+    let snapshot = k.graph.ok_or_else(|| {
+        GasError::Capability("graph viscosity needs the geometry stage's neighbor graph".into())
+    })?;
+    let weights = snapshot.weights.get(&config.weights).ok_or_else(|| {
+        GasError::Configuration(format!(
+            "graph viscosity edge weights {:?} are not produced by the geometry stage",
+            config.weights
+        ))
+    })?;
+    let eligible = p.eligible(k.include_truncated);
+    let x = p.observations.field(positions)?;
+    let v = p.observations.field(velocities)?;
+    let (n, d) = (p.len(), v.width());
+    require(
+        snapshot.graph.nodes() == n
+            && gradient.rows() == n
+            && gradient.width() == d
+            && x.width() == d,
+        "graph force shapes",
+    )?;
+    crate::memory::enforce(
+        crate::memory::checked_mul(
+            crate::memory::checked_mul(n, d * d + 8 * d + 2)?,
+            std::mem::size_of::<T>(),
+        )?,
+        cx.max_memory_bytes,
+    )?;
+    let wrap: Vec<(usize, T)> = snapshot
+        .wrap
+        .iter()
+        .map(|&(axis, length)| (axis, T::from_f64(length)))
+        .collect();
+    let field = GraphField {
+        graph: &snapshot.graph,
+        weights,
+        positions: x.values(),
+        dimension: d,
+        eligible: &eligible,
+        wrap: &wrap,
+    };
+    let par = Parallelism::Auto;
+    let nu = T::from_f64(config.coefficient);
+    let quarter = duration * T::from_f64(0.5);
+    let viscous = viscous_force(&field, v.values(), nu, par);
+    let kicked: Vec<T> = (0..n * d)
+        .map(|a| v.values()[a] + quarter * (viscous[a] - gradient.values()[a]))
+        .collect();
+    let beta = qft.curl.as_ref().map_or(0., |c| c.beta_curl);
+    let (rotated, curl_field, angle) = if beta > 0. {
+        let c = curl(&field, &viscous, par)?;
+        let scale = T::from_f64(0.5 * beta) * duration;
+        let (rotated, angle) = boris_rotate(&kicked, &c, d, scale, &eligible, par)?;
+        (rotated, c, angle)
+    } else {
+        (kicked, vec![T::ZERO; n * d * d], vec![T::ZERO; n])
+    };
+    let viscous_rotated = viscous_force(&field, &rotated, nu, par);
+    let result: Vec<T> = (0..n * d)
+        .map(|a| rotated[a] + quarter * (viscous_rotated[a] - gradient.values()[a]))
+        .collect();
+    if cx.recorded_fields.is_some() {
+        let total: Vec<T> = (0..n * d)
+            .map(|a| viscous[a] - gradient.values()[a])
+            .collect();
+        cx.record_field_with_coverage(stage, "force_input_velocity", p.version, v, &eligible);
+        cx.record_field_with_coverage(
+            stage,
+            "viscous_force",
+            p.version,
+            &TensorBatch::vectors(n, d, viscous)?,
+            &eligible,
+        );
+        cx.record_field_with_coverage(
+            stage,
+            "total_force",
+            p.version,
+            &TensorBatch::vectors(n, d, total)?,
+            &eligible,
+        );
+        cx.record_field_with_coverage(
+            stage,
+            "curl_field",
+            p.version,
+            &TensorBatch::new(n, vec![d, d], curl_field)?,
+            &eligible,
+        );
+        cx.record_field_with_coverage(
+            stage,
+            "boris_rotation_angle",
+            p.version,
+            &TensorBatch::scalars(angle)?,
+            &eligible,
+        );
+    }
+    Ok(Some(TensorBatch::vectors(n, d, result)?))
+}
+
 impl KineticOperator {
     pub fn validate<T: Real>(&self, p: &Population<T>, has_gradient: bool) -> Result<()> {
+        require(
+            self.position_diffusion.is_finite() && self.position_diffusion >= 0.,
+            "position diffusion must be finite and nonnegative",
+        )?;
+        require(
+            self.velocity_cap.is_none_or(|v| v.is_finite() && v > 0.),
+            "velocity cap must be finite and positive",
+        )?;
+        require(
+            matches!(self.integrator, KineticKind::Baoab { .. })
+                || (self.position_diffusion == 0.
+                    && self.velocity_cap.is_none()
+                    && self.boundary_schedule == KineticBoundarySchedule::Substeps),
+            "position diffusion, velocity cap and terminal boundary schedule require BAOAB",
+        )?;
         match &self.integrator {
             KineticKind::DirectJump { field, amplitude }
             | KineticKind::Brownian {
@@ -415,15 +609,23 @@ impl KineticOperator {
                 let grad = gradient.gradient(p, cx).await?;
                 cx.record_boundary_input("B1_input", p);
                 cx.record_field("B1", "potential_gradient", p.version, &grad);
-                let force = recorded_force(p, positions, velocities, &grad, &k, "B1", cx)?;
                 let alive = p.eligible(k.include_truncated);
-                if let Some(force) = force {
+                let kicked = graph_kick(p, positions, velocities, &grad, &k, "B1", half, cx)?;
+                let force = match &kicked {
+                    Some(_) => None,
+                    None => recorded_force(p, positions, velocities, &grad, &k, "B1", cx)?,
+                };
+                if let Some(next) = kicked {
+                    update(p, velocities, &next, T::ZERO, T::ONE, &alive, cx, k.domain).await?;
+                } else if let Some(force) = force {
                     update(p, velocities, &force, T::ONE, half, &alive, cx, k.domain).await?;
                 } else {
                     update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 }
                 cx.record_boundary_input("B1_before_boundary", p);
-                k.boundary(p)?;
+                if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                    k.boundary(p)?;
+                }
                 cx.trace_population("B1", p);
                 if !k.has_eligible(p) {
                     return Ok(());
@@ -432,7 +634,9 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
                 cx.record_boundary_input("A1_before_boundary", p);
-                k.boundary(p)?;
+                if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                    k.boundary(p)?;
+                }
                 cx.trace_population("A1", p);
                 if !k.has_eligible(p) {
                     return Ok(());
@@ -471,7 +675,9 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, velocities, &eta, c, scale, &alive, cx, k.domain).await?;
                 cx.record_boundary_input("O_before_boundary", p);
-                k.boundary(p)?;
+                if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                    k.boundary(p)?;
+                }
                 cx.trace_population("O", p);
                 if !k.has_eligible(p) {
                     return Ok(());
@@ -480,7 +686,9 @@ impl KineticOperator {
                 let alive = p.eligible(k.include_truncated);
                 update(p, positions, &velocity, T::ONE, half, &alive, cx, k.domain).await?;
                 cx.record_boundary_input("A2_before_boundary", p);
-                k.boundary(p)?;
+                if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                    k.boundary(p)?;
+                }
                 cx.trace_population("A2", p);
                 if !k.has_eligible(p) {
                     return Ok(());
@@ -489,16 +697,111 @@ impl KineticOperator {
                 let grad = gradient.gradient(p, cx).await?;
                 cx.record_boundary_input("B2_input", p);
                 cx.record_field("B2", "potential_gradient", p.version, &grad);
-                let force = recorded_force(p, positions, velocities, &grad, &k, "B2", cx)?;
                 let alive = p.eligible(k.include_truncated);
-                if let Some(force) = force {
+                let kicked = graph_kick(p, positions, velocities, &grad, &k, "B2", half, cx)?;
+                let force = match &kicked {
+                    Some(_) => None,
+                    None => recorded_force(p, positions, velocities, &grad, &k, "B2", cx)?,
+                };
+                if let Some(next) = kicked {
+                    update(p, velocities, &next, T::ZERO, T::ONE, &alive, cx, k.domain).await?;
+                } else if let Some(force) = force {
                     update(p, velocities, &force, T::ONE, half, &alive, cx, k.domain).await?;
                 } else {
                     update(p, velocities, &grad, T::ONE, -half, &alive, cx, k.domain).await?;
                 }
                 cx.record_boundary_input("B2_before_boundary", p);
-                k.boundary(p)?;
+                if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                    k.boundary(p)?;
+                }
                 cx.trace_population("B2", p);
+                if self.position_diffusion > 0. && k.has_eligible(p) {
+                    let alive = p.eligible(k.include_truncated);
+                    let eta = Noise::default()
+                        .sample_masked(
+                            &p.observations,
+                            NoiseRequest {
+                                rows: p.len(),
+                                dimension: d,
+                                seed: k.seed,
+                                step: k.step,
+                                stream: Stream::Kinetic,
+                                substep: 5,
+                            },
+                            &alive,
+                            cx,
+                        )
+                        .await?;
+                    cx.record_field_with_coverage(
+                        "position_diffusion",
+                        "executed_noise",
+                        p.version,
+                        &eta,
+                        &alive,
+                    );
+                    update(
+                        p,
+                        positions,
+                        &eta,
+                        T::ONE,
+                        h.sqrt() * T::from_f64(self.position_diffusion),
+                        &alive,
+                        cx,
+                        k.domain,
+                    )
+                    .await?;
+                    cx.record_boundary_input("position_diffusion_before_boundary", p);
+                    if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                        k.boundary(p)?;
+                    }
+                    cx.trace_population("position_diffusion", p);
+                }
+                if let Some(radius) = self.velocity_cap
+                    && k.has_eligible(p)
+                {
+                    let alive = p.eligible(k.include_truncated);
+                    let mut capped = p.observations.field(velocities)?.clone();
+                    let radius = T::from_f64(radius);
+                    for row in capped.values_mut().chunks_mut(d) {
+                        // Scaled norm avoids overflow in the sum of squares.
+                        let scale = row.iter().fold(T::ZERO, |m, x| m.max(x.abs()));
+                        if scale > T::ZERO {
+                            let norm_scaled = row
+                                .iter()
+                                .fold(T::ZERO, |s, x| s + (*x / scale) * (*x / scale))
+                                .sqrt();
+                            let factor = if scale <= radius {
+                                T::ONE / (T::ONE + (scale / radius) * norm_scaled)
+                            } else {
+                                (radius / scale) / (radius / scale + norm_scaled)
+                            };
+                            for x in row {
+                                *x = *x * factor;
+                            }
+                        }
+                    }
+                    update(
+                        p,
+                        velocities,
+                        &capped,
+                        T::ZERO,
+                        T::ONE,
+                        &alive,
+                        cx,
+                        k.domain,
+                    )
+                    .await?;
+                    cx.record_boundary_input("velocity_cap_before_boundary", p);
+                    if self.boundary_schedule == KineticBoundarySchedule::Substeps {
+                        k.boundary(p)?;
+                    }
+                    cx.trace_population("velocity_cap", p);
+                }
+                if self.boundary_schedule == KineticBoundarySchedule::EndOfStep {
+                    cx.record_boundary_input("terminal_before_boundary", p);
+                    k.boundary(p)?;
+                    cx.trace_population("terminal", p);
+                }
             }
             KineticKind::Environment => {
                 let alive = p.eligible(k.include_truncated);

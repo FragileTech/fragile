@@ -1,0 +1,170 @@
+{
+  "test_command": "cargo test -p algorithmic-gas-benchmarks --test algorithmic_field_equations -- --nocapture",
+  "test_file": "crates/benchmarks/tests/algorithmic_field_equations.rs",
+  "tests_passed": 9,
+  "ensemble": {
+    "independent_trajectories_per_innovation_law": 48,
+    "successive_updates_per_trajectory": 8,
+    "laws": [
+      "Gaussian",
+      "StandardizedUniform"
+    ],
+    "same_seed_indices_across_laws": true,
+    "sampling_unit": "complete trajectory; within-trajectory stages and walkers remain dependent",
+    "deterministic_field_residual_bound": 2e-13,
+    "thermostat": {
+      "maximum_absolute_standardized_residual": 2.0881,
+      "realized_to_predicted_quadratic_variation_range": [
+        0.857,
+        1.2287
+      ]
+    },
+    "cloning": {
+      "maximum_absolute_standardized_residual": 1.9401,
+      "realized_to_predicted_quadratic_variation_range": [
+        0.9114,
+        1.1564
+      ],
+      "accepted_historical_copies": {
+        "Gaussian": 706,
+        "StandardizedUniform": 719
+      },
+      "conditioning": "sampled candidate donors, exact immutable source identities, rescored fitness and selected revival source"
+    }
+  },
+  "additional_executed_cases": [
+    "conditional-fitness metric noise",
+    "absorbing losses and revival",
+    "periodic boundary transport"
+  ],
+  "rejected_tampering": [
+    "clock",
+    "noise sample",
+    "noise factor",
+    "donor incarnation",
+    "acceptance probability",
+    "missing required stage",
+    "each missing stage",
+    "reordered stages",
+    "duplicated stages",
+    "stage versions and generations",
+    "untouched coordinates",
+    "population changes across read-only gradient evaluation"
+  ],
+  "registered_controls": {
+    "runs": 85,
+    "updates_per_run": 8,
+    "observables": [
+      "density",
+      "momentum",
+      "stress",
+      "energy",
+      "phase_space"
+    ],
+    "wave_numbers": [
+      0.0,
+      0.25,
+      0.5,
+      0.75,
+      1.0,
+      1.25,
+      1.5,
+      1.75,
+      2.0,
+      2.25,
+      2.5,
+      2.75,
+      3.0,
+      3.25,
+      3.5,
+      3.75,
+      4.0
+    ],
+    "default_wave_number_checked_by_omission": true,
+    "both_equation_reports_available": true,
+    "archive_recomputation_matches": true,
+    "scope": "all 17 registered quarter-step wave numbers and all five field observables; default 1 also resolved by omission"
+  },
+  "browser": {
+    "observables_checked": [
+      "density",
+      "momentum",
+      "stress",
+      "energy",
+      "phase_space"
+    ],
+    "executed_updates_per_view": 16,
+    "both_equation_reports_available": true,
+    "page_errors": 0
+  },
+  "interpretation": "Derived conditional laws agree with independent exact checks and trajectory replication. Finite 128-trajectory estimates include deviations over three estimated standard errors; targeted disjoint replication does not show persistence. All batches and comparisons remain in metric-field-review.json. The full marked-state derivation is analytically audited; these experiments do not numerically integrate every outer donor sum.",
+  "default_demo": {
+    "seed": 7,
+    "updates": 96,
+    "observable": "momentum",
+    "wave_number": 1,
+    "clone_equation_status": "available",
+    "weak_equation_status": "available",
+    "field_balance_residual": 4.163336342344337e-17,
+    "independent_copy_residual": 2.498001805406602e-16,
+    "independent_kick_transport_residual": 2.7755575615628914e-17,
+    "clone_fluctuation_over_predictable_scale": -1.3470193089798685,
+    "thermostat_fluctuation_over_predictable_scale": -1.037996758611194
+  },
+  "additional_test_suites": [
+    {
+      "file": "crates/benchmarks/tests/algorithmic_field_coverage.rs",
+      "tests_passed": 4
+    },
+    {
+      "file": "crates/benchmarks/tests/algorithmic_metric_field_predictions.rs",
+      "tests_passed": 1,
+      "evidence": "metric-field-review.json",
+      "actual_trajectories": 896,
+      "command": "ALGORITHMIC_GAS_FIELD_REPORT=/tmp/metric-field-review.json cargo test -p algorithmic-gas-benchmarks --test algorithmic_metric_field_predictions -- --nocapture"
+    }
+  ],
+  "independent_exact_checks": {
+    "polynomial_quadrature": {
+      "innovation_laws": [
+        "Gaussian",
+        "StandardizedUniform"
+      ],
+      "noise_geometries": [
+        "low_rank_2",
+        "conditional_fitness_metric"
+      ],
+      "friction": [
+        0,
+        1e-12,
+        1.3
+      ],
+      "mean_and_full_covariance_residual_bound": 2e-12,
+      "executed_configurations": 12
+    },
+    "clone_gate_enumeration": {
+      "max_gate_patterns_per_step": 256,
+      "historical_contexts": true,
+      "mean_and_full_covariance_residual_bound": 2e-12
+    },
+    "single_precision_execution": true
+  },
+  "validation_categories": {
+    "accounting": "Recorded increment telescoping, algebraically exact; does not independently validate conditional predictions.",
+    "kinetic_maps": "Reconstruct kick/transport from recorded potential gradient and independently recomputed viscosity.",
+    "conditional_laws": "Independent quadrature, full gate enumeration and actual-metric trajectory ensembles validate conditional means and full covariance.",
+    "metric_factor": "Reconstruct metric from recorded fitness Hessian and independently check g(BB^T)=2 gamma T I. Full fitness-derivative reconstruction has separate geometry regressions."
+  },
+  "completed_checks": {
+    "workspace_sweep_passed": 301,
+    "field_equation_tests_passed": 9,
+    "stage_coverage_tests_passed": 4,
+    "metric_ensemble_test_passed": 1,
+    "compiled_part_vi_tests_passed": 67,
+    "browser_field_views_passed": 5,
+    "workspace_clippy_warnings_denied": true,
+    "theory_build_and_portal_assembly": true,
+    "cpu_and_webgpu_engines_built": true,
+    "counts_overlap": true
+  }
+}

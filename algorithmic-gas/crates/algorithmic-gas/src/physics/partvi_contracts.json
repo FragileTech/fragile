@@ -567,7 +567,7 @@
     "validation": "Execute the registered gas configuration; compare the stated identity or prediction with its recorded inputs and independent numerical check. Sampling-based claims retain their stated run or frame sampling unit.",
     "limitations": "Finite empirical positivity or negativity does not establish reflection positivity of the complete path law; observations are temporally dependent.",
     "theory_labels": [
-      "prop-ym-native-labeled-color-reflection-sign"
+      "prop-ym-native-physical-reflection-calculation"
     ],
     "title": "Empirical temporal reflection spectrum",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
@@ -1084,21 +1084,19 @@
   },
   {
     "experiment": 51,
-    "algorithm_object": "Recorded clone, transform, raw kinetic, boundary and eligibility stages",
-    "exact_identity": "Exact kinetic/momentum differences telescope. Kick work=v dot delta-v+norm(delta-v)²/2. Weak local momentum splits impulse/transport/eligibility. Restitution overwrites pre-clone pairs and must subtract literal-clone increment.",
-    "measurement": "Archive source-aware heating, full stage budgets, centered kinetic moment, raw total-force kick work, and local test-function momentum measured directly.",
-    "validation": "Executed viscosity/source-shift tests check two kicks, weak identity and telescoping; no potential inferred from reward.",
-    "limitations": "The centered kinetic moment needs volume normalization and further contributions before it is a complete stress. The tested common spatial closure Ebar=kappa centered_kinetic+lambda gbar fails held-out prediction: local RMSE 51363 versus constant 31600 and shuffled 32372. Algebraic consequences of an assumed Lorentzian Einstein equation do not derive that closure from the gas.",
+    "algorithm_object": "Fixed-capacity phase-space empirical fields of the complete executed gas, with immutable donor history and actual conditional metric/noise",
+    "exact_identity": "Density and momentum increments equal explicit jump sources minus divergence of deposited flux. Fourier-field evolution composes clone, B/A, conditional O and boundary operators; centered clone gates and O innovations have their derived predictable covariance.",
+    "measurement": "Spatial density, momentum, stress, energy or phase-space Fourier fields; analytic clone-gate and thermostat predictions; independent transport/kick reconstruction; complete mechanical sources.",
+    "validation": "Validate complete stage coverage/order and exact recorded sources; recorded stage telescoping checks accounting. Independently reconstruct copy and kick/transport maps with recorded potential gradients and recomputed viscosity. Independent actual-metric ensembles and exact polynomial quadrature test conditional means and all covariance components for Gaussian/uniform innovations.",
+    "limitations": "Clone predictions condition on sampled candidates, rescored fitness and revival source. O predictions condition on actual A1 state and configured factor. A/B reconstruction conditions on the recorded potential gradient. The recorded accounting identity does not test conditional predictions. Reduced fields retain the derived hidden-state memory.",
     "theory_labels": [
-      "def-algorithmic-mechanical-observables",
-      "prop-algorithmic-stage-telescoping",
-      "prop-algorithmic-kick-work",
-      "prop-algorithmic-clone-balances",
-      "prop-algorithmic-weak-density",
-      "thm-structural-correspondence",
-      "rem-correspondence-meaning"
+      "thm-algorithmic-field-characteristics",
+      "thm-algorithmic-conditional-metric-law",
+      "thm-algorithmic-transient-field-memory",
+      "thm-algorithmic-spatial-field-equations",
+      "thm-algorithmic-coupled-field-system"
     ],
-    "title": "Complete mechanical balances and stress ingredients",
+    "title": "Algorithm-derived field equations and mechanical sources",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "available_measurement": "executed_algorithm_archive",
     "calculation_origin": "executed_algorithm_archive",

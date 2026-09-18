@@ -85,7 +85,7 @@ async fn job(
             let balance = analyze_step(
                 step,
                 &c.gas,
-                Some(&c.benchmark.physics_objective(c.dimensions)),
+                Some(&c.benchmark.physics_objective(c.dimensions)?),
             )?;
             let curvature = step
                 .field_evaluations

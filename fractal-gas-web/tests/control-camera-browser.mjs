@@ -385,6 +385,56 @@ try {
   const gizmoPan = await state();
   assert.equal(gizmoPan.follow, null);
   gizmoPan.center.forEach((value, i) => near(value, canvasPan[i]));
+  // A selected vehicle is ringed once, at its live position; the View panel
+  // can hide every selection marker without changing the selection.
+  await page.locator("#reset-view").click();
+  const vehicle = await page.evaluate(async () => {
+    const { Vector3 } = await import("./vendor/three.module.js");
+    const r = cameraTest.renderer,
+      i = r.controlled[0],
+      live = [r.state[8 + i], r.state[8 + r.info[1] + i]];
+    r.resize();
+    const p = new Vector3(...live, 0).project(r.camera);
+    const rect = r.canvas.getBoundingClientRect();
+    return {
+      i,
+      live,
+      x: rect.left + ((p.x + 1) * rect.width) / 2,
+      y: rect.top + ((1 - p.y) * rect.height) / 2,
+    };
+  });
+  const highlight = () =>
+    page.evaluate(() => {
+      const r = cameraTest.renderer;
+      return {
+        selected: cameraTest.editor.selection?.i,
+        key: cameraTest.editor.selection?.key,
+        ring: r.selection.visible,
+        at: [r.selection.position.x, r.selection.position.y],
+        markers: r.multiSelection.children.length,
+        markersVisible: r.multiSelection.visible,
+      };
+    });
+  const ringed = {
+    selected: vehicle.i,
+    key: "bodies",
+    ring: true,
+    at: vehicle.live,
+    markers: 0,
+    markersVisible: true,
+  };
+  await page.mouse.click(vehicle.x, vehicle.y);
+  assert.deepEqual(await highlight(), ringed);
+  await page.evaluate((i) => cameraTest.editor.selectBody(i), vehicle.i);
+  assert.deepEqual(await highlight(), ringed);
+  await page.locator("#layer-selection").evaluate((input) => input.click());
+  assert.deepEqual(await highlight(), {
+    ...ringed,
+    ring: false,
+    markersVisible: false,
+  });
+  await page.locator("#layer-selection").evaluate((input) => input.click());
+  assert.deepEqual(await highlight(), ringed);
   await page.locator("#reset-view").click();
   await page.locator("#mode-edit").click();
   const beforeEdit = await state();

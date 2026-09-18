@@ -279,6 +279,7 @@ fn weighted_probability(
     module: &DonorModule,
     batch: &CompanionBatch,
     sources: &[SourceRef],
+    recipients: &[bool],
 ) -> Result<f64> {
     check(
         module.law == SamplingLaw::Independent,
@@ -311,7 +312,7 @@ fn weighted_probability(
         }
     }
     let mut logp = 0.;
-    for (i, &active) in s.report.pre_clone_eligible.iter().enumerate() {
+    for (i, &active) in recipients.iter().enumerate() {
         if !active {
             continue;
         }
@@ -360,17 +361,12 @@ fn assignment(
     module: &DonorModule,
     batch: &CompanionBatch,
     sources: &[SourceRef],
+    recipients: &[bool],
 ) -> Result<f64> {
     if matches!(module.kernel, Kernel::Uniform) {
-        uniform_assignment_log_probability(
-            module,
-            batch,
-            sources,
-            s.report.step - 1,
-            &s.report.pre_clone_eligible,
-        )
+        uniform_assignment_log_probability(module, batch, sources, s.report.step - 1, recipients)
     } else {
-        weighted_probability(a, s, module, batch, sources)
+        weighted_probability(a, s, module, batch, sources, recipients)
     }
 }
 fn gates(s: &RecordedStep<f64>) -> Result<f64> {
@@ -384,7 +380,10 @@ fn gates(s: &RecordedStep<f64>) -> Result<f64> {
     }
     Ok(logp)
 }
-fn revival(s: &RecordedStep<f64>) -> Result<f64> {
+fn revival(s: &RecordedStep<f64>, from_companion: bool) -> Result<f64> {
+    if from_companion {
+        return Ok(0.);
+    }
     let current = s.report.step - 1;
     let sources = &s.report.clone_plan.sources;
     let n = sources.iter().filter(|p| p.frame == current).count();
@@ -401,7 +400,9 @@ fn revival(s: &RecordedStep<f64>) -> Result<f64> {
 }
 fn add(components: &mut Vec<Component>, name: impl Into<String>, x: Result<f64>) {
     let name = name.into();
-    let carrier = if name.contains("latent innovation") {
+    let carrier = if name.contains("shared Haar") {
+        "normalized_component_Haar"
+    } else if name.contains("latent innovation") {
         "standardized_innovation_lebesgue"
     } else if name.starts_with("noise ") {
         "Bxi_lebesgue"
@@ -475,6 +476,11 @@ pub fn likelihood(a: &RunArchive<f64>) -> Result<PathLikelihood> {
     });
     let mut rows = vec![];
     for s in &a.steps {
+        let clone_recipients = if a.gas_config.clone_decision.revival_from_companion {
+            vec![true; s.before.len()]
+        } else {
+            s.report.pre_clone_eligible.clone()
+        };
         let mut c = vec![];
         if builtin {
             add(
@@ -486,6 +492,7 @@ pub fn likelihood(a: &RunArchive<f64>) -> Result<PathLikelihood> {
                     &a.gas_config.distance_donors,
                     &s.report.distance_companions,
                     &s.report.distance_sources,
+                    &s.report.pre_clone_eligible,
                 ),
             );
             add(
@@ -497,10 +504,41 @@ pub fn likelihood(a: &RunArchive<f64>) -> Result<PathLikelihood> {
                     &a.gas_config.cloning_donors,
                     &s.report.cloning_companions,
                     &s.report.clone_plan.sources,
+                    &clone_recipients,
                 ),
             );
             add(&mut c, "clone acceptance gates", gates(s));
-            add(&mut c, "revival donor choices", revival(s));
+            add(
+                &mut c,
+                "revival donor choices",
+                revival(s, a.gas_config.clone_decision.revival_from_companion),
+            );
+            if a.gas_config.clone_transform.restitution.is_some() {
+                let d = s
+                    .before
+                    .observations
+                    .field(
+                        a.gas_config
+                            .clone_transform
+                            .velocity_field
+                            .as_deref()
+                            .unwrap_or("velocities"),
+                    )?
+                    .width();
+                add(
+                    &mut c,
+                    "shared Haar component rotations",
+                    super::field_evolution::collision_field_balance(
+                        &a.gas_config,
+                        s,
+                        &super::field_evolution::WeakFieldObservable::Momentum {
+                            k: vec![0.; d],
+                            component: 0,
+                        },
+                    )
+                    .map(|_| 0.),
+                );
+            }
         } else {
             add(
                 &mut c,
@@ -519,6 +557,26 @@ pub fn likelihood(a: &RunArchive<f64>) -> Result<PathLikelihood> {
                     "clone jitter density",
                     Err(unavailable(
                         "configured clone jitter sample is absent from the archive",
+                    )),
+                );
+            }
+            if a.gas_config.kinetic.position_diffusion > 0.
+                && s.stages.iter().any(|x| {
+                    x.stage == "B2"
+                        && x.validity
+                            .iter()
+                            .any(|v| v.eligible(a.gas_config.include_truncated))
+                })
+                && !s
+                    .noise
+                    .iter()
+                    .any(|n| n.stream == Stream::Kinetic && n.substep == 5)
+            {
+                add(
+                    &mut c,
+                    "final position innovation density",
+                    Err(unavailable(
+                        "configured final position diffusion has no recorded innovation sample",
                     )),
                 );
             }
@@ -562,6 +620,13 @@ pub fn likelihood(a: &RunArchive<f64>) -> Result<PathLikelihood> {
                     st.validity
                         .iter()
                         .map(|x| x.eligible(a.gas_config.include_truncated))
+                        .collect()
+                })
+            } else if noise.stream == Stream::Kinetic && noise.substep == 5 {
+                s.stages.iter().find(|x| x.stage == "B2").map(|st| {
+                    st.validity
+                        .iter()
+                        .map(|v| v.eligible(a.gas_config.include_truncated))
                         .collect()
                 })
             } else if noise.stream == Stream::Kinetic {

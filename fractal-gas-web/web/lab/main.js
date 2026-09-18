@@ -1201,6 +1201,7 @@ for (const name of [
   "tethers",
   "cargo-labels",
   "checkpoint-labels",
+  "selection",
 ]) {
   const input = $(`layer-${name}`);
   input.checked = readPreference(`layer.${name}`, input.checked);
@@ -1591,7 +1592,10 @@ async function setMode(mode) {
   $("editor").hidden = mode !== "edit";
   document.body.classList.toggle("editing", mode === "edit");
   if (mode === "edit") editor.setDraftScene(workspace.draft.scene);
-  else renderer.clearDraft();
+  else {
+    renderer.clearDraft();
+    editor.refreshSelection();
+  }
   if (mode === "drive") {
     if (
       !renderer.controlled.includes(editor.selection?.i) ||

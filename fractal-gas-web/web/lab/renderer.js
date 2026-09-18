@@ -141,6 +141,7 @@ export class LabRenderer {
       tethers: true,
       "cargo-labels": true,
       "checkpoint-labels": true,
+      selection: true,
     };
     this.zoom = 1;
     this.top = false;
@@ -487,6 +488,7 @@ export class LabRenderer {
     this.overlays.add(this.inspection, this.multiSelection);
     this.selection = zoneModel(0.95, 0xffffff);
     this.selection.visible = false;
+    this.selectedPosition = null;
     this.overlays.add(this.selection);
     this.resize();
     this.setLayers(this.layers);
@@ -876,6 +878,10 @@ export class LabRenderer {
       this.hulls.visible = this.layers.geometry;
       this.tethers.visible = this.layers.tethers;
     }
+    if (this.selection) {
+      this.selection.visible = this.layers.selection && !!this.selectedPosition;
+      this.multiSelection.visible = this.layers.selection;
+    }
     this.formationOverlay?.setVisible(this.layers.tethers);
     if (this.formationLegend)
       this.formationLegend.hidden = !this.formationOverlay?.group.visible;
@@ -900,7 +906,8 @@ export class LabRenderer {
   }
   select(position) {
     if (this.selection) {
-      this.selection.visible = !!position;
+      this.selectedPosition = position || null;
+      this.selection.visible = this.layers.selection && !!position;
       if (position) this.selection.position.set(...position, 0.1);
     }
   }

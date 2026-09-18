@@ -33,6 +33,9 @@ pub trait Real:
     const PRECISION: Precision;
     const ZERO: Self;
     const ONE: Self;
+    /// Smallest positive normal value and the unit roundoff of this dtype.
+    const MIN_POSITIVE: Self;
+    const EPSILON: Self;
     fn from_f64(v: f64) -> Self;
     fn to_f64(self) -> f64;
     fn sqrt(self) -> Self;
@@ -42,6 +45,9 @@ pub trait Real:
     fn exp_m1(self) -> Self;
     fn sin(self) -> Self;
     fn cos(self) -> Self;
+    fn acos(self) -> Self;
+    fn atan(self) -> Self;
+    fn atan2(self, x: Self) -> Self;
     fn powf(self, p: Self) -> Self;
     fn floor(self) -> Self;
     fn abs(self) -> Self;
@@ -55,6 +61,8 @@ macro_rules! real {
             const PRECISION: Precision = Precision::$p;
             const ZERO: Self = 0.;
             const ONE: Self = 1.;
+            const MIN_POSITIVE: Self = <$t>::MIN_POSITIVE;
+            const EPSILON: Self = <$t>::EPSILON;
             fn from_f64(v: f64) -> Self {
                 v as Self
             }
@@ -81,6 +89,15 @@ macro_rules! real {
             }
             fn cos(self) -> Self {
                 self.cos()
+            }
+            fn acos(self) -> Self {
+                self.acos()
+            }
+            fn atan(self) -> Self {
+                self.atan()
+            }
+            fn atan2(self, x: Self) -> Self {
+                self.atan2(x)
             }
             fn powf(self, p: Self) -> Self {
                 self.powf(p)

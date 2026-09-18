@@ -50,8 +50,8 @@ pub struct PhysicsMetricOperators {
     pub reward_shift: Vec<f64>,
 }
 impl Benchmark {
-    pub fn physics_objective(self, dimension: usize) -> Objective {
-        match self {
+    pub fn physics_objective(self, dimension: usize) -> Result<Objective> {
+        Ok(match self {
             Self::Sphere => Objective::Sphere,
             Self::Quadratic => Objective::Quadratic {
                 matrix: (0..dimension * dimension)
@@ -67,7 +67,13 @@ impl Benchmark {
             Self::Rastrigin => Objective::Rastrigin,
             Self::Rosenbrock => Objective::Rosenbrock,
             Self::StyblinskiTang => Objective::StyblinskiTang,
-        }
+            other => {
+                return Err(GasError::Capability(format!(
+                    "the conditional physics metric has no closed-form jet for `{}`",
+                    other.id()
+                )));
+            }
+        })
     }
 }
 impl<T: Real> GasOperators<T> for PhysicsMetricOperators {
@@ -221,7 +227,7 @@ impl<T: Real> GasOperators<T> for PhysicsMetricOperators {
                     dv.push(T::ZERO);
                 }
             }
-            let objective = self.benchmark.physics_objective(d);
+            let objective = self.benchmark.physics_objective(d)?;
             let floor = T::from_f64(f.config.fitness.distance_floor);
             let constants = JetSpace::new(d, 0)?;
             let mut rewards = Vec::with_capacity(n);

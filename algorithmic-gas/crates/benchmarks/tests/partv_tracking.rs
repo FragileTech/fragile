@@ -367,7 +367,7 @@ fn light_cone_comparison_uses_physical_time_and_separate_cst_order() {
 }
 
 #[test]
-fn restitution_records_field_influence_even_for_noncloning_partner() {
+fn component_collision_records_shared_rotation_even_for_noncloning_donor() {
     block_on(async {
         let mut p = population();
         p.observations.fields.insert(
@@ -394,11 +394,21 @@ fn restitution_records_field_influence_even_for_noncloning_partner() {
         let a = g.recording().unwrap();
         a.validate().unwrap();
         let s = &a.steps[0];
-        assert!(!s.influences.is_empty());
-        assert!(
-            s.influences
+        let field = |name: &str| {
+            s.field_evaluations
                 .iter()
-                .any(|w| !s.report.clone_plan.choices[w.recipient as usize].accepted)
+                .find(|f| f.stage == "component_collision" && f.field == name)
+                .unwrap()
+        };
+        let ids = field("collision_component_id");
+        let rotations = field("collision_rotation");
+        let centers = field("collision_center_of_mass");
+        let input = field("collision_input_velocity");
+        assert!(
+            ids.available
+                .iter()
+                .enumerate()
+                .any(|(i, &active)| active && !s.report.clone_plan.choices[i].accepted)
         );
         let transformed = s
             .stages
@@ -406,43 +416,43 @@ fn restitution_records_field_influence_even_for_noncloning_partner() {
             .find(|v| v.stage == "post_transform")
             .unwrap();
         for recipient in 0..4 {
-            let weights = s
-                .influences
-                .iter()
-                .filter(|w| w.recipient as usize == recipient)
-                .collect::<Vec<_>>();
-            if weights.is_empty() {
+            if !ids.available[recipient] {
                 continue;
             }
-            assert_eq!(weights.iter().map(|w| w.weight).sum::<f64>(), 1.);
-            for component in 0..2 {
-                let expected = weights
-                    .iter()
-                    .map(|w| {
-                        w.weight
-                            * s.before
-                                .observations
-                                .field("velocities")
-                                .unwrap()
-                                .row(w.source.slot as usize)
-                                .unwrap()[component]
-                    })
-                    .sum::<f64>();
+            let key = ids.values[recipient] as usize;
+            assert_eq!(
+                &rotations.values[recipient * 4..recipient * 4 + 4],
+                &rotations.values[key * 4..key * 4 + 4]
+            );
+            for a in 0..2 {
+                let expected = centers.values[recipient * 2 + a]
+                    + 0.25
+                        * (0..2)
+                            .map(|b| {
+                                rotations.values[recipient * 4 + a * 2 + b]
+                                    * (input.values[recipient * 2 + b]
+                                        - centers.values[recipient * 2 + b])
+                            })
+                            .sum::<f64>();
                 assert!(
-                    (expected - transformed.fields["velocities"].values[recipient * 2 + component])
+                    (expected - transformed.fields["velocities"].values[recipient * 2 + a]).abs()
+                        < 1e-12
+                );
+                assert!(
+                    (field("collision_momentum_before").values[recipient * 2 + a]
+                        - field("collision_momentum_after").values[recipient * 2 + a])
                         .abs()
                         < 1e-12
                 );
             }
+            assert!(
+                (field("collision_relative_energy_after").values[recipient]
+                    - 0.25_f64.powi(2)
+                        * field("collision_relative_energy_before").values[recipient])
+                    .abs()
+                    < 1e-12
+            );
         }
-        assert_eq!(
-            a.graph()
-                .edges
-                .iter()
-                .filter(|e| e.kind == EdgeKind::IaTransform)
-                .count(),
-            s.influences.len()
-        );
     });
 }
 

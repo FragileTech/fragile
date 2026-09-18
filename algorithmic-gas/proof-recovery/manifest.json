@@ -1,0 +1,5013 @@
+{
+  "baseline_commit": "b416d3a98112b360e6ae7f6655fb47497916cfcb",
+  "archive_sha256": "17bde17d76630b064fce493d08fc5423713e7782eaa82bddc0205bb7e6505da4",
+  "files": [
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "bytes": 79972,
+      "sha256": "daa12669ddf30af3cf6e6a1e77ebd3c29fc937cc529b5a30b19657a948158ea0"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "bytes": 481218,
+      "sha256": "3c69a9d2a07d6264cea6cfd620171865fcc3338e85ea328481cd8221446a7974"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "bytes": 151923,
+      "sha256": "c1e6de61ef422021da697db0f143b3ff325914abbc2d40ca52ecce6297cb1b03"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "bytes": 502803,
+      "sha256": "effed711b282149991be7136399171a49ec984bd9c0b102b56700c327cd93c63"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_single_particle.md",
+      "bytes": 22172,
+      "sha256": "25b40f8c8fac3d02db9c0a8b5f68de4dbceaaceea8597fad3305b59f9a1c3895"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "bytes": 37007,
+      "sha256": "c0422c68b4ae97fc11f82665ef9a7749e3c75642955b7c1e4f144271227b2142"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "bytes": 113755,
+      "sha256": "eae46b9551d37c00142dd5367f7a97d1dba35a7169e91dccbf256945d6cfaa49"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "bytes": 152226,
+      "sha256": "8eaf863fa035f4ad43b1b8f387601bd3d60adcda422a02e9740189f0a2aab317"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "bytes": 32716,
+      "sha256": "9a77b42c041355194555fb5f9e55e9f559d2bec0c1bce7fa758e5adcb1fb7dac"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "bytes": 91773,
+      "sha256": "1ecccb74f276fe71f10a46147c12ca9be5926b14917f94313aba0afd7d7f0f44"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "bytes": 119951,
+      "sha256": "ca467fa926075b1d12f4c62d6216b0a537018da72254dc861715bf546156a70d"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/10_kl_hypocoercive.md",
+      "bytes": 41108,
+      "sha256": "c67faebd81f30a4bb0ff10d9afa43640fcfad157593415139c53380e22244f05"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "bytes": 190990,
+      "sha256": "977987759d74ce032a8f0f8616cafa8306b8264264c7273949fcd981ab07901f"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "bytes": 33556,
+      "sha256": "b7c66ba2514d2dc9e4d63577a61ce29e740fdaf4664c07f33eb32afe57334d51"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "bytes": 120676,
+      "sha256": "18be538cf258294f5e0810dde4c4f6e034fd707026eeb91605cf16590ec1b63c"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "bytes": 126533,
+      "sha256": "f686c4b0b1332cf229b6f460197297d2edbd123372d15dd53d2b4964632fcdd3"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "bytes": 218005,
+      "sha256": "9556680e249914360c891a7b413ad6ef0b0a4ee148c58a9b5081b21aae8c55fd"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "bytes": 336452,
+      "sha256": "4aea363f8186ecaba82e1ee5bfd73210b63b425f5e9a89a2bc1204a7ada82183"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/13_geometric_gas_c3_regularity.md",
+      "bytes": 271,
+      "sha256": "d8b846069f701b0425e487593020a8122d567deb4d307a279ecb1fa2c01f83ba"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/14_geometric_gas_cinf_regularity_full.md",
+      "bytes": 280,
+      "sha256": "7394957bdee6da1f8a3fe65e05179fdf4d944249eaa56dd0cc7d2bb4a390546d"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_effective_interaction_radius_full.md",
+      "bytes": 1409,
+      "sha256": "5ebfa297bf859b24d3fd7669d150a51523cbc9f3421d66582e055d749398bb5e"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_exp_convergence.md",
+      "bytes": 1443,
+      "sha256": "857989645dccf430284fb3a716a75a36bf6c7057018df158204d8addc325e523"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_exponential_qsd_companion_dependent_full.md",
+      "bytes": 1152,
+      "sha256": "b8692a3cbd24dde93df2bfd0fef85ee0ed7cf44f79516ae3f0ac53455e2adcd6"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_gevrey_1_fitness_potential_full.md",
+      "bytes": 1547,
+      "sha256": "6e525a87ef849ebdd4de36ff1c5acb0fc46cd26c7e23ca13994d76bfab7750e3"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full.md",
+      "bytes": 2024,
+      "sha256": "1ab71a21f3ddc8b28f73a44252c3d497c0eb57079aea4604236adce116bfdd8d"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_effective_companion_count_full.md",
+      "bytes": 1668,
+      "sha256": "8f432bf067beea48130a308f0e432de915946401d284641cff47efe84810ea0e"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_greedy_ideal_equivalence.md",
+      "bytes": 2408,
+      "sha256": "a5ed1956e7964f2ee8bf6d752c384155e46e5bfc464f568205780df4511bb2cf"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_hormander.md",
+      "bytes": 1395,
+      "sha256": "f713a8ee1de7b60f948b836794a5250c185daa78b6004d0cbb7985dd20abbe65"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_macro_transport.md",
+      "bytes": 1408,
+      "sha256": "6d3f4c7f6c5a7ba140d9d84816681a933b11baa1ae6f7c87b1b8f3d1694039c5"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_telescoping_derivatives.md",
+      "bytes": 1283,
+      "sha256": "b73098ca64b0fbf97d07026036202af4b9890f7fec9773c3ac2f453945e02846"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_variance_to_gap_adaptive.md",
+      "bytes": 702,
+      "sha256": "c388afa84b915621befe9a9483134146c728848638900a8a4e104adc276f56af"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_prop_complete_gradient_bounds.md",
+      "bytes": 1047,
+      "sha256": "c057dd142b78836b67209be392fde4b58df54e7590f93678a6d6b15bf5995c67"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_backbone_convergence.md",
+      "bytes": 2051,
+      "sha256": "aa9979fbd3cdd5c204f1635de5f987d85de5e1da4715a0031959ee3516ff615f"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_exponential_tails.md",
+      "bytes": 1476,
+      "sha256": "1316c972aed1250a5c0b837ac304537a0e2e54f64eca8654bcbc632664168eea"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_faa_di_bruno_appendix.md",
+      "bytes": 2030,
+      "sha256": "6ed20e261adf16acd85e81a731f1f43bf3d3b4293ce1ab5fe7afb30688edebd9"
+    }
+  ],
+  "claims": [
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 53,
+      "label": "note-resolution-strategy",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 170,
+      "label": "thm-backbone-lsi-proven",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 192,
+      "label": "thm-ueph-proven",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 208,
+      "label": "thm-force-bounds-proven",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 326,
+      "label": "def-qsd-adaptive",
+      "title": "Quasi-Stationary Distribution (QSD)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 347,
+      "label": "def-lsi-adaptive",
+      "title": "Log-Sobolev Inequality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 803,
+      "label": "thm-fitness-third-deriv-proven",
+      "title": "N-Uniform Third Derivative Bound for Fitness (PROVEN)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 883,
+      "label": "thm-qsd-poincare-rigorous",
+      "title": "N-Uniform Poincar\u00e9 Inequality for QSD Velocities (CORRECTED PROOF)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 906,
+      "label": "proof-thm-qsd-poincare-rigorous",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 1068,
+      "label": "thm-drift-perturbation-bounds",
+      "title": "N-Uniform Drift Perturbation Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 1092,
+      "label": "proof-thm-drift-perturbation-bounds",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 1125,
+      "label": "thm-cattiaux-guillin-verification",
+      "title": "Verification of Cattiaux-Guillin Hypotheses"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 1153,
+      "label": "proof-thm-cattiaux-guillin-verification",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/appendices/references_do_not_cite/15_geometric_gas_lsi_proof.md",
+      "line": 1283,
+      "label": "thm-adaptive-lsi-main",
+      "title": "N-Uniform Log-Sobolev Inequality for Geometric Viscous Fluid Model"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 158,
+      "label": "def-walker",
+      "title": "Walker"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 186,
+      "label": "def-swarm-and-state-space",
+      "title": "Swarm and Swarm State Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 207,
+      "label": "def-alive-dead-sets",
+      "title": "Alive and Dead Sets"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 264,
+      "label": "def-valid-state-space",
+      "title": "Valid State Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 322,
+      "label": "def-ambient-euclidean",
+      "title": "Ambient Euclidean Structure and Reference Measures"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 332,
+      "label": "def-reference-measures",
+      "title": "Reference Noise and Kernel Families"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 423,
+      "label": "def-n-particle-displacement-metric",
+      "title": "N-Particle Displacement Pseudometric ($d_{\\text{Disp},\\mathcal{Y}}$)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 458,
+      "label": "def-metric-quotient",
+      "title": "Metric quotient of $(\\Sigma_N, d_{\\text{Disp},\\mathcal{Y}})$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 474,
+      "label": "lem-borel-image-of-the-projected-swarm-space",
+      "title": "Borel image of the projected swarm ({prf:ref}`def-swarm-and-state-space`) space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 494,
+      "label": "rem-closure-cemetery",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 502,
+      "label": "lem-polishness-and-w2",
+      "title": "Polishness of the quotient state space and $W_2$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 521,
+      "label": "def-displacement-components",
+      "title": "Components of Swarm Displacement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 570,
+      "label": "axiom-instep-independence",
+      "title": "Conditional product structure within a step"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 620,
+      "label": "axiom-guaranteed-revival",
+      "title": "Axiom of Guaranteed Revival"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 635,
+      "label": "thm-revival-guarantee",
+      "title": "Almost\u2011sure revival under the global constraint"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 687,
+      "label": "axiom-boundary-regularity",
+      "title": "Axiom of Boundary Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 726,
+      "label": "axiom-boundary-smoothness",
+      "title": "Axiom of Boundary Smoothness"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 763,
+      "label": "axiom-environmental-richness",
+      "title": "Axiom of Environmental Richness"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 788,
+      "label": "axiom-reward-regularity",
+      "title": "Axiom of Reward Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 815,
+      "label": "axiom-projection-compatibility",
+      "title": "Projection compatibility"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 825,
+      "label": "axiom-bounded-algorithmic-diameter",
+      "title": "Axiom of Bounded Algorithmic Diameter"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 836,
+      "label": "axiom-range-respecting-mean",
+      "title": "Range\u2011Respecting Mean"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 850,
+      "label": "def-valid-noise-measure",
+      "title": "Valid Noise Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 867,
+      "label": "axiom-sufficient-amplification",
+      "title": "Axiom of Sufficient Amplification"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 886,
+      "label": "axiom-non-degenerate-noise",
+      "title": "Axiom of Non-Degenerate Noise"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 901,
+      "label": "def-components-mean-square-standardization-error",
+      "title": "Components of Mean-Square Standardization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 913,
+      "label": "thm-mean-square-standardization-error",
+      "title": "Asymptotic Behavior of the Mean-Square Standardization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 938,
+      "label": "axiom-bounded-relative-collapse",
+      "title": "Axiom of Bounded Relative Collapse"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 953,
+      "label": "axiom-bounded-deviation-variance",
+      "title": "Axiom of Bounded Deviation from Aggregated Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 970,
+      "label": "axiom-bounded-variance-production",
+      "title": "Axiom of Bounded Variance Production"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 991,
+      "label": "axiom-geometric-consistency",
+      "title": "Axiom of Geometric Consistency"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1018,
+      "label": "thm-forced-activity",
+      "title": "Theorem of Forced Activity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1093,
+      "label": "axiom-margin-stability",
+      "title": "Axiom of Position\u2011Only Status Margin"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1112,
+      "label": "rem-margin-stability",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1133,
+      "label": "def-reward-measurement",
+      "title": "Reward Measurement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1147,
+      "label": "def-perturbation-measure",
+      "title": "Perturbation Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1151,
+      "label": "def-cloning-measure",
+      "title": "Cloning Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1158,
+      "label": "lem-validation-of-the-heat-kernel",
+      "title": "Validation of the Heat Kernel"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1176,
+      "label": "lem-validation-of-the-uniform-ball-measure",
+      "title": "Validation of the Uniform Ball Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1208,
+      "label": "lem-boundary-uniform-ball",
+      "title": "Uniform\u2011ball death probability Lipschitz continuity for finite perimeter"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1228,
+      "label": "rem-projection-choice",
+      "title": "Projection choice"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1235,
+      "label": "lem-boundary-heat-kernel",
+      "title": "Heat\u2011kernel death probability is Lipschitz"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1255,
+      "label": "def-algorithmic-space-generic",
+      "title": "Algorithmic Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1261,
+      "label": "def-distance-positional-measures",
+      "title": "Distance Between Positional Measures"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1274,
+      "label": "def-alg-distance",
+      "title": "Algorithmic Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1316,
+      "label": "def-swarm-aggregation-operator-axiomatic",
+      "title": "Swarm Aggregation Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1392,
+      "label": "lem-empirical-aggregator-properties",
+      "title": "Axiomatic Properties of the Empirical Measure Aggregator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1480,
+      "label": "def-smoothed-gaussian-measure",
+      "title": "Smoothed Gaussian Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1498,
+      "label": "def-algorithmic-cemetery-extension",
+      "title": "Algorithmic space with cemetery point"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1509,
+      "label": "rem-maximal-cemetery-distance-design-choice",
+      "title": "Maximal cemetery distance (design choice)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1513,
+      "label": "def-cemetery-state-measure",
+      "title": "Cemetery State Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1520,
+      "label": "def-distance-to-cemetery-state",
+      "title": "Distance to the Cemetery State"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1553,
+      "label": "def-companion-selection-measure",
+      "title": "Companion Selection Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1578,
+      "label": "lem-set-difference-bound",
+      "title": "Bound on the Error from Companion Set Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1616,
+      "label": "lem-normalization-difference-bound",
+      "title": "Bound on the Error from Normalization Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1643,
+      "label": "thm-total-error-status-bound",
+      "title": "Total Error Bound in Terms of Status Changes"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1703,
+      "label": "axiom-rescale-function",
+      "title": "Axiom of a Well-Behaved Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1737,
+      "label": "def-asymmetric-rescale-function",
+      "title": "Smooth Piecewise Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1766,
+      "label": "lem-cubic-patch-uniqueness",
+      "title": "Existence and Uniqueness of the Smooth ({prf:ref}`axiom-boundary-smoothness`)le Patch"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1817,
+      "label": "lem-cubic-patch-coefficients",
+      "title": "Explicit Coefficients of the Smooth ({prf:ref}`axiom-boundary-smoothness`)le Patch"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1868,
+      "label": "lem-cubic-patch-derivative",
+      "title": "Explicit Form of the Polynomial Patch Derivative"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1906,
+      "label": "lem-polynomial-patch-monotonicity",
+      "title": "Monotonicity of the Polynomial Patch"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1914,
+      "label": "rem-cubic-hermite-construction",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1919,
+      "label": "lem-cubic-patch-derivative-bounds",
+      "title": "Bounds on the Polynomial Patch Derivative"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 1998,
+      "label": "lem-rescale-monotonicity",
+      "title": "Monotonicity of the Smooth Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2040,
+      "label": "thm-rescale-function-lipschitz",
+      "title": "Global Lipschitz Continuity of the Smlipschitz ({prf:ref}`axiom-reward-regularity`)`axiom-boundary-smoothness`)Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2066,
+      "label": "lem-lipschitz-constant-of-the-patched-standardization",
+      "title": "Lipschitz constant of the patched standardization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2078,
+      "label": "lem-sigma-patch-derivative-bound",
+      "title": "Derivative bound for \\sigma'_{\\text{reg}}"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2089,
+      "label": "lem-lipschitz-bound-for-the-variance-functional",
+      "title": "Lipschitz continuity of the variance functional"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2118,
+      "label": "cor-chain-rule-sigma-reg-var",
+      "title": "Chain\u2011rule bound for \\sigma'_{\\text{reg}}\\circ \\mathrm{Var}"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2136,
+      "label": "cor-closed-form-lipschitz-composite",
+      "title": "Closed\u2011form bound for $L_{g_A\\circ z}$ (empirical aggregator)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2157,
+      "label": "def-canonical-logistic-rescale-function-example",
+      "title": "Canonical Logistic Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2170,
+      "label": "thm-canonical-logistic-validity",
+      "title": "The Canonical Logistic Function is a Valid Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2190,
+      "label": "def-raw-value-operator",
+      "title": "Raw Value Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2203,
+      "label": "axiom-raw-value-mean-square-continuity",
+      "title": "Axiom of Mean-Square Continuity for Raw Values"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2218,
+      "label": "axiom-bounded-measurement-variance",
+      "title": "Axiom of Bounded Measurement Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2235,
+      "label": "def-distance-to-companion-measurement",
+      "title": "Distance-to-Companion Measurement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2257,
+      "label": "lem-single-walker-positional-error",
+      "title": "Bound on Single-Walker Error from Positional Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2300,
+      "label": "lem-single-walker-structural-error",
+      "title": "Bound on Single-Walker Error from Structural Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2332,
+      "label": "lem-single-walker-own-status-error",
+      "title": "Bound on Single-Walker Error from Own Status Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2352,
+      "label": "thm-total-expected-distance-error-decomposition",
+      "title": "Decomposition of the Total Squared Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2370,
+      "label": "lem-total-squared-error-unstable",
+      "title": "Bound on the Total Squared Error for Unstable Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2389,
+      "label": "lem-total-squared-error-stable",
+      "title": "Bound on the Total Squared Error for Stable Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2428,
+      "label": "lem-sub-stable-walker-error-decomposition",
+      "title": "Decomposition of Stable Walker Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2460,
+      "label": "lem-sub-stable-positional-error-bound",
+      "title": "Bounding the Positional Error Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2528,
+      "label": "lem-sub-stable-structural-error-bound",
+      "title": "Bounding the Structural Error Component for Stable Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2722,
+      "label": "thm-expected-raw-distance-bound",
+      "title": "Bound on the Expected Raw Distance Vector Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2745,
+      "label": "thm-expected-raw-distance-k1",
+      "title": "Deterministic Behavior of the Expected Raw Distance Vector at $k=1$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2788,
+      "label": "thm-distance-operator-satisfies-bounded-variance-axiom",
+      "title": "The Distance Operator Satisfies the Bounded Variance Axiom"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2829,
+      "label": "thm-distance-operator-mean-square-continuity",
+      "title": "Mean-Square Continuity of the Distance Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2907,
+      "label": "def-standardization-operator-n-dimensional",
+      "title": "N-Dimensional Standardization Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2933,
+      "label": "def-statistical-properties-measurement",
+      "title": "Statistical Properties Measurement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 2953,
+      "label": "lem-sigma-reg-derivative-bounds",
+      "title": "Derivative Bounds for Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3020,
+      "label": "lem-stats-value-continuity",
+      "title": "Value Continuity of Statistical Properties"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3058,
+      "label": "lem-stats-structural-continuity",
+      "title": "Structural Continuity of Statistical Properties"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3090,
+      "label": "thm-z-score-norm-bound",
+      "title": "General Bound on the Norm of the Standardized Vector"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3157,
+      "label": "thm-asymptotic-std-dev-structural-continuity",
+      "title": "Asymptotic Behavior of the Structural Continuity for the Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3225,
+      "label": "thm-standardization-operator-unified-mean-square-continuity",
+      "title": "Decomposition of Mean-Square Standardization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3255,
+      "label": "def-expected-squared-value-error",
+      "title": "The Expected Squared Value Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3271,
+      "label": "def-expected-squared-structural-error",
+      "title": "The Expected Squared Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3287,
+      "label": "thm-standardization-value-error-mean-square",
+      "title": "Bounding the Expected Squared Value Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3304,
+      "label": "lem-sub-value-error-decomposition",
+      "title": "Algebraic Decomposition of the Value Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3379,
+      "label": "lem-direct-value-shift-bound",
+      "title": "Bounding the Direct Shift Error Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3399,
+      "label": "lem-sub-mean-shift-bound",
+      "title": "Boundi raw valueError Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3419,
+      "label": "lem-sub-statistical-fluctuation-bound",
+      "title": "Bounding the Statistical Fluctuation Error Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3442,
+      "label": "def-value-error-coefficients",
+      "title": "Value Error Coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3477,
+      "label": "proof-thm-standardization-value-error-mean-square",
+      "title": "Value Error Coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3522,
+      "label": "thm-standardization-structural-error-mean-square",
+      "title": "Bounding the Expected Squared Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3538,
+      "label": "lem-sub-structural-error-decomposition",
+      "title": "Algebraic Decomposition of the Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3582,
+      "label": "lem-sub-indirect-structural-error",
+      "title": "Bounding the Indirect Structural Error Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3611,
+      "label": "thm-general-asymptotic-scaling-mean-square",
+      "title": "General Asymptotic Scaling of Mean-Square Standardization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3681,
+      "label": "thm-deterministic-error-decomposition",
+      "title": "Decomposition of the Total Standardization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3795,
+      "label": "thm-lipschitz-value-error-bound",
+      "title": "Bounding the Squared Value Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3837,
+      "label": "def-lipschitz-value-error-coefficients",
+      "title": "Value Error Coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3879,
+      "label": "thm-lipschitz-structural-error-bound",
+      "title": "Bounding the Squared Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3921,
+      "label": "def-lipschitz-structural-error-coefficients",
+      "title": "Structural Error Coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3949,
+      "label": "thm-global-continuity-patched-standardization",
+      "title": "Global Continuity of the Patched Standardization Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 3991,
+      "label": "def-alive-set-potential-operator",
+      "title": "Rescaled Potential Operator for the Alive Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4018,
+      "label": "def-swarm-potential-assembly-operator",
+      "title": "Swarm Potential Assembly Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4038,
+      "label": "lem-potential-boundedness",
+      "title": "Boundedness of the Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4070,
+      "label": "lem-component-potential-lipschitz",
+      "title": "Lipschitz Continuity of the Fitness Potential Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4108,
+      "label": "lem-sub-potential-unstable-error-mean-square",
+      "title": "Bounding the Expected Error from Unstable Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4129,
+      "label": "lem-sub-potential-stable-error-mean-square",
+      "title": "Bounding the Expected Error from Stable Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4182,
+      "label": "thm-deterministic-potential-continuity",
+      "title": "Deterministic Continuity of the Fitness Potential Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4196,
+      "label": "proof-deterministic-potential-continuity",
+      "title": "Deterministic Continuity of the Fitness Potential Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4239,
+      "label": "cor-pipeline-continuity-margin-stability",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4259,
+      "label": "def-perturbation-operator",
+      "title": "Pertu ({prf:ref}`def-perturbation-operator`)rbation Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4281,
+      "label": "axiom-bounded-second-moment-perturbation",
+      "title": "Axiom of Bounded Second Moment of Perturbation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4300,
+      "label": "lem-sub-perturbation-positional-bound-reproof",
+      "title": "Bounding the Output Positional Displacement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4346,
+      "label": "thm-mcdiarmids-inequality",
+      "title": "McDiarmid's Inequality (Bounded Differences Inequality) (Boucheron\u2013Lugosi\u2013Massart)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4366,
+      "label": "lem-sub-probabilistic-bound-perturbation-displacement-reproof",
+      "title": "Probabilistic Bound on Total Perturbation-Induced Displacement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4402,
+      "label": "def-perturbation-fluctuation-bounds-reproof",
+      "title": "Perturbation Fluctuation Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4423,
+      "label": "thm-perturbation-operator-continuity-reproof",
+      "title": "Probabilistic Continuity of the Perturbation Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4462,
+      "label": "def-status-update-operator",
+      "title": "Status Update Operator ({prf:ref}`def-status-update-operator`)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4485,
+      "label": "thm-post-perturbation-status-update-continuity",
+      "title": "Probabilistic Continuity of the Post-Perturbation Status Update"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4561,
+      "label": "def-cloning-score-function",
+      "title": "Cloning Score Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4574,
+      "label": "def-stochastic-threshold-cloning",
+      "title": "Stochastic Threshold Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4623,
+      "label": "rem-cloning-scope-companion-convention",
+      "title": "Cloning Scope and Companion Convention"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4630,
+      "label": "def-total-expected-cloning-action",
+      "title": "Total Expected Cloning Action"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4644,
+      "label": "def-cloning-probability-function",
+      "title": "The Conditional Cloning Probability Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4656,
+      "label": "lem-cloning-probability-lipschitz",
+      "title": "Lipschitz Continuity of the Conditional Cloning Probability ({prf:ref}`def-cloning-probability-function`)it)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4691,
+      "label": "def-expected-cloning-action",
+      "title": "Conditional Expected Cloning Action"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4725,
+      "label": "thm-total-expected-cloning-action-continuity",
+      "title": "Expected Cloning ({prf:ref}`def-expected-cloning-action`)d Cloning Action"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4750,
+      "label": "lem-total-clone-prob-structural-error",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4767,
+      "label": "thm-potential-operator-is-mean-square-continuous",
+      "title": "The Fitness Potential Operator is Mean-Square Continuous"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4787,
+      "label": "lem-total-clone-prob-value-error",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4808,
+      "label": "thm-cloning-transition-operator-continuity-recorrected",
+      "title": "Mean-Square Continuity of the Cloning Transition Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4823,
+      "label": "def-cloning-operator-continuity-coeffs-recorrected",
+      "title": "Mean-Square Continuity of the Cloning Transition Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4829,
+      "label": "proof-cloning-transition-operator-continuity-recorrected",
+      "title": "Mean-Square Continuity of the Cloning Transition Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4879,
+      "label": "lem-sub-bound-sum-total-cloning-probs",
+      "title": "Bounding the Sum of Total Cloning Probabilities"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4939,
+      "label": "rem-phoenix-effect",
+      "title": "The Near-Extinction Recovery Mechanism (Phoenix Effect)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 4950,
+      "label": "thm-k1-revival-state",
+      "title": "Theorem of Guaranteed Revival from a Single Survivor"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5015,
+      "label": "def-swarm-update-procedure",
+      "title": "Swarm Update Procedure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5087,
+      "label": "lem-final-positional-displacement-bound",
+      "title": "Swarm Update Procedure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5119,
+      "label": "def-final-status-change-coeffs",
+      "title": "Final Status Change Bound Coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5143,
+      "label": "lem-final-status-change-bound",
+      "title": "Bounding the Expected Final Status Change"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5200,
+      "label": "lem-inequality-toolbox",
+      "title": "Inequality Toolbox"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5224,
+      "label": "thm-swarm-update-operator-continuity-recorrected",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5246,
+      "label": "def-composite-continuity-coeffs-recorrected",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5274,
+      "label": "proof-composite-continuity-bound-recorrected",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5343,
+      "label": "lem-subadditivity-power",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5357,
+      "label": "lem-sub-unify-holder-terms",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5387,
+      "label": "rem-remark-context-4997",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5391,
+      "label": "subsec-w2-coupling-offset-removal",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5394,
+      "label": "def-w2-output-metric",
+      "title": "Wasserstein-2 on the output space (quotient)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5408,
+      "label": "prop-w2-bound-no-offset",
+      "title": "W2 continuity bound without offset (for $k\\ge 2$)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5442,
+      "label": "rem-remark-context-5042",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5446,
+      "label": "subsec-measurability-markov-kernel",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5448,
+      "label": "prop-psi-markov-kernel",
+      "title": "The Swarm Update defines a Markov kernel"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5459,
+      "label": "rem-context-5056",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5463,
+      "label": "subsec-coefficient-regularity",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5465,
+      "label": "prop-coefficient-regularity",
+      "title": "Boundedness and continuity of composite coefficients"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5482,
+      "label": "rem-context-5075",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5520,
+      "label": "def-fragile-swarm-instantiation",
+      "title": "Fragile Swarm Instantiation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/01_fragile_gas_framework.md",
+      "line": 5535,
+      "label": "def-fragile-gas-algorithm",
+      "title": "The Fragile Gas Algorithm"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 158,
+      "label": "alg-euclidean-gas",
+      "title": "Euclidean Gas Update"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 423,
+      "label": "lem-squashing-properties-generic",
+      "title": "Properties of smooth radial squashing maps"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 452,
+      "label": "lem-projection-lipschitz",
+      "title": "Lipschitz continuity of the projection $\\varphi$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 560,
+      "label": "lem-sasaki-kinetic-lipschitz",
+      "title": "Lipschitz property of the kinetic flow"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 619,
+      "label": "lem-euclidean-boundary-holder",
+      "title": "H\u00f6lder continuity of the death probability"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 751,
+      "label": "lem-euclidean-reward-regularity",
+      "title": "Reward regularity in the Sasaki metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 779,
+      "label": "lem-euclidean-richness",
+      "title": "Environmental richness with a kinetic regularizer"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 819,
+      "label": "lem-euclidean-perturb-moment",
+      "title": "Perturbation second moment in the Sasaki metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 920,
+      "label": "lem-euclidean-geometric-consistency",
+      "title": "Geometric consistency under the capped kinetic kernel"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1086,
+      "label": "lem-sasaki-single-walker-positional-error",
+      "title": "Single-walker positional error bound in the Sasaki metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1142,
+      "label": "lem-sasaki-single-walker-structural-error",
+      "title": "Single-walker structural error bound in the Sasaki metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1184,
+      "label": "lem-sasaki-total-squared-error-stable",
+      "title": "Mean-square error on stable walkers (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1222,
+      "label": "thm-sasaki-distance-ms",
+      "title": "Mean-square continuity of the distance measurement (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1260,
+      "label": "lem-sasaki-aggregator-value",
+      "title": "Value continuity of the empirical moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1279,
+      "label": "lem-sasaki-aggregator-structural",
+      "title": "Structural continuity of the empirical moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1298,
+      "label": "lem-sasaki-aggregator-lipschitz",
+      "title": "Lipschitz data for the Sasaki empirical aggregators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1329,
+      "label": "def-sasaki-standardization-constants",
+      "title": "Standardization constants (Sasaki geometry)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1384,
+      "label": "thm-sasaki-standardization-value-sq",
+      "title": "Value continuity of patched standardization (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1399,
+      "label": "lem-sasaki-value-error-decomposition",
+      "title": "Decomposition of the Value Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1475,
+      "label": "lem-sasaki-direct-shift-bound-sq",
+      "title": "Bound on the Squared Direct Shift Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1530,
+      "label": "lem-sasaki-mean-shift-bound-sq",
+      "title": "Bound on the Squared Mean Shift Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1588,
+      "label": "lem-sasaki-denom-shift-bound-sq",
+      "title": "Bounding the Squared Denominator Shift Component"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1727,
+      "label": "def-sasaki-standardization-constants-sq",
+      "title": "Value Error Coefficients (Squared Form)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1769,
+      "label": "thm-sasaki-standardization-structural-sq",
+      "title": "Structural Continuity of Patched Standardization (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1786,
+      "label": "lem-sasaki-structural-error-decomposition",
+      "title": "Decomposition of the Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1845,
+      "label": "lem-sasaki-direct-structural-error-sq",
+      "title": "Bound on the Squared Direct Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 1905,
+      "label": "lem-sasaki-indirect-structural-error-sq",
+      "title": "Bound on the Squared Indirect Structural Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 2042,
+      "label": "def-sasaki-structural-coeffs-sq",
+      "title": "Structural Error Coefficients (Squared Form)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 2068,
+      "label": "thm-sasaki-standardization-composite-sq",
+      "title": "Composite Continuity of the Patched Standardization Operator (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 2152,
+      "label": "lem-sasaki-standardization-lipschitz",
+      "title": "Lipschitz continuity of patched standardization (Sasaki)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 2195,
+      "label": "axiom-non-deceptive",
+      "title": "Axiom of Non-Deceptive Landscapes"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/02_euclidean_gas.md",
+      "line": 2383,
+      "label": "thm-euclidean-feller",
+      "title": "Feller continuity of $\\Psi_{\\mathcal F_{\\mathrm{EG}}}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 26,
+      "label": "rem-note-extinction-possibility",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 111,
+      "label": "def-single-swarm-space",
+      "title": "Single-Walker and Swarm State Spaces"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 152,
+      "label": "def-coupled-state-space",
+      "title": "The Coupled State Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 176,
+      "label": "def-state-difference-vectors",
+      "title": "State Difference Vectors"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 212,
+      "label": "axiom-domain-regularity",
+      "title": "**(Axiom EG-0): Regularity of the Domain**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 226,
+      "label": "prop-barrier-existence",
+      "title": "Existence of a Global Smooth Barrier Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 392,
+      "label": "def-barycentres-and-centered-vectors",
+      "title": "Barycentres and Centered Vectors (Alive Walkers Only)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 460,
+      "label": "def-location-error-component",
+      "title": "The Location Error Component ($V_{\\text{loc}}$)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 477,
+      "label": "def-structural-error-component",
+      "title": "The Structural Error Component ($V_{\\text{struct}}$)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 503,
+      "label": "lem-wasserstein-decomposition",
+      "title": "Decomposition of the Hypocoercive Wasserstein Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 676,
+      "label": "lem-sx-implies-variance",
+      "title": "Structural Positional Error and Internal Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 808,
+      "label": "def-full-synergistic-lyapunov-function",
+      "title": "The Full Synergistic Hypocoercive Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 928,
+      "label": "def-variance-conversions",
+      "title": "Variance Notation Conversion Formulas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 995,
+      "label": "prop-lyapunov-necessity",
+      "title": "Necessity of the Augmented Lyapunov Structure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1052,
+      "label": "rem-note-hypocoercivity-analogy",
+      "title": "Analogy to Classical Hypocoercivity Theory"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1077,
+      "label": "lem-V-coercive",
+      "title": "Coercivity of the Hypocoercive Lyapunov Components"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1251,
+      "label": "axiom-lipschitz-fields",
+      "title": "**(Axiom EG-1): Lipschitz Regularity of Environmental Fields**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1277,
+      "label": "axiom-safe-harbor",
+      "title": "**(Axiom EG-2): Existence of a Safe Harbor**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1305,
+      "label": "axiom-non-deceptive-landscape",
+      "title": "**(Axiom EG-3): Non-Deceptive Landscape ({prf:ref}`axiom-environmental-richness`)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1334,
+      "label": "axiom-velocity-regularization",
+      "title": "**(Axiom EG-4): Velocity Regularization via Reward**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1379,
+      "label": "axiom-active-diversity",
+      "title": "**(Axiom EG-5): Active Diversity Signal**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1446,
+      "label": "def-algorithmic-distance-metric",
+      "title": "Algorithmic Distance for Companion Selection"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1491,
+      "label": "def-spatial-pairing-diversity-idealized",
+      "title": "Spatially-Aware Pairing Operator (Idealized Model)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1533,
+      "label": "def-greedy-pairing-algorithm",
+      "title": "Sequential Stochastic Greedy Pairing Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1568,
+      "label": "alg-greedy-pairing",
+      "title": "Sequential Stochastic Greedy Pairing Algorithm"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1628,
+      "label": "def-geometric-partition",
+      "title": "Geometric Partitioning of High-Variance Swarms"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1642,
+      "label": "lem-greedy-preserves-signal",
+      "title": "Greedy Pairing Guarantees Signal Separation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1867,
+      "label": "def-raw-value-operators",
+      "title": "Raw Value Operators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1909,
+      "label": "def-swarm-aggregation-operator",
+      "title": "Swarm Aggregation Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1924,
+      "label": "def-patched-std-dev-function",
+      "title": "Patched Standard Deviation Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1942,
+      "label": "lem-patching-properties",
+      "title": "Properties of the Patching Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1951,
+      "label": "def-standardization-operator",
+      "title": "N-Dimensional Standardization Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1965,
+      "label": "lem-compact-support-z-scores",
+      "title": "Compact Support of Standardized Scores"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1979,
+      "label": "def-logistic-rescale",
+      "title": "Canonical Logistic Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 1991,
+      "label": "lem-logistic-properties",
+      "title": "Verification of Axiomatic Properties"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2000,
+      "label": "def-fitness-potential-operator",
+      "title": "Fitness Potential Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2023,
+      "label": "lem-potential-bounds",
+      "title": "Uniform Bounds of the Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2072,
+      "label": "def-cloning-companion-operator",
+      "title": "Companion Selection Operator for Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2106,
+      "label": "def-cloning-score",
+      "title": "The Canonical Cloning Score"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2121,
+      "label": "def-cloning-probability",
+      "title": "Total Cloning Probability"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2151,
+      "label": "def-cloning-decision",
+      "title": "The Stochastic Cloning Decision"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2163,
+      "label": "def-inelastic-collision-update",
+      "title": "The Inelastic Collision State Update"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2235,
+      "label": "prop-bounded-velocity-expansion",
+      "title": "Bounded Velocity Variance Expansion from Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2482,
+      "label": "lem-V_Varx-implies-variance",
+      "title": "Large $V_{\\text{Var},x}$ Implies Large Single-Swarm Positional Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2534,
+      "label": "def-unified-high-low-error-sets",
+      "title": "The Unified High-Error and Low-Error Sets"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2599,
+      "label": "lem-phase-space-packing",
+      "title": "The Phase-Space Packing Lemma"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2759,
+      "label": "lem-var-x-implies-var-h",
+      "title": "Positional Variance as a Lower Bound for Hypocoercive Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2796,
+      "label": "lem-outlier-fraction-lower-bound",
+      "title": "N-Uniform Lower Bound on the Outlier Fraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 2909,
+      "label": "lem-outlier-cluster-fraction-lower-bound",
+      "title": "N-Uniform Lower Bound on the Outlier-Cluster Fraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3007,
+      "label": "cor-vvarx-to-high-error-fraction",
+      "title": "A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3095,
+      "label": "lem-geometric-separation-of-partition",
+      "title": "Geometric Separation of the Partition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3570,
+      "label": "thm-geometry-guarantees-variance",
+      "title": "Geometric Structure Guarantees Measurement Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3740,
+      "label": "prop-satisfiability-of-snr-gamma",
+      "title": "**(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3859,
+      "label": "lem-variance-to-gap",
+      "title": "From Bounded Variance to a Guaranteed Gap"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3926,
+      "label": "def-max-patched-std",
+      "title": "Maximum Patched Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3941,
+      "label": "lem-rescale-derivative-lower-bound",
+      "title": "Positive Derivative Bound for the Rescale Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 3971,
+      "label": "lem-raw-gap-to-rescaled-gap",
+      "title": "From Raw Measurement Gap to Rescaled Value Gap"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4060,
+      "label": "lem-variance-to-mean-separation",
+      "title": "**(From Total Variance to Mean Separation)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4204,
+      "label": "thm-derivation-of-stability-condition",
+      "title": "Derivation of the Stability Condition for Intelligent Adaptation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4328,
+      "label": "lem-log-gap-lower-bound",
+      "title": "Lower Bound on Logarithmic Mean Gap"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4462,
+      "label": "rem-log-gap-bound-tightness",
+      "title": "On the Tightness of the Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4480,
+      "label": "lem-log-gap-upper-bound",
+      "title": "Upper Bound on Logarithmic Mean Gap"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4591,
+      "label": "rem-log-gap-bound-tight-at-vmin",
+      "title": "Why the Bound is Tight at $V_{\\min}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4611,
+      "label": "prop-corrective-signal-bound",
+      "title": "**(Lower Bound on the Corrective Diversity Signal)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4661,
+      "label": "prop-adversarial-signal-bound-naive",
+      "title": "**(Worst-Case Upper Bound on the Adversarial Reward Signal)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4726,
+      "label": "prop-raw-reward-mean-gap-bound",
+      "title": "**(Lipschitz Bound on the Raw Reward Mean Gap)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4765,
+      "label": "prop-log-reward-gap-axiom-bound",
+      "title": "**(Axiom-Based Bound on the Logarithmic Reward Gap)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4840,
+      "label": "thm-stability-condition-final-corrected",
+      "title": "**(The Corrected Stability Condition for Intelligent Adaptation)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4888,
+      "label": "def-unfit-set",
+      "title": "The Unfit Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4900,
+      "label": "lem-unfit-fraction-lower-bound",
+      "title": "N-Uniform Lower Bound on the Unfit Fraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 4968,
+      "label": "thm-unfit-high-error-overlap-fraction",
+      "title": "N-Uniform Lower Bound on the Unfit-High-Error Overlap Fraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5050,
+      "label": "lem-quantitative-keystone",
+      "title": "The N-Uniform Quantitative Keystone Lemma"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5103,
+      "label": "def-critical-target-set",
+      "title": "The Critical Target Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5126,
+      "label": "lem-mean-companion-fitness-gap",
+      "title": "Lower Bound on Mean Companion Fitness Gap"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5305,
+      "label": "rem-n-uniformity-delta-min-bound",
+      "title": "N-Uniformity of the Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5312,
+      "label": "lem-unfit-cloning-pressure",
+      "title": "Guaranteed Cloning Pressure on the Unfit Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5376,
+      "label": "cor-cloning-pressure-target-set",
+      "title": "Cloning Pressure on the Target Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5402,
+      "label": "lem-variance-concentration-Hk",
+      "title": "**(Variance Concentration in the High-Error Set)**"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5536,
+      "label": "lem-error-concentration-target-set",
+      "title": "Error Concentration in the Target Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 5978,
+      "label": "prop-n-uniformity-keystone",
+      "title": "N-Uniformity of Keystone Constants"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6233,
+      "label": "def-cloning-operator-formal",
+      "title": "The Cloning Operator $\\Psi_{\\text{clone}}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6284,
+      "label": "def-measurement-operator",
+      "title": "The Measurement Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6320,
+      "label": "rem-measurement-coupling",
+      "title": "Stochastic Coupling for Drift Analysis"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6333,
+      "label": "def-fitness-operator",
+      "title": "The Fitness Evaluation Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6416,
+      "label": "def-decision-operator",
+      "title": "The Cloning Decision Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6474,
+      "label": "lem-dead-walker-clone-prob",
+      "title": "Total Cloning Probability for Dead Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6508,
+      "label": "def-update-operator",
+      "title": "The State Update Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6610,
+      "label": "rem-position-velocity-update-difference",
+      "title": "Position Jitter vs. Velocity Collision Model"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6630,
+      "label": "thm-cloning-operator-composition",
+      "title": "Compositional Structure of $\\Psi_{\\text{clone}}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6662,
+      "label": "def-key-operator-outputs",
+      "title": "Key Operator Outputs"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6708,
+      "label": "prop-expected-displacement-cloning",
+      "title": "Expected Displacement Under Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6787,
+      "label": "def-coupled-cloning-expectation",
+      "title": "Coupled Cloning Expectation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6807,
+      "label": "rem-coupling-benefits",
+      "title": "Synchronous Coupling Benefits"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6825,
+      "label": "thm-positional-variance-contraction",
+      "title": "Positional Variance Contraction Under Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6858,
+      "label": "lem-variance-change-decomposition",
+      "title": "Variance Change Decomposition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 6931,
+      "label": "lem-keystone-contraction-alive",
+      "title": "Keystone-Driven Contraction for Stably Alive Walkers"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7049,
+      "label": "lem-dead-walker-revival-bounded",
+      "title": "Bounded Contribution from Dead Walker Revival"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7254,
+      "label": "thm-velocity-variance-bounded-expansion",
+      "title": "Bounded Velocity Variance Expansion from Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7340,
+      "label": "rem-synergistic-velocity-dissipation",
+      "title": "Synergistic Dissipation Enables Net Contraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7366,
+      "label": "cor-structural-error-contraction",
+      "title": "Structural Error Contraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7402,
+      "label": "thm-complete-variance-drift",
+      "title": "Complete Variance Drift Characterization for Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7493,
+      "label": "rem-drift-constants-dependencies",
+      "title": "Constants and Parameter Dependencies"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7565,
+      "label": "def-boundary-potential-cloning",
+      "title": "Boundary Potential Component (Recall)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7586,
+      "label": "rem-barrier-geometric-penalty",
+      "title": "Barrier Function as Geometric Penalty"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7611,
+      "label": "lem-fitness-gradient-boundary",
+      "title": "Fitness Gradient from Boundary Proximity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7792,
+      "label": "def-boundary-exposed-set",
+      "title": "The Boundary-Exposed Set"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7813,
+      "label": "rem-boundary-mass-relationship",
+      "title": "Relationship to Total Boundary Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7828,
+      "label": "thm-boundary-potential-contraction",
+      "title": "Boundary Potential Contraction Under Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7848,
+      "label": "rem-progressive-safety",
+      "title": "Interpretation: Progressive Safety Enhancement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7869,
+      "label": "lem-boundary-enhanced-cloning",
+      "title": "Enhanced Cloning Probability Near Boundary"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 7946,
+      "label": "lem-barrier-reduction-cloning",
+      "title": "Expected Barrier Reduction for Cloned Walker"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8121,
+      "label": "cor-bounded-boundary-exposure",
+      "title": "Bounded Boundary Exposure in Equilibrium"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8170,
+      "label": "cor-extinction-suppression",
+      "title": "Exponentially Suppressed Extinction Probability"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8292,
+      "label": "rem-safety-margin-tuning",
+      "title": "Safety Margin and Parameter Tuning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8310,
+      "label": "thm-complete-boundary-drift",
+      "title": "Complete Boundary Potential Drift Characterization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8433,
+      "label": "thm-inter-swarm-bounded-expansion",
+      "title": "Bounded Expansion of Inter-Swarm Wasserstein Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8558,
+      "label": "rem-why-vw-expands",
+      "title": "Why Inter-Swarm Error Doesn't Contract Under Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8576,
+      "label": "cor-component-bounds-vw",
+      "title": "Component-Wise Bounds on Inter-Swarm Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8594,
+      "label": "thm-complete-wasserstein-drift",
+      "title": "Complete Wasserstein Decomposition Drift"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8694,
+      "label": "thm-complete-cloning-drift",
+      "title": "Complete Drift Inequality for the Cloning Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8805,
+      "label": "prop-kinetic-necessity",
+      "title": "Necessity of the Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8837,
+      "label": "rem-perfect-complementarity",
+      "title": "Perfect Complementarity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8850,
+      "label": "thm-synergistic-foster-lyapunov-preview",
+      "title": "Synergistic Foster-Lyapunov Condition (Preview)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8957,
+      "label": "prop-coupling-constant-existence",
+      "title": "Existence of Valid Coupling Constants"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 8998,
+      "label": "rem-tuning-guidance",
+      "title": "Tuning Guidance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/03_cloning.md",
+      "line": 9022,
+      "label": "thm-fg-cloning-main-results",
+      "title": "Main Results of the Cloning Analysis (Summary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_single_particle.md",
+      "line": 56,
+      "label": "def-single-observable-stack",
+      "title": "Observable Parameter Stack"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_single_particle.md",
+      "line": 196,
+      "label": "prop-single-fitness-distribution",
+      "title": "Single Walker Fitness Distribution"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_single_particle.md",
+      "line": 292,
+      "label": "rem-fg-single-particle-discrete-field",
+      "title": "Interpretation as a Discrete Random Field"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 177,
+      "label": "def-target-complement",
+      "title": "Target Set and Complement"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 214,
+      "label": "rem-all-alive-normalization",
+      "title": "All-Alive Normalization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 220,
+      "label": "rem-why-target-sets",
+      "title": "Why These Sets?"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 234,
+      "label": "rem-empirical-measures",
+      "title": "Empirical Measures and Framework Properties"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 269,
+      "label": "lem-variance-decomposition",
+      "title": "Variance Decomposition by Clusters"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 347,
+      "label": "lem-centered-w2-variance-bound",
+      "title": "Centered Positional Wasserstein Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 369,
+      "label": "lem-wasserstein-barycenter-decomposition",
+      "title": "Barycenter Decomposition of Wasserstein-2"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 391,
+      "label": "rem-variance-wasserstein-interpretation",
+      "title": "Interpretation of the Decomposition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 404,
+      "label": "rem-structural-dominance",
+      "title": "Structural-Dominance Regime (Optional)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 425,
+      "label": "lem-quantitative-keystone-w2",
+      "title": "N-Uniform Quantitative Keystone Lemma (Positional Component)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 440,
+      "label": "thm-positional-variance-proxy",
+      "title": "Positional Variance Proxy Drift"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 461,
+      "label": "rem-jitter-scale",
+      "title": "Jitter Scale Convention"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 473,
+      "label": "prop-centered-w2-control",
+      "title": "Centered Positional Control via Variance Proxy"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 487,
+      "label": "rem-closed-drift-vxstruct",
+      "title": "Closed Drift for $V_{\\text{x,struct}}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 494,
+      "label": "ass-structural-dominance",
+      "title": "Structural-Dominance Regime (Positional)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 506,
+      "label": "rem-structural-dominance-sufficient",
+      "title": "Sufficient Geometric Condition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 520,
+      "label": "cor-closed-drift-vxstruct",
+      "title": "Closed Drift Under Structural Dominance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/04_wasserstein_contraction.md",
+      "line": 540,
+      "label": "thm-full-w2-split",
+      "title": "Structural/Barycenter Split for Full $W_2$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 186,
+      "label": "def-kinetic-operator-stratonovich",
+      "title": "The Kinetic Operator (Stratonovich Form)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 222,
+      "label": "rem-stratonovich-ito-equivalence",
+      "title": "Relationship to It\u00f4 Formulation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 246,
+      "label": "axiom-confining-potential",
+      "title": "Globally Confining Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 297,
+      "label": "ex-canonical-confining-potential",
+      "title": "Canonical Confining Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 324,
+      "label": "axiom-diffusion-tensor",
+      "title": "Anisotropic Diffusion Tensor"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 393,
+      "label": "rem-uniform-ellipticity-importance",
+      "title": "Why Uniform Ellipticity Matters"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 407,
+      "label": "axiom-friction-timestep",
+      "title": "Friction and Integration Parameters"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 463,
+      "label": "prop-fokker-planck-kinetic",
+      "title": "Fokker-Planck Equation for the Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 495,
+      "label": "rem-formal-invariant-measure",
+      "title": "Formal Invariant Measure (Without Boundary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 514,
+      "label": "def-baoab-integrator",
+      "title": "BAOAB Integrator for Stratonovich Langevin"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 572,
+      "label": "rem-baoab-anisotropic",
+      "title": "Stratonovich Correction for Anisotropic Case"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 624,
+      "label": "def-generator",
+      "title": "Infinitesimal Generator of the Kinetic SDE"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 675,
+      "label": "thm-discretization",
+      "title": "Discrete-Time Inheritance of Generator Drift"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 748,
+      "label": "prop-weak-error-variance",
+      "title": "BAOAB Weak Error for Variance Lyapunov Functions"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 814,
+      "label": "rem-fg-kinetic-weak-error-velocity",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 821,
+      "label": "prop-weak-error-boundary",
+      "title": "BAOAB Weak Error for Boundary Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 846,
+      "label": "prop-weak-error-wasserstein",
+      "title": "BAOAB Weak Error for Wasserstein Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1018,
+      "label": "rem-gradient-flow-vs-coupling",
+      "title": "Comparison to Gradient Flow Approach"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1157,
+      "label": "prop-explicit-constants",
+      "title": "Explicit Discretization Constants"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1307,
+      "label": "def-hypocoercive-norm",
+      "title": "The Hypocoercive Norm"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1341,
+      "label": "rem-coupling-term-intuition",
+      "title": "Intuition for the Coupling Term"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1355,
+      "label": "thm-inter-swarm-contraction-kinetic",
+      "title": "Inter-Swarm Error Contraction Under Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1405,
+      "label": "lem-location-error-drift-kinetic",
+      "title": "Drift of Location Error Under Kinetics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1510,
+      "label": "def-core-exterior-regions",
+      "title": "Core and Exterior Regions"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1665,
+      "label": "lem-structural-error-drift-kinetic",
+      "title": "Drift of Structural Error Under Kinetics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1923,
+      "label": "def-velocity-variance-recall",
+      "title": "Velocity Variance Component (Recall)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1940,
+      "label": "def-velocity-barycenter-energy",
+      "title": "Velocity Barycenter Energy"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 1955,
+      "label": "thm-velocity-variance-contraction-kinetic",
+      "title": "Velocity Variance Contraction Under Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2230,
+      "label": "thm-velocity-barycenter-dissipation",
+      "title": "Velocity Barycenter Drift Under Kinetics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2263,
+      "label": "cor-net-velocity-contraction",
+      "title": "Net Velocity Variance Contraction for Composed Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2308,
+      "label": "cor-net-barycenter-drift",
+      "title": "Barycenter Drift Under the Composed Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2368,
+      "label": "def-positional-variance-recall",
+      "title": "Positional Variance Component (Recall)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2383,
+      "label": "thm-positional-variance-bounded-expansion",
+      "title": "Bounded Positional Variance Expansion Under Kinetics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2603,
+      "label": "assump-uniform-variance-bounds",
+      "title": "Uniform Variance Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2673,
+      "label": "cor-net-positional-contraction",
+      "title": "Net Positional Variance Contraction for Composed Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2734,
+      "label": "def-boundary-potential-kinetic",
+      "title": "Boundary Potential (Recall)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 2751,
+      "label": "thm-boundary-potential-contraction-kinetic",
+      "title": "Boundary Potential Contraction Under Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 3142,
+      "label": "cor-total-boundary-safety",
+      "title": "Total Boundary Safety from Dual Mechanisms"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/05_kinetic_contraction.md",
+      "line": 3173,
+      "label": "lem-kinetic-minorization",
+      "title": "Minorization on Compact Interior Sets"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 177,
+      "label": "rem-prerequisite-drifts",
+      "title": "Summary of Required Operator Drifts"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 240,
+      "label": "def-tv-lyapunov",
+      "title": "TV Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 263,
+      "label": "prop-complete-drift-summary",
+      "title": "Complete Drift Characterization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 280,
+      "label": "thm-foster-lyapunov-main",
+      "title": "Foster-Lyapunov Drift for the Composed Operator (TV Track)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 440,
+      "label": "def-cemetery-state",
+      "title": "The Cemetery State"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 457,
+      "label": "rem-extinction-inevitable",
+      "title": "Why Extinction is Inevitable (Eventually)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 475,
+      "label": "def-qsd",
+      "title": "Quasi-Stationary Distribution (QSD)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 500,
+      "label": "thm-phi-irreducibility",
+      "title": "\u03c6-Irreducibility of the Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 552,
+      "label": "thm-aperiodicity",
+      "title": "Aperiodicity of the Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 606,
+      "label": "thm-main-convergence",
+      "title": "Geometric Ergodicity and Convergence to QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 722,
+      "label": "prop-qsd-properties",
+      "title": "Properties of the Quasi-Stationary Distribution"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 774,
+      "label": "thm-equilibrium-variance-bounds",
+      "title": "Equilibrium Variance Bounds from Drift Inequalities"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 988,
+      "label": "prop-velocity-rate-explicit",
+      "title": "Velocity Dissipation Rate (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1056,
+      "label": "prop-position-rate-explicit",
+      "title": "Positional Contraction Rate (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1106,
+      "label": "prop-wasserstein-rate-explicit",
+      "title": "Wasserstein Contraction Rate (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1215,
+      "label": "prop-boundary-rate-explicit",
+      "title": "Boundary Contraction Rate (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1334,
+      "label": "thm-synergistic-rate-derivation",
+      "title": "Synergistic Rate Derivation from Component Drifts"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1454,
+      "label": "thm-total-rate-explicit",
+      "title": "Total Convergence Rate (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1588,
+      "label": "prop-mixing-time-explicit",
+      "title": "Mixing Time (Parameter-Explicit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1686,
+      "label": "alg-param-selection",
+      "title": "Parameter Selection for Optimal Convergence"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 1956,
+      "label": "def-complete-parameter-space",
+      "title": "Complete Parameter Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2009,
+      "label": "prop-parameter-classification",
+      "title": "Parameter Classification"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2085,
+      "label": "def-rate-sensitivity-matrix",
+      "title": "Log-Sensitivity Matrix for Convergence Rates"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2225,
+      "label": "thm-explicit-rate-sensitivity",
+      "title": "Explicit Rate Sensitivity Matrix"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2276,
+      "label": "def-equilibrium-sensitivity-matrix",
+      "title": "Equilibrium Constant Sensitivity Matrix"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2351,
+      "label": "thm-svd-rate-matrix",
+      "title": "SVD of Rate Sensitivity Matrix"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2482,
+      "label": "prop-condition-number-rate",
+      "title": "Condition Number of Rate Sensitivity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2503,
+      "label": "def-parameter-optimization",
+      "title": "Parameter Optimization Problem"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2546,
+      "label": "thm-subgradient-min",
+      "title": "Subgradient of min() Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2586,
+      "label": "thm-balanced-optimality",
+      "title": "Necessity of Balanced Rates at Optimum"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2704,
+      "label": "prop-restitution-friction-coupling",
+      "title": "Restitution-Friction Coupling"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2763,
+      "label": "prop-jitter-cloning-coupling",
+      "title": "Position Jitter - Cloning Rate Coupling"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2814,
+      "label": "prop-phase-space-pairing",
+      "title": "Phase-Space Pairing Quality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 2866,
+      "label": "thm-error-propagation",
+      "title": "Parameter Error Propagation Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 3041,
+      "label": "thm-closed-form-optimum",
+      "title": "Closed-Form Balanced Optimum"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 3161,
+      "label": "alg-projected-gradient-ascent",
+      "title": "Projected Gradient Ascent for Parameter Optimization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 3273,
+      "label": "def-pareto-optimality",
+      "title": "Pareto Optimality in Parameter Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/06_convergence.md",
+      "line": 3350,
+      "label": "alg-adaptive-tuning",
+      "title": "Adaptive Parameter Tuning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "line": 73,
+      "label": "prop-continuum-distance",
+      "title": "Continuum Approximation of Algorithmic Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "line": 148,
+      "label": "thm-cloning-equilibrium",
+      "title": "The Cloning Equilibrium Density"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "line": 258,
+      "label": "prop-halo-density",
+      "title": "The Halo Density in Equilibrium"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "line": 285,
+      "label": "thm-velocity-thermalization",
+      "title": "Velocity Thermalization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/07_discrete_qsd.md",
+      "line": 391,
+      "label": "thm-decorated-gibbs",
+      "title": "The Decorated Gibbs Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 42,
+      "label": "def-mean-field-phase-space",
+      "title": "Phase Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 58,
+      "label": "remark-mean-field-cloud",
+      "title": "Phase Space"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 65,
+      "label": "def-phase-space-density",
+      "title": "Phase-Space Density"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 90,
+      "label": "remark-mean-field-regularity",
+      "title": "Phase-Space Density"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 102,
+      "label": "remark-mean-field-sum-to-integral",
+      "title": "Phase-Space Density"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 123,
+      "label": "def-mean-field-moments",
+      "title": "Mean-Field Statistical Moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 155,
+      "label": "remark-cemetery-state",
+      "title": "Mean-Field Statistical Moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 187,
+      "label": "def-mean-field-patched-std",
+      "title": "Mean-Field Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 205,
+      "label": "def-mean-field-z-scores",
+      "title": "Mean-Field Z-Scores"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 219,
+      "label": "def-mean-field-fitness-potential",
+      "title": "Mean-Field Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 232,
+      "label": "remark-important-nonlocal-nonlinear",
+      "title": "Mean-Field Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 271,
+      "label": "def-baoab-update-rule",
+      "title": "The BAOAB Update Rule"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 316,
+      "label": "remark-fidelity-generator",
+      "title": "The BAOAB Update Rule"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 331,
+      "label": "def-kinetic-generator",
+      "title": "Kinetic Transport Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 360,
+      "label": "remark-separation-kinetic-death",
+      "title": "Kinetic Transport Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 370,
+      "label": "remark-separation-death-revival-cloning",
+      "title": "Kinetic Transport Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 381,
+      "label": "def-killing-operator",
+      "title": "Interior Killing Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 400,
+      "label": "def-revival-operator",
+      "title": "Revival Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 529,
+      "label": "def-cloning-generator",
+      "title": "Internal Cloning Operator (Derived Form)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 591,
+      "label": "def-transport-operator",
+      "title": "Transport Operator and Probability Flux"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 610,
+      "label": "lem-mass-conservation-transport",
+      "title": "Mass Conservation of Transport"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 653,
+      "label": "thm-mean-field-equation",
+      "title": "The Mean-Field Equations for the Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 731,
+      "label": "thm-mass-conservation",
+      "title": "Total Mass Conservation and Population Dynamics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 821,
+      "label": "assumption-regularity-summary",
+      "title": "Summary of Regularity Assumptions"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 864,
+      "label": "assumption-domain-regularity",
+      "title": "Regularity of the Valid Domain"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 875,
+      "label": "assumption-integrator-regularity",
+      "title": "Regularity of the Discrete Integrator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 888,
+      "label": "assumption-density-regularity-killing",
+      "title": "Density Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 900,
+      "label": "thm-killing-rate-consistency",
+      "title": "Consistency of the Interior Killing Rate Approximation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 1359,
+      "label": "remark-killing-rate-interpretation",
+      "title": "Proof of Part (ii): Uniform Convergence with Error Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 1378,
+      "label": "remark-important-killing-rate-well-posedness",
+      "title": "Proof of Part (ii): Uniform Convergence with Error Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 1413,
+      "label": "remark-numerical-validation-killing-rate",
+      "title": "Proof of Part (ii): Uniform Convergence with Error Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/08_mean_field.md",
+      "line": 1456,
+      "label": "thm-mean-field-limit-informal",
+      "title": "Mean-Field Limit (Informal Statement)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 130,
+      "label": "def-sequence-of-qsds",
+      "title": "Sequence of N-Particle QSDs and their Marginals"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 159,
+      "label": "thm-qsd-marginals-are-tight",
+      "title": "The Sequence of Marginals $\\{\\mu_N\\}$ is Tight"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 229,
+      "label": "lem-exchangeability",
+      "title": "Exchangeability of the N-Particle QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 250,
+      "label": "lem-empirical-convergence",
+      "title": "Weak Convergence of the Empirical Companion Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 291,
+      "label": "lem-reward-continuity",
+      "title": "Continuity of the Reward Moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 319,
+      "label": "lem-distance-continuity",
+      "title": "Continuity of the Distance Moments"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 373,
+      "label": "lem-uniform-integrability",
+      "title": "Uniform Integrability and Interchange of Limits"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 421,
+      "label": "lem-boundary-convergence",
+      "title": "Convergence of Boundary Death and Revival"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 536,
+      "label": "rem-qsd-vs-true-stationarity",
+      "title": "QSD Stationarity vs. True Stationarity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 553,
+      "label": "thm-extinction-rate-vanishes",
+      "title": "Extinction Rate Vanishes in the Mean-Field Limit"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 682,
+      "label": "rem-extinction-rate-physical-interpretation",
+      "title": "Physical Interpretation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 691,
+      "label": "thm-limit-is-weak-solution",
+      "title": "Limit Points are Weak Solutions to the Stationary Mean-Field PDE"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 867,
+      "label": "def-uniqueness-weighted-sobolev-h1w",
+      "title": "Weighted Sobolev Space $H^1_w(\\Omega)$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 880,
+      "label": "thm-uniqueness-completeness-h1w-omega",
+      "title": "Completeness of $H^1_w(\\Omega)$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 904,
+      "label": "rem-uniqueness-completeness-constraint-set",
+      "title": "Completeness of the Constraint Set $\\mathcal{P}$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 942,
+      "label": "lem-uniqueness-self-mapping",
+      "title": "Self-Mapping Property of the Solution Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1068,
+      "label": "lem-uniqueness-lipschitz-moments",
+      "title": "Lipschitz Continuity of Moment Functionals"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1112,
+      "label": "lem-uniqueness-fixed-point-bounded",
+      "title": "Fixed Points Lie in a Bounded Ball"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1250,
+      "label": "lem-uniqueness-lipschitz-fitness-potential",
+      "title": "Lipschitz Continuity of the Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1287,
+      "label": "lem-uniqueness-lipschitz-cloning-operator",
+      "title": "Local Lipschitz Continuity of the Cloning Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1453,
+      "label": "thm-uniqueness-hormander",
+      "title": "H\u00f6rmander's Theorem for Kinetic Operators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1474,
+      "label": "lem-uniqueness-hormander-verification",
+      "title": "Verification of H\u00f6rmander's Condition for the Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1549,
+      "label": "thm-uniqueness-hypoelliptic-regularity",
+      "title": "Hypoelliptic Regularity for the Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1646,
+      "label": "lem-uniqueness-scaling-hypoelliptic-constant",
+      "title": "Scaling of $C_{\\text{hypo}}$ with Diffusion Strength"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1713,
+      "label": "thm-uniqueness-contraction-solution-operator",
+      "title": "Contraction Property of the Solution Operator on an Invariant Ball"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1854,
+      "label": "thm-uniqueness-uniqueness-stationary-solution",
+      "title": "Uniqueness of the Stationary Solution"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1893,
+      "label": "rem-uniqueness-proof-technique",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1904,
+      "label": "rem-uniqueness-algorithm-connection",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1950,
+      "label": "def-sequence-of-qsds-summary",
+      "title": "Sequence of N-Particle QSDs and their Marginals (Summary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 1969,
+      "label": "thm-qsd-marginals-are-tight-summary",
+      "title": "The Sequence of Marginals $\\{\\mu_N\\}$ is Tight (Summary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 2021,
+      "label": "thm-limit-is-weak-solution-summary",
+      "title": "Limit Points are Weak Solutions to the Stationary Mean-Field PDE (Summary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 2089,
+      "label": "thm-uniqueness-of-qsd",
+      "title": "Uniqueness of the Stationary Solution"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 2153,
+      "label": "thm-thermodynamic-limit",
+      "title": "Convergence of Macroscopic Observables (The Thermodynamic Limit)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/09_propagation_chaos.md",
+      "line": 2203,
+      "label": "cor-w2-convergence-thermodynamic-limit",
+      "title": "Wasserstein-2 Convergence in the Thermodynamic Limit"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/10_kl_hypocoercive.md",
+      "line": 494,
+      "label": "thm-explicit-kinetic-decay",
+      "title": "Explicit Hypocoercive Decay Rate"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/10_kl_hypocoercive.md",
+      "line": 656,
+      "label": "thm-unconditional-lsi-explicit",
+      "title": "Unconditional LSI with Explicit Constants"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/10_kl_hypocoercive.md",
+      "line": 697,
+      "label": "lem-discrete-entropy-decay",
+      "title": "Discrete Entropy Decay"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/10_kl_hypocoercive.md",
+      "line": 757,
+      "label": "thm-n-uniformity",
+      "title": "N-Uniformity of Convergence"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 39,
+      "label": "def-hk-metric-intro",
+      "title": "Additive Hellinger-Kantorovich Metric for the Fragile Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 186,
+      "label": "lem-mass-contraction-revival-death",
+      "title": "Mass Contraction via Revival and Death"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1010,
+      "label": "lem-structural-variance-contraction",
+      "title": "Exponential Contraction of Structural Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1174,
+      "label": "lem-kinetic-hellinger-contraction",
+      "title": "Kinetic Operator Hellinger Contraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1313,
+      "label": "prop-killing-rate-continuous",
+      "title": "Continuous-Time Killing Rate from BAOAB"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1528,
+      "label": "thm-uniform-density-bound-hk",
+      "title": "Uniform Boundedness of Density Ratio"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1931,
+      "label": "ax-bounded-density-ratio-rigorous",
+      "title": "Bounded Density Ratio"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 1999,
+      "label": "lem-hormander-bracket",
+      "title": "H\u00f6rmander's Bracket Condition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2035,
+      "label": "thm-parabolic-harnack",
+      "title": "Parabolic Harnack Inequality for Kinetic Operators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2078,
+      "label": "lem-linfty-full-operator",
+      "title": "$L^\\infty$ Bound for the Full Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2313,
+      "label": "lem-gaussian-kernel-lower-bound",
+      "title": "Gaussian Kernel Lower Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2367,
+      "label": "lem-strict-positivity-cloning",
+      "title": "Strict Positivity After Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2412,
+      "label": "lem-qsd-strict-positivity",
+      "title": "QSD Strict Positivity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2546,
+      "label": "thm-exponential-survival",
+      "title": "Exponential Survival Time (QSD Theory)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2597,
+      "label": "lem-mass-lower-bound-high-prob",
+      "title": "High-Probability Alive Mass Lower Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2754,
+      "label": "cor-conditional-mass-lower-bound",
+      "title": "Conditional Mass Lower Bound (Uniform in Time)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2782,
+      "label": "prop-poc-mass",
+      "title": "Propagation-of-Chaos Mass Concentration"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2863,
+      "label": "thm-bounded-density-ratio-main",
+      "title": "Bounded Density Ratio for the Euclidean Gas (RIGOROUS)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 2991,
+      "label": "lem-linearization-qsd",
+      "title": "Linearization Around QSD Fixed Point"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3081,
+      "label": "lem-linearized-spectral-gap",
+      "title": "Exponential Decay in L\u00b9 for Linearized Dynamics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3122,
+      "label": "lem-hypoellipticity-full-linearized",
+      "title": "Hypoellipticity Preservation via Bootstrap Argument"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3217,
+      "label": "lem-relative-boundedness-nonlocal",
+      "title": "Relative Boundedness of Nonlocal Operators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3342,
+      "label": "lem-l1-to-linfty-near-qsd",
+      "title": "Nash-Aronson Type L\u00b9-to-L\u221e Bound for Linearized Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3805,
+      "label": "thm-hk-convergence-conditional",
+      "title": "Exponential HK-Convergence of the Fragile Gas (CONDITIONAL ON SURVIVAL)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 3866,
+      "label": "thm-hk-convergence-main-assembly",
+      "title": "Exponential HK-Convergence of the Fragile Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/11_hk_convergence.md",
+      "line": 4512,
+      "label": "thm-hk-summary",
+      "title": "Exponential HK-Convergence (Summary)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 16,
+      "label": "thm-qsd-exchangeability",
+      "title": "Exchangeability of the QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 57,
+      "label": "thm-hewitt-savage-representation",
+      "title": "Finite de Finetti Representation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 186,
+      "label": "def-single-particle-marginal",
+      "title": "Single-Particle Marginal"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 199,
+      "label": "prop-marginal-mixture",
+      "title": "Marginal as Mixture Average"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 232,
+      "label": "thm-propagation-chaos-qsd",
+      "title": "Propagation of Chaos"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 295,
+      "label": "thm-correlation-decay",
+      "title": "Quantitative Decorrelation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 405,
+      "label": "thm-mixing-variance-corrected",
+      "title": "Variance of Mixing Measure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 576,
+      "label": "thm-n-uniform-lsi-exchangeable",
+      "title": "N-Uniform LSI via Hypocoercivity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 642,
+      "label": "lem-conditional-gaussian-qsd-euclidean",
+      "title": "Conditional Gaussian Structure (Euclidean Gas)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md",
+      "line": 702,
+      "label": "cor-mean-field-lsi",
+      "title": "Mean-Field LSI from N-Uniform Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 39,
+      "label": "lem-wasserstein-entropy",
+      "title": "Wasserstein-Entropy Inequality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 187,
+      "label": "lem-quantitative-kl-bound",
+      "title": "Quantitative KL Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 312,
+      "label": "prop-interaction-complexity-bound",
+      "title": "Boundedness of Interaction Complexity Constant"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 374,
+      "label": "lem-lipschitz-observable-error",
+      "title": "Empirical Measure Observable Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 454,
+      "label": "prop-empirical-wasserstein-concentration",
+      "title": "Empirical Measure Concentration"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 540,
+      "label": "prop-finite-second-moment-meanfield",
+      "title": "Finite Second Moment of Mean-Field QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 672,
+      "label": "thm-quantitative-propagation-chaos",
+      "title": "Quantitative Propagation of Chaos"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 805,
+      "label": "prop-fourth-moment-baoab",
+      "title": "Fourth-Moment Uniform Bounds for BAOAB"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1189,
+      "label": "lem-baoab-weak-error",
+      "title": "BAOAB Second-Order Weak Convergence"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1317,
+      "label": "lem-baoab-invariant-measure-error",
+      "title": "BAOAB Invariant Measure Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1530,
+      "label": "thm-langevin-baoab-discretization-error",
+      "title": "Langevin-BAOAB Time Discretization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1673,
+      "label": "thm-full-system-discretization-error",
+      "title": "Full System Time Discretization Error"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1723,
+      "label": "lem-lie-splitting-weak-error",
+      "title": "One-Step Weak Error for Lie Splitting"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 1987,
+      "label": "lem-uniform-geometric-ergodicity",
+      "title": "Uniform Geometric Ergodicity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2216,
+      "label": "thm-meyn-tweedie-drift-minor",
+      "title": "Drift-Minorization Implies Geometric Ergodicity (Meyn & Tweedie)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2311,
+      "label": "prop-mixing-rate-relationship",
+      "title": "Relationship Between Continuous and Discrete Mixing Rates"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2383,
+      "label": "thm-quantitative-error-propagation",
+      "title": "Error Propagation for Ergodic Chains"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2546,
+      "label": "thm-total-error-bound",
+      "title": "Total Error Bound for Discrete Fragile Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2746,
+      "label": "rem-rate-interpretation",
+      "title": "Rate Interpretation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2782,
+      "label": "rem-higher-order-splitting",
+      "title": "Higher-Order Splitting Methods"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2825,
+      "label": "rem-optimality-mean-field-rate",
+      "title": "Optimality of the Mean-Field Rate"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/13_quantitative_error_bounds.md",
+      "line": 2850,
+      "label": "prop-quantitative-explicit-constants",
+      "title": "Explicit Constant Formulas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 185,
+      "label": "def-effective-counts-two-scales",
+      "title": "Effective Interaction Counts (Two Scales)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 245,
+      "label": "notation-keff-superscripts",
+      "title": "k_eff Superscript Convention"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 499,
+      "label": "lem-derivative-locality-c3",
+      "title": "Derivative Locality for Third Derivatives (Complete)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 537,
+      "label": "proof-lem-derivative-locality-c3",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 669,
+      "label": "lem-self-measurement-derivatives",
+      "title": "Self-Measurement Derivative Bounds (j=i Case)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 716,
+      "label": "proof-lem-self-measurement-derivatives",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 891,
+      "label": "lem-telescoping-derivatives",
+      "title": "Telescoping Identity for Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 901,
+      "label": "proof-lem-telescoping-derivatives",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 981,
+      "label": "assump-c3-measurement-companion",
+      "title": "Companion-Dependent Measurements with Regularization"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1008,
+      "label": "assump-c3-kernel",
+      "title": "Localization Kernel $C^3$ Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1036,
+      "label": "assump-c3-rescale",
+      "title": "Rescale Function $C^3$ Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1058,
+      "label": "assump-c3-patch",
+      "title": "Rescale Function $C^3$ Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1112,
+      "label": "lem-weight-third-derivative",
+      "title": "Third Derivative of Localization Weights"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1130,
+      "label": "proof-lem-weight-third-derivative",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1219,
+      "label": "lem-mean-third-derivative",
+      "title": "k-Uniform Third Derivative of Localized Mean (Full Model)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1239,
+      "label": "proof-lem-mean-third-derivative",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1354,
+      "label": "lem-variance-third-derivative",
+      "title": "k-Uniform Third Derivative of Localized Variance (Full Model)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1368,
+      "label": "proof-lem-variance-third-derivative",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1532,
+      "label": "lem-patch-chain-rule",
+      "title": "Chain Rule for Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1558,
+      "label": "proof-lem-patch-chain-rule",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1596,
+      "label": "lem-patch-third-derivative",
+      "title": "Third Derivative Bound for Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1612,
+      "label": "proof-lem-patch-third-derivative",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1630,
+      "label": "lem-zscore-third-derivative",
+      "title": "k-Uniform Third Derivative of Z-Score"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1659,
+      "label": "proof-lem-zscore-third-derivative",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1803,
+      "label": "thm-c3-regularity",
+      "title": "$C^3$ Regularity of the \u03c1-Localized Fitness Potential"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1832,
+      "label": "proof-thm-c3-regularity",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1939,
+      "label": "prop-scaling-kv3",
+      "title": "\u03c1-Dependence of the Third Derivative Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1968,
+      "label": "cor-baoab-validity",
+      "title": "BAOAB Discretization Validity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 1993,
+      "label": "proof-cor-baoab-validity",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2014,
+      "label": "cor-lyapunov-c3",
+      "title": "$C^3$ Regularity of Total Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2029,
+      "label": "proof-cor-lyapunov-c3",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2070,
+      "label": "cor-smooth-perturbation",
+      "title": "$C^3$ Perturbation Structure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2089,
+      "label": "proof-cor-smooth-perturbation",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2111,
+      "label": "cor-regularity-hierarchy",
+      "title": "Regularity Hierarchy Complete"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2150,
+      "label": "prop-timestep-constraint",
+      "title": "Time Step Constraint from $C^3$ Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2163,
+      "label": "proof-prop-timestep-constraint",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2213,
+      "label": "prop-explicit-k-v-3",
+      "title": "Explicit Formula for $K_{V,3}(\\rho)$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2243,
+      "label": "thm-continuity-third-derivatives",
+      "title": "Continuity of Third Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2260,
+      "label": "proof-thm-continuity-third-derivatives",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity.md",
+      "line": 2436,
+      "label": "def-reg-std-implementation",
+      "title": "Regularized Standard Deviation (Implementation)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 156,
+      "label": "def-effective-counts-two-scales",
+      "title": "Effective Interaction Counts (Two Scales)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 204,
+      "label": "notation-keff-superscripts",
+      "title": "k_eff Superscript Convention"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 581,
+      "label": "assump-uniform-density-full",
+      "title": "Uniform Density Bound for the QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 614,
+      "label": "lem-companion-availability-enforcement",
+      "title": "Partition Function Lower Bound from Algorithmic Diameter"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 632,
+      "label": "proof-lem-companion-availability-enforcement",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 693,
+      "label": "lem-close-pair-probability-full",
+      "title": "Close-Pair Probability Bound (Mean-Field QSD)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 731,
+      "label": "lem-sum-to-integral-bound-full",
+      "title": "Sum-to-Integral Bound in Algorithmic Coordinates"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 771,
+      "label": "proof-lem-sum-to-integral-bound-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 840,
+      "label": "def-smooth-phase-space-partition-full",
+      "title": "Smooth Phase-Space Partition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 871,
+      "label": "const-mollified-partition-full",
+      "title": "Mollified Partition via Smooth Cutoffs"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 919,
+      "label": "lem-partition-derivative-bounds-full",
+      "title": "Derivative Bounds for Partition Functions"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 932,
+      "label": "proof-lem-partition-derivative-bounds-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 980,
+      "label": "def-soft-cluster-membership-full",
+      "title": "Soft Cluster Membership Weights"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1000,
+      "label": "def-effective-cluster-population-full",
+      "title": "Effective Cluster Population"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1013,
+      "label": "lem-effective-cluster-size-bounds-full",
+      "title": "Bounds on Effective Cluster Size"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1040,
+      "label": "proof-lem-effective-cluster-size-bounds-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1110,
+      "label": "lem-mean-field-kernel-mass-bound",
+      "title": "Mean-Field Kernel Mass Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1157,
+      "label": "lem-softmax-tail-corrected-full",
+      "title": "Finite-$N$ Heuristic: Softmax Tail Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1172,
+      "label": "cor-effective-interaction-radius-full",
+      "title": "Finite-$N$ Heuristic: Effective Interaction Radius"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1185,
+      "label": "lem-effective-companion-count-full",
+      "title": "Finite-$N$ Heuristic: Effective Companion Count"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1205,
+      "label": "lem-softmax-derivative-locality-full",
+      "title": "Exponential Locality of Softmax Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1222,
+      "label": "proof-lem-softmax-derivative-locality-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1325,
+      "label": "lem-dalg-derivative-bounds-full",
+      "title": "Higher Derivatives of Regularized Algorithmic Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1370,
+      "label": "proof-lem-dalg-derivative-bounds-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1474,
+      "label": "prop-dalg-locality",
+      "title": "Locality of Algorithmic Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1527,
+      "label": "lem-companion-measurement-derivatives-full",
+      "title": "Derivatives of Companion-Dependent Measurements"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1549,
+      "label": "proof-lem-companion-measurement-derivatives-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1704,
+      "label": "lem-softmax-jacobian-reduction",
+      "title": "Softmax Jacobian Reduction for $j \\neq i$"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1943,
+      "label": "lem-self-measurement-derivatives-full",
+      "title": "Derivatives of Self-Measurement (j=i case)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 1965,
+      "label": "proof-lem-self-measurement-derivatives-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2068,
+      "label": "note-dual-mechanism-framework",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2088,
+      "label": "def-diversity-pairing-cinf",
+      "title": "Sequential Stochastic Greedy Pairing"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2107,
+      "label": "def-idealized-pairing-cinf",
+      "title": "Idealized Spatially-Aware Pairing"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2151,
+      "label": "thm-diversity-pairing-measurement-regularity",
+      "title": "C^\u221e Regularity with K-Uniform Bounds (Diversity Pairing)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2164,
+      "label": "proof-thm-diversity-pairing-measurement-regularity",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2374,
+      "label": "lem-greedy-ideal-equivalence",
+      "title": "Statistical Equivalence Preserves C^\u221e Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2386,
+      "label": "proof-lem-greedy-ideal-equivalence",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2444,
+      "label": "rem-observation-common-kernel-structure",
+      "title": "Common Exponential Kernel Structure"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2484,
+      "label": "thm-statistical-equivalence-companion-mechanisms",
+      "title": "Qualitative Statistical Equivalence of Companion Mechanisms"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2513,
+      "label": "proof-thm-statistical-equivalence-companion-mechanisms",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2546,
+      "label": "thm-unified-cinf-regularity-both-mechanisms",
+      "title": "C^\u221e Regularity of Companion-Dependent Fitness Potential (Both Mechanisms)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2576,
+      "label": "proof-thm-unified-cinf-regularity-both-mechanisms",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2623,
+      "label": "lem-gaussian-kernel-derivatives-full",
+      "title": "Gaussian Kernel Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2638,
+      "label": "proof-lem-gaussian-kernel-derivatives-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2660,
+      "label": "lem-localization-weight-derivatives-full",
+      "title": "Localization Weight Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2673,
+      "label": "proof-lem-localization-weight-derivatives-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2764,
+      "label": "lem-telescoping-localization-weights-full",
+      "title": "Telescoping for Localization Weights"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2775,
+      "label": "proof-lem-telescoping-localization-weights-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2817,
+      "label": "thm-k-uniformity-telescoping-full",
+      "title": "k-Uniformity via Telescoping Cancellation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2838,
+      "label": "proof-thm-k-uniformity-telescoping-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2937,
+      "label": "lem-derivatives-companion-distance-full",
+      "title": "Derivatives of Companion-Dependent Distance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2951,
+      "label": "proof-lem-derivatives-companion-distance-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2968,
+      "label": "thm-cluster-localized-derivative-bounds-full",
+      "title": "Cluster-Localized Derivative Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 2983,
+      "label": "proof-thm-cluster-localized-derivative-bounds-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3100,
+      "label": "lem-first-derivative-localized-mean-full",
+      "title": "First Derivative of Localized Mean"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3111,
+      "label": "proof-lem-first-derivative-localized-mean-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3282,
+      "label": "lem-mth-derivative-localized-mean-full",
+      "title": "m-th Derivative of Localized Mean"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3295,
+      "label": "proof-lem-mth-derivative-localized-mean-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3472,
+      "label": "lem-first-derivative-localized-variance-full",
+      "title": "First Derivative of Localized Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3483,
+      "label": "proof-lem-first-derivative-localized-variance-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3596,
+      "label": "thm-mth-derivative-localized-variance-full",
+      "title": "m-th Derivative of Localized Variance"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3609,
+      "label": "proof-thm-mth-derivative-localized-variance-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3938,
+      "label": "lem-properties-regularized-std-dev-full",
+      "title": "Properties of Regularized Standard Deviation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 3957,
+      "label": "proof-lem-properties-regularized-std-dev-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4056,
+      "label": "thm-cinf-regularity-zscore-full",
+      "title": "C^\u221e Regularity of Z-Score"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4071,
+      "label": "proof-thm-cinf-regularity-zscore-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4179,
+      "label": "assump-rescale-function-cinf-full",
+      "title": "Rescale Function C^\u221e Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4201,
+      "label": "thm-main-cinf-regularity-fitness-potential-full",
+      "title": "C^\u221e Regularity of Fitness Potential (Main Result)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4253,
+      "label": "proof-thm-main-cinf-regularity-fitness-potential-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4336,
+      "label": "cor-gevrey-1-fitness-potential-full",
+      "title": "Gevrey-1 Classification"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4353,
+      "label": "proof-cor-gevrey-1-fitness-potential-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4480,
+      "label": "thm-main-complete-cinf-geometric-gas-full",
+      "title": "C^\u221e Regularity of Geometric Gas with Companion-Dependent Fitness (Complete)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4544,
+      "label": "proof-thm-main-complete-cinf-geometric-gas-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4586,
+      "label": "thm-hypoellipticity-companion-dependent-full",
+      "title": "Hypoellipticity with Companion-Dependent Fitness"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4601,
+      "label": "proof-thm-hypoellipticity-companion-dependent-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4662,
+      "label": "thm-lsi-companion-dependent-full",
+      "title": "LSI for Companion-Dependent Geometric Gas (Hypocoercive Route)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4731,
+      "label": "cor-exponential-qsd-companion-dependent-full",
+      "title": "Exponential Convergence to QSD (from LSI)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4746,
+      "label": "proof-cor-exponential-qsd-companion-dependent-full",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4772,
+      "label": "rem-simplified-vs-full-final",
+      "title": "Simplified vs Full Model"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4876,
+      "label": "rem-rho-tradeoffs",
+      "title": "Localization Scale Trade-offs"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4967,
+      "label": "thm-faa-di-bruno-appendix",
+      "title": "Fa\u00e0 di Bruno Formula for Higher-Order Chain Rule"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 4985,
+      "label": "proof-thm-faa-di-bruno-appendix",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 5012,
+      "label": "prop-factorial-sqrt-composition",
+      "title": "Factorial Growth for Composition with Square Root"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 5025,
+      "label": "proof-prop-factorial-sqrt-composition",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 5140,
+      "label": "cor-gevrey-closure",
+      "title": "Gevrey-1 Closure Under Smooth Composition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md",
+      "line": 5160,
+      "label": "proof-cor-gevrey-closure",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 165,
+      "label": "thm-main-kl-convergence",
+      "title": "Exponential KL-Convergence for the Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 233,
+      "label": "def-relative-entropy",
+      "title": "Relative Entropy and Fisher Information"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 258,
+      "label": "def-lsi-continuous",
+      "title": "Logarithmic Sobolev Inequality (LSI)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 277,
+      "label": "def-discrete-lsi",
+      "title": "Discrete-Time LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 299,
+      "label": "thm-bakry-emery",
+      "title": "Bakry-\u00c9mery Criterion for LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 557,
+      "label": "def-gibbs-kinetic",
+      "title": "Target Gibbs Measure for Kinetic Dynamics"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 576,
+      "label": "rem-note-kinetic-non-reversibility",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 584,
+      "label": "def-hypocoercive-metric",
+      "title": "Hypocoercive Metric and Modified Dirichlet Form"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 610,
+      "label": "lem-hypocoercive-dissipation",
+      "title": "Dissipation of the Hypocoercive Norm"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 726,
+      "label": "thm-kinetic-lsi",
+      "title": "Hypocoercive LSI for the Kinetic Flow Map"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 844,
+      "label": "thm-tensorization",
+      "title": "Tensorization of LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 876,
+      "label": "cor-n-particle-kinetic-lsi",
+      "title": "LSI for N-Particle Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 910,
+      "label": "axiom-qsd-log-concave",
+      "title": "Log-Concavity of the Quasi-Stationary Distribution (Historical - Now Proven)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 940,
+      "label": "rem-note-log-concavity-motivation",
+      "title": "Motivation and Justification"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1040,
+      "label": "def-log-concavity-condition",
+      "title": "Explicit Log-Concavity Condition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1066,
+      "label": "lem-log-concave-yang-mills",
+      "title": "Log-Concavity for Pure Yang-Mills Vacuum"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1142,
+      "label": "rem-important-millennium-prize",
+      "title": "Implications for Millennium Prize"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1194,
+      "label": "lem-cloning-conditional-independence",
+      "title": "Conditional Independence of Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1210,
+      "label": "thm-hwi-inequality",
+      "title": "The HWI Inequality (Otto-Villani)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1227,
+      "label": "rem-note-hwi-bridge",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1240,
+      "label": "lem-cloning-wasserstein-contraction",
+      "title": "Wasserstein-2 Contraction for Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1276,
+      "label": "lem-cloning-fisher-info",
+      "title": "Fisher Information Bound After Cloning"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1326,
+      "label": "thm-cloning-entropy-contraction",
+      "title": "Entropy Contraction for the Cloning Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1400,
+      "label": "rem-cloning-sublinear",
+      "title": "Interpretation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1426,
+      "label": "def-entropy-transport-lyapunov",
+      "title": "Entropy-Transport Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1444,
+      "label": "lem-entropy-transport-dissipation",
+      "title": "Entropy-Transport Dissipation Inequality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1565,
+      "label": "rem-note-entropy-transport-innovation",
+      "title": ""
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1575,
+      "label": "lem-kinetic-evolution-bounds",
+      "title": "Kinetic Evolution Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1617,
+      "label": "thm-entropy-transport-contraction",
+      "title": "Linear Contraction of the Entropy-Transport Lyapunov Function"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1766,
+      "label": "thm-main-lsi-composition",
+      "title": "Discrete-Time LSI for the Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1802,
+      "label": "cor-quantitative-lsi-final",
+      "title": "Quantitative LSI Constant"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1852,
+      "label": "thm-lsi-implies-kl-convergence",
+      "title": "Exponential KL-Convergence via LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1889,
+      "label": "thm-main-kl-final",
+      "title": "KL-Convergence of the Euclidean Gas (Main Result)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1922,
+      "label": "rem-kl-tv-comparison",
+      "title": "Relationship Between KL and TV Convergence Rates"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1952,
+      "label": "thm-lsi-perturbation",
+      "title": "LSI Stability Under Bounded Perturbations"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 1981,
+      "label": "cor-adaptive-lsi",
+      "title": "LSI for the \u03c1-Localized Geometric Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 2121,
+      "label": "cor-n-uniform-lsi",
+      "title": "N-Uniform Logarithmic Sobolev Inequality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 2180,
+      "label": "thm-kl-convergence-euclidean",
+      "title": "N-Uniform LSI for Euclidean Gas (Canonical Reference)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 2343,
+      "label": "lem-mean-field-cloning-sketch",
+      "title": "Entropy Dissipation Under Cloning (Mean-Field Sketch)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 2525,
+      "label": "lem-sinh-bound-global",
+      "title": "Sinh Inequality"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 3261,
+      "label": "thm-entropy-bound-debruijn",
+      "title": "Entropy Bound via De Bruijn Identity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 3864,
+      "label": "thm-meanfield-kl-convergence-hybrid",
+      "title": "Exponential KL-Convergence via Mean-Field Analysis"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 3907,
+      "label": "thm-kinetic-lsi-reference",
+      "title": "Hypocoercive LSI for Kinetic Operator (Reference)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 3936,
+      "label": "lem-meanfield-cloning-dissipation-hybrid",
+      "title": "Mean-Field Cloning Entropy Dissipation"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4128,
+      "label": "thm-composition-reference",
+      "title": "Composition of LSI Operators (Reference)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4168,
+      "label": "def-discrete-dirichlet",
+      "title": "Discrete Dirichlet Form"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4180,
+      "label": "thm-discrete-lsi-hybrid",
+      "title": "Discrete-Time LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4211,
+      "label": "thm-exp-convergence-hybrid",
+      "title": "Exponential Convergence from LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4337,
+      "label": "thm-meanfield-lsi-standalone",
+      "title": "Exponential KL-Convergence via Mean-Field Generator Analysis"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4436,
+      "label": "thm-kinetic-lsi-standalone",
+      "title": "Hypocoercive LSI for Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4601,
+      "label": "lem-cloning-contraction-standalone",
+      "title": "Mean-Field Cloning Contraction"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4861,
+      "label": "thm-composition-standalone",
+      "title": "Composition of Kinetic and Cloning Operators"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 4926,
+      "label": "thm-exp-convergence-standalone",
+      "title": "Exponential KL Convergence"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5153,
+      "label": "axiom-qsd-log-concave-recap",
+      "title": "Log-Concavity of the Quasi-Stationary Distribution (Historical Requirement - Now Proven)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5175,
+      "label": "axiom-confining-recap",
+      "title": "Confining Potential (from {doc}`06_convergence`, Axiom 1.3.1)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5201,
+      "label": "thm-nonconvex-informal",
+      "title": "Exponential KL Convergence for Non-Convex Fitness (Informal)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5263,
+      "label": "axiom-confining-complete",
+      "title": "Confining Potential (Complete Statement)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5394,
+      "label": "thm-villani-hypocoercivity",
+      "title": "Villani's Hypocoercivity (Simplified)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5494,
+      "label": "prop-hypocoercivity-piecewise",
+      "title": "Hypocoercivity for Piecewise Smooth Confining Potentials"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5767,
+      "label": "lem-kinetic-lsi-hypocoercive",
+      "title": "Hypocoercive LSI for Discrete-Time Kinetic Operator"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5834,
+      "label": "cor-n-particle-hypocoercive",
+      "title": "N-Particle Hypocoercive LSI"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 5973,
+      "label": "def-status-metric",
+      "title": "Discrete Status-Change Metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 6010,
+      "label": "lem-softmax-lipschitz-status",
+      "title": "Lipschitz Continuity of Softmax-Weighted Companion Selection"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 6148,
+      "label": "thm-dobrushin-contraction",
+      "title": "Dobrushin Contraction for Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 6304,
+      "label": "thm-exponential-convergence-status",
+      "title": "Exponential Convergence in $d_{\\text{status}}$ Metric"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 6381,
+      "label": "thm-nonconvex-main",
+      "title": "Exponential KL Convergence for Non-Convex Fitness Landscapes"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 6569,
+      "label": "rem-observation-composition-failure",
+      "title": "Why Composition Fails"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7152,
+      "label": "thm-fl-recap",
+      "title": "Foster-Lyapunov Drift (Unconditional)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7173,
+      "label": "thm-lsi-target",
+      "title": "Logarithmic Sobolev Inequality (Hypocoercive Route)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7192,
+      "label": "ex-fl-no-lsi",
+      "title": "Random Walk on \u2124"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7218,
+      "label": "thm-bakry-emery-classical",
+      "title": "Classical Bakry-\u00c9mery Criterion"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7266,
+      "label": "thm-villani-hypocoercivity-recap",
+      "title": "Villani's Hypocoercivity (Informal)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7324,
+      "label": "thm-fl-established",
+      "title": "Synergistic Foster-Lyapunov (Established)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7357,
+      "label": "lem-kinetic-lsi-established",
+      "title": "Hypocoercive LSI for \u03a8_kin (Established)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7395,
+      "label": "thm-dobrushin-established",
+      "title": "Dobrushin Contraction (Established)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7478,
+      "label": "thm-unconditional-lsi",
+      "title": "Unconditional LSI for Euclidean Gas (Hypocoercive Route)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7552,
+      "label": "def-hypo-carre-du-champ",
+      "title": "Hypocoercive Carr\u00e9 du Champ"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7574,
+      "label": "lem-gamma2-decomposition",
+      "title": "Additive Decomposition of Hypocoercive \u0393\u2082"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7628,
+      "label": "lem-kinetic-gamma2-bound",
+      "title": "Kinetic \u0393\u2082 Lower Bound"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7712,
+      "label": "lem-cloning-gamma2-bound",
+      "title": "Cloning \u0393\u2082 Bound via Dobrushin"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7819,
+      "label": "thm-hypo-curvature-bound",
+      "title": "Hypocoercive Curvature Bound for Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7949,
+      "label": "cor-n-uniform-curvature",
+      "title": "N-Uniform Hypocoercive Curvature"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 7975,
+      "label": "lem-discrete-lsi-from-curvature",
+      "title": "Discrete-Time Entropy Contraction from Continuous Curvature"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 8066,
+      "label": "thm-discrete-lsi-constant",
+      "title": "Discrete-Time LSI Constant for Euclidean Gas"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/15_kl_convergence.md",
+      "line": 8122,
+      "label": "cor-acoustic-limit-explicit",
+      "title": "Explicit Acoustic Limit Condition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_effective_interaction_radius_full.md",
+      "line": 4,
+      "label": "proof-cor-effective-interaction-radius-full",
+      "title": "Effective Interaction Radius (Finite-$N$ Heuristic)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_exp_convergence.md",
+      "line": 4,
+      "label": "proof-cor-exp-convergence",
+      "title": "Exponential Convergence"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_exponential_qsd_companion_dependent_full.md",
+      "line": 4,
+      "label": "proof-cor-exponential-qsd-companion-dependent-full",
+      "title": "Exponential Convergence to QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_cor_gevrey_1_fitness_potential_full.md",
+      "line": 4,
+      "label": "proof-cor-gevrey-1-fitness-potential-full",
+      "title": "Gevrey-1 Classification (Mean-Field Expected Fitness)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_effective_cluster_size_bounds_full.md",
+      "line": 4,
+      "label": "proof-lem-effective-cluster-size-bounds-full",
+      "title": "Bounds on Effective Cluster Size (Mean-Field)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_effective_companion_count_full.md",
+      "line": 4,
+      "label": "proof-lem-effective-companion-count-full",
+      "title": "Effective Companion Count (Finite-$N$ Heuristic)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_greedy_ideal_equivalence.md",
+      "line": 4,
+      "label": "proof-lem-greedy-ideal-equivalence",
+      "title": "Statistical Equivalence Preserves C^\u221e Regularity"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_hormander.md",
+      "line": 4,
+      "label": "proof-lem-hormander",
+      "title": "H\u00f6rmander's Condition"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_macro_transport.md",
+      "line": 4,
+      "label": "proof-lem-macro-transport",
+      "title": "Macroscopic Transport (Poincare Form)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_telescoping_derivatives.md",
+      "line": 4,
+      "label": "proof-lem-telescoping-derivatives",
+      "title": "Telescoping Identity for Derivatives"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_lem_variance_to_gap_adaptive.md",
+      "line": 4,
+      "label": "proof-lem-variance-to-gap-adaptive",
+      "title": "Variance-to-Gap (Universal)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_prop_complete_gradient_bounds.md",
+      "line": 4,
+      "label": "proof-prop-complete-gradient-bounds",
+      "title": "Complete Gradient and Laplacian Bounds"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_backbone_convergence.md",
+      "line": 4,
+      "label": "proof-thm-backbone-convergence",
+      "title": "Geometric Ergodicity of the Backbone"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_exponential_tails.md",
+      "line": 4,
+      "label": "proof-thm-exponential-tails",
+      "title": "Exponential Tails for QSD"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_faa_di_bruno_appendix.md",
+      "line": 4,
+      "label": "proof-thm-faa-di-bruno-appendix",
+      "title": "Multivariate Fa\u00e0 di Bruno Formula (Form Used)"
+    },
+    {
+      "path": "docs/source/3_fractal_gas/convergence_program/proofs/proof_thm_faa_di_bruno_appendix.md",
+      "line": 24,
+      "label": "proof-cor-gevrey-1-closure",
+      "title": "Gevrey-1 Closure Under Composition"
+    }
+  ]
+}

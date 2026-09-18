@@ -67,6 +67,9 @@ fn dt(c: &RunConfig) -> f64 {
     }
 }
 pub fn config(id: &str, p: &Value, seed: u64) -> Result<RunConfig> {
+    if id.starts_with("III-") {
+        return crate::lecture_meanfield::config(id, p, seed);
+    }
     let (part, n) = index(id)?;
     let mut c = RunConfig {
         benchmark: Benchmark::Quadratic,
@@ -76,7 +79,9 @@ pub fn config(id: &str, p: &Value, seed: u64) -> Result<RunConfig> {
             number(
                 p,
                 "N",
-                if matches!(id, "I-04" | "IV-07") {
+                if id == "IV-07" {
+                    4.
+                } else if id == "I-04" {
                     16.
                 } else {
                     64.
@@ -244,6 +249,9 @@ pub fn config(id: &str, p: &Value, seed: u64) -> Result<RunConfig> {
     Ok(c)
 }
 pub fn configs(id: &str, p: &Value, seed: u64) -> Result<Vec<RunConfig>> {
+    if id.starts_with("III-") {
+        return crate::lecture_meanfield::configs(id, p, seed);
+    }
     let base = config(id, p, seed)?;
     let mut out = vec![base.clone()];
     if id == "IV-14" {
@@ -450,7 +458,7 @@ fn conditional_jet(
         .collect::<Result<Vec<_>>>()?;
     let objective = config(id, p, a.gas_config.seed)?
         .benchmark
-        .physics_objective(d);
+        .physics_objective(d)?;
     let mut rewards = last
         .report
         .pre_clone_rewards
@@ -560,6 +568,9 @@ fn derivative_experiment(
 
 /// Analysis never draws random numbers or advances the physical state.
 pub fn analyze(id: &str, p: &Value, a: &RunArchive<f64>) -> Result<ExperimentResult> {
+    if id.starts_with("III-") {
+        return crate::lecture_meanfield::analyze(id, std::slice::from_ref(a));
+    }
     let (part, n) = index(id)?;
     a.validate()?;
     if a.steps.is_empty() {
@@ -699,7 +710,10 @@ pub fn analyze(id: &str, p: &Value, a: &RunArchive<f64>) -> Result<ExperimentRes
                 .sum();
             r.metric("Acceptance martingale residual sum", residual, "");
         }
-        (4, 5 | 7) => {
+        (4, 7) => {
+            crate::lecture_taylor::analyze(p, a, &mut r)?;
+        }
+        (4, 5) => {
             derivative_experiment(id, p, a, &mut r)?;
         }
         (1, 3) | (3, 5) | (4, 6) => {
@@ -1357,6 +1371,9 @@ pub fn analyze_ensemble(
     p: &Value,
     archives: &[RunArchive<f64>],
 ) -> Result<ExperimentResult> {
+    if id.starts_with("III-") {
+        return crate::lecture_meanfield::analyze(id, archives);
+    }
     let first = archives.first().ok_or_else(|| err("empty ensemble"))?;
     let mut result = analyze(id, p, first)?;
     if matches!(id, "II-03" | "II-04") && archives.len() == 2 {
@@ -1516,7 +1533,7 @@ mod tests {
     #[test]
     fn derivatives_differentiate_normalization_on_executed_data() {
         futures_lite::future::block_on(async {
-            for id in ["IV-05", "IV-07"] {
+            for id in ["IV-05"] {
                 for seed in [0, 7, 516] {
                     let p = json!({"walkers":8,"sigma":0.15,"rho":0.7});
                     let a = archive(id, &p, seed, 3).await.unwrap();

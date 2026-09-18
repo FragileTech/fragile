@@ -7,79 +7,597 @@
 (sec-field-equations-tldr)=
 ## TLDR
 
-The primary field equations in this chapter are exact finite-step laws of
-the algorithm. The full transition kernel determines the conditional drift
-and fluctuations of an observable, including a specified reconstruction of
-the fitness metric. Operator increments telescope to the full change in
-energy, momentum, or empirical density. These identities require no Gibbs
-law, continuum limit, or gravitational constitutive equation.
+The Euclidean Gas supplies a finite-step stochastic field system through
+its donor probabilities, normalized fitness, cloning, BAOAB motion,
+boundaries and retained history. Its complete marked empirical field
+retains each slot's state and exact donor identity. The equations close
+on that field and the configured provider/input state.
 
-The Rust BAOAB thermostat gives, for one unit-mass walker and a frozen noise
-factor $B$,
+Its spatial density and momentum satisfy the derived equations
 
 $$
-\mathbb E[\Delta K\mid v,B]
-=(c^2-1)K+\frac{s^2}{2}\operatorname{tr}(BB^\top),\qquad
-c=e^{-\gamma h},\quad
-s^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0.
-\end{cases}
+\rho_{n+1}-\rho_n+\operatorname{div}\mathcal J_\rho=\mathcal S_\rho,
+\qquad
+j_{n+1}-j_n+\operatorname{div}\mathcal J_j=\mathcal S_j.
 $$
 
-Geometry enters this measured budget through the actual diffusion factor.
-An equation for the metric alone needs an additional closure result.
+The sources and finite-path fluxes are explicit functions of the executed
+clone, force, transport, thermostat and boundary updates. The kinetic
+stress is an anisotropic measured tensor. Row-normalized viscosity also
+has an explicit momentum source whenever its pair weights are asymmetric.
 
-Later sections retain comparison density and fluctuation models. A Gaussian
-pair energy has an explicit dilation derivative. Its quadratic stiffness
-and its pressure are different derivatives.
-
-A homogeneous diffusion and Gaussian gain–loss model has exact decay rate
+The conditional-fitness metric and its noise coefficient are
 
 $$
-\omega(k)=D_{\mathrm{eff}}|k|^2+
- \lambda_{\mathrm{kill}}(1-e^{-\varepsilon_c^2|k|^2/2}).
+g_{n,i}^{O}(z)=\epsilon_gI+
+[\nabla_z^2\mathcal F_{\tau_i}(z;S_n,D_n)]_+,
+\qquad
+B_{n,i}=\sqrt{2\gamma T}\,
+[g_{n,i}^{O}(x_i^{A1})]^{-1/2}.
 $$
 
-Every nonzero mode decays when
-$D_{\mathrm{eff}}+\lambda_{\mathrm{kill}}>0$. A periodic domain has
-a positive first nonzero frequency; on the whole space frequencies
-approach zero and there is no uniform exponential $L^2$ rate.
+Here the donor context is frozen while differentiating the complete
+fitness normalization. Its next value follows by the actual next
+selection and motion through the O-input barrier. Geometry therefore
+couples directly to the algorithm's thermal covariance and subsequent
+momentum transport.
 
-The finite Gaussian mode ensemble gives pressure by differentiating its
-partition function. The Einstein-type Ricci contraction is a comparison
-calculation under a specified constitutive equation. The actual swarm's QSD,
-mean-field, concentration, and entropy results supply separate,
-established analytical estimates with their stated hypotheses.
+For a reduced field descriptor, the two-step prediction contains the
+exact memory term
+
+$$
+\mathsf T_{n,n+2}
+=\mathsf A_n\mathsf A_{n+1}+\mathsf B_n\mathsf C_{n+1}.
+$$
+
+The general transient recurrence retains every excursion through omitted
+population and donor-history variables. A complementary conditional-law
+equation predicts the next fields given their observed past and includes
+both fresh transition noise and unresolved-state uncertainty.
+
+The later Gaussian correlation-energy, homogeneous density and Gaussian
+mode models have their own explicit pressure and dispersion formulas.
+They provide specified analytic comparisons for reductions of the
+algorithm-derived system.
 
 (sec-field-equations-intro)=
 ## Introduction
 
 :::{div} feynman-prose
-Start with a single completed update. We know the population before it and
-after it, and we know which instructions produced the change. Ask how much
-the local ruler, the kinetic energy, or the momentum changed at each
-instruction. Average over fresh realizations of that same update. That
-gives a prediction which another set of realizations can test.
+What should a field equation predict? Give it the state of the experiment
+now, and it should tell us how the next field measurement is distributed.
+For the Euclidean Gas we can construct that prediction from the
+instructions which move and replace the walkers.
 
-A ruler attached to a moving walker can change because the walker moved,
-because the population changed the landscape, or because cloning replaced
-its ancestry. We must separate these changes before assigning any of them
-a field equation. The identities below do this at the actual time step.
+Start with donor selection. Its probabilities depend on the current
+population and possibly on retained frames. Fitness compares a walker
+with population statistics, so changing one row changes part of the
+normalization. Cloning then transfers state between particular locations.
+The kinetic update adds forces, transports positions, and applies a
+thermal kick whose directional covariance can depend on the fitness
+metric. Every one of these operations leaves a term in the equations.
 
-To calculate pressure, imagine expanding the region occupied by a fixed
-amount of material. Specify what moves, what stays fixed, and how its
-energy changes. Pressure is the negative derivative of that energy
-with respect to volume.
+The local ruler is especially interesting. It shapes the thermal kick,
+but the next ruler is itself calculated from the population changed by
+that kick, transport and selection. We will derive this cycle at the
+algorithm's actual time step, including the exact point at which each
+metric is queried.
 
-A different experiment changes the density profile inside a fixed region.
-Its quadratic energy measures stiffness. There is no reason for the
-first derivative in the expansion experiment to equal the second
-derivative in the density experiment.
+Once those equations are in hand, we can ask which measurements suffice
+for a smaller description. A few density and stress moments discard
+information about donor history and the population. Their evolution
+therefore acquires memory and additional noise. Deriving those terms
+tells us what a reduced field theory must retain and gives experiments
+which can test its predictive accuracy.
+:::
 
-We will do both calculations. We will also solve a homogeneous model
-exactly in Fourier space and calculate the long-time spreading of an
-Ornstein–Uhlenbeck velocity process. Each calculation has a definite
-model and normalization. These results become statements about measured
-walkers when the corresponding law or evolution has been identified.
+(sec-algorithmic-primitive-fields)=
+## Deriving the Fields from Donors, Cloning, and Motion
+
+:::{div} feynman-prose
+Begin by asking what can change a walker. It can select a donor, copy it,
+receive a displacement, exchange velocity with a partner, accelerate,
+move, receive a thermal kick, or leave the eligible population. Each
+instruction gives a term in the field equation. The instruction order
+determines which population supplies that term's coefficients.
+
+There is an especially important kind of interaction here. Moving one
+walker changes its normalized fitness because that walker contributes to
+the population statistics used to judge it. A donor from a retained frame
+also carries information which is absent from the present cloud. We will
+keep both effects in the equations, and only then ask whether a smaller
+set of measured fields can predict their consequences.
+:::
+
+### Donor probabilities and population-dependent fitness
+
+:::{prf:definition} Primitive selection coefficients
+:label: def-algorithmic-primitive-selection
+
+Write the admitted pre-selection state as
+
+$$
+S_n=(P_n,P_{n-1},\ldots,P_{n-L},\chi_n,n;\theta),\qquad
+P_n=((x_i,v_i,a_i,\ell_i,\mathrm{flags}_i,\mathrm{state}_i))_{i=1}^N,
+$$
+
+where $M=\sum_i a_i$ is the eligible count, $a_i$ is configured eligibility, $\ell_i$ includes slot/generation identity, $L$ is the maximum configured donor window, and $\theta$ contains the complete configuration and fixed provider definitions. The state $\chi_n$ contains mutable global provider/domain state, the input schedule and any variables needed to advance them. The maps below are deterministic given that state and their explicitly listed innovations. The population $P_n$ is the admitted pre-selection population. Let $\mathcal E_n$ denote the configured input/extraction, observation refresh, boundary and reward-validity operations that produce this admitted population from the preceding completed one. Include $\mathcal E_n$ as an explicit stage whenever it changes a measured field. Rewards and observations are refreshed at their actual transaction barriers; opaque domain state must be included when the domain is not numerical. At a numerical experiment boundary, the input schedule is also fixed or adjoined. The mathematical stochastic law uses independent addressed innovations; a fixed seed determines a reproducible realization.
+
+For module $m\in\{D,C\}$, its frozen eligible pool is
+
+$$
+\mathcal P_m(S_n)=\{(b,j):0\le b\le L_m,\ a_j(P_{n-b})=1\}.
+$$
+
+Every pool atom retains its own coordinates, frame, generation and version. Current self is removed when self-companions are disabled; the same slot at a historical frame is a distinct permitted donor. If no nonself candidate exists, the implemented singleton fallback uses the eligible current self.
+
+For an independent donor draw, define the actual weights
+
+$$
+w^m_{i,bj}=\begin{cases}
+1&\text{uniform kernel},\\
+\exp[-d_m(z_i,z_{bj})^2/(2\varepsilon_m^2)]&\text{Gaussian kernel},\\
+\exp[-q_m(z_i,z_{bj})/\tau_m]&\text{exponential kernel},
+\end{cases}\qquad
+p^m_{i,bj}=w^m_{i,bj}/\sum_{(c,k)\in\mathcal C_i^m}w^m_{i,ck}.
+$$
+
+Here the exponential uses the configured comparison value $q_m$, and the Gaussian squares an ordinary distance but does not square an already squared comparison again. With replacement, the row law is the product of these probabilities. Without replacement, the ordered selected list $j_1,\ldots,j_K$ has the Plackett–Luce law
+
+$$
+\prod_{r=1}^K\frac{w_{i,j_r}}{\sum_{k\in\mathcal C_i\setminus\{j_1,\ldots,j_{r-1}\}}w_{ik}}.
+$$
+
+Reciprocal matching has a joint law. Fisher–Yates draws a uniform random permutation and pairs consecutive entries. Gaussian-greedy draws a uniform random permutation, takes its last unmatched entry $i$, chooses a partner among the remaining entries with probability proportional to $w_{ij}$, removes both, and repeats. Summing the probability of these construction histories defines the joint matching law $Q_m$; the configured odd policy supplies self, unmatched, or rejection. These are explicit finite algorithms for $Q_m$, not an unspecified transition kernel. Matching uses current eligible sources only.
+
+Let $D$ be the distance companion batch. Its reducer gives $d_i(D)$, and the diversity measurement is $s_i=(d_i^2+\delta_D^2)^{1/2}$. Let $r_i$ denote the oriented reward. For the smooth global standardizer,
+
+$$
+\overline r=\frac1M\sum_i a_i r_i,\quad
+\sigma_r=\left[\frac1M\sum_i a_i(r_i-\overline r)^2+\sigma_{r,\min}^2\right]^{1/2},\quad z_i^r=(r_i-\overline r)/\sigma_r,
+$$
+
+and likewise for $s$. The local standardizer replaces uniform weights by its configured normalized kernel weights, excludes self when configured, and falls back to global statistics only for an empty neighborhood. The actual logistic positive maps are $R(z)=A_r/(1+e^{-z})+f_r$, $D_+(z)=A_d/(1+e^{-z})+f_d$. Therefore
+
+$$
+F_i=R(z_i^r)^\alpha D_+(z_i^s)^\beta.
+$$
+
+The enabled metric provider requires these smooth global/local standardizers and logistic maps. These formulas specify the smooth fitness branch used by the conditional-metric experiments.
+
+If historical cloning is enabled, the engine draws an additional distance batch $D^H$ on the entire clone pool with the independent `HistoricalDistance` stream, recomputes its rewards under the current input, and computes historical diversity. Historical fitness uses these fresh measurements with the current population's global means and scales. Current donor fitness remains $F_j$, not the pool-rescored value. This historical rescore is essential to the transition law.
+:::
+
+### Clone transformations and the kinetic maps
+
+:::{prf:definition} Executed clone and BAOAB maps
+:label: def-algorithmic-primitive-maps
+
+After $D,C,D^H$ are fixed, define for each eligible target
+
+$$
+q_i=\left[\frac{F_{C_i}^{\mathrm{donor}}-F_i}
+{s_c(F_i+\epsilon_c)}\right]_0^1,
+\qquad A_i\sim\mathrm{Bernoulli}(q_i).
+$$
+
+An unmatched target has $q_i=0$. The gates are conditionally independent across recipients in the built-in stochastic law. Every ineligible target is instead revived from an independent uniform current-eligible donor and is accepted with probability one. Historical sources are not used for revival.
+
+Literal copying is simultaneous from the immutable pre-clone donor pool. The target retains its slot, increments its own generation on an accepted replacement, and obtains the donor's row state and observations. Thus the copy map is a fully specified deterministic map $C_{D,C,D^H,A,R}(S_n)$, where $R$ denotes revival donors.
+
+If jitter is enabled, an accepted **nonrevival** target receives
+$x_i\leftarrow x_i+\eta_c B_i^c\xi_i^c$, with the noise factor evaluated after literal copying. Revival targets are not jittered by this transform. If restitution $e\in[0,1]$ is enabled, every disjoint current reciprocal pair $(i,j)$ with at least one accepted gate has
+
+$$
+v_i'=\tfrac12(v_i+v_j)+\tfrac e2(v_i-v_j),\qquad
+v_j'=\tfrac12(v_i+v_j)-\tfrac e2(v_i-v_j),
+$$
+
+using both **pre-clone** velocities. Therefore the partner's velocity can change even if its own gate was rejected. Restitution cannot be represented by independent target-copy kernels. It is not supported for historical or overlapping donor pairs.
+
+Let $\mathcal B$ mean the actual boundary/reconciliation map. Built-in boundaries are unbounded, absorbing box, periodic box, external termination, or an ordered composition. Absorbing boundaries mark out-of-bounds and preserve the recorded row; periodic boundaries wrap coordinates. There is no built-in reflecting boundary in this implementation. Reward validation and eligibility updates are separate deterministic maps at their recorded barriers.
+
+Let $Y^0$ be the post-transform, reconciled, boundary-classified and reward-validated population. Set $h=\mathrm{dt}$, $c=e^{-\gamma h}$, and
+
+$$
+s_h^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0.\end{cases}
+$$
+
+For every eligible input row, the kinetic maps, with boundaries between each, are
+
+$$
+\begin{aligned}
+Y^1&=\mathcal B B_{h/2}(Y^0),&v_i&\leftarrow v_i+(h/2)f_i(Y^0),\\
+Y^2&=\mathcal B A_{h/2}(Y^1),&x_i&\leftarrow x_i+(h/2)v_i,\\
+Y^3&=\mathcal B O_h(Y^2,\xi),&v_i&\leftarrow c v_i+s_hB_i(Y^2;S_n,D,A,R)\xi_i,\\
+Y^4&=\mathcal B A_{h/2}(Y^3),&x_i&\leftarrow x_i+(h/2)v_i,\\
+Y^5&=\mathcal B B_{h/2}(Y^4),&v_i&\leftarrow v_i+(h/2)f_i(Y^4).
+\end{aligned}
+$$
+
+Rows that become ineligible are skipped thereafter; complete extinction skips the remaining kinetic stages. The force is
+
+$$
+f_i(Y)=-\mathcal D_i(Y)+\nu\sum_{j\ne i}a_j
+\frac{\exp[-|x_i-x_j|^2/(2\ell_\nu^2)]}{Z_i(Y)}(v_j-v_i),
+$$
+
+where $\mathcal D$ is the actual gradient provider and $Z_i=\sum_{j\ne i}a_jw_{ij}$ for row normalization, otherwise $Z_i=M(Y)$, including self in the eligible count. A zero row normalizer gives zero viscous force. The current implementation computes these viscous distances directly in coordinates. B2 recomputes the gradient, weights, velocities and eligibility from its own input. It is not a repeated B1 force.
+
+The innovation components are standard Gaussian or uniform on $[-\sqrt3,\sqrt3]$, optionally shifted by the configured addressed source perturbations. The factor is isotropic, diagonal, full, low-rank, or the metric factor specified below. The integrator owns $s_h$; it must not be included a second time inside $B$.
+:::
+
+:::{prf:theorem} Explicit finite-step population law
+:label: thm-algorithmic-explicit-transition
+
+Denote the preceding complete composition, final reward refresh, bounded history shift and next admission $\mathcal E_{n+1}$ by $\mathcal T(S_n;D,C,D^H,A,R,\xi^c,\xi)$. Its retained age-one frame is the admitted input $P_n$; its new age-zero frame is the next admitted population. This fixes the pre-selection convention for $S_{n+1}$. For the fixed-input numerical experiments, next admission preserves the completed physical rows. The explicit law of an integrable full-state observable $\Phi$ is
+
+$$
+\begin{split}
+\mathbb E[\Phi(S_{n+1})\mid S_n]
+={}&\sum_D Q_D(D\mid S_n)\sum_C Q_C(C\mid S_n)
+\sum_{D^H}Q_H(D^H\mid S_n,C)\\
+&\times\sum_{A\in\{0,1\}^{M}}\prod_{i:a_i=1}
+q_i^{A_i}(1-q_i)^{1-A_i}
+\sum_R M^{-N_{\rm dead}}\\
+&\times\int\Phi(\mathcal T(S_n;D,C,D^H,A,R,\xi^c,\xi))
+\,d\nu_c(\xi^c)\,d\nu_O(\xi).
+\end{split}
+$$
+
+Absent historical rescoring or jitter is a unit point mass. The clone pool itself is fixed by $S_n$, so $Q_H$ does not actually depend on the realized clone draw for built-in modules; its notation emphasizes the correct pool. The equation applies on the configured successful-transaction domain. If $M=0$, the transaction returns extinction; use its specified absorbing outcome in place of the donor sums. Eligibility loss within a transaction remains in $\mathcal T$.
+
+:::
+
+:::{prf:proof}
+ Each donor procedure is sampled on its named stream; the historical rescore is evaluated on its separate named stream; conditioned on those outputs the gate comparison with independent uniforms produces the stated Bernoulli factors and the revival stream supplies uniform donor factors. Copying and restitution are deterministic given those choices. The remaining stochastic maps are the configured jitter and thermostat innovations. Iterated conditional expectation through the exact stage order gives the sum and integral. The final memory operation is deterministic. All its probabilities and maps are the configured primitive coefficients above.
+:::
+
+:::{div} feynman-prose
+The expression is long because the update has several actual operations.
+Its coefficients are quite concrete: a donor weight, an acceptance
+probability, a force, and an innovation distribution. Once the population,
+its history and its configuration are supplied, each coefficient can be
+evaluated. This gives an independent prediction for repeated runs from
+that state. Replacing all those operations by an unknown drift would
+conceal exactly the interactions we want to understand.
+:::
+
+(sec-algorithmic-field-hierarchy)=
+## The Marked-Field Hierarchy and Donor Memory
+
+:::{div} feynman-prose
+Think of a field measurement as placing a measuring function over the
+walkers and adding its readings. Different measuring functions reveal
+density, momentum, energy, or a spatial oscillation. We can update all of
+these readings by following what the algorithm does to each atom.
+
+A position plot throws away labels, velocities and donor history. The
+complete marked field keeps them. It is a change of mathematical
+coordinates for the same algorithmic state. When we retain only a few
+readings, the omitted information reappears as a hierarchy of
+correlations and memory terms.
+:::
+
+:::{prf:theorem} Exact field characteristics and moment hierarchy
+:label: thm-algorithmic-field-characteristics
+
+Use the subprobability phase-space field
+
+$$
+\mu_n=\frac1N\sum_i a_i\delta_{(x_i,v_i)}.
+$$
+
+The denominator is the configured slot count, not the random alive count. For a test function $\varphi(x,v)$, an exact stage increment is
+
+$$
+\Delta_r\langle\mu,\varphi\rangle=
+\frac1N\sum_i\big[a_i^{r+1}\varphi(x_i^{r+1},v_i^{r+1})-
+a_i^r\varphi(x_i^r,v_i^r)\big].
+$$
+
+Summing literal-copy, jitter, restitution, each reconciliation/boundary map, B1, A1, O, A2 and B2 increments, together with the next admission $\mathcal E_{n+1}$ whenever it changes the field, telescopes exactly to the admitted-to-admitted full-step change. Conditional expectation of each term uses the explicit transition measure above. These are weak field equations with stage-resolved sources, impulses, transport and noise.
+
+In particular, before transforms, conditional on donor/fitness measurements the expected literal-copy source is
+
+$$
+\frac1N\sum_{\substack{i:a_i=1\\ C_i\ \mathrm{matched}}}q_i[\varphi(z_{C_i})-\varphi(z_i)]
++\frac1N\sum_{i:a_i=0}\frac1M\sum_{j:a_j=1}\varphi(z_j).
+$$
+
+For revival the previous contribution is zero in the eligible field. Jitter, restitution and subsequent killing must be added separately; otherwise this source is not the full cloning update.
+
+For Fourier tests $\varphi_{k,\ell}(x,v)=e^{i(k\cdot x+\ell\cdot v)}$, a deterministic kick multiplies each atom by $e^{i(h/2)\ell\cdot f_i}$, and a drift substitutes $\ell\mapsto\ell+(h/2)k$. Conditional on the O input, the pre-boundary thermostat prediction is explicitly
+
+$$
+\mathbb E\langle\mu^{O+},\varphi_{k,\ell}\rangle
+=\frac1N\sum_i a_i e^{i(k\cdot x_i+c\ell\cdot v_i)}
+\widehat\nu(s_hB_i^T\ell),
+$$
+
+where
+
+$$
+\widehat\nu(u)=e^{-|u|^2/2}\quad\text{(Gaussian)},\qquad
+\widehat\nu(u)=\prod_\alpha\frac{\sin(\sqrt3u_\alpha)}{\sqrt3u_\alpha}
+\quad\text{(standardized uniform)}.
+$$
+
+A configured per-row innovation shift $b_i$ multiplies its factor by $e^{iu\cdot b_i}$. This exact finite-step equation distinguishes innovation laws having identical covariance. For absorbing boundaries one must integrate the boundary indicator against this same noise law; dropping it changes the prediction. For periodic boundaries use the wrapped test function (periodic Fourier modes are unchanged by wrapping).
+
+The characteristic functional of the eligibility-weighted phase-space field is obtained by setting
+
+$$
+\Phi_\psi(P)=\exp\left\{\frac{i}{N}\sum_i a_i\psi(x_i,v_i)\right\}
+$$
+
+inside the explicit sum/integral in {prf:ref}`thm-algorithmic-explicit-transition`. At an O stage before its boundary, conditional independence gives
+
+$$
+\mathbb E[\Phi_\psi(P^{O+})\mid P^{O-},B]
+=\prod_{i:a_i=1}\int
+\exp\{i\psi(x_i,cv_i+s_hB_i(\xi+b_i))/N\}\,d\nu(\xi).
+$$
+
+Here $\nu$ is the centered configured innovation law and $b_i=0$
+unless an addressed source shift is configured. Functional differentiation produces every field correlation equation. The outer expectation retains dependence across selection outcomes: mutual donor matching, shared normalization and shared state-dependent factors are retained in the outer sums. Momentum and energy equations follow by differentiating the Fourier tests at zero; their noise coefficients are the executed $B_iB_i^T$, the configured covariance-rate tensor. Higher moments couple to higher joint fields through fitness, matching, viscosity and clipping. This is the derived hierarchy.
+
+:::
+
+:::{prf:proof}
+ Subtract successive atomic measures and sum; each intermediate
+atom cancels. A replaced atom contributes its donor test value minus its
+recipient test value. Averaging its gate yields $q_i$, and averaging a
+revival uses the uniform current-eligible law. For a kick, substitute
+$v+(h/2)f_i$ in the Fourier exponential. For a drift, substitute
+$x+(h/2)v$. At the thermostat, its input fixes $B_i$ and the exponential
+separates into a deterministic factor and
+$\exp(i s_h\ell\cdot B_i\xi_i)$. Integrating independent innovation
+coordinates gives the Gaussian exponential or uniform sinc product.
+The characteristic-functional product follows by independence only after
+conditioning on the complete O input. Differentiate under the integrals
+when the corresponding moments exist; bounded Fourier tests themselves
+require no moment hypothesis. The complete outer donor and gate sums
+supply all cross-walker correlations.
+:::
+
+:::{prf:proposition} Closure on marked fields and age transport
+:label: prop-algorithmic-marked-field-closure
+
+Let labeled history fields be
+
+$$
+\mathcal M_n^{(b)}=N^{-1}\sum_i
+\delta_{(i,\ell_i(P_{n-b}),a_i(P_{n-b}),x_i(P_{n-b}),v_i(P_{n-b}),\mathrm{flags}_i,\mathrm{state}_i)}.
+$$
+
+These full marked fields retain ineligible rows as well; eligibility-weighted observables and donor measures are obtained by multiplying by the eligibility mark. All configured observation channels and cached input-dependent rewards must also be included when they are not deterministic functions of the displayed coordinates and provider/input state. At each successful commit,
+
+$$
+\mathcal M_{n+1}^{(0)}=\mathcal T_{\mathrm{marked}}(S_n;\omega_n),\qquad
+\mathcal M_{n+1}^{(b+1)}=\mathcal M_n^{(b)},\quad 0\le b<L,
+$$
+
+where $\mathcal T_{\mathrm{marked}}$ is the marked pushforward of
+{prf:ref}`thm-algorithmic-explicit-transition`. Age $L+1$ is discarded. Early runs only contain available ages. This is an exact discrete age-transport equation with a new-age boundary condition. Donor sums are integrals over these age fields with their configured windows. Labeled fields including opaque state and flags retain the full numerical/domain state; an unlabeled or few-moment reduction generally does not. The random gate and matching hierarchy is then a consequence of the specified algorithm, not a reason to assume memory away.
+
+For bounded real tests $\psi_0,\ldots,\psi_L$ on the full mark space
+and a bounded test $\vartheta$ of $\chi_n$, define the complete marked
+characteristic functional
+
+$$
+\mathscr Z_{\psi,\vartheta}(S_n)
+=\exp\!\left(i\sum_{b=0}^L
+\langle\mathcal M_n^{(b)},\psi_b\rangle+i\vartheta(\chi_n)\right).
+$$
+
+At a step with all retained ages present, its exact equation is
+
+$$
+\begin{aligned}
+\mathbb E[\mathscr Z_{\psi,\vartheta}(S_{n+1})\mid S_n]
+={}&\exp\!\left(i\sum_{b=1}^L
+\langle\mathcal M_n^{(b-1)},\psi_b\rangle\right)\\
+&\times\int\exp\!\left(
+ i\langle\mathcal T_{\mathrm{marked}}(S_n;\omega),\psi_0\rangle
+ +i\vartheta(\chi_{n+1}(S_n;\omega))\right)
+\mathbb Q_{S_n}(d\omega).
+\end{aligned}
+$$
+
+Use only available ages during initialization. The measure
+$\mathbb Q_{S_n}$ is the explicit donor, gate and innovation law above.
+Differentiating in finite linear combinations of the tests gives the
+joint moment hierarchy of marked fields across retained ages, including
+eligibility, ancestry and donor-dependent field correlations. This hierarchy retains the same
+state information as the marked representation.
+
+:::
+
+:::{prf:proof}
+At a successful commit, the engine stores its admitted pre-selection
+population $P_n$ in the retained history. That is the next age-one frame;
+older retained frames increment their ages. The new current population
+is the completed output followed by the next admission $\mathcal E_{n+1}$.
+Frames beyond the configured window are discarded. The slot, frame, generation,
+version and domain-state marks reconstruct each donor-pool atom exactly.
+Together with provider state and the input schedule this reconstructs
+$S_n$. Applying the explicit primitive update and deterministic history
+shift therefore determines the law of the next complete marked field.
+No independence between atoms is required for this reconstruction. The older-age contribution to
+$\mathscr Z$ is determined by this shift and factors out of the conditional
+expectation; the new-age and provider-state terms retain the explicit
+innovation integral. Differentiation in bounded test amplitudes is
+justified by dominated convergence, proving the joint marked hierarchy.
+:::
+
+(sec-algorithmic-conditional-metric-field)=
+## The Conditional Fitness Metric as an Evolving Field
+
+:::{div} feynman-prose
+The local ruler has a specific job in the algorithm: it sets the shape
+of a thermal velocity kick. To construct it, hold the donor context fixed,
+move the query point a little, and differentiate the resulting fitness.
+The population normalization participates in that differentiation.
+
+Now distinguish two changes. Moving the query point changes a spatial
+field within one frozen context. Running the next update can change the
+donor, the population and the retained history, producing a new context.
+The metric equation must include both. The O-stage ruler is evaluated
+after the first displacement, using the selection context retained from
+the beginning of that transaction.
+:::
+
+:::{prf:theorem} Conditional Hessian metric and its actual transition
+:label: thm-algorithmic-conditional-metric-law
+
+Use the configured conditional-fitness provider with one distance
+companion per target and the `Mean` reducer. Its distance is unscaled,
+nonperiodic Euclidean distance or the unscaled phase-space distance in
+the formula below. Both standardizers are smooth global or local
+standardizers and both positive maps are logistic. Assume
+$\epsilon_g>0$, $T\geq0$ and $\gamma\geq0$.
+
+When historical cloning is enabled, the provider uses global
+standardization; external-input updates with historical cloning are
+outside the supported transaction domain. The remaining donor-history,
+boundary and eligibility operations retain their configured laws.
+
+The O-stage metric uses the immutable pre-selection population and distance companions, evaluated at the actual post-A1 query position.
+
+For an eligible pre-selection target $j$, form a conditional replacement fitness $\mathcal F_j(y;S_n,D)$: replace only its reward and diversity measurements by
+
+$$
+r_j(y)=\mathrm{orient}\,V(y),\qquad
+s_j(y)=\left[|y-x_{D_j}|^2+\lambda|v_j-v_{D_j}|^2+\delta_D^2\right]^{1/2},
+$$
+
+leaving all other measurement rows fixed, but **recompute the complete global or local normalization as a function of $y$**. Local kernel weights also depend on the query. Euclidean distance is the $\lambda=0$ case. A missing companion supplies the constant floor. Coordinate shifts of the benchmark are applied consistently.
+
+Then
+
+$$
+H_j(y)=\nabla_y^2\mathcal F_j(y;S_n,D),\qquad
+g_j(y)=\epsilon_g I+[H_j(y)]_+,
+\qquad B_i=\sqrt{2\gamma T}\,g_{\tau_i}(x_i^{A1})^{-1/2}.
+$$
+
+Here $\tau_i=i$ for a pre-selection eligible target, including a target that subsequently clones. A revived target uses the exact eligible current donor's target $\tau_i$. This is the actual provider's conditional field convention. For the strict metric policy, replace $[H]_+$ by $H$ and require $\epsilon_gI+H$ positive definite.
+
+All derivatives are explicit algebraic derivatives of the preceding measurement and standardization formulas. For example, putting
+
+$$
+L(y)=\alpha\log R(z_j^r(y))+\beta\log D_+(z_j^s(y)),
+$$
+
+gives
+
+$$
+H_j=\mathcal F_j[\nabla^2L+\nabla L\nabla L^T],\quad
+\nabla L=\sum_{c=r,s}p_c\frac{M_c'(z_c)}{M_c(z_c)}\nabla z_c,
+$$
+
+$$
+\nabla^2L=\sum_c p_c\left[
+\left(\frac{M_c''}{M_c}-\frac{(M_c')^2}{M_c^2}\right)\nabla z_c\nabla z_c^T+
+\frac{M_c'}{M_c}\nabla^2z_c\right].
+$$
+
+For this formula, $(p_r,p_s)=(\alpha,\beta)$ and
+$(M_r,M_s)=(R,D_+)$. The derivatives of the standardization are explicit.
+For either measurement channel, write its queried row as $t(y)$, its
+eligible mean as $m(y)$, its regularized variance as $V(y)=\sigma(y)^2$,
+and $u(y)=t(y)-m(y)$. In the global branch with fixed eligible count $M$,
+
+$$
+\nabla u=(1-M^{-1})\nabla t,\qquad
+\nabla^2u=(1-M^{-1})\nabla^2t,
+$$
+
+$$
+\nabla V=\frac{2u}{M}\nabla t,\qquad
+\nabla^2V=\frac2M\left[
+(1-M^{-1})\nabla t\nabla t^\top+u\nabla^2t\right].
+$$
+
+Consequently the normalized query $z=uV^{-1/2}$ has
+
+$$
+\nabla z=V^{-1/2}\nabla u-\frac{u}{2}V^{-3/2}\nabla V,
+$$
+
+$$
+\begin{aligned}
+\nabla^2z={}&V^{-1/2}\nabla^2u
+-\frac12V^{-3/2}
+(\nabla u\nabla V^\top+\nabla V\nabla u^\top+u\nabla^2V)\\
+&+\frac{3u}{4}V^{-5/2}\nabla V\nabla V^\top.
+\end{aligned}
+$$
+
+In the local branch, let $\omega_k(y)$ be the configured normalized
+query-neighbor weights, with $\sum_k\omega_k=1$. Then
+
+$$
+m=\sum_k\omega_kt_k,\qquad
+V=\sum_k\omega_kt_k^2-m^2+\sigma_{\min}^2.
+$$
+
+For $\omega_k=e^{\ell_k}/\sum_re^{\ell_r}$,
+
+$$
+\nabla\omega_k=\omega_k\left(\nabla\ell_k-
+\sum_r\omega_r\nabla\ell_r\right),
+$$
+
+and differentiating this product gives $\nabla^2\omega_k$. Apply the
+product rule to the displayed $m,V$, then the same formula for
+$\nabla^2(uV^{-1/2})$. These weights use fixed companion and neighbor identities with the
+moving query coordinate. If the local standardizer includes the target
+as its own neighbor, that self-comparison has identically zero distance
+as the target moves; its kernel log-weight is constant. Other neighbors
+retain their frozen coordinates. Changes of donor identity are discrete
+transitions in the outer law.
+
+Define the measured metric field at each actual O input by
+
+$$
+\Gamma_n[\psi]=N^{-1}\sum_i a_i^{A1}
+\psi(x_i^{A1})\,g_{\tau_i}(x_i^{A1};S_n,D_n).
+$$
+
+Its exact conditional prediction is the same explicit donor/gate/jitter sum from {prf:ref}`thm-algorithmic-explicit-transition`, stopped at A1, with the displayed algebraic $g$ inserted. The current O-input prediction stops before the current O innovation is drawn. The next O-input metric requires continuing through current O, A2, B2, history shift, next donor selection, next cloning and next B1/A1. This two-barrier composition gives its exact transition law. Equivalently use the augmented O-input state containing its frozen selection context as the stroboscopic Markov state.
+
+For each component, subtracting the current metric and dividing by $h$ gives the discrete material metric equation. Its forcing consists explicitly of changed population measurements, new companion draws, cloning/revival target maps, transported query coordinates, updated history and the positive-part matrix map. These contributions determine the metric increment jointly with the evolving population and donor history.
+
+Curvature is then computed from spatial derivatives of this same $g$, with standard metric contractions. Within a smooth clipping region, $Dg$ and $D^2g$ follow the spectral divided-difference chain rule applied to $H, DH,D^2H$; mixed-sign clipping needs fourth derivatives of fitness. At an eigenvalue clipping threshold classical curvature need not exist, even though the metric pushforward and finite differences of $g$ remain defined. A curvature equation is obtained by inserting this derived curvature observable into the same explicit transition measure; exchanging expectation with the nonlinear curvature map is not valid.
+
+
+
+:::
+
+:::{prf:proof}
+ The conditional provider builds reward and diversity jets by
+substituting the query into one target row of the frozen population.
+Applying its configured standardizers and positive maps gives
+$\mathcal F_j$. Twice differentiating $e^{L}$ yields the displayed Hessian,
+and the product and quotient rules give the expressions for $\nabla L$
+and $\nabla^2L$. Spectral clipping and the positive floor yield $g$;
+its inverse square root is precisely the provider's factor in the O
+update. Conditional on O input,
+$\operatorname{Cov}(v^{O+})=s_h^2B_iB_i^\top
+=2\gamma T s_h^2g_{\tau_i}^{-1}$.
+
+The provider retains the pre-selection target index for an eligible row.
+For a revival it resolves the accepted donor's exact current-frame event
+identity and uses that eligible target. This proves the target map
+$\tau_i$. The value at the actual post-A1 coordinate follows by direct
+substitution. Stopping the explicit transition at A1 gives the current
+metric law. Composing its remaining stages with the following
+transaction through A1 gives the next metric law. Curvature is a
+specified nonlinear observable of spatial metric derivatives wherever
+those derivatives exist, so its transition follows by the same
+substitution into the explicit expectation.
 :::
 
 (sec-algorithmic-metric-evolution)=
@@ -717,7 +1235,7 @@ There is no need to guess a pressure or a temperature first.
 
 The order of operations is part of the physics of this algorithm. The
 Rust integrator checks boundaries after each kick, each displacement, and
-the thermostat. A reflected velocity or a newly killed walker contributes
+the thermostat. A wrapped position or a newly killed walker contributes
 at that boundary operation. Combining the thermostat and the boundary
 into one measurement hides their separate contributions. It is still a
 valid combined increment, but it cannot be compared directly with the
@@ -1097,10 +1615,560 @@ not establish a finite continuous-time generator when clone
 probabilities remain of order one. A macroscopic closure must be
 derived from the transition, with its limit and error controlled.
 
-A comparison between an Einstein tensor and stress must compute the
-stress from these independent mechanical observables and specify any
-spacetime construction separately. Solving the proposed geometric
-equation for its own source cannot validate that equation.
+The spatial deposition in {prf:ref}`thm-algorithmic-spatial-field-equations`
+constructs the stress and source terms from these mechanical observables.
+The conditional metric law couples their evolution through the actual
+fitness-dependent noise factor and the evolving donor context.
+:::
+
+(sec-algorithmic-transient-memory)=
+## Reduced Fields and Their Derived Memory Equation
+
+:::{div} feynman-prose
+Suppose we keep a density, a current and a few metric components. Two
+populations can give the same readings while carrying different donor
+histories. The next readings can then differ, even before sampling error
+enters the experiment. The omitted information has a dynamical effect.
+
+We can follow that effect explicitly. A prediction first leaves the
+chosen field description, evolves through omitted variables, and later
+returns to a measured field. Each such excursion produces a memory term.
+The derivation below uses the distribution of the actual experiment at
+each time. A settling swarm and a stationary swarm are both covered by
+the same time-indexed calculation.
+:::
+
+:::{prf:theorem} Transient projected field equation
+:label: thm-algorithmic-transient-field-memory
+
+Let $\lambda_n$ be the law of the complete state $S_n$ generated by
+{prf:ref}`thm-algorithmic-explicit-transition` from the declared initial
+law. For a specified field descriptor $q_n$, put
+
+$$
+\mathcal H_n=L^2(\lambda_n),\qquad
+P_nf(s)=\mathbb E[f(S_{n+1})\mid S_n=s],\qquad
+\Pi_n=\mathbb E_{\lambda_n}[\,\cdot\mid\sigma(q_n)],\quad
+R_n=I-\Pi_n.
+$$
+
+Thus $P_n:\mathcal H_{n+1}\to\mathcal H_n$. Write
+$V_n=\operatorname{Ran}\Pi_n$ and $W_n=\operatorname{Ran}R_n$ and define
+
+$$
+\begin{array}{ll}
+\mathsf A_n=\Pi_nP_n|_{V_{n+1}},&
+\mathsf B_n=\Pi_nP_n|_{W_{n+1}},\\
+\mathsf C_n=R_nP_n|_{V_{n+1}},&
+\mathsf D_n=R_nP_n|_{W_{n+1}}.
+\end{array}
+$$
+
+Every block has operator norm at most one between its indicated spaces.
+For $s<t$, let
+
+$$
+\mathsf T_{s,t}=\Pi_sP_sP_{s+1}\cdots P_{t-1}|_{V_t},
+\qquad \mathsf T_{t,t}=I_{V_t}.
+$$
+
+Then the exact reduced field propagation satisfies
+
+$$
+\boxed{
+\mathsf T_{s,t}
+=\mathsf A_s\mathsf T_{s+1,t}
++\sum_{j=s+1}^{t-1}
+\mathsf B_s\mathsf D_{s+1}\cdots\mathsf D_{j-1}
+\mathsf C_j\mathsf T_{j+1,t}.
+}
+$$
+
+An empty product of $\mathsf D$ blocks is the identity. In particular,
+
+$$
+\mathsf T_{s,s+2}-\mathsf A_s\mathsf A_{s+1}
+=\mathsf B_s\mathsf C_{s+1}.
+$$
+
+The left side is the discrepancy between actual two-step field
+prediction and composing the two one-step field predictors. Its right
+side is the exact contribution through omitted state variables.
+:::
+
+:::{prf:proof}
+Jensen's inequality and the actual pushforward law
+$\lambda_{n+1}=\lambda_nP_n$ give
+
+$$
+\|P_nf\|_{L^2(\lambda_n)}^2
+\leq\mathbb E|f(S_{n+1})|^2
+=\|f\|_{L^2(\lambda_{n+1})}^2.
+$$
+
+This also shows that a null function maps to a null function, so the
+operator is defined on the stated equivalence classes. Conditional
+expectation and its orthogonal complement are contractions; all four
+block bounds follow.
+
+Fix $f\in V_t$. Set $u_k=P_k\cdots P_{t-1}f$,
+$x_k=\Pi_ku_k$ and $y_k=R_ku_k$. The block decomposition gives
+
+$$
+x_k=\mathsf A_kx_{k+1}+\mathsf B_ky_{k+1},\qquad
+y_k=\mathsf C_kx_{k+1}+\mathsf D_ky_{k+1},\qquad
+x_t=f,\quad y_t=0.
+$$
+
+Substitution from $t-1$ down to $s+1$ yields
+
+$$
+y_{s+1}=\sum_{j=s+1}^{t-1}
+\mathsf D_{s+1}\cdots\mathsf D_{j-1}\mathsf C_jx_{j+1}.
+$$
+
+Insert this expression into the equation for $x_s$ and use
+$x_k=\mathsf T_{k,t}f$. This proves the stated recurrence and its
+two-step specialization. The Markov property of the complete state and
+the tower property identify $\mathsf T_{s,t}f$ with
+$\mathbb E[f(S_t)\mid q_s(S_s)]$. The law and the projection may change
+at every step of the experiment.
+:::
+
+:::{prf:corollary} A criterion for a closed reduced field
+:label: cor-algorithmic-resolved-field-closure
+
+If $\mathsf C_n=0$ throughout a horizon, then
+
+$$
+\mathsf T_{s,t}=\mathsf A_s\mathsf A_{s+1}\cdots\mathsf A_{t-1}.
+$$
+
+This is closure for the actual initial law, up to its null sets.
+Closure for every relevant initial law follows from the stronger
+kernel factorization
+
+$$
+P_n(s,q_{n+1}^{-1}(B))=K_n(q_n(s),B)
+$$
+
+on the relevant complete-state space. A nonzero two-step defect rejects
+one-step composition for that descriptor. A zero two-step defect alone
+allows cancellations and does not establish that all later memory terms
+vanish.
+
+**Proof.** When $\mathsf C_n=0$, every term of the memory sum vanishes,
+and induction gives the product. Kernel factorization says that the
+conditional next-descriptor law is determined by the current descriptor
+for every complete state, proving the stronger assertion by iterated
+conditioning. The product $\mathsf B_s\mathsf C_{s+1}$ may vanish with
+$\mathsf C_{s+1}\ne0$, which proves the last distinction.
+:::
+
+:::{prf:theorem} Field evolution conditional on its observed history
+:label: thm-algorithmic-field-filter
+
+Assume the complete-state and descriptor spaces are standard Borel, and
+let $Y_n=q_n(S_n)$ be a finite-dimensional square-integrable descriptor.
+Let $\beta_n$ be the regular conditional law of $S_n$ given
+$Y_0,\ldots,Y_n$. Its prediction and observation update are
+
+$$
+\beta^-_{n+1}(B)=\int\beta_n(ds)
+\int\mathbf1_B(\mathcal T(s;\omega))\,\mathbb Q_s(d\omega),
+$$
+
+followed by disintegration of
+
+$$
+\beta^-_{n+1}(ds')\,\delta_{q_{n+1}(s')}(dy')
+$$
+
+with respect to its $y'$ marginal, evaluated at the observed $Y_{n+1}$.
+Here $\mathbb Q_s$ is exactly the finite donor/gate sums and innovation
+measure in {prf:ref}`thm-algorithmic-explicit-transition`.
+
+Define the primitive-computed increment and covariance
+
+$$
+b_q(s)=\int[q_{n+1}(\mathcal T(s;\omega))-q_n(s)]
+\,\mathbb Q_s(d\omega),\qquad
+\Gamma_q(s)=\operatorname{Cov}_{\mathbb Q_s}
+\bigl(q_{n+1}(\mathcal T(s;\omega))\bigr).
+$$
+
+Then
+
+$$
+\boxed{
+Y_{n+1}-Y_n=\int b_q(s)\,\beta_n(ds)+\zeta_{n+1},
+\qquad\mathbb E[\zeta_{n+1}\mid Y_0,\ldots,Y_n]=0,
+}
+$$
+
+and its conditional noise covariance is
+
+$$
+\mathbb E[\Gamma_q(S_n)\mid Y_0,\ldots,Y_n]
++\operatorname{Cov}(b_q(S_n)\mid Y_0,\ldots,Y_n).
+$$
+:::
+
+:::{prf:proof}
+Condition first on the complete state. The explicit update law gives the
+prediction integral. Standard Borel disintegration supplies the
+conditional next-state law given the next descriptor, including
+continuous readouts. By definition $q_n(S_n)=Y_n$ almost surely under
+$\beta_n$. The tower property therefore gives the displayed conditional
+increment. Subtracting this mean defines $\zeta_{n+1}$. Applying the law
+of total covariance, first conditional on $S_n$ and then on the observed
+history, yields the two terms: fresh transition noise and variation of
+the conditional increment over unresolved complete states.
+:::
+
+:::{div} feynman-prose
+These two noise terms have different experimental meanings. Even with a
+complete checkpoint, fresh donor choices and thermal kicks spread the
+next reading. When only a few fields are observed, there is additional
+uncertainty about which complete population and history produced those
+fields. The second covariance accounts for that uncertainty.
+
+The equations are closed on the conditional population law $\beta_n$.
+A practical reduction chooses a finite collection of field and memory
+features to approximate it. We can then compare the resulting predictions
+with independent complete-population continuations, increase the feature
+resolution, and measure what remains unexplained. Every term has an
+algorithmic origin before such an approximation is chosen.
+:::
+
+(sec-stress-energy-tensor)=
+## Spatial Sources, Momentum Flux, and the Coupled Metric Equation
+
+:::{div} feynman-prose
+Put a small measuring region around part of the swarm. Its momentum can
+change because a velocity changes inside it, because a walker crosses
+its edge, or because a slot is killed or revived. Cloning adds another
+possibility: a slot can take the state of a distant donor in one update.
+
+We can represent that transfer exactly. Join the old position to the new
+one with a specified path and deposit the transferred momentum along it.
+The divergence of that deposited flux has one endpoint contribution at
+each end. What remains is an explicit local source. This construction
+lets us write spatial field equations while preserving every finite jump
+of the algorithm.
+
+The velocity second moment gives a tensor of momentum transport. Its
+unequal directional components are measurable. We will retain that
+tensor, together with clone, force, thermal and boundary contributions,
+and couple it to the metric through the fitness-dependent noise factor
+that the algorithm actually uses.
+:::
+
+:::{prf:definition} Spatial fields and a path-deposition convention
+:label: def-algorithmic-spatial-source-flux
+
+In a fixed Euclidean chart, define the distribution-valued fields
+
+$$
+\rho=\frac1N\sum_i a_i\delta_{x_i},\qquad
+j=\frac1N\sum_i a_iv_i\delta_{x_i},\qquad
+\mathsf M=\frac1N\sum_i a_iv_i\otimes v_i\delta_{x_i}.
+$$
+
+For positions $x,y$, put $r=y-x$ and
+
+$$
+L_{x,y}=\int_0^1\delta_{x+t r}\,dt.
+$$
+
+Thus $rL_{x,y}$ is an oriented segment deposition. Tensor divergence
+contracts the second index:
+$(\operatorname{div}\mathsf T)_\alpha
+=\sum_\beta\partial_\beta\mathsf T_{\alpha\beta}$.
+The fields have fixed-capacity normalization; $\int\rho$ is the eligible
+fraction. A zero-length segment has zero associated flux.
+
+On a periodic domain, use periodic distributions and a declared lift or
+path joining the endpoints. For a general piecewise smooth path
+$\chi:[0,1]\to\mathcal X$, replace $rL_{x,y}$ by
+$\int_0^1\dot\chi(t)\delta_{\chi(t)}dt$. Different joining paths have
+the same endpoint divergence. Boundary classifications and coordinate
+wraps are recorded as their own actual stages.
+:::
+
+:::{prf:theorem} Exact discrete spatial density and momentum equations
+:label: thm-algorithmic-spatial-field-equations
+
+Consider any realized row transition $(x,v,a)\mapsto(y,w,b)$ at any
+recorded stage, with $a,b\in\{0,1\}$. Its unnormalized density and current
+increments satisfy the distributional identities
+
+$$
+\boxed{
+b\delta_y-a\delta_x
+=(b-a)\delta_x-\operatorname{div}(b r L_{x,y}),
+}
+$$
+
+$$
+\boxed{
+bw\delta_y-av\delta_x
+=(bw-av)\delta_x
+-\operatorname{div}(bw\otimes r L_{x,y}).
+}
+$$
+
+For a complete step, sum over slots $i$ and actual stages $r$ and divide
+by $N$. Write the resulting sums of endpoint terms as
+$\mathcal S_\rho,\mathcal S_j$ and the summed depositions as
+$\mathcal J_\rho,\mathcal J_j$. Then
+
+$$
+\boxed{
+\rho_{n+1}-\rho_n+\operatorname{div}\mathcal J_\rho
+=\mathcal S_\rho,\qquad
+j_{n+1}-j_n+\operatorname{div}\mathcal J_j
+=\mathcal S_j.
+}
+$$
+
+These are exact finite-step field equations. Every source and flux is
+computed from the actual donor, copy, force, transport, thermostat,
+reconciliation and boundary maps. Their conditional predictions follow
+by applying {prf:ref}`thm-algorithmic-explicit-transition` to these
+explicit expressions.
+:::
+
+:::{prf:proof}
+For a smooth compactly supported scalar test $\phi$, the fundamental
+theorem of calculus gives
+
+$$
+\phi(y)-\phi(x)=\int_0^1\nabla\phi(x+t r)\cdot r\,dt.
+$$
+
+By the definition of distributional divergence,
+$\operatorname{div}(rL_{x,y})=\delta_x-\delta_y$. Hence
+
+$$
+(b-a)\delta_x-b(\delta_x-\delta_y)
+=b\delta_y-a\delta_x.
+$$
+
+For each component $\alpha$ of current,
+$\operatorname{div}(bw\otimes rL_{x,y})_\alpha
+=bw_\alpha(\delta_x-\delta_y)$. Subtracting this from
+$(bw_\alpha-av_\alpha)\delta_x$ gives the second identity.
+Sum the row identities over stages: the intermediate fields cancel,
+including stages that change eligibility. Division by $N$ gives the
+stated equations. The same calculation with $\chi$ proves the general
+path formula. Integrating against the exact transition measure yields
+the conditional equations whenever the tested terms are integrable.
+:::
+
+### The sources supplied by each algorithmic instruction
+
+:::{prf:corollary} Primitive mechanical sources and transport tensors
+:label: cor-algorithmic-primitive-stress
+
+The following specializations of
+{prf:ref}`thm-algorithmic-spatial-field-equations` hold before subsequent
+boundary operations.
+
+1. **Literal copying.** An eligible donor $(y,w)$ replacing $(x,v,a)$
+   contributes mass source $(1-a)\delta_x/N$, momentum source
+   $(w-av)\delta_x/N$, mass flux $rL_{x,y}/N$, and momentum flux
+   $w\otimes rL_{x,y}/N$. For an eligible target the mass source vanishes;
+   a revival contributes one unit of eligible mass divided by $N$.
+   Average these formulas using the actual donor and gate probabilities.
+
+2. **Kick.** At fixed position and eligibility, a kick
+   $v\mapsto v+\delta t f_i$ has zero mass source and momentum source
+   $a_i\delta t f_i\delta_{x_i}/N$. Both BAOAB kicks use
+   $\delta t=h/2$ with the force recomputed at their own inputs.
+
+3. **Displacement.** A drift $x\mapsto x+\delta t v$ has no endpoint
+   source. It contributes mass flux
+   $a\delta t v L_{x,x+\delta t v}/N$ and momentum flux
+   $a\delta t v\otimes v L_{x,x+\delta t v}/N$.
+   This is a finite-path kinetic transport tensor.
+
+4. **Thermostat.** At its fixed input position, the conditional mean
+   momentum source is $a(c-1)v\delta_x/N$. Its random source is
+   $a s_hB\xi\delta_x/N$ for centered innovations. Its conditional
+   covariance comes from the actual $s_h^2BB^\top$, including the
+   metric-derived anisotropy.
+
+5. **Eligibility change.** Killing at a fixed position contributes
+   $-a\delta_x/N$ and $-av\delta_x/N$ as mass and momentum sinks.
+   A boundary that also changes position or velocity uses the complete
+   row identity. Jitter and restitution likewise use their actual
+   intermediate input and output states.
+
+For the configured viscous acceleration, define for eligible $i\ne j$
+
+$$
+\kappa_{ij}=\nu\frac{a_i a_jw_{ij}}{Z_i},\qquad
+w_{ij}=e^{-|x_i-x_j|^2/(2\ell_\nu^2)},
+$$
+
+with zero value when the row normalizer vanishes. For $i<j$, let
+$d_{ij}=v_j-v_i$, $r_{ij}=x_j-x_i$,
+$k^s_{ij}=(\kappa_{ij}+\kappa_{ji})/2$, and
+$k^a_{ij}=(\kappa_{ij}-\kappa_{ji})/2$. The viscous force density is
+
+$$
+\frac1N\sum_i a_i f_i^{\mathrm{visc}}\delta_{x_i}
+=\operatorname{div}\!\left[
+\frac1N\sum_{i<j} k^s_{ij}d_{ij}\otimes r_{ij}L_{x_i,x_j}
+\right]
++\frac1N\sum_{i<j}k^a_{ij}d_{ij}
+(\delta_{x_i}+\delta_{x_j}).
+$$
+
+The first term may be moved to the flux side of the momentum equation
+with a minus sign and its actual kick duration. The second is a source
+from asymmetric row normalization. For the common eligible-count
+normalizer, $\kappa_{ij}=\kappa_{ji}$ and this source vanishes.
+:::
+
+:::{prf:proof}
+Substitute the indicated primitive maps into the row identities.
+For the thermostat take the conditional mean using
+$\mathbb E\xi=0$. For viscosity, collect the two terms of each
+unordered pair:
+
+$$
+\kappa_{ij}d_{ij}\delta_{x_i}
+-\kappa_{ji}d_{ij}\delta_{x_j}
+=k^s_{ij}d_{ij}(\delta_{x_i}-\delta_{x_j})
++k^a_{ij}d_{ij}(\delta_{x_i}+\delta_{x_j}).
+$$
+
+Use the segment-divergence identity on the first difference. The
+Gaussian weight is symmetric in its endpoints; a common denominator
+therefore cancels the antisymmetric coefficient. Row-dependent
+denominators generally retain it.
+:::
+
+:::{prf:proposition} Derived anisotropic kinetic stress
+:label: prop-algorithmic-anisotropic-kinetic-stress
+
+Let $W_\ell$ be a specified nonnegative smoothing kernel. Convolve the
+spatial fields with it and, where $\rho_\ell(z)>0$, define
+
+$$
+u_\ell(z)=\frac{j_\ell(z)}{\rho_\ell(z)},\qquad
+\Pi_\ell(z)=\frac1N\sum_i a_iW_\ell(z-x_i)
+(v_i-u_\ell(z))\otimes(v_i-u_\ell(z)).
+$$
+
+Then
+
+$$
+\boxed{\mathsf M_\ell
+=\rho_\ell u_\ell\otimes u_\ell+\Pi_\ell,\qquad
+\Pi_\ell\succeq0.}
+$$
+
+The scalar $\operatorname{tr}\Pi_\ell/d$ is the mean directional
+kinetic stress; the traceless part retains measured anisotropy. For an
+O stage with centered unit-covariance innovations, its uncentered
+second-moment field obeys
+
+$$
+\boxed{
+\mathbb E[\mathsf M^{O+}\mid O\text{ input}]
+=c^2\mathsf M^{O-}
++\frac{s_h^2}{N}\sum_i a_iB_iB_i^\top\delta_{x_i}.
+}
+$$
+
+When the conditional metric provider is enabled, its injection tensor
+is $2\gamma T s_h^2g_{\tau_i}^{-1}$ at the actual O query. Subsequent
+boundary changes enter separate sources. The positive smoothing kernel
+may be applied to both sides of the equation.
+:::
+
+:::{prf:proof}
+Expand $(v_i-u)\otimes(v_i-u)$ and sum with the smoothing weights.
+The two linear terms use $j_\ell=\rho_\ell u$ and leave
+$\mathsf M_\ell-\rho_\ell u\otimes u$. Its quadratic form in any
+vector is a nonnegative weighted sum of squares. For O, expand
+$(cv_i+s_hB_i\xi_i)\otimes(cv_i+s_hB_i\xi_i)$; the mixed terms have
+zero mean and the last term averages to $s_h^2B_iB_i^\top$.
+Insert the executed metric factor from
+{prf:ref}`thm-algorithmic-conditional-metric-law`.
+:::
+
+### The resulting field system
+
+:::{prf:theorem} Coupled population, mechanical, and metric fields
+:label: thm-algorithmic-coupled-field-system
+
+Retain the complete marked field and its history from
+{prf:ref}`prop-algorithmic-marked-field-closure`, together with the
+configured provider and input state. Then the following system determines
+its finite-step law and its derived mechanical and metric observables:
+
+$$
+\begin{aligned}
+\mathcal M_{n+1}^{(0)}
+ &=\mathcal T_{\mathrm{marked}}(S_n;\omega_n),
+ &\omega_n&\sim\mathbb Q_{S_n},\\
+\mathcal M_{n+1}^{(b+1)}&=\mathcal M_n^{(b)},
+ &0\leq b&<L,\\
+\rho_{n+1}-\rho_n+\operatorname{div}\mathcal J_\rho
+ &=\mathcal S_\rho,
+ &j_{n+1}-j_n+\operatorname{div}\mathcal J_j
+ &=\mathcal S_j,\\
+g_{n,i}^{O}(z)&=\epsilon_gI+
+ [\nabla_z^2\mathcal F_{\tau_i}(z;S_n,D_n)]_+,
+ &B_{n,i}&=\sqrt{2\gamma T}\,
+ [g_{n,i}^{O}(x_i^{A1})]^{-1/2}.
+\end{aligned}
+$$
+
+Here $\mathcal T_{\mathrm{marked}}$ is the explicit donor, clone and
+BAOAB composition; $\mathbb Q$ is its explicit joint choice law; and
+$\mathcal S,\mathcal J$ are the primitive source and flux formulas
+above. The strict metric policy uses its specified unclipped branch.
+The next O-input metric is obtained by completing the current step,
+shifting history, applying the next admission, and executing selection and motion through
+A1 with its new context.
+
+For a reduced collection of these observables, the exact prediction is
+{prf:ref}`thm-algorithmic-transient-field-memory` or, conditional on the
+observed field path, {prf:ref}`thm-algorithmic-field-filter`. These supply
+the contributions of eliminated population and donor-history variables.
+:::
+
+:::{prf:proof}
+The complete marked representation reconstructs every coefficient of
+{prf:ref}`thm-algorithmic-explicit-transition`. Its deterministic history
+shift closes the retained donor state. The spatial equations follow
+row by row from {prf:ref}`thm-algorithmic-spatial-field-equations`.
+The conditional-fitness differentiation and provider factor give the
+metric and noise equations. Their actual stage ordering gives the next
+O-input context. Finally, projecting this complete transition yields the
+proved transient memory and conditional-history equations. All
+coefficients are fixed by the algorithm, the initial law and the chosen
+measurement functions.
+:::
+
+:::{div} feynman-prose
+This is the field theory of the finite algorithm. The population and its
+memory determine the fitness curvature; that curvature shapes the next
+thermal kick; the kick changes the velocity stress and subsequent
+transport; selection and cloning change the population which determines
+the next ruler. The coupling runs through the whole cycle.
+
+A compact relation involving only curvature and kinetic stress would
+have to eliminate the other terms in this system with a controlled
+approximation. We now know which terms need to be estimated and which
+measurements can test that elimination. A failed two-coefficient fit
+identifies a poor reduction of these equations, while the full equations
+continue to give independent finite-step predictions.
 :::
 
 (sec-ig-free-energy)=
@@ -1860,217 +2928,75 @@ QSD requires the corresponding closure and law identifications, using
 {doc}`../convergence_program/15_kl_convergence`.
 :::
 
-(sec-stress-energy-tensor)=
-## Comparison: Stress and an Einstein Constitutive Equation
-
-:::{div} feynman-prose
-The transition-derived budgets above give measurable sources. The
-calculation in this section asks a separate, conditional question:
-what curvature would a specified Einstein equation predict for a chosen
-perfect fluid? Keeping the answer is useful for comparison, provided we
-do not count the assumed equation as an algorithmic derivation.
-
-An isotropic stress in a local rest frame has one energy density and one
-pressure. This determines the algebraic form of a perfect-fluid tensor.
-
-A field equation is an additional relation between that tensor and the
-metric. Once the relation is specified, taking its trace and contracting
-with an observer's velocity gives a definite curvature formula. Geometry
-alone does not determine the energy model or the proportionality
-constant.
-:::
-
-:::{prf:definition} Perfect-fluid effective stress
-:label: def-effective-stress-energy
-
-Let $G_{ab}$ be the specified Lorentzian metric in dimension $d+1$,
-and let $u$ be a unit timelike field, $G(u,u)=-1$. A symmetric stress
-with zero rest-frame energy flux and isotropic spatial stress has form
-
-$$
-T_{ab}^{\mathrm{eff}}
-=e\,u_au_b+P\,h_{ab}
-=(e+P)u_au_b+P\,G_{ab},\qquad
-h_{ab}=G_{ab}+u_au_b.
-$$
-
-Here $e=T(u,u)$ is energy density and $P$ is rest-frame pressure.
-The field $u$ need not be geodesic. An anisotropic stress or nonzero
-energy flux requires the corresponding additional tensor terms.
-
-For the chosen effective energy model one may set
-$P=P_{\mathrm{pair}}+P_{\mathrm{modes}}$ after fixing their common
-volume, temperature, and state-law conventions. This equation is a
-definition of that model, not an identification forced by isotropy of
-a sampling density.
-:::
-
-:::{prf:proof}
-Choose a local orthonormal rest frame with time direction $u$.
-The stated conditions give components
-$T_{00}=e$, $T_{0i}=0$, and $T_{ij}=P\delta_{ij}$.
-The displayed tensor has exactly these components, proving its
-coordinate-independent form.
-:::
-
-:::{prf:definition} Signed pressure parameter and vacuum convention
-:label: def-effective-cosmological-constant
-
-Choose a positive coupling $\kappa_G$, with
-$\kappa_G=8\pi G_{\mathrm{eff}}/c^4$ in four-dimensional physical
-units, and define
-
-$$
-\Lambda_P=\kappa_G P_{\mathrm{vac}}.
-$$
-
-This is a signed pressure parameter. Let
-$\mathsf E_{ab}=R_{ab}-\tfrac12R G_{ab}$ denote the Einstein tensor.
-In the convention
-
-$$
-\mathsf E_{ab}+\Lambda G_{ab}=\kappa_G T_{ab},
-$$
-
-vacuum stress has
-$T_{ab}^{\mathrm{vac}}=-e_{\mathrm{vac}}G_{ab}$ and
-$P_{\mathrm{vac}}=-e_{\mathrm{vac}}$. Moving that term to the left
-gives
-
-$$
-\Delta\Lambda=\kappa_Ge_{\mathrm{vac}}=-\Lambda_P.
-$$
-
-Thus the pressure parameter and the vacuum contribution to the
-Einstein constant have opposite signs. A physical identification also
-requires the vacuum equation of state and the field equation.
-Dimensional consistency does not fix the coupling's value.
-:::
-
-:::{prf:theorem} Ricci contraction under an Einstein constitutive equation
-:label: thm-structural-correspondence
-
-In spacetime dimension $n=d+1>2$, suppose an effective metric and
-stress satisfy the specified constitutive equation
-
-$$
-\mathsf E_{ab}+\Lambda G_{ab}=\kappa_G T_{ab},
-\qquad
-\mathsf E_{ab}=R_{ab}-\tfrac12R G_{ab}.
-$$
-
-For a perfect fluid with energy density $e$, pressure $P$, and
-unit timelike field $u$,
-
-$$
-R_{ab}u^au^b
-=\frac{\kappa_G}{d-1}\bigl[(d-2)e+dP\bigr]
- -\frac{2\Lambda}{d-1}.
-$$
-
-Here $\kappa_G$ has the units of the specified dimension and energy
-normalization. In four-dimensional physical units it may be written
-$8\pi G_{\mathrm{eff}}/c^4$.
-:::
-
-:::{prf:proof}
-Taking the trace yields
-
-$$
-R=\frac{2(n\Lambda-\kappa_GT)}{n-2}.
-$$
-
-Substitution into the constitutive equation gives
-
-$$
-R_{ab}
-=\kappa_G\left(T_{ab}-\frac{T}{n-2}G_{ab}\right)
- +\frac{2\Lambda}{n-2}G_{ab}.
-$$
-
-Now $G(u,u)=-1$, $T(u,u)=e$, and $T=-e+dP$.
-Contracting yields the stated formula. Under the congruence hypotheses,
-it can be substituted into Raychaudhuri's identity.
-
-Conservation and Raychaudhuri do not imply the constitutive equation.
-For example, on Minkowski space take $\Lambda=0$ and a nonzero
-constant perfect-fluid stress. Its divergence vanishes and all geometric
-identities hold, while $\mathsf E=0\ne\kappa_G T$.
-:::
-
-:::{prf:remark} Geometric identity and constitutive equation
-:label: rem-correspondence-meaning
-
-This section supplies no derivation of an Einstein equation from the
-transition law. A test of such an equation must use independently computed
-mechanical observables from
-{ref}`sec-algorithmic-balance-laws` and an independently specified
-spacetime reconstruction. Its coupling, source, and error cannot be
-defined by fitting the source to the same geometric tensor.
-
-Raychaudhuri relates the expansion of a specified congruence to the Ricci
-tensor of its metric. The perfect-fluid contraction in
-{prf:ref}`thm-structural-correspondence` additionally uses the stated
-Einstein constitutive equation. A pressure sign determines that contraction
-only after the energy density, cosmological term, dimensional normalization,
-and constitutive equation are fixed.
-:::
-
 (sec-summary-field-equations)=
 ## Results and Their Applications
 
-The algorithm's finite-step metric equation is
-{prf:ref}`thm-algorithmic-observable-increment` applied to specified fixed
-spatial probes. Its drift and covariance follow from the full transition
-law. {prf:ref}`prop-algorithmic-stage-telescoping` resolves the drift into
-actual operator contributions and retains cross covariances.
-{prf:ref}`prop-algorithmic-material-metric` separates field change,
-spatial sampling, and clone replacement.
+{prf:ref}`thm-algorithmic-explicit-transition` gives the coefficient-explicit
+population law: the joint donor procedures, historical rescoring, clone
+gates, revival, transformations, BAOAB stages, boundaries and history
+shift. {prf:ref}`thm-algorithmic-field-characteristics` converts those
+instructions into Fourier field equations and a full correlation
+hierarchy. Gaussian and standardized uniform innovations have distinct
+finite-step characteristic factors, even when their covariance agrees.
 
-The thermostat has exact conditional energy and momentum moments.
-Kicks, clone transfers, restitution, transport, and eligibility changes
-have explicit finite-step budgets. Together they determine mechanical
-sources without imposing an equilibrium law. Independent-replica tests
-check predictions with the appropriate ensemble uncertainty. A closed
-macroscopic or gravitational equation remains a further derivation.
+{prf:ref}`thm-algorithmic-spatial-field-equations` expresses every realized
+finite jump as endpoint sources and path-deposited fluxes.
+{prf:ref}`cor-algorithmic-primitive-stress` identifies the actual clone,
+force, transport, thermostat and boundary terms, including the source
+created by asymmetric viscous normalization.
+{prf:ref}`prop-algorithmic-anisotropic-kinetic-stress` derives the measured
+kinetic stress and its thermal covariance injection.
 
-The fixed-mass Gaussian correlation energy is nonnegative and has the
-proved quadratic expansion. Its Hessian and the jump operator obey the
-explicit identity in {prf:ref}`prop-jump-hamiltonian-derivation`.
-The dilation pressure follows by differentiating the stated energy;
-the sign depends on that energy and the transported density.
+The metric is the conditional-fitness Hessian construction in
+{prf:ref}`thm-algorithmic-conditional-metric-law`. Its update retains the
+frozen donor context, normalization derivatives, actual query motion and
+next selection. Together with the source and flux equations and retained
+history, these give the closed complete-field system in
+{prf:ref}`thm-algorithmic-coupled-field-system`.
 
-The homogeneous closure has the exact Fourier multiplier and stability
-bounds above. On a periodic box its mean-zero modes have an exponential
-rate; on $\mathbb R^d$ arbitrarily long waves remove a uniform spectral
-gap. The continuous OU and constant-coefficient BAOAB references give
-their respective diffusion tensors.
+Reduced descriptions obey the transient memory equation in
+{prf:ref}`thm-algorithmic-transient-field-memory`. Their conditional
+prediction given an observed field path follows
+{prf:ref}`thm-algorithmic-field-filter`. These equations specify both
+fresh algorithmic noise and uncertainty from omitted state variables.
+They provide direct tests: compare exact O-stage predictions with
+independent innovations, telescope recorded spatial balances, compare
+next-O metric readouts from complete checkpoints, and test multi-step
+predictions while adding measured history features.
 
-For a finite Gaussian mode ensemble,
+The Gaussian correlation energy has its proved quadratic expansion and
+dilation pressure. The homogeneous density model has the stated Fourier
+multiplier and domain-dependent stability rates. The continuous OU and
+constant-coefficient BAOAB calculations give their respective diffusion
+tensors. For a finite Gaussian mode ensemble,
 
 $$
 P_{\mathrm{modes}}
 =-\frac{k_BT_{\mathrm{eff}}}{2}
- \sum_j\partial_V\log w_j.
+\sum_j\partial_V\log w_j.
 $$
 
-The prescribed two-term pressure
-$B-A\varepsilon_c^{d+2}$ is positive below its crossover and negative
-above it when $A,B$ remain fixed. That algebra does not identify an
-Einstein cosmological constant.
-
-Applications to the actual interacting swarm use its identified law,
-normalized mean-field dynamics, and the finite-particle, LSI, and entropy
-estimates. The particular stress–Ricci comparison proved in
-{prf:ref}`thm-structural-correspondence` assumes its constitutive
-equation; it is not the transition-derived metric equation.
+These analytic models can be compared with independently measured
+algorithmic fields once their energy, law and normalization conventions
+are fixed. Applications to interacting long-time laws also use the
+finite-particle, QSD, mean-field, LSI and entropy estimates under their
+stated hypotheses.
 
 (sec-symbols-field-equations)=
 ## Table of Symbols
 
 | Symbol | Meaning |
 |---|---|
-| $X_n$, $\mathsf P_{N,h}$ | Extended algorithmic state and fixed-step transition operator |
+| $S_n$, $X_n$, $\mathsf P_{N,h}$ | Complete algorithmic state and fixed-step transition operator |
+| $Q_D$, $Q_C$, $Q_H$, $\mathbb Q$ | Explicit donor, historical-rescore and joint update choice laws |
+| $\mathcal M_n^{(b)}$ | Complete marked empirical field at retained age $b$ |
+| $\rho$, $j$, $\mathsf M$ | Fixed-capacity spatial density, current and velocity second moment |
+| $\mathcal S_\rho$, $\mathcal S_j$, $\mathcal J_\rho$, $\mathcal J_j$ | Actual endpoint sources and finite-path fluxes |
+| $\Pi_\ell$, $u_\ell$ | Smoothed anisotropic kinetic stress and local mean velocity |
+| $\mathcal F_j$, $H_j$, $\tau_i$ | Conditional replacement fitness, its Hessian and O-query target map |
+| $q_n$, $\lambda_n$, $\Pi_n$, $R_n$ | Reduced descriptor, actual run law and resolved/omitted projections |
+| $\mathsf A_n$, $\mathsf B_n$, $\mathsf C_n$, $\mathsf D_n$ | Blocks of the actual projected transition operator |
+| $\mathsf T_{s,t}$, $\beta_n$ | Two-time field predictor and full-state law conditional on observed fields |
 | $A$, $b_A$, $\Gamma_A$ | Specified observable, conditional increment drift, and covariance |
 | $g_X(z)$ | Metric reconstruction at a fixed reference-coordinate probe |
 | $\eta_{n+1}$ | Zero-mean conditional observable fluctuation |
@@ -2090,10 +3016,6 @@ equation; it is not the transition-derived metric equation.
 | $\lambda_{\mathrm{kill}}$ | Balanced loss coefficient in the auxiliary gain–loss model |
 | $T_{\mathrm{eff}}$, $w_j$, $m_j$ | Mode temperature, quadratic energy coefficient, and mobility |
 | $\varepsilon_c^{\mathrm{th}}$ | Crossover in the prescribed two-term pressure model |
-| $G_{ab}$, $\mathsf E_{ab}$ | Lorentzian metric and its Einstein tensor |
-| $e$, $P$, $T_{ab}$ | Rest-frame energy density, pressure, and effective stress |
-| $\kappa_G$, $\Lambda$ | Coupling and cosmological term in the specified constitutive equation |
-| $\Lambda_P$ | Signed pressure parameter; vacuum contributes $-\Lambda_P$ to $\Lambda$ |
 | $\gamma$, $\sigma_v^2$, $v_T^2$ | Reference friction, noise variance rate, and stationary velocity variance |
 
 (sec-references-field-equations)=

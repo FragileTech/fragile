@@ -44,6 +44,12 @@ pub struct ExecutionStats {
     pub uploaded_bytes: u64,
     pub downloaded_bytes: u64,
     pub peak_batch_elements: usize,
+    /// Objective evaluations performed by scalar host code instead of the tensor graph.
+    #[serde(default)]
+    pub host_reward_evaluations: u64,
+    /// Objective evaluations spent on host finite-difference gradients.
+    #[serde(default)]
+    pub host_gradient_evaluations: u64,
 }
 
 #[derive(Clone, Debug)]

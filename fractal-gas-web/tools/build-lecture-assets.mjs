@@ -73,6 +73,7 @@ for (const demo of demos) {
       "V-12": 1,
     };
     const chart =
+      (demo.id === "VI-51" && snapshot.charts.find((chart) => chart.title === "Conditional field equation: cloning term")) ||
       snapshot.charts[preferred[demo.id]] ||
       snapshot.charts.find(
         (chart) =>

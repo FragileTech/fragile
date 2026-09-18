@@ -13,6 +13,9 @@ pub enum Stream {
     Kinetic = 7,
     Domain = 8,
     HistoricalDistance = 9,
+    CollisionRotation = 10,
+    MeanFieldReference = 11,
+    RewardNoise = 12,
 }
 /// Scheduling-independent addressed host reference RNG. Its integer operations
 /// are identical on native and WASM; no shared mutable backend RNG is used.
@@ -84,5 +87,46 @@ impl RandomStream {
             let j = self.index(i + 1);
             values.swap(i, j);
         }
+    }
+
+    /// Haar O(d) matrix from an isotropic Gaussian matrix with a positive-diagonal
+    /// QR factorization. The orthogonal factor includes both determinant signs.
+    /// Columns are reorthogonalized to control finite-precision loss of orthogonality.
+    pub fn haar_orthogonal(&mut self, dimension: usize) -> crate::Result<Vec<f64>> {
+        crate::error::require(
+            (1..=256).contains(&dimension),
+            "component rotations require dimension in 1..=256",
+        )?;
+        let d = dimension;
+        for _ in 0..8 {
+            let mut q = vec![0.; d * d];
+            let mut valid = true;
+            for column in 0..d {
+                let mut v: Vec<f64> = (0..d).map(|_| self.gaussian::<f64>()).collect();
+                for _ in 0..2 {
+                    for previous in 0..column {
+                        let projection: f64 =
+                            (0..d).map(|row| q[row * d + previous] * v[row]).sum();
+                        for row in 0..d {
+                            v[row] -= projection * q[row * d + previous];
+                        }
+                    }
+                }
+                let norm = v.iter().map(|x| x * x).sum::<f64>().sqrt();
+                if !norm.is_finite() || norm <= 1e-12 {
+                    valid = false;
+                    break;
+                }
+                for row in 0..d {
+                    q[row * d + column] = v[row] / norm;
+                }
+            }
+            if valid {
+                return Ok(q);
+            }
+        }
+        Err(crate::GasError::Numerical(
+            "Gaussian component rotation was numerically rank deficient".into(),
+        ))
     }
 }

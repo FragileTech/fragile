@@ -129,7 +129,7 @@ summary {
 }
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   padding: 18px 20px;
   gap: 12px;
   border-bottom: 1px solid var(--line);
@@ -152,6 +152,9 @@ summary {
 #metric-best {
   color: var(--cyan);
 }
+#metric-gap-tile[hidden] {
+  display: none;
+}
 .view-bar {
   display: flex;
   align-items: center;
@@ -171,8 +174,23 @@ summary {
 }
 .view-controls {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
   align-items: center;
+}
+.view-controls label[hidden],
+.view-controls button[hidden] {
+  display: none;
+}
+.view-controls #view {
+  width: 118px;
+}
+.view-controls #color-mode {
+  width: 104px;
+}
+.view-controls #z-axis {
+  width: 68px;
 }
 .view-controls label {
   flex-direction: row;
@@ -246,6 +264,82 @@ summary {
 .white {
   background: white;
 }
+.gold {
+  background: #efc87b;
+}
+.stage-legend [hidden] {
+  display: none;
+}
+.display-options {
+  border-top: 1px solid var(--line);
+  padding: 10px 20px 4px;
+  margin: 0;
+  font-size: 11px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.display-options summary {
+  color: var(--lavender, var(--ink));
+  margin-bottom: 4px;
+}
+.display-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin-top: 8px;
+}
+.display-grid label,
+#slice-controls label {
+  margin: 0;
+}
+.display-grid input[type="range"],
+#slice-controls input[type="range"] {
+  padding: 0;
+  accent-color: var(--cyan);
+}
+.display-grid .check {
+  flex-direction: row;
+  align-items: center;
+  align-self: end;
+}
+.slice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 12px;
+}
+.slice-actions button {
+  padding: 4px 8px;
+  min-height: 26px;
+}
+#slice-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px 14px;
+  margin-top: 10px;
+  max-height: 120px;
+  overflow: auto;
+}
+#slice-controls output {
+  color: var(--ink);
+  font-family: var(--mono);
+}
+.display-options .hint {
+  margin: 8px 0;
+}
+.display-options .hint[hidden] {
+  display: none;
+}
+#molecule[hidden] {
+  display: none;
+}
+#molecule-canvas {
+  display: block;
+  width: 100%;
+  height: 200px;
+  touch-action: none;
+  margin-bottom: 12px;
+}
 .convergence {
   border-top: 1px solid var(--line);
   padding: 16px 20px 8px;
@@ -311,7 +405,7 @@ dd {
   }
   .workspace {
     min-height: 0;
-    overflow: hidden;
+    overflow: hidden auto;
   }
   #stage {
     min-height: 190px;
@@ -346,7 +440,8 @@ dd {
   }
   .inspector .section-heading,
   .inspector dl,
-  .inspector .hint {
+  .inspector .hint,
+  .inspector #molecule {
     grid-column: 1 / -1;
   }
   .inspector dl {
@@ -372,6 +467,17 @@ dd {
   }
   .metrics strong {
     font-size: 16px;
+  }
+  .view-controls {
+    justify-content: flex-start;
+  }
+  .display-options {
+    padding: 10px 12px 4px;
+    max-height: none;
+  }
+  .display-grid,
+  #slice-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .run-bar,
   .view-bar {

@@ -48,6 +48,14 @@ pub trait AlgorithmicDistance<T: Real> {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum Distance {
+    /// Bounded algorithmic features; physical coordinates remain unbounded.
+    SquashedPhaseSpace {
+        positions: String,
+        velocities: String,
+        position_radius: f64,
+        velocity_radius: f64,
+        lambda: f64,
+    },
     Euclidean {
         field: String,
         scales: Vec<f64>,
@@ -80,6 +88,29 @@ impl Default for Distance {
 impl Distance {
     pub fn validate<T: Real>(&self, obs: &ObservationBatch<T>) -> Result<()> {
         match self {
+            Self::SquashedPhaseSpace {
+                positions,
+                velocities,
+                position_radius,
+                velocity_radius,
+                lambda,
+            } => {
+                let x = obs.field(positions)?;
+                let v = obs.field(velocities)?;
+                require(
+                    x.item_shape().len() == 1 && x.item_shape() == v.item_shape(),
+                    "squashed phase-space requires matching vectors",
+                )?;
+                require(
+                    position_radius.is_finite()
+                        && *position_radius > 0.
+                        && velocity_radius.is_finite()
+                        && *velocity_radius > 0.
+                        && lambda.is_finite()
+                        && *lambda >= 0.,
+                    "invalid squashed phase-space parameters",
+                )?;
+            }
             Self::Euclidean {
                 field,
                 scales,
@@ -146,7 +177,9 @@ impl Distance {
     pub fn field(&self) -> &str {
         match self {
             Self::Euclidean { field, .. } | Self::Cosine { field, .. } => field,
-            Self::PhaseSpace { positions, .. } => positions,
+            Self::PhaseSpace { positions, .. } | Self::SquashedPhaseSpace { positions, .. } => {
+                positions
+            }
         }
     }
     pub fn periodic(&self) -> Option<&BoxDomain> {
@@ -253,6 +286,46 @@ impl Distance {
     ) -> Result<Vec<T>> {
         let mut delta = Vec::new();
         match self {
+            Self::SquashedPhaseSpace {
+                positions,
+                velocities,
+                position_radius,
+                velocity_radius,
+                lambda,
+            } => {
+                for (field, radius, weight) in [
+                    (positions, *position_radius, 1.),
+                    (velocities, *velocity_radius, lambda.sqrt()),
+                ] {
+                    let av = a.field(field)?.row(i)?;
+                    let bv = b.field(field)?.row(j)?;
+                    require(av.len() == bv.len(), "squashed phase-space schemas differ")?;
+                    let factor = |v: &[T]| {
+                        let scale = v.iter().fold(T::ZERO, |m, x| m.max(x.abs()));
+                        if scale == T::ZERO {
+                            return T::ONE;
+                        }
+                        let norm = v
+                            .iter()
+                            .fold(T::ZERO, |s, x| s + (*x / scale) * (*x / scale))
+                            .sqrt();
+                        let radius = T::from_f64(radius);
+                        if scale <= radius {
+                            T::ONE / (T::ONE + (scale / radius) * norm)
+                        } else {
+                            let r = radius / scale;
+                            r / (r + norm)
+                        }
+                    };
+                    let af = factor(av);
+                    let bf = factor(bv);
+                    delta.extend(
+                        av.iter()
+                            .zip(bv)
+                            .map(|(x, y)| (*x * af - *y * bf) * T::from_f64(weight)),
+                    );
+                }
+            }
             Self::Euclidean {
                 field,
                 scales,

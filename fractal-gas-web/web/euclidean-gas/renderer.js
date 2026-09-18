@@ -1,6 +1,7 @@
 import * as THREE from "./vendor/three.module.js";
 import { OrbitControls } from "./vendor/addons/controls/OrbitControls.js";
 import { alive } from "./config.js";
+import { pixelStats } from "./geometry3d.js";
 
 const LOW = new THREE.Color("#7ef5df");
 const HIGH = new THREE.Color("#ff729b");
@@ -145,7 +146,31 @@ export class PopulationRenderer {
   project(x, low, high) {
     return (2 * (x - low)) / (high - low) - 1;
   }
+  setDomain(domain) {
+    this.domain = domain;
+  }
+  setSurface(data, settings) {
+    if (data) this.landscape(data);
+    this.setLandscapeVisible(settings?.showSurface !== false);
+  }
+  resetCamera() {
+    this.fit();
+  }
+  pixelStats() {
+    this.render();
+    return pixelStats(this.renderer.getContext());
+  }
+  // Also accepts the shared stage signature update(frame, settings, selected).
   update(frame, bounds, axes, selected, includeTruncated = false) {
+    if (!Array.isArray(bounds)) {
+      const settings = bounds;
+      selected = axes;
+      bounds = [this.domain.low, this.domain.high];
+      axes = settings.axes.slice(0, 2);
+      includeTruncated = settings.includeTruncated;
+      if (this.showLandscape !== settings.showSurface)
+        this.setLandscapeVisible(settings.showSurface);
+    }
     this.frame = frame;
     this.bounds = bounds;
     this.axes = axes;
@@ -232,7 +257,9 @@ export class PopulationRenderer {
       for (let col = 0; col < n; col++) {
         const v = data.values[(n - 1 - row) * n + col];
         const t =
-          max > min ? Math.max(0, Math.min(1, (v - min) / (max - min))) : 0;
+          max > min && Number.isFinite(v)
+            ? Math.max(0, Math.min(1, (v - min) / (max - min)))
+            : 0;
         if (t < 0.65) color.copy(low).lerp(middle, t / 0.65);
         else color.copy(middle).lerp(high, (t - 0.65) / 0.35);
         color.toArray(colors, (row * n + col) * 3);
@@ -280,7 +307,14 @@ export class PopulationRenderer {
   dispose() {
     this.resizeObserver.disconnect();
     this.controls.dispose();
+    this.scene.traverse((child) => {
+      child.geometry?.dispose();
+      child.material?.map?.dispose();
+      child.material?.dispose();
+    });
     this.renderer.dispose();
+    this.renderer.forceContextLoss();
+    this.renderer.domElement.remove();
   }
 }
 

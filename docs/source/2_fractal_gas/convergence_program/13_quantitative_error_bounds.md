@@ -86,6 +86,134 @@ the identity and in its estimates.
 :::
 
 :::{div} feynman-prose
+Imagine preparing the comparison population by drawing each marked slot from
+$\rho$, then discarding preparations in which every slot is dead. That is
+$R_N$. Now advance this preparation through the complete gas update. Walkers
+can share donors and component rotations, so the resulting $R_N^+$ contains
+the correlations produced by the algorithm. The term $\mathcal I_n$ measures
+the change of reference caused by this step.
+
+Survival also changes which inputs we see. An input with larger survival
+probability contributes more often to the surviving output ensemble. The
+covariance and logarithm in $\mathcal S_n$ account for that reweighting and
+its normalization. Keeping these two effects visible lets us locate the
+estimates needed for concentration: entropy lost through the transition,
+entropy contributed by the evolving comparison law, and the selection of
+surviving runs.
+:::
+
+:::{prf:theorem} Exact discrete population-entropy accounting
+:label: thm-quantitative-full-step-entropy
+
+Let $Q_N$ be the complete marked Euclidean Gas kernel, $k_N=Q_N1$, and
+$E_N$ its nonextinct input state space. Let $\rho$ be a terminally
+consistent one-slot law with alive mass $m>0$. Define
+
+$$
+q_N=\rho^{\otimes N}(E_N)=1-(1-m)^N,\qquad
+R_N=\rho^{\otimes N}(\,\cdot\mid E_N),\qquad
+R_N^+=\frac{R_NQ_N}{R_Nk_N},\quad
+b_N=R_Nk_N.
+$$
+
+For the actual survival-conditioned iterates $P_{n+1}=P_nQ_N/a_n$, where
+$a_n=P_nk_N$, set
+$f_n=dP_n/dR_N$ and $H_n=D(P_n\Vert R_N)$.
+Whenever the displayed terms are finite, their exact per-step balance is
+
+$$
+H_{n+1}-H_n
+=-\mathcal B_N(P_n,R_N)+\mathcal S_n+\mathcal I_n,
+$$
+
+where
+
+$$
+\mathcal S_n
+=\frac{\operatorname{Cov}_{P_n}(k_N,\log f_n)}{a_n}
++\log\frac{b_N}{a_n},
+\qquad
+\mathcal I_n=P_{n+1}\log\frac{dR_N^+}{dR_N},
+$$
+
+and $\mathcal B_N$ is the nonnegative backward relative entropy in
+{prf:ref}`thm-kl-full-step-survivor-chain-rule`. Thus for every $t\geq1$,
+
+$$
+H_t+\sum_{n=0}^{t-1}\mathcal B_N(P_n,R_N)
+=H_0+\sum_{n=0}^{t-1}(\mathcal S_n+\mathcal I_n).
+$$
+
+For an actual QSD $P_n=\nu_N$, the left entropy increment is zero, giving
+the stationary identity
+$\mathcal B_N(\nu_N,R_N)=\mathcal S_\nu+\mathcal I_\nu$.
+The unconditioned product-reference entropy and the entropy per slot are
+respectively
+
+$$
+D(P_n\Vert\rho^{\otimes N})=H_n-\log q_N,
+\qquad
+\frac1N D(P_n\Vert\rho^{\otimes N})
+=\frac{H_n-\log q_N}{N}.
+$$
+
+These identities also hold when $\rho$ is a fixed point of the actual
+population map $\mathcal F_h$. The finite-population output $R_N^+$ in
+$\mathcal I_n$ retains its component dependence and need not be a product.
+:::
+
+:::{prf:proof}
+The event that every independently sampled slot is dead has probability
+$(1-m)^N$, which proves $q_N$. On $E_N$,
+$dR_N/d\rho^{\otimes N}=1/q_N$. The logarithmic likelihood-ratio identity
+therefore gives $D(P_n\Vert\rho^{\otimes N})=H_n-\log q_N$.
+Apply {prf:ref}`thm-kl-full-step-survivor-chain-rule` with $P=P_n$,
+$R=T=R_N$; its covariance form gives the claimed increment exactly.
+Summing telescopes. For a QSD the normalized full-step output equals the
+input, so its entropy increment is zero. No exchangeability cancellation,
+time interpolation, or differentiation of a replacement generator is used.
+:::
+
+:::{prf:corollary} Bounded-observable concentration with the survival cost
+:label: cor-quantitative-marked-product-entropy
+
+Under the notation of {prf:ref}`thm-quantitative-full-step-entropy`, let
+$\varphi$ be any bounded measurable one-slot observable, including the
+alive indicator, whose range lies in an interval of length $\ell>0$.
+For any input law $P$ on $E_N$,
+
+$$
+\mathbb E_P\left|L_N\varphi-\rho\varphi\right|^2
+\leq\frac{\ell^2}{N}
+\left[D(P\Vert R_N)-\log q_N+\frac12\log2\right].
+$$
+
+The same right-hand side bounds $\operatorname{Var}_P(L_N\varphi)$.
+The conditioning contribution satisfies
+$-\log q_N\leq(1-m)^N/[1-(1-m)^N]$.
+:::
+
+:::{prf:proof}
+Under $Q=\rho^{\otimes N}$, Hoeffding's lemma and independence give,
+for $F=L_N\varphi-\rho\varphi$,
+$\mathbb E_Qe^{sF}\leq e^{s^2\ell^2/(8N)}$.
+For an independent standard Gaussian $G$, Tonelli's theorem yields
+
+$$
+\mathbb E_Qe^{NF^2/\ell^2}
+=\mathbb E_G\mathbb E_Qe^{\sqrt{2N}\,GF/\ell}
+\leq\mathbb E_Ge^{G^2/4}=\sqrt2.
+$$
+
+The entropy variational inequality bounds
+$\mathbb E_P[NF^2/\ell^2]$ by $D(P\Vert Q)+\tfrac12\log2$.
+Substitute the exact conditioning identity. Variance is no larger than
+squared error about a specified constant. Finally
+$-\log(1-x)=\int_0^x(1-u)^{-1}du\leq x/(1-x)$ for $0\leq x<1$.
+No joint QSD LSI or independence of the walkers under $P$ is needed.
+:::
+
+:::{div} feynman-prose
 The differential inequality has a useful interpretation: dissipation removes entropy, while the residual term can replenish it. A bounded residual leaves a bounded long-time entropy level. To make that bound uniform in the number of particles, the residual must itself have a uniform bound. The covariance calculation below shows one way an interaction error can meet that requirement.
 :::
 
@@ -165,6 +293,95 @@ not a dimension-independent $W_2$ rate for the entire empirical measure.
 This is the empirical-coupling construction proved in
 {prf:ref}`thm-mean-field-limit-informal`: pair coordinates, apply the triangle
 inequality, and use Jensen's inequality on the mean squared coupling cost.
+:::
+
+:::{prf:theorem} Physical quantization error for the actual population law
+:label: thm-quantitative-algorithm-quantization-lower-bound
+
+Let $\mu=\mathcal F_h(\lambda)$ be the output of the actual marked
+Euclidean Gas population update, with final independent position Gaussian
+noise of standard deviation $s=\sigma_x\sqrt h>0$ in each coordinate.
+Let $\mu_x$ be its full-slot physical position marginal in $\mathbb R^d$,
+including the retained positions of dead slots. Write
+$\omega_d$ for the volume of the unit Euclidean ball and
+$M_s=(2\pi s^2)^{-d/2}$.
+For every probability measure $\eta_N$ supported on at most $N$ physical
+positions,
+
+$$
+W_2^2(\eta_N,\mu_x)
+\geq\frac12(2M_s\omega_d)^{-2/d}N^{-2/d}.
+$$
+
+In particular the bound holds for every realized empirical position measure
+of an actual Rust gas run, without any independence assumption on its slots.
+It also holds with $\mu=\mu_*$ for every fixed point
+$\mu_*=\mathcal F_h(\mu_*)$ of this same algorithm.
+
+When $d>2$, no constant $C$ independent of $N$ can satisfy either
+$\mathbb EW_2^2(\eta_N,\mu_x)\leq C/N$ or
+$\mathbb EW_2(\eta_N,\mu_x)\leq C/\sqrt N$ for all $N$.
+The same obstruction holds for physical phase-space Wasserstein distance
+whose ground metric dominates position distance. It concerns distributional
+quantization and does not contradict the bounds for each fixed observable
+in {prf:ref}`cor-quantitative-marked-product-entropy`.
+:::
+
+:::{prf:proof}
+Condition on all stages before the final position noise, including the
+sampled-fitness graph, the shared component rotations, revival, jitter,
+and BAOAB. If $\Lambda_x$ is the resulting pre-noise position law, the
+full-slot output position marginal is exactly
+
+$$
+\mu_x=\Lambda_x*\mathcal N(0,s^2I_d).
+$$
+
+The velocity cap does not change positions. The terminal boundary operation
+assigns alive/dead marks and retains both sets of position coordinates, so
+summing over those marks preserves this convolution identity. Consequently
+$\mu_x$ has a density bounded above by $M_s$ everywhere.
+
+Let $A$ be the support of $\eta_N$ and put
+$r=(2NM_s\omega_d)^{-1/d}$. The union $U$ of radius-$r$ balls about the
+at most $N$ points of $A$ satisfies
+
+$$
+\mu_x(U)\leq M_sN\omega_dr^d=\frac12.
+$$
+
+In every coupling of $X\sim\mu_x$ and $Y\sim\eta_N$, the event
+$X\notin U$ therefore has probability at least $1/2$, and on that event
+$|X-Y|\geq r$. Thus every coupling costs at least $r^2/2$.
+Taking the infimum proves the first bound, including the case of infinite
+transport cost. Projection from physical phase space to position cannot
+increase Wasserstein distance, so its cost has the same lower bound.
+
+The inequality holds for each realization and hence after taking expectation.
+Its square root gives the deterministic lower bound
+$W_2\geq(2M_s\omega_d)^{-1/d}N^{-1/d}/\sqrt2$.
+For $d>2$, the ratios of these lower bounds to $N^{-1}$ and $N^{-1/2}$,
+respectively, grow without bound. The fixed-point substitution uses its
+actual one-step identity and requires no replacement particle model.
+:::
+
+:::{div} feynman-prose
+There are two different measurement tasks here. For a fixed bounded
+observable, such as the alive fraction, each run supplies one average.
+The entropy bound above gives a standard error of order $N^{-1/2}$ when
+the joint product-reference entropy stays bounded uniformly in $N$.
+Establishing that entropy bound is the analytic task; the independence
+used in its comparison calculation belongs to the reference law.
+
+To approximate the entire position distribution in $W_2$, the same run
+must represent a smooth cloud with only $N$ points. Place a small ball
+around each point. Because the final Gaussian noise bounds the target
+density, these balls cover at most half its probability when their radius
+is of order $N^{-1/d}$. The remaining probability must travel at least
+that distance. This geometric cost persists even for perfectly arranged
+points. It concerns spatial resolution; the cluster analysis controls
+the dependence among walkers. A sharp cluster estimate can therefore
+coexist with a dimension-dependent empirical transport rate.
 :::
 
 :::{prf:proposition} Second moments of a mean-field limit

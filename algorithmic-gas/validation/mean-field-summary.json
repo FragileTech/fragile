@@ -1,0 +1,3270 @@
+{
+  "uncertainty_unit": "independent complete seed trajectory at each N; sizes reuse seeds and are paired, never pooled as independent runs",
+  "studies": [
+    {
+      "source": "validation/mean-field-population.json",
+      "case": "canonical",
+      "seed_start": 0,
+      "cohorts": [
+        {
+          "N": 16,
+          "balances": {
+            "clone": {
+              "mean": 0.58381079047673,
+              "standard_error": 0.7326802746870192,
+              "sample_variance": 68.71300926917709,
+              "replicas": 128,
+              "sum_residual": 74.72778118102144,
+              "sum_predictable_variance": 8076.749457604534,
+              "predicted_standard_error_of_mean": 0.7021151366670537,
+              "standardized_sum": 0.8315029259276258
+            },
+            "stress": {
+              "mean": -0.0011728377883966229,
+              "standard_error": 0.0009300680493746284,
+              "sample_variance": 0.00011072340178784337,
+              "replicas": 128,
+              "sum_residual": -0.15012323691476773,
+              "sum_predictable_variance": 0.015310237607913887,
+              "predicted_standard_error_of_mean": 0.0009666761322302575,
+              "standardized_sum": -1.2132685904747864
+            },
+            "position": {
+              "mean": 0.0013650905009124047,
+              "standard_error": 0.0008123502233498287,
+              "sample_variance": 8.446884932819412e-05,
+              "replicas": 128,
+              "sum_residual": 0.1747315841167878,
+              "sum_predictable_variance": 0.011700702951314134,
+              "predicted_standard_error_of_mean": 0.0008450764656930723,
+              "standardized_sum": 1.6153455412970865
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8402859683712305,
+                "standard_error": 0.00325527933042072,
+                "sample_variance": 0.0013563959704402397,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0016916424171600475,
+                "standard_error": 0.011758619353328427,
+                "sample_variance": 0.01769793652434814,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8667342004618489,
+                "standard_error": 0.0037625839596097297,
+                "sample_variance": 0.0018121008707983914,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.008714245386217316,
+                "standard_error": 0.011611344547457776,
+                "sample_variance": 0.01725738524157151,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.054296875,
+                "standard_error": 0.002420939956517214,
+                "sample_variance": 0.0007502016349518809,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.18798828125,
+                "standard_error": 0.005022866832486886,
+                "sample_variance": 0.0032293364757627952,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9237723397083686,
+                "standard_error": 0.0033089361879430823,
+                "sample_variance": 0.0014014795130725501,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0010377005829490776,
+                "standard_error": 0.009911743768777348,
+                "sample_variance": 0.012575061060850764,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.054427083333333334,
+                "standard_error": 0.0025041275460301465,
+                "sample_variance": 0.0008026438101487313,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.18896484375,
+                "standard_error": 0.0047761086478685525,
+                "sample_variance": 0.0029198353684793308,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.971968013522648,
+                "standard_error": 0.0014398915728253954,
+                "sample_variance": 0.0002653808309111796,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0013949640593705613,
+                "standard_error": 0.007355126739700112,
+                "sample_variance": 0.006924529837702604,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.049609375,
+                "standard_error": 0.001984317304601424,
+                "sample_variance": 0.0005040019411636045,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.18359375,
+                "standard_error": 0.004315429472598578,
+                "sample_variance": 0.0023837352362204725,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9806502488551825,
+                "standard_error": 0.000677565933753339,
+                "sample_variance": 5.876423610662836e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0027075794632961904,
+                "standard_error": 0.00562977826988762,
+                "sample_variance": 0.004056883631116653,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.04283854166666667,
+                "standard_error": 0.002169192023311376,
+                "sample_variance": 0.000602290436351706,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.17236328125,
+                "standard_error": 0.004739808906833109,
+                "sample_variance": 0.002875620924581693,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 34206,
+          "components_larger_than_pairs": 6371,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 4.163336342344337e-17
+        },
+        {
+          "N": 32,
+          "balances": {
+            "clone": {
+              "mean": 0.32226319151110777,
+              "standard_error": 1.0008782734606732,
+              "sample_variance": 128.2249367405591,
+              "replicas": 128,
+              "sum_residual": 41.249688513421795,
+              "sum_predictable_variance": 16509.71517751916,
+              "predicted_standard_error_of_mean": 1.0038291913980577,
+              "standardized_sum": 0.32103389129607185
+            },
+            "stress": {
+              "mean": 0.001878999633418013,
+              "standard_error": 0.0006065365833626679,
+              "sample_variance": 4.708948825052911e-05,
+              "replicas": 128,
+              "sum_residual": 0.24051195307750567,
+              "sum_predictable_variance": 0.007482744031788987,
+              "predicted_standard_error_of_mean": 0.0006758035595933154,
+              "standardized_sum": 2.7803932174443653
+            },
+            "position": {
+              "mean": 0.00015948544261377528,
+              "standard_error": 0.0006386965455527098,
+              "sample_variance": 5.221545949452347e-05,
+              "replicas": 128,
+              "sum_residual": 0.020414136654563236,
+              "sum_predictable_variance": 0.005636261883015915,
+              "predicted_standard_error_of_mean": 0.0005865237631126258,
+              "standardized_sum": 0.27191642119903414
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8406203445827156,
+                "standard_error": 0.0023965997697520925,
+                "sample_variance": 0.0007351923784161001,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.003508180544181123,
+                "standard_error": 0.00929134883917093,
+                "sample_variance": 0.011050132896148862,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8658782586040931,
+                "standard_error": 0.0026222683011051895,
+                "sample_variance": 0.0008801652535015803,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.003930095138821521,
+                "standard_error": 0.00805171537234056,
+                "sample_variance": 0.008298255415959717,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.028225806451612902,
+                "standard_error": 0.000963938509757134,
+                "sample_variance": 0.00011893471367587896,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.11669921875,
+                "standard_error": 0.002889360637208105,
+                "sample_variance": 0.0010685958261564962,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9227427079811552,
+                "standard_error": 0.002415808329421515,
+                "sample_variance": 0.0007470246252163035,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.010241809583911642,
+                "standard_error": 0.0074321448440829805,
+                "sample_variance": 0.007070307453878942,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.027784778225806453,
+                "standard_error": 0.0009534895774858205,
+                "sample_variance": 0.00011637022391988333,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.1171875,
+                "standard_error": 0.003157891617209702,
+                "sample_variance": 0.0012764517716535432,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9744534265028222,
+                "standard_error": 0.0009770590501979096,
+                "sample_variance": 0.0001221944816094261,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.01041623105849325,
+                "standard_error": 0.004752657430770324,
+                "sample_variance": 0.002891232339744817,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.021547379032258066,
+                "standard_error": 0.0007155227281593403,
+                "sample_variance": 6.553251513761092e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.103271484375,
+                "standard_error": 0.0023137898538583748,
+                "sample_variance": 0.0006852638064406988,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9810473793230728,
+                "standard_error": 0.0005493269957034412,
+                "sample_variance": 3.862529897069676e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0010872032362586718,
+                "standard_error": 0.003834582337130893,
+                "sample_variance": 0.0018821147776302363,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.021169354838709676,
+                "standard_error": 0.0006489070936995329,
+                "sample_variance": 5.389829328045753e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.1025390625,
+                "standard_error": 0.0023493182501778784,
+                "sample_variance": 0.0007064699187992126,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 67036,
+          "components_larger_than_pairs": 12473,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 5.551115123125783e-17
+        },
+        {
+          "N": 64,
+          "balances": {
+            "clone": {
+              "mean": 2.2535028111144237,
+              "standard_error": 1.448024574418601,
+              "sample_variance": 268.3872215193819,
+              "replicas": 128,
+              "sum_residual": 288.44835982264624,
+              "sum_predictable_variance": 33235.09682578656,
+              "predicted_standard_error_of_mean": 1.4242574653993434,
+              "standardized_sum": 1.5822299449787829
+            },
+            "stress": {
+              "mean": 0.00034006489427124685,
+              "standard_error": 0.000490112804569397,
+              "sample_variance": 3.074695183396864e-05,
+              "replicas": 128,
+              "sum_residual": 0.043528306466719596,
+              "sum_predictable_variance": 0.003789382560503683,
+              "predicted_standard_error_of_mean": 0.00048092157018724723,
+              "standardized_sum": 0.7071109206826433
+            },
+            "position": {
+              "mean": -0.00025421157779191957,
+              "standard_error": 0.0004039990953789462,
+              "sample_variance": 2.089155444057688e-05,
+              "replicas": 128,
+              "sum_residual": -0.032539081957365705,
+              "sum_predictable_variance": 0.0027922874503783484,
+              "predicted_standard_error_of_mean": 0.00041282890018596886,
+              "standardized_sum": -0.6157795098100054
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8409954769687097,
+                "standard_error": 0.0017807192216312987,
+                "sample_variance": 0.00040588300112475876,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0023062187455101667,
+                "standard_error": 0.006696371778065601,
+                "sample_variance": 0.0057396985587294036,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8687039154736533,
+                "standard_error": 0.0021759761394454977,
+                "sample_variance": 0.0006060636364078249,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0002567430465789148,
+                "standard_error": 0.0059046785985678255,
+                "sample_variance": 0.0044627493571052675,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.014342292906746032,
+                "standard_error": 0.0003019583752080006,
+                "sample_variance": 1.1670894125856727e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0660400390625,
+                "standard_error": 0.0013995918587618654,
+                "sample_variance": 0.00025073374350239913,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9249056687133395,
+                "standard_error": 0.001624421828440723,
+                "sample_variance": 0.0003377595234194818,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0016017849417938627,
+                "standard_error": 0.00472009451330714,
+                "sample_variance": 0.0028517494034626775,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.012943328373015872,
+                "standard_error": 0.0003245429240013568,
+                "sample_variance": 1.3481998018476857e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0640869140625,
+                "standard_error": 0.0014587033349158774,
+                "sample_variance": 0.00027236037366972193,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9754423069549495,
+                "standard_error": 0.0006398907887167245,
+                "sample_variance": 5.24109083500175e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.005650823225566599,
+                "standard_error": 0.0035779989832942336,
+                "sample_variance": 0.0016386658207301849,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.01065305679563492,
+                "standard_error": 0.00028636458624932756,
+                "sample_variance": 1.0496598560991818e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0609130859375,
+                "standard_error": 0.001437964341215628,
+                "sample_variance": 0.00026467090516578493,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.979554689888253,
+                "standard_error": 0.0004850303892342178,
+                "sample_variance": 3.011257324552919e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0021586678674515294,
+                "standard_error": 0.0029975452572174465,
+                "sample_variance": 0.0011501155288405514,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.010141524057539682,
+                "standard_error": 0.0002520000081619733,
+                "sample_variance": 8.128512526545231e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0567626953125,
+                "standard_error": 0.0012361287749453366,
+                "sample_variance": 0.0001955858365757259,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 133034,
+          "components_larger_than_pairs": 25015,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        },
+        {
+          "N": 128,
+          "balances": {
+            "clone": {
+              "mean": -2.529006308754577,
+              "standard_error": 2.1602065347797565,
+              "sample_variance": 597.3110109318609,
+              "replicas": 128,
+              "sum_residual": -323.71280752058584,
+              "sum_predictable_variance": 66652.35467901055,
+              "predicted_standard_error_of_mean": 2.0169622907391767,
+              "standardized_sum": -1.253868909878204
+            },
+            "stress": {
+              "mean": 9.6819820769832e-05,
+              "standard_error": 0.00030503216658460625,
+              "sample_variance": 1.190971169936627e-05,
+              "replicas": 128,
+              "sum_residual": 0.012392937058538497,
+              "sum_predictable_variance": 0.0018928138201215019,
+              "predicted_standard_error_of_mean": 0.0003398943766279096,
+              "standardized_sum": 0.28485267020414096
+            },
+            "position": {
+              "mean": 0.0001823491719989952,
+              "standard_error": 0.0002868139263155801,
+              "sample_variance": 1.0529565226055552e-05,
+              "replicas": 128,
+              "sum_residual": 0.023340694015871386,
+              "sum_predictable_variance": 0.0013927716499764209,
+              "predicted_standard_error_of_mean": 0.00029156137480276974,
+              "standardized_sum": 0.6254229392434013
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8411103611572364,
+                "standard_error": 0.0011333233158365198,
+                "sample_variance": 0.00016440598249199155,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0015901306019107302,
+                "standard_error": 0.00454282570434954,
+                "sample_variance": 0.0026415699686526584,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8708277824053936,
+                "standard_error": 0.0012991341142466549,
+                "sample_variance": 0.0002160319291903284,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0018867653424974303,
+                "standard_error": 0.004031484254510366,
+                "sample_variance": 0.00208036675767872,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.007012795275590551,
+                "standard_error": 0.00011115069719947281,
+                "sample_variance": 1.5813731184548983e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.03704833984375,
+                "standard_error": 0.0006836821388454609,
+                "sample_variance": 5.982992217296691e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9282716261070856,
+                "standard_error": 0.0009938808984470335,
+                "sample_variance": 0.00012643830275812894,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.002804075876210018,
+                "standard_error": 0.0036873631702971066,
+                "sample_variance": 0.0017403708351569319,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0065341258612204725,
+                "standard_error": 0.0001122198198364696,
+                "sample_variance": 1.6119408594086011e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.03619384765625,
+                "standard_error": 0.0006705123461464736,
+                "sample_variance": 5.7547111210860606e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9747380656470439,
+                "standard_error": 0.00040315125490266406,
+                "sample_variance": 2.080395959418788e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0011635859888081003,
+                "standard_error": 0.0023654844538081293,
+                "sample_variance": 0.0007162261377546167,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.005270169475885827,
+                "standard_error": 9.942161322271032e-05,
+                "sample_variance": 1.2652361185031947e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.03350830078125,
+                "standard_error": 0.0007258038631723353,
+                "sample_variance": 6.74292797178734e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9796900084124001,
+                "standard_error": 0.00030993434978297314,
+                "sample_variance": 1.2295590550450477e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0010305281554373756,
+                "standard_error": 0.0019379178112333578,
+                "sample_variance": 0.0004807072567162225,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.005124069574311023,
+                "standard_error": 8.39525452271318e-05,
+                "sample_variance": 9.021478208145423e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.03314208984375,
+                "standard_error": 0.0006470016724616019,
+                "sample_variance": 5.3582229013518086e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 264344,
+          "components_larger_than_pairs": 49348,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        },
+        {
+          "N": 256,
+          "balances": {
+            "clone": {
+              "mean": 4.166358978892234,
+              "standard_error": 2.8548598073731846,
+              "sample_variance": 1043.2287385286218,
+              "replicas": 128,
+              "sum_residual": 533.2939492982059,
+              "sum_predictable_variance": 133654.47030395482,
+              "predicted_standard_error_of_mean": 2.856155016541096,
+              "standardized_sum": 1.458729990061198
+            },
+            "stress": {
+              "mean": -6.498628467442564e-05,
+              "standard_error": 0.0002397346079807949,
+              "sample_variance": 7.356503329754293e-06,
+              "replicas": 128,
+              "sum_residual": -0.008318244438326482,
+              "sum_predictable_variance": 0.0009518353442235766,
+              "predicted_standard_error_of_mean": 0.0002410299129962058,
+              "standardized_sum": -0.2696191682874176
+            },
+            "position": {
+              "mean": 9.605510749742025e-05,
+              "standard_error": 0.00021153431581030034,
+              "sample_variance": 5.72758614596248e-06,
+              "replicas": 128,
+              "sum_residual": 0.012295053759669793,
+              "sum_predictable_variance": 0.0006893854548728778,
+              "predicted_standard_error_of_mean": 0.0002051261781310309,
+              "standardized_sum": 0.46827327634438737
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8419214718460505,
+                "standard_error": 0.0007574316975672479,
+                "sample_variance": 7.343395538938917e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0006739510559134425,
+                "standard_error": 0.003012826187631804,
+                "sample_variance": 0.0011618715695206386,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8703639431578278,
+                "standard_error": 0.0008494650183805368,
+                "sample_variance": 9.236362463388744e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.003673986966241174,
+                "standard_error": 0.0028157890521139702,
+                "sample_variance": 0.001014869502208626,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0035268746170343136,
+                "standard_error": 4.450388539624045e-05,
+                "sample_variance": 2.5351626436629814e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.02117919921875,
+                "standard_error": 0.0003482699127954966,
+                "sample_variance": 1.5525367316298598e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.926712003382211,
+                "standard_error": 0.0008031051865645823,
+                "sample_variance": 8.255717640792737e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.002471252161948947,
+                "standard_error": 0.0025259255239377526,
+                "sample_variance": 0.000816678368317467,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003245873544730392,
+                "standard_error": 3.874074873115896e-05,
+                "sample_variance": 1.9210823836810168e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0206298828125,
+                "standard_error": 0.00037507471456667187,
+                "sample_variance": 1.800717331293061e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9756200646426998,
+                "standard_error": 0.00028665786121317147,
+                "sample_variance": 1.0518109362599666e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.00172050509772966,
+                "standard_error": 0.0016147800576552347,
+                "sample_variance": 0.0003337618732289335,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0026288200827205882,
+                "standard_error": 3.5412296409042045e-05,
+                "sample_variance": 1.605159343311171e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.018402099609375,
+                "standard_error": 0.00034703593772137997,
+                "sample_variance": 1.5415544584980163e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.980047447484891,
+                "standard_error": 0.00022683687265787736,
+                "sample_variance": 6.586235750042377e-06,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.00023126697357363015,
+                "standard_error": 0.0013574673339414119,
+                "sample_variance": 0.0002358678480279046,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0025572533700980392,
+                "standard_error": 3.346725423244754e-05,
+                "sample_variance": 1.433673095499876e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.018524169921875,
+                "standard_error": 0.00036827765776485265,
+                "sample_variance": 1.736043945072204e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 528983,
+          "components_larger_than_pairs": 99263,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 5.551115123125783e-17
+        }
+      ]
+    },
+    {
+      "source": "validation/mean-field-heldout.json",
+      "case": "canonical",
+      "seed_start": 30000,
+      "cohorts": [
+        {
+          "N": 16,
+          "balances": {
+            "clone": {
+              "mean": -0.05454534293649927,
+              "standard_error": 0.7435448013200527,
+              "sample_variance": 70.76593556096982,
+              "replicas": 128,
+              "sum_residual": -6.981803895871907,
+              "sum_predictable_variance": 8120.61590227467,
+              "predicted_standard_error_of_mean": 0.7040192188012833,
+              "standardized_sum": -0.0774770652275265
+            },
+            "stress": {
+              "mean": 0.000684944958023382,
+              "standard_error": 0.0008942631014714777,
+              "sample_variance": 0.00010236243131563346,
+              "replicas": 128,
+              "sum_residual": 0.0876729546269929,
+              "sum_predictable_variance": 0.01554258538764836,
+              "predicted_standard_error_of_mean": 0.0009739836382938291,
+              "standardized_sum": 0.7032407230405131
+            },
+            "position": {
+              "mean": -0.0002253982851354006,
+              "standard_error": 0.0008974443801105262,
+              "sample_variance": 0.00010309202117017174,
+              "replicas": 128,
+              "sum_residual": -0.028850980497331275,
+              "sum_predictable_variance": 0.011687821428048901,
+              "predicted_standard_error_of_mean": 0.0008446111573280706,
+              "standardized_sum": -0.2668663362776885
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8412040804185837,
+                "standard_error": 0.0028833561861488386,
+                "sample_variance": 0.0010641590907139553,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.022771290564735827,
+                "standard_error": 0.011253888004994347,
+                "sample_variance": 0.016211199389306322,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8673716740486387,
+                "standard_error": 0.0033092521603682477,
+                "sample_variance": 0.001401747182195445,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.01935251857929254,
+                "standard_error": 0.01144190989999878,
+                "sample_variance": 0.016757414676440333,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.06002604166666667,
+                "standard_error": 0.0026890836433985607,
+                "sample_variance": 0.0009255898676727908,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.20263671875,
+                "standard_error": 0.005447445749682637,
+                "sample_variance": 0.0037983571450541337,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9229188375893399,
+                "standard_error": 0.003184632765308099,
+                "sample_variance": 0.0012981613887838607,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0032266543673096265,
+                "standard_error": 0.011531669860892938,
+                "sample_variance": 0.0170213644519202,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.05462239583333333,
+                "standard_error": 0.0026465685038256016,
+                "sample_variance": 0.0008965535802165354,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.1943359375,
+                "standard_error": 0.005512705409600635,
+                "sample_variance": 0.0038899098794291337,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9703380888195392,
+                "standard_error": 0.001823602194841486,
+                "sample_variance": 0.0004256671955239277,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.010924667842261076,
+                "standard_error": 0.007140682231254914,
+                "sample_variance": 0.006526635869153237,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.04596354166666667,
+                "standard_error": 0.0022470612259574843,
+                "sample_variance": 0.0006463083716097988,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.1787109375,
+                "standard_error": 0.004986292755728988,
+                "sample_variance": 0.0031824787770669293,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9816001080849274,
+                "standard_error": 0.000819368193342604,
+                "sample_variance": 8.593462224147493e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.007136169792751906,
+                "standard_error": 0.006424564848982187,
+                "sample_variance": 0.005283204287843521,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.042578125,
+                "standard_error": 0.002195617467036724,
+                "sample_variance": 0.0006170542158792651,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.169921875,
+                "standard_error": 0.0048989337705729035,
+                "sample_variance": 0.003071942667322835,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 34071,
+          "components_larger_than_pairs": 6363,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 4.163336342344337e-17
+        },
+        {
+          "N": 64,
+          "balances": {
+            "clone": {
+              "mean": -1.57983789716811,
+              "standard_error": 1.4888378753373723,
+              "sample_variance": 283.72969203700495,
+              "replicas": 128,
+              "sum_residual": -202.21925083751808,
+              "sum_predictable_variance": 33314.19744487132,
+              "predicted_standard_error_of_mean": 1.4259513478345156,
+              "standardized_sum": -1.107918513185804
+            },
+            "stress": {
+              "mean": 0.0006611962654110727,
+              "standard_error": 0.000480757968817144,
+              "sample_variance": 2.9584412746391806e-05,
+              "replicas": 128,
+              "sum_residual": 0.08463312197261731,
+              "sum_predictable_variance": 0.0037748558787688577,
+              "predicted_standard_error_of_mean": 0.00047999887331314465,
+              "standardized_sum": 1.377495452952277
+            },
+            "position": {
+              "mean": 0.00027309749214222344,
+              "standard_error": 0.0004046635052896834,
+              "sample_variance": 2.0960326721706702e-05,
+              "replicas": 128,
+              "sum_residual": 0.0349564789942046,
+              "sum_predictable_variance": 0.002812456430165175,
+              "predicted_standard_error_of_mean": 0.00041431717036764077,
+              "standardized_sum": 0.6591507947881878
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8409913096295552,
+                "standard_error": 0.0013791667312110993,
+                "sample_variance": 0.00024346891167737714,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.008304700161132193,
+                "standard_error": 0.005614713935029096,
+                "sample_variance": 0.004035201609242869,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8682852456233191,
+                "standard_error": 0.001595593501721025,
+                "sample_variance": 0.0003258775837099984,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.011608820171345057,
+                "standard_error": 0.00504831406610965,
+                "sample_variance": 0.0032621407884903097,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0143035404265873,
+                "standard_error": 0.0003237182547976896,
+                "sample_variance": 1.3413569086625519e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0675048828125,
+                "standard_error": 0.0013304839535456109,
+                "sample_variance": 0.00022658400648222196,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9262664070032269,
+                "standard_error": 0.001660488077050995,
+                "sample_variance": 0.00035292424371564945,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.009668496177740358,
+                "standard_error": 0.005327906532633467,
+                "sample_variance": 0.003633483266621232,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.013412233382936508,
+                "standard_error": 0.00033784031481704565,
+                "sample_variance": 1.4609418024407106e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0635986328125,
+                "standard_error": 0.0014099488294377078,
+                "sample_variance": 0.0002544583298089936,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9737837213118711,
+                "standard_error": 0.0006350518094714538,
+                "sample_variance": 5.162122249125987e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.004134780033012372,
+                "standard_error": 0.003291864064079955,
+                "sample_variance": 0.001387055234096768,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.010168650793650794,
+                "standard_error": 0.00028124663151861065,
+                "sample_variance": 1.0124757470792341e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0579833984375,
+                "standard_error": 0.0015223087385901953,
+                "sample_variance": 0.0002966302586352731,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.979684527200831,
+                "standard_error": 0.0003807073373751582,
+                "sample_variance": 1.8552073821604162e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0018427900365640187,
+                "standard_error": 0.0027201259108851085,
+                "sample_variance": 0.0009470828762967732,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.01011439732142857,
+                "standard_error": 0.00028147441981367914,
+                "sample_variance": 1.014116467320925e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.05810546875,
+                "standard_error": 0.0012124087673657032,
+                "sample_variance": 0.00018815168245570865,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 132348,
+          "components_larger_than_pairs": 24570,
+          "maximum_momentum_residual": 3.3306690738754696e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        },
+        {
+          "N": 256,
+          "balances": {
+            "clone": {
+              "mean": -0.5079995701825585,
+              "standard_error": 3.0414022241881997,
+              "sample_variance": 1184.0163186300067,
+              "replicas": 128,
+              "sum_residual": -65.02394498336749,
+              "sum_predictable_variance": 133811.868782068,
+              "predicted_standard_error_of_mean": 2.8578363002834886,
+              "standardized_sum": -0.17775670710466043
+            },
+            "stress": {
+              "mean": 0.0001228381987803952,
+              "standard_error": 0.00022626067492362422,
+              "sample_variance": 6.552818306162426e-06,
+              "replicas": 128,
+              "sum_residual": 0.015723289443890585,
+              "sum_predictable_variance": 0.0009497935578310361,
+              "predicted_standard_error_of_mean": 0.00024077125702097563,
+              "standardized_sum": 0.5101863083669232
+            },
+            "position": {
+              "mean": -3.395461415148264e-05,
+              "standard_error": 0.00021226328748163447,
+              "sample_variance": 5.7671300112014074e-06,
+              "replicas": 128,
+              "sum_residual": -0.004346190611389778,
+              "sum_predictable_variance": 0.0006926139362193561,
+              "predicted_standard_error_of_mean": 0.00020560593332410407,
+              "standardized_sum": -0.16514413568969702
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8414314247088605,
+                "standard_error": 0.0006933143110153122,
+                "sample_variance": 6.152764593390555e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0002904020997401324,
+                "standard_error": 0.0026174655509264145,
+                "sample_variance": 0.0008769441165166744,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8698591993581422,
+                "standard_error": 0.0008340605410037381,
+                "sample_variance": 8.904409421560938e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0025487892517634487,
+                "standard_error": 0.0027029509278882723,
+                "sample_variance": 0.0009351607959772253,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0035352519914215686,
+                "standard_error": 3.878085955147753e-05,
+                "sample_variance": 1.9250624864658256e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.021636962890625,
+                "standard_error": 0.00036225472258806263,
+                "sample_variance": 1.679724595678134e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9279596174729556,
+                "standard_error": 0.0008903492583377331,
+                "sample_variance": 0.00010146839063328657,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.003640050662837033,
+                "standard_error": 0.0022118316181616486,
+                "sample_variance": 0.000626201485708746,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003229358149509804,
+                "standard_error": 3.723152456745603e-05,
+                "sample_variance": 1.774318619669865e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.02044677734375,
+                "standard_error": 0.0003313508689047913,
+                "sample_variance": 1.4053554985466904e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9752703231029684,
+                "standard_error": 0.00031129727883264744,
+                "sample_variance": 1.2403967463502214e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0009047672776347721,
+                "standard_error": 0.0014796987987288428,
+                "sample_variance": 0.0002802570924748263,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0025835822610294117,
+                "standard_error": 3.389101828802544e-05,
+                "sample_variance": 1.4702094343670722e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0181884765625,
+                "standard_error": 0.0003396135072106805,
+                "sample_variance": 1.4763178787832184e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9798383695697599,
+                "standard_error": 0.0002001717067664227,
+                "sample_variance": 5.1287951602921876e-06,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0008702751310513389,
+                "standard_error": 0.0012888751456023302,
+                "sample_variance": 0.00021263349004178276,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0025404986213235295,
+                "standard_error": 3.502133686730066e-05,
+                "sample_variance": 1.5699123660453789e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0185546875,
+                "standard_error": 0.00037272115829223556,
+                "sample_variance": 1.778189591535433e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 528029,
+          "components_larger_than_pairs": 98824,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        }
+      ]
+    },
+    {
+      "source": "validation/mean-field-boundary.json",
+      "case": "boundary_stress",
+      "seed_start": 10000,
+      "cohorts": [
+        {
+          "N": 16,
+          "balances": {
+            "clone": {
+              "mean": -0.4743877127136718,
+              "standard_error": 0.6929552303822009,
+              "sample_variance": 61.46392976819828,
+              "replicas": 128,
+              "sum_residual": -60.72162722734999,
+              "sum_predictable_variance": 7390.217433964026,
+              "predicted_standard_error_of_mean": 0.6716122957506573,
+              "standardized_sum": -0.7063416136291122
+            },
+            "stress": {
+              "mean": -0.0008763411829246607,
+              "standard_error": 0.001089767694342508,
+              "sample_variance": 0.000152011984336971,
+              "replicas": 128,
+              "sum_residual": -0.11217167141435656,
+              "sum_predictable_variance": 0.01784517072633728,
+              "predicted_standard_error_of_mean": 0.0010436392018269157,
+              "standardized_sum": -0.8396974561616737
+            },
+            "position": {
+              "mean": -0.003475772750686892,
+              "standard_error": 0.006730962648738903,
+              "sample_variance": 0.005799149846875933,
+              "replicas": 128,
+              "sum_residual": -0.44489891208792215,
+              "sum_predictable_variance": 0.740236819511653,
+              "predicted_standard_error_of_mean": 0.006721641908112689,
+              "standardized_sum": -0.5171017436218681
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8432685813094734,
+                "standard_error": 0.0029765960676171556,
+                "sample_variance": 0.001134095891168501,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.011208077015232618,
+                "standard_error": 0.01097603311276145,
+                "sample_variance": 0.015420582770231785,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.9305445783166486,
+                "standard_error": 0.0025623834060319135,
+                "sample_variance": 0.0008404235160969868,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.013296344384164617,
+                "standard_error": 0.013708049561140375,
+                "sample_variance": 0.024052559714647148,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.330078125,
+                "standard_error": 0.01822506149290756,
+                "sample_variance": 0.042515566901793526,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.470703125,
+                "standard_error": 0.01707891022231122,
+                "sample_variance": 0.03733621432086614,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.79931640625,
+                "standard_error": 0.010297752326313456,
+                "sample_variance": 0.013573593980684055,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9554077423852464,
+                "standard_error": 0.0016059857485812453,
+                "sample_variance": 0.000330136348754696,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.011369919961133743,
+                "standard_error": 0.009544287452055848,
+                "sample_variance": 0.011659958139836252,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.06393229166666667,
+                "standard_error": 0.0025264982371431197,
+                "sample_variance": 0.0008170487478127734,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.20556640625,
+                "standard_error": 0.0050541645772079515,
+                "sample_variance": 0.0032697061854084645,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.9189453125,
+                "standard_error": 0.006805110116309449,
+                "sample_variance": 0.005927619032972441,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9603660595531144,
+                "standard_error": 0.0013137953400183923,
+                "sample_variance": 0.0002209354490181175,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.004936270207736482,
+                "standard_error": 0.007453765815598898,
+                "sample_variance": 0.007111503978725209,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.06471354166666667,
+                "standard_error": 0.002767567798192757,
+                "sample_variance": 0.0009804072342519685,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.20947265625,
+                "standard_error": 0.005351484762837743,
+                "sample_variance": 0.0036657138133612205,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.9365234375,
+                "standard_error": 0.005233184718571447,
+                "sample_variance": 0.0035054364542322835,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9555201326007284,
+                "standard_error": 0.0014147954070333638,
+                "sample_variance": 0.0002562106936016258,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.014847105052021345,
+                "standard_error": 0.00781656807200765,
+                "sample_variance": 0.00782063826231416,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0576171875,
+                "standard_error": 0.0030503262957868415,
+                "sample_variance": 0.0011909747853783904,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.19287109375,
+                "standard_error": 0.005503673629111491,
+                "sample_variance": 0.0038771741972194883,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.92578125,
+                "standard_error": 0.005953456465393414,
+                "sample_variance": 0.004536786417322834,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 11175,
+          "clones": 31654,
+          "components_larger_than_pairs": 9251,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 5.551115123125783e-17
+        },
+        {
+          "N": 64,
+          "balances": {
+            "clone": {
+              "mean": -1.4289518264880967,
+              "standard_error": 1.2095658956839603,
+              "sample_variance": 187.27035596822287,
+              "replicas": 128,
+              "sum_residual": -182.90583379047638,
+              "sum_predictable_variance": 29970.06194779802,
+              "predicted_standard_error_of_mean": 1.3524893396275002,
+              "standardized_sum": -1.0565346318231652
+            },
+            "stress": {
+              "mean": -0.00028164908402352064,
+              "standard_error": 0.0005102119527261137,
+              "sample_variance": 3.332047829818804e-05,
+              "replicas": 128,
+              "sum_residual": -0.03605108275501064,
+              "sum_predictable_variance": 0.004500646660340383,
+              "predicted_standard_error_of_mean": 0.0005241160865112957,
+              "standardized_sum": -0.5373792014251609
+            },
+            "position": {
+              "mean": 0.0004343044711361882,
+              "standard_error": 0.0037026829721723623,
+              "sample_variance": 0.0017548622326291404,
+              "replicas": 128,
+              "sum_residual": 0.05559097230543209,
+              "sum_predictable_variance": 0.18653563978914173,
+              "predicted_standard_error_of_mean": 0.003374200930698109,
+              "standardized_sum": 0.12871328058294748
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.843691428733274,
+                "standard_error": 0.0014308574972381658,
+                "sample_variance": 0.00026206120670754145,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.00914448714582077,
+                "standard_error": 0.0058274985023594305,
+                "sample_variance": 0.00434684656576018,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.9335139354292136,
+                "standard_error": 0.0011968053762940732,
+                "sample_variance": 0.00018333991791697895,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.006844960612622818,
+                "standard_error": 0.006407058412792647,
+                "sample_variance": 0.00525445088063194,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.07547820560515874,
+                "standard_error": 0.0020089531129621613,
+                "sample_variance": 0.0005165942540902858,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.165283203125,
+                "standard_error": 0.004204765363077158,
+                "sample_variance": 0.0022630466250922734,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.8160400390625,
+                "standard_error": 0.005080179576339268,
+                "sample_variance": 0.0033034527395653913,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.9515470850303381,
+                "standard_error": 0.000809033638341127,
+                "sample_variance": 8.378053477983764e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0005236487031639556,
+                "standard_error": 0.004618835740863197,
+                "sample_variance": 0.0027307063809376354,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.016039651537698412,
+                "standard_error": 0.00037527568237661176,
+                "sample_variance": 1.8026475236253643e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0703125,
+                "standard_error": 0.0013646586215230695,
+                "sample_variance": 0.00023837352362204725,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.9102783203125,
+                "standard_error": 0.0036281664698663836,
+                "sample_variance": 0.0016849397674320251,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.957455045936414,
+                "standard_error": 0.0006408230096660271,
+                "sample_variance": 5.2563728603830404e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.007605506389752721,
+                "standard_error": 0.004004349629990883,
+                "sample_variance": 0.00205245644277864,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.014977833581349206,
+                "standard_error": 0.0003507930898020539,
+                "sample_variance": 1.5751141357167595e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.07275390625,
+                "standard_error": 0.0015446886749963871,
+                "sample_variance": 0.00030541607714074803,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.9271240234375,
+                "standard_error": 0.0029066688378547377,
+                "sample_variance": 0.001081436637818344,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9565540263024898,
+                "standard_error": 0.000727424664859306,
+                "sample_variance": 6.773077030984623e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0009214756822880497,
+                "standard_error": 0.004446632176930606,
+                "sample_variance": 0.0025308848277650715,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.014171781994047618,
+                "standard_error": 0.0003498263354870938,
+                "sample_variance": 1.5664443520042074e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0667724609375,
+                "standard_error": 0.001447074223963049,
+                "sample_variance": 0.00026803504763625737,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.9268798828125,
+                "standard_error": 0.003242059619532313,
+                "sample_variance": 0.0013454016738050566,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 44586,
+          "clones": 124376,
+          "components_larger_than_pairs": 36190,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 8.326672684688674e-17
+        },
+        {
+          "N": 256,
+          "balances": {
+            "clone": {
+              "mean": -3.79666933352905,
+              "standard_error": 2.6407977251228454,
+              "sample_variance": 892.6480160017913,
+              "replicas": 128,
+              "sum_residual": -485.9736746917184,
+              "sum_predictable_variance": 120563.03413279227,
+              "predicted_standard_error_of_mean": 2.712670939548153,
+              "standardized_sum": -1.3996055615066445
+            },
+            "stress": {
+              "mean": 5.645101793344984e-05,
+              "standard_error": 0.00024106629457864803,
+              "sample_variance": 7.438458672880576e-06,
+              "replicas": 128,
+              "sum_residual": 0.00722573029548158,
+              "sum_predictable_variance": 0.001118378645387586,
+              "predicted_standard_error_of_mean": 0.00026126694273844646,
+              "standardized_sum": 0.2160664389522971
+            },
+            "position": {
+              "mean": 0.0012658779443021355,
+              "standard_error": 0.001604538806826657,
+              "sample_variance": 0.0003295417321744272,
+              "replicas": 128,
+              "sum_residual": 0.16203237687067334,
+              "sum_predictable_variance": 0.0465266793478297,
+              "predicted_standard_error_of_mean": 0.0016851596790181142,
+              "standardized_sum": 0.7511916882794869
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8414877210572113,
+                "standard_error": 0.000791904435183246,
+                "sample_variance": 8.027041721125067e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0010410392792220256,
+                "standard_error": 0.002811101214823905,
+                "sample_variance": 0.0010114931251180078,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.9311778832510288,
+                "standard_error": 0.0005641769244953332,
+                "sample_variance": 4.074183707302565e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0014668368668803375,
+                "standard_error": 0.003160930867787656,
+                "sample_variance": 0.0012789099457194016,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.017954149433210786,
+                "standard_error": 0.0002536117710609039,
+                "sample_variance": 8.232823093842988e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.052093505859375,
+                "standard_error": 0.0009485530766966072,
+                "sample_variance": 0.00011516837623175673,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.80804443359375,
+                "standard_error": 0.0025433673098524457,
+                "sample_variance": 0.0008279958109217365,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.952721316054252,
+                "standard_error": 0.0004244810432705179,
+                "sample_variance": 2.3063571980291492e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.001750100068466781,
+                "standard_error": 0.0020184438239534007,
+                "sample_variance": 0.0005214867802183203,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0038437787224264706,
+                "standard_error": 4.2742498151495794e-05,
+                "sample_variance": 2.3384590697351955e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0224609375,
+                "standard_error": 0.0003899515910520031,
+                "sample_variance": 1.946396715059055e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.913543701171875,
+                "standard_error": 0.0016346593319539666,
+                "sample_variance": 0.0003420302248376561,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.956486383785228,
+                "standard_error": 0.0003669043738755367,
+                "sample_variance": 1.723120890483195e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.000909998361007333,
+                "standard_error": 0.0017055508907994096,
+                "sample_variance": 0.0003723396916616524,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003510598575367647,
+                "standard_error": 4.500564035289932e-05,
+                "sample_variance": 2.5926498093753854e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.020965576171875,
+                "standard_error": 0.0003489745833381811,
+                "sample_variance": 1.558825725645531e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.927276611328125,
+                "standard_error": 0.0015159342947454024,
+                "sample_variance": 0.0002941512686061108,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9566633432126982,
+                "standard_error": 0.0003227965734460268,
+                "sample_variance": 1.333729636204751e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.004039947745059864,
+                "standard_error": 0.0018463848081875058,
+                "sample_variance": 0.00043636951806791846,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003458419500612745,
+                "standard_error": 5.037312983751253e-05,
+                "sample_variance": 3.247938828322425e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.021240234375,
+                "standard_error": 0.00041952111610319255,
+                "sample_variance": 2.2527739757627953e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 0.927642822265625,
+                "standard_error": 0.001486448723857112,
+                "sample_variance": 0.000282819815508024,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 177878,
+          "clones": 495664,
+          "components_larger_than_pairs": 143547,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        }
+      ]
+    },
+    {
+      "source": "validation/mean-field-shared.json",
+      "case": "shared_initial",
+      "seed_start": 20000,
+      "cohorts": [
+        {
+          "N": 16,
+          "balances": {
+            "clone": {
+              "mean": -0.9873619772173988,
+              "standard_error": 0.7200795161088208,
+              "sample_variance": 66.36985721849774,
+              "replicas": 128,
+              "sum_residual": -126.38233308382705,
+              "sum_predictable_variance": 8195.1114676919,
+              "predicted_standard_error_of_mean": 0.7072410543207612,
+              "standardized_sum": -1.396075597118252
+            },
+            "stress": {
+              "mean": 0.0004257355271537776,
+              "standard_error": 0.0009463713767010573,
+              "sample_variance": 0.00011463920417779896,
+              "replicas": 128,
+              "sum_residual": 0.054494147475683534,
+              "sum_predictable_variance": 0.015349019792156702,
+              "predicted_standard_error_of_mean": 0.0009678996958872478,
+              "standardized_sum": 0.43985500663218746
+            },
+            "position": {
+              "mean": -0.0007276865884752438,
+              "standard_error": 0.00112990005120843,
+              "sample_variance": 0.00016341428809226398,
+              "replicas": 128,
+              "sum_residual": -0.0931438833248312,
+              "sum_predictable_variance": 0.017686441906187397,
+              "predicted_standard_error_of_mean": 0.001038987365298874,
+              "standardized_sum": -0.7003805943933863
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8221402103990793,
+                "standard_error": 0.012676553674345996,
+                "sample_variance": 0.020568961671497594,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0958047040359745,
+                "standard_error": 0.04815482465514438,
+                "sample_variance": 0.2968175536086658,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8196646549140627,
+                "standard_error": 0.012766002159805646,
+                "sample_variance": 0.02086026382645279,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09410516018836854,
+                "standard_error": 0.04824045142758335,
+                "sample_variance": 0.29787406770393965,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0556640625,
+                "standard_error": 0.0027636276911479647,
+                "sample_variance": 0.0009776176659558181,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.19287109375,
+                "standard_error": 0.005415647685437553,
+                "sample_variance": 0.003754142701156496,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.833427800752715,
+                "standard_error": 0.01177637249556108,
+                "sample_variance": 0.01775141749173856,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0887914389368974,
+                "standard_error": 0.04598313408074022,
+                "sample_variance": 0.2706494233455786,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0521484375,
+                "standard_error": 0.002538536669927107,
+                "sample_variance": 0.0008248535583442694,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.18896484375,
+                "standard_error": 0.005479059274974648,
+                "sample_variance": 0.003842571588951772,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9467104802429823,
+                "standard_error": 0.0039502058323411205,
+                "sample_variance": 0.0019973281430863106,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.03504189573178049,
+                "standard_error": 0.024625308008433787,
+                "sample_variance": 0.07761994169730986,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.043359375,
+                "standard_error": 0.001664715924387766,
+                "sample_variance": 0.0003547237259405074,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.1708984375,
+                "standard_error": 0.004070983568503845,
+                "sample_variance": 0.002121332123523622,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9791891866991814,
+                "standard_error": 0.0009007916430757121,
+                "sample_variance": 0.00010386247478208527,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.005789582652139332,
+                "standard_error": 0.005848356944021665,
+                "sample_variance": 0.004378019704919863,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.04251302083333333,
+                "standard_error": 0.002115564011905548,
+                "sample_variance": 0.0005728782193241469,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.16845703125,
+                "standard_error": 0.004304758211827403,
+                "sample_variance": 0.002371960737573819,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 34101,
+          "components_larger_than_pairs": 6391,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 5.551115123125783e-17
+        },
+        {
+          "N": 64,
+          "balances": {
+            "clone": {
+              "mean": 0.4796387887555423,
+              "standard_error": 1.3121520442009473,
+              "sample_variance": 220.38310234889275,
+              "replicas": 128,
+              "sum_residual": 61.39376496070941,
+              "sum_predictable_variance": 33169.70981489379,
+              "predicted_standard_error_of_mean": 1.422855727513932,
+              "standardized_sum": 0.3370958695816515
+            },
+            "stress": {
+              "mean": 0.0009634062505424599,
+              "standard_error": 0.0004455404019790278,
+              "sample_variance": 2.540879997384111e-05,
+              "replicas": 128,
+              "sum_residual": 0.12331600006943487,
+              "sum_predictable_variance": 0.0038189544537627893,
+              "predicted_standard_error_of_mean": 0.00048279445087640065,
+              "standardized_sum": 1.9954791294589669
+            },
+            "position": {
+              "mean": -0.0005218994183460915,
+              "standard_error": 0.0005477884433367459,
+              "sample_variance": 3.84092388676218e-05,
+              "replicas": 128,
+              "sum_residual": -0.06680312554829972,
+              "sum_predictable_variance": 0.0040751234654427156,
+              "predicted_standard_error_of_mean": 0.0004987241697084046,
+              "standardized_sum": -1.0464690705710875
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8221402103990793,
+                "standard_error": 0.012676553674345996,
+                "sample_variance": 0.020568961671497594,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09580470403597446,
+                "standard_error": 0.04815482465514438,
+                "sample_variance": 0.2968175536086658,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8211292543850356,
+                "standard_error": 0.012591561452044753,
+                "sample_variance": 0.02029406973447928,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09495290013186457,
+                "standard_error": 0.04806319245358739,
+                "sample_variance": 0.29568902001031416,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.013481987847222222,
+                "standard_error": 0.0003233278984257228,
+                "sample_variance": 1.33812390272505e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0650634765625,
+                "standard_error": 0.0012943659886197854,
+                "sample_variance": 0.00021444906399944636,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.835776635372308,
+                "standard_error": 0.01137571901523394,
+                "sample_variance": 0.016564093838535045,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09007406286166089,
+                "standard_error": 0.04562458035064906,
+                "sample_variance": 0.2664450985181226,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.012365916418650792,
+                "standard_error": 0.00031246030022176485,
+                "sample_variance": 1.2496824219478455e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0631103515625,
+                "standard_error": 0.00131308545620758,
+                "sample_variance": 0.00022069675715889517,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9597922164556238,
+                "standard_error": 0.002397587533142004,
+                "sample_variance": 0.0007357985253219789,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.039561385233045726,
+                "standard_error": 0.01817824366751112,
+                "sample_variance": 0.042297413482932235,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.010811941964285714,
+                "standard_error": 0.0002661698747094389,
+                "sample_variance": 9.068339481963317e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.059814453125,
+                "standard_error": 0.001263030313011936,
+                "sample_variance": 0.00020419143316313977,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9795038402304181,
+                "standard_error": 0.0004069544540612463,
+                "sample_variance": 2.1198326743076737e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0017902970488287387,
+                "standard_error": 0.002915243737894371,
+                "sample_variance": 0.00108782669457054,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.010374038938492062,
+                "standard_error": 0.00025993656772695345,
+                "sample_variance": 8.648578462933638e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0595703125,
+                "standard_error": 0.0012224320310713888,
+                "sample_variance": 0.00019127552903543308,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 133777,
+          "components_larger_than_pairs": 25268,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        },
+        {
+          "N": 256,
+          "balances": {
+            "clone": {
+              "mean": 1.3066233023792644,
+              "standard_error": 2.776088392872986,
+              "sample_variance": 986.453345925647,
+              "replicas": 128,
+              "sum_residual": 167.24778270454584,
+              "sum_predictable_variance": 133188.0349706373,
+              "predicted_standard_error_of_mean": 2.8511668707852427,
+              "standardized_sum": 0.45827668515922604
+            },
+            "stress": {
+              "mean": 0.00019385009537613206,
+              "standard_error": 0.0002492220775363486,
+              "sample_variance": 7.95029042323632e-06,
+              "replicas": 128,
+              "sum_residual": 0.024812812208144904,
+              "sum_predictable_variance": 0.0009521530242693061,
+              "predicted_standard_error_of_mean": 0.00024107013214039424,
+              "standardized_sum": 0.8041232385571423
+            },
+            "position": {
+              "mean": -0.0005438855248738254,
+              "standard_error": 0.00023074875602609605,
+              "sample_variance": 6.815358516171622e-06,
+              "replicas": 128,
+              "sum_residual": -0.06961734718384965,
+              "sum_predictable_variance": 0.0009872040667568286,
+              "predicted_standard_error_of_mean": 0.0002454672166810437,
+              "standardized_sum": -2.2157155331277574
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.8221402103990791,
+                "standard_error": 0.012676553674346011,
+                "sample_variance": 0.020568961671497646,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09580470403597428,
+                "standard_error": 0.04815482465514436,
+                "sample_variance": 0.29681755360866546,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.8209805478991187,
+                "standard_error": 0.012629904567574974,
+                "sample_variance": 0.020417854641414553,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.09543613952451652,
+                "standard_error": 0.04804873134946265,
+                "sample_variance": 0.29551111478948283,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0033933153339460783,
+                "standard_error": 4.395049135194924e-05,
+                "sample_variance": 2.4725064832995386e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.02081298828125,
+                "standard_error": 0.00036279077470928374,
+                "sample_variance": 1.6846994715412772e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.837457976930298,
+                "standard_error": 0.011248740595765791,
+                "sample_variance": 0.016196373118826154,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.08942088313032977,
+                "standard_error": 0.04535312083032145,
+                "sample_variance": 0.2632839128383664,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003007956112132353,
+                "standard_error": 4.1194043924199644e-05,
+                "sample_variance": 2.1720950461809786e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.01947021484375,
+                "standard_error": 0.0003465813214521805,
+                "sample_variance": 1.537518238458108e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.9667032274303374,
+                "standard_error": 0.0016010838000204617,
+                "sample_variance": 0.00032812407484005907,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.023206441700894035,
+                "standard_error": 0.014407912557975296,
+                "sample_variance": 0.026571256867617566,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0027762618719362744,
+                "standard_error": 3.942597897389843e-05,
+                "sample_variance": 1.9896420071043596e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.019134521484375,
+                "standard_error": 0.0003895658868158362,
+                "sample_variance": 1.9425482261837938e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9795187853036254,
+                "standard_error": 0.00023169570005821688,
+                "sample_variance": 6.8714108704598015e-06,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0015159527565116843,
+                "standard_error": 0.0014295353110390934,
+                "sample_variance": 0.0002615771143049776,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0025309244791666668,
+                "standard_error": 3.342115143810644e-05,
+                "sample_variance": 1.4297259052145203e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.01837158203125,
+                "standard_error": 0.0003859822262021925,
+                "sample_variance": 1.9069731704832063e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 531225,
+          "components_larger_than_pairs": 99816,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        }
+      ]
+    },
+    {
+      "source": "validation/mean-field-shifted.json",
+      "case": "shifted_initial",
+      "seed_start": 40000,
+      "cohorts": [
+        {
+          "N": 16,
+          "balances": {
+            "clone": {
+              "mean": -0.2903507329112211,
+              "standard_error": 0.6855663211170587,
+              "sample_variance": 60.160151123197195,
+              "replicas": 128,
+              "sum_residual": -37.1648938126363,
+              "sum_predictable_variance": 7907.685777160912,
+              "predicted_standard_error_of_mean": 0.6947278870067899,
+              "standardized_sum": -0.4179344723906029
+            },
+            "stress": {
+              "mean": -0.00029010088928188213,
+              "standard_error": 0.0009741670891013274,
+              "sample_variance": 0.00012147219423848365,
+              "replicas": 128,
+              "sum_residual": -0.03713291382808091,
+              "sum_predictable_variance": 0.01564914458223125,
+              "predicted_standard_error_of_mean": 0.0009773167269392894,
+              "standardized_sum": -0.2968340572563465
+            },
+            "position": {
+              "mean": 0.0021153248176610127,
+              "standard_error": 0.0013905270368693688,
+              "sample_variance": 0.0002474963763538825,
+              "replicas": 128,
+              "sum_residual": 0.2707615766606096,
+              "sum_predictable_variance": 0.04025587880273338,
+              "predicted_standard_error_of_mean": 0.0015674896659008297,
+              "standardized_sum": 1.3494984137234132
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.3565983777549462,
+                "standard_error": 0.002435092178244003,
+                "sample_variance": 0.0007589982613177758,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9269413592780104,
+                "standard_error": 0.000936662247828382,
+                "sample_variance": 0.0001122990293128854,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.3851976361279345,
+                "standard_error": 0.0034496760908806377,
+                "sample_variance": 0.00152323393689517,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9140565048078247,
+                "standard_error": 0.0014519968414158607,
+                "sample_variance": 0.0002698617379176494,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.05709635416666667,
+                "standard_error": 0.0027390274423887096,
+                "sample_variance": 0.0009602907302602799,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.19091796875,
+                "standard_error": 0.005202061839679588,
+                "sample_variance": 0.003463865265132874,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.4779335097852757,
+                "standard_error": 0.004379085677212374,
+                "sample_variance": 0.0024545780951509195,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.8673560877590786,
+                "standard_error": 0.0025189813388064477,
+                "sample_variance": 0.0008121941741126558,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0544921875,
+                "standard_error": 0.002436625554960437,
+                "sample_variance": 0.0007599544441710411,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.19140625,
+                "standard_error": 0.005313639728368277,
+                "sample_variance": 0.003614050196850394,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.832320404432441,
+                "standard_error": 0.0068248975125452934,
+                "sample_variance": 0.005962140935263608,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.5100090984586237,
+                "standard_error": 0.01202971102438197,
+                "sample_variance": 0.018523385258257554,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.05221354166666667,
+                "standard_error": 0.0026733500115019926,
+                "sample_variance": 0.000914790436351706,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.189453125,
+                "standard_error": 0.004996072022244252,
+                "sample_variance": 0.0031949741633858267,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9811530959371749,
+                "standard_error": 0.000922248574682634,
+                "sample_variance": 0.0001088694314885312,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.0011565597309717139,
+                "standard_error": 0.005393573386640577,
+                "sample_variance": 0.0037236011362659195,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.04049479166666667,
+                "standard_error": 0.0018059575648492403,
+                "sample_variance": 0.00041746978893263337,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.16796875,
+                "standard_error": 0.004086632404191523,
+                "sample_variance": 0.0021376722440944883,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 35205,
+          "components_larger_than_pairs": 6808,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 4.163336342344337e-17
+        },
+        {
+          "N": 64,
+          "balances": {
+            "clone": {
+              "mean": 1.064746163172658,
+              "standard_error": 1.433701952302108,
+              "sample_variance": 263.10416486846407,
+              "replicas": 128,
+              "sum_residual": 136.28750888610023,
+              "sum_predictable_variance": 32212.05336546359,
+              "predicted_standard_error_of_mean": 1.4021653648177195,
+              "standardized_sum": 0.7593584821652433
+            },
+            "stress": {
+              "mean": -0.00010081548633100516,
+              "standard_error": 0.0004892355193171039,
+              "sample_variance": 3.063697835026898e-05,
+              "replicas": 128,
+              "sum_residual": -0.01290438225036866,
+              "sum_predictable_variance": 0.0038607493656417735,
+              "predicted_standard_error_of_mean": 0.00048542913053713005,
+              "standardized_sum": -0.2076832229237093
+            },
+            "position": {
+              "mean": -0.00028649394736049287,
+              "standard_error": 0.0006870432663397437,
+              "sample_variance": 6.041964157731636e-05,
+              "replicas": 128,
+              "sum_residual": -0.03667122526214309,
+              "sum_predictable_variance": 0.009249716863651461,
+              "predicted_standard_error_of_mean": 0.0007513706901664629,
+              "standardized_sum": -0.3812950799252249
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.3597910385469673,
+                "standard_error": 0.0012098925792726266,
+                "sample_variance": 0.00018737152683250804,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9258763954697704,
+                "standard_error": 0.000478765350074013,
+                "sample_variance": 2.9339681335231006e-05,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.38731250583648286,
+                "standard_error": 0.0016734538008025832,
+                "sample_variance": 0.00035845729579783833,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9133968174115468,
+                "standard_error": 0.0007076475563544457,
+                "sample_variance": 6.409792819384556e-05,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.01394314236111111,
+                "standard_error": 0.0003819104884470531,
+                "sample_variance": 1.8669519511790937e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.0662841796875,
+                "standard_error": 0.0016326864996097903,
+                "sample_variance": 0.00034120514636903297,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.48991875131231544,
+                "standard_error": 0.0025450768705858853,
+                "sample_variance": 0.0008291092834804791,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.8605910386620548,
+                "standard_error": 0.0014974107795834803,
+                "sample_variance": 0.00028700659748003915,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.01382688492063492,
+                "standard_error": 0.0003178306148742527,
+                "sample_variance": 1.2930086368172232e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.065673828125,
+                "standard_error": 0.0014433802685602183,
+                "sample_variance": 0.0002666683647576279,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.8658932570672487,
+                "standard_error": 0.0036900322778711967,
+                "sample_variance": 0.0017428912911016056,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.45857911211108526,
+                "standard_error": 0.00751134248104483,
+                "sample_variance": 0.007221794031046233,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.013392857142857142,
+                "standard_error": 0.0002872108736663318,
+                "sample_variance": 1.0558731001878734e-05,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.064697265625,
+                "standard_error": 0.001436862374482775,
+                "sample_variance": 0.0002642654058501476,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.9801981064740178,
+                "standard_error": 0.0004484538823899615,
+                "sample_variance": 2.5742193232720567e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.0003947172053071738,
+                "standard_error": 0.002821123449227378,
+                "sample_variance": 0.001018718402019914,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.010044642857142856,
+                "standard_error": 0.00020312601697388828,
+                "sample_variance": 5.281302882774573e-06,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.05712890625,
+                "standard_error": 0.0011156422462460555,
+                "sample_variance": 0.00015931617556594487,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 138498,
+          "components_larger_than_pairs": 26684,
+          "maximum_momentum_residual": 2.220446049250313e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        },
+        {
+          "N": 256,
+          "balances": {
+            "clone": {
+              "mean": 3.791184762212947,
+              "standard_error": 2.60168440563244,
+              "sample_variance": 866.4015035534111,
+              "replicas": 128,
+              "sum_residual": 485.2716495632572,
+              "sum_predictable_variance": 129531.6745526853,
+              "predicted_standard_error_of_mean": 2.811758523708481,
+              "standardized_sum": 1.3483322732894867
+            },
+            "stress": {
+              "mean": 0.00022417078500146622,
+              "standard_error": 0.00024237664739356712,
+              "sample_variance": 7.519544217823433e-06,
+              "replicas": 128,
+              "sum_residual": 0.028693860480187676,
+              "sum_predictable_variance": 0.000966539132374275,
+              "predicted_standard_error_of_mean": 0.0002428844724682978,
+              "standardized_sum": 0.9229523103035162
+            },
+            "position": {
+              "mean": 0.0001408329027400346,
+              "standard_error": 0.00029984270876388795,
+              "sample_variance": 1.1507923199854812e-05,
+              "replicas": 128,
+              "sum_residual": 0.01802661155072443,
+              "sum_predictable_variance": 0.0021936114988213985,
+              "predicted_standard_error_of_mean": 0.0003659063002769435,
+              "standardized_sum": 0.38488788696298043
+            }
+          },
+          "observations": [
+            {
+              "step": 0,
+              "cos_position": {
+                "mean": 0.3593286631707704,
+                "standard_error": 0.0006009330982782138,
+                "sample_variance": 4.622343534160043e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9260698403904443,
+                "standard_error": 0.00024225838775832352,
+                "sample_variance": 7.512208184225566e-06,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 1,
+              "cos_position": {
+                "mean": 0.3868761271300579,
+                "standard_error": 0.0008213574753798503,
+                "sample_variance": 8.635239710238224e-05,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.9137142546986782,
+                "standard_error": 0.00035302426540030467,
+                "sample_variance": 1.5952144891062367e-05,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.003443579580269608,
+                "standard_error": 4.231541916044288e-05,
+                "sample_variance": 2.2919612143666894e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.022003173828125,
+                "standard_error": 0.0004437068014745964,
+                "sample_variance": 2.5200092886376568e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 4,
+              "cos_position": {
+                "mean": 0.4894826535478321,
+                "standard_error": 0.0013420134640036382,
+                "sample_variance": 0.00023052801760858167,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.8611650644381179,
+                "standard_error": 0.0008132735653564481,
+                "sample_variance": 8.466097818977138e-05,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0034201229319852943,
+                "standard_error": 4.328878490178313e-05,
+                "sample_variance": 2.398616189789244e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.021484375,
+                "standard_error": 0.00038020125825424713,
+                "sample_variance": 1.8502783587598426e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 16,
+              "cos_position": {
+                "mean": 0.8927009479364815,
+                "standard_error": 0.002185929009692953,
+                "sample_variance": 0.0006116205613334035,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": 0.4004618988713625,
+                "standard_error": 0.005552773535988514,
+                "sample_variance": 0.003946661624572721,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.00326693665747549,
+                "standard_error": 4.0506293624519895e-05,
+                "sample_variance": 2.100172573690651e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.020904541015625,
+                "standard_error": 0.00038654228825902426,
+                "sample_variance": 1.9125112398402896e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            },
+            {
+              "step": 64,
+              "cos_position": {
+                "mean": 0.980198136259225,
+                "standard_error": 0.00019245406767801984,
+                "sample_variance": 4.740936725224428e-06,
+                "replicas": 128
+              },
+              "sin_position": {
+                "mean": -0.000780919515753588,
+                "standard_error": 0.0013875365918493972,
+                "sample_variance": 0.00024643299759629316,
+                "replicas": 128
+              },
+              "shared_component_probability": {
+                "mean": 0.0025527056525735292,
+                "standard_error": 3.15397874425869e-05,
+                "sample_variance": 1.2732904856621599e-07,
+                "replicas": 128
+              },
+              "largest_component_fraction": {
+                "mean": 0.017974853515625,
+                "standard_error": 0.0002885129201170903,
+                "sample_variance": 1.0654682249534787e-05,
+                "replicas": 128
+              },
+              "alive_fraction": {
+                "mean": 1.0,
+                "standard_error": 0.0,
+                "sample_variance": 0.0,
+                "replicas": 128
+              }
+            }
+          ],
+          "extinct_trajectories": 0,
+          "revivals": 0,
+          "clones": 551562,
+          "components_larger_than_pairs": 106138,
+          "maximum_momentum_residual": 4.440892098500626e-16,
+          "maximum_energy_residual": 6.938893903907228e-17
+        }
+      ]
+    }
+  ]
+}

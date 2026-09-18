@@ -1,0 +1,102 @@
+{
+  "kind": "independent_finite_accepted_kernel_algebra",
+  "scope": "Algebraic verification of equations (3.S1) and (3.S2), not gas trajectories or an analytic proof.",
+  "random_seed": 493810,
+  "random_cases": 10000,
+  "deterministic_flux_cases": 8,
+  "singleton_persistence_checked": true,
+  "alive_population_range": [
+    2,
+    34
+  ],
+  "fitness_bounds": {
+    "F_star": 0.1,
+    "F_upper": 4.41
+  },
+  "normalization_rows_checked": 180590,
+  "maximum_kernel_normalization_error": 2.220446049250313e-16,
+  "minimum_no_clone_probability": -2.220446049250313e-16,
+  "minimum_slack": {
+    "3.S1": 0.0,
+    "3.S2": -1.1102230246251565e-16
+  },
+  "maximum_lower_bound_violation": {
+    "3.S1": 0.0,
+    "3.S2": 1.1102230246251565e-16
+  },
+  "worst_case": {
+    "3.S1": "two_tied",
+    "3.S2": "negative_gap:5102"
+  },
+  "numerical_tolerance": 1e-11,
+  "case_modes": {
+    "deterministic": 8,
+    "overlap": 1667,
+    "positive_gap": 1667,
+    "negative_gap": 1667,
+    "homogeneous": 1667,
+    "tied": 1666,
+    "near_tie": 1666
+  },
+  "fitness_gap_signs": {
+    "zero": 1668,
+    "positive": 4178,
+    "negative": 4162
+  },
+  "gate_regimes": {
+    "zero": 2478136,
+    "partial": 753739,
+    "saturated": 752443
+  },
+  "data_coefficient_reversals_b_less_than_a": 1058,
+  "deterministic_results": [
+    {
+      "case": "two_tied",
+      "net_flow": 0.0,
+      "3.S1": 0.0,
+      "3.S2": 0.0
+    },
+    {
+      "case": "positive_unsaturated",
+      "net_flow": 0.04999995000005005,
+      "3.S1": 0.011337865909780982,
+      "3.S2": 0.049999950000050045
+    },
+    {
+      "case": "negative_unsaturated",
+      "net_flow": -0.04999995000005005,
+      "3.S1": -0.49999500004999986,
+      "3.S2": -0.049999950000050045
+    },
+    {
+      "case": "positive_saturated",
+      "net_flow": 0.5,
+      "3.S1": 0.5,
+      "3.S2": 0.5
+    },
+    {
+      "case": "negative_saturated",
+      "net_flow": -0.5,
+      "3.S1": -2154.978450215498,
+      "3.S2": -2154.9784502154976
+    },
+    {
+      "case": "positive_data_coefficient_reversal",
+      "net_flow": 0.5,
+      "3.S1": 0.04421767704814579,
+      "3.S2": 0.5
+    },
+    {
+      "case": "homogeneous_clusters_with_external_donors",
+      "net_flow": 0.12013535589611776,
+      "3.S1": 0.0035273360608207467,
+      "3.S2": 0.10895688568941725
+    },
+    {
+      "case": "all_tied_nonuniform_weights",
+      "net_flow": 0.0,
+      "3.S1": 0.0,
+      "3.S2": 0.0
+    }
+  ]
+}

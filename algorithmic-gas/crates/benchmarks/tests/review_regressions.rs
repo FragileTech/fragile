@@ -70,7 +70,7 @@ impl RewardSource<f64> for BoundedReward {
 }
 
 #[test]
-fn clone_jitter_is_classified_before_bounded_reward_and_revives_next_step() {
+fn clone_jitter_is_classified_and_applies_to_revived_recipients() {
     block_on(async {
         let mut c = config();
         c.fitness.direction = ObjectiveDirection::Maximize;
@@ -92,7 +92,8 @@ fn clone_jitter_is_classified_before_bounded_reward_and_revives_next_step() {
         saved.validate().unwrap();
         let next = gas.step().await.unwrap();
         assert_eq!(next.revivals, 1);
-        assert_eq!(next.eligible, 2);
+        assert_eq!(next.eligible, 1);
+        assert!(gas.population().validity[0].out_of_bounds);
         let expected = gas.checkpoint().to_bytes().unwrap();
         gas.restore(saved).unwrap();
         gas.step().await.unwrap();

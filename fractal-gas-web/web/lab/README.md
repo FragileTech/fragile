@@ -31,6 +31,9 @@ Under **View**, **Cargo signs** toggles the harvested-item readouts above vehicl
 in Ants & Drops, and **Checkpoint signs** toggles crossing-progress readouts in
 Tandem Flight. Both switches apply immediately and persist on this device.
 **Clean view** temporarily hides these signs along with the diagnostic layers.
+A selected vehicle is ringed at its current position, so the ring travels with
+it; **Selection highlight** under **View** hides the ring and every other
+selection marker without changing what is selected, and also persists.
 
 Configuration fields edit a draft. **Apply and restart** commits scene, controller,
 and recording-policy changes together; **Discard changes** restores active values.

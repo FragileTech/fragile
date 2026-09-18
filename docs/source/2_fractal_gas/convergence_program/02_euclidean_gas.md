@@ -1,368 +1,100 @@
-# Euclidean Gas — a Fragile Gas instantiation (Langevin perturbations)
+# Euclidean Gas: Canonical Transition and Operator Estimates
 
+(sec-eg-tldr)=
 ## 0. TLDR
 
-**Euclidean Gas Definition**: The Euclidean Gas is the canonical instantiation of the Fragile Gas framework in Euclidean space with Langevin dynamics. Walkers carry both position $x \in \mathbb{R}^d$ and velocity $v \in \mathbb{R}^d$, evolving through measurement-guided cloning (with inelastic collisions) followed by BAOAB-integrated Langevin perturbations.
+:::{div} feynman-prose
+The Euclidean Gas advances a complete marked population through one fixed sequence: sampled measurements, frozen acceptance decisions, connected-component collisions, BAOAB, position diffusion, smooth velocity compression, and terminal boundary classification. One shared orthogonal matrix rotates all relative velocities in a component. This gives exact component momentum conservation and multiplies its relative kinetic energy by the square of the restitution coefficient.
 
-**Sasaki Metric Geometry**: The algorithmic space $\mathcal{Y} = \overline{B(0,R_x)} \times \overline{B(0,V_{\text{alg}})}$ uses the Sasaki metric $d_{\mathcal{Y}}^{\text{Sasaki}}((x,v),(x',v'))^2 = \|x-x'\|^2 + \lambda_v\|v-v'\|^2$ to couple position and velocity coordinates. Smooth squashing maps $\psi_x$, $\psi_v$ ensure bounded diameter while preserving Lipschitz continuity.
+The comparison coordinates are bounded; the physical coordinates are retained. Dead slots use those retained coordinates when choosing revival donors and entering collisions. The primary population description is the discrete map $\mu_{n+1}=\mathcal F_h(\mu_n)$ derived in {doc}`08_mean_field`.
+:::
 
-**Axiom-by-Axiom Validation**: This document rigorously verifies that the Euclidean Gas satisfies all framework axioms ({prf:ref}`def-fragile-gas-algorithm`), establishing Hölder continuity constants for survival probability, measurement operators, and the full swarm update kernel in the Sasaki geometry.
-
-**Momentum-Conserving Cloning**: The cloning operator implements inelastic collisions with center-of-mass momentum conservation, random rotation, and restitution coefficient $\alpha_{\text{restitution}}$, providing controlled energy dissipation while maintaining physical plausibility.
-
-**Dependencies**: {doc}`01_fragile_gas_framework`, {doc}`04_single_particle`, {doc}`03_cloning`
-
+(sec-eg-introduction)=
 ## 1. Introduction
 
-### 1.1. Goal and Scope
+:::{div} feynman-prose
+Imagine stopping a simulation just before an update and writing down every random choice it is about to make. That list is the algorithm's transition law. A theory of this gas must average that same list: which companion was measured, which donor was selected, which edge was accepted, and which other walkers joined the collision.
 
-The goal of this document is to define the **Euclidean Gas** as a concrete, physically-motivated instantiation of the abstract Fragile Gas framework and to verify, axiom-by-axiom, that this construction satisfies all requirements for a valid Fragile Gas.
+Two details make a large difference. First, acceptance acts on sampled fitness. An average measurement substituted before the nonlinear gate changes the law. Second, an accepted recipient can itself be a donor. The connected components of all accepted edges specify the collision groups without overlapping writes. A shared rotation preserves the sum of relative velocities; independent rotations do not.
 
-The Euclidean Gas is the canonical example of a Fragile Swarm operating in continuous Euclidean space $\mathbb{R}^d$. Each walker $w_i = (x_i ({prf:ref}`def-walker`), v_i, s_i)$ carries both position and velocity coordinates, with the algorithmic state space $\mathcal{Y}$ equipped with the **Sasaki metric** to couple these coordinates. The perturbation dynamics follow underdamped Langevin evolution via the BAOAB splitting integrator, providing a physically grounded stochastic exploration mechanism with friction, thermal noise, and force-driven drift.
-
-The main results of this document are:
-
-1. **Formal Specification** (§3): Complete definition of the Euclidean Gas algorithm, including the Sasaki metric structure, squashing projections, reward function, and BAOAB kinetic operator.
-
-2. **Framework Compliance** (§4): Rigorous verification that the Euclidean Gas satisfies all viability, environmental, and algorithmic axioms from the framework document ({prf:ref}`def-fragile-swarm-instantiation`).
-
-3. **Continuity Analysis** (§4.3): Detailed derivation of Hölder/Lipschitz constants for all operators (measurement, standardization, rescale, cloning, kinetic) in the Sasaki geometry, yielding explicit bounds for swarm-level continuity.
-
-4. **Operator Kernel** (§5): Construction of the one-step update operator $\Psi_{\mathcal{F}_{\text{EG}}}$ as a well-defined Markov kernel on the swarm state space ({prf:ref}`def-swarm-and-state-space`).
-
-This document focuses exclusively on the **geometric and analytical foundations** of the Euclidean Gas. The convergence analysis (exponential approach to quasi-stationary distribution), mean-field limit (McKean-Vlasov PDE), and propagation of chaos are treated in subsequent documents ({doc}`06_convergence`, {doc}`08_mean_field`, {doc}`09_propagation_chaos`).
-
-### 1.2. Physical Motivation and the Langevin Paradigm
-
-The Euclidean Gas bridges stochastic optimization and statistical physics by encoding the search process as a non-equilibrium thermodynamic system. The underdamped Langevin dynamics provides a second-order evolution law that couples position and momentum, allowing the swarm to accumulate directional information and exploit gradient structure in the reward landscape.
-
-The BAOAB integrator ({prf:ref}`alg-euclidean-gas`) implements a symmetric, second-order accurate splitting of the Langevin operator into deterministic drift (A-steps: position update), force application (B-steps: velocity kick), and stochastic thermostat (O-step: Ornstein-Uhlenbeck friction+noise). The deterministic substeps preserve symplectic structure, while the full stochastic integrator maintains numerical stability for finite time steps $\tau$.
-
-The **inelastic collision model** for cloning (Definition 5.7.4 in {doc}`03_cloning`) reflects physical intuition: when walkers clone toward a fitter companion, they undergo a momentum-conserving collision that dissipates kinetic energy (via restitution coefficient $\alpha_{\text{restitution}} \in [0,1]$) while randomizing relative orientations. This mechanism prevents kinetic energy buildup during cloning events and ensures the velocity distribution remains well-behaved.
-
-:::{note} Connection to Statistical Mechanics
-The Euclidean Gas can be viewed as a **driven-dissipative many-particle system** far from equilibrium:
-- **Driving force**: Measurement-guided cloning injects particles toward high-reward regions
-- **Dissipation**: Langevin friction ($\gamma_{\text{fric}}$) and inelastic cloning collisions remove kinetic energy
-- **Thermal bath**: Gaussian velocity noise ($\sigma_v$) and position jitter ($\sigma_x$) maintain exploration
-
-The quasi-stationary distribution (QSD) plays the role of a **non-equilibrium steady state**, analogous to the invariant measure of a driven Fokker-Planck equation.
+We define the complete transition, prove its component identities, and derive kinetic bounds directly from its BAOAB stages. The final position has an exact Gaussian conditional law, which makes terminal survival calculations particularly transparent. The complete finite-population kernel is permutation equivariant and Feller. The population and chaos proofs are in {doc}`08_mean_field` and {doc}`09_propagation_chaos`.
 :::
-
-### 1.3. Overview of the Proof Strategy and Document Structure
-
-The verification strategy follows the logical dependency structure shown in the diagram below. We first establish the geometric foundations (position-velocity coupling, Sasaki metric, squashing maps), then systematically verify each axiom category using these tools.
 
 ```{mermaid}
-graph TD
-    subgraph "Part I: Geometric Foundations (§3)"
-        A["<b>§3.3: Sasaki Metric Structure</b><br>Defines product space with <br><b>d<sub>Y</sub><sup>Sasaki</sup></b> coupling x and v"]:::stateStyle
-        B["<b>§3: Squashing Projections</b><br><b>ψ<sub>x</sub>, ψ<sub>v</sub></b> ensure bounded diameter<br>Lemma: 1-Lipschitz property"]:::lemmaStyle
-        C["<b>§3: Reward Function</b><br><b>R(x,v) = R<sub>pos</sub>(x) - λ<sub>vel</sub>||v||²</b><br>Lemma: Lipschitz in Sasaki metric"]:::lemmaStyle
-        D["<b>§3: BAOAB Kinetic Operator</b><br>Underdamped Langevin via symplectic splitting<br>Lemma: Lipschitz flow map"]:::lemmaStyle
-
-        A --> B
-        A --> C
-        A --> D
-    end
-
-    subgraph "Part II: Viability Axioms (§4.1)"
-        E["<b>§4.1: Guaranteed Revival</b><br>Dead walkers always clone<br>Axiom: Guaranteed Revival"]:::axiomStyle
-        F["<b>§4.1: Boundary Regularity</b><br>Hölder continuity of p<sub>dead</sub> via<br>tubular neighborhood + Gaussian tail bounds"]:::theoremStyle
-
-        D --> F
-    end
-
-    subgraph "Part III: Environmental Axioms (§4.2)"
-        G["<b>§4.2: Environmental Richness</b><br>Non-zero reward variance from<br>compact domain + C¹ potential"]:::axiomStyle
-        H["<b>§4.2: Reward Regularity</b><br>Lipschitz R inherits from<br>Lipschitz R<sub>pos</sub> + bounded ||v||"]:::axiomStyle
-
-        C --> G
-        C --> H
-    end
-
-    subgraph "Part IV: Algorithmic Axioms (§4.3)"
-        I["<b>§4.3: Measurement Continuity</b><br>Theorem: Mean-square bound on<br>raw distance vector Δ<b>d</b>"]:::theoremStyle
-        J["<b>§4.3: Standardization Continuity</b><br>Theorem: Value + structural error bounds<br>for patched std deviation"]:::theoremStyle
-        K["<b>§4.3: Rescale Continuity</b><br>Logistic rescale inherits Lipschitz<br>from bounded derivative"]:::theoremStyle
-        L["<b>§4.3: Cloning Operator</b><br>Inelastic collision model:<br>momentum conservation + energy dissipation"]:::stateStyle
-
-        B --> I
-        I --> J
-        J --> K
-        K --> L
-    end
-
-    subgraph "Part V: Swarm Update Kernel (§5)"
-        M["<b>§5: Full Operator Ψ<sub>EG</sub></b><br>Composition of measurement → cloning → kinetic<br>Theorem: Well-defined Markov kernel"]:::theoremStyle
-    end
-
-    E --> M
-    F --> M
-    G --> M
-    H --> M
-    L --> M
-
-    classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
-    classDef axiomStyle fill:#8c6239,stroke:#d4a574,stroke-width:2px,stroke-dasharray: 5 5,color:#f4e8d8
-    classDef lemmaStyle fill:#3d6b4b,stroke:#7fc296,stroke-width:2px,color:#d8f4e3
-    classDef theoremStyle fill:#8c3d5f,stroke:#d47fa4,stroke-width:3px,color:#f4d8e8
+flowchart LR
+    S["Frozen marked swarm"] --> M["Sample measurements and retain fitness"]
+    M --> G["Draw donors and acceptance gates"]
+    G --> C["Accepted-edge components"]
+    C --> J["Frozen position copies and jitter"]
+    C --> R["One shared orthogonal matrix per component"]
+    J --> K["BAOAB"]
+    R --> K
+    K --> X["Position diffusion"]
+    X --> V["Smooth velocity cap"]
+    V --> A["Terminal alive/dead marks"]
 ```
 
-The document is structured as follows:
+(sec-eg-framework-alignment)=
+## 2. Physical states and comparison geometry
 
-- **§2 (Framework Adaptation)**: We explain how the canonical framework axioms, stated for algorithmic states $y \in \mathcal{Y}$, lift to the product space $\mathcal{X} \times \mathcal{V}$ with position-velocity walkers.
+:::{div} feynman-prose
+A bounded comparison feature is a way of measuring similarity, not a wall in physical space. Two distant positions may look similar after squashing, yet the force and the boundary still use their actual positions. We therefore keep both notions visible: the physical position–velocity metric for kinetic estimates, and the squashed metric for companion weights and bounded measurements.
 
-- **§3 (Geometric Foundations)**: We define the position-velocity state space, introduce the Sasaki metric as the natural product metric for coupled coordinates, and establish Lipschitz bounds for the squashing maps, reward function, and BAOAB integrator.
-
-- **§4.1 (Viability Axioms)**: We verify the Axiom of Guaranteed Revival (trivial by construction: dead walkers always have $S_i > T_i$) and prove Hölder continuity of the boundary survival probability using tubular neighborhood volume bounds and Gaussian tail estimates.
-
-- **§4.2 (Environmental Axioms)**: We verify that the compact valid domain with $C^1$ reward potential guarantees non-zero variance (Environmental Richness) and that reward Lipschitz continuity follows from the Sasaki metric structure (Reward Regularity).
-
-- **§4.3 (Algorithmic Axioms)**: This is the technical core of the document. We derive explicit mean-square error bounds for the measurement operator, showing how positional displacement $\Delta_{\text{pos},\text{Sasaki}}$ and status changes $n_c$ propagate through standardization and rescale. We then specify the momentum-conserving inelastic collision model for cloning.
-
-- **§5 (Swarm Update Kernel)**: We assemble the full one-step operator $\Psi_{\mathcal{F}_{\text{EG}}}$ by composing the measurement, cloning, and kinetic stages, proving it defines a valid Markov kernel on the swarm state space.
-
-**Key Technical Contributions:**
-1. **Sasaki metric analysis**: Complete derivation of continuity constants in the coupled $(x,v)$ geometry
-2. **Squared-norm error bounds**: Mean-square (L²) formulation for measurement pipeline continuity
-3. **Inelastic collision physics**: Momentum-conserving cloning with energy dissipation
-4. **Explicit constants**: All Hölder/Lipschitz constants expressed in terms of physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\text{fric}}, \ldots)$
-
-
-
-## 2. Framework alignment with velocity states
-
-The canonical Fragile framework ({doc}`01_fragile_gas_framework`) phrases every axiom in terms of
-an **algorithmic state** $y \in \mathcal Y$ and a binary status. To accommodate walkers of the
-form $w=(x,v,s)$ we first make explicit how each framework object lifts to the product space
-$\mathcal X \times \mathcal V$. Write $\pi_x(x,v,s)=(x,s)$ and $\pi_{\mathcal Y}(x,v,s)=(x,v)$.
-
-:::{note} Framework adaptation
-Throughout the remainder of this chapter we instantiate the Euclidean Gas by taking
-$\widetilde{\mathcal Y}=\mathcal X	\times\mathcal V_{\mathrm{alg}}$ with the Sasaki metric of
-Section 3.3. The canonical measurement and potential pipeline now operate on the full
-position-velocity states; $\Pi$ only serves as a bookkeeping device when comparing with the
-framework notation. Sections 1.2 and 2 re-derive every geometry-dependent continuity bound
-for this Sasaki dispersion.
-
+The framework's deterministic aggregation estimates can be used when their stated input bounds hold. Its independent-output arguments cannot be applied to the shared component collision. Our kernel proof below conditions on the whole accepted graph, and the population proof controls the graph seen by a tagged walker.
 :::
 
+(sec-eg-definition)=
 ## 3. Definition: the Euclidean Gas
 
-A **Euclidean Gas** is the Fragile Swarm $\mathcal F_{\text{EG}}$ given by the tuple of environmental structures, parameters, operators, and noise measures below. It induces a Markov chain on the swarm state space via the **Fragile Gas Algorithm** $\mathcal{S}_{t+1}\!\sim\!\Psi_{\mathcal F_{\text{EG}}}(\mathcal S_t,\cdot)$ (Def. *Fragile Gas Algorithm* ({prf:ref}`def-fragile-gas-algorithm`)). Throughout this chapter the measurement pipeline is fixed to the patched standardisation operator of {prf:ref}`def-statistical-properties-measurement` followed by the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`); these choices are part of the Euclidean Gas specification and underlie every continuity bound below.
+A **Euclidean Gas** is the Fragile Swarm $\mathcal F_{\text{EG}}$ given by the tuple of environmental structures, parameters, operators, and noise measures below. It induces a Markov chain on the swarm state space via the **Fragile Gas Algorithm** $\mathcal{S}_{t+1}\!\sim\!\Psi_{\mathcal F_{\text{EG}}}(\mathcal S_t,\cdot)$ (Def. *Fragile Gas Algorithm* ({prf:ref}`def-fragile-gas-algorithm`)). The canonical measurement pipeline uses global population variance with a positive quadratic regularization floor, followed by positive logistic rescaling. The detailed formulas below distinguish this choice from the explicitly scoped auxiliary standardization estimates.
 
-### **3.1 Euclidean Gas algorithm (canonical pipeline)**
+### 3.1 Euclidean Gas algorithm (canonical pipeline)
+
+:::{div} feynman-prose
+Freeze a photograph of the swarm at the beginning of the step. Every measurement, donor choice, and acceptance decision refers to this photograph. Draw an edge from each accepted recipient to its donor. If two collision groups overlap, they are one connected group: a walker has exactly one velocity destination. Rotate the whole group's relative velocities with the same matrix. The vectors then still add to zero, which is the reason momentum is conserved.
+
+After cloning, advance all slots through the kinetic stages and check the boundary at the end. A revived slot joins the collision using its retained input velocity. Its position comes from its selected donor, but its momentum has not been replaced by a second copy of the donor's momentum.
+:::
 
 :::{prf:algorithm} Euclidean Gas Update
 :label: alg-euclidean-gas
 
-Given a swarm state $\mathcal S_t=(w_1,\dots,w_N)$ with walkers $w_i=(x_i,v_i,s_i)$, the Euclidean Gas performs one update as follows:
+Given the complete marked swarm $S=((x_i,v_i,a_i))_{i=1}^N$, retain all coordinates, including those of dead slots.
 
-1.  **Cemetery check.** If all walkers are dead (no alive indices in $\mathcal A_t$) return the cemetery state ({prf:ref}`def-cemetery-state`); otherwise continue.
-2.  **Measurement stage.** For every alive walker $i\in\mathcal A_t$ sample a companion $c_{\mathrm{pot}}(i)$ from the algorithmic distance-weighted kernel $\mathbb C_\epsilon(\mathcal S_t,i)$, then compute raw reward $r_i:=R(x_i,v_i)$ and algorithmic distance $d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i))$ as defined in Section 3.3 and detailed in {ref}`Stage 2 <sec-eg-stage2>`.
-3.  **Patched standardisation.** Aggregate the raw reward and distance vectors with the empirical operator and apply the regularized standard deviation from {prf:ref}`def-statistical-properties-measurement` to obtain standardized scores with floor $\sigma'_{\min,\mathrm{patch}} = \sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$.
-4.  **Logistic rescale.** Apply the Canonical Logistic Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`) to the standardized reward and distance components, producing positive outputs $r'_i$ and $d'_i$. Combine them with the canonical exponents to freeze the potential vector $V_{\text{fit},i}=(d'_i)^\beta (r'_i)^\alpha$ with floor $\eta^{\alpha+\beta}$.
-5.  **Clone/Persist gate.** For each walker draw a clone companion $c_{\mathrm{clone}}(i)$ from the same algorithmic distance-weighted kernel ({prf:ref}`def-alg-distance`) and threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$, compute the canonical score $S_i:=\big(V_{\text{fit},c_{\mathrm{clone}}(i)}-V_{\text{fit},i}\big)/(V_{\text{fit},i}+\varepsilon_{\mathrm{clone}})$, and clone when $S_i>T_i$. Cloned walkers are grouped by companion and undergo a momentum-conserving inelastic collision: positions reset to the companion's position plus Gaussian jitter ($\sigma_x$), while velocities are updated via center-of-mass calculation with random rotation and restitution coefficient $\alpha_{\text{restitution}}$, as detailed in {ref}`Stage 3 <sec-eg-stage3>` and Definition 5.7.4 of {doc}`03_cloning`. Otherwise the walker persists unchanged. The intermediate swarm sets every status to alive before the kinetic step.
-6.  **Kinetic perturbation.** Update each alive clone or survivor by applying the **BAOAB splitting integrator** for one step of underdamped Langevin dynamics with force $F(x)=\nabla R_{\mathrm{pos}}(x)$ and noise scales $(\sigma_v,\sigma_x)$.
-7.  **Status refresh ({prf:ref}`def-status-update-operator`).** Set the new status $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ and output the updated swarm $\mathcal S_{t+1}$.
+1. If $M=\sum_i a_i=0$, return $S$ unchanged and stop the run.
+2. Each alive row draws one measurement companion from the normalized Gaussian law on squashed phase-space distance, excluding itself when another alive row exists. Measure reward and the sampled separation, including the positive diversity floor, as specified in {ref}`sec-eg-stage2`.
+3. Compute alive-population means and population variances. Standardize each channel using $\sqrt{\operatorname{Var}+\sigma_{\min}^2}$, apply its positive logistic map, and form the fitness product. Retain every realized sampled fitness throughout the cloning stage.
+4. Each row draws one current cloning donor from the same distance-weighted law. For alive rows, accept with probability $\min\{1,[(V_{\mathrm{fit},j}-V_{\mathrm{fit},i})/(p_{\max}(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}}))]_+\}$. Accept every dead row whenever $M>0$. An alive singleton has no distinct donor and does not clone.
+5. Form the undirected graph of accepted recipient–donor edges and compute its connected components. Copy accepted recipient positions from their frozen donors and add independent Gaussian jitter $\sigma_{\mathrm{clone}}\zeta_i$. For each nontrivial component $C$, independently draw $R_C$ from normalized Haar measure on $O(d)$ and set
+   $$
+   \bar v_C=\frac1{|C|}\sum_{i\in C}v_i,\qquad
+   \widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}R_C(v_i-\bar v_C).
+   $$
+   Uninvolved rows keep their input position and velocity. A donor's position changes only if that donor is itself an accepted recipient. Every slot is alive after this stage.
+6. Apply the BAOAB map of {prf:ref}`def-eg-baoab-canonical` to each intermediate row, then independent Gaussian position diffusion and the smooth radial velocity cap. Use fresh independent kinetic noises across rows.
+7. Apply terminal boundary classification once. Retain the positions and velocities of every terminally dead row in the output.
 
-**Euclidean Gas Algorithm**
-
-$$
-\begin{aligned}
-& \textbf{Input:} \mathcal S_t = \{(x_i^{(t)}, v_i^{(t)}, s_i^{(t)})\}_{i=1}^N\text{; and parameters } \alpha, \beta, \varepsilon_{\mathrm{std}}, \eta, \tau, p_{\max}, \varepsilon_{\mathrm{clone}}, \sigma_x, \alpha_{\text{restitution}}, \sigma_v, \\
-& \qquad \sigma'_{\mathrm{patch}}, g_A, \mathbb C_i, Q_{\delta}, \Psi_{\mathrm{kin,BAOAB}}. \\
-& \textbf{If } |\mathcal A_t| = 0: \textbf{ return } \delta_{\mathcal S_t} \quad \text{\# Cemetery absorption} \\
-\\
-& \underline{\text{Stage 2a: Raw vectors on alive set ({prf:ref}`def-alive-dead-sets`)}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2b: Patched standardisation}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2c: Logistic rescale of components}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 2d: Assemble full vectors with floors}} \\
-& \dots \quad \text{\# Unchanged} \\
-\\
-& \underline{\text{Stage 3: Cloning transition}} \\
-& \dots \quad \text{\# Unchanged logic, produces } (x_i^{(t+\frac{1}{2})}, v_i^{(t+\frac{1}{2})}) \\
-\\
-& \underline{\text{Stage 4: Langevin perturbation and status refresh}} \\
-& \mathcal S_{\mathrm{pert}} \sim \Psi_{\mathrm{kin,BAOAB}}(\{(x_i^{(t+\frac{1}{2})}, v_i^{(t+\frac{1}{2})})\}, \cdot) \quad \text{\# BAOAB Langevin step with velocity capping} \\
-& \textbf{For each } i = 1..N: \\
-& \quad (x_i^{(t+1)}, v_i^{(t+1)}) \leftarrow \text{draw from kinetic step output} \\
-& \quad s_i^{(t+1)} \leftarrow \mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^{(t+1)}) \\
-& \textbf{Return } \mathcal S_{t+1}
-\end{aligned}
-
-$$
-
+All coordinates used in Steps 2–5 are frozen input coordinates. In particular, velocity updates include donors and revived recipients, and no updated donor coordinate feeds another recipient during the same step.
 :::
 
-### 3.2 Python implementation of the Euclidean Gas algorithm
-```python
+### 3.2 Compiled configuration and experiment contract
 
-import numpy as np
+:::{prf:definition} Canonical Rust configuration
+:label: def-eg-canonical-rust
 
-def psi_v(v: np.ndarray, V_alg: float) -> np.ndarray:
-    """
-    Applies the smooth velocity squashing map to a set of velocity vectors.
+`GasConfig::euclidean(d, h)` in the Rust `algorithmic-gas` library selects current-frame independent companions, Gaussian width $\epsilon_D=\epsilon_C=2$, squashing radii $R_x=R_v=2$, and phase-space weight $\lambda_v=1$. Both standardization floors are $0.1$, both logistic maps are $g(z)=2/(1+e^{-z})+0.1$, and both fitness exponents are $1$. The separation floor is $10^{-3}$; clone saturation is $p_{\max}=1$ and acceptance denominator floor is $10^{-6}$.
 
-    This function implements the formula from Section 3.3 of this document:
-    ψ_v(v) = V_alg * (v / (V_alg + ||v||))
+The collision has $\alpha_{\mathrm{restitution}}=0.5$ and $\sigma_{\mathrm{clone}}=0.1$. BAOAB uses unit mass, friction $1$, velocity diffusion factor $1$, final position diffusion $\sigma_x=0.1$, and velocity radius $V_{\mathrm{alg}}=2$. The absorbing box is $[-2,2]^d$, with terminal-only boundary classification. The caller supplies the objective and its potential gradient; the benchmark experiments use an explicit quadratic objective. Rust supports $1\le d\le256$ for the shared orthogonal sampler.
 
-    It ensures that the returned velocity vectors have a magnitude strictly less
-    than V_alg, while pointing in the same direction as the input vectors.
-    The implementation is vectorized to handle an array of N walkers.
+The mathematical formulas describe the real-arithmetic transition. Each interactive experiment executes the Rust engine and records its configuration, seed, accepted edges, component rotations, stage outputs, and terminal status. They do not run a separate Python trajectory implementation.
 
-    Args:
-        v (np.ndarray): An (N, D) array of N velocity vectors in D dimensions.
-        V_alg (float): The scalar maximum algorithmic velocity (the radius of the ball).
+Uniform companions, uncapped kinetics, substep absorption, direct-copy cloning, historical donors, and additional force terms are separately configured library extensions. Statements for the canonical configuration apply to an extension only after its changed transition and proof hypotheses have been checked.
+:::
 
-    Returns:
-        np.ndarray: An (N, D) array of squashed velocity vectors.
-    """
-    # Calculate the L2 norm (Euclidean magnitude) for each velocity vector (row).
-    # The `axis=1` argument computes the norm along the columns for each row.
-    # `keepdims=True` is crucial: it makes the output shape (N, 1) instead of (N,),
-    # which allows for correct NumPy broadcasting during the division.
-    norms = np.linalg.norm(v, axis=1, keepdims=True)
-
-    # To avoid division by zero if a norm is zero, we can add a small epsilon.
-    # However, the formula is mathematically well-behaved at v=0.
-    # If v=0, then norm=0, and the output is V_alg * 0 / (V_alg + 0) = 0.
-    # NumPy handles this correctly without explicit checks.
-
-    # The scaling factor by which each vector is multiplied.
-    # This factor is always in the range [0, 1).
-    scaling_factor = V_alg / (V_alg + norms)
-
-    # Apply the scaling factor to the original velocity vectors.
-    # Broadcasting rules: (N, 1) * (N, D) -> (N, D)
-    squashed_v = scaling_factor * v
-
-    return squashed_v
-
-# BAOAB: force (B), drift (A), exact thermostat (O), drift (A), force (B).
-def Psi_kin_BAOAB(x, v, params):
-    """Apply one BAOAB step with mass m and velocity diffusion factor sigma_v.
-
-    The velocity SDE has force F(x)/m, friction gamma_fric, and
-    diffusion sigma_v dW. For temperature Theta, sigma_v**2 =
-    2*gamma_fric*Theta/m, so the O-stage variance is
-    (Theta/m)*(1-exp(-2*gamma_fric*tau)). The flow u is frozen at
-    the O-stage position. Set sigma_x=0 and V_alg=None for uncapped
-    BAOAB with no additional position-diffusion step.
-    """
-    p = params
-    N, D = x.shape
-    h, gamma = p['tau'], p['gamma_fric']
-
-    # B: first half force kick, evaluated at the initial position.
-    v_half = v + (h / (2.0 * p['m'])) * F(x)
-
-    # A: first half position drift.
-    x_half = x + (h / 2.0) * v_half
-
-    # O: all friction and velocity noise occur in this exact substep.
-    c = np.exp(-gamma * h)
-    one_minus_c = -np.expm1(-gamma * h)
-    variance_time = h if gamma == 0 else -np.expm1(-2.0 * gamma * h) / (2.0 * gamma)
-    innovation = p['sigma_v'] * np.sqrt(variance_time) * np.random.randn(N, D)
-    v_ou = c * v_half + one_minus_c * u(x_half) + innovation
-
-    # A: second half drift, using the thermostatted velocity.
-    x_next = x_half + (h / 2.0) * v_ou
-
-    # B: recompute the force at the post-drift position.
-    v_next = v_ou + (h / (2.0 * p['m'])) * F(x_next)
-
-    # Optional position diffusion composed after the five BAOAB substeps.
-    if p.get('sigma_x', 0.0) > 0:
-        x_next += np.sqrt(h) * p['sigma_x'] * np.random.randn(N, D)
-
-    # Optional final cap; the lecture's pure BAOAB preset uses V_alg=None.
-    if p.get('V_alg') is not None:
-        v_next = psi_v(v_next, p['V_alg'])
-
-    return x_next, v_next
-
-def run_euclidean_gas_step(S_t, params):
-    """
-    Executes one step of the Euclidean Gas algorithm using BAOAB integrator.
-
-    Note: This implementation uses uniform companion selection (infinite ε limit).
-    For spatially-aware companion selection using algorithmic distance d_alg(i,j),
-    see the full implementation in {doc}`03_cloning`.
-    """
-    x_t, v_t, s_t = S_t['x'], S_t['v'], S_t['s']
-    N, D = x_t.shape
-    p = params
-
-    A_t_indices = np.where(s_t == 1)[0]
-    if len(A_t_indices) == 0:
-        return S_t
-
-    # --- Stage 2: Measurement using algorithmic distance ---
-    r = np.zeros(N); d = np.zeros(N)
-    # Companion selection: uniform for canonical EG (infinite ε limit)
-    # For finite ε: weight by exp(-d_alg(i,j)^2 / 2ε^2)
-    c_pot = np.random.choice(A_t_indices, size=len(A_t_indices))
-    r[A_t_indices] = R(x_t[A_t_indices], v_t[A_t_indices])
-    # Compute algorithmic distance d_alg(i, c_pot(i))
-    # For canonical EG with λ_alg = λ_v, this matches the Sasaki metric
-    p1 = phi(x_t[A_t_indices], v_t[A_t_indices])
-    p2 = phi(x_t[c_pot], v_t[c_pot])
-    d[A_t_indices] = d_sasaki(p1, p2)  # d_alg with λ_alg = λ_v
-    r_alive = r[A_t_indices]; d_alive = d[A_t_indices]
-    mu_R, sigma_R = np.mean(r_alive), np.std(r_alive)
-    mu_D, sigma_D = np.mean(d_alive), np.std(d_alive)
-    hat_sigma_R = patched_std(sigma_R, p['epsilon_std'])
-    hat_sigma_D = patched_std(sigma_D, p['epsilon_std'])
-    tilde_r_alive = (r_alive - mu_R) / hat_sigma_R
-    tilde_d_alive = (d_alive - mu_D) / hat_sigma_D
-    r_prime_alive = g_A(tilde_r_alive, p['eta'])
-    d_prime_alive = g_A(tilde_d_alive, p['eta'])
-    V_alive = (d_prime_alive**p['beta']) * (r_prime_alive**p['alpha'])
-    V_fit = np.full(N, np.inf)
-    V_fit[A_t_indices] = np.maximum(V_alive, p['eta']**(p['alpha'] + p['beta']))
-
-    # --- Stage 3: Cloning with positional jitter only (no velocity jitter) ---
-    x_half, v_half = np.zeros_like(x_t), np.zeros_like(v_t)
-    c_clone = np.random.choice(A_t_indices, size=N)
-    U = np.random.uniform(0, p['p_max'], size=N)
-    v_i = V_fit
-    v_c = V_fit[c_clone]
-    S_i = (v_c - v_i) / (v_i + p['epsilon_clone'])
-    should_clone = (S_i > U) | (s_t == 0)
-
-    clone_indices = np.where(should_clone)[0]
-    if len(clone_indices) > 0:
-        c = c_clone[clone_indices]
-        # Position: companion + Gaussian jitter
-        jitter_x = np.random.randn(len(clone_indices), D) * p['sigma_x']
-        x_half[clone_indices] = x_t[c] + jitter_x
-        # Velocity: direct reset to companion (NO jitter)
-        v_half[clone_indices] = v_t[c]
-
-    persist_indices = np.where(~should_clone)[0]
-    if len(persist_indices) > 0:
-        x_half[persist_indices] = x_t[persist_indices]
-        v_half[persist_indices] = v_t[persist_indices]
-
-    # --- Stage 4: Langevin perturbation (BAOAB) and status refresh ---
-    x_next, v_next = Psi_kin_BAOAB(x_half, v_half, p)
-    s_next = is_valid(x_next).astype(int)
-
-    return {'x': x_next, 'v': v_next, 's': s_next}
-```
 
 ### 3.3 Position–velocity foundations and projection (Sasaki metric)
 
-- **Position space** $(\mathcal X,d_{\mathcal X})$: the ambient space is $\mathbb R^d$ with its Euclidean metric, while the algorithm operates on the **bounded valid domain** $\mathcal X_{\mathrm{valid}}\subset\mathbb R^d$. We assume $\mathcal X_{\mathrm{valid}}$ is compact with $C^1$ boundary, the standing hypothesis across the framework.
+- **Physical position space** is $\mathbb R^d$. The canonical absorbing domain $D=\mathcal X_{\mathrm{valid}}$ is a closed box with nonempty interior. Its boundary has Lebesgue measure zero; smooth boundary is unnecessary here. Dead coordinates and intermediate Gaussian perturbations can lie outside $D$. The unbounded configuration takes $D=\mathbb R^d$ and requires physical moment and tail estimates separately.
 - **Velocity radius** $V_{\mathrm{alg}}\in(0,\infty)$ and **velocity cap** $\mathcal V_{\mathrm{alg}}:=\{v\in\mathbb R^d:\|v\|\le V_{\mathrm{alg}}\}$.
 - **Positional radius** $R_x\in(0,\infty)$, which sets the characteristic scale of the bounded algorithmic position space.
 - **Walker state** $w_i=(x_i,v_i,s_i)\in\mathcal X\times\mathbb R^d\times\{0,1\}$ collects position, velocity, and status.
@@ -390,7 +122,7 @@ def run_euclidean_gas_step(S_t, params):
 
   ::: {admonition} Design Note
   :class: tip
-  Smooth ($C^{\infty}$ away from the origin) squashing maps are chosen over hard radial projections. They provide differentiability for both position and velocity coordinates, a prerequisite for the one-step minorization proof in the convergence analysis (Chapter 5) and for deriving continuum limits.
+  Each squashing map is $C^1$ globally and $C^\infty$ away from the origin. Its image is the open ball, so the final smooth cap does not create an atom on the velocity sphere. Minorization and any further continuum identification must use this particular map.
   :::
 
   The projection $\varphi$ maps the physical state space $\mathbb R^d\times\mathbb R^d$ into the bounded product $B(0,R_x)\times B(0,V_{\mathrm{alg}})$. Its image has compact closure $\mathcal Y$, so the **Axiom of Bounded Algorithmic Diameter** ({prf:ref}`axiom-bounded-algorithmic-diameter`) holds by construction. Lemma {prf:ref}`lem-squashing-properties-generic` shows that each squashing map is $1$-Lipschitz, and Lemma {prf:ref}`lem-projection-lipschitz` extends this to $\varphi$ under the Sasaki metric.
@@ -398,11 +130,11 @@ def run_euclidean_gas_step(S_t, params):
 - **Algorithmic distance for companion selection ({prf:ref}`def-alg-distance`).** For intra-swarm measurements (companion selection for diversity and cloning), the algorithm uses the **algorithmic distance** between two walkers $i$ and $j$:
 
   $$
-  d_{\text{alg}}(i,j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2
+  d_{\text{alg}}(i,j)^2 := \|\psi_x(x_i)-\psi_x(x_j)\|^2 + \lambda_{\text{alg}}\|\psi_v(v_i)-\psi_v(v_j)\|^2
 
   $$
 
-  where $\lambda_{\text{alg}} \geq 0$ controls the relative importance of velocity similarity in companion selection. For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ to match the Sasaki metric weight, ensuring consistency between the algorithmic behavior and the analytical geometry. See Definition 5.0 in {doc}`03_cloning` for the full framework specification. This metric defines the algorithm's "perception" of proximity and is distinct from the Sasaki metric used in the analysis (see Section 3.4).
+  where $\lambda_{\text{alg}}=\lambda_v$ in the canonical configuration. Thus this is exactly the Sasaki distance between squashed features. The physical phase-space metric instead uses unsquashed coordinates; the two metrics have different quantitative bounds.
 
 - **Reward** $R:\mathcal X_{\mathrm{valid}}\times\mathcal V_{\mathrm{alg}}\to\mathbb R$ couples the position potential with a kinetic regularizer:
 
@@ -410,7 +142,7 @@ def run_euclidean_gas_step(S_t, params):
   R(x,v):=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2,
 
   $$
-  where $R_{\mathrm{pos}}:\mathcal X_{\mathrm{valid}}\to\mathbb R$ is a $C^1$ potential defined on a neighbourhood of the valid domain. We require only that $R_{\mathrm{pos}}$ is bounded above on $\mathcal X_{\mathrm{valid}}$ and that its gradient $F(x):=\nabla R_{\mathrm{pos}}(x)$ is Lipschitz on the compact set $\mathcal X_{\mathrm{valid}}$ with constant $L_F$. The potential therefore provides a smooth reward landscape inside the permitted region rather than a mechanism for confining walkers at infinity.
+  where $R_{\mathrm{pos}}=-U$ for a minimized objective $U$. The canonical preset permits $\lambda_{\mathrm{vel}}=0$; a positive kinetic regularizer is an additional objective choice. The acceleration $F=-\nabla U$ must be defined on all of $\mathbb R^d$, because jitter and BAOAB drift can leave $D$ before the terminal check. For the estimates below assume $F$ is globally Lipschitz with constant $L_F$, so $\|F(x)\|\le B_F+L_F\|x\|$, where $B_F=\|F(0)\|$. Bounded comparison features do not supply physical confinement.
 
 ::::{prf:lemma} Properties of smooth radial squashing maps
 :label: lem-squashing-properties-generic
@@ -479,9 +211,9 @@ Taking square roots gives the stated bound.
 ```
 ::::
 
-The bound exhibits at most quadratic growth in $\|x\|$ and $\|v\|$, meeting the controlled-moment requirement for the non-compact kinetic axiom.
+This bound compares projected and physical displacements. The physical kinetic moment estimate is proved in {prf:ref}`lem-euclidean-perturb-moment`.
 
-The Sasaki metric retains the full position–velocity information needed for the kinetic perturbation, while the smooth squashing maps enforce the finite algorithmic diameter used by the Fragile framework. From this point forward every continuity and stability statement is re-proved in the Sasaki geometry: when we cite a "framework" lemma in later sections we first restate and re-derive its Lipschitz bounds for $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$. No argument is borrowed verbatim from the positional framework—each bound is recomputed from the primitive constants introduced above.
+The projection is injective on finite coordinates and gives bounded comparison features. Its inverse is not uniformly Lipschitz near the boundary of the feature image. Consequently physical moment estimates and local changes of metric remain separate parts of the analysis.
 
 ### 3.4 Swarm distance and canonical operators
 
@@ -508,246 +240,109 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
   For the Euclidean Gas, we set $\lambda_{\text{alg}} = \lambda_v$ so that these metrics coincide in their functional form, simplifying the connection between algorithmic behavior and analytical properties. However, they serve conceptually different roles: the algorithmic distance is intrinsic to the algorithm's design, while the Sasaki metric is extrinsic to the convergence analysis.
   :::
-- **Walkers:** $N\ge 2$; the empirical reward and distance aggregators ({prf:ref}`def-swarm-aggregation-operator-axiomatic`) keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the regularized standard deviation and logistic rescale operators.
-- **Dynamics weights:** $\alpha,\beta\ge 0$ with $\alpha+\beta>0$ fixed as in the framework’s Axiom of Sufficient Amplification ({prf:ref}`axiom-sufficient-amplification`).
+- **Walkers:** $N\ge1$, with the explicit singleton convention; the empirical reward and distance aggregators ({prf:ref}`def-swarm-aggregation-operator-axiomatic`) keep their canonical formulas. Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` supplies Sasaki-specific error moduli, and Lemma {prf:ref}`lem-sasaki-standardization-lipschitz` applies them to the regularized standard deviation and logistic rescale operators.
+- **Dynamics weights:** $\alpha,\beta\ge 0$ with $\alpha+\beta>0$. The preset takes both exponents equal to one; any stronger amplification inequality used by a convergence theorem is an additional condition.
 
 ### 3.5 Kinetic Langevin perturbations with velocity capping
 
-- **Physical parameters.** Fix mass $m>0$, friction $\gamma_{\mathrm{fric}}>0$, temperature $\Theta>0$, and integrator step $\tau>0$. Optionally prescribe a steady flow field $u:\mathcal X_{\mathrm{valid}}\to\mathbb R^d$ (set $u\equiv 0$ if absent). The force field is derived from the potential $R_{\mathrm{pos}}$ via $F(x):=\nabla R_{\mathrm{pos}}(x)$; Section 3.3 shows that $F$ is Lipschitz on the compact domain with constant $L_F$ and therefore bounded. Define $\sigma_v^2:=2\gamma_{\mathrm{fric}}\Theta/m$ and choose a (possibly small) positional noise scale $\sigma_x>0$.
-- **One kinetic Euler step (assumption EG-kin$^+$).** Given $(x,v)$ draw independent $\xi_v,\xi_x\sim\mathcal N(0,I_d)$ and set
+:::{div} feynman-prose
+Keep track of where the force is evaluated. The first half-kick uses the post-cloning position. The second uses the position after the second drift. Then position diffusion moves the walker once more, and the velocity cap acts once. Reordering any of these operations changes the transition law.
 
-  $$
-  \begin{aligned}
-  \tilde v &= v + \frac{\tau}{m}\,F(x) - \gamma_{\mathrm{fric}}\tau\,(v-u(x)) + \sqrt{\sigma_v^2\,\tau}\,\xi_v,\
-  v^+ &= \psi_v(\tilde v),\
-  x^+ &= x + \tau\,v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x.
-  \end{aligned}
+The cap is smooth radial compression: even a small nonzero velocity is reduced. It is therefore an order-one operation per update when its radius is held fixed. We study the population limit at fixed step size before asking whether any differential equation describes a further limit.
+:::
 
-  $$
-  The **kinetic perturbation kernel ({prf:ref}`def-perturbation-measure`)** $\mathcal P_{\mathrm{kin}}$ therefore injects independent Gaussian noise into both velocities and positions. The cap ensures $\|v^+\|\le V_{\mathrm{alg}}$; when capping is inactive the drift component coincides with an underdamped Langevin Euler step. If one sets $\sigma_x=0$, the same reachability conclusions follow whenever $\operatorname{diam}(\mathcal X_{\mathrm{comp}})<\tau V_{\mathrm{alg}}$, because $\psi_v(\mathbb R^d)=B(0,V_{\mathrm{alg}})$ makes every point of $\mathcal X_{\mathrm{comp}}$ one-step reachable.
-- **Clone jitter distribution.** When the Clone action fires in {ref}`Stage 3 <sec-eg-stage3>`, positions are reset with Gaussian jitter $x_c + \sigma_x\zeta_x$ where $\zeta_x\sim\mathcal N(0,I_d)$ and $\sigma_x > 0$ is the positional jitter scale. Velocities are updated via the momentum-conserving inelastic collision (see Definition 5.7.4 in {doc}`03_cloning`) model: for each companion $c$ with cloners $I_c$, the center-of-mass velocity $V_{\text{COM},c} = (v_c + \sum_{j \in I_c} v_j)/(M_c+1)$ is computed, then each walker $k$ in the system receives velocity $\tilde v_k = V_{\text{COM},c} + \alpha_{\text{restitution}} \cdot R_k(v_k - V_{\text{COM},c})$ where $R_k$ is a random rotation and $\alpha_{\text{restitution}} \in [0,1]$ controls energy dissipation. See Definition 5.7.4 in {doc}`03_cloning` for the complete specification.
-- **Pipeline ordering.** {ref}`Section 4 <sec-eg-kernel>` executes the canonical measurement → standardize → rescale pipeline first, freezes the potential vector, and then applies the Clone/Persist rule to produce an all-alive intermediate swarm. The kinetic update above acts on that intermediate state, and the deterministic status operator sets $s_i^{(t+1)}=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(x_i^+)$ afterward—no cloning occurs after the status check.
-- **In-step independence.** The random draws $(\xi_i^v,\xi_i^x,\zeta_i^x,R_i)$ used in the cloning and kinetic stages are independent across walkers given the current swarm, as required by Assumption A ({prf:ref}`axiom-instep-independence`). Here $R_i$ denotes the random rotation applied in the inelastic collision model.
+:::{prf:definition} BAOAB, position diffusion, smooth cap, and terminal classification
+:label: def-eg-baoab-canonical
 
-**Design note.** The Langevin force field uses only the positional potential $R_{\mathrm{pos}}$, while the selection pipeline optimizes the full reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$. This intentional decoupling treats the velocity penalty as a regulariser that preserves fragility: Lemma {prf:ref}`lem-euclidean-richness` shows the quadratic term forces the environmental richness variance floor needed by ({prf:ref}`axiom-environmental-richness`). Consequently the kinetic perturbation samples a Gibbs law for $U(x)=-R_{\mathrm{pos}}(x)$ rather than $R$, and the stationary distribution of the swarm is not the standard underdamped Langevin equilibrium for the selection objective. All continuity and limit arguments in Section 2 therefore work directly with the Sasaki metric and the patched standardization pipeline, without assuming a coupled potential.
+Write $h=\tau>0$, $\gamma\ge0$, $F=-\nabla U$, and
+$$
+c=e^{-\gamma h},\qquad
+q^2=\sigma_v^2\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\ h,&\gamma=0.\end{cases}
+$$
+From the post-collision row $(x,v)$ draw independent standard Gaussian vectors $\xi_v,\xi_x$ and apply
+$$
+\begin{aligned}
+v_1&=v+\tfrac h2F(x), &x_1&=x+\tfrac h2v_1,\\
+v_2&=c v_1+q\xi_v, &x_2&=x_1+\tfrac h2v_2,\\
+v_3&=v_2+\tfrac h2F(x_2), &x^+&=x_2+\sigma_x\sqrt h\xi_x,\\
+v^+&=\psi_v(v_3)=\frac{V_{\mathrm{alg}}v_3}{V_{\mathrm{alg}}+\|v_3\|},
+&a^+&=\mathbf1_D(x^+).
+\end{aligned}
+$$
+The force is an acceleration; a nonunit physical mass is incorporated into $F$. The canonical thermostat is centered at zero. No boundary operation occurs at the clone, B, A, or O stages. The cap changes velocities only, and terminal absorption changes the mark only. In particular, $\|v^+\|<V_{\mathrm{alg}}$ for every finite input.
 
-The kinetic parameters feed the geometric consistency constants computed in Section 2 (perturbation moment, anisotropy, drift control) and inherit continuity from the Gaussian/affine structure.
+Clone jitter uses the separate parameter $\sigma_{\mathrm{clone}}$ and independent $\zeta_i$ for every accepted row, including revived rows. These jitters and the kinetic noises are independent across rows and independent of the graph. Rotations are independent across components, with one rotation shared inside each component. Conditional collision outputs are consequently correlated.
+:::
+
+:::{prf:remark} Continuous-time interpretation
+:label: remark-eg-fixed-step-kinetics
+
+BAOAB discretizes underdamped Langevin dynamics before the final diffusion, cap, and selection operations are composed with it. The complete canonical kernel is the composition just defined. Its stationary law is not asserted to be a Gibbs law. Holding the cap radius and order-one cloning rule fixed while $h\downarrow0$ need not yield a finite continuous-time generator; {doc}`08_mean_field` analyzes this identification using the actual one-step map.
+:::
 
 
-
+(sec-eg-operator-estimates)=
 ## 4. Axiom-by-axiom validation (Sasaki formulation)
 
-We reuse the canonical Fragile framework proofs, updating every bound so it lives in the Sasaki metric on position–velocity space and the kinetic perturbation described in §1.3.
+The estimates in this section state the transition and metric to which they apply. The physical phase-space metric is
+$$
+d_{\mathrm{phys}}((x,v),(x',v'))^2=\|x-x'\|^2+\lambda_v\|v-v'\|^2.
+$$
+The squashed comparison metric has the same topology on finite physical states, but a global physical Lipschitz estimate cannot be inferred from bounded feature distance. On each compact physical set the inverse squashing map is Lipschitz, so local constants transfer between these metrics.
 
-### 4.1 Viability axioms (survival)
+### 4.1 Revival and terminal survival
 
-1. **Guaranteed Revival.** {ref}`Stage 2 <sec-eg-stage2>` freezes the potential vector $\mathbf V_{\text{fit}}$ with the canonical floor $\eta^{\alpha+\beta}$, and Stage 3 draws independent thresholds $T_i\sim\mathrm{Unif}(0,p_{\max})$ while cloning walker $i$ whenever $S_i>T_i$. The fraction
+:::{prf:lemma} Scheduled revival
+:label: lem-eg-scheduled-revival
 
-   $$
-   \kappa_{\mathrm{revival}}\;=\;\frac{\eta^{\alpha+\beta}}{\varepsilon_{\mathrm{clone}}\,p_{\max}}\;>\;1
+If at least one slot is alive, every dead slot draws an eligible donor using its retained position and velocity in the Gaussian weights and is accepted with probability one. Thus the post-cloning population has $N$ alive slots. If no slot is alive, the swarm is absorbing. This conclusion does not require an inequality relating the fitness floor to the clone acceptance denominator.
 
-   $$
-   is therefore the same as in the framework, so each dead walker survives the Clone/Persist gate with strictly positive probability and the all-alive intermediate swarm satisfies the axiom (Theorem *Almost-sure revival* ({prf:ref}`thm-revival-guarantee`, {prf:ref}`axiom-guaranteed-revival`).
+*Proof.* The Gaussian donor weights are positive for all finite coordinates. Their sum over the nonempty alive pool is positive. The dead-row branch of the cloning rule accepts the selected donor deterministically. The component transform and jitter are then applied before any terminal classification. $\square$
+:::
 
-2. **Boundary regularity & smoothness.** Lemma {prf:ref}`lem-euclidean-boundary-holder` bounds the death probability with explicit Hölder constants, verifying the boundary axioms ({prf:ref}`axiom-boundary-regularity`, {prf:ref}`axiom-boundary-smoothness`).
 
-::::{prf:lemma} Lipschitz property of the kinetic flow
+:::{prf:lemma} Lipschitz property of the kinetic position map
 :label: lem-sasaki-kinetic-lipschitz
 
-For $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and any $\xi_v,\xi_x\in\mathbb R^d$ define
-
+For the canonical kinetic step, let $b=h(1+c)/2$ and
 $$
-\Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\big(v+\tfrac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))+\sqrt{\sigma_v^2\tau}\,\xi_v\big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
-
+M_h(x,v)=x+b\bigl(v+\tfrac h2F(x)\bigr),\qquad
+s_h^2=\tfrac{h^2q^2}{4}+h\sigma_x^2.
 $$
-Then
-
+Then $x^+$ has law $\mathcal N(M_h(x,v),s_h^2 I_d)$, and under identical innovations
 $$
-\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')),\qquad L_{\mathrm{flow}}:=1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}.
-
+\|x^+-x'^+\|\le L_{\mathrm{flow}}d_{\mathrm{phys}}((x,v),(x',v')),
+\qquad L_{\mathrm{flow}}=1+\tfrac{bhL_F}{2}+\frac b{\sqrt{\lambda_v}}.
 $$
 
-Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and $\xi_v,\xi_x\in\mathbb R^d$. Define the uncapped velocities
-
-$$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad\tilde v':=v'+\frac{\tau}{m}F(x')-\gamma_{\mathrm{fric}}\tau\big(v'-u(x')\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Because the same velocity noise $\xi_v$ appears in both expressions, it cancels in the difference $\tilde v-\tilde v'$. We bound the displacement in four steps.
-
-1. **Uncapped velocity difference.** Using the triangle inequality, the Lipschitz constant $L_F$ of $F$, and the Lipschitz constant $L_u$ of $u$, we obtain
-
-$$
-\begin{aligned}
-\|\tilde v-\tilde v'\|&\le \|v-v'\|+\frac{\tau}{m}\|F(x)-F(x')\|+\gamma_{\mathrm{fric}}\tau\|v-v'\|+\gamma_{\mathrm{fric}}\tau\|u(x)-u(x')\|\\
-&\le(1+\gamma_{\mathrm{fric}}\tau)\,\|v-v'\|+\Big(\frac{\tau}{m}L_F+\gamma_{\mathrm{fric}}\tau L_u\Big)\,\|x-x'\|.
-\end{aligned}
-
-$$
-
-2. **Lipschitz projection.** Lemma {prf:ref}`lem-squashing-properties-generic` shows the smooth squashing map $\psi_v$ is $1$-Lipschitz, so the same inequality holds for the capped velocities $v^+:=\psi_v(\tilde v)$ and $v'^+:=\psi_v(\tilde v')$.
-
-3. **Position update.** The Euler step sets $x^+:=x+\tau v^+ +\sqrt{\tau}\,\sigma_x\,\xi_x$ and $x'^+:=x'+\tau v'^+ +\sqrt{\tau}\,\sigma_x\,\xi_x$. Hence
-
-$$
-\|x^+-x'^+\|\le\|x-x'\|+\tau\,\|v^+-v'^+\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u\Big)\|x-x'\|+\tau(1+\gamma_{\mathrm{fric}}\tau)\|v-v'\|.
-
-$$
-
-4. **Express via the Sasaki metric.** The Sasaki distance satisfies $d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))^2=\|x-x'\|^2+\lambda_v\|v-v'\|^2$, so $\|x-x'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}$ and $\|v-v'\|\le d_{\mathcal Y}^{\mathrm{Sasaki}}/\sqrt{\lambda_v}$. Substituting these bounds into the inequality from Step 3 yields
-
-$$
-\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le\Big(1+\frac{\tau^2}{m}L_F+\gamma_{\mathrm{fric}}\tau^2L_u+\frac{\tau(1+\gamma_{\mathrm{fric}}\tau)}{\sqrt{\lambda_v}}\Big) d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v')).
-
-$$
-
-The constant in parentheses is $L_{\mathrm{flow}}$, completing the proof.
+*Proof.* Substitute $v_2=cv_1+q\xi_v$ into $x_2=x+h(v_1+v_2)/2$. This gives $x^+=M_h+(hq/2)\xi_v+\sigma_x\sqrt h\xi_x$. The noises are independent and their covariance is $s_h^2I_d$. In a synchronous coupling they cancel. The Lipschitz bound on $F$ and the two coordinate bounds supplied by $d_{\mathrm{phys}}$ give the result. The B2 kick and cap do not change $x^+$. $\square$
 :::
-```
-::::
 
-::::{prf:lemma} Hölder continuity of the death probability
+:::{prf:lemma} Lipschitz continuity of the death probability
 :label: lem-euclidean-boundary-holder
 
-Let $p_{\mathrm{dead}}(x,v) := \mathbb{P}(x^+ \notin \mathcal{X}_{\mathrm{valid}})$ denote the probability that a walker at $(x,v)$ exits the valid domain after one kinetic step. Then for any compact $C \subset \mathcal{X}_{\mathrm{valid}}$ containing $(x,v)$ and $(x',v')$, there exists a constant $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) < \infty$ such that
-
+For any Borel domain $D$, define $p_{\mathrm{dead}}(x,v)=\mathbb P(x^+\notin D)$. If $s_h>0$, then
 $$
-|p_{\mathrm{dead}}(x,v) - p_{\mathrm{dead}}(x',v')| \le L_{\mathrm{death}}^{\mathrm{Sasaki}}(C) \cdot d_{\mathcal{Y}}^{\mathrm{Sasaki}}((x,v),(x',v')).
+|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|
+\le \frac{L_{\mathrm{flow}}}{\sqrt{2\pi}s_h}\,
+ d_{\mathrm{phys}}((x,v),(x',v')).
 $$
+For a domain with Lebesgue-null boundary, $\mathbb P(x^+\in\partial D)=0$.
 
-This establishes Hölder continuity with exponent $\alpha_B^{\mathrm{Sasaki}} = 1$.
-
-Referenced by {prf:ref}`thm-euclidean-feller`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x,v),(x',v')\in\mathcal X\times\mathcal V_{\mathrm{alg}}$ and set $\Delta:=d_{\mathcal Y}^{\mathrm{Sasaki}}((x,v),(x',v'))$. Let $C$ be any compact subset of $\mathbb R^d$ containing $x$ and $x'$, so that the local constants from Lemma {prf:ref}`lem-euclidean-geometric-consistency` apply uniformly on $C$. For independent $\xi_v,\xi_x\sim\mathcal N(0,I_d)$ define
-
-$$
-\Phi_{x,v}(\xi_v,\xi_x):=x+\tau\psi_v\Big(v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v\Big)+\sqrt{\tau}\,\sigma_x\,\xi_x.
-
-$$
-
-Lemma {prf:ref}`lem-sasaki-kinetic-lipschitz` delivers $\|\Phi_{x,v}(\xi_v,\xi_x)-\Phi_{x',v'}(\xi_v,\xi_x)\|\le L_{\mathrm{flow}}\,\Delta$ almost surely. Consequently
-
-$$
-|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le\mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)+\mathbb P\big(\Phi_{x',v'}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big).
-
-$$
-
-We bound the first term; the second is identical with primed variables.
-
-1. **Tubular neighbourhood volume.** Because $\partial\mathcal X_{\mathrm{valid}}$ is $C^1$ with bounded curvature, the tubular-neighbourhood theorem ([Federer 69, §4.18]) provides $\varepsilon_{\mathrm{tube}}>0$ and
-
-$$
-C_{\partial}:=\sup_{0<\varepsilon\le\varepsilon_{\mathrm{tube}}}\frac{\operatorname{Vol}(N_\varepsilon(\partial\mathcal X_{\mathrm{valid}}))}{\varepsilon}<\infty.
-
-$$
-
-By monotonicity it suffices to treat $L_{\mathrm{flow}}\Delta\le\varepsilon_{\mathrm{tube}}$; otherwise the Hölder bound follows immediately.
-
-2. **Affine Gaussian contribution (no capping).** Introduce the uncapped velocity update
-
-$$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Then $\tilde x:=x+\tau\tilde v+\sqrt{\tau}\,\sigma_x\,\xi_x$ is Gaussian with mean $x+\tau m(x,v)$, where $m(x,v):=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))$, and covariance $\tau(\sigma_v^2\tau^2+\sigma_x^2)I_d$. Its density is
-
-$$
-p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}\exp\Big(-\frac{\|y-(x+\tau m(x,v))\|^2}{2\tau(\sigma_v^2\tau^2+\sigma_x^2)}\Big).
-
-$$
-
-The density attains its supremum at the mean, yielding
-
-$$
-p_{\mathrm{aff}}:=\sup_{y\in\mathbb R^d}p_{\tilde x}(y)=\frac{1}{(2\pi\tau(\sigma_v^2\tau^2+\sigma_x^2))^{d/2}}.
-
-$$
-
-This constant governs the contribution of $C^c:=\{\|\tilde v\|\le V_{\mathrm{alg}}\}$, where the velocity cap is inactive.
-
-3. **Directional density under capping.** Let $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Lemma {prf:ref}`lem-euclidean-geometric-consistency` gives $\mathbb P(E)\le\rho_*(C)$. On $E$ write $\tilde v=ru$ with $r>V_{\mathrm{alg}}$ and $u\in S^{d-1}$. The capped velocity is $v^+=V_{\mathrm{alg}}u$, whose conditional density equals
-
-$$
-g(u)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\int_{V_{\mathrm{alg}}}^{\infty}\exp\Big(-\frac{\|ru-m(x,v)\|^2}{2\sigma_v^2\tau}\Big) r^{d-1}\,dr.
-
-$$
-
-The local bounds on $F$ and $u$ over $C$ imply
-
-$$
-\|m(x,v)\|\le M_{\mathrm{kin}}(C).
-
-$$
-
-For $r\ge V_{\mathrm{alg}}$ the inequality $\|a-b\|^2\ge\tfrac{1}{2}\|a\|^2-\|b\|^2$ yields
-
-$$
-\|ru-m(x,v)\|^2\ge\frac{r^2}{2}-M_{\mathrm{kin}}(C)^2.
-
-$$
-
-Substituting into $g(u)$ and changing variables via $s=r^2/(4\sigma_v^2\tau)$ produces
-
-$$
-g(u)\le\frac{\exp(M_{\mathrm{kin}}(C)^2/(2\sigma_v^2\tau))}{(2\pi\sigma_v^2\tau)^{d/2}}(2\sigma_v^2\tau)^{d/2}\Gamma\Big(\frac{d}{2},\frac{V_{\mathrm{alg}}^2}{4\sigma_v^2\tau}\Big)=:q_{\mathrm{dir}}(C),
-
-$$
-
-where $\Gamma(\cdot,\cdot)$ is the upper incomplete gamma function. Thus the capped direction has uniformly bounded density.
-
-4. **Probability of hitting the tube.** For any Borel $A\subseteq\mathcal X$ split according to $E$:
-
-$$
-\begin{aligned}
-\mathbb P\big(\Phi_{x,v}(\xi)\in A\big)&=\mathbb P(E^c)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E^c\big)+\mathbb P(E)\,\mathbb P\big(\Phi_{x,v}(\xi)\in A\mid E\big)\\
-&\le p_{\mathrm{aff}}\operatorname{Vol}(A)+\rho_*(C) q_{\mathrm{dir}}(C)\operatorname{Vol}(A).
-\end{aligned}
-
-$$
-
-Taking $A=N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})$ and using Step 1 yields
-
-$$
-\mathbb P\big(\Phi_{x,v}(\xi)\in N_{L_{\mathrm{flow}}\Delta}(\partial\mathcal X_{\mathrm{valid}})\big)\le\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
-
-$$
-
-Combining the two probabilities shows
-
-$$
-|p_{\mathrm{dead}}(x,v)-p_{\mathrm{dead}}(x',v')|\le2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}\,\Delta.
-
-$$
-
-Therefore $\alpha_B^{\mathrm{Sasaki}}=1$ with Hölder constant
-
-$$
-L_{\mathrm{death}}^{\mathrm{Sasaki}}(C):=2\big(p_{\mathrm{aff}}+\rho_*(C)q_{\mathrm{dir}}(C)\big)C_{\partial}L_{\mathrm{flow}}.
-
-$$
-
+*Proof.* Two Gaussians with covariance $s_h^2I$ and mean separation $r$ have total variation distance $2\Phi(r/(2s_h))-1$. To see this, divide their densities: the region where the first is larger is the half-space through their midpoint perpendicular to the mean difference. Integrating over that half-space reduces the distance to the displayed one-dimensional expression. Since $\Phi'$ is at most $1/\sqrt{2\pi}$, this distance is at most $r/(\sqrt{2\pi}s_h)$. Apply the bound to the exit event and then use {prf:ref}`lem-sasaki-kinetic-lipschitz`. The null-boundary assertion follows from the Gaussian density. $\square$
 :::
-```
-::::
+
+
 3. **Finite algorithmic diameter.** Section 3.3 built $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ from the capped velocities and showed that the projection $\varphi$ is $1$-Lipschitz. Consequently $\operatorname{diam}_{d_{\mathcal Y}^{\mathrm{Sasaki}}}(\mathcal Y)<\infty$, meeting the Axiom of Bounded Algorithmic Diameter ({prf:ref}`axiom-bounded-algorithmic-diameter`).
 
 ### 4.2 Environmental axioms
 
-The ambient space ({prf:ref}`def-ambient-euclidean`) $(\mathcal X,d_{\mathcal X})$ remains Euclidean with Lebesgue reference measure, so the canonical density and integration arguments carry over. Because $\mathcal X_{\mathrm{valid}}$ is compact and $F=\nabla R_{\mathrm{pos}}$ is Lipschitz on this set, both $F$ and the auxiliary flow field $u$ are uniformly bounded; these bounds are the only ingredients required by the kinetic and boundary estimates recorded below.
+The physical state remains Euclidean, and the retained dead coordinates need not belong to the valid box. Reward statistics use alive rows. Global force growth, rather than a bound restricted to the alive box, controls intermediate kinetic states.
 
 ::::{prf:lemma} Reward regularity in the Sasaki metric
 :label: lem-euclidean-reward-regularity
 
-The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous on $(\mathcal Y,d_{\mathcal Y}^{\mathrm{Sasaki}})$ and therefore satisfies the Axiom of Reward Regularity ({prf:ref}`axiom-reward-regularity`).
+The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous in physical coordinates and Lipschitz on each compact physical set. Expressed in squashed coordinates it is Lipschitz on the image of each such compact set. This gives the reward-regularity bound on the alive box with capped velocities. It does not assert a bounded continuous extension to the boundary of the full feature-space compactification.
 
 
 ```{dropdown} Proof
@@ -755,7 +350,7 @@ The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ i
 Let $\mathcal Y^{\circ}:=B(0,R_x)\times B(0,V_{\mathrm{alg}})$ be the image of the projection $\varphi:\mathbb R^d\times\mathbb R^d\to\mathcal Y^{\circ}$. For $y=(y_x,y_v)\in\mathcal Y^{\circ}$ the inverse mapping is explicit:
 
 $$
-\psi_C^{-1}(y)=\frac{C}{1-\|y\|/C}\,y\qquad(\|y\|<C).
+\psi_C^{-1}(y)=\frac{y}{1-\|y\|/C}\qquad(\|y\|<C).
 
 $$
 
@@ -773,37 +368,20 @@ Because $R_{\mathcal Y}$ is continuous on $\mathcal Y^{\circ}$ and $\mathcal Y^{
 ```
 ::::
 
-::::{prf:lemma} Environmental richness with a kinetic regularizer
+:::{prf:lemma} Reward variation and a quantitative richness condition
 :label: lem-euclidean-richness
 
-The reward $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ with $\lambda_{\mathrm{vel}}>0$ satisfies the Axiom of Environmental Richness ({prf:ref}`axiom-environmental-richness`).
-
-```{dropdown} Proof
-:::{prf:proof}
-Fix $(x_0,v_0)\in\mathcal Y$ and radius $r>0$. Every Sasaki ball of radius $r$ contains the set of velocities with Euclidean norm at most $r/\sqrt{\lambda_v}$ around $v_0$. Let
-
+Let $\pi_B$ be the reference probability on a specified local region $B$ used in a richness assertion. Suppose two measurable subsets $B_1,B_2\subset B$ satisfy $\pi_B(B_i)\ge p_i>0$ and
 $$
-\delta:=\min\Big\{\frac{r}{\sqrt{\lambda_v}},\,\frac{V_{\mathrm{alg}}}{2}\Big\}>0.
-
+\inf_{z\in B_1,z'\in B_2}|R(z)-R(z')|\ge\Delta>0.
 $$
-Consider the two velocities $v_1:=v_0$ and $v_2:=v_0+\delta e$, where the direction $e$ is chosen as follows:
+Then $\operatorname{Var}_{\pi_B}R\ge p_1p_2\Delta^2$.
 
-1. If $\|v_0\|\le V_{\mathrm{alg}}-\delta$, take $e$ orthogonal to $v_0$. Then $\|v_2\|^2=\|v_0\|^2+\delta^2\le V_{\mathrm{alg}}^2$, so $v_2\in\mathcal V_{\mathrm{alg}}$ and $d_{\mathcal Y}^{\mathrm{Sasaki}}((x_0,v_0),(x_0,v_2))=\sqrt{\lambda_v}\,\delta\le r$.
-2. If $\|v_0\|>V_{\mathrm{alg}}-\delta$, set $e:=-v_0/\|v_0\|$ (if $v_0=0$, pick any unit vector). The new velocity has norm $\|v_0\| - \delta\le V_{\mathrm{alg}}$ and again lies within the Sasaki ball.
+*Proof.* If $Z,Z'$ are independent with law $\pi_B$, then $\operatorname{Var}R=\frac12\mathbb E[(R(Z)-R(Z'))^2]$. The two ordered events $B_1\times B_2$ and $B_2\times B_1$ contribute at least $2p_1p_2\Delta^2$. $\square$
 
-In both cases the velocities stay in the ball, and the reward difference equals
-
-$$
-|R(x_0,v_1)-R(x_0,v_2)|=\lambda_{\mathrm{vel}}\,|\|v_2\|^2-\|v_0\|^2|\ge \lambda_{\mathrm{vel}}\,\delta^2.
-
-$$
-For the inward-pointing choice we use that $\|v_0\|>V_{\mathrm{alg}}-\delta\ge V_{\mathrm{alg}}/2\ge\delta$ because $\delta\le V_{\mathrm{alg}}/2$, guaranteeing the same lower bound.
-Hence the variance of $R$ on the ball is at least $\sigma_{\mathrm{rich}}^2(r):=\lambda_{\mathrm{vel}}^2\delta^4/4>0$, establishing environmental richness.
+A nonzero kinetic penalty creates local reward variation, but a pair of distinct reward values alone does not provide the probability factors $p_1,p_2$. A uniform richness axiom requires these factors and the gap to be bounded uniformly over the specified regions and reference law. The canonical fixed-step population proofs use positive regularization floors and do not assume this additional richness statement. For a constant objective with zero kinetic penalty, reward variance is exactly zero while the regularized algorithm remains defined.
 :::
-```
-::::
 
-These bounds also guarantee that the position-derived force admits explicit growth control: with $F(x)=\nabla R_{\mathrm{pos}}(x)$ the Lipschitz assumption gives $\|F(x)\|\le\|F(0)\|+L_F\|x\|$. The velocity penalty therefore fixes the degeneracy noted in the earlier draft by ensuring every Sasaki ball carries non-zero reward variance while allowing us to track the kinetic growth terms explicitly.
 
 ### 4.3 Algorithmic & operator axioms
 
@@ -814,274 +392,82 @@ These bounds also guarantee that the position-derived force admits explicit grow
 On an unbounded domain we cannot demand a uniform moment bound. Instead, the kinetic axiom tracks the squared Sasaki increment through a Lyapunov-style control that grows at most quadratically in $\|x\|$ and $\|v\|$. The following lemma establishes this controlled growth together with the requisite Feller property.
 :::
 
-::::{prf:lemma} Perturbation second moment in the Sasaki metric
+:::{prf:lemma} Perturbation second moment in physical phase space
 :label: lem-euclidean-perturb-moment
 
-Let $(x^+, v^+)$ denote the walker state after one BAOAB kinetic step from $(x,v)$. The expected squared Sasaki displacement satisfies the quadratic growth bound
-
+For the canonical BAOAB step, let $b,s_h$ be as in {prf:ref}`lem-sasaki-kinetic-lipschitz`, and assume $\|F(x)\|\le B_F+L_F\|x\|$. Then
 $$
-\mathbb{E}\big[d_{\mathcal{Y}}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big] \le C_x^{(\mathrm{pert})}\|x\|^2 + C_v^{(\mathrm{pert})}\|v\|^2 + C_0^{(\mathrm{pert})}
+\mathbb E d_{\mathrm{phys}}((x,v),(x^+,v^+))^2
+\le C_x\|x\|^2+C_v\|v\|^2+C_0,
 $$
-
-where $C_x^{(\mathrm{pert})}$, $C_v^{(\mathrm{pert})}$, and $C_0^{(\mathrm{pert})}$ are explicit constants depending on the physical parameters $(\tau, \sigma_v, \sigma_x, \gamma_{\mathrm{fric}}, L_F, L_u, \lambda_v, V_{\mathrm{alg}})$. Moreover, the kinetic kernel is Feller: it maps bounded continuous functions to bounded continuous functions.
-
-Referenced by {prf:ref}`thm-euclidean-feller`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Introduce the uncapped velocity update
-
+where
 $$
-\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v,\qquad \xi_v\sim\mathcal N(0,I_d).
-
+C_x=\frac{3b^2h^2L_F^2}{4},\qquad
+C_v=3b^2+2\lambda_v,\qquad
+C_0=\frac{3b^2h^2B_F^2}{4}+d s_h^2+2\lambda_v V_{\mathrm{alg}}^2.
 $$
+The unmarked kinetic kernel maps bounded continuous functions to bounded continuous functions.
 
-Write $a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)$. {ref}`Stage 4 <sec-eg-stage4>` applies the cap and Euler step to obtain
-
+*Proof.* The Gaussian position formula gives
 $$
-v^+:=\psi_v(\tilde v),\qquad x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x,
-
+\mathbb E\|x^+-x\|^2=b^2\|v+\tfrac h2F(x)\|^2+d s_h^2
+\le3b^2\|v\|^2+\tfrac{3b^2h^2}{4}(L_F^2\|x\|^2+B_F^2)+d s_h^2.
 $$
-
-with $\xi_x\sim\mathcal N(0,I_d)$ independent of $\xi_v$.
-
-We bound the expected Sasaki increment in three explicit steps.
-
-1. **Positional increment.** The cap guarantees $\|v^+\|\le V_{\mathrm{alg}}$. Hence
-
-$$
-\|x^+-x\|\le\tau\,\|v^+\|+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|\le\tau V_{\mathrm{alg}}+\sqrt{\tau}\,\sigma_x\,\|\xi_x\|,
-
-$$
-
-so $\mathbb E\big[\|x^+-x\|^2\big]\le 2\tau^2 V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d$.
-
-2. **Velocity increment.** Lemma {prf:ref}`lem-squashing-properties-generic` gives $\|v^+-v\|\le\|\tilde v-v\|$. The random increment decomposes as
-
-$$
-\tilde v-v=a(x,v)+\sqrt{\sigma_v^2\tau}\,\xi_v.
-
-$$
-
-Let $F_0:=\|F(0)\|$ and $u_0:=\|u(0)\|$. The Lipschitz bounds $\|F(x)\|\le F_0+L_F\|x\|$ and $\|u(x)\|\le u_0+L_u\|x\|$ imply
-
-$$
-\|a(x,v)\|\le\frac{\tau}{m}\big(F_0+L_F\|x\|\big)+\gamma_{\mathrm{fric}}\tau\Big(\|v\|+u_0+L_u\|x\|\Big).
-
-$$
-
-Define the coefficients
-
-$$
-A_x:=\tau\Big(\frac{L_F}{m}+\gamma_{\mathrm{fric}}L_u\Big),\qquad A_v:=\gamma_{\mathrm{fric}}\tau,\qquad A_0:=\frac{\tau}{m}F_0+\gamma_{\mathrm{fric}}\tau u_0.
-
-$$
-
-Then $\|a(x,v)\|\le A_x\|x\|+A_v\|v\|+A_0$. Using $\mathbb E\|\xi_v\|^2=d$ and $(\alpha+\beta+\gamma)^2\le 3(\alpha^2+\beta^2+\gamma^2)$ gives
-
-$$
-\mathbb E\big[\|\tilde v-v\|^2\big]\le 3A_x^2\|x\|^2+3A_v^2\|v\|^2+3A_0^2+\sigma_v^2\tau d.
-
-$$
-
-3. **Assemble the Sasaki moment.** By definition of the Sasaki metric,
-
-$$
-d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2=\|x^+-x\|^2+\lambda_v\,\|v^+-v\|^2.
-
-$$
-
-Taking expectations and combining the bounds from Steps 1–2 yields
-
-$$
-\mathbb E\big[d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x,v),(x^+,v^+)\big)^2\big]\le C_x^{(\mathrm{pert})}\,\|x\|^2+C_v^{(\mathrm{pert})}\,\|v\|^2+C_0^{(\mathrm{pert})},
-
-$$
-
-with
-
-$$
-\begin{aligned}
-C_x^{(\mathrm{pert})}&:=3\lambda_vA_x^2,\\
-C_v^{(\mathrm{pert})}&:=3\lambda_vA_v^2,\\
-C_0^{(\mathrm{pert})}&:=2\tau^2V_{\mathrm{alg}}^2+2\tau\sigma_x^2 d+3\lambda_vA_0^2+\lambda_v\sigma_v^2\tau d.
-\end{aligned}
-
-$$
-
-The kinetic kernel is Feller: it composes the continuous affine map $(x,v)\mapsto(x,\tilde v)$, the 1-Lipschitz projection $\psi_v$, and addition of a Gaussian with full support; appending the deterministic status update preserves this property.
-
+The smooth cap gives $\|v^+-v\|^2\le2V_{\mathrm{alg}}^2+2\|v\|^2$. Sum these inequalities with velocity weight $\lambda_v$. Every BAOAB substep and the cap are continuous in the input for each fixed pair of innovations. Dominated convergence proves the asserted kernel continuity. The bound for projected displacement follows from the squashing maps' 1-Lipschitz property. $\square$
 :::
-```
-::::
-2. **Geometric consistency constants.** Lemma {prf:ref}`lem-euclidean-geometric-consistency` bounds the drift and anisotropy parameters in the Sasaki geometry.
 
-::::{prf:lemma} Geometric consistency under the capped kinetic kernel
+:::{prf:lemma} Kinetic drift, positional covariance, and local phase-space nondegeneracy
 :label: lem-euclidean-geometric-consistency
 
-Referenced by {prf:ref}`lem-euclidean-boundary-holder`.
-
-```{dropdown} Proof
-:::{prf:proof}
-Because $\mathcal X_{\mathrm{valid}}$ is compact and $F$ and $u$ are continuous, the drift and anisotropy envelopes appearing in the Axiom of Geometric Consistency admit finite global bounds. To make the dependence on the geometry explicit we index the constants by an arbitrary compact subset $C \subset \mathcal X_{\mathrm{valid}}$; in practice we take $C = \mathcal X_{\mathrm{valid}}$ and obtain uniform constants on the entire valid domain.
-
-Let $C\subset\mathbb R^d$ be an arbitrary compact set and define the local envelopes
-
+For the same transition,
 $$
-F_C:=\sup_{x\in C}\|F(x)\|,\qquad u_C:=\sup_{x\in C}\|u(x)\|,
-
+\mathbb E(x^+-x)=b(v+\tfrac h2F(x)),\qquad
+\operatorname{Cov}(x^+)=s_h^2I_d.
 $$
+Hence the positional covariance condition number is exactly $1$, and the phase-space mean displacement has magnitude at most $\sqrt{C_x\|x\|^2+C_v\|v\|^2+C_0}$. The full position–velocity covariance is not generally isotropic.
 
-which are finite by continuity. Set
+If $F$ is $C^1$, $q>0$, $\sigma_x>0$, and $h^2L_F/4<1$, then the full physical phase-space covariance is positive definite. Its condition number is bounded on every compact set of inputs, with constants depending on that set and on $h$.
 
+*Proof.* The first two identities follow directly from the Gaussian position formula; Jensen's inequality and {prf:ref}`lem-euclidean-perturb-moment` give the drift bound. For the final assertion, condition on $x_1$. The map from the O-stage velocity $w$ to the B2 velocity is
 $$
-C_{\mathrm{force}}(C):=\frac{F_C}{m}+\gamma_{\mathrm{fric}}\big(V_{\mathrm{alg}}+u_C\big),\qquad M_{\mathrm{kin}}(C):=V_{\mathrm{alg}}+\frac{\tau}{m}F_C+\gamma_{\mathrm{fric}}\tau\big(V_{\mathrm{alg}}+u_C\big).
-
+T(w)=w+\tfrac h2F(x_1+\tfrac h2w).
 $$
+Its perturbation of the identity has Lipschitz constant $h^2L_F/4<1$. For every target $y$, the equation $w=y-\tfrac h2F(x_1+hw/2)$ has a unique solution by geometric convergence of this contraction. Its derivative is invertible, so $T$ is a $C^1$ bijection with continuous inverse. Composing with $\psi_v$ maps onto $B(0,V_{\mathrm{alg}})$ with a positive density. Independent final position noise then gives a positive joint density on $\mathbb R^d\times B(0,V_{\mathrm{alg}})$.
 
-Let $\tilde v:=v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big)+\sqrt{\sigma_v^2\tau}\,\xi_v$ with $\xi_v\sim\mathcal N(0,I_d)$ and set $v^+:=\psi_v(\tilde v)$, $x^+:=x+\tau v^+ + \sqrt{\tau}\,\sigma_x\,\xi_x$. Denote
+A nonzero linear functional cannot be constant on this open set, so its variance is positive. Covariance entries depend continuously on the initial state by Gaussian moment domination and the velocity bound. Compactness therefore supplies a positive minimum eigenvalue and a finite maximum eigenvalue on each compact input set. Their ratio is the stated local condition-number bound. $\square$
 
-$$
-a(x,v):=\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau\big(v-u(x)\big).
+For the unit quadratic potential used by the canonical experiments, $F(x)=-x$ and $L_F=1$, so the positive-definiteness condition is verified whenever $0<h<2$, including the experiment default $h=0.04$. There is an exact obstruction at $h=2$: $x_2=x_1+v_2$ and $v_3=v_2-x_2=-x_1$, so the final velocity is deterministic conditional on the kinetic input, despite positive thermostat noise. Its velocity covariance is zero. The final position still has the displayed nondegenerate Gaussian law.
 
-$$
-
-We supply explicit constants for the drift and anisotropy parts of Definition {prf:ref}`axiom-geometric-consistency`.
-
-1. **Drift of the mean displacement.** Because $\|v\|\le V_{\mathrm{alg}}$ we have
-
-$$
-\|\mathbb E[x^+-x]\|=\tau\,\|\mathbb E[v^+]\|\le\tau\big(\|\mathbb E[v^+-v]\|+V_{\mathrm{alg}}\big).
-
-$$
-
-The increment of the velocity splits as
-
-$$
-\mathbb E[v^+-v]=\mathbb E[\tilde v-v]+\mathbb E[\psi_v(\tilde v)-\tilde v].
-
-$$
-
-The affine term obeys $\|\mathbb E[\tilde v-v]\|=\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. The projection error equals $(\|\tilde v\|-V_{\mathrm{alg}})_+$ and is supported on the capping event $E:=\{\|\tilde v\|>V_{\mathrm{alg}}\}$. Since $\tilde v = v + a(x,v) + \sqrt{\sigma_v^2\tau}\xi_v$ and $\mathbb E[\xi_v]=0$, the second moment satisfies
-
-$$
-\mathbb E[\|\tilde v\|^2]=\|v+a(x,v)\|^2+\sigma_v^2\tau d\le(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d
-
-$$
-
-where we used $\|v\|\le V_{\mathrm{alg}}$ and $\|a(x,v)\|\le\tau C_{\mathrm{force}}(C)$. By Markov's inequality, $\mathbb P(E)\le\mathbb E[\|\tilde v\|^2]/V_{\mathrm{alg}}^2$, and since $(\|\tilde v\|-V_{\mathrm{alg}})_+\le\|\tilde v\|-V_{\mathrm{alg}}$ on $E$ and equals zero elsewhere, we have
-
-$$
-\mathbb E[(\|\tilde v\|-V_{\mathrm{alg}})_+]\le\frac{\mathbb E[\|\tilde v\|^2]}{V_{\mathrm{alg}}}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}}=:\varepsilon_{\mathrm{cap}}^{\max}(C).
-
-$$
-
-Thus $\|\mathbb E[v^+-v]\|\le\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)$ and
-
-$$
-\|\mathbb E[x^+-x]\|\le\tau\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big).
-
-$$
-
-Combining the position and velocity components gives
-
-$$
-\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C):=\sqrt{\tau^2\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}}\big)^2+\lambda_v\big(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)\big)^2}.
-
-$$
-
-2. **Probability of capping.** The same second-moment estimate implies
-
-$$
-\rho_*(C):=\mathbb P(E)\le\frac{\mathbb E\|\tilde v\|^2}{V_{\mathrm{alg}}^2}\le\frac{(V_{\mathrm{alg}}+\tau C_{\mathrm{force}}(C))^2+\sigma_v^2\tau d}{V_{\mathrm{alg}}^2}.
-
-$$
-
-3. **Lower bound on the uncapped density.** The mean of $\tilde v$ satisfies
-
-$$
-\|m(x,v)\|=\Big\|v+\frac{\tau}{m}F(x)-\gamma_{\mathrm{fric}}\tau(v-u(x))\Big\|\le M_{\mathrm{kin}}(C).
-
-$$
-
-The Gaussian density of $\tilde v$ is
-
-$$
-p_{\tilde v}(y)=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{\|y-m(x,v)\|^2}{2\sigma_v^2\tau}\Big).
-
-$$
-
-For $u\in S^{d-1}$ and $0\le r\le V_{\mathrm{alg}}/2$ the inequality $\|a-b\|^2\le 2\|a\|^2+2\|b\|^2$ yields
-
-$$
-\|ru-m(x,v)\|^2\le\Big(\frac{V_{\mathrm{alg}}}{2}+M_{\mathrm{kin}}(C)\Big)^2.
-
-$$
-
-Hence $p_{\tilde v}(ru)\ge c_{d,0}$ where
-
-$$
-c_{d,0}(C):=\frac{1}{(2\pi\sigma_v^2\tau)^{d/2}}\exp\Big(-\frac{(V_{\mathrm{alg}}/2+M_{\mathrm{kin}}(C))^2}{2\sigma_v^2\tau}\Big)>0.
-
-$$
-
-Integrating over the radial segment $[0,V_{\mathrm{alg}}/2]$ yields
-
-$$
-P(\tilde v\in K(u))\ge c_{d,0}(C)\int_{0}^{V_{\mathrm{alg}}/2} r^{d-1}\,dr=:c_d(C)>0,
-
-$$
-
-where $K(u):=\{ru:0\le r\le V_{\mathrm{alg}}/2\}$ and we used the polar-volume factor $r^{d-1}$. Thus every cone with opening direction $u$ receives probability at least $c_d(C)$.
-
-4. **Pushforward through the cap.** On $E^c$ the cap is inactive and $v^+=\tilde v$, so the lower bound from Step 3 applies. On $E$ the map $\psi_v$ replaces the radial component by $V_{\mathrm{alg}}$ while leaving the direction $u$ unchanged, whence the directional distribution of $v^+$ dominates $(1-\rho_*(C))c_d(C)$ times the surface measure $\sigma_{d-1}$ on $S^{d-1}$. Equivalently, for every measurable $A\subseteq S^{d-1}$
-
-$$
-P(v^+\in A)\ge(1-\rho_*(C))c_d(C)\,\sigma_{d-1}(A).
-
-$$
-
-Taking reciprocals furnishes the anisotropy constant
-
-$$
-\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C):=\frac{1}{(1-\rho_*(C))c_d(C)}.
-
-$$
-
-These constants realise the drift and anisotropy requirements of Definition {prf:ref}`axiom-geometric-consistency` on the compact set $C$. Since $C$ was arbitrary, the bounds hold uniformly on every compact subset of the state space, which suffices for the non-compact geometric-consistency axiom.
-
+These are fixed-step drift and covariance statements. The mean force drift, the full covariance, and contraction of the selection–collision kernel are different quantities.
 :::
-```
-::::
-3. **Distance-to-companion continuity.** The Sasaki geometry requires re-deriving the canonical continuity bounds for the expected raw distance vector before invoking the mean-square argument.
+
+
+3. **Auxiliary distance continuity.** The following inequalities isolate the geometric and scalar-array calculations used when their sampling law and input bounds apply.
 
 #### 2.3.3 Continuity of the Expected Raw Distance Vector ($k \ge 2$ Regime)
 
-:::{admonition} Note on the Model Specification: Canonical EG vs. Full Spatially-Aware Model
-:class: warning
+:::{prf:remark} Scope of the auxiliary uniform-companion estimates
+:label: remark-eg-uniform-estimates
 
-The analysis in the remainder of this chapter is performed for the **canonical Euclidean Gas**, which assumes **uniform random companion selection**. This corresponds to a mean-field model with an infinite interaction range (`ε → ∞`). The continuity bounds and explicit constants derived for operators like the distance measurement (`thm-sasaki-distance-ms`) and standardization (`thm-sasaki-standardization-composite-sq`) are rigorously proven for this specific instantiation.
+The expected-distance estimates {prf:ref}`lem-sasaki-single-walker-structural-error` and {prf:ref}`thm-sasaki-distance-ms` below are for the explicitly defined extension with uniform independent companions. Their constants do not cover the canonical finite-width Gaussian donor probabilities. The deterministic aggregation and standardization inequalities remain usable for actual input arrays satisfying their stated bounds. Replacing a sampled distance by its expectation before nonlinear standardization or acceptance is not licensed by an expected-distance estimate.
 
-**Key Simplifications in the Canonical Model:**
-- **Companion Selection:** Uniform random selection from alive walkers (infinite ε limit)
-- **Algorithmic Distance ({prf:ref}`def-alg-distance`):** While formally defined in Section 3.3 as `d_alg(i,j)² = ||x_i - x_j||² + λ_alg ||v_i - v_j||²`, the uniform selection means this distance only affects the raw distance measurement `d_i`, not the companion selection probabilities.
-- **Cloning Operator:** Momentum-conserving inelastic collision model with position jitter (as defined in Definition 5.7.4 of {doc}`03_cloning`)
-
-This simplified, non-local model serves as a valuable and tractable baseline. The main convergence proof, presented in the {doc}`03_cloning` document, builds upon this foundation by analyzing the full model with:
-- **Finite ε:** Companion selection weighted by `exp(-d_alg(i,j)² / 2ε²)`
-- **Spatially-Aware Pairing:** Full sequential stochastic greedy pairing operator
-- **Phase-Space Geometry:** Complete treatment of position-velocity coupling
-
-The proofs in {doc}`03_cloning` generalize the calculations presented here to be `ε`-dependent, allowing for a full analysis of the local-interaction regime and the transition from position-only (`λ_alg = 0`) to full phase-space geometry (`λ_alg > 0`).
+For the canonical weighted law, use the normalized-kernel denominator bounds, marked measurement law, component exploration estimates, and one-step consistency proof in {doc}`08_mean_field` and {doc}`09_propagation_chaos`. Pairing without replacement is another configuration, not the canonical independent single-companion law.
 :::
 
-Let $\mathcal S_1,\mathcal S_2$ be two swarm states and denote their alive sets by $\mathcal A_r:=\mathcal A(\mathcal S_r)$. Write $k_r:=|\mathcal A_r|$ and assume $k_1\ge 2$. Define the set of walkers that remain alive in both swarms by $\mathcal A_{\mathrm{stable}}:=\mathcal A_1\cap\mathcal A_2$ and the number of status changes by $n_c(\mathcal S_1,\mathcal S_2):=\sum_{i=1}^N (s_{1,i}-s_{2,i})^2$. The positional displacement of the capped states is
 
-$$
-\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2):=\sum_{i=1}^N d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(w_{1,i}),\varphi(w_{2,i})\big)^2,
+:::{prf:definition} Notation for auxiliary finite-swarm continuity estimates
+:label: def-eg-auxiliary-continuity-notation
 
+For two swarms $\mathcal S_r$ let $\mathcal A_r$ be their alive sets, $k_r=|\mathcal A_r|$, and $\mathcal A_{\mathrm{stable}}=\mathcal A_1\cap\mathcal A_2$. Set
 $$
-and let $D_{\mathcal Y}:=\operatorname{diam}_{d_{\mathcal Y}^{\mathrm{Sasaki}}}(\mathcal Y)$.
+n_c(\mathcal S_1,\mathcal S_2)=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2,\qquad
+\Delta_{\mathrm{pos,Sasaki}}^2=
+\sum_{i=1}^N d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))^2,
+$$
+and $D_{\mathcal Y}=\operatorname{diam}(\mathcal Y)$. Expected-distance statements below use unregularized comparison distance and the uniform-companion extension. The deterministic scalar-array statements assume their displayed uniform bound $V_{\max}$; physical reward comparisons are restricted to compact sets where the specified $L_R^{\mathrm{Sasaki}}$ is finite.
+
+For the canonical global regularizer, the notation $\sigma_{\min,\mathrm{patch}}$ in these scalar-array inequalities means $\sigma_{\min}$: take $\kappa_{\mathrm{var,min}}=0$ and $\varepsilon_{\mathrm{std}}=\sigma_{\min}$. As a function of variance $t\ge0$, the scale $\sqrt{t+\sigma_{\min}^2}$ has derivative at most $1/(2\sigma_{\min})$. Thus its denominator bounds are available directly. Its application to sampled arrays still requires averaging after, rather than before, the nonlinear pipeline.
+:::
 
 ::::{prf:lemma} Single-walker positional error bound in the Sasaki metric
 :label: lem-sasaki-single-walker-positional-error
@@ -1171,7 +557,7 @@ $$
 \text{Error} \le \frac{2 M_f}{|S_1|} \cdot n_c(\mathcal S_1, \mathcal S_2)
 
 $$
-This bound is purely algebraic and holds for any choice of metric or bounded function.
+This bound is algebraic for uniform probability on the specified support sets and any bounded test function. Changing Gaussian weights on a fixed support requires an additional term.
 
 **Step 4: Substitute and Finalize.**
 We substitute our specific function bound $M_f = D_{\mathcal Y}$ and the support set size $|S_1| = k_1 - 1$ into the general formula. This immediately yields the stated bound for the structural error component.
@@ -1251,7 +637,7 @@ Finally, the structural perturbation of the companion distribution for stable wa
 ```
 ::::
 
-4. **Non-degenerate noise ({prf:ref}`axiom-non-degenerate-noise`).** Choosing $\sigma_v^2>0$ and positional cloning jitter $\sigma_x>0$ keeps the perturbation and cloning measures non-Dirac. The velocity updates via the inelastic collision model add stochasticity through random rotations $R_k$.
+4. **Non-degenerate noise.** The positive canonical velocity diffusion and final position diffusion give non-Dirac kinetic noise. Clone jitter has its own scale $\sigma_{\mathrm{clone}}$. Shared component rotations add collision randomness when relative velocities and restitution are nonzero; this randomness can be degenerate when either vanishes.
 
 5. **Sufficient amplification.** The weights $\alpha,\beta\ge 0$ satisfy $\alpha+\beta>0$ exactly as in the canonical swarm ({prf:ref}`axiom-sufficient-amplification`).
 
@@ -1340,7 +726,7 @@ $$
 
 Let $\sigma_{\min,\mathrm{patch}}:=\sqrt{\kappa_{\mathrm{var,min}}+\varepsilon_{\mathrm{std}}^2}$ be the uniform lower bound on the regularized standard deviation, and let $L_{\sigma'_{\mathrm{patch}}}$ be its global Lipschitz constant from Lemma {prf:ref}`lem-sigma-patch-derivative-bound`.
 
-##### Value Error Coefficients
+#### Value Error Coefficients
 The following coefficients bound the error in the standardization operator when the swarm structure is fixed but the raw values change due to positional displacement. They are notably independent of the number of alive walkers, `k`.
 
 -   **Direct Shift Coefficient ($C_{V,\mathrm{direct}}$):** Bounding the error from the direct change in the raw value vector.
@@ -1371,7 +757,7 @@ The following coefficients bound the error in the standardization operator when 
 
     $$
 
-##### Structural Error Coefficients
+#### Structural Error Coefficients
 The structural error coefficients, which are used in the subsequent theorem for structural continuity, remain as defined:
 
 $$
@@ -1403,7 +789,7 @@ $$
 where $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ is the **Total Value Error Coefficient**, a deterministic constant defined in {prf:ref}`def-sasaki-standardization-constants-sq`. The proof is provided in the subsequent sections by decomposing the total error into its constituent parts.
 :::
 
-##### 2.3.4.1. Sub-Lemma: Algebraic Decomposition of the Value Error
+#### 2.3.4.1. Sub-Lemma: Algebraic Decomposition of the Value Error
 
 ::::{prf:lemma} Decomposition of the Value Error
 :label: lem-sasaki-value-error-decomposition
@@ -1480,7 +866,7 @@ This completes the proof.
 ```
 ::::
 
-##### 2.3.4.2. Sub-Lemma: Bounding the Squared Direct Shift Component
+#### 2.3.4.2. Sub-Lemma: Bounding the Squared Direct Shift Component
 
 ::::{prf:lemma} Bound on the Squared Direct Shift Component
 :label: lem-sasaki-direct-shift-bound-sq
@@ -1536,7 +922,7 @@ The proof is a direct application of the definition of $\Delta_{\text{direct}}$ 
 ```
 ::::
 
-##### 2.3.4.3. Sub-Lemma: Bounding the Squared Mean Shift Component
+#### 2.3.4.3. Sub-Lemma: Bounding the Squared Mean Shift Component
 
 ::::{prf:lemma} Bound on the Squared Mean Shift Component
 :label: lem-sasaki-mean-shift-bound-sq
@@ -1595,7 +981,7 @@ The proof combines the definition of the mean shift component with the axiomatic
 ```
 ::::
 
-##### 2.3.4.4. Sub-Lemma: Bounding the Squared Denominator Shift Component
+#### 2.3.4.4. Sub-Lemma: Bounding the Squared Denominator Shift Component
 
 ::::{prf:lemma} Bounding the Squared Denominator Shift Component
 :label: lem-sasaki-denom-shift-bound-sq
@@ -1667,7 +1053,7 @@ The proof bounds the squared norm by bounding its three constituent parts: the n
 ```
 ::::
 
-##### 2.3.4.5. Proof of Theorem 2.3.4
+#### 2.3.4.5. Proof of Theorem 2.3.4
 
 :::{prf:proof} of {prf:ref}`thm-sasaki-standardization-value-sq`
 
@@ -1735,7 +1121,7 @@ This completes the proof.
 **Q.E.D.**
 :::
 
-##### 2.3.5. Definition: Value Error Coefficients (Squared Form)
+#### 2.3.5. Definition: Value Error Coefficients (Squared Form)
 
 :::{prf:definition} Value Error Coefficients (Squared Form)
 :label: def-sasaki-standardization-constants-sq
@@ -1777,7 +1163,7 @@ Referenced by {prf:ref}`thm-sasaki-standardization-value-sq`.
 where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ are the value Lipschitz functions for the aggregator's mean and regularized standard deviation, respectively. For the canonical empirical aggregator, these coefficients simplify, notably making the mean shift coefficient independent of $k$: $C_{V,\mathrm{mean}}^{\mathrm{sq}}(\mathcal S) = 1/\sigma_{\min,\mathrm{patch}}^2$.
 :::
 
-###### 2.3.6. Theorem: Structural Continuity of Patched Standardization (Sasaki)
+#### 2.3.6. Theorem: Structural Continuity of Patched Standardization (Sasaki)
 
 :::{prf:theorem} Structural Continuity of Patched Standardization (Sasaki)
 :label: thm-sasaki-standardization-structural-sq
@@ -1794,7 +1180,7 @@ $$
 where $C_{S,\mathrm{direct}}^{\mathrm{sq}}$ and $C_{S,\mathrm{indirect}}^{\mathrm{sq}}$ are the **Squared Structural Error Coefficients** defined in {prf:ref}`def-sasaki-structural-coeffs-sq`. The proof is provided in the subsequent sections.
 :::
 
-##### 2.3.6.1. Sub-Lemma: Decomposition of the Structural Error
+#### 2.3.6.1. Sub-Lemma: Decomposition of the Structural Error
 
 ::::{prf:lemma} Decomposition of the Structural Error
 :label: lem-sasaki-structural-error-decomposition
@@ -1854,7 +1240,7 @@ This completes the proof.
 ```
 ::::
 
-##### 2.3.6.2. Sub-Lemma: Bounding the Squared Direct Structural Error
+#### 2.3.6.2. Sub-Lemma: Bounding the Squared Direct Structural Error
 
 ::::{prf:lemma} Bound on the Squared Direct Structural Error
 :label: lem-sasaki-direct-structural-error-sq
@@ -1915,7 +1301,7 @@ The proof bounds the squared error for each unstable walker and sums the results
 ```
 ::::
 
-##### 2.3.6.3. Sub-Lemma: Bounding the Squared Indirect Structural Error
+#### 2.3.6.3. Sub-Lemma: Bounding the Squared Indirect Structural Error
 
 ::::{prf:lemma} Bound on the Squared Indirect Structural Error
 :label: lem-sasaki-indirect-structural-error-sq
@@ -2011,7 +1397,7 @@ The term in the brackets is precisely the definition of the **Squared Indirect S
 ```
 ::::
 
-##### 2.3.6.4. Proof of Theorem 2.3.6
+#### 2.3.6.4. Proof of Theorem 2.3.6
 
 :::{prf:proof} of {prf:ref}`thm-sasaki-standardization-structural-sq`
 The proof establishes the final bound by assembling the deterministic bounds for the two orthogonal error components derived in the preceding sub-lemmas.
@@ -2055,7 +1441,7 @@ This completes the proof, establishing a deterministic, worst-case bound on the 
 
 :::
 
-##### 2.3.7. Structural Error Coefficients (Squared Form)
+#### 2.3.7. Structural Error Coefficients (Squared Form)
 
 :::{prf:definition} Structural Error Coefficients (Squared Form)
 :label: def-sasaki-structural-coeffs-sq
@@ -2081,7 +1467,7 @@ Referenced by {prf:ref}`lem-sasaki-indirect-structural-error-sq` and {prf:ref}`t
 
 where $L_{\mu,S}^{\mathrm{Sasaki}}$ and $L_{\sigma',S}^{\mathrm{Sasaki}}$ are the structural continuity functions for the aggregator's mean and regularized standard deviation, respectively, which depend on the swarm states.
 
-###### 2.3.8. Theorem: Composite Continuity of the Patched Standardization Operator
+#### 2.3.8. Theorem: Composite Continuity of the Patched Standardization Operator
 
 ::::{prf:theorem} Composite Continuity of the Patched Standardization Operator (Sasaki)
 :label: thm-sasaki-standardization-composite-sq
@@ -2187,26 +1573,17 @@ The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standa
 
 ::::
 
-### 4.4 Swarm-level continuity & dynamics
+### 4.4 Swarm-level continuity and population evolution
+
+:::{prf:remark} Constants and their scope
+:label: remark-eg-continuity-scope
+
+The kinetic constants $L_{\mathrm{flow}},s_h,C_x,C_v,C_0$ are given explicitly in {prf:ref}`lem-sasaki-kinetic-lipschitz` and {prf:ref}`lem-euclidean-perturb-moment`. The terminal death-probability constant is $L_{\mathrm{flow}}/(\sqrt{2\pi}s_h)$ in physical phase-space distance. On a compact physical set these can be converted to squashed-distance constants using the Lipschitz constant of the inverse projection.
+
+For each fixed $N$, the complete marked kernel is Feller by {prf:ref}`thm-euclidean-feller`. Uniform-in-$N$ continuity and concentration require control of the accepted components and sampled global statistics. Their proofs are given for the same canonical transition in {doc}`08_mean_field` and {doc}`09_propagation_chaos`; they do not follow from independent per-walker collision outputs. The shared rotation is part of the population map.
+:::
 
 
-### 4.5 Constants at a glance (Sasaki geometry)
-
-| Constant                                                                                                   | Definition                                                                                                                                                                                                                                                                                                                   | Source lemma                                     |
-|:-----------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------|
-| $C_x^{(\mathrm{pert})}, C_v^{(\mathrm{pert})}, C_0^{(\mathrm{pert})}$                                      | $3\lambda_vA_x^2$, $3\lambda_vA_v^2$, $2\tau^2 V_{\mathrm{alg}}^2 + 2\tau\sigma_x^2 d + 3\lambda_vA_0^2 + \lambda_v\sigma_v^2\tau d$                                                                                                                                                                                         | {prf:ref}`lem-euclidean-perturb-moment`          |
-| $\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}(C)$                                                             | $\sqrt{\tau^2(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C)+V_{\mathrm{alg}})^2+\lambda_v(\tau C_{\mathrm{force}}(C)+\varepsilon_{\mathrm{cap}}^{\max}(C))^2}$                                                                                                                                             | {prf:ref}`lem-euclidean-geometric-consistency`   |
-| $\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}(C)$                                                        | $[(1-\rho_*(C))c_d(C)]^{-1}$                                                                                                                                                                                                                                                                                                 | {prf:ref}`lem-euclidean-geometric-consistency`   |
-| $L_{\mu,M}^{\mathrm{Sasaki}}(k)$, $L_{m_2,M}^{\mathrm{Sasaki}}(k)$                                         | $k^{-1/2}$, $2V_{\max}/k^{1/2}$ (with $V_{\max}=V_{\max}^{(R)}$ or $V_{\max}^{(d)}$)                                                                                                                                                                                                                                         | {prf:ref}`lem-sasaki-aggregator-lipschitz`       |
-| $C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$                                                                   | $3\left(\frac{1}{\sigma_{\min,\mathrm{patch}}^2}+\frac{k\left(L_{\mu,M}^{\mathrm{Sasaki}}(k)\right)^2}{\sigma_{\min,\mathrm{patch}}^2}+k\left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2\left(\frac{L_{\sigma',M}^{\mathrm{Sasaki}}(k)}{\sigma_{\min,\mathrm{patch}}}\right)^2\right)$; positional coefficient is $\left(L_R^{\mathrm{Sasaki}}\right)^2 C_{V,\mathrm{total}}^{\mathrm{Sasaki}}$ | {prf:ref}`def-sasaki-standardization-constants-sq`  |
-| $C_{S,\mathrm{direct}}^{\mathrm{sq}}$, $C_{S,\mathrm{indirect}}^{\mathrm{sq}}(\mathcal S_1,\mathcal S_2)$ | $\left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2$, $2 k_{\mathrm{stable}} \frac{\left(L_{\mu,S}^{\mathrm{Sasaki}}\right)^2}{\sigma_{\min,\mathrm{patch}}^2}+2 k_2 \left(\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}\right)^2 \frac{\left(L_{\sigma',S}^{\mathrm{Sasaki}}\right)^2}{\sigma_{\min,\mathrm{patch}}^2}$ | {prf:ref}`def-sasaki-structural-coeffs-sq`          |
-| $L_{\mathrm{death}}^{\mathrm{Sasaki}}(C)$                                                                  | $2\big(p_{\mathrm{aff}}+\rho_*(C) q_{\mathrm{dir}}(C)\big) C_{\partial} L_{\mathrm{flow}}$                                                                                                                                                                                                                                   | {prf:ref}`lem-euclidean-boundary-holder`         |
-
-Note. The mean-square continuity bound $F_{d,ms}^{\mathrm{Sasaki}}$ retains both $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2$ and $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^4$ contributions through the $n_c$ and $n_c^2$ terms in Theorem {prf:ref}`thm-sasaki-distance-ms`; the bound is therefore a composite Lipschitz–Hölder function of the dispersion distance rather than purely Lipschitz.
-
-These constants feed the composition bound in Section 4.4 and the axiom checklist in Section 3.
-
-{ref}`Section 4.5 <sec-eg-kernel-repr>` expresses $\Psi_{\mathcal F_{\mathrm{EG}}}$ as the pushforward of a product measure over $(\boldsymbol U,\boldsymbol C^{\mathrm{pot}},\boldsymbol C^{\mathrm{clone}},\boldsymbol\zeta,\boldsymbol\xi)$ with all draws conditionally independent across walkers, realising Assumption A ({prf:ref}`axiom-instep-independence`). Lemmas {prf:ref}`lem-euclidean-perturb-moment`, {prf:ref}`lem-euclidean-geometric-consistency`, {prf:ref}`lem-sasaki-aggregator-lipschitz`, {prf:ref}`lem-sasaki-standardization-lipschitz`, {prf:ref}`thm-sasaki-distance-ms`, and {prf:ref}`lem-euclidean-boundary-holder` supply the Lipschitz and Feller bounds for every stage of the pipeline, so the hypotheses of the framework’s composition theorem (Framework Sec. 17) hold verbatim in the Sasaki geometry. The resulting continuity bound for $\Psi_{\mathcal F_{\mathrm{EG}}}$ inherits the perturbation-growth coefficients $(C_x^{(\mathrm{pert})},C_v^{(\mathrm{pert})},C_0^{(\mathrm{pert})})$, the drift constant $\kappa_{\mathrm{drift}}^{\mathrm{Sasaki}}$, the anisotropy constant $\kappa_{\mathrm{anisotropy}}^{\mathrm{Sasaki}}$, $F_{d,ms}^{\mathrm{Sasaki}}$, and $L_{\mathrm{death}}^{\mathrm{Sasaki}}$ with exponent $\alpha_B^{\mathrm{Sasaki}}$. The only potential discontinuity is the status indicator, but the $C^1$ boundary of $\mathcal X_{\mathrm{valid}}$ ensures $\mathbb P(\hat x_i\in\partial\mathcal X_{\mathrm{valid}})=0$, so dominated convergence applies. {ref}`sec-eg-feller-proof` proves that $\Psi_{\mathcal F_{\mathrm{EG}}}$ defines a time-homogeneous Feller Markov chain on $(\Sigma_N,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}})$ ({prf:ref}`def-fragile-gas-algorithm`).
 
 ### 2.6 Axiom for Convergence: Non-Deceptive Landscape
 
@@ -2222,45 +1599,35 @@ $$
 
 $$
 
-**Validation:** This axiom is satisfied by ensuring the potential function $R_{\mathrm{pos}}$ does not contain large, perfectly flat plateaus within the compact valid domain $X_{\mathrm{valid}}$. Continuity of $\nabla R_{\mathrm{pos}}$ on the compact set allows the constants to be chosen with $L_{\mathrm{grad}}$ no larger than the richness scale $r_{\mathrm{rich}}/4$ from Section 4.2. This regularity condition is assumed to hold for the Euclidean Gas instantiation.
+**Applicability:** This inequality is an additional quantitative landscape hypothesis wherever a theorem uses it. Continuity alone does not prove a positive lower bound. It is not required to define the canonical transition or its finite-horizon population limit; any geometric-ergodicity application must verify it for its specified potential and scales.
 :::
 
 
 
-## 5. Statement & proof: Kinetic Euclidean Gas is a valid Fragile Gas
+(sec-eg-verified-kernel)=
+## 5. The canonical marked transition
 
-**Theorem.** The Kinetic Euclidean Gas $\mathcal F_{\mathrm{EG}}$ defined in Section 3, equipped with the Sasaki dispersion metric and kinetic perturbation of §3.5, is a valid instantiation of a *Fragile Swarm* and hence a *Fragile Gas* (Defs. 18.1–18.2).
+:::{prf:theorem} Well-defined canonical Euclidean Gas
+:label: thm-eg-canonical-kernel
 
-**Proof (axiom checklist).**
-The Kinetic Euclidean Gas is a valid Fragile Gas because every axiom required by the framework has been verified in the preceding sections:
-- **Foundations & environment:** Lemmas {prf:ref}`lem-euclidean-reward-regularity` and {prf:ref}`lem-euclidean-richness` prove reward regularity and environmental richness in the Sasaki space, and the projection in Section 3.3 establishes bounded algorithmic diameter ({prf:ref}`axiom-bounded-algorithmic-diameter`).
-- **Noise validity & growth control:** Lemma {prf:ref}`lem-euclidean-perturb-moment` bounds the second moment of the kinetic perturbation by a quadratic function of $\|x\|$ and $\|v\|$ and confirms the Feller property of the capped kernel.
-- **Geometric constants & non-degeneracy:** Lemma {prf:ref}`lem-euclidean-geometric-consistency` supplies drift and anisotropy bounds that are uniform on compact subsets of the state space, while the parameter choices $\sigma_v^2>0$, $\sigma_x>0$, and random rotations $R_k$ in the inelastic collision model keep the noise non-degenerate.
-- **Measurement operator continuity:** Lemma {prf:ref}`thm-sasaki-distance-ms` proves the mean-square continuity of the Sasaki distance measurement with explicit error function $F_{d,ms}^{\mathrm{Sasaki}}$.
-- **Deterministic operator pipeline:** Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq` (culminating in Lemma {prf:ref}`lem-sasaki-standardization-lipschitz`) provide Sasaki-specific Lipschitz and Feller bounds for the empirical aggregators, patched standardization, and logistic rescale, so the deterministic stage respects the dispersion metric ({prf:ref}`axiom-instep-independence`).
-- **Viability:** Section 4.1 re-establishes guaranteed revival and boundary regularity via Lemma {prf:ref}`lem-euclidean-boundary-holder`.
+For finite $N\ge1$, positive Gaussian donor widths, positive regularization and fitness floors, finite $h>0$, globally Lipschitz force, and the canonical schedule, {prf:ref}`alg-euclidean-gas` defines a time-homogeneous Markov kernel on the full marked state. It preserves all-slot momentum during the collision stage and is permutation equivariant. With $\sigma_x>0$ and Lebesgue-null boundary it is Feller.
 
-Since all axioms are satisfied, $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Markov kernel on the alive-swarm space and the Euclidean Gas realises a Fragile Gas.
+*Proof.* With at least one alive row the donor normalizers are positive; self-exclusion and singleton rules specify every draw. Positive regularization denominators make the sampled fitness finite, and all acceptance probabilities lie in $[0,1]$. A finite undirected graph has a unique partition into connected components. The common-rotation formula assigns each row exactly one output. BAOAB, final diffusion, cap, and status classification are measurable, so their composition with the finite draws is a probability kernel. The all-dead branch is absorbing.
 
-````{dropdown} Axiom validation checklist
-:class: tip
-| Framework axiom | Validation in this chapter |
-| --- | --- |
-| Bounded Algorithmic Diameter ({prf:ref}`axiom-bounded-algorithmic-diameter`) | Section 3.3, squashing projection $\varphi$ |
-| Reward Regularity ({prf:ref}`axiom-reward-regularity`) | Lemma {prf:ref}`lem-euclidean-reward-regularity` |
-| Environmental Richness ({prf:ref}`axiom-environmental-richness`) | Lemma {prf:ref}`lem-euclidean-richness` |
-| Measurement Stability (patched standardisation & logistic rescale) | Lemmas {prf:ref}`lem-sasaki-aggregator-lipschitz`, {prf:ref}`lem-sasaki-standardization-lipschitz` |
-| Geometric Consistency ({prf:ref}`axiom-geometric-consistency`) | Lemma {prf:ref}`lem-euclidean-geometric-consistency` |
-| Patched Standardisation ({prf:ref}`def-statistical-properties-measurement`) | Algorithm {prf:ref}`alg-euclidean-gas` and Section 3.2 |
-| Boundary Regularity | Lemma {prf:ref}`lem-euclidean-boundary-holder` |
-````
+For each component, $\sum_{i\in C}(v_i-\bar v_C)=0$, so summing its velocity formula gives $\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i$. Relabeling the input, donor indices, innovations, and components relabels the output: weights, empirical statistics, connectedness, and component means are unchanged as unlabeled objects. Haar matrices have the same independent law after this transport. This proves kernel equivariance, without requiring equality of arbitrary fixed-seed trajectories under relabeling. The Feller assertion is proved in {prf:ref}`thm-euclidean-feller`. $\square$
+:::
 
+:::{prf:remark} What requires a separate convergence argument
+:label: remark-eg-convergence-hypotheses
+
+Kernel existence and symmetry do not imply every axiom of an abstract convergence theorem. In particular, a richness lower bound depends on an explicitly specified reference measure, correlated component outputs cannot satisfy an independent-output assumption, and stationary uniqueness requires an attraction or contraction argument for the actual nonlinear map. The canonical population and finite-horizon chaos statements are established in {doc}`08_mean_field` and {doc}`09_propagation_chaos`; the latter gives the exact stationary identification obligations.
+:::
 
 
 (sec-eg-kernel)=
 ## 6. Swarm Update Operator Kernel
 
-We define the one-step kernel $\Psi_{\mathcal F_{\mathrm{EG}}}$ on the ordered swarm space $\Sigma_N=(\mathcal X\times\mathbb R^d\times\{0,1\})^N$. Randomness inside a step is conditionally independent across walkers given the current swarm, matching Assumption A ({prf:ref}`axiom-instep-independence`). When no walkers are alive the process becomes absorbing.
+We define the one-step kernel $\Psi_{\mathcal F_{\mathrm{EG}}}$ on the ordered swarm space $\Sigma_N=(\mathcal X\times\mathbb R^d\times\{0,1\})^N$. Measurement and donor innovations are independent across recipient rows conditional on the input, while rotations are independent across accepted components. Output walkers within a component share one rotation. When no walkers are alive the process becomes absorbing.
 
 (sec-eg-stage1)=
 ### 6.1 Stage 1 — Cemetery absorption
@@ -2270,163 +1637,139 @@ If the alive index set $\mathcal A(\mathcal S_t)$ is empty, the operator returns
 (sec-eg-stage2)=
 ### 6.2 Stage 2 — Single-shot measurement and frozen potentials
 
-1.  **Raw scores.** For $i\in\mathcal A_t$ set $r_i:=R(x_i,v_i)$, and put $r_i:=0$ for $i\notin\mathcal A_t$.
-2.  **Measurement companions ({prf:ref}`def-distance-to-companion-measurement`).** For each alive walker $i\in\mathcal A_t$, a companion for the diversity measurement, $c_{\mathrm{pot}}(i)$, is drawn independently from the **`ε`-dependent companion kernel** $\mathbb C_\epsilon(\mathcal S_t, i)$. This measure assigns a probability to each potential companion $j \in \mathcal A_t \setminus \{i\}$ that is weighted by their algorithmic distance (see Section 3.3):
+:::{prf:definition} Finite sampled measurement and fitness law
+:label: def-eg-frozen-measurements
 
-   $$
-   P(\text{choose } j \mid \mathcal S_t, i) \propto \exp\left(-\frac{d_{\text{alg}}(i,j)^2}{2\epsilon^2}\right).
+Let $\mathcal A=\{i:a_i=1\}$. For $M\ge2$, the measurement and cloning kernels for an alive recipient exclude its own label. A dead recipient's clone kernel uses all of $\mathcal A$. For either role $b\in\{D,C\}$,
+$$
+P_b^N(i,j)=\frac{\mathbf1_{j\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,j)^2/(2\epsilon_b^2)]}
+{\sum_{k\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,k)^2/(2\epsilon_b^2)]}.
+$$
+An alive singleton uses the zero-distance exception and cannot clone from itself. Dead rows still select the sole alive donor.
 
-   $$
+Fix the separation floor $\delta_D>0$. Independently for each alive $i$, sample $J_i^D$ and retain
+$$
+r_i=R(x_i,v_i),\qquad d_i=\sqrt{d_{\mathrm{alg}}(i,J_i^D)^2+\delta_D^2}.
+$$
+In the singleton exception the measured raw distance is zero and the separation is $\delta_D$. Set unused dead measurement entries to zero. For $y=r,d$, compute
+$$
+\bar y=\frac1M\sum_{i\in\mathcal A}y_i,\qquad
+\widehat\sigma_y=\sqrt{\frac1M\sum_{i\in\mathcal A}(y_i-\bar y)^2+\sigma_{\min,y}^2},\qquad
+z_i^y=(y_i-\bar y)/\widehat\sigma_y.
+$$
+For an objective minimized by the engine, $R$ denotes its negative, so larger $z_i^r$ is better. Define
+$$
+V_{\mathrm{fit},i}=
+\left(\frac{A_r}{1+e^{-z_i^r}}+\eta_r\right)^\alpha
+\left(\frac{A_d}{1+e^{-z_i^d}}+\eta_d\right)^\beta
+\quad(i\in\mathcal A),
+$$
+and set unused dead fitness to zero. Freeze the entire realized fitness vector for acceptance. In particular, its donor entry contains the donor's own sampled measurement, and common empirical means and variances are retained.
+:::
 
-   The raw distance to this sampled companion is then computed using the algorithmic distance ({prf:ref}`def-alg-distance`):
-
-   $$
-   d_i:=d_{\text{alg}}(i,c_{\mathrm{pot}}(i)),
-
-   $$
-   while $d_i:=0$ for $i\notin\mathcal A_t$.
-3.  **Potential pipeline.** Apply the canonical patched standardization and logistic rescale operators of Section 3.2 to $(r_i)$ and $(d_i)$ restricted to the alive set. Denote the positive outputs by $r'_i$ and $d'_i$, and combine them with the canonical exponents
-
-   $$
-   V_{\text{fit},i}:=(d'_i)^\beta (r'_i)^\alpha \quad (i\in\mathcal A_t),\qquad V_{\text{fit},i}:=0 \quad (i\notin\mathcal A_t).
-
-   $$
-   The vector $\mathbf V_{\text{fit}}\in\mathbb R_+^N$ is frozen for the remainder of the step.
 
 (sec-eg-stage3)=
-### 6.3 Stage 3 — Per-walker Clone vs. Persist
+### 6.3 Stage 3 — Accepted edges and component collisions
 
-For each index $i\in\{1,\dots,N\}$ independently:
+:::{prf:definition} Frozen component cloning transformation
+:label: def-eg-component-collision
 
-1.  **Clone companion and threshold.** Sample a companion using algorithmic distance ({prf:ref}`def-alg-distance`) $c_{\mathrm{clone}}(i)\sim\mathbb C_\epsilon(\mathcal S_t, i)$ from the same **`ε`-dependent companion kernel** used in the measurement stage, weighted by algorithmic distance. Independently, sample a threshold $T_i\sim\mathrm{Unif}(0,p_{\max})$.
-2.  **Score comparison.** With $v_i:=V_{\text{fit},i}$ and $v_c:=V_{\text{fit},c_{\mathrm{clone}}(i)}$, compute
+Draw cloning donors $J_i^C$ from the kernels in {prf:ref}`def-eg-frozen-measurements` and independent $U_i\sim\operatorname{Unif}[0,1]$. For alive rows with a distinct donor, set
+$$
+p_i=\min\left\{1,\frac{[V_{\mathrm{fit},J_i^C}-V_{\mathrm{fit},i}]_+}{p_{\max}(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}})}\right\},
+\qquad A_i=\mathbf1_{\{U_i<p_i\}}.
+$$
+For dead rows set $p_i=A_i=1$; for an alive singleton set $p_i=A_i=0$.
 
-   $$
-   S_i:=\frac{v_c-v_i}{v_i+\varepsilon_{\mathrm{clone}}}.
+Let $G$ have undirected edges $\{i,J_i^C\}$ whenever $A_i=1$, and let $\mathcal C(G)$ be its nontrivial connected components. From frozen input coordinates set
+$$
+\widetilde x_i=\begin{cases}x_{J_i^C}+\sigma_{\mathrm{clone}}\zeta_i,&A_i=1,\\x_i,&A_i=0,\end{cases}
+\qquad \zeta_i\overset{\mathrm{iid}}\sim\mathcal N(0,I_d).
+$$
+For each $C\in\mathcal C(G)$, draw one independent Haar orthogonal matrix $R_C$ and set
+$$
+\bar v_C=|C|^{-1}\sum_{i\in C}v_i,\qquad
+\widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}R_C(v_i-\bar v_C).
+$$
+For vertices outside these components set $\widetilde v_i=v_i$. All intermediate marks equal one. A persisting donor can therefore change velocity even though it does not copy a position.
+:::
 
-   $$
-   Set $a_i=\textsf{Clone}$ if $S_i>T_i$, else $a_i=\textsf{Persist}$. (Note: For a dead walker `i`, this condition is guaranteed to be met by the Axiom of Guaranteed Revival.)
-3.  **Intermediate state (Inelastic Collision Model).**
+:::{prf:theorem} Component conservation, restitution, and shared covariance
+:label: thm-eg-component-balances
 
-   The state update uses the momentum-conserving inelastic collision model from Definition 5.7.4 of {doc}`03_cloning`. Let $C_{\text{set}} := \{i \mid a_i = \textsf{Clone}\}$ be the set of all walkers marked for cloning.
+For each component, with $u_i=v_i-\bar v_C$,
+$$
+\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i,\qquad
+\sum_{i\in C}\|\widetilde v_i-\bar v_C\|^2=
+\alpha_{\mathrm{restitution}}^2\sum_{i\in C}\|u_i\|^2.
+$$
+Conditional on the accepted graph and all frozen velocities,
+$$
+\mathbb E\widetilde v_i=\bar v_C,\qquad
+\operatorname{Cov}(\widetilde v_i,\widetilde v_j)=
+\frac{\alpha_{\mathrm{restitution}}^2}{d}(u_i\cdot u_j)I_d,
+\quad i,j\in C.
+$$
+At $\alpha_{\mathrm{restitution}}=0$ all component velocities become their mean. At $\alpha_{\mathrm{restitution}}=1$ total component kinetic energy is conserved.
 
-   - **Walkers that persist:** If $a_i=\textsf{Persist}$, take $(\tilde x_i,\tilde v_i):=(x_i,v_i)$.
+*Proof.* The sum of the $u_i$ is zero, and a common linear map preserves that identity. Orthogonality preserves every squared relative norm. Haar invariance under $R\mapsto-R$ gives $\mathbb E R=0$, and left orthogonal invariance implies $\mathbb E[(Ru_i)(Ru_j)^\top]$ is a scalar multiple of $I_d$. Taking its trace gives that scalar as $(u_i\cdot u_j)/d$. Summing the relative-energy identity and the unchanged center-of-mass energy proves the last assertion. $\square$
 
-   - **Walkers that clone:** For cloners, the update proceeds in three stages:
+These momentum sums include dead input slots. Before kinetics, all slots have become alive, so the change in alive-only momentum relative to the input is exactly the sum of the retained dead input velocities. The full-slot collision momentum change is zero. Terminal killing then removes its own measured momentum from the alive sum.
+:::
 
-     **Stage 3a: Group by companion.** For each unique companion $c$ in the swarm, identify the set of cloners that selected it:
+:::{div} feynman-prose
+Take three slots with velocities $-1,0,1$ connected in a chain. Their center-of-mass velocity is zero. In one dimension the shared Haar matrix is a single random sign, so the output is either $(-\alpha,0,\alpha)$ or $(\alpha,0,-\alpha)$. Momentum is zero in both cases. Assigning separate signs to the two nonzero relative velocities would sometimes make them point the same way and would fail the conservation identity.
 
-     $$
-     I_c := \{j \in C_{\text{set}} \mid c_{\mathrm{clone}}(j) = c\}.
+The graph also tells us which errors can travel together. A measurement affects a gate; a changed gate can merge two components; the merged component uses one mean velocity and one rotation. This is why the population proof explores accepted neighborhoods instead of treating collision outputs as independent row updates.
+:::
 
-     $$
-
-     Let $M_c := |I_c|$ be the number of walkers cloning from companion $c$. Each $(M_c+1)$-particle system (companion $c$ plus its cloners $I_c$) undergoes a coupled collision event.
-
-     **Stage 3b: Position updates.** For each cloner $j \in I_c$, draw independent Gaussian jitter $\zeta_j^x \sim \mathcal{N}(0, I_d)$ and set:
-
-     $$
-     \tilde x_j := x_c + \sigma_x \zeta_j^x.
-
-     $$
-
-     The companion's position remains unchanged: $\tilde x_c := x_c$.
-
-     **Stage 3c: Velocity updates (momentum-conserving inelastic collision).** The velocities of all $(M_c+1)$ interacting walkers are updated simultaneously:
-
-     1. **Center-of-mass velocity** (conserved quantity):
-
-        $$
-        V_{\text{COM}, c} := \frac{1}{M_c+1} \left( v_c + \sum_{j \in I_c} v_j \right).
-
-        $$
-
-     2. **Relative velocities in CoM frame:** For each walker $k \in I_c \cup \{c\}$, compute:
-
-        $$
-        u_k := v_k - V_{\text{COM}, c}.
-
-        $$
-
-     3. **Inelastic contraction with random rotation:** Let $R_k$ be a random orthogonal transformation that isotropically rotates $u_k$ to a uniformly random direction on the $(d-1)$-sphere while preserving magnitude. The new relative velocity is:
-
-        $$
-        u'_k := \alpha_{\text{restitution}} \cdot R_k(u_k),
-
-        $$
-
-        where $\alpha_{\text{restitution}} \in [0, 1]$ is the coefficient of restitution controlling energy dissipation.
-
-     4. **Return to lab frame:** The final velocity for each interacting walker is:
-
-        $$
-        \tilde v_k := V_{\text{COM}, c} + u'_k.
-
-        $$
-
-   - **Uninvolved walkers:** Any walker that is neither a cloner nor selected as a companion has its state unchanged: $(\tilde x_i, \tilde v_i) := (x_i, v_i)$.
-
-   **Physical interpretation:** This multi-body inelastic collision model ensures total momentum conservation while allowing tunable energy dissipation. When $\alpha_{\text{restitution}} = 0$ (perfectly inelastic), all walkers in a cloning group collapse to the center-of-mass velocity. When $\alpha_{\text{restitution}} = 1$ (perfectly elastic), kinetic energy is conserved but redistributed via random rotations. See Definition 5.7.4 in {doc}`03_cloning` for detailed analysis.
-
-Collect the intermediate swarm $\mathcal S_{t+1/2}=((\tilde x_i,\tilde v_i,1))_{i=1}^N$, i.e. every walker is set to alive before the kinetic step.
 
 (sec-eg-stage4)=
 ### 6.4 Stage 4 — Kinetic perturbation and status update
 
-Independently for each $i$, draw $\xi_i^v,\xi_i^x\sim\mathcal N(0,I_d)$ and apply the kinetic Euler step of Section 3.5:
-
-$$
-\hat v_i:=\psi_v\!\Big(\tilde v_i+\frac{\tau}{m}F(\tilde x_i)-\gamma_{\mathrm{fric}}\tau(\tilde v_i-u(\tilde x_i))+\sqrt{\sigma_v^2\tau}\,\xi_i^v\Big),\qquad\hat x_i:=\tilde x_i+\tau\hat v_i+\sqrt{\tau}\,\sigma_x\,\xi_i^x.
-
-$$
-Set the terminal status by the deterministic boundary check
-
-$$
- s_i^{(t+1)}:=\mathbf 1_{\mathcal X_{\mathrm{valid}}}(\hat x_i).
-
-$$
-The next swarm is $\mathcal S_{t+1}=((\hat x_i,\hat v_i,s_i^{(t+1)}))_{i=1}^N$.
+Apply {prf:ref}`def-eg-baoab-canonical` independently to the rows of $(\widetilde x,\widetilde v)$, conditional on this correlated intermediate population. Use its B1–A1–O–A2–B2 sequence, final position diffusion, smooth cap, and terminal classification in exactly that order. The next swarm is $S^+=((x_i^+,v_i^+,a_i^+))_{i=1}^N$; every coordinate is retained even when $a_i^+=0$.
 
 (sec-eg-kernel-repr)=
 ### 6.5 Kernel representation
 
-Let $\boldsymbol U=(T_i)$, $\boldsymbol C^{\mathrm{pot}}=(c_{\mathrm{pot}}(i))$, $\boldsymbol C^{\mathrm{clone}}=(c_{\mathrm{clone}}(i))$, $\boldsymbol\zeta=(\zeta_i^x)$, and $\boldsymbol\xi=(\xi_i^v,\xi_i^x)$. Writing $\nu$ for the product law of these arrays, the one-step operator is the pushforward
+:::{prf:definition} Innovation representation of the kernel
+:label: def-eg-complete-kernel
 
+For each input $S$, let $\nu_S$ be the law obtained by: drawing independent measurement and cloning companions with their input-dependent categorical weights; drawing the independent gate uniforms; forming $G$; drawing one Haar matrix per component of $G$; and drawing independent clone and kinetic Gaussian innovations. If $\Phi_h$ executes the specified stages, then
 $$
-\Psi_{\mathcal F_{\mathrm{EG}}}(\mathcal S_t,A)=\int\mathbf 1\big\{\Phi(\mathcal S_t;\boldsymbol U,\boldsymbol C^{\mathrm{pot}},\boldsymbol C^{\mathrm{clone}},\boldsymbol\zeta,\boldsymbol\xi)\in A\big\}\,\nu(d\boldsymbol U\,d\boldsymbol C^{\mathrm{pot}}\,d\boldsymbol C^{\mathrm{clone}}\,d\boldsymbol\zeta\,d\boldsymbol\xi)
+\Psi_{\mathcal F_{\mathrm{EG}}}(S,B)=\int\mathbf1_B(\Phi_h(S;\omega))\nu_S(d\omega).
+$$
+The equivalent representation with input-independent uniforms realizes each categorical draw by inverse cumulative probabilities. Component matrices can be preassigned independently to every nonempty vertex subset and the matrix indexed by each realized component selected. Only the selected matrices are used. This supplies a fixed product innovation space without assuming independent collision outputs.
+:::
 
-$$
-for Borel $A\subseteq\Sigma_N$, where $\Phi$ executes the deterministic composition of Stages 2–4.
 
 (sec-eg-feller-proof)=
 ## Proof of the Feller Property for the Euclidean Gas Kernel
 
-::::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
+:::{prf:theorem} Feller continuity of $\Psi_{\mathcal F_{\mathrm{EG}}}$
 :label: thm-euclidean-feller
 
-```{dropdown} Proof
-:::{prf:proof}
-Write the single-step operator as the composition of the cemetery check (Stage 1), the measurement and potential pipeline (Stage 2), the Clone/Persist gate (Stage 3), and the kinetic-plus-status update (Stage 4). Each stage defines a Markov kernel on $\Sigma_N$ that is Feller with respect to $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$; the claim follows because Feller kernels are closed under composition (see, e.g., [Ethier & Kurtz 86, Prop. 4.2.2]).
+For fixed $N$, continuous reward, globally Lipschitz force, positive donor and standardization denominators, $\sigma_x>0$, and Lebesgue-null $\partial D$, the canonical marked kernel maps bounded continuous functions to bounded continuous functions on
+$$
+\Sigma_N=(\mathbb R^d\times\mathbb R^d\times\{0,1\})^N,
+$$
+with the discrete topology on the marks. Restricting to terminally consistent marked states preserves this assertion. The physical and squashed coordinate metrics induce the same topology on finite states.
 
-1. **Stage 1 (cemetery absorption).** The map $\mathcal S\mapsto\delta_{\mathcal S}$ is continuous. The absorbing branch fires only when $\mathcal A(\mathcal S)=\varnothing$, which is a closed condition, so Stage 1 is Feller.
+*Proof.* Suppose $S_k\to S$. The finite vector of discrete marks is eventually constant. If all marks are zero, the transition is the identity and the result follows. Otherwise the alive set and the singleton convention are eventually fixed.
 
-2. **Stage 2 (measurement and potential pipeline).** Conditional on $\mathcal S$, the companion draws $(c_{\mathrm{pot}}(i))$ are sampled from the product coupling $\mathbb C(\mathcal S)$, which depends continuously on $\mathcal S$ in the dispersion metric by Lemma {prf:ref}`lem-sasaki-single-walker-positional-error`. Lemma {prf:ref}`thm-sasaki-distance-ms` bounds the mean-square variation of the companion distances, and Lemma {prf:ref}`lem-sasaki-aggregator-lipschitz` together with Theorems {prf:ref}`thm-sasaki-standardization-value-sq` and {prf:ref}`thm-sasaki-standardization-structural-sq` show that the patched standardisation and logistic rescale operators depend continuously on the raw values. Consequently the kernel that outputs $(\mathbf r,\mathbf d,\mathbf V_{\text{fit}})$ is Feller.
+There are finitely many possible measurement donor arrays, clone donor arrays, and acceptance arrays. Their probabilities depend continuously on $S$: Gaussian weights have positive denominators, measured features and rewards are continuous, and regularized scales and positive fitness denominators do not vanish. Fix one such discrete array. Its accepted graph and connected components are fixed. Each component mean is a continuous linear function of the frozen velocities, and the rotation and position-copy maps are continuous for each fixed set of Haar and Gaussian innovations. BAOAB and the cap are likewise continuous.
 
-3. **Stage 3 (Clone/Persist gate).** The Bernoulli probabilities $p_i(\mathcal S)$ governing the Clone/Persist decision are continuous functions of the standardized scores produced in Stage 2. Conditional on cloning, the jitter distribution is Gaussian with fixed covariance; the resulting pushforward through the 1-Lipschitz squashing map $\psi_v$ is Feller by Lemma {prf:ref}`lem-squashing-properties-generic`. Therefore the Stage-3 kernel is a finite mixture of Feller kernels with continuous weights and is itself Feller.
-
-4. **Stage 4 (kinetic step and boundary check).** Lemma {prf:ref}`lem-euclidean-perturb-moment` proves that the capped kinetic update map $(x,v)\mapsto(x^+,v^+)$ is Feller and that its second moment grows at most quadratically in the state norm. The status indicator is applied to $x^+$; Lemma {prf:ref}`lem-euclidean-boundary-holder` shows that the death probability varies continuously and that $\mathbb P(x^+\in\partial\mathcal X_{\mathrm{valid}})=0$ under the $C^1$-boundary assumption, so the indicator preserves the Feller property.
-
-Since every stage is Feller, their composition $\Psi_{\mathcal F_{\mathrm{EG}}}$ is a Feller Markov kernel on $(\Sigma_N,d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}})$.
+The terminal status indicator can be discontinuous only when one output position lies on $\partial D$. Conditional on all earlier innovations, independent final Gaussian position noise gives this event probability zero. Hence the marked outputs converge almost surely under the common innovations for the fixed discrete array. A bounded continuous test function then converges in expectation by dominated convergence. Sum over the finitely many discrete arrays with their continuous weights. This proves the assertion. No independence of output rows is used. $\square$
 :::
-```
-::::
 
+
+(sec-eg-references)=
 ## References (selected)
 
 - Federer, H. *Geometric Measure Theory*. Springer, 1969. Standard tubular-neighbourhood volume estimates and Weyl's tube formula.
 - Ethier, S. N., and Kurtz, T. G. *Markov Processes: Characterization and Convergence*. Wiley, 1986. Composition properties of Feller kernels.
 
-Here are BibTeX entries for the sources cited in the convergence section.
+Bibliographic records for the framework estimates follow.
 
 ```bibtex
 @book{MeynTweedie2009,
@@ -2563,8 +1906,6 @@ Here are BibTeX entries for the sources cited in the convergence section.
 ```
 
 ([Oxford University Press][9])
-
-If you want these exported as a `.bib` file, say the filename you prefer and I’ll package it for download.
 
 [1]: https://www.cambridge.org/core/books/markov-chains-and-stochastic-stability/E2B82BFB409CD2F7D67AFC5390C565EC?utm_source=chatgpt.com "Markov Chains and Stochastic Stability"
 [2]: https://academic.oup.com/book/26549?utm_source=chatgpt.com "Concentration Inequalities: A Nonasymptotic Theory of ..."

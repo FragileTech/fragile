@@ -43,6 +43,7 @@ fn config() -> RunConfig {
             friction: 1.,
         },
         noise: Noise::default(),
+        ..Default::default()
     };
     config
 }

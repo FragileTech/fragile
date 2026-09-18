@@ -1,0 +1,14 @@
+{
+  "kind": "independent_finite_kernel_algebra",
+  "cases": 14,
+  "maximum_identity_error": 4.440892098500626e-16,
+  "maximum_cubic_remainder_ratio": 0.0430316452250971,
+  "allowed_cubic_remainder_ratio": 12,
+  "identities": [
+    "survivor_chain_rule",
+    "product_reference_recurrence",
+    "qsd_variance_budget",
+    "doob_entropy_decay",
+    "qsd_forcing_cancellation"
+  ]
+}

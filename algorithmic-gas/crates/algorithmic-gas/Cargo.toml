@@ -10,8 +10,10 @@ description = "Modular Algorithmic Gas engine with private Burn compute adapters
 workspace = true
 
 [features]
-default = ["cpu"]
+default = ["cpu", "parallel"]
 cpu = ["burn/flex"]
+# Host data parallelism for tessellation and graph kernels. Absent on wasm32.
+parallel = ["dep:rayon"]
 wgpu = ["burn/wgpu", "burn/webgpu"]
 cuda = ["burn/cuda"]
 
@@ -23,9 +25,13 @@ ciborium.workspace = true
 thiserror.workspace = true
 futures-util.workspace = true
 spade = "=2.15.1"
+robust = "1.2"
 
 [dev-dependencies]
 futures-lite.workspace = true
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+rayon = { version = "1.10", optional = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.4", features = ["wasm_js"] }

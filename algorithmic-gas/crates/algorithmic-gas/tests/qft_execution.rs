@@ -68,6 +68,7 @@ async fn run(qft: QftExecutionConfig, amplitude: f64) -> AlgorithmicGas<f64> {
                     },
                 },
             },
+            ..Default::default()
         },
         ..Default::default()
     };

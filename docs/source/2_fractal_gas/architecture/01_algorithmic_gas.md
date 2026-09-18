@@ -336,7 +336,7 @@ Shared fields are evaluated once per valid cache key. Supported extraction patte
 |---|---|
 | Function evaluation | Reuse $f(x_i)$ for observations and a reward such as $f(x_i)+c\lVert v_i\rVert^2$. |
 | Atari RAM/images | Extract positions and an explicitly encoded level, RGB pixels, or an embedding. Level encoding and its distance weight are configured. |
-| Population geometry | Return one Einstein-action contribution per walker. The provider defines the allocation: local contribution, density, marginal contribution, or another rule. A broadcast global scalar gives no reward discrimination under global standardization. Physical and convergence claims require separate validation. |
+| Population geometry | Return one Einstein-action contribution per walker. The provider defines the allocation: local contribution, density, marginal contribution, or another rule. A broadcast global scalar gives no reward discrimination under global standardization. Physical and convergence claims require separate validation. In the Rust engine the geometry stage (`tessellation::GeometryStageConfig`) tessellates the population, writes curvature and volume element as observation fields, and `tessellation::GeometryReward` applies a `RewardAllocation`; the default allocation is the density $R_i\sqrt{\det g_i}$ ({prf:ref}`def-tessellation-rust-representation`). |
 
 Cache keys include input/state versions, eligible masks, and declared donor or
 statistic dependencies. Independent extractors may run in parallel; dependencies
@@ -2055,7 +2055,7 @@ Neither replaces the existing Python engines or C++ Optimization Lab.
 | Extensions | Batch-level `GasOperators` hooks plus extraction, reward, domain, distance, noise and derivative interfaces; optional derivative providers are not all used by built-in integrators |
 | Precision and execution | Native/WASM CPU `f32` and `f64`; feature-gated CUDA and WGPU adapters; browser WebGPU `f32`; explicit precision/capability failures |
 | Recording | Versioned committed-step reports and CBOR checkpoints with population, configuration, donor archive, source identities and provider IDs |
-| Browser | Worker execution, bounded stepping/pause, configuration controls, 2D projection, convergence chart, walker inspector, JSON export, binary/IndexedDB checkpoint restore |
+| Browser | Worker execution, bounded stepping/pause, configuration controls, 2D projection and 3D spatial/landscape views, catalog of classic and COCO BBOB objectives, convergence chart, walker inspector, JSON export, binary/IndexedDB checkpoint restore |
 
 The accelerator path is **host-orchestrated**, not device-resident: Burn executes
 batched objective/gradient evaluation, pair reductions, noise factors and kinetic

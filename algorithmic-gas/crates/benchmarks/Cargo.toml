@@ -9,8 +9,9 @@ license.workspace = true
 workspace = true
 
 [features]
-default = ["cpu"]
+default = ["cpu", "parallel"]
 cpu = ["algorithmic-gas/cpu"]
+parallel = ["algorithmic-gas/parallel"]
 wgpu = ["algorithmic-gas/wgpu"]
 cuda = ["algorithmic-gas/cuda"]
 

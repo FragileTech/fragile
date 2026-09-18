@@ -72,36 +72,36 @@
     "prediction": "Cloning, revival and absorbing exits all enter the measured population ledger."
   },
   "III-01": {
-    "question": "How many walkers are eligible before cloning and after the full update?",
-    "prediction": "Recorded eligibility and revival counts distinguish population replacement from survival."
+    "question": "How does scheduled revival replace dead slots before terminal absorption?",
+    "prediction": "Every admitted dead slot is revived; the final boundary independently determines its next status."
   },
   "III-02": {
-    "question": "How does the observed number of copies compare with the sum of their probabilities?",
-    "prediction": "Conditional copy probabilities predict event counts for each executed update."
+    "question": "Do actual clone counts match the sum of their acceptance probabilities?",
+    "prediction": "Conditional clone-count mean is the sum of gate probabilities; variance is the sum of p(1-p)."
   },
   "III-03": {
-    "question": "How do independently seeded population means fluctuate under selection?",
-    "prediction": "Within-population spread and across-run endpoint variance measure different sources of variation."
+    "question": "How do independent-run fluctuations change with N at fixed update count?",
+    "prediction": "Chaotic initial data converge under the fixed-step population map; measure finite-N fluctuations across independent runs."
   },
   "III-04": {
-    "question": "Does the actual numerical process have stationary position moments?",
-    "prediction": "Measured increments divided by h identify the finite-step generator without substituting a continuous process."
+    "question": "Does the full component transformation conserve momentum and contract relative energy?",
+    "prediction": "Each component conserves its full-slot momentum and multiplies relative kinetic energy by restitution squared."
   },
   "III-05": {
-    "question": "Does the measured population settle into a narrow fitness range?",
-    "prediction": "The actual reward and diversity channels determine the observed fitness variation."
+    "question": "How does changing reward selection affect the full gas?",
+    "prediction": "Measure the actual nonlinear update with sampled fitness retained through acceptance."
   },
   "III-06": {
-    "question": "How does the spatial distribution change under diffusion, selection and absorption?",
-    "prediction": "The plotted conditional distribution consists of the eligible walkers after executed updates."
+    "question": "How does final position diffusion change survival and revival?",
+    "prediction": "The declared Gaussian position step determines terminal crossing probabilities from its actual input."
   },
   "III-07": {
-    "question": "How does shared initial information affect independent runs of the interacting gas?",
-    "prediction": "Across-run population means and within-run spread measure different fluctuations."
+    "question": "Does common initial information survive as N grows?",
+    "prediction": "An exchangeable initial mixture can retain a random population law."
   },
   "III-08": {
-    "question": "How often do executed donor selections point to the same source?",
-    "prediction": "The collision statistic follows the actual donor law and its eligible source set."
+    "question": "How large are accepted collision components, and how often do two walkers share one?",
+    "prediction": "Strict fitness increase makes the current accepted graph a forest; its component dependence is measured directly."
   },
   "IV-01": {
     "question": "How does a position displacement affect the later velocity law?",
@@ -128,8 +128,8 @@
     "prediction": "The inverse sum of squared normalized weights defines the effective neighbor count on the recorded population."
   },
   "IV-07": {
-    "question": "How accurately do conditional fitness derivatives predict a local displacement?",
-    "prediction": "The polynomial and direct field evaluation share the same recorded donor realization and normalization."
+    "question": "How do the reward landscape and companion choices change fitness?",
+    "prediction": "Fixed-assignment derivatives include every affected row; derivatives of mean fitness also include changing companion probabilities."
   },
   "IV-08": {
     "question": "How do local fitness and donor width affect actual copying?",
@@ -448,8 +448,8 @@
     "prediction": "Measure position covariance radius, RMS speed, centered velocity variance, and the corresponding crossing-time diagnostic from eligible records."
   },
   "VI-51": {
-    "question": "Which operations supply the measured mechanical increments?",
-    "prediction": "Resolve cloning, restitution, jitter, total-force work, thermostat, transport, boundary, and eligibility contributions using recorded stages. Compare exact balance ledgers with direct changes and retain the quantities needed for stress diagnostics."
+    "question": "Do the executed field increments obey the equations of the algorithm?",
+    "prediction": "Resolve every clone, force, transport, boundary and eligibility source for a spatial Fourier field. Integrate its thermostat contribution under the actual Gaussian or uniform innovation law and compare centered fluctuations with the predicted conditional covariance."
   },
   "VI-52": {
     "question": "Which actual interactions cross a chosen slot partition?",

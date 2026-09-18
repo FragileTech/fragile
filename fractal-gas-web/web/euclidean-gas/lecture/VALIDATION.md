@@ -101,16 +101,16 @@ current test output.
 
 ## Executed validation record
 
-The final native workspace run passed 293 tests, including the
+The final native workspace run passed 301 tests, including the
 browser-number JSON round trip, request/configuration rejection, fractional-count
 rejection, exact displayed conditioning-state comparison and 96-step scene-window
-checks. The additional VI-51 archive-only regression and its five-test suite passed, as did all 35 private field-reference tests. Workspace Clippy passed with warnings denied.
+checks. The VI-51 archive regression and the nine field-equation tests pass, including all 85 registered observable/wave-number combinations. The 35 private field-reference tests also pass. Workspace Clippy passed with warnings denied.
 
 Adaptive VI-39 refinement passed the actual default 96-step regression, all 35
 field-reference tests and all 15 core physics/geometry tests. The final compiled
 QFT suite passed 67 tests. Chromium checks completed VI-19, VI-22 and VI-45 with
 32 continuations per group, VI-39 with converged independent refinement, and
-VI-51 with archive-only mechanical readouts.
+VI-51 with all five algorithm-derived field readouts and available clone/thermostat predictions.
 
 The registry stress run passed all 258 Part V–VI defaults across seeds 0, 7 and
 516, and all 1,455 individual categorical/range endpoints. The continuation-state
@@ -142,3 +142,13 @@ The Theory build and portal assembly passed. External DOI tooltip lookups emitte
 network-resolution warnings; local lecture assets and navigation passed the
 assembled-book browser checks. Browser scientific execution uses the CPU/WASM
 engine. Compiling the WebGPU profile does not constitute a GPU hardware run.
+
+## Algorithm-derived field equations
+
+VI-51 exposes density, momentum, stress, energy and phase-space Fourier fields, with adjustable spatial wave number. The Rust engine computes analytic clone-gate predictions conditional on actual donor candidates/rescored fitness and exact historical sources, conditional thermostat means/covariances under the executed innovation law, independently reconstructed kick/transport increments, and all recorded stage sources.
+
+Native field-equation tests exercise 48 independent eight-step trajectories per Gaussian/uniform law. Literal-copy, independent A/B and full field residuals are below 2e-13. Maximum absolute standardized accumulated residuals are 2.0881 (thermostat) and 1.9401 (cloning); realized/predicted quadratic variation ranges are 0.8570–1.2287 and 0.9114–1.1564. Separate executed cases cover metric-dependent noise, periodic wrapping, absorbing loss and revival. Exact source, probability, clock, factor and sample tampering are rejected. Successive stages within each trajectory are dependent.
+
+The compiled Part VI suite passes all 67 tests. Chromium verifies all five VI-51 field views with both equation reports available and no page errors.
+
+Four strict stage-coverage tests reject missing, reordered or duplicated required records while accepting legitimate O/A2 boundary extinction. The full field residual is labeled as accounting; conditional predictions are validated separately. Independent polynomial quadrature and complete clone-gate enumeration verify all covariance entries within 2e-12. Metric-active ensembles retain 896 trajectories and 192 projection comparisons, including the finite-sample deviations and their disjoint replications in `algorithmic-gas/validation/metric-field-review.json`.

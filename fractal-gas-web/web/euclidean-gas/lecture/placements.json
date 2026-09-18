@@ -81,7 +81,7 @@
     "part": "II",
     "title": "Drift is an average over possible next steps",
     "chapter": "source/2_fractal_gas/convergence_program/03_cloning",
-    "target": "10.3. Positional Variance Contraction"
+    "target": "10.3. Exact positional variance and the geometric drift term"
   },
   {
     "id": "II-03",
@@ -128,58 +128,58 @@
   {
     "id": "III-01",
     "part": "III",
-    "title": "A population mass ledger for the forward equation",
+    "title": "Immediate revival and terminal boundary loss",
     "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
-    "target": "sec-mean-field-population"
+    "target": "sec-mean-field-boundary"
   },
   {
     "id": "III-02",
     "part": "III",
-    "title": "Shrinking the timestep changes the reaction frequency",
+    "title": "Finite-step clone counts and their conditional law",
     "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
-    "target": "sec-mean-field-reactions"
+    "target": "sec-mean-field-measurements"
   },
   {
     "id": "III-03",
     "part": "III",
-    "title": "Watch the empirical law fluctuate between runs",
+    "title": "Population-size scaling of collective fluctuations",
     "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
     "target": "sec-chaos-population-laws"
   },
   {
     "id": "III-04",
     "part": "III",
-    "title": "Two limits and a stationary residual",
+    "title": "Shared component collisions and conserved momentum",
     "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
-    "target": "sec-chaos-identification"
+    "target": "sec-chaos-positive-evolution"
   },
   {
     "id": "III-05",
     "part": "III",
-    "title": "Watch an equilibrium profile emerge",
-    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
-    "target": "sec-equilibrium-selection"
+    "title": "Selection strength and the population trajectory",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-measurements"
   },
   {
     "id": "III-06",
     "part": "III",
-    "title": "A sine, a parabola, and a surviving shape",
-    "chapter": "source/2_fractal_gas/convergence_program/07_discrete_qsd",
-    "target": "sec-equilibrium-kinetic"
+    "title": "Gaussian terminal noise and boundary crossings",
+    "chapter": "source/2_fractal_gas/convergence_program/08_mean_field",
+    "target": "sec-mean-field-kinetic"
   },
   {
     "id": "III-07",
     "part": "III",
-    "title": "Exchangeable walkers can move as one random object",
-    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
-    "target": "sec-exchangeability-qsd"
+    "title": "Shared initial randomness and empirical mixtures",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-identification"
   },
   {
     "id": "III-08",
     "part": "III",
-    "title": "Sampling with replacement exposes the finite-$N$ correction",
-    "chapter": "source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory",
-    "target": "sec-exchangeability-finite-mixtures"
+    "title": "Collision forests and tagged-walker dependence",
+    "chapter": "source/2_fractal_gas/convergence_program/09_propagation_chaos",
+    "target": "sec-chaos-positive-evolution"
   },
   {
     "id": "IV-01",
@@ -226,9 +226,9 @@
   {
     "id": "IV-07",
     "part": "IV",
-    "title": "Follow the growth of higher derivatives",
+    "title": "Fitness sensitivity and companion fluctuations",
     "chapter": "source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full",
-    "target": "sec-gg-cinf-regularity"
+    "target": "sec-cinf-companion-sensitivity-experiment"
   },
   {
     "id": "IV-08",
@@ -627,7 +627,7 @@
     "part": "VI",
     "title": "Empirical temporal reflection spectrum",
     "chapter": "source/2_fractal_gas/2_fractal_set/05_yang_mills_noether",
-    "target": "prop-ym-native-labeled-color-reflection-sign"
+    "target": "prop-ym-native-physical-reflection-calculation"
   },
   {
     "id": "VI-29",
@@ -786,7 +786,7 @@
   {
     "id": "VI-51",
     "part": "VI",
-    "title": "Complete mechanical balances and stress ingredients",
+    "title": "Algorithm-derived field equations and mechanical sources",
     "chapter": "source/2_fractal_gas/3_fitness_manifold/04_field_equations",
     "target": "sec-stress-energy-tensor"
   },

@@ -28,6 +28,7 @@ fn config() -> RunConfig {
                 scale: FactorValues::Constant { values: vec![1.] },
             },
         },
+        ..Default::default()
     };
     config
 }

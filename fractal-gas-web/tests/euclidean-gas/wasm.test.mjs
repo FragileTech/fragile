@@ -6,17 +6,27 @@ import init, {
   default_config,
   checkpoint_config,
   capabilities,
+  benchmark_catalog,
+  objective_info,
 } from "../../web/euclidean-gas/engine/cpu/gas.js";
 import {
-  resolveConfig,
+  benchmarkInfo,
+  benchmarkParameters,
+  dimensionFor,
+  resolveConfig as resolveWithCatalog,
   frameMetrics,
-  validateLabConfig,
+  validateLabConfig as validateWithCatalog,
 } from "../../web/euclidean-gas/config.js";
 await init({
   module_or_path: await readFile(
     new URL("../../web/euclidean-gas/engine/cpu/gas_bg.wasm", import.meta.url),
   ),
 });
+
+const catalog = benchmark_catalog();
+const resolveConfig = (base, values) =>
+  resolveWithCatalog(base, values, catalog);
+const validateLabConfig = (config) => validateWithCatalog(config, catalog);
 
 test("Checkpoint format explicitly versions corrected semantics", () => {
   assert.equal(capabilities().checkpoint_version, 4);
@@ -206,26 +216,134 @@ test("UI validation rejects incompatible geometry and precision", () => {
     /periodic/,
   );
 });
-test("All four benchmark configurations run in WASM", async () => {
-  for (const benchmark of [
-    "sphere",
-    "rastrigin",
-    "rosenbrock",
-    "styblinski_tang",
-  ]) {
-    const config = resolveConfig(JSON.parse(default_config()), {
-      ...form,
-      benchmark,
-    });
-    const gas = await BrowserGas.create(JSON.stringify(config));
-    try {
-      const frame = await gas.step(1);
-      assert.equal(frame.step, 1);
-      assert(frame.population.rewards.raw.every(Number.isFinite));
-    } finally {
-      gas.free();
+test("Every catalog benchmark resolves, runs and draws a landscape in WASM", async () => {
+  assert.equal(catalog.benchmarks.length, 38);
+  assert.equal(
+    catalog.benchmarks.filter((entry) => entry.suite === "bbob").length,
+    24,
+  );
+  for (const entry of catalog.benchmarks) {
+    for (const requested of entry.dimensions ? [2, 5] : [2]) {
+      const parameters = benchmarkParameters(entry);
+      if (entry.dimensionRule) parameters.n_atoms = 3;
+      const dimensions = dimensionFor(entry, parameters, requested);
+      const config = resolveConfig(JSON.parse(default_config()), {
+        ...form,
+        benchmark: entry.id,
+        parameters,
+        dimensions: String(dimensions),
+        "initial-box": "domain",
+      });
+      validateLabConfig(config);
+      assert.deepEqual(config.gas.boundary.domain.lower, [
+        ...Array(dimensions).fill(entry.bounds[0]),
+      ]);
+      const gas = await BrowserGas.create(JSON.stringify(config));
+      try {
+        const frame = await gas.step(1);
+        assert.equal(frame.step, 1, entry.id);
+        assert(frame.population.rewards.raw.every(Number.isFinite), entry.id);
+        const host = entry.objective_execution === "host";
+        if (entry.suite === "bbob") {
+          assert(host);
+          assert.equal(
+            frame.execution.host_reward_evaluations,
+            frame.reward_evaluations,
+          );
+        } else if (!host)
+          assert.equal(frame.execution.host_reward_evaluations, 0);
+        const objective = gas.objective_info();
+        assert.deepEqual(objective, objective_info(JSON.stringify(config)));
+        const info = benchmarkInfo(config, catalog, objective);
+        assert.equal(info.low, entry.bounds[0]);
+        assert.equal(info.molecule, entry.id === "lennard_jones");
+        const landscape = gas.landscape(
+          0,
+          1,
+          8,
+          objective.minimizer || Array(dimensions).fill(0.25),
+        );
+        assert.equal(landscape.values.length, 64);
+        assert.equal(landscape.minimum, objective.minimum);
+        if (objective.minimum !== null && !entry.dimensionRule)
+          assert(
+            landscape.values.every(
+              (v) => v === null || v >= objective.minimum - 1e-6,
+            ),
+            entry.id,
+          );
+        // Landscape queries leave the run untouched.
+        assert.deepEqual(gas.snapshot(), frame);
+      } finally {
+        gas.free();
+      }
     }
   }
+});
+test("Benchmark parameters and dimension rules are enforced", async () => {
+  const base = JSON.parse(default_config());
+  const pick = (id) => catalog.benchmarks.find((entry) => entry.id === id);
+  assert.equal(dimensionFor(pick("eggholder"), {}, 7), 2);
+  assert.equal(dimensionFor(pick("lennard_jones"), { n_atoms: 4 }, 2), 12);
+  assert.equal(dimensionFor(pick("bbob_7"), {}, 8), 10);
+  assert.equal(dimensionFor(pick("rosenbrock"), {}, 1), 2);
+  assert.throws(
+    () =>
+      resolveConfig(base, { ...form, benchmark: "eggholder", dimensions: "3" }),
+    /requires 2 dimensions/,
+  );
+  assert.throws(
+    () =>
+      resolveConfig(base, { ...form, benchmark: "bbob_3", dimensions: "4" }),
+    /2, 3, 5, 10, 20, 40/,
+  );
+  assert.throws(
+    () =>
+      resolveConfig(base, {
+        ...form,
+        benchmark: "bbob_3",
+        parameters: { coco_instance: 0 },
+      }),
+    /COCO instance/,
+  );
+  await assert.rejects(
+    BrowserGas.create(
+      JSON.stringify({ ...base, benchmark: { id: "sphere", alpha: 2 } }),
+    ),
+  );
+  const config = resolveConfig(base, {
+    ...form,
+    benchmark: "bbob_21",
+    parameters: { coco_instance: 3 },
+    dimensions: "5",
+  });
+  assert.deepEqual(config.benchmark, { id: "bbob_21", coco_instance: 3 });
+  const gas = await BrowserGas.create(JSON.stringify(config));
+  try {
+    assert.equal(gas.objective_info().coco_problem_id, "bbob_f021_i03_d05");
+    await gas.step(2);
+    const bytes = gas.checkpoint();
+    assert.deepEqual(
+      JSON.parse(checkpoint_config(bytes)).benchmark,
+      config.benchmark,
+    );
+    const restored = await BrowserGas.restore(bytes);
+    try {
+      assert.deepEqual(await restored.step(1), await gas.step(1));
+    } finally {
+      restored.free();
+    }
+  } finally {
+    gas.free();
+  }
+});
+test("The benchmark list is generated from the engine catalog", async () => {
+  const html = await readFile(
+    new URL("../../web/euclidean-gas/index.html", import.meta.url),
+    "utf8",
+  );
+  assert.match(html, /<select id="benchmark"><\/select/);
+  assert.equal(capabilities().objective_catalog_version, catalog.version);
 });
 test("Langevin, anisotropic noise and mutual companions run in WASM f64", async () => {
   const config = resolveConfig(JSON.parse(default_config()), {

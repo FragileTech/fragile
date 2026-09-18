@@ -1,765 +1,618 @@
-# The Mean-Field Model and Its Forward Equation
+# The Mean-Field Law of the Euclidean Gas
 
 (sec-mean-field-foundations)=
-## 1. Alive mass, probability laws, and measurements
+## 1. A population law for one complete update
 
 :::{div} feynman-prose
-There are two limits to distinguish. Increasing the number of walkers turns empirical measurements into functionals of a probability law. Decreasing the integration step replaces a discrete transition by a continuous evolution only when its transition rates and boundary rules have the required limit. This chapter derives the forward equation for a specified continuous-time model and states the estimates that connect it to particles.
+Sit on one walker just before an update. It measures a companion, receives a fitness, and may copy a donor. Other walkers may copy it. These accepted edges join walkers into collision groups, and a group shares one rotation about its center-of-mass velocity. A description of our walker must therefore include the group that can change its velocity.
 
-The model tracks an alive density and a dead reservoir. Transport moves the alive density, killing transfers mass to the reservoir, revival returns it, and cloning redistributes it according to a companion rule. A probability-preserving offspring kernel makes cloning mass-neutral. An offspring kernel that can leave the alive domain adds another loss term.
+Increasing the population does not make cloning rare. It makes the random neighborhood of a tagged walker approach a definite probability law. We construct that law, apply the actual kinetic stages, and obtain a discrete nonlinear evolution. The time step stays fixed throughout this construction.
 
-The generator assembly, population balance, positive alive-mass bound, boundary-flux limit, and particle-coupling transfer are proved below. Existence, uniqueness, and stationary mean-field analysis use these operators in {doc}`09_propagation_chaos`. The underlying algorithm and its discrete updates are specified in {doc}`02_euclidean_gas`, {doc}`03_cloning`, and {doc}`04_single_particle`.
+The retained coordinates of a dead slot also matter. They determine its revival donor probabilities, and its retained velocity participates in its collision group. A single number called “dead mass” cannot carry this information. Our probability law includes alive and dead marked states.
 :::
 
-### 1.1. State space and normalization
+:::{prf:definition} Complete one-slot state for the canonical gas
+:label: def-mean-field-marked-state
 
-:::{prf:definition} Phase space
-:label: def-mean-field-phase-space
+Fix a time step $h>0$, dimension $d\geq1$, velocity radius $V>0$, and restitution $\alpha\in[0,1]$. A slot has state
 
-Let $X_{\mathrm{valid}}\subset\mathbb R^d$ be the valid position domain and let $V$ be the velocity state space. Write $\Omega=X_{\mathrm{valid}}\times V$ and $z=(x,v)$. For the uncapped kinetic diffusion, $V=\mathbb R^d$. A bounded velocity ball requires a separately specified boundary law. The boundary-flux calculation in Section 5 uses a bounded $C^2$ position domain and bounded velocities; the conservative kinetic model below can instead use a confining unbounded domain with justified decay at infinity.
+$$
+z=(x,v,a)\in E:=\mathbb R^d\times\overline B_V\times\{0,1\},
+$$
+
+where $a$ records eligibility at the completed update. A dead slot retains $x$ and $v$. The full empirical probability and its alive restriction are
+
+$$
+L_N=\frac1N\sum_{i=1}^N\delta_{z_i},\qquad
+\mu^a(dz)=a\mu(dz),\qquad m(\mu)=\mu(a=1),\qquad
+\rho_\mu=\frac{\mu^a}{m(\mu)}.
+$$
+
+The canonical configuration uses current-frame, independent, single-companion sampling; global regularized statistics; positive logistic fitness maps; simultaneous component collisions; Gaussian BAOAB noise; independent final Gaussian position noise of amplitude $\sigma_x\sqrt h$, with $\sigma_x>0$; the final radial velocity cap; and terminal boundary classification. There is no absorbing check between these stages.
+
+In the absorbing configuration, $a=\mathbf1_D(x)$ for the closed box $D=\prod_{k=1}^d[\ell_k,u_k]$ at admission and after each complete update. In the unbounded configuration, every finite state is eligible. The objective has continuous reward $r$ with at most quadratic growth, and its potential satisfies
+
+$$
+|\nabla U(x)-\nabla U(y)|\leq L_U|x-y|,\qquad
+|\nabla U(x)|\leq L_U|x|+B_U.
+$$
+
+The results below concern the real-arithmetic transition specified by these operations. Numerical overflow is an execution failure, not an additional physical killing rule.
 :::
 
-(remark-mean-field-cloud)=
-:::{admonition} From particles to a law
-:class: feynman-added note
-
-An $N$-particle configuration is a point in a large state space. Its empirical measure places mass $1/N$ at each particle state. A mean-field law describes a representative particle. A density is one representation of that law when it is absolutely continuous; an empirical measure itself is atomic.
-:::
-
-:::{prf:definition} Alive density and dead mass
-:label: def-phase-space-density
-
-Let $f(t,z)\geq0$ be an alive sub-probability density with
-
-$$
-m_a(t)=\int_\Omega f(t,z)dz,\qquad m_d(t)=1-m_a(t).
-$$
-
-On the region $m_a(t)>0$, define the conditional alive probability density
-
-$$
-\rho_t(z)=\frac{f(t,z)}{m_a(t)}.
-$$
-
-The weak forward equation is interpreted in time-integrated form. Whenever a density description is used, $f\in C([0,T];L^1(\Omega))$ is a natural solution class, supplemented by the test-function, boundary-trace, and reaction-integrability requirements of the particular result.
-:::
-
-:::{prf:remark} What density continuity provides
+:::{prf:remark} Retained memory and other configurations
 :label: remark-mean-field-regularity
 
-Continuity into $L^1$ makes the alive mass continuous and permits a mild-solution formulation. It does not by itself give pointwise derivatives or boundary traces. The forward identities below specify how those stronger operations are justified.
+The canonical current-frame configuration is Markov on $E^N$. If donor history, mutable observation providers, or time-dependent objectives are enabled, their state must be included in the population state before defining its transition. A projection onto $(x,v,a)$ then generally has memory. The finite-component proof below uses one current donor and strict increase of one frozen fitness along every accepted live edge; it does not assert that arbitrary historical or multiple-donor mechanisms have that property. The complete-state construction is developed in {doc}`../3_fitness_manifold/04_field_equations`.
 :::
 
-:::{prf:remark} Averaging over the alive population
+:::{prf:definition} Physical state space and densities
+:label: def-mean-field-phase-space
+
+The alive phase space is $\Omega=D\times\overline B_V$, with $D=\mathbb R^d$ allowed. Measures, rather than densities, are primary: finite populations are atomic, and a density need not be available for every initial law. The smooth radial cap sends finite velocities into the open ball; the closed ball is used for weak compactness. When the alive restriction has a density, write $f_n$ for that sub-probability density and $\rho_n=f_n/m_n$. This notation does not discard the marked dead law.
+:::
+
+:::{prf:definition} Alive and dead population balance
+:label: def-phase-space-density
+
+At update $n$, the alive and dead masses are $m_n=\mu_n(a=1)$ and $1-m_n$. With $m_n>0$, every dead slot draws an eligible current donor and is revived during cloning. Subsequent terminal classification determines the new dead mass. With $m_n=0$, companion-based evolution stops at extinction; no restart distribution is implied.
+:::
+
+:::{prf:remark} Alive normalization
 :label: remark-mean-field-sum-to-integral
 
-The finite average $k^{-1}\sum_{i\in A}Q(z_i)$ corresponds to $\int Q(z)\rho_t(z)dz$, where $\rho_t=f/m_a$. Integrating against $f$ instead gives the unnormalized alive contribution. Products $\rho_t(dz)\rho_t(dz')$ below describe independent uniform alive companion sampling; a nonuniform or correlated companion mechanism uses its actual conditional or joint kernel.
+An average over alive slots converges to an integral against $\rho_\mu$, whereas an average over all slots uses $\mu$. A donor-selected pair has law $\rho_\mu(dz)P_D(\mu;z,dy)$, not generally $\rho_\mu(dz)\rho_\mu(dy)$. Both distinctions enter the fitness moments.
 :::
 
-:::{prf:definition} Mean-Field Statistical Moments
+(sec-mean-field-measurements)=
+## 2. Sampled measurements and accepted edges
+
+:::{div} feynman-prose
+A walker keeps the measurement it actually drew. Suppose a rare companion gives a large diversity score. Standardization and acceptance act on that score before we average over companions. Replacing it by the average diversity would change which edges are accepted.
+
+We can retain this randomness without retaining a whole finite population. Give each representative walker a measurement mark, compute the population moments of those marked walkers, and carry the resulting fitness into the graph construction. The bounds below come from the actual bounded comparison features and the positive normalization floors.
+:::
+
+:::{prf:definition} Squashed comparison and weighted companion laws
+:label: def-mean-field-measurement-law
+
+Let $S_R(u)=Ru/(R+|u|)$, and define
+
+$$
+\Phi(z)=\bigl(S_{R_x}(x),\sqrt\lambda S_{R_v}(v)\bigr),\qquad
+D(z,y)=|\Phi(z)-\Phi(y)|.
+$$
+
+For measurement and cloning widths $\epsilon_D,\epsilon_C>0$, put
+
+$$
+w_b(z,y)=\exp\!\left[-\frac{D(z,y)^2}{2\epsilon_b^2}\right],\qquad
+Z_b(\mu;z)=\int a_yw_b(z,y)\mu(dy),\qquad
+P_b(\mu;z,dy)=\frac{a_yw_b(z,y)\mu(dy)}{Z_b(\mu;z)},
+\quad b\in\{D,C\}.
+$$
+
+Since $D^2\leq D_*^2:=4R_x^2+4\lambda R_v^2$,
+
+$$
+0<\kappa_b:=e^{-D_*^2/(2\epsilon_b^2)}\leq w_b\leq1,
+\qquad Z_b(\mu;z)\geq\kappa_bm(\mu).
+$$
+
+These bounds hold for arbitrarily large physical positions, including retained dead positions. They bound the comparison features, not the physical domain. Finite alive recipients exclude themselves from companion sampling; dead recipients are not in the eligible pool. A singleton alive pool has no eligible distinct measurement companion and uses the specified zero-distance measurement. This finite exception disappears along sequences with a positive limiting alive fraction.
+:::
+
+:::{prf:definition} The marked measurement law
 :label: def-mean-field-moments
 
-Let $f(t, \cdot)$ be the phase-space density (see {prf:ref}`def-phase-space-density`) at time $t$, with total alive mass $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. The statistical moments required for the standardization pipeline are defined as the following **functionals** of $f$. The notation $\mu[f]$ emphasizes that these are numbers that depend on the entire *shape* of the function $f$.
-
-The moments are computed with respect to the **normalized density of the alive population**, which is $f(t,z) / m_a(t)$. This normalization is critical for ensuring the mean-field model is a faithful limit of the N-particle system, where statistics are computed by averaging over the $k$ alive walkers.
-
-*   **Reward Moments:** The mean reward, $\mu_R[f]$, is computed as the expected value over the normalized alive population:
-
-    $$
-    \mu_R[f](t) := \int_{\Omega} R(z) \frac{f(t,z)}{m_a(t)}\,\mathrm dz
-
-    $$
-
-    $$
-    \sigma_R^2[f](t) := \int_{\Omega} \bigl(R(z) - \mu_R[f](t)\bigr)^2 \frac{f(t,z)}{m_a(t)}\,\mathrm dz
-
-    $$
-
-*   **Distance Moments:** The mean distance is the expectation of the distance between two particles drawn independently from the normalized alive population:
-
-    $$
-    \mu_D[f](t) := \iint_{\Omega \times \Omega} d_{\mathcal{Y}}(\varphi(z), \varphi(z')) \frac{f(t,z)}{m_a(t)} \frac{f(t,z')}{m_a(t)}\,\mathrm dz\,\mathrm dz'
-
-    $$
-
-    $$
-    \sigma_D^2[f](t) := \iint_{\Omega \times \Omega} \bigl(d_{\mathcal{Y}}(\varphi(z), \varphi(z')) - \mu_D[f](t)\bigr)^2 \frac{f(t,z)}{m_a(t)} \frac{f(t,z')}{m_a(t)}\,\mathrm dz\,\mathrm dz'
-
-    $$
-:::
-
-:::{prf:remark} Positive mass and the cemetery boundary
-:label: remark-cemetery-state
-
-The normalized moments are defined while $m_a>0$. For bounded killing and positive revival, {prf:ref}`cor-mean-field-positive-alive-mass` proves that positive initial alive mass stays bounded away from zero on every finite interval. No reference distribution at extinction is needed for those solutions.
-
-At exactly $m_a=0$, the ratio $f/m_a$ has no canonical value. An extension that keeps extinction absorbing must switch off companion-based revival there; an extension using a prescribed restart law is a different model. Neither extension follows by assigning a limit to arbitrary paths $f\to0$. The results here concern the positive-mass model and its stated boundary law.
-:::
-
-### 1.2. Standardization and fitness
-
-:::{prf:definition} Regularized standard deviations
-:label: def-mean-field-patched-std
-
-Apply the specified variance regularization $\sigma'_{\mathrm{reg}}$ to the reward and distance variances:
+Given $\mu$ with $m>0$, attach $Y_D\sim P_D(\mu;z,\cdot)$ independently to each alive type. Dead types have a dummy mark $\dagger$. Denote the resulting probability on $(z,Y_D)$ by $\widehat\eta_\mu$. The measured separation is
 
 $$
-\widehat\sigma_R[f]=\sigma'_{\mathrm{reg}}(\sigma_R^2[f]),\qquad
-\widehat\sigma_D[f]=\sigma'_{\mathrm{reg}}(\sigma_D^2[f]).
+s(z,y)=\sqrt{D(z,y)^2+\delta_D^2},\qquad\delta_D>0.
 $$
 
-The regularization is chosen so both denominators are at least a fixed $s_*>0$. A smooth floor and a piecewise patch have their respective derivative domains; those domains remain part of subsequent regularity estimates.
+The four required moments are
+
+$$
+\bar r=\int r(z)\rho_\mu(dz),\quad
+s_r^2=\int(r(z)-\bar r)^2\rho_\mu(dz),
+$$
+
+$$
+\bar s=\int\rho_\mu(dz)\int P_D(\mu;z,dy)s(z,y),\quad
+s_s^2=\int\rho_\mu(dz)\int P_D(\mu;z,dy)(s(z,y)-\bar s)^2.
+$$
+
+Thus the diversity variance includes the companion sampling randomness. It is not the variance of the conditional mean separation.
 :::
 
-:::{prf:definition} Mean-Field Z-Scores
-:label: def-mean-field-z-scores
-
-For a particle at state $z$ and a potential companion at state $z_c$, the mean-field Z-scores at time $t$ are defined using the density-dependent functionals derived in Section 1.2. The means $\mu_R[f]$ and $\mu_D[f]$ are from {prf:ref}`def-mean-field-moments`, and the regularized standard deviations $\widehat{\sigma}_R[f]$ and $\widehat{\sigma}_D[f]$ are from {prf:ref}`def-mean-field-patched-std`:
-
-$$
-\widetilde{r}[f](z,t) := \frac{R(z) - \mu_R[f](t)}{\widehat{\sigma}_R[f](t)}, \qquad \widetilde{d}[f](z,z_c,t) := \frac{d_{\mathcal{Y}}(\varphi(z),\varphi(z_c)) - \mu_D[f](t)}{\widehat{\sigma}_D[f](t)}
-
-$$
-These Z-scores measure how many "global standard deviations" a particle's raw reward or its distance to a companion is from the swarm's current average. A positive Z-score indicates an above-average measurement.
-:::
-
-:::{prf:definition} Mean-Field Fitness Potential
+:::{prf:definition} Regularized standardization and sampled fitness
 :label: def-mean-field-fitness-potential
 
-The **Mean-Field Fitness Potential**, denoted $V[f](z, z_c, t)$, is a functional of the density $f$ that determines the fitness of a particle at state $z$ relative to a companion at $z_c$. It is constructed using the specified nonnegative rescaling map $g_A$, floor $\eta>0$, and nonnegative exponents $\alpha,\beta$ to the mean-field Z-scores (see {prf:ref}`def-mean-field-z-scores`):
+With $\sigma_r,\sigma_s>0$, positive amplitudes $A_r,A_s$, positive floors $\eta_r,\eta_s$, and exponents $p_r,p_s\geq0$, define
 
 $$
-V[f](z,z_c,t) := \left(g_A(\widetilde{d}[f](z,z_c,t)) + \eta\right)^{\beta} \cdot \left(g_A(\widetilde{r}[f](z,t)) + \eta\right)^{\alpha}
-
-$$
-The positive floor makes this specified fitness strictly positive.
-:::
-
-:::{div} feynman-prose
-The order of the operations matters. Compute the moments, standardize each sampled measurement, apply the rescaling map, form fitness, and then evaluate acceptance. Averaging an acceptance probability over sampled companions generally differs from applying acceptance to averaged fitness. The mean-field kernel must retain that order.
-
-The equation is nonlocal because its coefficients contain integrals over the alive law. It is nonlinear because normalization, variance, and fitness depend on that law. These are concrete dependencies that can be estimated, rather than reasons to assume the equation has a particular stationary density.
-:::
-
-:::{prf:remark} The nonlinear acceptance kernel
-:label: remark-important-nonlocal-nonlinear
-
-Write $P_\rho(z_d,z_c)\in[0,1]$ for acceptance after averaging any additional sampled measurement companions according to their actual joint law. The displayed $V[f](z,z_c)$ is the specified fitness field before this acceptance average. The canonical sampled-versus-expected distinction is {prf:ref}`rem-mean-field-fitness-field-latent`.
-:::
-
-(sec-mean-field-kinetic)=
-## 2. Kinetic transport and the continuous-time scale
-
-:::{div} feynman-prose
-The kinetic update is built from force kicks, position drifts, and an exactly solved Ornstein–Uhlenbeck velocity step. Its interior infinitesimal generator is straightforward to calculate. Boundary reflection, clipping, and rejection are additional operations; their limiting behavior must be checked separately.
-
-A fixed-step cloning probability also needs a time interpretation. Below, a finite attempt intensity defines a continuous jump model. If the algorithm's step is subsequently sent to zero, a finite jump generator requires the accepted jump probability to be of order the step.
-:::
-
-### 2.1. BAOAB and its interior generator
-
-:::{prf:definition} The BAOAB Update Rule
-:label: def-baoab-update-rule
-
-For a single particle with state $(x_n, v_n)$ at time $t_n$, the state $(x_{n+1}, v_{n+1})$ at time $t_{n+1} = t_n + h$ is computed via the following five steps:
-
-1.  **B-Step (Force Kick):** The velocity is updated with a half-step kick from the conservative force $F(x)$.
-
-    $$
-    v_{n+1/2}^{(1)} = v_n + \frac{h}{2m} F(x_n)
-
-    $$
-
-2.  **A-Step (Position Drift):** The position is updated with a half-step drift using the new velocity.
-
-    $$
-    x_{n+1/2} = x_n + \frac{h}{2} v_{n+1/2}^{(1)}
-
-    $$
-
-3.  **O-Step (Ornstein-Uhlenbeck):** The velocity is updated for a full timestep by exactly solving the Ornstein-Uhlenbeck process that combines friction and thermal noise. Let $u_{n+1/2} = u(x_{n+1/2})$ be the flow field evaluated at the midpoint.
-
-    $$
-    v_{n+1/2}^{(2)} = u_{n+1/2} + e^{-\gamma_{\mathrm{fric}}h}\left(v_{n+1/2}^{(1)} - u_{n+1/2}\right) + \sqrt{\frac{\Theta}{m}(1 - e^{-2\gamma_{\mathrm{fric}}h})} \cdot \xi
-
-    $$
-    where $\xi \sim \mathcal{N}(0, I_d)$ is a standard Gaussian random vector.
-
-4.  **A-Step (Position Drift):** The position is updated with a final half-step drift.
-
-    $$
-    x_{n+1} = x_{n+1/2} + \frac{h}{2} v_{n+1/2}^{(2)}
-
-    $$
-
-5.  **B-Step (Force Kick):** The velocity is updated with a final half-step kick using the force evaluated at the new position, $F(x_{n+1})$.
-
-    $$
-    v_{n+1} = v_{n+1/2}^{(2)} + \frac{h}{2m} F(x_{n+1})
-
-    $$
-
-An optional finite-step velocity cap $\psi_v$ can be applied after the final B-step. Its limiting boundary law must be identified separately; the uncapped interior formula above defines the kinetic approximation used here.
-:::
-
-:::{prf:remark} What the splitting identifies
-:label: remark-fidelity-generator
-
-For the uncapped interior BAOAB update, the force and drift increments are $O(h)$ and the OU covariance is $\sigma_v^2hI+O(h^2)$. Taylor expansion against a smooth test function yields the kinetic generator below. Applying a velocity squash or cap can change the limiting boundary behavior; it is not automatically a reflecting diffusion. The five-stage discrete kernel is also not the exact finite-time kinetic semigroup.
-:::
-
-:::{prf:definition} Backward kinetic generator
-:label: def-kinetic-generator
-
-The continuous interior dynamics is
-
-$$
-dX_t=V_tdt,\qquad
-dV_t=A_v(X_t,V_t)dt+\sigma_vdW_t,
-\qquad
-A_v(x,v)=m^{-1}F(x)-\gamma_{\mathrm{fric}}(v-u(x)),
+\widehat s_r=\sqrt{s_r^2+\sigma_r^2},\qquad
+\widehat s_s=\sqrt{s_s^2+\sigma_s^2},\qquad
+g_b(q)=\frac{A_b}{1+e^{-q}}+\eta_b,
 $$
 
-with $\sigma_v^2=2\gamma_{\mathrm{fric}}\Theta/m$ for the stated BAOAB temperature convention. Its backward generator acts on an observable $\psi$ as
-
 $$
-L\psi=v\cdot\nabla_x\psi+A_v\cdot\nabla_v\psi
-+\frac{\sigma_v^2}{2}\Delta_v\psi.
+F_\mu(z,y)=
+g_r\!\left(\frac{r(z)-\bar r}{\widehat s_r}\right)^{p_r}
+g_s\!\left(\frac{s(z,y)-\bar s}{\widehat s_s}\right)^{p_s}.
 $$
 
-For independent kinetic particle updates, sum these terms over the alive coordinates. A conservative position boundary can use specular reflection with matching incoming and outgoing traces. A bounded velocity domain can use a declared no-flux reflecting law. Alternatively, absorb spatial exits and record their outgoing flux. These are distinct operator domains.
+Let $\eta_\mu$ be the law of $t=(z,Y_D,F_\mu(z,Y_D))$, with a dummy fitness for dead types. There are configuration constants $0<F_*\leq F_\mu\leq F^*<\infty$. Fitness is sampled once and frozen through the cloning decision.
 :::
 
-:::{prf:remark} Transport and death
-:label: remark-separation-kinetic-death
+:::{prf:lemma} Measurement normalization and the self-exclusion error
+:label: lem-mean-field-measurement-consistency
 
-The population equation in Section 4 first uses a conservative transport semigroup and a prescribed interior killing rate. A spatially absorbing kinetic model replaces that conservative boundary law and adds its outgoing flux to the dead reservoir. Section 5 computes the corresponding discrete exit limit.
+Suppose deterministic input arrays satisfy $L_N\Rightarrow\mu$, $m(\mu)>0$, and their first two alive reward moments converge. Then the empirical marked fitness law converges in probability to $\eta_\mu$. In a bounded alive domain, the random errors in the two empirical diversity moments have mean squares $O(N^{-1})$. Their contribution to the normalized fitness error has the same mean-square order.
+
+*Proof.* Conditional on the input array, the measurement draws of different recipients are independent. For a bounded marked test $\psi$, the variance of its empirical average is at most $\|\psi\|_\infty^2/N$. The conditional average is the empirical integral of its donor kernel. The denominator is bounded below by $\kappa_Dm$ in the limit. Removing the mass of one self atom changes the normalized donor law in total variation by at most $1/(\kappa_DM)$, where $M$ is the finite alive count, whenever the distinct-donor pool is nonempty. Consequently its averaged error vanishes.
+
+The separation and its square are bounded. Applying the variance calculation to each gives their concentration. The variance is a continuous polynomial of these two moments. The square-root regularizers have denominators bounded away from zero; on bounded measurement ranges, the standardizers, logistic maps, and powers on $[F_*,F^*]$ are Lipschitz. Their composition gives the asserted fitness estimate. For unbounded reward, first truncate the reward and then use the stated reward-moment convergence. This establishes the marked-law convergence without averaging fitness before acceptance. $\square$
 :::
 
-### 2.2. Forward flux and mass conservation
+:::{prf:definition} Accepted graph of a frozen population
+:label: def-mean-field-accepted-graph
 
-:::{prf:definition} Forward transport and probability flux
-:label: def-transport-operator
-
-For the constant velocity diffusion above, the forward adjoint acts on densities by
+Conditional on the input and measurement marks, each alive recipient independently draws a cloning donor and a uniform gate. Write
 
 $$
-L^\dagger f=-\nabla_x\cdot(vf)-\nabla_v\cdot(A_vf)
-+\frac{\sigma_v^2}{2}\Delta_vf=-\nabla\cdot J[f],
+p(F,G)=\min\!\left(1,\frac{(G-F)_+}{s_c(F+\epsilon_c)}\right),
+\qquad s_c,\epsilon_c>0.
 $$
 
-where $J_x=vf$ and $J_v=A_vf-(\sigma_v^2/2)\nabla_vf$. An independently specified position diffusion adds its own second-order term and flux; it is absent from this kinetic model.
+For distinct alive $i,j$, the probability of an accepted edge $i\to j$ is
+
+$$
+b^N_{ij}=\frac{w_C(z_i,z_j)}{\sum_{k:a_k=1,\ k\ne i}w_C(z_i,z_k)}p(F_i,F_j).
+$$
+
+A dead recipient draws from the same weighted current-donor module using its retained $(x_i,v_i)$ and accepts with probability one:
+
+$$
+b^N_{ij}=\frac{a_jw_C(z_i,z_j)}{\sum_{k:a_k=1}w_C(z_i,z_k)}.
+$$
+
+Each row has at most one outgoing accepted edge. The undirected connected components of these edges are the collision groups. A rejected proposal creates no edge.
 :::
 
-:::{prf:lemma} Mass conservation of conservative transport
-:label: lem-mass-conservation-transport
+:::{prf:lemma} Finite collision components without weak selection
+:label: lem-mean-field-component-bound
 
-For the stated conservative domain, with integrable flux and justified boundary traces or cutoff limits,
+If $M\geq m_*N$ and $N\geq2/m_*$, set $C=2/(\kappa_Cm_*)$. Conditional on all input states and measurement marks, the accepted graph is a forest and
 
 $$
-\int_\Omega L^\dagger f\,dz=0.
+\mathbb E|\mathcal C_N(i)|\leq e^{2C},\qquad
+\mathbb P\!\left(\operatorname{rad}(\mathcal C_N(i),i)\geq r\right)
+\leq\frac{(2C)^r}{r!},\qquad
+\mathbb P(|\mathcal C_N(i)|>K)\leq\frac{e^{2C}}K.
 $$
-:::
 
-:::{prf:proof}
-Integrate the divergence to obtain the negative total boundary flux. At a specular spatial boundary, pair $v$ with $R_nv=v-2(v\cdot n)n$. The reflection preserves velocity volume and reverses $v\cdot n$; equality of the incoming and outgoing traces cancels the integrated spatial flux. At a reflecting velocity boundary, $J_v\cdot n_v=0$. On an unbounded domain use the stated vanishing-flux cutoff limit. These conditions eliminate the total flux; kinetic specular reflection need not set $vf\cdot n$ to zero pointwise for each velocity.
+*Proof.* A live accepted edge strictly increases frozen fitness. A dead vertex cannot be a target and has one outgoing edge. Order vertices by live fitness, putting all dead vertices first and breaking ties arbitrarily. Every edge increases this order, and every vertex has outdegree at most one. A finite undirected cycle would require every vertex on the cycle to use its outgoing edge within the cycle, creating a directed cycle. Strict increase rules this out.
+
+Every edge probability is at most $C/N$. A simple path of length $\ell$ from $i$ has an increasing leg of length $a$ followed by a decreasing leg of length $\ell-a$: an internal vertex cannot send two outgoing path edges. The possible labels on the increasing leg number at most $N^a/a!$ because their order is fixed once selected. The decreasing leg contributes at most $N^{\ell-a}/(\ell-a)!$. Ignoring intersections only enlarges these bounds. Each edge uses a different recipient draw, so row independence bounds the probability of that path by $(C/N)^\ell$. Therefore the expected number of length-$\ell$ simple paths is at most
+
+$$
+\sum_{a=0}^{\ell}\frac{C^\ell}{a!(\ell-a)!}=\frac{(2C)^\ell}{\ell!}.
+$$
+
+A vertex at distance $r$ provides such a path; summing over $\ell\geq0$ bounds the expected component size. Markov's inequality gives the final bound. No small acceptance probability was used. $\square$
 :::
 
 (sec-mean-field-reactions)=
-## 3. Killing, revival, and the cloning kernel
+## 3. The limiting collision neighborhood
 
 :::{div} feynman-prose
-Track one transition at a time. Killing removes an alive particle. Revival draws a replacement from a specified alive-companion law. An internal cloning attempt removes the donor's old state and inserts its offspring state. Integrating that last difference gives zero exactly when the offspring stays in the alive state space with probability one.
+The graph estimate explains why a one-walker population description is possible even though a collision changes several velocities. A typical walker has a finite random collision neighborhood, uniformly as the swarm grows. Its neighborhood does not have to be a pair.
+
+There are two ways to meet a neighbor. Our walker can select a donor, or another walker can select it. The first gives at most one outgoing edge. The second is a collection of rare incoming selections, which becomes a Poisson point process of neighbors. This Poisson law concerns the number of neighbors within a single simultaneous update. It introduces no continuous-time attempt clock.
 :::
 
-:::{prf:remark} Three population operations
-:label: remark-separation-death-revival-cloning
+:::{prf:definition} Rooted-component population collision map
+:label: def-mean-field-rooted-collision
 
-Interior killing, reservoir revival, and alive-to-alive cloning have separate rates. A finite revival rate gives a waiting-time model for dead mass; it is not instantaneous resurrection at every numerical step. Matching an algorithm requires its actual scheduling and transition probabilities.
+For $\eta=\eta_\mu$, define the accepted-edge density relative to $\eta(du)$ by
+
+$$
+\beta_\mu(t,u)=\frac{a_uw_C(z_t,z_u)}{Z_C(\mu;z_t)}
+\begin{cases}p(F_t,F_u),&a_t=1,\\1,&a_t=0.\end{cases}
+$$
+
+Its outgoing mass $q_\mu(t)=\int\beta_\mu(t,u)\eta(du)$ is at most one and equals one for a dead type. Construct a rooted marked tree as follows.
+
+1. Draw root type $t_0\sim\eta$. Its outgoing edge is absent with probability $1-q_\mu(t_0)$; conditional on an edge being present, its target has probability law $\beta_\mu(t_0,u)\eta(du)/q_\mu(t_0)$. Continue the freely exposed outgoing chain by the same rule.
+2. At each exposed vertex of type $t$, the additional incoming children form a Poisson point process with intensity $\eta(du)\beta_\mu(u,t)$. Recursively expose their incoming children.
+3. A child reached through its outgoing edge to its parent has already used its outgoing choice. Do not draw another. A known incoming child is already present; the additional Poisson process does not duplicate that vertex identity. Its intensity remains $\eta(du)\beta_\mu(u,t)$, including any atoms: new vertices may have the same type as the known child. Dead children have no incoming children.
+
+The finite-component bound transfers to this construction by finite exploration and monotone convergence, so its component is finite almost surely. On a component $\mathcal C$ with at least one edge, draw one independent Haar matrix $R_\mathcal C\in O(d)$ and set
+
+$$
+\bar v_\mathcal C=\frac1{|\mathcal C|}\sum_{j\in\mathcal C}v_j,
+\qquad v_j^c=\bar v_\mathcal C+\alpha R_\mathcal C(v_j-\bar v_\mathcal C).
+$$
+
+Every accepted recipient, including a revived slot, receives
+
+$$
+x_j^c=x_{\operatorname{donor}(j)}+\sigma_J\xi_j^J,
+\qquad\xi_j^J\sim N(0,I_d),
+$$
+
+using frozen donor positions and independent jitter. A row without an outgoing accepted edge retains its position. Its velocity still changes if it belongs to a nontrivial collision component. An isolated row retains both coordinates. All rows are alive at this stage. The law of the root output is $\mathcal J(\mu)$.
 :::
 
-:::{prf:definition} Interior killing
-:label: def-killing-operator
+:::{prf:theorem} Component momentum, energy, and shared covariance
+:label: thm-mean-field-component-identities
 
-Let $c:\Omega\to[0,\infty)$ be a prescribed rate. Its density contribution is $-cf$ and its total alive loss is
+For every realized component,
 
 $$
-k_{\mathrm{killed}}[f]=\int_\Omega c(z)f(z)dz.
+\sum_{j\in\mathcal C}v_j^c=\sum_{j\in\mathcal C}v_j,\qquad
+\sum_{j\in\mathcal C}|v_j^c-\bar v_\mathcal C|^2
+=\alpha^2\sum_{j\in\mathcal C}|v_j-\bar v_\mathcal C|^2.
 $$
 
-A smooth bounded rate supported in a boundary layer is one possible reaction model. The integrated kinetic exit limit in Section 5 does not define such a rate by a pointwise limit.
+Conditional on the component and its pre-collision types,
+
+$$
+\mathbb E v_i^c=\bar v_\mathcal C,\qquad
+\operatorname{Cov}(v_i^c,v_j^c)
+=\frac{\alpha^2}{d}
+\bigl[(v_i-\bar v_\mathcal C)\cdot(v_j-\bar v_\mathcal C)\bigr]I_d.
+$$
+
+These are full-slot identities, including retained dead velocities. Alive-only momentum before revival need not be conserved across revival.
+
+*Proof.* The centered velocities sum to zero, and an orthogonal matrix preserves their norms. Haar invariance under $R\mapsto-R$ gives $\mathbb E R=0$. Rotational invariance makes $\mathbb E[(Ru)(Rw)^T]$ a scalar multiple of $I_d$; taking its trace gives $(u\cdot w)/d$. Substitution proves the covariance formula. In dimension one, Haar $O(1)$ is a uniform sign, so the same calculation applies. Summing the covariance over a whole component gives zero, in agreement with exact momentum conservation. $\square$
 :::
 
-:::{prf:definition} Finite-rate reservoir revival
-:label: def-revival-operator
+:::{prf:theorem} One-step collision consistency
+:label: thm-mean-field-one-step-consistency
 
-For $m_a>0$, copying a uniformly sampled alive companion without a further state change gives
+For input arrays satisfying the measurement-consistency hypotheses and $m(\mu)>0$, the empirical post-collision law converges in probability to $\mathcal J(\mu)$. For every bounded continuous $\phi$,
 
 $$
-B[f,m_d](z)=\lambda_{\mathrm{revive}}m_d\frac{f(z)}{m_a},
-\qquad\lambda_{\mathrm{revive}}>0.
+\mathbb E[L_N^c\phi]\longrightarrow\mathcal J(\mu)\phi,
+\qquad \operatorname{Var}(L_N^c\phi)\longrightarrow0.
 $$
 
-Its integral is $\lambda_{\mathrm{revive}}m_d$. If revival also applies a state-transition kernel, replace $f/m_a$ by the pushforward under that kernel and retain any probability lost from the alive domain.
+The same assertion holds for random input arrays converging in probability to the deterministic law $\mu$, with the required moment convergence in probability and uniform integrability when expectations of unbounded quantities are used.
+
+*Proof.* First condition on the complete measured array. Restrict exploration to at most $K$ vertices. For any unexplored row, the probability of hitting one of $K$ exposed targets is at most $CK/N$. These row choices are independent. In the incoming point processes, the sum of squared hit probabilities is at most $C^2K^2/N$. Expanding the product of their probability generating functions therefore gives independent Poisson limits with the displayed intensity measures. Removing exposed labels and conditioning a row not to have hit an earlier target changes its remaining probabilities by $O(CK/N)$; over the bounded exploration the resulting error vanishes. The accumulated finite exploration and repeated conditioning errors are bounded by $A(C,K)/N$ for fixed $K$, with a conservative bound $A(C,K)=O((1+C)^2K^3)$.
+
+The empirical type law converges by {prf:ref}`lem-mean-field-measurement-consistency`. The weights are bounded continuous, their denominators stay positive, and acceptance is continuous at fitness ties as well as elsewhere. Thus the finite exploration converges to the rooted construction. The shared Haar mark and independent jitters can be attached to this finite tree in both constructions. Each finite-tree output is a continuous function of these types and marks.
+
+Remove the exploration cutoff using $\mathbb P(|\mathcal C|>K)\leq e^{2C}/K$, first taking $N\to\infty$ and then $K\to\infty$. This proves convergence for one uniformly tagged root. Explore two uniformly distinct roots together. Their finite neighborhoods have independent limits; the probability of an exploration collision is bounded by $A(C,K)/N$ before removing the cutoff. Convergent global normalizers are deterministic and introduce no residual common mark. Expanding the empirical variance into the diagonal term, bounded by $\|\phi\|_\infty^2/N$, and the two-root covariance proves the second assertion. Conditioning and the subsequence characterization of convergence in probability extend the argument to random inputs. $\square$
 :::
 
-:::{prf:definition} Continuous-time cloning attempts
-:label: def-cloning-generator
+:::{prf:remark} Rates and what the graph estimate controls
+:label: remark-important-nonlocal-nonlinear
 
-Fix a finite attempt rate $\omega_{\mathrm{cl}}\geq0$. Let $\rho=f/m_a$, let $P_\rho(z_d,z_c)$ be the acceptance kernel, and let $Q_\rho(dz\mid z_d,z_c)$ be the offspring law after acceptance, including the specified velocity update. For independent uniform alive donor and companion sampling, the weak cloning operator is
+The proof supplies a concrete truncation error $2\|\phi\|_\infty e^{2C}/K$ and finite-exploration errors vanishing with $N$ at fixed $K$. Relative to a prescribed limiting input $\mu$, the empirical kernel-integral error also depends on how the initial empirical law and its moments approach $\mu$. The within-component covariance remains present at every population size; chaos concerns finitely many uniformly chosen distinct slots, whose components separate in the limit.
 
-$$
-\int\psi\,S[f]
-=\omega_{\mathrm{cl}}m_a\iint\rho(dz_d)\rho(dz_c)P_\rho(z_d,z_c)
-\left[\int\psi(z)Q_\rho(dz\mid z_d,z_c)-\psi(z_d)\right].
-$$
+The conditional fluctuation around the actual finite-population expectation
+has a quantitative bound: {prf:ref}`thm-chaos-canonical-conditional-variance`
+proves $\operatorname{Var}(L_N'\phi\mid S)\leq A_\phi/N$ for the full
+update. Its proof controls all component moments and recomputes the global
+statistics when a measurement innovation is changed. This conditional
+variance and the bias relative to $\mathcal F_h(L_N(S))$ are distinct terms
+in the one-step mean-square error.
 
-When an offspring density exists,
-
-$$
-S_{\mathrm{src}}[f](z)=\frac{\omega_{\mathrm{cl}}}{m_a}
-\iint f(z_d)f(z_c)P_\rho(z_d,z_c)Q_\rho(z\mid z_d,z_c)dz_d\,dz_c,
-$$
-
-$$
-S_{\mathrm{sink}}[f](z)=\omega_{\mathrm{cl}}f(z)
-\int P_\rho(z,z_c)\rho(z_c)dz_c,\qquad S=S_{\mathrm{src}}-S_{\mathrm{sink}}.
-$$
-
-A donor-independent jitter model is the special case $Q_\rho(dz\mid z_d,z_c)=Q_\delta(dz\mid z_c)$. The formulas below allow either case; $Q$ denotes the selected offspring kernel. The operator is mass-neutral when $Q(\Omega\mid z_d,z_c)=1$.
+For that empirical-input comparison,
+{prf:ref}`thm-chaos-canonical-quantitative-bias` also bounds the bias by
+$2\|\phi\|_\infty B_*/\sqrt N$, giving a full conditional mean-square
+error of order $N^{-1}$. It derives the normalization error and the finite
+marked-exploration error separately; convergence of $L_N(S)$ to a different
+prescribed law remains a separate input approximation.
 :::
-
-:::{prf:proof}
-In an interval of length $h$, an alive donor attempts a jump with probability $\omega_{\mathrm{cl}}h+o(h)$. Condition on its state, companion, acceptance, and offspring. The observable increment is its offspring value minus its donor value. Averaging gives the weak formula. Fubini identifies the source and sink when densities exist. With $\psi=1$, the bracket is zero for a probability kernel on $\Omega$, proving mass neutrality.
-:::
-
-:::{prf:remark} Fixed-step probabilities and Poissonization
-:label: rem-mean-field-attempt-scaling
-
-Choosing $\omega_{\mathrm{cl}}=1/\tau$ for a fixed reference step $\tau$ defines a Poissonized model with the same attempt frequency. Its finite-time transition is not the original simultaneous cloning step. A finite continuous-time limit as $h\downarrow0$ requires an accepted probability $P_h=h\,a+o(h)$, or an equivalent finite-attempt-rate construction. Keeping order-one acceptance at every shrinking step does not yield the finite generator above.
-:::
-
-(sec-mean-field-population)=
-## 4. Generator assembly and the population balance
 
 :::{div} feynman-prose
-We can now assemble the equation without treating an unbounded transport operator as a bounded matrix. Strong continuity gives the first-order transport increment; the reaction increment adds to it on the generator domain. Testing the resulting weak equation against one then gives the population balance.
+Imagine saving one input swarm and running its next update many times with fresh
+random draws. The output observable scatters around its finite-population mean.
+Measurement draws contribute to that scatter, together with donor choices,
+acceptance, shared rotations, jitter, and kinetic noise. The conditional variance
+measures this scatter after the complete update, including the boundary decision.
 
-That constant test is useful because it sees exactly what a transition does to alive mass. A clone with a valid offspring changes no total mass. Killing and revival contribute equal and opposite terms to the alive and dead equations.
+Now compare that mean with the population map applied to the saved swarm's
+empirical law. Their difference is the finite-population bias. Repeating the
+experiment estimates it more accurately; increasing the population controls its
+size. The two estimates above keep these effects separate while accounting for
+the correlations inside each collision component and the fluctuations of the
+global fitness statistics. Neither calculation replaces a sampled fitness by its
+average before acceptance. Both follow the same algorithm that generated the
+output.
 :::
 
-:::{prf:lemma} First-order assembly of transport and reaction
-:label: lem-generator-additivity-mean-field
+(sec-mean-field-kinetic)=
+## 4. Composing the actual kinetic stages
 
-Let $T_h$ be a strongly continuous semigroup with generator $A$ on a Banach
-space $X$. Let a reaction map $R:X\to X$ be continuous at $u\in D(A)$, and
-suppose its local update satisfies $S_hu=u+hR(u)+o_X(h)$. Then
+:::{div} feynman-prose
+After collision, the law is still only halfway through an update. A force kick changes velocity, a drift changes position, and the thermostat adds a fresh velocity innovation. Their order determines where the next force is evaluated. We keep that order in the population equation.
 
-$$
-T_hS_hu=u+h(Au+R(u))+o_X(h).
-$$
-
-For finitely many locally differentiable reaction updates, their first-order
-contributions add in the same way.
+The final position noise is also part of the algorithm. In an absorbing box it gives every row a positive chance of landing inside the box, even when its deterministic drift points outward. This lets us derive an alive-mass bound from the actual update rather than insert a revival rate into a differential equation.
 :::
 
-:::{prf:proof}
-Write
+:::{prf:definition} Exact BAOAB population stages
+:label: def-baoab-update-rule
+
+For the canonical isotropic thermostat with constant factor $B=bI_d$, put
 
 $$
-T_hS_hu-u=(T_hu-u)+hT_hR(u)+T_ho_X(h).
+c_h=e^{-\gamma h},\qquad
+s_h^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0.\end{cases}
 $$
 
-The first term is $hAu+o_X(h)$ by the generator definition. Strong continuity
-gives $T_hR(u)\to R(u)$, and the uniform boundedness principle bounds $T_h$ on
-a sufficiently short time interval. Thus the final term is $o_X(h)$.
-For multiple reaction maps, telescope their compositions; continuity at $u$
-replaces each intermediate value by $u$ in its first-order coefficient.
-The argument does not require the differential operator $A$ to be bounded.
+Starting from $(X_0,V_0)\sim\mathcal J(\mu)$, apply
+
+$$
+V_1=V_0+\tfrac h2 f_{\lambda_0}(X_0,V_0),\qquad
+X_1=X_0+\tfrac h2V_1,
+$$
+
+$$
+V_2=c_hV_1+s_hB\xi^O,\qquad
+X_2=X_1+\tfrac h2V_2,\qquad
+V_3=V_2+\tfrac h2 f_{\lambda_2}(X_2,V_2),
+$$
+
+$$
+X_3=X_2+\sigma_x\sqrt h\,\xi^x,\qquad
+V_4=\Pi_V(V_3),\qquad A_4=\mathbf1_D(X_3),
+\qquad \Pi_V(v)=\frac{Vv}{V+|v|}.
+$$
+
+Intermediate velocity laws live on $\mathbb R^d$; only the completed state is capped. The two Gaussian innovations are independent of each other and of the collision graph, rotations, and jitters. The force is $-\nabla U$ in the canonical configuration; $\lambda_0$ and $\lambda_2$ denote the actual laws at the two force inputs if an explicitly enabled population force is present. The output law of $(X_3,V_4,A_4)$ is $\mathcal F_h(\mu)$. For the unbounded configuration, $A_4=1$.
 :::
 
-:::{prf:theorem} Coupled continuous-time forward equation
+:::{prf:remark} Explicit viscosity extension
+:label: remark-separation-kinetic-death
+
+For a Gaussian locality weight $w_\nu$, either specified normalization gives
+
+$$
+f_\lambda(x,v)=-\nabla U(x)+\nu\frac{\int w_\nu(x,y)(w-v)\lambda(dy,dw)}{Z_\lambda(x)},
+$$
+
+with $Z_\lambda(x)=\int w_\nu(x,y)\lambda(dy,dw)$ for row normalization and $Z_\lambda=1$ for eligible-count normalization, since revival makes all rows alive before kinetics. The finite empirical convention excludes self where specified; its numerator self-term is zero. The force uses the current intermediate population, including changes to donor velocities. A theorem for the zero-viscosity canonical configuration is not automatically a theorem for a different force normalization.
+:::
+
+:::{prf:theorem} The fixed-step mean-field equation
 :label: thm-mean-field-equation
 
-For the transport and reaction model defined above, let $f\geq0$, $m_d\geq0$ be a weak solution on $[0,T]$ with $m_a=\int f>0$. Suppose transport is conservative on its stated domain, $Q$ is a probability kernel on $\Omega$, and the reaction terms are integrable in time and space. Then
+For every admissible initial probability $\mu_0$ with positive alive mass, the canonical population evolution is uniquely defined by
 
 $$
-\partial_tf=L^\dagger f-cf+B[f,m_d]+S[f]
-$$ (eq-mean-field-pde-main)
+\boxed{\quad\mu_{n+1}=\mathcal F_h(\mu_n),\qquad n=0,1,\ldots.\quad}
+$$
 
-and
+The map is the rooted collision law followed by precisely the stages in {prf:ref}`def-baoab-update-rule`. For every bounded measurable test $\phi$,
 
 $$
-\frac{d}{dt}m_d=\int_\Omega cf-\lambda_{\mathrm{revive}}m_d.
-$$ (eq-dead-mass-ode)
+\mu_{n+1}\phi=\mathbb E_{\eta_{\mu_n},\,\mathcal C,\,R,\,\xi^J,\,\xi^O,\,\xi^x}
+\phi(X_3,V_4,A_4).
+$$
 
-With $f(0)=f_0$ and $m_d(0)=1-\int f_0$, the total population remains one. Identification with a discrete algorithm requires the matching transition-operator and boundary limits.
+It preserves positivity and total probability. At every fixed finite horizon it is the population limit of the canonical particle update. On the absorbing configuration, use convergence of the full marked initial laws; atoms on the position boundary are allowed. On the unbounded configuration, assume a uniformly bounded initial position moment of order $4+\delta$ for some $\delta>0$. This supplies uniform integrability of the fourth moments needed for the quadratic reward variance, and the same property propagates at each fixed finite horizon.
 :::
 
 :::{prf:proof}
 :label: proof-mean-field-equation
 
-Apply {prf:ref}`lem-generator-additivity-mean-field` with transport generator
-$A=L^\dagger$ and reaction
-$R(f,m_d)=-cf+B[f,m_d]+S[f]$, on its domain of differentiability.
-For weak solutions the resulting identity is interpreted against a smooth
-admissible test function $\psi$:
+The graph construction defines a probability because its component is finite almost surely and its outgoing law has total mass at most one. Independent Haar and Gaussian kernels and the deterministic stage maps preserve probability. Existence of each successive law follows once its moments and positive alive mass are established below; uniqueness here means the uniquely specified iterates from a given initial law.
 
-$$
-\frac{d}{dt}\int_\Omega\psi f
-=\int_\Omega(L\psi)f-\int_\Omega\psi cf
-+\int_\Omega\psi B[f,m_d]+\int_\Omega\psi S[f].
-$$
-
-Equivalently, this is an equality integrated over every time interval
-$[s,t]\subset[0,T]$. For interior compactly supported test functions,
-$L\psi=A\cdot\nabla\psi+\mathsf D:D^2\psi$, which identifies the
-transport distribution as
-$L^\dagger f=-\nabla\cdot(Af)+\nabla\cdot(\mathsf D\nabla f)$ for constant
-$\mathsf D$. A flux representation with boundary integration may also be used
-when $J[f]\in H(\operatorname{div},\Omega)$ and its stated normal trace exists.
-
-The transport conservation law supplies the admissible constant test function
-$1$ (or its justified cutoff limit). The cloning source and sink cancel exactly:
-by Tonelli's theorem and $\int Q(dz\mid z_d,z_c)=1$,
-
-$$
-\int S_{\mathrm{src}}[f]
-=\frac{\omega_{\mathrm{cl}}}{m_a}\iint f(z_d)f(z_c)P_\rho(z_d,z_c)\,dz_d\,dz_c
-=\int S_{\mathrm{sink}}[f].
-$$
-
-The revival term integrates to $\lambda_{\mathrm{revive}}m_d$ since
-$\int f/m_a=1$. Thus the integrated weak identity gives
-
-$$
-m_a(t)-m_a(s)=\int_s^t\left[-\int_\Omega cf
-+\lambda_{\mathrm{revive}}m_d\right]du.
-$$
-
-The integrand is integrable by hypothesis, proving absolute continuity of
-$m_a$ without assuming its differentiability in advance. The dead-reservoir
-balance is
-$m_d'=\int cf-\lambda_{\mathrm{revive}}m_d$. Adding the two derivatives
-shows that $m_a+m_d$ is constant, hence equals one for the stated initial data.
-This proves the forward system and its mass balance.
+Collision consistency is {prf:ref}`thm-mean-field-one-step-consistency`. For $f=-\nabla U$, the kicks and drifts are continuous and have linear growth. Independent row Gaussian innovations give conditional empirical concentration for bounded tests. The radial cap is continuous. Final position noise gives an absolutely continuous position law, so the boundary of a box has zero output probability; terminal marking is therefore continuous almost surely. Truncation using the finite-horizon moment bounds below handles unbounded functions. These facts prove one-step consistency for the composed map. The positive alive-mass estimate makes the next donor denominators nonzero. Induction yields the assertion at any fixed number of updates. The detailed exchangeability and marginal-chaos consequences are proved in {doc}`09_propagation_chaos`.
 :::
 
-:::{prf:corollary} Positive alive mass in the continuous-time population model
-:label: cor-mean-field-positive-alive-mass
-
-If $0\leq c\leq C$ and $\lambda=\lambda_{\mathrm{revive}}>0$, every
-nonnegative unit-mass solution satisfies
-
-$$
-m_a(t)\geq\frac{\lambda}{C+\lambda}
-+\left(m_a(0)-\frac{\lambda}{C+\lambda}\right)e^{-(C+\lambda)t}.
-$$
-
-In particular $m_a(0)>0$ gives a positive lower bound on every finite time
-interval, and a positive limiting lower bound as $t\to\infty$.
-:::
-
-:::{prf:proof}
-The population equation gives
-$m_a'\geq-Cm_a+\lambda(1-m_a)$ almost everywhere. Multiply by
-$e^{(C+\lambda)t}$ and integrate. All terms on the right combine into the
-stated solution of the scalar comparison equation. No inequality between
-$\lambda$ and $C$ is required.
-:::
-
-:::{div} feynman-prose
-The positive-mass estimate closes a potential circularity. The measurement formulas divide by alive mass, while the population equation itself contains those measurements. Bounded killing and revival keep the solution in a region where that normalization remains defined. The bound requires no assumption that revival is faster than killing.
-:::
-
-:::{prf:remark} Boundary loss in a sub-probability cloning kernel
-:label: rem-mean-field-cloning-boundary-loss
-
-If the actual offspring kernel has $Q(\Omega\mid z_d,z_c)<1$, the source
-and sink do not cancel on the alive domain. Their integral is instead
-$-\ell_Q[f]$, where
-
-$$
-\ell_Q[f]=\frac{\omega_{\mathrm{cl}}}{m_a}\iint f(z_d)f(z_c)P_\rho(z_d,z_c)
-[1-Q(\Omega\mid z_d,z_c)]\,dz_d\,dz_c\geq0.
-$$
-
-This term is added to the dead-reservoir equation, preserving total mass. An
-untruncated Gaussian on a bounded alive domain is such a sub-probability
-kernel. The probability-kernel formulation above and the boundary-loss
-formulation must be matched to the update being modeled. This identity follows
-from the same Tonelli calculation, retaining the integral of $Q$. Since $0\leq P_\rho\leq1$, one also has $\ell_Q[f]\leq\omega_{\mathrm{cl}}m_a$. Consequently the positive alive-mass comparison still holds with $C+\omega_{\mathrm{cl}}$ in place of $C$, provided revival remains a probability-preserving injection.
-:::
-
-:::{prf:theorem} Total Mass Conservation and Population Dynamics
+:::{prf:theorem} Exact mass and weak field balances
 :label: thm-mass-conservation
 
-Any sufficiently regular solution $(f(t,z), m_d(t))$ to the Mean-Field Equations (see {prf:ref}`thm-mean-field-equation`) satisfies the following properties:
-
-**1. Total Mass Conservation:** The total population is conserved for all time $t>0$:
+Let $(Z,Z')$ be the coupled root input and output from the complete construction. Then
 
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}\left[m_a(t) + m_d(t)\right] = 0
-
+\mathcal F_h(\mu)(1)=1,\qquad
+m(\mathcal F_h(\mu))=\mathbb P(X_3\in D),
 $$
 
-where $m_a(t) = \int_\Omega f(t,z)\,\mathrm{d}z$. This implies that $m_a(t) + m_d(t) = 1$ for all $t$ if this holds initially.
-
-**2. Alive Population Dynamics:** The alive mass evolves according to the balance between killing and revival:
-
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = \lambda_{\mathrm{revive}} m_d(t) - k_{\text{killed}}[f](t)
-
+m(\mathcal F_h(\mu))-m(\mu)
+=(1-m(\mu))-\mathbb P(X_3\notin D).
 $$
 
-where $k_{\text{killed}}[f] = \int_\Omega c(z)f(z)\,\mathrm{d}z$ is the instantaneous killing rate. At a stationary state the alive-mass equation requires $k_{\text{killed}}[f_\infty] = \lambda_{\mathrm{revive}} m_{d,\infty}$.
-:::
-
-:::{prf:proof}
-We compute the time derivatives of both components and show they sum to zero.
-
-**For the alive mass:** Integrate the equation for $\partial_t f$ over $\Omega$:
+For any integrable $\phi$, the exact weak increment is
 
 $$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = \frac{\mathrm{d}}{\mathrm{d}t}\int_\Omega f(t,z)\,\mathrm{d}z = \int_\Omega L^\dagger f\,\mathrm{d}z - \int_\Omega c(z)f\,\mathrm{d}z + \int_\Omega B[f, m_d]\,\mathrm{d}z + \int_\Omega S[f]\,\mathrm{d}z
-
+\frac{\mathcal F_h(\mu)\phi-\mu\phi}{h}
+=\frac1h\mathbb E[\phi(Z')-\phi(Z)].
 $$
 
-Evaluating each term using the properties established in previous sections:
+The numerator can be telescoped over collision, B1, A1, O, A2, B2, position diffusion, cap, and terminal marking, using the actual intermediate states. This is an equality of per-step balances, including all source terms.
 
-1.  **Transport**: From {prf:ref}`lem-mass-conservation-transport`, $\int_\Omega L^\dagger f\,\mathrm{d}z = 0$ (the stated conservative boundary law)
-2.  **Killing**: By definition, $\int_\Omega c(z)f\,\mathrm{d}z = k_{\text{killed}}[f]$
-3.  **Revival**: From {prf:ref}`def-revival-operator`, $\int_\Omega B[f, m_d]\,\mathrm{d}z = \lambda_{\text{revive}} m_d(t)$
-4.  **Internal cloning**: From {prf:ref}`def-cloning-generator`, $\int_\Omega S[f]\,\mathrm{d}z = 0$
-
-Therefore:
-
-$$
-\frac{\mathrm{d}}{\mathrm{d}t}m_a(t) = 0 - k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t) + 0 = -k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t)
-
-$$
-
-**For the dead mass:** From the second equation:
-
-$$
-\frac{\mathrm{d}}{\mathrm{d}t}m_d(t) = k_{\text{killed}}[f] - \lambda_{\mathrm{revive}} m_d(t)
-
-$$
-
-**Sum:** Adding these two equations:
-
-$$
-\frac{\mathrm{d}}{\mathrm{d}t}\left[m_a(t) + m_d(t)\right] = \left[-k_{\text{killed}}[f] + \lambda_{\mathrm{revive}} m_d(t)\right] + \left[k_{\text{killed}}[f] - \lambda_{\mathrm{revive}} m_d(t)\right] = 0
-
-$$
-
-This demonstrates that the total mass is conserved for all time, completing the proof.
-
+*Proof.* Every input slot produces one output slot. Revival changes all entering dead marks to alive before the terminal test; terminally dead rows are exactly the event $X_3\notin D$. Subtract the input alive mass for the second identity. The weak identity is the definition of the pushforward law; inserting each intermediate value gives its telescoping form. $\square$
 :::
 
 (sec-mean-field-boundary)=
-## 5. Boundary exits and the continuous-time identification
+## 5. Alive mass, moments, and stability
 
 :::{div} feynman-prose
-At any fixed interior point, a sufficiently short kinetic step almost never exits the domain. Yet a thin layer of points next to the boundary has enough mass to produce a finite outgoing flux. Taking the limit pointwise therefore misses the boundary contribution. The correct calculation integrates over that shrinking layer before dividing by the step.
+A denominator bound is useful only if the dynamics keeps enough donors available. Here we can calculate such a bound. Copying places each slot at an eligible donor position, collision velocities remain bounded, and a controlled set of Gaussian innovations keeps the subsequent drift within a finite radius. The final independent position noise then puts a definite fraction back inside the domain.
 
-The next theorem preserves the kinetic position-noise scale: velocity noise contributes a position displacement of order $h^{3/2}$. Independent position diffusion would have a different scale and a different boundary calculation.
+The resulting lower bound can be extremely small. It proves that the population map remains defined; it is not a prediction that a simulation should sit near that lower bound. The measured alive fraction should instead be compared with the actual conditional terminal probabilities.
 :::
 
-:::{prf:assumption} Domain regularity for boundary flux
-:label: assumption-domain-regularity
+:::{prf:corollary} Positive alive mass from the terminal update
+:label: cor-mean-field-positive-alive-mass
 
-Let $D\subset\mathbb R^d$ be the bounded spatial domain with $C^2$ boundary
-and a tubular neighborhood of positive width. Velocities range over a bounded
-set $V$. Write $n(y)$ for the outward unit normal at $y\in\partial D$.
+In a bounded box, choose a core ball $B(0,r_0)\Subset D$, and let $R_D=\sup_{x\in D}|x|$. All input velocities, including dead ones, have norm at most $V$. Set
+
+$$
+W=(1+2\alpha)V,\qquad F_J=L_U(R_D+J)+B_U,
+$$
+
+$$
+L=R_D+J+\tfrac h2(1+c_h)(W+\tfrac h2F_J)
++\tfrac h2s_h\|B\|G,
+$$
+
+where $J,G>0$. For Gaussian jitter amplitude $\sigma_J$, define
+
+$$
+p_J=\mathbb P(|\sigma_J\xi^J|\leq J),\quad
+p_G=\mathbb P(|\xi^O|\leq G),\quad p=p_Jp_G,
+$$
+
+$$
+p_0=|B(0,r_0)|(2\pi\sigma_x^2h)^{-d/2}
+\exp\!\left[-\frac{(L+r_0)^2}{2\sigma_x^2h}\right]>0.
+$$
+
+For every admitted finite population with at least one alive donor,
+
+$$
+\mathbb P\!\left(\frac{M_{n+1}}N<\frac{p_0p}{4}\,\middle|\,S_n\right)
+\leq e^{-pN/8}+e^{-p_0pN/16}.
+$$
+
+Moreover $m(\mathcal F_h(\mu))\geq p_0p>0$ for every $m(\mu)>0$. In the unbounded configuration $m(\mathcal F_h(\mu))=1$.
+
+*Proof.* Literal copying and mandatory revival place each slot inside $D$ before jitter. The component formula gives $|v_i^c|\leq|\bar v|+\alpha(|v_i|+|\bar v|)\leq W$. On $|\sigma_J\xi_i^J|\leq J$ and $|\xi_i^O|\leq G$, the B1 force is at most $F_J$, so the center $X_2$ before final position noise has norm at most $L$. B2 and the cap do not change that center.
+
+Assign independent latent jitter innovations even to rows that do not clone; their good events imply the same bound. Conditional on the entire graph and rotations, the jitter/O good events are independent with probability $p$. A multiplicative Chernoff estimate gives at least $pN/2$ good rows except with probability $e^{-pN/8}$. Conditional on all these preceding innovations, the final position noises remain independent. On every good row, integrating their Gaussian density over the core gives probability at least $p_0$. A second Chernoff bound gives at least $p_0pN/4$ surviving rows with the asserted exception probability. For one limiting root, the same good-event argument gives the expectation bound $p_0p$. $\square$
 :::
 
-:::{prf:assumption} Gaussian position update
-:label: assumption-integrator-regularity
+:::{prf:lemma} Finite-horizon moments on the unbounded domain
+:label: lem-mean-field-finite-moments
 
-Write the position update as
-$Y_h=x+hv+r_h(x,v)+B_h(x,v)\xi$, with $\xi\sim N(0,I_d)$,
-$\sup\|r_h\|\leq C h^2$ and $\sup\|B_h\|\leq C h^{3/2}$.
-This is the kinetic-noise position scaling for the stated splitting update.
-An independent position diffusion of order $h^{1/2}$ is a different boundary
-scaling and is treated through its diffusive flux.
+For the canonical force and any $q\geq1$, there are finite configuration constants $A_q,B_q$ such that, when all finite rows are eligible,
+
+$$
+\mathbb E\!\left[L_N'|x|^q\mid S\right]
+\leq A_qL_N|x|^q+B_q,\qquad |v_i'|\leq V.
+$$
+
+The same estimate holds for $\mathcal F_h$. Thus finite initial moments propagate uniformly in $N$ at every fixed finite horizon. If an initial moment of order $q+\delta$ is uniformly bounded, moments of order $q$ are uniformly integrable at those horizons.
+
+*Proof.* For $N\geq2$, each eligible donor probability is at most $2/(\kappa_CN)$; for a singleton the position is retained. Therefore frozen position copying obeys
+
+$$
+\mathbb E\!\left[\frac1N\sum_i|x_i^{\rm copy}|^q\mid S\right]
+\leq\left(1+\frac2{\kappa_C}\right)L_N|x|^q.
+$$
+
+Gaussian jitter has every finite moment. Collision velocities are bounded by $W$. Linear growth of $\nabla U$ and the finite BAOAB coefficients then bound $|X_2|^q$ by a constant times $1+|X_0|^q+|\xi^O|^q$. Add the finite final position-noise moment. The cap proves the velocity bound, and induction gives the assertion. Applying the estimate at $q+\delta$ proves uniform integrability at order $q$. No compact physical support or stationary moment bound was used. $\square$
 :::
 
-:::{prf:assumption} Density regularity for the boundary flux limit
-:label: assumption-density-regularity-killing
+:::{prf:lemma} Continuity of the actual population map
+:label: lem-mean-field-map-continuity
 
-Let $f(x,v)$ be bounded, nonnegative and continuous up to the spatial boundary,
-with bounded spatial derivative, and integrable on $D\times V$.
-For an approximating family $f_h$, any additional density error is retained
-explicitly as $h^{-1}\|f_h-f\|_{L^1}$ unless a stronger trace estimate is supplied.
+On the absorbing-box state space with $m\geq m_*>0$, $\mathcal F_h$ is continuous for weak convergence of marked laws. On the unbounded state space it is continuous when weak convergence is accompanied by convergence of the first two reward moments and the moment bounds needed for the kinetic stages.
+
+*Proof.* The bounded positive donor kernels have denominators uniformly separated from zero. Eligibility is the retained discrete mark, so initial atoms on the position boundary cause no discontinuity in these input integrals. Eligible reward is bounded on the box, so its moments and the marked measurement law converge. In the unbounded case use the stated reward-moment convergence. For fixed exploration cutoff $K$, all outgoing integrals, incoming intensity measures, and finite-tree readouts converge by their bounded continuous kernels. Remove the cutoff with the uniform component bound. This proves continuity of $\mathcal J$ for bounded continuous tests. The kinetic composition is continuous by the same Gaussian, cap, and terminal-boundary argument used in {prf:ref}`thm-mean-field-equation`. $\square$
 :::
 
-:::{prf:theorem} Pointwise exit probabilities and integrated kinetic boundary flux
-:label: thm-killing-rate-consistency
+:::{prf:remark} Stability without an assumed contraction
+:label: rem-mean-field-analytic-results
 
-Under the preceding assumptions, each fixed interior state satisfies
-
-$$
-\lim_{h\downarrow0}\frac{\mathbb P(Y_h\notin D)}{h}=0.
-$$
-
-Nevertheless the integrated exit fraction has the nonzero boundary limit
+Continuity gives stability at every fixed number of iterations. On any compact invariant set $K$, it supplies a uniform modulus
 
 $$
-\frac1h\int_{D\times V}f(x,v)\mathbb P(Y_h\notin D)\,dx\,dv
-=\int_{\partial D\times V}(v\cdot n(y))_+f(y,v)\,dS(y)\,dv+O(\sqrt h).
+\omega_K(\delta)=\sup\{d_{\rm BL}(\mathcal F_h\mu,\mathcal F_h\nu):
+\mu,\nu\in K,\ d_{\rm BL}(\mu,\nu)\leq\delta\}\longrightarrow0.
 $$
 
-For $f_h$ in place of $f$, the absolute error increases by at most
-$h^{-1}\|f_h-f\|_{L^1}$. The exit mechanism is a boundary flux; it is not a
-nonzero smooth interior killing density obtained from the pointwise limit.
-:::
-
-:::{prf:proof}
-Fix $x\in D$ at distance $r>0$ from the boundary. For small $h$,
-$\|hv+r_h\|\leq r/2$. Exiting then requires
-$\|\xi\|\geq r/(2Ch^{3/2})$. Exponential Markov inequality gives
-
-$$
-\mathbb P(Y_h\notin D)
-\leq2^{d/2}\exp\!\left[-\frac{r^2}{16C^2h^3}\right]=o(h).
-$$
-
-This proves the pointwise claim, including points in any fixed boundary collar.
-
-For the integrated claim, first take the ballistic update $x\mapsto x+hv$.
-Its exiting initial positions lie in a collar of width $h\sup_V\|v\|$.
-Write them as $x=y-rn(y)$. The tubular-coordinate Jacobian is $1+O(r)$,
-and Taylor expansion of the signed distance shows that the exiting interval
-in $r$ differs from $[0,h(v\cdot n(y))_+]$ by a set of length $O(h^2)$,
-uniformly in $y,v$. The density satisfies
-$f(y-rn(y),v)=f(y,v)+O(r)$. Integration gives
-
-$$
-\int f(x,v)\mathbf1_{x+hv\notin D}\,dx\,dv
-=h\int_{\partial D\times V}(v\cdot n)_+f\,dS\,dv+O(h^2).
-$$
-
-For the Gaussian update, the two exit indicators can differ only when
-$x+hv$ is within distance
-$C(h^2+h^{3/2}\|\xi\|)$ of $\partial D$. A bounded smooth domain has collar
-volume at most a constant times its width for small widths. For larger widths,
-the finite volume of $D$ gives the same bound after increasing the constant.
-Boundedness of $f$ and $V$ therefore bounds the difference of the integrated
-exit fractions by
-
-$$
-C'\mathbb E(h^2+h^{3/2}\|\xi\|)=O(h^{3/2}).
-$$
-
-Divide by $h$ to obtain the result. Finally the exit probability is at most
-one, so replacing $f$ by $f_h$ contributes at most
-$h^{-1}\|f_h-f\|_{L^1}$.
-:::
-
-:::{prf:remark} Matching the boundary law
-:label: remark-killing-rate-interpretation
-
-The continuous reaction model with reflecting transport and prescribed
-interior rate $c$ has the population equations of
-{prf:ref}`thm-mean-field-equation`. A boundary-killed kinetic model instead
-uses its outward flux in the dead-reservoir balance. Equality of these models
-requires an approximation theorem for the chosen killing layer; the pointwise
-exit limit above does not supply a nonzero interior rate.
-:::
-
-:::{prf:remark} Regularity of the prescribed reaction model
-:label: remark-important-killing-rate-well-posedness
-
-A bounded prescribed killing rate permits the positive alive-mass estimate
-{prf:ref}`cor-mean-field-positive-alive-mass`. The existence and uniqueness
-arguments in {doc}`09_propagation_chaos` specify the transport semigroup and
-reaction Lipschitz bounds for the model to which they apply.
-:::
-
-:::{prf:remark} Numerical comparison of boundary losses
-:label: remark-numerical-validation-killing-rate
-
-For the kinetic position-noise scaling, the integrated quantity to compare
-with measured exits per unit time is the boundary integral in
-{prf:ref}`thm-killing-rate-consistency`. A position-diffusive model requires
-its diffusive normal flux as well. The time-step scale, kernel and boundary
-convention must agree in the simulation and the analytical comparison.
+This follows by compactness and the preceding lemma. Iterating that modulus transfers small input errors through any fixed number of steps. It does not make $\omega_K(\delta)<\delta$, prove uniqueness of a stationary law, or control arbitrarily long times.
 :::
 
 (sec-mean-field-analysis)=
-## 6. Well-posedness, stationary laws, and particle limits
+## 6. Stationarity, physical time, and the experiments
 
 :::{div} feynman-prose
-The equation now has a specified transport semigroup, reaction kernel, mass normalization, and boundary law. These are the inputs for existence and uniqueness. The same identification is needed before transferring a particle estimate to the PDE.
+A stationary population reproduces its law after one complete update. That is a fixed point of the map we have just constructed. Existence of such a law, attraction toward it, and convergence of finite-population conditioned laws are distinct calculations. We can prove the first in the bounded-domain canonical setting. The others require control of the same nonlinear map over long times.
 
-There are two errors in that transfer: interacting particles differ from independent copies of the limiting process, and a finite sample of those independent copies differs from their common law. The final theorem keeps both errors visible. For a single Lipschitz observable, the second error has the familiar variance-over-population form; empirical Wasserstein distance has additional dimension dependence.
+There is also a useful way to write a rate: divide an exact one-step increment by the duration of the step. This is a finite difference. It does not authorize replacing the update by a differential equation that continuously re-evaluates fitness and collision neighborhoods between updates.
 :::
 
-:::{prf:assumption} Analytic setting for the specified reaction model
-:label: assumption-regularity-summary
+:::{prf:theorem} Stationary existence for the canonical absorbing-box map
+:label: thm-mean-field-stationary-existence
 
-Use a positive conservative strongly continuous transport semigroup on the chosen function or measure space. Require the normalized moment, acceptance, and offspring maps to satisfy the local Lipschitz and integrability bounds used by the solution theorem, on sets with $m_a\geq a_*>0$. The prescribed killing rate is bounded, and the finite revival and attempt rates are fixed. Boundary domains and any velocity cap have the meanings stated in Section 2.
+The canonical absorbing-box population map has at least one stationary marked probability $\mu_*$ with $m(\mu_*)>0$:
 
-The concrete moment and cloning estimates in {prf:ref}`lem-uniqueness-lipschitz-moments` and {prf:ref}`lem-uniqueness-lipschitz-cloning-operator` provide these inputs for their specified coefficient class. Smoothness or measurability alone does not establish all of them.
+$$
+\mu_*=\mathcal F_h(\mu_*).
+$$
+
+*Proof.* Every entering row copies an eligible donor or retains its own eligible position, so its pre-jitter position lies in $D$. Velocities before collision are capped, and the collision velocities are bounded by $W$. The linear-growth force and Gaussian innovations give a uniform output second position moment $M_2$, independent of the entering dead coordinates. Final position convolution bounds the output position density by $H=(2\pi\sigma_x^2h)^{-d/2}$. The output alive mass is at least $p_0p$, and its velocity lies in $\overline B_V$.
+
+Let $K$ be the set of marked laws with second position moment at most $M_2$, position marginal dominated by $H$ times Lebesgue measure, alive mass at least $p_0p$, capped velocity, and terminally consistent mark $a=\mathbf1_D(x)$. It is nonempty because it contains the output of any admissible law. It is convex and tight. The moment constraint is weakly closed by lower semicontinuity; the density constraint is weakly closed by testing nonnegative continuous compactly supported functions. The latter also excludes position mass on $\partial D$, so terminal mark consistency is preserved by weak limits. Thus $K$ is compact. The output bounds give $\mathcal F_h(K)\subset K$, and {prf:ref}`lem-mean-field-map-continuity` gives continuity on $K$. The compact-convex fixed-point theorem applied in the locally convex space of finite signed measures with the weak topology yields a fixed point. $\square$
 :::
 
-:::{prf:remark} Existing existence and stationary results
-:label: rem-mean-field-analytic-results
+:::{prf:remark} What stationary identification still requires
+:label: remark-cemetery-state
 
-The mild-solution construction and uniqueness proof are {prf:ref}`thm-chaos-mild-wellposedness`; measure-valued initial data are treated in {prf:ref}`cor-chaos-measure-initial-data`. The positive alive-mass estimate supplies the finite-time normalization bound when its hypotheses hold. Stationary solutions and their uniqueness use the resolvent and contraction argument in {prf:ref}`thm-uniqueness-contraction-solution-operator` and {prf:ref}`thm-uniqueness-uniqueness-stationary-solution`.
-
-A stationary alive/dead population model is a conservative law on the extended state space. A killed process has a QSD after conditioning on survival. Their relation must use their defining equations; existence of one is not a density formula for the other. Full-gradient LSI and hypocoercive entropy convergence are established in {doc}`15_kl_convergence` for its identified laws and generators.
+A finite-$N$ killed-chain QSD satisfies a conditioned eigenmeasure equation, whereas $\mu_*$ satisfies the nonlinear fixed-step equation above. Identifying limits of finite-$N$ QSDs requires the actual survival probabilities and concentration or attraction estimates. The finite-component bound proves finite-time consistency but is not a long-time contraction. Positive noise alone does not prove that the nonlinear map has a unique attractor. For an unbounded confining domain, the finite-horizon moment estimate likewise does not yet supply a uniform-in-time Lyapunov bound. These unresolved stationary steps and their dependent claims are treated explicitly in {doc}`09_propagation_chaos`.
 :::
 
-:::{prf:theorem} Transfer of particle-coupling estimates
+:::{prf:proposition} Fixed-step balance and the small-step obstruction
+:label: rem-mean-field-attempt-scaling
+
+Define the exact nonlinear increment functional
+
+$$
+\mathcal A_h(\mu)\phi=\frac{\mathcal F_h(\mu)\phi-\mu\phi}{h}.
+$$
+
+Then $\mu_{n+1}\phi-\mu_n\phi=h\mathcal A_h(\mu_n)\phi$. Suppose along $h\downarrow0$ the complete one-step law converges to $\mathcal F_0(\mu)$ and there is a bounded continuous test with $\mathcal F_0(\mu)\phi\ne\mu\phi$. Then $\mathcal A_h(\mu)\phi$ has no finite limit.
+
+*Proof.* Its numerator converges to a nonzero constant. Division by $h\downarrow0$ diverges. $\square$
+
+For an all-alive initial law and fixed nonzero jitter/collision parameters, the vanishing-step kinetic stages tend to the identity before the terminal cap and classification. Thus $\mathcal F_0$ retains the order-one collision, copying, jitter, cap, and terminal-mark operations. The smooth cap is itself an order-one operation: for any nonzero finite velocity, $|\Pi_V(v)|<|v|$, even strictly inside the radius $V$. Repeating this same cap alone gives $|v_n|^{-1}=|v_0|^{-1}+n/V$ when $v_0\ne0$. Thus at $n\approx t/h$ its effect is singular as $h\downarrow0$; it cannot be replaced by a reflecting velocity boundary. The full $\mathcal F_0$ need not be the identity. A continuous physical-time limit can therefore have an initial fast relaxation or require a different state/time description. A finite-rate differential equation is identified only after proving the relevant limit of these same iterates; changing acceptance probabilities to enforce that limit changes the configured algorithm.
+:::
+
+:::{prf:remark} Boundary losses at the actual noise scale
+:label: remark-numerical-validation-killing-rate
+
+The terminal position increment includes $\sigma_x\sqrt h\,\xi^x$. Its boundary layer therefore differs from a purely ballistic position update with only $O(h^{3/2})$ integrated thermostat noise. At fixed $h$, the exact quantity is $\mathbb P(X_3\notin D)$ under the full root construction. Neither a ballistic flux formula nor a smooth interior killing rate can replace this probability without a matching limiting argument and boundary regularity estimates.
+:::
+
+:::{prf:theorem} Transfer of independent-reference coupling estimates
 :label: thm-mean-field-limit-informal
 
-Let $X_1,\ldots,X_N$ be interacting particle states coupled to independent
-$Y_1,\ldots,Y_N$ with common probability law $\mu$, all with finite second moments. Put
-$\varepsilon_N=N^{-1}\sum_i\mathbb E\|X_i-Y_i\|^2$ and
-$\mu_N^X=N^{-1}\sum_i\delta_{X_i}$, $\mu_N^Y=N^{-1}\sum_i\delta_{Y_i}$.
-Then
+Let $X_1,\ldots,X_N$ be interacting states and let $Y_1,\ldots,Y_N$ be independent with common law $\mu$. For a metric $d_E$ and a coupling with
+$\varepsilon_N=N^{-1}\sum_i\mathbb E d_E(X_i,Y_i)^2<\infty$,
 
 $$
-\mathbb E W_2(\mu_N^X,\mu)
-\leq\sqrt{\varepsilon_N}+\mathbb E W_2(\mu_N^Y,\mu).
+\mathbb E W_2(L_N^X,\mu)
+\leq\sqrt{\varepsilon_N}+\mathbb E W_2(L_N^Y,\mu).
 $$
 
-For any $L$-Lipschitz observable $\phi$ with finite variance under $\mu$,
+For an $L$-Lipschitz test $\phi$ of finite $\mu$-variance,
 
 $$
-\mathbb E|\mu_N^X\phi-\mu\phi|
-\leq L\sqrt{\varepsilon_N}+\sqrt{\operatorname{Var}_{\mu}(\phi)/N}.
+\mathbb E|L_N^X\phi-\mu\phi|
+\leq L\sqrt{\varepsilon_N}+\sqrt{\operatorname{Var}_\mu(\phi)/N}.
 $$
 
-If the coupling discrepancy satisfies
-$\varepsilon_N'(t)\leq C\varepsilon_N(t)+b_N(t)$ almost everywhere, then
+*Proof.* Pair $X_i$ with $Y_i$ to couple their empirical measures. The triangle inequality and Jensen's inequality give the Wasserstein bound. For the test, split through $L_N^Y\phi$, use the Lipschitz bound for the paired term, and use independence to compute the reference empirical variance. $\square$
 
-$$
-\varepsilon_N(t)\leq e^{Ct}\varepsilon_N(0)
-+\int_0^t e^{C(t-s)}b_N(s)\,ds.
-$$
-
-The analytical coupling and mean-field identification results are developed
-in {doc}`09_propagation_chaos`. The empirical Wasserstein term has its own
-moment- and dimension-dependent sampling rate.
+This transfer inequality is available when a coupling estimate has been established. The rooted-component proof supplies empirical consistency directly and does not assume that estimate as a premise.
 :::
 
-:::{prf:proof}
-The empirical pairing
-$N^{-1}\sum_i\delta_{(X_i,Y_i)}$ is an admissible coupling of the empirical
-measures. Thus
-$W_2^2(\mu_N^X,\mu_N^Y)\leq N^{-1}\sum_i\|X_i-Y_i\|^2$.
-Use the triangle inequality and Jensen's inequality to obtain the first bound.
-For the observable, split the error through $\mu_N^Y\phi$. Lipschitz
-continuity and Cauchy–Schwarz bound the paired error by
-$L\sqrt{\varepsilon_N}$. Independence gives
-$\mathbb E|\mu_N^Y\phi-\mu\phi|^2=\operatorname{Var}_{\mu}(\phi)/N$.
-Cauchy–Schwarz gives its first-moment bound. The final inequality follows by
-multiplying the differential inequality by $e^{-Ct}$ and integrating.
-:::
+:::{prf:remark} Experimental quantities tied to the population map
+:label: remark-mean-field-experiments
 
-:::{div} feynman-prose
-The forward equation gives the macroscopic balance of specified particle transitions. Its analysis then proceeds through the proved normalization, continuity, coupling, and stationary-law estimates. Keeping the finite-step kernel, the infinitesimal generator, and the conditioned law distinct makes those estimates fit together without changing the algorithm along the way.
+The Part III Rust experiments test the actual stage predictions:
+
+- accepted live edges increase frozen sampled fitness, and the accepted graph is a forest;
+- full-component momentum and relative energy obey {prf:ref}`thm-mean-field-component-identities`, including revived slots;
+- conditional cross covariance uses the shared rotation, with all donor velocity changes included;
+- one-step root observables are compared with the rooted-component law, keeping finite-population error separate from independent integration error;
+- increasing-$N$ comparisons hold $h$ and the number of updates fixed, and estimate uncertainty across independently seeded complete runs;
+- killing and revival diagnostics count actual events and compare terminal alive mass with the conditional final-noise probabilities;
+- stationary concentration and dependence on initialization are measured separately from fixed-horizon chaos.
+
+The bounds on component tails and alive mass are inequality predictions. Their conservative constants are not fitted rates or expected equalities. Empirical agreement with a one-step identity does not supply the unresolved stationary attraction estimate.
 :::

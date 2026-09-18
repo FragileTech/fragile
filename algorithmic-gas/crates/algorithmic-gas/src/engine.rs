@@ -38,6 +38,8 @@ pub struct GasConfig {
     pub clone_transform: CloneTransform,
     pub kinetic: KineticOperator,
     pub qft: crate::kinetic::QftExecutionConfig,
+    /// Tessellation geometry stage; `None` runs the gas without it.
+    pub geometry: Option<crate::tessellation::GeometryStageConfig>,
     pub include_truncated: bool,
     pub invalid_reward: InvalidRewardPolicy,
     pub max_batch_elements: usize,
@@ -65,6 +67,7 @@ impl Default for GasConfig {
             clone_transform: CloneTransform::default(),
             kinetic: KineticOperator::default(),
             qft: crate::kinetic::QftExecutionConfig::default(),
+            geometry: None,
             include_truncated: false,
             invalid_reward: InvalidRewardPolicy::Error,
             max_batch_elements: 16_777_216,
@@ -88,13 +91,23 @@ impl GasConfig {
             .unwrap_or(1);
         self.qft.validate(p.len(), dimension)?;
         require(
-            self.qft.viscosity.is_none()
+            (self.qft.viscosity.is_none() && self.qft.graph_viscosity.is_none())
                 || matches!(
                     self.kinetic.integrator,
                     crate::kinetic::KineticKind::Baoab { .. }
                 ),
             "viscosity requires BAOAB",
         )?;
+        if let Some(geometry) = &self.geometry {
+            geometry.validate(p)?;
+        }
+        if let Some(viscosity) = &self.qft.graph_viscosity {
+            let weights = self.geometry.as_ref().map(|g| &g.pipeline.weights);
+            require(
+                weights.is_some_and(|w| w.iter().any(|spec| spec.key() == viscosity.weights)),
+                "graph viscosity requires a geometry stage providing its edge weights",
+            )?;
+        }
         require(self.max_memory_bytes > 0, "memory budget must be positive")?;
         self.working_set_bytes(p, &[], None)?;
         require(
@@ -136,14 +149,13 @@ impl GasConfig {
             )?;
         }
         self.clone_decision.validate()?;
-        self.clone_transform.validate(
-            p,
-            matches!(
-                self.cloning_donors.law,
-                SamplingLaw::FisherYates | SamplingLaw::GaussianGreedy
-            ),
-            1,
+        require(
+            !self.clone_decision.revival_from_companion
+                || (self.cloning_donors.law == SamplingLaw::Independent
+                    && self.cloning_donors.history_window == 0),
+            "distance-weighted revival requires independent current-donor sampling",
         )?;
+        self.clone_transform.validate(p)?;
         self.kinetic.validate(p, has_gradient)?;
         for module in [&self.distance_donors, &self.cloning_donors] {
             let boundary = self.boundary.periodic_domain(module.distance.field());
@@ -241,6 +253,10 @@ pub struct Checkpoint<T: Real> {
     pub last_report: Option<StepReport<T>>,
     #[serde(default)]
     pub recording: Option<crate::tracking::RunArchive<T>>,
+    /// Neighbor graph of the last geometry refresh; graph forces reuse it on
+    /// steps that do not tessellate.
+    #[serde(default)]
+    pub graph: Option<crate::tessellation::GraphSnapshot<T>>,
     pub reward_provider: String,
     pub gradient_provider: Option<String>,
     pub domain_provider: String,
@@ -325,7 +341,12 @@ impl<T: Real> GasBuilder<T> {
         self.domain = Arc::new(domain);
         self
     }
-    pub async fn build(self) -> Result<AlgorithmicGas<T>> {
+    pub async fn build(mut self) -> Result<AlgorithmicGas<T>> {
+        // The stage's fields belong to the population schema from the start.
+        if let Some(geometry) = &self.config.geometry {
+            geometry.validate(&self.population)?;
+            geometry.prepare(&mut self.population)?;
+        }
         self.config
             .validate(&self.population, self.gradient.is_some())?;
         self.operators.validate(&self.config, &self.population)?;
@@ -347,6 +368,7 @@ impl<T: Real> GasBuilder<T> {
             last_report: None,
             recording: None,
             cancellation: CancellationToken::default(),
+            graph: None,
         };
         gas.domain.refresh_observations(&mut gas.population)?;
         gas.operators.boundary(
@@ -354,6 +376,10 @@ impl<T: Real> GasBuilder<T> {
             &mut gas.population,
             gas.domain.as_ref(),
         )?;
+        let mut population = std::mem::replace(&mut gas.population, placeholder_population()?);
+        let refreshed = gas.refresh_geometry(&mut population);
+        gas.population = population;
+        gas.graph = refreshed?;
         gas.population.rewards = gas
             .reward
             .evaluate(&gas.population, None, "initial", &mut gas.cx)
@@ -387,6 +413,14 @@ pub struct AlgorithmicGas<T: Real> {
     last_report: Option<StepReport<T>>,
     recording: Option<crate::tracking::RunArchive<T>>,
     cancellation: CancellationToken,
+    /// Neighbor graph of the last committed geometry refresh.
+    graph: Option<Arc<crate::tessellation::GraphSnapshot<T>>>,
+}
+/// Stand-in while the real population is borrowed mutably next to the gas.
+fn placeholder_population<T: Real>() -> Result<Population<T>> {
+    Population::new(crate::ObservationBatch::positions(
+        crate::TensorBatch::scalars(vec![T::ZERO])?,
+    ))
 }
 fn validate_rewards<T: Real>(p: &mut Population<T>, config: &GasConfig) -> Result<()> {
     p.rewards.validate(p.len())?;
@@ -410,6 +444,31 @@ fn validate_rewards<T: Real>(p: &mut Population<T>, config: &GasConfig) -> Resul
     p.validate()
 }
 impl<T: Real> AlgorithmicGas<T> {
+    /// Run the geometry stage on `p`; `None` when no stage is configured.
+    fn refresh_geometry(
+        &self,
+        p: &mut Population<T>,
+    ) -> Result<Option<Arc<crate::tessellation::GraphSnapshot<T>>>> {
+        let Some(stage) = &self.config.geometry else {
+            return Ok(None);
+        };
+        let geometry = self.operators.geometry(
+            stage,
+            p,
+            crate::operators::GeometryRequest {
+                include_truncated: self.config.include_truncated,
+                max_edges: self.config.max_batch_elements / 2,
+                max_memory_bytes: self.cx.max_memory_bytes,
+            },
+        )?;
+        Ok(Some(Arc::new(crate::tessellation::GraphSnapshot::of(
+            &geometry,
+        ))))
+    }
+    /// Neighbor graph of the last committed geometry refresh.
+    pub fn graph(&self) -> Option<&crate::tessellation::GraphSnapshot<T>> {
+        self.graph.as_deref()
+    }
     fn execution_allowance(
         &self,
         p: &Population<T>,
@@ -536,6 +595,10 @@ impl<T: Real> AlgorithmicGas<T> {
         self.config
             .working_set_bytes(&self.population, &self.history, Some(input))?;
         let mut population = pipeline.extract(input, &self.population)?;
+        if let Some(geometry) = &self.config.geometry {
+            geometry.validate(&population)?;
+            geometry.prepare(&mut population)?;
+        }
         self.config.validate(&population, self.gradient.is_some())?;
         let fields = population
             .observations
@@ -624,6 +687,12 @@ impl<T: Real> AlgorithmicGas<T> {
         self.cx.max_memory_bytes = self.execution_allowance(&p, input)?;
         p.observations.provenance.population_version = p.version;
         p.observations.provenance.stage = "pre_clone".into();
+        let mut step_graph = self.graph.clone();
+        if self.config.geometry.as_ref().is_some_and(|g| {
+            extracted_version.is_some() || g.timing == crate::tessellation::GeometryTiming::Both
+        }) {
+            step_graph = self.refresh_geometry(&mut p)?;
+        }
         if extracted_version != Some(p.version) {
             p.rewards = self
                 .reward
@@ -703,6 +772,11 @@ impl<T: Real> AlgorithmicGas<T> {
             self.config.cloning_donors.history_window,
             self.config.include_truncated,
         )?;
+        let clone_recipients = if self.config.clone_decision.revival_from_companion {
+            vec![true; p.len()]
+        } else {
+            alive.clone()
+        };
         let cloning_companions = self
             .operators
             .companions(
@@ -710,7 +784,7 @@ impl<T: Real> AlgorithmicGas<T> {
                 CompanionRequest {
                     population: &p,
                     pool: &clone_pool,
-                    eligible: &alive,
+                    eligible: &clone_recipients,
                     seed: self.config.seed,
                     step: next,
                     stream: Stream::Cloning,
@@ -879,22 +953,36 @@ impl<T: Real> AlgorithmicGas<T> {
         self.cx.max_memory_bytes = self.execution_allowance(&destination, input)?;
         // Classify/repair newly transformed coordinates before a bounded
         // reward provider sees them and before applying invalid-reward policy.
-        self.operators.boundary(
-            &self.config.boundary,
-            &mut destination,
-            self.domain.as_ref(),
-        )?;
+        if self.config.kinetic.boundary_schedule
+            == crate::kinetic::KineticBoundarySchedule::Substeps
+        {
+            self.operators.boundary(
+                &self.config.boundary,
+                &mut destination,
+                self.domain.as_ref(),
+            )?;
+        }
+        if let Some(stage) = &self.config.geometry {
+            let cloned = plan.choices.iter().any(|c| c.accepted);
+            if stage.due(next, cloned, step_graph.is_some()) {
+                step_graph = self.refresh_geometry(&mut destination)?;
+            }
+        }
         destination.rewards = self
             .reward
             .evaluate(&destination, input, "post_clone", &mut self.cx)
             .await?;
         evals += destination.len() as u64;
         validate_rewards(&mut destination, &self.config)?;
-        self.operators.boundary(
-            &self.config.boundary,
-            &mut destination,
-            self.domain.as_ref(),
-        )?;
+        if self.config.kinetic.boundary_schedule
+            == crate::kinetic::KineticBoundarySchedule::Substeps
+        {
+            self.operators.boundary(
+                &self.config.boundary,
+                &mut destination,
+                self.domain.as_ref(),
+            )?;
+        }
         self.cx.trace_population("post_clone", &destination);
         self.cancellation.check()?;
         if destination
@@ -913,6 +1001,7 @@ impl<T: Real> AlgorithmicGas<T> {
                         include_truncated: self.config.include_truncated,
                         seed: self.config.seed,
                         step: next,
+                        graph: step_graph.as_deref(),
                         operators: Some(self.operators.as_ref()),
                         frozen_fitness: Some(crate::operators::FrozenFitnessContext {
                             population: &p,
@@ -982,6 +1071,15 @@ impl<T: Real> AlgorithmicGas<T> {
                 influences: self.cx.recorded_influences.clone().unwrap_or_default(),
                 report: report.clone(),
                 donor_fitness,
+                graph: step_graph
+                    .as_deref()
+                    .filter(|_| {
+                        self.config
+                            .geometry
+                            .as_ref()
+                            .is_some_and(|g| g.record_graph)
+                    })
+                    .cloned(),
             };
             archive.append(record)?;
             let admission = (|| {
@@ -1011,6 +1109,7 @@ impl<T: Real> AlgorithmicGas<T> {
             }
         }
         self.population = destination;
+        self.graph = step_graph;
         self.step = next;
         self.reward_evaluations = evals;
         self.last_report = Some(report.clone());
@@ -1037,6 +1136,10 @@ impl<T: Real> AlgorithmicGas<T> {
             .version
             .checked_add(1)
             .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
+        if let Some(geometry) = &self.config.geometry {
+            geometry.validate(&population)?;
+            geometry.prepare(&mut population)?;
+        }
         self.config.validate(&population, self.gradient.is_some())?;
         self.cx.max_memory_bytes = self.execution_allowance(&population, None)?;
         let fields = population
@@ -1049,6 +1152,7 @@ impl<T: Real> AlgorithmicGas<T> {
         self.domain.refresh_observations(&mut population)?;
         self.operators
             .boundary(&self.config.boundary, &mut population, self.domain.as_ref())?;
+        let graph = self.refresh_geometry(&mut population)?;
         population.rewards = self
             .reward
             .evaluate(&population, None, "external_replace", &mut self.cx)
@@ -1080,6 +1184,7 @@ impl<T: Real> AlgorithmicGas<T> {
         }
         self.reward_evaluations = reward_evaluations;
         self.population = population;
+        self.graph = graph;
         self.history.clear();
         self.last_report = None;
         if let Some(trace) = &mut self.cx.stage_trace {
@@ -1099,6 +1204,7 @@ impl<T: Real> AlgorithmicGas<T> {
             history: self.history.clone(),
             last_report: self.last_report.clone(),
             recording: self.recording.clone(),
+            graph: self.graph.as_deref().cloned(),
             reward_provider: self.reward.id(),
             gradient_provider: self.gradient.as_ref().map(|g| g.id()),
             domain_provider: self.domain.id(),
@@ -1151,6 +1257,7 @@ impl<T: Real> AlgorithmicGas<T> {
         self.history = checkpoint.history;
         self.last_report = checkpoint.last_report;
         self.recording = checkpoint.recording;
+        self.graph = checkpoint.graph.map(Arc::new);
         self.cx.recorded_stages = self.recording.as_ref().map(|_| Vec::new());
         self.cx.recorded_noise = self.recording.as_ref().map(|_| Vec::new());
         self.cx.recorded_fields = self.recording.as_ref().map(|_| Vec::new());

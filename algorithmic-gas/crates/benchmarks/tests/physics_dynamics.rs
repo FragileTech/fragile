@@ -37,8 +37,12 @@ fn generalized_metric_recording_is_observational_and_balances_actual_stages() {
                 let archive = recorded.recording().unwrap();
                 archive.validate().unwrap();
                 let step = archive.steps.last().unwrap();
-                let b =
-                    analyze_step(step, &c.gas, Some(&c.benchmark.physics_objective(d))).unwrap();
+                let b = analyze_step(
+                    step,
+                    &c.gas,
+                    Some(&c.benchmark.physics_objective(d).unwrap()),
+                )
+                .unwrap();
                 assert!(b.kinetic_telescoping_residual.abs() < 1e-12);
                 assert!(b.thermostat.is_some(), "{:?}", b.unavailable);
                 let recorded_moments = step

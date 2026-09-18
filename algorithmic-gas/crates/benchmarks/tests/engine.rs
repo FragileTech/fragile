@@ -167,6 +167,7 @@ fn baoab_constant_noise_zero_matches_verlet() {
                 },
                 ..Default::default()
             },
+            ..Default::default()
         };
         let mut p = c.initial_population::<f64>().unwrap();
         p.observations
@@ -304,15 +305,39 @@ fn phase_space_anisotropic_configuration_runs() {
     });
 }
 #[test]
-fn multi_clone_and_overlapping_restitution_rejected_at_prepare() {
+fn multi_clone_rejects_and_independent_component_restitution_runs() {
     block_on(async {
         let mut c = config(Precision::F32);
+        c.gas.kinetic.integrator = KineticKind::Baoab {
+            positions: "positions".into(),
+            velocities: "velocities".into(),
+            dt: 0.01,
+            friction: 1.,
+        };
         c.gas.cloning_donors.count = 2;
         assert!(c.build::<f32>().await.is_err());
         c.gas.cloning_donors.count = 1;
         c.gas.clone_transform.restitution = Some(0.8);
         c.gas.clone_transform.velocity_field = Some("velocities".into());
-        assert!(c.build::<f32>().await.is_err());
+        let mut gas = c.build::<f32>().await.unwrap();
+        gas.start_recording(Default::default()).unwrap();
+        for _ in 0..3 {
+            gas.step().await.unwrap();
+        }
+        let archive = gas.recording().unwrap();
+        archive.validate().unwrap();
+        assert!(archive.steps.iter().all(|s| {
+            s.field_evaluations
+                .iter()
+                .any(|f| f.stage == "component_collision" && f.field == "collision_rotation")
+        }));
+        assert!(archive.steps.iter().any(|s| {
+            s.field_evaluations.iter().any(|f| {
+                f.stage == "component_collision"
+                    && f.field == "collision_component_size"
+                    && f.values.iter().any(|&size| size > 2.)
+            })
+        }));
     });
 }
 #[test]

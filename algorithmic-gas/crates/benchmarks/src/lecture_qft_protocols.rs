@@ -152,6 +152,7 @@ pub async fn build(
         ShiftedReward {
             model,
             shift: c.reward_shift.clone(),
+            noise: None,
         },
     )
     .config(c.gas.clone())

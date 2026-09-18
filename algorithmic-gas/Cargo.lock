@@ -60,6 +60,8 @@ dependencies = [
  "futures-lite",
  "futures-util",
  "getrandom 0.4.3",
+ "rayon",
+ "robust",
  "serde",
  "serde_json",
  "spade",

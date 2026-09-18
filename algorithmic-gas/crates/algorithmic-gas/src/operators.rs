@@ -41,6 +41,15 @@ pub struct TransformRequest<'a, T: Real> {
     pub step: u64,
 }
 
+/// Budgets handed to the geometry stage.
+#[derive(Clone, Copy, Debug)]
+pub struct GeometryRequest {
+    pub include_truncated: bool,
+    /// Bound on undirected neighbor edges, including lifted cliques.
+    pub max_edges: usize,
+    pub max_memory_bytes: usize,
+}
+
 /// Immutable selection-stage data carried transactionally to O-stage providers.
 /// Query observations are supplied separately at the actual noise evaluation.
 #[derive(Clone, Copy)]
@@ -68,6 +77,23 @@ pub trait GasOperators<T: Real> {
         domain: &dyn DomainAdapter<T>,
     ) -> Result<()> {
         crate::kinetic::check_boundary(p, policy, domain)
+    }
+    /// Tessellate `population` and write the stage's observation fields. A
+    /// custom implementation may swap any component, e.g. call
+    /// `GeometryPipelineConfig::evaluate_with` with its own tessellator, but
+    /// must write every field `GeometryStageConfig::prepare` declares.
+    fn geometry(
+        &self,
+        stage: &crate::tessellation::GeometryStageConfig,
+        population: &mut Population<T>,
+        request: GeometryRequest,
+    ) -> Result<crate::tessellation::TessellationGeometry<T>> {
+        stage.refresh(
+            population,
+            request.include_truncated,
+            request.max_edges,
+            request.max_memory_bytes,
+        )
     }
     fn companions<'a>(
         &'a self,

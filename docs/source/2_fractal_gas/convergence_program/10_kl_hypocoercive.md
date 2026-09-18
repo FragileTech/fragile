@@ -500,6 +500,92 @@ Young's inequality gives $B\sqrt I\leq(a/2)I+B^2/(2a)$. Thus $\dot\Phi\leq-r\Phi
 For the common-invariant-kernel theorem, the jump estimate is proportional to existing information, so a strict margin gives decay to zero. A persistent source instead leaves the displayed floor. An estimate for spatial Fisher alone also leaves the entropy and cross-Fisher derivatives to be controlled. These distinctions determine the actual parameter condition; a friction-versus-cloning slogan cannot replace them.
 :::
 
+:::{prf:proposition} Exact cancellation at the full discrete QSD
+:label: prop-hypocoercive-full-qsd-cancellation
+
+Let $Q_N$ be the complete marked Euclidean Gas sub-Markov kernel and
+$\nu_NQ_N=\alpha_N\nu_N$. Its backward conditional kernel is
+
+$$
+B_N(S',dS)=\frac{\nu_N(dS)Q_N(S,dS')}{\alpha_N\nu_N(dS')},
+\qquad A_Ng(S')=\int g(S)B_N(S',dS).
+$$
+
+The quotient denotes a regular conditional probability, not a pointwise
+density assumption. For a bounded $g$ with $\nu_Ng=0$, put
+$M=\|g\|_\infty$ and $c=\nu_N(A_Ng)$.
+For $|\varepsilon|M<1$, the input law
+$\mu_\varepsilon=(1+\varepsilon g)\nu_N$ has the exact conditioned
+output density
+
+$$
+\frac{d(\mu_\varepsilon Q_N/\mu_\varepsilon Q_N1)}{d\nu_N}
+=\frac{1+\varepsilon A_Ng}{1+\varepsilon c}
+=1+\frac{\varepsilon(A_Ng-c)}{1+\varepsilon c}.
+$$
+
+For $|\varepsilon|M\leq1/8$, its entropy increment satisfies
+
+$$
+\begin{aligned}
+&D\!\left(\frac{\mu_\varepsilon Q_N}{\mu_\varepsilon Q_N1}
+\middle\Vert\nu_N\right)-D(\mu_\varepsilon\Vert\nu_N)\\
+&\quad=\frac{\varepsilon^2}{2}
+\left[\operatorname{Var}_{\nu_N}(A_Ng)-\nu_N(g^2)\right]
++\mathcal R_\varepsilon,\qquad
+|\mathcal R_\varepsilon|\leq12|\varepsilon|^3M^3.
+\end{aligned}
+$$
+
+Thus the full entropy balance at its actual QSD has no term of first order
+in $\varepsilon$. The centering $A_Ng-c$ includes the derivative of the
+survival normalization.
+:::
+
+:::{prf:proof}
+The joint measure $\nu_N(dS)Q_N(S,dS')/\alpha_N$ has output marginal
+$\nu_N$, so $B_N$ is Markov and $\|A_Ng\|_\infty\leq M$.
+Moreover
+
+$$
+\mu_\varepsilon Q_N
+=\alpha_N(1+\varepsilon A_Ng)\nu_N,\qquad
+\mu_\varepsilon Q_N1=\alpha_N(1+\varepsilon c),
+$$
+
+which proves the exact density formula. Both $g$ and $A_Ng-c$ have zero
+$\nu_N$-mean. For $\psi(1+t)=(1+t)\log(1+t)-t$, Taylor's theorem gives
+
+$$
+\left|\psi(1+t)-\frac{t^2}{2}\right|
+\leq\frac{|t|^3}{6(1-|t|)^2},\qquad |t|<1.
+$$
+
+Set $e=|\varepsilon|M\leq1/8$ and
+$t=\varepsilon(A_Ng-c)/(1+\varepsilon c)$; then
+$|t|\leq2e/(1-e)\leq2/7$. Integrating Taylor's formula gives the
+quadratic output term
+$\varepsilon^2\operatorname{Var}_{\nu_N}(A_Ng)/[2(1+\varepsilon c)^2]$.
+Replacing its denominator by one costs at most
+$2e^2(2e+e^2)/(1-e)^2$.
+The output Taylor remainder is at most
+$[2e/(1-e)]^3/[6(1-2e/(1-e))^2]$, and the input remainder is at most
+$e^3/[6(1-e)^2]$. Their sum, including the denominator cost, is less than
+$12e^3$ for $e\leq1/8$. This proves the bound.
+
+The cancellation uses the full eigenmeasure equation and its normalized
+kernel. In particular, it does not discard a positive square-root estimate
+for a separately centered cloning or kinetic term. The quadratic coefficient
+is the complete one-step response; its sign is not assigned from the
+separate pieces.
+:::
+
+:::{div} feynman-prose
+Imagine making a small dent in the equilibrium density: move a little probability from some swarm configurations to others. After a complete update, conditioning on survival changes the total weight of that dent. The subtraction of $c$ accounts for this change. Once it is included, the disturbance still has zero total mass, and its entropy begins at second order in its size.
+
+This is why we must put cloning, motion, and killing back together before evaluating their balance at the QSD. Each stage can move the equilibrium density; the complete conditioned step preserves it. The proposition computes the surviving quadratic term explicitly. Its sign tells us whether that particular disturbance loses information in one step. The cubic remainder bounds the error in this small-disturbance calculation; cancellation of the linear term alone does not determine the sign.
+:::
+
 (sec-kl-hypocoercive-discrete-population)=
 ## 6. Discrete time and population-independent constants
 
@@ -510,6 +596,88 @@ Population size enters through the constants in the joint-law estimates. Tensori
 :::
 
 ### 6.1. A discrete functional estimate
+
+:::{prf:theorem} Entropy convergence for the canonical full-step gas
+:label: thm-hypocoercive-canonical-discrete-entropy
+
+For the canonical terminal absorbing-box gas of
+{prf:ref}`thm-chaos-canonical-finite-n-qsd`, fix $N\geq1$ and $h\ne2$.
+Let $Q_N$, $\nu_N$, $\alpha_N$, and $e_N$ be its actual full-step killed
+kernel, QSD, survival eigenvalue, and positive right eigenfunction. Normalize
+$\nu_N(e_N)=1$. Use the constants proved there:
+
+$$
+0<m_N\leq e_N\leq M_N,\qquad
+Q_N(S,\cdot)\geq\epsilon_N\theta_N(\cdot),\qquad
+\delta_N=\frac{\epsilon_N\theta_N(e_N)}{\alpha_N M_N}>0.
+$$
+
+For every initial law $\mu$ with finite $D(\mu\Vert\nu_N)$ and every
+integer $n\geq0$,
+
+$$
+D\!\left(\frac{\mu Q_N^n}{\mu Q_N^n1}\middle\Vert\nu_N\right)
+\leq\left(\frac{M_N}{m_N}\right)^2
+(1-\delta_N)^nD(\mu\Vert\nu_N).
+$$
+
+The full sampled-fitness component collision and revival rule, retained dead
+coordinates, BAOAB, final position noise, smooth cap, and terminal boundary
+are included in $Q_N$. The constants in this statement are finite-population
+constants supplied by its full-kernel Gaussian minorization.
+:::
+
+:::{prf:proof}
+Define the conservative Doob kernel and its invariant law by
+
+$$
+P_N(S,dS')=\frac{e_N(S')Q_N(S,dS')}{\alpha_Ne_N(S)},
+\qquad \pi_N=e_N\nu_N.
+$$
+
+The minorization gives
+$P_N\geq\delta_N\widehat\theta_N$, where
+$\widehat\theta_N=e_N\theta_N/\theta_N(e_N)$.
+For $\delta_N<1$ write
+$P_N=\delta_N\widehat\theta_N+(1-\delta_N)R_N$, with $R_N$ Markov.
+Joint convexity of relative entropy and data processing imply, for every
+law $\eta$,
+
+$$
+\begin{aligned}
+D(\eta P_N\Vert\pi_N)
+&=D\bigl(\delta_N\widehat\theta_N+(1-\delta_N)\eta R_N
+\Vert\delta_N\widehat\theta_N+(1-\delta_N)\pi_NR_N\bigr)\\
+&\leq(1-\delta_N)D(\eta R_N\Vert\pi_NR_N)\\
+&\leq(1-\delta_N)D(\eta\Vert\pi_N).
+\end{aligned}
+$$
+
+For $\delta_N=1$, $P_N$ is the constant kernel and the conclusion after
+one update is immediate. Iterate the inequality. The exact discrete
+conjugacy, obtained by canceling $e_N$ between successive kernels, is
+
+$$
+\frac{\mu Q_N^n}{\mu Q_N^n1}
+=\mathcal R_{1/e_N}\bigl[(\mathcal R_{e_N}\mu)P_N^n\bigr],
+\qquad \mathcal R_w\eta=\frac{w\eta}{\eta(w)}.
+$$
+
+Apply {prf:ref}`lem-kl-bounded-reweighting` to the initial and final
+reweightings. Each costs at most $M_N/m_N$, giving the claimed bound.
+The proof of the minorization in Chapter 09 conditions on every accepted
+graph and shared rotation before integrating their actual probabilities;
+it therefore applies to the full mechanism rather than to independent
+collision outputs. Its constants need not be uniform in $N$.
+:::
+
+:::{div} feynman-prose
+The function $e_N$ lets us change how we weight swarm configurations while keeping an exact account of survival. In the proof, its factors cancel between successive steps. Reweighting at the beginning and end therefore recovers precisely the conditioned trajectories of the gas. All the shared collision rotations remain inside the transition being studied.
+
+The minorization gives a common part of the transition law, of weight $\delta_N$, that carries no information about the starting configuration. Repeated updates erase information through that common part. The two reweightings account for the prefactor in the entropy bound.
+
+For a fixed swarm size this proves decay. As we add walkers, the common weight can shrink and the reweighting cost can grow. The cluster estimates have a further task: control the dependence on population size. The finite-swarm bound here supplies no such uniform estimate by itself.
+:::
 
 :::{prf:lemma} Discrete entropy decay with the numerical defect retained
 :label: lem-discrete-entropy-decay

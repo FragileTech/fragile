@@ -594,6 +594,49 @@ fallback. Such mixed-sign queries require the separately invoked
 general metric calculation.
 :::
 
+:::{prf:definition} Computational representation of tessellation geometry
+:label: def-tessellation-rust-representation
+
+The Rust module `algorithmic_gas::tessellation` estimates geometry from
+the walker positions alone, without fitness derivatives. It is the
+discrete counterpart of {ref}`sec-tessellation-to-curvature`: the sites
+are the projections of the eligible walkers onto the tessellated
+coordinates, and every later quantity is a function of their Delaunay
+complex.
+
+| Component | Mathematical input and result |
+|---|---|
+| `TessellatorKind` | Delaunay complex of the distinct sites: sorted path ($d=1$), planar triangulation ($d=2$), tetrahedralization with exact orientation and in-sphere predicates ($d=3$). Coincident walkers share a site and are mutual neighbors; a swarm confined to an affine subspace is triangulated inside that subspace; no coordinate is perturbed |
+| `TessellationDomain` | Open space, a clip box realized by mirror-image sites, or a periodic box realized by translated image sites with minimum-image displacements |
+| `VoronoiCells` | Dual cells from the circumcenters: facet measure $A_{ij}$ and volume $V_i=\sum_j A_{ij}\lVert x_j-x_i\rVert/(2d)$ |
+| `MetricKind::NeighborCovariance` | Emergent metric $g_i=\bigl(\tfrac{1}{\deg i}\sum_{j\sim i}\Delta x_{ij}\Delta x_{ij}^{\mathsf T}+\varepsilon I\bigr)^{+}$ with clamped spectrum, its determinant, and the diffusion factor $g_i^{-1/2}$ |
+| `VolumeKind` | $\sqrt{\det g_i}$, the Voronoi volume $V_i$, or their product |
+| `WeightMode` | Edge weights $w_{ij}$ from Euclidean or metric edge lengths $d_g(i,j)^2=\Delta x_{ij}^{\mathsf T}\tfrac12(g_i+g_j)\Delta x_{ij}$, volumes, or facet measures, optionally normalized over each walker's neighbors |
+| `CurvatureKind::ConformalLaplacian` | With $u_i=\log\det g_i/(2d)$, the conformal scalar curvature $R_i=-2(d-1)\sum_j w_{ij}(u_j-u_i)$ |
+| `CurvatureKind::ConformalQuadraticFit` | Weighted local quadratic fit of $u$ giving $\nabla u$ and $\nabla^2u$; $R=-2(d-1)e^{-2u}\bigl(\Delta u+\tfrac{d-2}{2}\lVert\nabla u\rVert^2\bigr)$ and the coordinate Ricci tensor $R_{ab}=-(d-2)(u_{ab}-u_au_b)-(\Delta u+(d-2)\lVert\nabla u\rVert^2)\delta_{ab}$ |
+| `CurvatureKind::ReggeDeficit` | Deficit angles $\delta_h$ of the hinges (vertices for $d=2$, edges for $d=3$) from edge lengths alone, with $\int R\,dV=2\sum_h\lvert h\rvert\delta_h$ allocated to the sites over their barycentric dual volumes |
+| `CurvatureKind::{VolumeDistortion, ShapeDistortion, RaychaudhuriExpansion}` | Voronoi-cell indicators: $1-V_i/\langle V\rangle$, $1-r_{\mathrm{in}}/r_{\mathrm{circ}}$, and $-\theta_i$ with $\theta_i=(V_i-V_i^{\mathrm{prev}})/(\Delta t\,V_i)$ ({ref}`sec-discrete-raychaudhuri`) |
+| `RewardAllocationKind::EinsteinHilbertDensity` | The walker's share $r_i=\lambda R_i\,\mathrm{vol}_i$ of the Einstein–Hilbert action |
+
+The conformal estimators measure the curvature of the conformal class
+$e^{2u}\delta$ with $\det g=e^{2du}$; they are exact for a conformally
+flat metric and ignore the trace-free part of $g$. The quadratic fit is
+exact for quadratic $u$ up to its ridge, which is absolute and must stay
+far below the squared neighbor spacing. A Regge deficit angle is
+$O(h^2)$ in the neighbor spacing $h$, the same order as the relative
+error of a length built from the endpoint metrics; the Regge action
+converges to the continuum one for exact geodesic edge lengths, and with
+endpoint-metric lengths it is an indicator with an $O(1)$ discretization
+bias. The Voronoi indicators are heuristic. None of these constructions
+imposes a field equation.
+
+Predicates are evaluated exactly in double precision on the exact images
+of the run-precision coordinates; numerical geometry uses the run
+precision. Every per-walker, per-edge and per-cell result is a pure
+function of the tessellation, so serial and thread-parallel evaluation
+return identical bits.
+:::
+
 :::{div} feynman-prose
 Here is a small calculation whose answer can be checked on paper. Take
 $V(x,y,z)=(x^2+y^2+z^2)/2+0.1xyz$ and evaluate at the origin, with

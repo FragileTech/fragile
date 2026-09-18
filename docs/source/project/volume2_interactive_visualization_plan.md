@@ -352,15 +352,13 @@ The experiment catalog and admitted controls are maintained in the shared Rust r
 **Controls.** Walkers (`N`, default `64`); Localization width ρ (`rho`, default `0.7`); Cloud geometry (`geometry`, default `clustered`)
 :::
 
-### IV-07 — Taylor coefficients of a recorded fitness field
+### IV-07 — Fitness sensitivity and companion fluctuations
 
-:::{div} feynman-prose
-**Where and why.** [Lecture chapter](../2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md), at `sec-gg-cinf-regularity`. How accurately do conditional fitness derivatives predict a local displacement?
+**Where and why.** [Lecture chapter](../2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full.md), at `sec-cinf-companion-sensitivity-experiment`. Distinguish deterministic landscape sensitivity from companion randomness at a fixed swarm.
 
-**Executed experiment.** Fit no polynomial coefficients: obtain them by automatic differentiation of the recorded conditional field. Compare the resulting Taylor polynomial with direct field evaluations over the selected radius. Order and radius control approximation of this fixed conditional field.
+**Executed experiment.** Displace one walker, retain companion identities and recompute all affected rows and normalization. Compare the production scalar fitness with automatically differentiated Taylor coefficients. Shrink the requested window until two interleaved grids meet the error tolerance; report independent finite-difference coefficient checks and their numerical resolution. For the default four walkers, enumerate the full companion law and plot its fitness distribution, the mean response with fixed probabilities, and the mean response with updated probabilities. Compare the derivative of the mean with the sum of its fixed-assignment and changing-law contributions.
 
-**Controls.** Taylor order (`order`, default `6`); Expansion radius (`radius`, default `0.2`); Standard-deviation floor (`sigma`, default `0.15`)
-:::
+**Controls.** Three to five walkers; quadratic or Rastrigin reward; Taylor order; requested radius; error tolerance; standard-deviation floor; neighborhood and donor width; reward and diversity exponents. The displayed accuracy window is measured, with no claim to a certified analytic remainder bound.
 
 ### IV-08 — Conditional acceptance in a localized gas
 

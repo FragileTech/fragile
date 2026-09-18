@@ -1158,7 +1158,7 @@ The declared radius makes its coefficient vanish.
 :::{prf:remark} Pressure and the cosmological sign convention
 :label: rem-holo-cosmological-sign
 
-Write $\varkappa=8\pi G_{\mathrm{eff}}/c^4$. The signed pressure parameter $\Lambda_P=\varkappa P$ in {prf:ref}`def-effective-cosmological-constant` is not automatically the parameter multiplying $g_{ab}$ in the vacuum equation above. If a vacuum stress has $T_{ab}=Pg_{ab}$, then
+Write $\varkappa=8\pi G_{\mathrm{eff}}/c^4$ and define $\Lambda_P=\varkappa P$ for the specified vacuum comparison. If its vacuum stress has $T_{ab}=Pg_{ab}$, then
 
 $$
 G_{ab}+\Lambda_{\mathrm{bare}}g_{ab}=\varkappa T_{ab}

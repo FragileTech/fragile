@@ -8,7 +8,7 @@ use crate::{
 use std::collections::BTreeSet;
 
 /// The single supported checkpoint schema.
-pub const CHECKPOINT_VERSION: u32 = 4;
+pub const CHECKPOINT_VERSION: u32 = 5;
 
 fn rewards<T: Real>(r: &RewardBatch<T>, n: usize, version: u64) -> Result<()> {
     r.validate(n)?;
@@ -184,11 +184,16 @@ impl<T: Real> StepReport<T> {
             alive,
             frame,
         )?;
+        let clone_recipients = if config.clone_decision.revival_from_companion {
+            vec![true; n]
+        } else {
+            alive.to_vec()
+        };
         companions(
             &self.cloning_companions,
             &self.clone_plan.sources,
             1,
-            alive,
+            &clone_recipients,
             frame,
         )?;
         require(
@@ -239,7 +244,8 @@ impl<T: Real> StepReport<T> {
                 let s = self.clone_plan.sources[donor.pool_index as usize];
                 if choice.revival {
                     require(s.frame == frame, "revival donor is historical")?;
-                } else {
+                }
+                if !choice.revival || config.clone_decision.revival_from_companion {
                     require(
                         self.cloning_companions.row(i).next() == Some(donor.pool_index),
                         "clone decision differs from companion proposal",
@@ -274,6 +280,9 @@ impl<T: Real> Checkpoint<T> {
             self.schema_version == CHECKPOINT_VERSION && self.rng_version == RNG_VERSION,
             "unsupported checkpoint/RNG version",
         )?;
+        if let Some(graph) = &self.graph {
+            graph.validate(self.population.len())?;
+        }
         if let Some(archive) = &self.recording {
             archive.validate()?;
             let (step, terminal) = archive.terminal();
