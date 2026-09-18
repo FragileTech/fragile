@@ -23,6 +23,7 @@ import {
   FORMATION_GRADIENT,
 } from "./visuals/formation-overlay.js";
 import { dragOrbit, orbitPosition, presetOrbit } from "./camera-orbit.js";
+import { ViewGizmo } from "./view-gizmo.js";
 
 function line(points, color, dashed = false) {
   const geometry = new T.BufferGeometry().setFromPoints(
@@ -245,6 +246,7 @@ export class LabRenderer {
       listen(type, (e) => {
         if (this.cameraGesture?.id === e.pointerId) this.clearCameraGesture();
       });
+    this.viewGizmo = new ViewGizmo(canvas.parentElement, this);
     this.animate = this.animate.bind(this);
     this.frame = requestAnimationFrame(this.animate);
   }
@@ -273,6 +275,38 @@ export class LabRenderer {
     this.orbit = presetOrbit(top, this.flightMode && !top);
     this.updateCamera();
   }
+  // Navigation-gizmo entry points; they share the state and limits of the
+  // canvas gestures above.
+  setOrbit(orbit) {
+    this.clearCameraGesture();
+    this.orbit = orbit;
+    this.updateCamera();
+  }
+  orbitBy(dx, dy) {
+    this.setOrbit(dragOrbit(this.orbit, dx, dy, this.flightMode && !this.top));
+  }
+  zoomBy(factor) {
+    this.clearCameraGesture();
+    this.zoom = T.MathUtils.clamp(this.zoom * factor, 0.6, 12);
+    this.resize();
+  }
+  panByPixels(dx, dy) {
+    this.clearCameraGesture();
+    const r = this.canvas.getBoundingClientRect();
+    const clientX = r.left + r.width / 2,
+      clientY = r.top + r.height / 2;
+    const from = this.worldPoint({ clientX, clientY });
+    const to = this.worldPoint({
+      clientX: clientX + dx,
+      clientY: clientY + dy,
+    });
+    if (!from || !to) return;
+    const follow = this.followBody;
+    this.followBody = null;
+    this.viewCenter = this.viewCenter.map((v, i) => v + from[i] - to[i]);
+    this.updateCamera();
+    if (follow != null) this.canvas.dispatchEvent(new Event("camerachange"));
+  }
   updateCamera() {
     const side = this.flightMode && !this.top;
     this.coordinateFrame.rotation.x = side ? Math.PI / 2 : 0;
@@ -285,6 +319,7 @@ export class LabRenderer {
     this.camera.updateProjectionMatrix();
     this.camera.updateMatrixWorld(true);
     this.refreshCargoReadout();
+    this.viewGizmo?.sync(this.orbit, side);
   }
   worldPoint(event) {
     this.camera.updateMatrixWorld(true);
@@ -966,6 +1001,7 @@ export class LabRenderer {
     this.unsubscribeActionGuides();
     this.actionReadout.remove();
     this.cargoReadout.dispose();
+    this.viewGizmo.dispose();
     this.checkpoints?.dispose();
     this.checkpointMotion.removeEventListener(
       "change",

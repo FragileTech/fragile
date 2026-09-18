@@ -695,6 +695,7 @@ physics definitions; visual scale and attachments do not change collisions.
 | `visuals/body-layer.js` | Body transforms and instancing grouped by visual definition/color; supports nested animated parts |
 | `visuals/lighting.js` | Procedural reflections and shared contact shadows |
 | `renderer.js` | World, camera, environmental geometry and diagnostic overlays |
+| `camera-orbit.js`, `view-gizmo.js` | Orbit camera math and the viewport's navigation gizmo |
 | `motion.js` | Packed world recording, chunked storage and authoritative capture |
 | `playback.js` | Independent seek/playback clock; no DOM or native-engine dependency |
 | `replay-panel.js` | Replay controls and presentation callbacks |
@@ -726,6 +727,16 @@ Camera angles survive simulation updates, replay scrubbing, style changes,
 live reward changes, and resizing; loading or restarting a scene resets them.
 Near an edge-on flight view, rotate away from the edge before selecting, editing,
 or panning on the physics plane. Camera changes do not alter physics or recordings.
+
+The navigation gizmo in the viewport's top-right corner offers the same camera
+without a wheel or right button. It draws the simulation's X, Y and Z axes as
+currently seen. Dragging it orbits the view; clicking an axis ball looks along
+that axis, and clicking the axis already in view turns to the opposite one. The
+**Zoom** and **Pan** handles beneath it work by dragging. Each control also
+accepts the arrow keys when focused. Axis views stop at the camera's usual tilt
+limits, and an axis that those limits cannot reach, such as the view from below
+the ground, is dimmed. In flight scenes the X and Y views look along the physics
+plane, so the edge-on caveat above applies to them.
 
 The masthead's **Visual style** selector switches between **Futuristic** and
 **Steampunk** vehicles, props, scenery materials, lighting and interface accents.

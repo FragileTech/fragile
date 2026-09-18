@@ -292,6 +292,99 @@ try {
   await page.mouse.move(box.x - 15, y);
   await page.mouse.up();
   assert.equal((await state()).dragging, false);
+  // The navigation gizmo adds controls; it drives the same camera state.
+  const near = (a, b, message) =>
+    assert(Math.abs(a - b) < 1e-6, message || `${a} != ${b}`);
+  const gizmo = async (selector = "") => {
+    const b = await page
+      .locator(`#viewport .view-gizmo ${selector}`)
+      .boundingBox();
+    return { ...b, cx: b.x + b.width / 2, cy: b.y + b.height / 2 };
+  };
+  const snapTo = async (axis, sign, yaw, pitch) => {
+    const ball = await gizmo(
+      `[data-axis="${axis}"][data-sign="${sign}"] circle`,
+    );
+    await page.mouse.click(ball.cx, ball.cy);
+    await page.waitForFunction(
+      ({ yaw, pitch }) => {
+        const o = cameraTest.renderer.orbit;
+        return (
+          1 - Math.cos(o.yaw - yaw) < 1e-9 && Math.abs(o.pitch - pitch) < 1e-9
+        );
+      },
+      { yaw, pitch },
+    );
+    assert.equal((await state()).dragging, false);
+  };
+  const drag = async (from, dx, dy) => {
+    await page.mouse.move(from.cx, from.cy);
+    await page.mouse.down();
+    await page.mouse.move(from.cx + dx, from.cy + dy, { steps: 6 });
+    await page.mouse.up();
+  };
+  const degrees = Math.PI / 180;
+  await page.locator("#reset-view").click();
+  const frame = await page.locator("#viewport").boundingBox(),
+    corner = await gizmo();
+  assert(corner.x > frame.x + frame.width / 2);
+  assert(corner.x + corner.width <= frame.x + frame.width);
+  assert(corner.y >= frame.y && corner.y < frame.y + frame.height / 2);
+  const resetOrbit = (await state()).orbit;
+  await snapTo("x", 1, Math.PI / 2, 5 * degrees);
+  await snapTo("x", 1, -Math.PI / 2, 5 * degrees);
+  const sideways = await state();
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 40, y + 10, { steps: 4 });
+  await page.mouse.up();
+  assert.notDeepEqual(
+    (await state()).center,
+    sideways.center,
+    "Left-drag panning still works at an axis view",
+  );
+  await snapTo("z", 1, 0, 89.9 * degrees);
+  assert.equal(
+    await page
+      .locator('.view-gizmo [data-axis="z"][data-sign="-1"]')
+      .evaluate((node) => node.classList.contains("disabled")),
+    true,
+  );
+  await page.locator("#reset-view").click();
+  assert.deepEqual((await state()).orbit, resetOrbit);
+  const orbitWidget = await gizmo(".view-gizmo-orbit");
+  await drag({ cx: orbitWidget.cx - 30, cy: orbitWidget.cy + 30 }, 40, 0);
+  near((await state()).orbit.yaw, resetOrbit.yaw - 40 * 0.008);
+  near((await state()).orbit.pitch, resetOrbit.pitch);
+  await page.locator(".view-gizmo-orbit").focus();
+  await page.keyboard.press("ArrowRight");
+  near((await state()).orbit.yaw, resetOrbit.yaw - 40 * 0.008 - 15 * degrees);
+  await page.locator("#reset-view").click();
+  await drag(await gizmo(".view-gizmo-zoom"), 0, -50);
+  near((await state()).zoom, Math.exp(0.5));
+  await page.mouse.move(orbitWidget.cx, orbitWidget.cy);
+  await page.mouse.wheel(0, 200);
+  await page.waitForTimeout(100);
+  near((await state()).zoom, Math.exp(0.3));
+  await page.locator("#reset-view").click();
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x + 60, y + 30, { steps: 6 });
+  await page.mouse.up();
+  const canvasPan = (await state()).center;
+  await page.locator("#reset-view").click();
+  await page.locator("#focus").click();
+  const gizmoFollow = (await state()).follow;
+  assert.notEqual(gizmoFollow, null);
+  await page.locator("#reset-view").click();
+  await page.evaluate(
+    (body) => (cameraTest.renderer.followBody = body),
+    gizmoFollow,
+  );
+  await drag(await gizmo(".view-gizmo-pan"), 60, 30);
+  const gizmoPan = await state();
+  assert.equal(gizmoPan.follow, null);
+  gizmoPan.center.forEach((value, i) => near(value, canvasPan[i]));
   await page.locator("#reset-view").click();
   await page.locator("#mode-edit").click();
   const beforeEdit = await state();
@@ -490,11 +583,19 @@ try {
   );
   await page.mouse.up({ button: "right" });
   await page.locator("#reset-view").click();
+  const upright = await gizmo('[data-axis="y"][data-sign="1"] circle'),
+    hub = await gizmo(".view-gizmo-orbit");
+  assert(upright.cy < hub.cy - 20, "Flight views draw the Y axis upright");
+  await snapTo("y", 1, 0, 80 * degrees);
+  await snapTo("z", 1, 0, 0);
+  await snapTo("z", 1, Math.PI, 0);
+  await page.locator("#reset-view").click();
   await rightDrag(-40, 60);
   await captureStyles("flight");
   await page.mouse.move(x, y);
   await page.mouse.down({ button: "right" });
   await page.evaluate(() => cameraTest.renderer.dispose());
+  assert.equal(await page.locator(".view-gizmo").count(), 0);
   assert.equal((await state()).dragging, false);
   await page.mouse.up({ button: "right" });
   assert.deepEqual(errors, []);

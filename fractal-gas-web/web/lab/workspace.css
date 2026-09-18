@@ -165,6 +165,10 @@
   font-size: 11px;
   bottom: 12px;
 }
+.workspace .view-gizmo {
+  top: 10px;
+  right: 10px;
+}
 .workspace .telemetry {
   flex-shrink: 0;
   padding: 8px 12px;
