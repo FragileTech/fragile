@@ -92,6 +92,13 @@ function checkDimension(entry, config) {
         : `${entry.name} requires ${expected} dimensions.`,
     );
 }
+export function validateEliteCount(count, walkers) {
+  if (!Number.isInteger(count) || count < 0 || count > walkers)
+    throw new Error(
+      "Elite walkers must be an integer between 0 and the walker count.",
+    );
+  return count;
+}
 export function validateLabConfig(config, catalog) {
   const entry = config && catalogEntry(catalog, config.benchmark);
   if (!entry) throw new Error("Choose a benchmark supported by this lab.");
@@ -110,6 +117,7 @@ export function validateLabConfig(config, catalog) {
     config.gas.seed > 4294967295
   )
     throw new Error("The lab seed must be an unsigned 32-bit integer.");
+  validateEliteCount(config.gas.n_elite ?? 0, config.walkers);
   return config;
 }
 export function resolveConfig(base, values, catalog) {
@@ -148,6 +156,10 @@ export function resolveConfig(base, values, catalog) {
     config.initial_upper = Math.min(high, 1);
   }
   const gas = config.gas;
+  gas.n_elite = validateEliteCount(
+    Number(values["n-elite"] ?? gas.n_elite ?? 0),
+    config.walkers,
+  );
   gas.seed = number("seed");
   gas.backend = values.backend;
   gas.precision = values.precision;

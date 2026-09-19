@@ -369,3 +369,36 @@ test("Langevin, anisotropic noise and mutual companions run in WASM f64", async 
     gas.free();
   }
 });
+
+test("Elite count validation, clone protection and checkpoint continuation", async () => {
+  const config = JSON.parse(default_config());
+  assert.equal(config.gas.n_elite ?? 0, 0);
+  config.walkers = 8;
+  config.gas.n_elite = 2;
+  validateLabConfig(config);
+  for (const count of [-1, 1.5, 9]) {
+    const invalid = structuredClone(config);
+    invalid.gas.n_elite = count;
+    assert.throws(() => validateLabConfig(invalid), /Elite walkers/);
+    await assert.rejects(() => BrowserGas.create(JSON.stringify(invalid)));
+  }
+  const gas = await BrowserGas.create(JSON.stringify(config));
+  let resumed;
+  try {
+    await gas.step(1);
+    const bytes = gas.checkpoint();
+    assert.equal(JSON.parse(checkpoint_config(bytes)).gas.n_elite, 2);
+    resumed = await BrowserGas.restore(bytes);
+    const frame = await gas.step(1);
+    assert.equal(frame.elite_count, 2);
+    assert.ok(
+      frame.report.clone_plan.choices
+        .slice(0, 2)
+        .every((choice) => !choice.accepted),
+    );
+    assert.deepEqual(await resumed.step(1), frame);
+  } finally {
+    gas.free();
+    resumed?.free();
+  }
+});

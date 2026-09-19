@@ -165,6 +165,8 @@ pub struct ArchiveAnchor<T: Real> {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(bound = "T: Real")]
 pub struct RecordedStep<T: Real> {
+    #[serde(default)]
+    pub elite_injection: Option<crate::elites::EliteBank<T>>,
     pub epoch: u64,
     pub before: Population<T>,
     pub final_population: Population<T>,
@@ -264,6 +266,13 @@ impl<T: Real> RunArchive<T> {
                 bytes,
                 checked_add(s.before.buffer_bytes()?, s.final_population.buffer_bytes()?)?,
             )?;
+            if let Some(p) = s
+                .elite_injection
+                .as_ref()
+                .and_then(|bank| bank.population.as_ref())
+            {
+                bytes = checked_add(bytes, p.buffer_bytes()?)?;
+            }
             bytes = checked_add(bytes, checked_mul(s.before.len(), 1024)?)?;
             bytes = checked_add(
                 bytes,
@@ -427,6 +436,15 @@ impl<T: Real> RunArchive<T> {
                 .get(&s.epoch)
                 .copied()
                 .unwrap_or(&anchor.population);
+            let mut restored;
+            let previous = if let Some(bank) = &s.elite_injection {
+                bank.validate(&self.gas_config, previous)?;
+                restored = previous.clone();
+                bank.inject(&mut restored)?;
+                &restored
+            } else {
+                previous
+            };
             require(
                 boundary_matches(&s.before, previous),
                 "archive boundary differs from anchor or previous endpoint",

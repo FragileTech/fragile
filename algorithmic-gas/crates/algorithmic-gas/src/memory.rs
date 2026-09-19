@@ -91,7 +91,11 @@ impl GasConfig {
             .distance_donors
             .history_window
             .max(self.cloning_donors.history_window);
-        let copies = checked_add(12, checked_mul(window, 4)?)?;
+        // Reserve full-population capacity for both banks, selection scratch and recording.
+        let copies = checked_add(
+            if self.n_elite > 0 { 18 } else { 12 },
+            checked_mul(window, 4)?,
+        )?;
         let mut total = checked_mul(largest, copies)?;
         let edges = checked_mul(
             p.len(),

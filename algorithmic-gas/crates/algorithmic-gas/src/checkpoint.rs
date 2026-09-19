@@ -280,6 +280,24 @@ impl<T: Real> Checkpoint<T> {
             self.schema_version == CHECKPOINT_VERSION && self.rng_version == RNG_VERSION,
             "unsupported checkpoint/RNG version",
         )?;
+        require(
+            self.elites.is_some() == (self.config.n_elite > 0),
+            "checkpoint elite bank missing or disabled",
+        )?;
+        if let Some(elites) = &self.elites {
+            elites.validate(&self.config, &self.population)?;
+            if let Some(bank) = &elites.population {
+                let mut bytes = crate::memory::checked_add(
+                    self.config
+                        .working_set_bytes(&self.population, &self.history, None)?,
+                    crate::memory::checked_mul(bank.buffer_bytes()?, 3)?,
+                )?;
+                if let Some(archive) = &self.recording {
+                    bytes = crate::memory::checked_add(bytes, archive.buffer_bytes()?)?;
+                }
+                crate::memory::enforce(bytes, self.config.max_memory_bytes)?;
+            }
+        }
         if let Some(graph) = &self.graph {
             graph.validate(self.population.len())?;
         }

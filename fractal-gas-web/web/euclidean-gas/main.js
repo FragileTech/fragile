@@ -51,7 +51,7 @@ const pause = async () => {
 };
 function controls() {
   const ready = !!frame && !operation;
-  const extinct = !!frame && lastMetrics?.alive === 0;
+  const extinct = !!frame && lastMetrics?.alive === 0 && !frame.elite_count;
   $("run").disabled = !ready || extinct;
   $("run").textContent = running ? "Pause" : "Run";
   $("step").disabled = !ready || extinct || running || !!pendingStep;
@@ -320,7 +320,7 @@ function acceptFrame(next, reset = false) {
       bestRecorded === null ? null : bestRecorded - info.minimum,
     );
   $("stage-loading").hidden = true;
-  if (!metrics.alive) {
+  if (!metrics.alive && !frame.elite_count) {
     running = false;
     $("run-status").textContent = "Extinct";
   }
@@ -350,6 +350,7 @@ function fillForm(c) {
           : "custom",
     dimensions: c.dimensions,
     walkers: c.walkers,
+    "n-elite": g.n_elite ?? 0,
     seed: g.seed,
     direction: g.fitness.direction,
     backend: g.backend,
@@ -380,6 +381,7 @@ function fillForm(c) {
   };
   for (const [id, value] of Object.entries(values))
     if ($(id)) $(id).value = value;
+  $("n-elite").max = c.walkers;
   $("config-note").textContent =
     "Configuration applied. Changes require reset.";
 }
@@ -559,6 +561,9 @@ $("configuration").addEventListener("submit", (event) => {
       values[input.id] = input.value;
     await initialize(resolveConfig(config, values, catalog));
   });
+});
+$("walkers").addEventListener("input", () => {
+  $("n-elite").max = $("walkers").value;
 });
 $("configuration").addEventListener("input", () => {
   $("config-note").textContent = "Pending changes — Apply & reset to use them.";
@@ -765,6 +770,7 @@ await safe(async () => {
   catalog = defaults.catalog;
   fillBenchmarks();
   config = defaults.config;
+  config.gas.n_elite = Math.min(2, config.walkers);
   await initialize(config);
   window.euclideanGasLab = {
     ready: true,

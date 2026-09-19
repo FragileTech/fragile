@@ -536,3 +536,26 @@ prediction failures and current test coverage. The
 [Part VI contracts](crates/algorithmic-gas/src/physics/partvi_contracts.json) state
 what each experiment measures. The [lecture guide](../docs/source/2_fractal_gas/partvi_experiments.md)
 provides the chapter context.
+
+### Elite walkers
+
+`GasConfig.n_elite` retains the best eligible walkers seen after completed steps,
+ranked by raw reward in the configured minimize/maximize direction. The default
+is zero; counts above the population size are rejected. Prior elites win ties,
+followed by population order. If fewer eligible candidates exist, selected
+candidates repeat to fill the bank. Before the next step the bank replaces the
+first slots, which cannot clone away but remain donors and undergo normal kinetics.
+All numerical fields and opaque state snapshots travel together.
+
+Retention commits with the step, participates in memory admission, survives
+checkpoints, and clears when the population is explicitly replaced. Recordings
+include the reinjected bank. Legacy checkpoints without a bank remain valid
+only with elites disabled. External walker-indexed inputs are rejected when
+elites are enabled because their alignment cannot yet be restored. Best-ever
+selection compares rewards at the time each candidate was evaluated; stochastic
+or changing objectives therefore retain historical scores.
+
+The Euclidean Gas browser lab starts fresh runs with two elites and offers an
+**Elite walkers** count from zero to the population size. Changes take effect
+through **Apply & reset**; imports without the setting use zero. Theory presets
+and the Rust/WASM API defaults remain unchanged.

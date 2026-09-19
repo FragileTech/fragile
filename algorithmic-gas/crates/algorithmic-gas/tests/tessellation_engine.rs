@@ -277,3 +277,18 @@ fn geometry_budget_and_missing_stage_are_reported() {
         .is_err()
     );
 }
+
+#[test]
+fn elite_reinjection_refreshes_scheduled_geometry() {
+    let mut config = eh_config::<f64>(7, 1, GeometrySchedule::EveryStage);
+    config.n_elite = 2;
+    let mut gas = build(config, population::<f64>(12, 1.));
+    gas.start_recording(algorithmic_gas::tracking::RecordingConfig::default())
+        .unwrap();
+    for _ in 0..3 {
+        block_on(gas.step()).unwrap();
+        gas.graph().unwrap().validate(12).unwrap();
+    }
+    gas.recording().unwrap().validate().unwrap();
+    gas.checkpoint().validate().unwrap();
+}

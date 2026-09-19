@@ -6,6 +6,7 @@ pub mod cloning;
 pub mod compute;
 pub mod domain;
 pub mod donor;
+pub mod elites;
 pub mod engine;
 pub mod error;
 pub mod extraction;

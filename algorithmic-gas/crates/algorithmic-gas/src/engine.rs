@@ -23,9 +23,16 @@ use std::sync::{
     atomic::{AtomicBool, Ordering},
 };
 
+fn no_elites(count: &usize) -> bool {
+    *count == 0
+}
+
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct GasConfig {
+    /// Historical best walkers, restored before cloning; zero disables retention.
+    #[serde(skip_serializing_if = "no_elites")]
+    pub n_elite: usize,
     pub backend: BackendKind,
     pub precision: Precision,
     pub seed: u64,
@@ -55,6 +62,7 @@ pub enum InvalidRewardPolicy {
 impl Default for GasConfig {
     fn default() -> Self {
         Self {
+            n_elite: 0,
             backend: BackendKind::Cpu,
             precision: Precision::F32,
             seed: 7,
@@ -82,6 +90,7 @@ impl GasConfig {
             "gas",
         )?;
         p.validate()?;
+        require(self.n_elite <= p.len(), "elite count exceeds population")?;
         let dimension = p
             .observations
             .fields
@@ -242,6 +251,8 @@ pub trait HistorySink<T: Real> {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(bound = "T: Real", deny_unknown_fields)]
 pub struct Checkpoint<T: Real> {
+    #[serde(default)]
+    pub elites: Option<crate::elites::EliteBank<T>>,
     pub schema_version: u32,
     pub rng_version: u32,
     pub config: GasConfig,
@@ -369,6 +380,7 @@ impl<T: Real> GasBuilder<T> {
             recording: None,
             cancellation: CancellationToken::default(),
             graph: None,
+            elites: crate::elites::EliteBank { population: None },
         };
         gas.domain.refresh_observations(&mut gas.population)?;
         gas.operators.boundary(
@@ -400,6 +412,7 @@ impl<T: Real> GasBuilder<T> {
     }
 }
 pub struct AlgorithmicGas<T: Real> {
+    elites: crate::elites::EliteBank<T>,
     config: GasConfig,
     population: Population<T>,
     reward: Arc<dyn RewardSource<T>>,
@@ -476,6 +489,9 @@ impl<T: Real> AlgorithmicGas<T> {
     ) -> Result<usize> {
         use crate::memory::{checked_add, checked_mul, enforce};
         let mut reserved = self.config.working_set_bytes(p, &self.history, input)?;
+        if let Some(bank) = &self.elites.population {
+            reserved = checked_add(reserved, checked_mul(bank.buffer_bytes()?, 3)?)?;
+        }
         if let Some(archive) = &self.recording {
             // Retained archive plus typed per-stage copies and a transactional candidate.
             reserved = checked_add(reserved, archive.buffer_bytes()?)?;
@@ -505,11 +521,21 @@ impl<T: Real> AlgorithmicGas<T> {
         if let Some(gradient) = &self.gradient {
             archive.providers.insert("gradient".into(), gradient.id());
         }
+        let bank_bytes = self
+            .elites
+            .population
+            .as_ref()
+            .map(|p| p.buffer_bytes())
+            .transpose()?
+            .unwrap_or(0);
         crate::memory::enforce(
             crate::memory::checked_add(
-                archive.buffer_bytes()?,
-                self.config
-                    .working_set_bytes(&self.population, &self.history, None)?,
+                crate::memory::checked_add(
+                    archive.buffer_bytes()?,
+                    self.config
+                        .working_set_bytes(&self.population, &self.history, None)?,
+                )?,
+                crate::memory::checked_mul(bank_bytes, 3)?,
             )?,
             self.config.max_memory_bytes,
         )?;
@@ -556,6 +582,10 @@ impl<T: Real> AlgorithmicGas<T> {
     pub fn population(&self) -> &Population<T> {
         &self.population
     }
+    /// Number of retained walkers available for reinjection, even after population extinction.
+    pub fn elite_count(&self) -> usize {
+        self.elites.population.as_ref().map_or(0, |p| p.len())
+    }
     pub fn step_number(&self) -> u64 {
         self.step
     }
@@ -592,6 +622,10 @@ impl<T: Real> AlgorithmicGas<T> {
         input: &InputBatch<T>,
         pipeline: &crate::extraction::ExtractionPipeline<T>,
     ) -> Result<StepReport<T>> {
+        require(
+            self.config.n_elite == 0,
+            "elites with external inputs require source-aligned input restoration",
+        )?;
         self.config
             .working_set_bytes(&self.population, &self.history, Some(input))?;
         let mut population = pipeline.extract(input, &self.population)?;
@@ -614,6 +648,10 @@ impl<T: Real> AlgorithmicGas<T> {
         input: Option<&InputBatch<T>>,
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
+        require(
+            input.is_none() || self.config.n_elite == 0,
+            "elites with external inputs require source-aligned input restoration",
+        )?;
         let previous_trace = self.cx.stage_trace.clone();
         let previous_stats = self.cx.stats.clone();
         let previous_allowance = self.cx.max_memory_bytes;
@@ -683,6 +721,7 @@ impl<T: Real> AlgorithmicGas<T> {
         }
         let extracted_version = extracted.as_ref().map(|p| p.version);
         let mut p = extracted.unwrap_or_else(|| self.population.clone());
+        let injected = self.elites.inject(&mut p)?;
         let next = self
             .step
             .checked_add(1)
@@ -698,8 +737,18 @@ impl<T: Real> AlgorithmicGas<T> {
         // population was replaced by extraction or repaired at the boundary.
         let mut step_graph = self.graph.clone();
         if self.config.geometry.as_ref().is_some_and(|g| {
-            extracted_version.is_some() || (g.every_stage() && p.version != self.population.version)
+            injected > 0
+                || extracted_version.is_some()
+                || (g.every_stage() && p.version != self.population.version)
         }) {
+            if injected > 0 {
+                // Refreshed collective fields differ from the literal restored bank.
+                p.version = p
+                    .version
+                    .checked_add(1)
+                    .ok_or_else(|| GasError::Numerical("population version overflow".into()))?;
+                p.observations.provenance.population_version = p.version;
+            }
             step_graph = self.refresh_geometry(&mut p)?;
         }
         if extracted_version != Some(p.version) {
@@ -925,7 +974,7 @@ impl<T: Real> AlgorithmicGas<T> {
                 }
             }
         }
-        let plan = self.operators.clone_plan(
+        let mut plan = self.operators.clone_plan(
             &self.config.clone_decision,
             CloneRequest {
                 population: &p,
@@ -938,6 +987,14 @@ impl<T: Real> AlgorithmicGas<T> {
                 step: next,
             },
         )?;
+        plan.validate(&p, &clone_pool)?;
+        for (i, choice) in plan.choices.iter_mut().enumerate().take(injected) {
+            if alive[i] {
+                choice.accepted = false;
+                choice.revival = false;
+                choice.probability = Some(0.);
+            }
+        }
         let mut destination = plan.apply_literal(&p, &clone_pool)?;
         self.cx.trace_population("literal_clone", &destination);
         let changed = self
@@ -1078,11 +1135,34 @@ impl<T: Real> AlgorithmicGas<T> {
             reward_evaluations: evals,
             execution: self.cx.stats.clone(),
         };
+        let next_elites = self.elites.select(&self.config, &destination)?;
+        next_elites.validate(&self.config, &destination)?;
+        let mut retained = self
+            .config
+            .working_set_bytes(&destination, &self.history, input)?;
+        for bank in [&self.elites, &next_elites] {
+            if let Some(p) = &bank.population {
+                retained = crate::memory::checked_add(
+                    retained,
+                    crate::memory::checked_mul(p.buffer_bytes()?, 3)?,
+                )?;
+            }
+        }
+        let retained_with_archive = crate::memory::checked_add(
+            retained,
+            self.recording
+                .as_ref()
+                .map(|a| a.buffer_bytes())
+                .transpose()?
+                .unwrap_or(0),
+        )?;
+        crate::memory::enforce(retained_with_archive, self.config.max_memory_bytes)?;
         report.validate(&self.config, &destination, next, evals)?;
         self.cancellation.check()?;
         if let Some(archive) = &mut self.recording {
             let record = crate::tracking::RecordedStep {
                 epoch: archive.epoch,
+                elite_injection: self.elites.population.as_ref().map(|_| self.elites.clone()),
                 before: p.clone(),
                 final_population: destination.clone(),
                 stages: self
@@ -1119,11 +1199,7 @@ impl<T: Real> AlgorithmicGas<T> {
             archive.append(record)?;
             let admission = (|| {
                 crate::memory::enforce(
-                    crate::memory::checked_add(
-                        archive.buffer_bytes()?,
-                        self.config
-                            .working_set_bytes(&destination, &self.history, input)?,
-                    )?,
+                    crate::memory::checked_add(archive.buffer_bytes()?, retained)?,
                     self.config.max_memory_bytes,
                 )
             })();
@@ -1143,6 +1219,7 @@ impl<T: Real> AlgorithmicGas<T> {
                 self.history.remove(0);
             }
         }
+        self.elites = next_elites;
         self.population = destination;
         self.graph = step_graph;
         self.step = next;
@@ -1220,6 +1297,7 @@ impl<T: Real> AlgorithmicGas<T> {
         self.reward_evaluations = reward_evaluations;
         self.population = population;
         self.graph = graph;
+        self.elites = crate::elites::EliteBank { population: None };
         self.history.clear();
         self.last_report = None;
         if let Some(trace) = &mut self.cx.stage_trace {
@@ -1229,6 +1307,7 @@ impl<T: Real> AlgorithmicGas<T> {
     }
     pub fn checkpoint(&self) -> Checkpoint<T> {
         Checkpoint {
+            elites: (self.config.n_elite > 0).then(|| self.elites.clone()),
             schema_version: crate::checkpoint::CHECKPOINT_VERSION,
             rng_version: RNG_VERSION,
             config: self.config.clone(),
@@ -1286,6 +1365,9 @@ impl<T: Real> AlgorithmicGas<T> {
             )?;
             last = Some(*frame);
         }
+        self.elites = checkpoint
+            .elites
+            .unwrap_or(crate::elites::EliteBank { population: None });
         self.population = checkpoint.population;
         self.step = checkpoint.step;
         self.reward_evaluations = checkpoint.reward_evaluations;

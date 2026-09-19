@@ -1,6 +1,6 @@
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
-import { mkdir } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 
 const base = process.env.LECTURE_BASE_URL || "http://127.0.0.1:8770";
 const output = new URL("../../outputs/sandbox-review/", import.meta.url);
@@ -71,6 +71,34 @@ try {
   await page.goto(base + "/euclidean-gas/index.html");
   await ready();
   await noError("load");
+  assert.equal(await page.locator("#n-elite").inputValue(), "2");
+  await page.locator("#n-elite").fill("-1");
+  assert.equal(
+    await page.locator("#n-elite").evaluate((el) => el.checkValidity()),
+    false,
+  );
+  await apply({ "n-elite": 3 });
+  assert.equal(await page.locator("#n-elite").inputValue(), "3");
+  await apply({ "n-elite": 2 });
+  const [exportedFile] = await Promise.all([
+    page.waitForEvent("download"),
+    page.locator("#export-config").click(),
+  ]);
+  const exportedConfig = JSON.parse(
+    await readFile(await exportedFile.path(), "utf8"),
+  );
+  assert.equal(exportedConfig.gas.n_elite, 2);
+  delete exportedConfig.gas.n_elite;
+  await surface(() =>
+    page.locator("#config-file").setInputFiles({
+      name: "legacy-config.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(exportedConfig)),
+    }),
+  );
+  await ready();
+  assert.equal(await page.locator("#n-elite").inputValue(), "0");
+  await apply({ "n-elite": 2 });
   assert.equal(await page.locator("#view").inputValue(), "2d");
   assert.equal(await page.locator("#stage canvas").count(), 1);
 

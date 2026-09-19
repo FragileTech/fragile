@@ -445,6 +445,7 @@ fn snapshot<T: Real>(g: &AlgorithmicGas<T>) -> Result<JsValue, JsValue> {
     #[serde(bound = "T: Real")]
     struct Frame<'a, T: Real> {
         step: u64,
+        elite_count: usize,
         reward_evaluations: u64,
         population: &'a algorithmic_gas::Population<T>,
         report: Option<&'a algorithmic_gas::StepReport<T>>,
@@ -453,6 +454,7 @@ fn snapshot<T: Real>(g: &AlgorithmicGas<T>) -> Result<JsValue, JsValue> {
     }
     js(&Frame {
         step: g.step_number(),
+        elite_count: g.elite_count(),
         reward_evaluations: g.reward_evaluations(),
         population: g.population(),
         report: g.last_report(),

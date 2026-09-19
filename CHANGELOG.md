@@ -1,5 +1,7 @@
 # Changelog
 
+- Add historical elite walkers to the Rust Algorithmic Gas, with transactional retention, checkpoint continuation and recorded reinjection. The Euclidean Gas Lab exposes the elite count and starts fresh runs with two elites; existing configurations retain zero.
+
 - Fix CI checkpoint-version expectations for geometry schema 5 and update mobile browser tests to open Settings and interaction modes through Menu and Tools.
 
 - Give the Control Lab environment most of the mobile screen, with compact run controls and on-demand tools, settings, and replay panels; preserve desktop layout and recording state across responsive changes.
