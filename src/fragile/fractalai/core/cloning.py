@@ -9,6 +9,22 @@ from torch import Tensor
 from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
+def _validate_cloning_companions(companions: Tensor, alive: Tensor) -> None:
+    """Reject invalid donor indices before any cloning or companion indexing."""
+    if companions.shape != alive.shape or companions.dtype not in {torch.int32, torch.int64}:
+        msg = "Cloning companions must be integer indices with shape [N]"
+        raise ValueError(msg)
+    if not alive.any():
+        msg = "No alive walkers available for cloning"
+        raise ValueError(msg)
+    if ((companions < 0) | (companions >= alive.numel())).any():
+        msg = "Cloning companion indices are out of range"
+        raise ValueError(msg)
+    if not alive[companions].all():
+        msg = "Cloning companions must only select alive walkers"
+        raise ValueError(msg)
+
+
 def compute_cloning_score(
     fitness: Tensor,
     companion_fitness: Tensor,
@@ -244,7 +260,7 @@ def clone_walkers(
         positions: Walker positions [N, d]
         velocities: Walker velocities [N, d]
         fitness: Fitness potential values [N] from compute_fitness
-        companions: Companion indices [N] from compute_fitness
+        companions: Indices [N] of walkers alive before cloning
         alive: Boolean mask [N], True for alive walkers
         p_max: Maximum cloning probability threshold (default: 1.0)
         epsilon_clone: Regularization for cloning score (default: 0.01)
@@ -266,6 +282,9 @@ def clone_walkers(
             - 'num_cloned': Number of walkers that cloned
             - 'companions': Companion indices [N] (same as input)
 
+    Raises:
+        ValueError: If companions are invalid or select dead walkers, or none are alive.
+
     Note:
         - Dead walkers (alive=False) should have fitness=0, giving them maximum
           cloning pressure to be revived
@@ -273,6 +292,7 @@ def clone_walkers(
         - Positions updated before velocities to maintain proper state
         - Momentum conserved within each collision group
     """
+    _validate_cloning_companions(companions, alive)
     N = positions.shape[0]
     device = positions.device
     with torch.no_grad():
@@ -465,7 +485,7 @@ class CloneOperator(PanelModel):
             positions: Walker positions [N, d]
             velocities: Walker velocities [N, d]
             fitness: Fitness potential values [N] from compute_fitness
-            companions: Companion indices [N] from compute_fitness
+            companions: Indices [N] of walkers alive before cloning
             alive: Boolean mask [N], True for alive walkers
             p_max: Override maximum cloning probability threshold
             epsilon_clone: Override regularization for cloning score

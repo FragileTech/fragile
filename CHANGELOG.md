@@ -1,5 +1,7 @@
 # Changelog
 
+- Require alive cloning companions for every Python Euclidean Gas selection scheme, restrict selection calculations to survivors, fix single-survivor revival in pairing methods, and reject invalid custom donors before cloning.
+
 - Add historical elite walkers to the Rust Algorithmic Gas, with transactional retention, checkpoint continuation and recorded reinjection. The Euclidean Gas Lab exposes the elite count and starts fresh runs with two elites; existing configurations retain zero.
 
 - Fix CI checkpoint-version expectations for geometry schema 5 and update mobile browser tests to open Settings and interaction modes through Menu and Tools.

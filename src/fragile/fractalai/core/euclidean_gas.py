@@ -18,6 +18,7 @@ import param
 import torch
 from torch import Tensor
 
+from fragile.fractalai.core.cloning import _validate_cloning_companions
 from fragile.fractalai.core.panel_model import INPUT_WIDTH, PanelModel
 
 
@@ -577,6 +578,7 @@ class EuclideanGas(PanelModel):
                 bounds=self.bounds,
                 pbc=self.pbc,
             )
+            _validate_cloning_companions(companions_clone, alive_mask)
             # Prepare cached values to be cloned from companion
             clone_tensor_kwargs = {"fitness_cloned": fitness}
             if self._cached_ricci_scalar is not None:

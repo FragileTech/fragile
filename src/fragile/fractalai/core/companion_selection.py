@@ -104,79 +104,48 @@ def select_companions_softmax(
         pbc: If True, use periodic boundary conditions for distances
 
     Returns:
-        Companion indices for all alive walkers, shape [N]
-        Dead walkers map to -1 (invalid, should use uniform selection instead)
+        Companion indices for all walkers, shape [N], selecting only alive walkers.
+        Dead walkers select uniformly from alive walkers. A sole survivor selects itself.
 
-    Note:
-        This function only handles alive walkers. Dead walkers should use
-        select_companions_uniform() as per the hybrid cloning operator.
+    Raises:
+        ValueError: If no walkers are alive.
     """
     N = x.shape[0]
+    alive_indices = torch.where(alive_mask)[0]
+    n_alive = alive_indices.numel()
+    if n_alive == 0:
+        msg = "No alive walkers available for companion selection"
+        raise ValueError(msg)
+    if n_alive == 1:
+        return alive_indices.expand(N).clone()
 
-    # Compute full distance matrix [N, N] (accounting for PBC if enabled)
-    dist_sq = compute_algorithmic_distance_matrix(x, v, lambda_alg, bounds, pbc)
-
-    # Compute softmax weights: exp(-d^2 / (2*epsilon^2))
-    weights = torch.exp(-dist_sq / (2 * epsilon**2))  # [N, N]
-
-    # Create mask for valid companions
-    # Each row i can select from alive walkers, excluding self if requested
-    alive_mask_expanded = alive_mask.unsqueeze(0).expand(N, -1)  # [N, N]
-    valid_mask = alive_mask_expanded.clone()
-
+    # Only survivors participate in distances, weights, and probability normalization.
+    dist_sq = compute_algorithmic_distance_matrix(
+        x[alive_mask], v[alive_mask], lambda_alg, bounds, pbc
+    )
+    weights = torch.exp(-dist_sq / (2 * epsilon**2))
+    valid_mask = torch.ones_like(weights, dtype=torch.bool)
     if exclude_self:
-        # Exclude self-pairing: set diagonal to False
-        valid_mask.fill_diagonal_(fill_value=False)
+        valid_mask.fill_diagonal_(False)
+    weights.masked_fill_(~valid_mask, 0)
 
-    # Zero out invalid companions
-    weights *= valid_mask.float()
-
-    # Normalize weights to probabilities (vectorized)
-    # For each row, divide by row sum
-    row_sums = weights.sum(dim=1, keepdim=True)  # [N, 1]
-
-    # Handle numerical underflow: if all weights are ~0, fallback to uniform
-    underflow_rows = row_sums.squeeze() < 1e-30
+    row_sums = weights.sum(dim=1, keepdim=True)
+    underflow_rows = row_sums.squeeze(1) < 1e-30
     if underflow_rows.any():
-        # For underflow rows, use uniform distribution over valid companions
-        # Match dtype of weights to avoid dtype mismatch
-        valid_counts = valid_mask.to(weights.dtype).sum(dim=1, keepdim=True).clamp(min=1)
-        uniform_probs = valid_mask.to(weights.dtype) / valid_counts
+        valid_weights = valid_mask.to(weights.dtype)
+        uniform_probs = valid_weights / valid_weights.sum(dim=1, keepdim=True)
         weights[underflow_rows] = uniform_probs[underflow_rows]
         row_sums = weights.sum(dim=1, keepdim=True)
+    probs = weights / row_sums
+    local_companions = torch.multinomial(probs, num_samples=1).squeeze(1)
 
-    # Edge case: If a walker has no valid companions (e.g., single walker with exclude_self=True),
-    # allow self-selection for that walker to avoid multinomial error
-    no_companion_rows = row_sums.squeeze() < 1e-30
-    if no_companion_rows.any():
-        # For these rows, allow self-selection
-        self_mask = torch.eye(N, dtype=torch.bool, device=x.device)
-        weights[no_companion_rows] = self_mask[no_companion_rows].to(weights.dtype)
-        row_sums = weights.sum(dim=1, keepdim=True)
-
-    row_sums = torch.clamp(row_sums, min=1e-10)  # Avoid division by zero
-    probs = weights / row_sums  # [N, N]
-
-    # Sample companions for all walkers at once (vectorized)
-    # multinomial samples one index per row
-    companions = torch.multinomial(probs, num_samples=1).squeeze(1)  # [N]
-
-    # Assign dead walkers to random alive companions (for revival)
-    dead_mask = ~alive_mask
-    if dead_mask.any():
-        alive_indices = torch.where(alive_mask)[0]
-        n_alive = len(alive_indices)
-        if n_alive > 0:
-            dead_indices = torch.where(dead_mask)[0]
-            n_dead = len(dead_indices)
-            # Each dead walker gets a uniformly random alive companion
-            random_positions = torch.randint(0, n_alive, (n_dead,), device=x.device)
-            companions[dead_indices] = alive_indices[random_positions]
-        else:
-            # No alive walkers, map dead to themselves (will fail in cloning anyway)
-            dead_indices = torch.where(dead_mask)[0]
-            companions[dead_indices] = dead_indices
-
+    # Translate survivor-local indices back to the full swarm and fill revival donors.
+    companions = torch.empty(N, dtype=torch.long, device=x.device)
+    companions[alive_indices] = alive_indices[local_companions]
+    dead_indices = torch.where(~alive_mask)[0]
+    if dead_indices.numel():
+        random_positions = torch.randint(n_alive, (dead_indices.numel(),), device=x.device)
+        companions[dead_indices] = alive_indices[random_positions]
     return companions
 
 
@@ -230,12 +199,15 @@ def random_pairing_fisher_yates(
     Returns:
         Companion map for all walkers, shape [N]
         For paired walkers: mutual pairing c(i) = j and c(j) = i
-        For unpaired walkers (dead or singleton if N_alive odd): map to self
+        An unpaired alive walker maps to itself; dead walkers select alive companions
         Values are indices into the full walker array [0, N)
 
     Note:
         If the number of alive walkers is odd, the last walker maps to itself.
-        Dead walkers are mapped to themselves.
+        Dead walkers select uniformly from alive walkers.
+
+    Raises:
+        ValueError: If no walkers are alive.
     """
     N = alive_mask.shape[0]
     device = alive_mask.device
@@ -246,9 +218,11 @@ def random_pairing_fisher_yates(
     alive_indices = torch.where(alive_mask)[0]
     n_alive = len(alive_indices)
 
-    if n_alive < 2:
-        # If 0 or 1 alive walkers, no pairing needed
-        return companion_map
+    if n_alive == 0:
+        msg = "No alive walkers available for companion selection"
+        raise ValueError(msg)
+    if n_alive == 1:
+        return alive_indices.expand(N).clone()
 
     # Generate random permutation using PyTorch's built-in (faster than manual Fisher-Yates)
     permuted = alive_indices[torch.randperm(n_alive, device=device)]
@@ -310,17 +284,7 @@ def select_companions_for_cloning(
     Raises:
         ValueError: If no walkers are alive (cannot select companions)
     """
-    device = x.device
-
-    alive_indices = torch.where(alive_mask)[0]
-    n_alive = len(alive_indices)
-
-    if n_alive == 0:
-        msg = "No alive walkers available for companion selection"
-        raise ValueError(msg)
-
-    # Start with softmax selection for alive walkers
-    companions = select_companions_softmax(
+    return select_companions_softmax(
         x=x,
         v=v,
         alive_mask=alive_mask,
@@ -330,17 +294,6 @@ def select_companions_for_cloning(
         bounds=bounds,
         pbc=pbc,
     )
-
-    # For dead walkers, use uniform selection
-    dead_mask = ~alive_mask
-    n_dead = dead_mask.sum().item()
-
-    if n_dead > 0:
-        # Sample uniformly from alive walkers for each dead walker
-        random_positions = torch.randint(0, n_alive, (int(n_dead),), device=device)
-        companions[dead_mask] = alive_indices[random_positions]
-
-    return companions
 
 
 def sequential_greedy_pairing(
@@ -378,12 +331,15 @@ def sequential_greedy_pairing(
     Returns:
         Companion map for all walkers, shape [N]
         For paired walkers: mutual pairing c(i) = j and c(j) = i
-        For unpaired walkers (dead or singleton): map to self (i -> i)
+        An unpaired alive walker maps to itself; dead walkers select alive companions
         Values are indices into the full walker array [0, N)
 
     Note:
         If the number of alive walkers is odd, one walker will be mapped to itself.
-        Dead walkers are mapped to themselves.
+        Dead walkers select uniformly from alive walkers.
+
+    Raises:
+        ValueError: If no walkers are alive.
     """
     N = x.shape[0]
     device = x.device
@@ -395,9 +351,11 @@ def sequential_greedy_pairing(
     alive_indices = torch.where(alive_mask)[0]
     n_alive = len(alive_indices)
 
-    if n_alive < 2:
-        # If 0 or 1 alive walkers, no pairing needed (all map to self)
-        return companion_map
+    if n_alive == 0:
+        msg = "No alive walkers available for companion selection"
+        raise ValueError(msg)
+    if n_alive == 1:
+        return alive_indices.expand(N).clone()
 
     # Compute full distance matrix once (only for alive walkers)
     x_alive = x[alive_mask]  # [n_alive, d]
@@ -602,22 +560,21 @@ class CompanionSelection(PanelModel):
 
         Returns:
             Companion indices for each walker, shape [N]
-            - For "softmax", "cloning": indices in [0, N), dead walkers may be -1 (softmax)
-            - For "uniform": indices in [0, N), all map to alive walkers
-            - For "random_pairing", "greedy_pairing": mutual pairing map, shape [N]
-              Paired walkers have c(i) = j and c(j) = i
-              Unpaired walkers (dead or singleton) map to self
+            All indices refer to alive walkers in the original swarm. Dead walkers
+            select uniformly from survivors. Pairing methods create mutual pairs among
+            survivors, with unpaired survivors selecting themselves.
 
         Raises:
-            ValueError: If no walkers are alive (methods that require alive walkers)
+            ValueError: If no walkers are alive
             ValueError: If method is not recognized (should not happen after validation)
 
         Note:
+            Distance and probability calculations use only alive positions and velocities.
             The return semantics differ between selection methods:
             - Selection methods (softmax, uniform, cloning): Each walker independently
               selects a companion. Multiple walkers can select the same companion.
             - Pairing methods (random_pairing, greedy_pairing): Create mutual pairs
-              where c(i) = j implies c(j) = i. Each walker appears in at most one pair.
+              among survivors, where c(i) = j implies c(j) = i.
 
             With pbc=True, distance-based methods use minimum image convention for
             position distances, ensuring correct neighbor selection across periodic boundaries.
