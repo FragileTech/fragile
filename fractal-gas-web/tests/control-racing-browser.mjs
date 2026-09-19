@@ -1,5 +1,9 @@
 import { captureScreenshot } from "./helpers/screenshots.mjs";
-import { prepareWorkspace, applyDraft } from "./helpers/workspace-ui.mjs";
+import {
+  prepareWorkspace,
+  applyDraft,
+  openSettings,
+} from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 import { mkdir } from "node:fs/promises";
@@ -122,7 +126,9 @@ try {
   );
   assert.equal(await page.locator("#score").textContent(), "0");
   await page.setViewportSize({ width: 768, height: 1024 });
+  await page.locator("#mobile-tools-toggle").click();
   assert(await page.locator("#mode-drive").isVisible());
+  await page.locator("#mobile-close-tools").click();
   await capture("tablet");
   assert.equal(
     await page.evaluate(
@@ -137,8 +143,7 @@ try {
     { width: 768, height: 1024 },
   ]) {
     await page.setViewportSize(viewport);
-    if (!(await page.locator("#tab-setup").isVisible()))
-      await page.locator("#toggle-settings").click();
+    await openSettings(page);
     let lastOutline;
     for (const id of [
       "racing-roots",
@@ -148,8 +153,7 @@ try {
       "racing-obstacle-field",
       "racing",
     ]) {
-      if (!(await page.locator("#tab-setup").isVisible()))
-        await page.locator("#toggle-settings").click();
+      await openSettings(page);
       await page.locator("#tab-setup").click();
       await page.locator("#track").selectOption(id);
       await applyDraft(page);

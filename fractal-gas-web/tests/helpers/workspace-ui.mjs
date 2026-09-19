@@ -50,3 +50,18 @@ export async function closeFiles(page) {
   if (await page.locator("#files-dialog").isVisible())
     await page.locator("#files-dialog .dialog-close").click();
 }
+
+export async function openSettings(page) {
+  // setViewportSize resolves before the matchMedia change handler moves controls.
+  await page.waitForFunction(
+    () =>
+      document.body.classList.contains("mobile-workspace") ===
+      matchMedia(
+        "(max-width: 779px), (pointer: coarse) and (max-height: 500px)",
+      ).matches,
+  );
+  if (await page.locator("#tab-setup").isVisible()) return;
+  if (!(await page.locator("#toggle-settings").isVisible()))
+    await page.locator("#mobile-menu-toggle").click();
+  await page.locator("#toggle-settings").click();
+}

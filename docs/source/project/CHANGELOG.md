@@ -1,5 +1,7 @@
 # Changelog
 
+- Fix CI checkpoint-version expectations for geometry schema 5 and update mobile browser tests to open Settings and interaction modes through Menu and Tools.
+
 - Give the Control Lab environment most of the mobile screen, with compact run controls and on-demand tools, settings, and replay panels; preserve desktop layout and recording state across responsive changes.
 
 - Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.

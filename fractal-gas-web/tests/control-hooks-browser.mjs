@@ -1,5 +1,9 @@
 import { captureScreenshot } from "./helpers/screenshots.mjs";
-import { prepareWorkspace, applyDraft } from "./helpers/workspace-ui.mjs";
+import {
+  prepareWorkspace,
+  applyDraft,
+  openSettings,
+} from "./helpers/workspace-ui.mjs";
 import { chromium } from "playwright";
 import assert from "node:assert/strict";
 const browser = await chromium.launch({
@@ -93,7 +97,7 @@ try {
   assert.equal(await count(), n);
   await page.locator("#rock-size").fill("0.1");
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.locator("#toggle-settings").click();
+  await openSettings(page);
   await page.locator("#hook-stiffness").scrollIntoViewIfNeeded();
   await captureScreenshot(page, {
     animations: "disabled",

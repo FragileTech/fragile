@@ -28,8 +28,8 @@ const resolveConfig = (base, values) =>
   resolveWithCatalog(base, values, catalog);
 const validateLabConfig = (config) => validateWithCatalog(config, catalog);
 
-test("Checkpoint format explicitly versions corrected semantics", () => {
-  assert.equal(capabilities().checkpoint_version, 4);
+test("Checkpoint format explicitly versions geometry state", () => {
+  assert.equal(capabilities().checkpoint_version, 5);
 });
 
 test("Squared distance and ordinary distance have the same mean-diversity semantics", async () => {
