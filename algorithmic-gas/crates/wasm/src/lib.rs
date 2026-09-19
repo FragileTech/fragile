@@ -6,6 +6,7 @@ use algorithmic_gas_benchmarks::RunConfig;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 mod physics_bindings;
+mod spectroscopy_bindings;
 
 /// Complete Volume II catalog; controls and native stress cases share this source.
 #[wasm_bindgen]
@@ -218,7 +219,7 @@ pub fn checkpoint_config(bytes: Vec<u8>) -> Result<String, JsValue> {
 }
 #[wasm_bindgen]
 pub fn capabilities() -> JsValue {
-    js(&serde_json::json!({"wasm_cpu":["f32","f64"],"webgpu_compiled":cfg!(feature="webgpu"),"webgpu_precision":["f32"],"execution_model":"host-orchestrated Burn batches","rng_version":algorithmic_gas::random::RNG_VERSION,"checkpoint_version":CHECKPOINT_VERSION,"objective_execution":["graph","host"],"objective_catalog_version":algorithmic_gas_benchmarks::catalog::VERSION,"bbob":{"provider":"COCO 2.8.2 (Rust port)","dimensions":algorithmic_gas_benchmarks::bbob::DIMENSIONS}})).unwrap()
+    js(&serde_json::json!({"wasm_cpu":["f32","f64"],"webgpu_compiled":cfg!(feature="webgpu"),"webgpu_precision":["f32"],"execution_model":"host-orchestrated Burn batches","rng_version":algorithmic_gas::random::RNG_VERSION,"checkpoint_version":CHECKPOINT_VERSION,"spectroscopy_version":algorithmic_gas::physics::spectroscopy::SPECTROSCOPY_VERSION,"objective_execution":["graph","host"],"objective_catalog_version":algorithmic_gas_benchmarks::catalog::VERSION,"bbob":{"provider":"COCO 2.8.2 (Rust port)","dimensions":algorithmic_gas_benchmarks::bbob::DIMENSIONS}})).unwrap()
 }
 
 #[wasm_bindgen]

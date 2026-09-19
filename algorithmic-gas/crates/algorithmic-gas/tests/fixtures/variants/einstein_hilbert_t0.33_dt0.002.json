@@ -1,0 +1,188 @@
+{
+  "backend": "cpu",
+  "precision": "f32",
+  "seed": 7,
+  "boundary": {
+    "kind": "unbounded"
+  },
+  "distance_donors": {
+    "distance": {
+      "kind": "euclidean",
+      "field": "positions",
+      "scales": [],
+      "squared": false,
+      "periodic": null
+    },
+    "kernel": {
+      "kind": "uniform"
+    },
+    "law": "fisher_yates",
+    "count": 1,
+    "allow_self": false,
+    "replacement": true,
+    "insufficient": "use_available",
+    "odd": "self_companion",
+    "pivot": "ascending",
+    "history_window": 0,
+    "tile_edges": 4096
+  },
+  "cloning_donors": {
+    "distance": {
+      "kind": "euclidean",
+      "field": "positions",
+      "scales": [],
+      "squared": false,
+      "periodic": null
+    },
+    "kernel": {
+      "kind": "uniform"
+    },
+    "law": "fisher_yates",
+    "count": 1,
+    "allow_self": false,
+    "replacement": true,
+    "insufficient": "use_available",
+    "odd": "self_companion",
+    "pivot": "ascending",
+    "history_window": 0,
+    "tile_edges": 4096
+  },
+  "reducer": {
+    "kind": "mean"
+  },
+  "fitness": {
+    "direction": "maximize",
+    "reward_standardizer": {
+      "kind": "legacy_sample",
+      "epsilon": 1e-30
+    },
+    "diversity_standardizer": {
+      "kind": "legacy_sample",
+      "epsilon": 1e-30
+    },
+    "reward_map": {
+      "kind": "logistic",
+      "amplitude": 2.0,
+      "floor": 0.0
+    },
+    "diversity_map": {
+      "kind": "logistic",
+      "amplitude": 2.0,
+      "floor": 0.0
+    },
+    "reward_exponent": 1.0,
+    "diversity_exponent": 1.0,
+    "distance_floor": 1e-30
+  },
+  "clone_decision": {
+    "epsilon": 0.0,
+    "saturation": 1.0,
+    "revival_from_companion": false,
+    "every": 20
+  },
+  "clone_transform": {
+    "position_field": null,
+    "jitter": null,
+    "jitter_amplitude": 0.0,
+    "velocity_field": "velocities",
+    "restitution": 1.0,
+    "collision_rotation": "identity"
+  },
+  "kinetic": {
+    "integrator": {
+      "kind": "baoab",
+      "positions": "positions",
+      "velocities": "velocities",
+      "dt": 0.002,
+      "friction": 1.0
+    },
+    "noise": {
+      "innovation": "gaussian",
+      "geometry": {
+        "kind": "isotropic",
+        "scale": {
+          "kind": "constant",
+          "values": [
+            0.812403840463596
+          ]
+        }
+      }
+    },
+    "position_diffusion": 0.0,
+    "velocity_cap": null,
+    "boundary_schedule": "substeps"
+  },
+  "qft": {
+    "viscosity": null,
+    "innovation_shifts": [],
+    "graph_viscosity": {
+      "coefficient": 3.0,
+      "weights": "riemannian_kernel_volume"
+    },
+    "curl": {
+      "beta_curl": 1.0
+    }
+  },
+  "geometry": {
+    "pipeline": {
+      "positions": "positions",
+      "projection": {
+        "kind": "drop_last",
+        "min_ambient": 3
+      },
+      "domain": {
+        "kind": "open"
+      },
+      "tessellator": "auto",
+      "degeneracy": {
+        "duplicates": "lift_cliques",
+        "rank_projection": true,
+        "on_failure": "error"
+      },
+      "metric": {
+        "kind": "neighbor_covariance",
+        "ridge": 0.00001,
+        "min_eig": 1e-6,
+        "max_eig": null
+      },
+      "volume": {
+        "kind": "sqrt_det_metric",
+        "det_floor": 1e-12
+      },
+      "weights": [
+        {
+          "mode": "inverse_riemannian_distance",
+          "name": null,
+          "normalize": true,
+          "length_scale": 1.0
+        },
+        {
+          "mode": "riemannian_kernel_volume",
+          "name": null,
+          "normalize": true,
+          "length_scale": 1.0
+        }
+      ],
+      "curvature": [
+        {
+          "name": "ricci_scalar",
+          "estimator": {
+            "kind": "conformal_laplacian",
+            "weights": "inverse_riemannian_distance",
+            "det_floor": 1e-12
+          }
+        }
+      ],
+      "cells": null,
+      "parallelism": "auto"
+    },
+    "schedule": {
+      "kind": "every_stage"
+    },
+    "write_diffusion": true
+  },
+  "include_truncated": false,
+  "invalid_reward": "error",
+  "max_batch_elements": 16777216,
+  "max_memory_bytes": 536870912
+}

@@ -671,12 +671,16 @@ evaluations are distinct samples of the split update.
 
 ### 3.4 Relationship to SDE Dynamics
 
-The CST edge data encodes one complete step of the stochastic differential equation governing walker dynamics.
+The CST edge data encodes one complete step of the stochastic differential
+equation governing walker dynamics. The variant used here is the **Geometric
+Gas** ({prf:ref}`def-variant-geometric`), whose defining dynamics are the
+geometric kinetic dynamics {prf:ref}`def-gg-sde` of
+{doc}`../convergence_program/17_geometric_gas`.
 
-:::{prf:definition} Adaptive Gas SDE
+:::{prf:definition} Geometric Gas SDE
 :label: def-fractal-set-sde
 
-The Adaptive Gas dynamics for walker $i$ with state $(x_i, v_i)$ is governed by:
+In the notation of this chapter, the dynamics of the Geometric Gas ({prf:ref}`def-variant-geometric`) for walker $i$ with state $(x_i, v_i)$ take the form:
 
 $$dv_i = \left[\mathbf{F}_{\mathrm{stable}}(x_i) + \mathbf{F}_{\mathrm{adapt}}(x_i, S) + \mathbf{F}_{\mathrm{viscous}}(x_i, S) - \gamma v_i\right] dt + \Sigma_{\mathrm{reg}}(x_i, S) \circ dW_i,$$
 
@@ -687,6 +691,33 @@ where:
 - $\mathbf{F}_{\mathrm{viscous}}(x, S) = \nu \sum_{j \neq i} K_\rho(x_i, x_j)(v_j - v_i)$ is the viscous coupling force
 - $\Sigma_{\mathrm{reg}}(x, S)$ is the fitness-adapted diffusion tensor
 - $dW_i$ is a standard Wiener process
+
+The variant itself is defined by {prf:ref}`def-gg-sde`, which uses row-normalized viscous weights and the adaptive force $\epsilon_F\nabla_{x_i}V_i$; the two conventions are compared in {prf:ref}`def-variant-geometric`.
+:::
+
+:::{div} feynman-prose
+
+Compare this equation with {prf:ref}`def-gg-sde` term by term and you will find
+the same four forces plus the same fitness-adapted Stratonovich noise. Only the
+bookkeeping differs: here the viscous coupling is written with the raw kernel
+weights $K_\rho(x_i,x_j)$ and the adaptive force as $-\nabla V_{\mathrm{fit}}$,
+while {prf:ref}`def-gg-sde` uses the row-normalized weights
+$W_{ij}=K_{ij}/\sum_{l\ne i}K_{il}$ and $F_i=\epsilon_F\nabla_{x_i}V_i$. The
+comparison is made explicit in {prf:ref}`def-variant-geometric`.
+
+That distinction matters for what you may claim. The convergence results of
+{doc}`../convergence_program/17_geometric_gas` are proved for the normalized
+convention, and each one carries its own hypotheses — the spectral margin, the
+cloning estimate, the viscous degree comparison. Writing the same physics with
+unnormalized weights does not by itself transport those theorems here; you must
+identify the constants first. For this chapter nothing is lost, because all we
+need of the SDE is its *shape*: which quantities a CST edge has to store so that
+one step can be replayed exactly.
+
+Notice also the word "adaptive" in $\mathbf{F}_{\mathrm{adapt}}$ and in the
+adaptive diffusion tensor $\Sigma_{\mathrm{reg}}$. That is a description of what
+those objects do — they follow the measured fitness landscape — not the name of
+a gas variant. The variant is the Geometric Gas.
 :::
 
 :::{prf:proposition} CST Edge Encodes Complete Kinetic Update

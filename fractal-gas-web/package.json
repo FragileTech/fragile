@@ -44,7 +44,8 @@
     "test:euclidean-fractal-browser": "node tests/euclidean-gas/lecture-fractal-browser.mjs",
     "build:partvi-index": "node tools/build-partvi-index.mjs",
     "test:euclidean-qft": "node tests/euclidean-gas/lecture-qft.test.mjs",
-    "test:euclidean-qft-browser": "node tests/euclidean-gas/lecture-qft-browser.mjs"
+    "test:euclidean-qft-browser": "node tests/euclidean-gas/lecture-qft-browser.mjs",
+    "test:euclidean-qft-simulator": "node --test tests/euclidean-gas/qft-simulator.test.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",

@@ -1,0 +1,326 @@
+/* QFT Simulator workbench. Tokens (--bg, --panel, --ink, --muted, --accent,
+   --edge) and the shared chart, table, toolbar and export rules come from
+   ../lecture/style.css, which qft.html links first. */
+.qft main {
+  max-width: 1500px;
+  margin: auto;
+}
+.qft h2 {
+  font-size: 16px;
+  font-weight: 550;
+  margin: 28px 0 10px;
+}
+.qft h3 {
+  font-size: 13px;
+  font-weight: 550;
+  margin: 18px 0 8px;
+}
+.chart h3 {
+  flex: 1;
+  margin: 0;
+  line-height: 1.4;
+}
+.masthead .engine {
+  margin-left: auto;
+  color: var(--muted);
+  text-align: right;
+  letter-spacing: 0.05em;
+}
+
+[role="tablist"] {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--edge);
+  margin: 0 0 24px;
+  padding: 3px 3px 0;
+  scrollbar-width: thin;
+}
+[role="tab"] {
+  flex: 0 0 auto;
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 5px 5px 0 0;
+  background: none;
+  color: var(--muted);
+  padding: 9px 14px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+[role="tab"]:hover {
+  color: var(--ink);
+}
+[role="tab"][aria-selected="true"] {
+  background: var(--panel);
+  border-color: var(--edge);
+  color: var(--ink);
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+[role="tabpanel"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+}
+[role="tabpanel"][hidden] {
+  display: none;
+}
+
+.group,
+.mapping,
+.family {
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  margin: 0 0 18px;
+  padding: 12px 16px 16px;
+  min-width: 0;
+}
+.group > legend,
+.mapping > legend,
+.family > legend {
+  padding: 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.control input[type="number"],
+.control input[type="text"] {
+  grid-column: 1/-1;
+  width: 100%;
+}
+.control input[type="text"] {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--edge);
+  border-radius: 4px;
+  padding: 5px;
+}
+.control-slot {
+  display: contents;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.anchor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+.status {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.variants {
+  margin: 12px 0 0;
+  font-size: 12px;
+}
+.variants dt {
+  color: var(--ink);
+  margin-top: 8px;
+}
+.variants dd {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+.tag {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  border-radius: 9px;
+  padding: 1px 7px;
+  margin-left: 6px;
+}
+.tag-muted {
+  border-color: var(--edge);
+  color: var(--muted);
+}
+.book-label {
+  font-size: 11px;
+  color: #8298b6;
+}
+
+.family ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr));
+  gap: 10px;
+}
+.channel {
+  background: var(--panel);
+  border: 1px solid var(--edge);
+  border-radius: 6px;
+  padding: 10px 12px;
+  min-width: 0;
+  font-size: 12px;
+}
+.channel label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.channel .definition {
+  display: block;
+  margin: 7px 0;
+  color: var(--muted);
+  font-size: 11px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.channel-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 12px;
+  font-size: 11px;
+  color: #8298b6;
+}
+.channel-note,
+.channel-ok,
+.channel-reason {
+  margin: 6px 0 0;
+  font-size: 11px;
+}
+.channel-ok {
+  color: var(--accent);
+}
+.channel.unavailable {
+  opacity: 0.78;
+  border-style: dashed;
+}
+.channel.unavailable label {
+  color: var(--muted);
+}
+.channel-reason {
+  color: #f0b3bb;
+}
+#capability-error {
+  padding: 12px;
+  background: #3b2025;
+  border: 1px solid #a55a66;
+  margin-bottom: 14px;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 26px;
+  margin: 10px 0;
+  font-size: 12px;
+}
+.facts dt {
+  color: var(--muted);
+  font-size: 11px;
+}
+.facts dd {
+  margin: 0;
+}
+
+.progress {
+  display: grid;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.progress progress {
+  width: 100%;
+  height: 8px;
+  accent-color: var(--accent);
+}
+.numeric {
+  margin: 8px 8px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.numeric .table-scroll {
+  max-height: 220px;
+}
+caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 11px;
+  color: var(--muted);
+  padding: 6px 0;
+}
+.table-scroll:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.notes {
+  border-left: 2px solid var(--accent);
+  margin: 24px 0 0;
+  padding: 2px 0 2px 16px;
+  color: var(--muted);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.notes h3 {
+  margin: 0 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.notes ul {
+  margin: 0;
+  padding-left: 18px;
+}
+.note-owner {
+  color: var(--ink);
+  margin-right: 8px;
+  font-size: 11px;
+}
+.hypothesis-label {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 3px 10px;
+  border: 1px solid #e8d874;
+  border-radius: 4px;
+  color: #e8d874;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 700px) {
+  .group,
+  .mapping,
+  .family {
+    padding: 10px 10px 12px;
+  }
+  [role="tab"] {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+  .qft #analysis,
+  .qft #fit-controls,
+  .qft .control-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 420px) {
+  .qft #analysis,
+  .qft #fit-controls,
+  .qft .control-grid {
+    grid-template-columns: 1fr;
+  }
+  .masthead .engine {
+    flex-basis: 100%;
+    text-align: left;
+  }
+  .masthead {
+    flex-wrap: wrap;
+  }
+  .exports > * {
+    flex: 1 1 100%;
+    text-align: center;
+  }
+}

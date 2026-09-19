@@ -90,6 +90,7 @@ project:
       title: Part I — Algorithms and Foundations
       children:
       - file: source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition.md
+      - file: source/2_fractal_gas/1_the_algorithm/04_gas_variants.md
       - file: source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md
       - file: source/2_fractal_gas/convergence_program/02_euclidean_gas.md
       - file: source/2_fractal_gas/convergence_program/04_single_particle.md

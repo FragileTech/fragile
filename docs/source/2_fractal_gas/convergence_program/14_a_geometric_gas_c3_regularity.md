@@ -1,10 +1,12 @@
 # C³ Regularity of the Fractal Gas Fitness
 
+The fitness estimated here is the two-channel logistic fitness of {prf:ref}`def-c3-fitness-laws`, built from $\rho$-localized Z-scores. It is the fitness of the Latent Fractal Gas ({prf:ref}`def-variant-latent`, {prf:ref}`def-latent-fractal-gas-fitness`). The uniform-weight choice $w_{ij}=1/k$ is the special case in which the localization is the whole alive population, so the bounds also cover a fitness computed from global statistics, which is the standardizer of the Euclidean Gas ({prf:ref}`def-variant-euclidean`). The Geometric Gas ({prf:ref}`def-variant-geometric`) inserts $\rho$-localized Z-scores of the same form into the exponential field of {prf:ref}`def-gg-fitness-potential`; for that variant this chapter supplies the Z-score bounds of {prf:ref}`lem-normalized-zscore-bounds`, and the composition with the exponential is a separate step. A bound applies to a named variant only after that variant's distance, floors and companion law have been checked against the hypotheses of the statement.
+
 (sec-gg-c3-regularity)=
 ## 1. The fitness functions and their derivative coordinates
 
 :::{div} feynman-prose
-Move one walker a little and ask how its fitness changes. Three things can move with it: its distance to a companion, the local averages used to compare walkers, and the probabilities of choosing those companions. Keeping these three effects separate makes the calculation manageable.
+Move one walker a little and ask how its fitness changes. The fitness in question is a localized one: a walker compares itself not to the whole swarm at once but to a kernel-weighted neighborhood. The Geometric Gas builds its force and its noise from derivatives of scores of exactly this kind, so if we want to know whether those forces make sense, we have to know whether such a number is differentiable, and how big its derivatives can get. Three things can move with the walker: its distance to a companion, the local averages used to compare walkers, and the probabilities of choosing those companions. Keeping these three effects separate makes the calculation manageable.
 
 The main estimate comes from normalization. A weighted average has a denominator that grows with the number of terms. We differentiate that denominator along with the numerator, so the particle count can cancel exactly. A positive distance floor controls collisions, and a positive standard-deviation floor controls populations whose measurements are almost identical. These are different jobs, performed by different parameters.
 

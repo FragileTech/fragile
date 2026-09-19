@@ -1,5 +1,7 @@
 # Changelog
 
+- Give the Control Lab environment most of the mobile screen, with compact run controls and on-demand tools, settings, and replay panels; preserve desktop layout and recording state across responsive changes.
+
 - Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.
 
 - Make GAS (2017) with adaptive local Gaussian proposals the Optimization Lab default, and fix narrow landing-page navigation so the full Pages bundle can deploy.

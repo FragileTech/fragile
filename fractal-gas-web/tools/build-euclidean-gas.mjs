@@ -81,7 +81,7 @@ await writeFile(
     2,
   ),
 );
-console.log(`Euclidean Gas Lab built: ${profiles.join(", ")}.`);
+console.log(`Algorithmic Gas Lab built: ${profiles.join(", ")}.`);
 
 // Keep the lecture posters aligned with the compiled CPU engine.
 await import("./build-partvi-index.mjs");

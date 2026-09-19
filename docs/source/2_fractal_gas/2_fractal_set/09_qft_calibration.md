@@ -23,14 +23,25 @@ Recorded experiments and the calibration notebook are in
 (sec-qft-calibration-correlators)=
 ## From correlators to mass plateaus
 
-Channel masses are extracted from Euclidean correlators. The Schwinger functions are the Euclidean
-correlators of the theory ({prf:ref}`def-euclidean-correlator-fg`). For practical calibration we
-measure two-point correlators and their connected variants ({prf:ref}`def-two-point-connected`),
-then fit a single-exponential decay in Euclidean time to identify a mass plateau.
+Channel decay rates are extracted from time correlators of frame observables
+along the executed algorithm. The lag is the step index of the recorded chain
+multiplied by an assigned unit $\Delta\tau$; it is algorithm time, not a
+Euclidean-time coordinate of a field configuration. The Schwinger functions
+of a specified Euclidean field law are the objects of
+{prf:ref}`def-euclidean-correlator-fg`; reading a chain correlator as one of
+them is the additional hypothesis {prf:ref}`assm-qft-positive-transfer`. For
+practical calibration we measure two-point correlators and their connected
+variants ({prf:ref}`def-sm-direct-correlations`,
+{prf:ref}`def-two-point-connected`) and fit an exponential decay in the lag.
 
-The link to theory is the correlation length relation {prf:ref}`def-correlation-length` and the
-mass scale hierarchy {prf:ref}`thm-mass-scales`. A stable exponential decay corresponds to a stable
-correlation length, which is the operational definition of a channel mass in the analysis pipeline.
+The link to theory is the correlation length relation
+{prf:ref}`def-correlation-length` and the scale hierarchy
+{prf:ref}`thm-mass-scales`. A stable exponential decay defines the channel
+decay rate $m_\chi$ of {prf:ref}`def-qft-channel-decay-rate`. It is called a
+channel mass only under {prf:ref}`assm-qft-positive-transfer` together with
+the unit conventions of {prf:ref}`def-sm-direct-correlations`;
+{prf:ref}`prop-qft-decay-rate-scope` states what holds with and without that
+hypothesis.
 
 Implementation note: the generic correlator utilities and effective-mass extraction live in
 `src/fragile/physics/new_channels/correlator_channels.py` and
@@ -38,6 +49,426 @@ Implementation note: the generic correlator utilities and effective-mass extract
 assembles electroweak-specific operators and fit inputs in
 `src/fragile/physics/app/electroweak_correlators.py` and
 `src/fragile/physics/app/electroweak_mass_tab.py`.
+
+### Frame observables, decay rates, and the scope of the word mass
+
+:::{div} feynman-prose
+Let me tell you what this section is really about, because everything else in
+the chapter leans on it. We run an algorithm. It produces a sequence of
+recorded frames. On each frame we compute a number — a colour bilinear, a
+phase average, whatever — and we ask how fast that number forgets itself as
+the step index grows. If it forgets exponentially, we have a rate. That rate
+is a fact about the algorithm, and we can measure it.
+
+Calling that rate a *mass* is a different move entirely, and it is worth
+being honest about the gap. A mass, in the Euclidean-field sense, is the
+lowest energy carrying spectral weight, and the whole picture of "lowest
+energy" only makes sense when the correlator is the Laplace transform of a
+*positive* measure: $C(\ell)=\int\lambda^{\ell}\,d\nu(\lambda)$ with
+$\nu\ge0$. That representation is what a self-adjoint positive transfer
+operator buys you. Our kernel clones and kills walkers. Nobody has shown it
+is self-adjoint in the relevant inner product, and for a kernel that is not,
+a correlator can go *negative* — you will see an explicit three-state
+counterexample below. When that happens there is no positive spectral
+measure, no "lowest energy", and the effective rate is not even defined at
+the offending lag.
+
+So here is the bookkeeping we adopt. The rate is always available and always
+means something. The word "mass" is a promotion, and it costs a stated
+hypothesis. Nothing in this chapter is weakened by saying so; you simply know
+which claim you are entitled to.
+:::
+
+:::{prf:definition} Channel, channel correlator and decay rate
+:label: def-qft-channel-decay-rate
+
+Let $(R_n)_{n\ge0}$ be the complete recorded-state chain of
+{prf:ref}`thm-effective-twistor-spectral-meaning`, with transition kernel $K$
+and an invariant law $\pi$. A **channel** $\chi$ consists of a local operator
+$O$ with $c\ge1$ real components, its element selection, masks, weights and
+colour alignment ({prf:ref}`def-sm-color-alignment`), and one of the frame
+normalizations $\mathcal A_t$ or $\mathcal A_t^{N}$ of
+{prf:ref}`def-sm-direct-observable-law`. These data define a frame observable
+$f_\chi=(f_\chi^{1},\ldots,f_\chi^{c})$, a function of the recorded state.
+Assume $f_\chi^{k}\in L^2(\pi)$. The **channel correlator** is the contracted
+connected autocorrelation
+
+$$
+C_\chi(\ell)=\sum_{k=1}^{c}
+ \operatorname{Cov}_\pi\bigl(f_\chi^{k}(R_0),f_\chi^{k}(R_\ell)\bigr),
+\qquad \ell=0,1,2,\ldots
+$$
+
+For an assigned time $\Delta\tau>0$ per lag, the effective rate is
+
+$$
+m_\chi(\ell)=-\frac1{\Delta\tau}\log\frac{C_\chi(\ell+1)}{C_\chi(\ell)},
+$$
+
+defined at the lags where both correlator values are positive. The channel
+has the **decay rate** $m_\chi\in[0,\infty]$ when $C_\chi(\ell)>0$ for all
+sufficiently large $\ell$ and $m_\chi=\lim_{\ell\to\infty}m_\chi(\ell)$
+exists. A fitted plateau is an estimate of $m_\chi$. A channel whose
+correlator vanishes at every nonzero lag, or changes sign at arbitrarily large
+lags, has no decay rate.
+
+The pair $(K,\pi)$ is a time-homogeneous Markov kernel with an invariant law:
+a conservative executed kernel, or the kernel of the established
+Doob-transformed process, as declared under
+{prf:ref}`def-sm-direct-observable-law`. For a killed chain with almost sure
+extinction every invariant law of the killed kernel is carried by the
+cemetery state, where all frame observables vanish, so that kernel defines no
+channel. For a finite recorded law or a survival-conditioned history the
+correlator is the two-time function $C_O(t,s)$ of
+{prf:ref}`def-sm-direct-correlations`, and the first identity of
+{prf:ref}`thm-effective-twistor-spectral-meaning` replaces item 1 of
+{prf:ref}`prop-qft-decay-rate-scope`.
+
+The same effective-rate formula and limit, applied to a source-frozen pair
+correlator of {prf:ref}`def-effective-twistor-correlators`, define the
+**source-frozen decay rate** of the operator. It is a different quantity from
+the decay rate of the frame channel, and
+{prf:ref}`prop-qft-decay-rate-scope` is not asserted for it.
+
+In this chapter the symbol $m_\chi$ and the words heavier and lighter refer to
+a decay rate in one of these two senses, with the estimator declared
+({prf:ref}`rem-qft-declared-conventions`). The name **channel mass** is
+reserved for the decay rate $m_\chi$ of a frame channel under
+{prf:ref}`assm-qft-positive-transfer`, in the calibrated units required by
+{prf:ref}`def-sm-direct-correlations`.
+:::
+
+:::{div} feynman-prose
+Notice how much of that definition is *bookkeeping* rather than mathematics.
+The operator, the mask, the weights, the alignment, the normalization — all
+of it is part of the channel. Change any one and you are measuring a
+different thing, and you have no right to be surprised when the number moves.
+This is not pedantry. Most of the confusion in calibration work comes from
+comparing two rates that were never measurements of the same channel.
+
+One clause deserves a second look: the insistence that $(K,\pi)$ be a
+conservative kernel with an honest invariant law. Why not just use the killed
+chain, the thing the algorithm literally does? Because if the walkers die out
+with probability one, the only invariant law of the killed kernel sits on the
+cemetery — the state where every observable is zero. Its correlator is
+identically zero and its decay rate is meaningless. You must either declare
+the conservative kernel, or condition on survival and use the Doob transform.
+The definition forces you to say which.
+:::
+
+:::{prf:assumption} Positive transfer representation of a channel
+:label: assm-qft-positive-transfer
+
+For the channel $\chi$ and each component $k$ there is a finite positive Borel
+measure $\nu_\chi^{k}$ on $[0,1]$ with
+
+$$
+\operatorname{Cov}_\pi\bigl(f_\chi^{k}(R_0),f_\chi^{k}(R_\ell)\bigr)
+ =\int_{[0,1]}\lambda^{\ell}\,d\nu_\chi^{k}(\lambda),
+\qquad\ell\ge0.
+$$
+
+With $\lambda=e^{-E\Delta\tau}$ this is the representation
+$C_O(t)=\int e^{-Et}d\nu_O(E)$ of {prf:ref}`def-sm-direct-correlations`.
+It holds when $K$ is self-adjoint and positive on $L^2(\pi)$, in particular
+under the hypotheses of {prf:ref}`cor-effective-twistor-positive-transfer`.
+No result of this volume establishes it for a gas variant. It is a hypothesis
+on the channel, to be tested through the necessary conditions of
+{prf:ref}`prop-qft-decay-rate-scope`.
+:::
+
+:::{prf:proposition} What a fitted rate measures
+:label: prop-qft-decay-rate-scope
+
+Let $\widetilde f^{k}=f_\chi^{k}-\pi f_\chi^{k}$ and let $L_0^2(\pi)$ be the
+centred subspace.
+
+1. **Without further hypotheses.**
+   $C_\chi(\ell)=\sum_k\langle\widetilde f^{k},K^{\ell}\widetilde f^{k}\rangle_{L^2(\pi)}$
+   and $|C_\chi(\ell)|\le\|K^{\ell}\|_{L_0^2(\pi)}\,C_\chi(0)$. Every decay
+   rate of a channel is a rate of the semigroup of the executed algorithm on
+   the cyclic subspace of its frame observable.
+2. **Under {prf:ref}`assm-qft-positive-transfer`.** $C_\chi(\ell)\ge0$ and
+   $C_\chi(\ell+1)^2\le C_\chi(\ell)\,C_\chi(\ell+2)$ for all $\ell$. If
+   $C_\chi(1)=0$ then $C_\chi(\ell)=0$ for all $\ell\ge1$. If $C_\chi(1)>0$
+   then $C_\chi(\ell)>0$ for all $\ell$, the effective rate
+   $m_\chi(\ell)$ is nonincreasing, and
+
+   $$
+   m_\chi=\lim_{\ell\to\infty}m_\chi(\ell)
+        =-\frac1{\Delta\tau}\log\lambda_\chi^{*},
+   \qquad
+   \lambda_\chi^{*}=\max\operatorname{supp}\nu_\chi,\quad
+   \nu_\chi=\sum_k\nu_\chi^{k}.
+   $$
+
+   Thus the decay rate exists, the effective rate approaches it from above,
+   and $m_\chi$ is the smallest energy carrying spectral weight of the
+   channel.
+3. **The hypothesis can fail for a non-reversible kernel.** On
+   $\mathbb Z/3\mathbb Z$ with uniform $\pi$ let $(Pg)(x)=g(x+1)$,
+   $K=(1-a)I+aP$ with $0<a<1$, and $f(x)=\sqrt2\cos(2\pi x/3)$. Then
+   $C(\ell)=|\lambda|^{\ell}\cos(\ell\varphi)$ with
+   $\lambda=1-\tfrac32a+i\tfrac{\sqrt3}{2}a=|\lambda|e^{i\varphi}$,
+   $0<\varphi<\pi$. The correlator is negative at some lag, no positive
+   representing measure exists, and the effective rate is undefined there,
+   although $|C(\ell)|\le|\lambda|^{\ell}$.
+4. **Normal form of the conclusion.** A fitted rate of a channel is a decay
+   rate of the executed chain in that channel. It is a channel mass when
+   {prf:ref}`assm-qft-positive-transfer` holds for that channel. Negativity
+   of $C_\chi$ beyond its statistical error, failure of log-convexity, or an
+   effective rate that increases with the lag refutes the hypothesis for
+   that channel.
+
+None of these statements is asserted for the source-frozen pair correlators
+of {prf:ref}`def-effective-twistor-correlators`, which are ratios of sums
+with a lag-dependent valid-pair denominator and pair a source observable with
+a different sink observable.
+:::
+
+:::{prf:proof}
+**Item 1.** The proof of {prf:ref}`thm-effective-twistor-spectral-meaning`
+uses the Markov property and square integrability of the frame observable
+only; applied to each component and summed it gives the identity. The bound
+is Cauchy--Schwarz with $\|\widetilde f^{k}\|^2$ summed to $C_\chi(0)$.
+
+**Item 2.** A sum of positive measures is positive, so
+$C_\chi(\ell)=\int\lambda^{\ell}d\nu_\chi\ge0$. Writing
+$\lambda^{\ell+1}=\lambda^{\ell/2}\lambda^{(\ell+2)/2}$, Cauchy--Schwarz in
+$L^2(\nu_\chi)$ gives the log-convexity inequality. If $C_\chi(1)=0$ then
+$\nu_\chi$ is carried by $\{0\}$ and all later values vanish. If
+$C_\chi(1)>0$ then $\nu_\chi((0,1])>0$ and every
+$C_\chi(\ell)\ge\int_{(0,1]}\lambda^{\ell}d\nu_\chi>0$. Log-convexity makes
+$\rho_\ell=C_\chi(\ell+1)/C_\chi(\ell)$ nondecreasing, and
+$C_\chi(\ell+1)\le\lambda_\chi^{*}C_\chi(\ell)$ gives
+$\rho_\ell\le\lambda_\chi^{*}$; let $\rho_\infty$ be its limit. From
+$C_\chi(\ell)\le C_\chi(1)\rho_\infty^{\ell-1}$ one gets
+$\limsup C_\chi(\ell)^{1/\ell}\le\rho_\infty$, while
+$C_\chi(\ell)^{1/\ell}=\|\lambda\|_{L^{\ell}(\nu_\chi)}
+ \to\|\lambda\|_{L^{\infty}(\nu_\chi)}=\lambda_\chi^{*}$. Hence
+$\rho_\infty=\lambda_\chi^{*}$, and $m_\chi(\ell)=-\Delta\tau^{-1}\log\rho_\ell$
+decreases to the stated limit. With $\lambda=e^{-E\Delta\tau}$ the maximum of
+the support in $\lambda$ is the minimum in $E$.
+
+**Item 3.** The characters $e_{\pm1}(x)=e^{\pm2\pi ix/3}$ are orthonormal in
+$L^2(\pi)$, $Pe_{\pm1}=e^{\pm2\pi i/3}e_{\pm1}$, and
+$f=(e_1+e_{-1})/\sqrt2$ is centred. Therefore
+$K^{\ell}f=(\lambda^{\ell}e_1+\overline\lambda^{\ell}e_{-1})/\sqrt2$ and
+$C(\ell)=\operatorname{Re}\lambda^{\ell}$. Since $\operatorname{Im}\lambda>0$,
+$0<\varphi<\pi$; steps smaller than $\pi$ cannot jump over the arc
+$(\pi/2,3\pi/2)$, so $\cos(\ell\varphi)<0$ for some $\ell$. A positive
+representing measure would force $C\ge0$.
+
+**Item 4.** This collects items 1 and 2; the three refutation criteria are
+the contrapositives of the three necessary conditions in item 2. $\square$
+:::
+
+:::{div} feynman-prose
+Item 2 is the one to carry around in your head. Under the positivity
+hypothesis, the correlator is a mixture of pure decaying exponentials with
+nonnegative weights. Mix exponentials and the slowest one always wins in the
+end — so the ratio of successive values can only *rise* toward the slowest
+$\lambda$, which means the effective rate can only *fall* toward the true
+rate. That is why the plateau in a well-behaved channel is approached from
+above, and why an effective-mass curve that drifts *upward* with the lag is
+not noise you should average away. It is telling you the hypothesis is wrong
+for that channel.
+
+Now, item 3 is a small, concrete, completely explicit machine that breaks the
+hypothesis, and I want you to take it seriously rather than filing it under
+"pathological". Three states on a ring; at each step you stay with
+probability $1-a$ or step forward with probability $a$. Nothing exotic. But
+the motion has a *direction*, and direction means complex eigenvalues, and
+complex eigenvalues mean the correlator oscillates as it decays. Take
+$a=0.4$: the correlator runs $1,\ 0.4,\ 0.04,\ -0.08,\ldots$ It goes
+negative at lag three. You cannot take the log of a negative number, and no
+positive measure on $[0,1]$ can produce it. A reversible chain — one obeying
+detailed balance — has real spectrum and cannot do this. The gas is not known
+to be reversible. That is the whole content of the warning.
+
+Let me also say what item 1 does *not* say. It does not say your fit is
+meaningless without the hypothesis. It says the rate you fit is a decay rate
+of the algorithm's own semigroup on the subspace your observable generates —
+a genuine dynamical quantity, comparable across runs, responsive to knobs.
+You just cannot call it the lowest energy of a spectrum until you have earned
+the spectrum.
+:::
+
+:::{prf:proposition} The two frame normalizations
+:label: prop-qft-frame-normalizations
+
+Let $O$ be a local operator with
+$\sup_I|O_I|<\infty$, or more generally with both frame observables in
+$L^2(\pi)$.
+
+1. $\mathcal A_t(O)$, including its zero-denominator value, and
+   $\mathcal A_t^{N}(O)=(W_t/N)\mathcal A_t(O)$ are functions of the recorded
+   state $R_t$. Item 1 of {prf:ref}`prop-qft-decay-rate-scope` holds for each
+   of them with the same kernel $K$.
+2. Their correlators are
+   $\operatorname{Cov}(\mathcal A_0,\mathcal A_\ell)$ and
+   $N^{-2}\operatorname{Cov}(W_0\mathcal A_0,W_\ell\mathcal A_\ell)$. They are
+   proportional for every operator when $W_t$ is almost surely constant, and
+   need not be proportional otherwise. A decay rate, and under
+   {prf:ref}`assm-qft-positive-transfer` a spectral weight, is a property of
+   the channel including its normalization.
+3. A series from which the frames with $W_t=0$ have been removed is a
+   function of the recorded state on $\{W>0\}$ only, sampled at
+   state-dependent times. When $\pi(W=0)=0$ it is almost surely the full
+   series and item 1 of {prf:ref}`prop-qft-decay-rate-scope` applies to it
+   with the kernel $K$. When $\pi(W=0)>0$ it is a function of the trace chain
+   of $R$ on $\{W>0\}$, whose kernel is the first-return kernel
+   $K_{W>0}(x,\cdot)=\mathbb P_x(R_{\tau}\in\cdot)$,
+   $\tau=\min\{n\ge1:W(R_n)>0\}$, with invariant law
+   $\pi(\cdot\mid W>0)$; its lag counts retained frames, not steps, and its
+   correlator is not $\langle\widetilde f,K^{\ell}\widetilde f\rangle_{L^2(\pi)}$
+   in general. Frames that the record cannot
+   evaluate for a reason independent of the state, such as the first frame of
+   a segment under $\mathsf A_{\mathrm{PK}}$, are missing data and not
+   zeros.
+
+The chapter-04 average $\mathcal A_t$ is the primary normalization;
+$\mathcal A_t^{N}$ is the alternative of
+{prf:ref}`thm-effective-twistor-spectral-meaning`. Every reported rate states
+which one it uses.
+:::
+
+:::{prf:proof}
+$W_t$ and the numerator are finite sums of functions of the recorded fields
+of frame $t$, and the zero-denominator branch is a measurable case
+distinction; this gives item 1 together with the cited proof. Item 2 is the
+definition of the two series; if $W_t=W$ almost surely the second covariance
+is $(W/N)^2$ times the first. For the converse direction take $O\equiv1$ and
+a law with $W_t>0$ almost surely and $\operatorname{Var}_\pi W>0$: then
+$\mathcal A_t(O)=1$ has the zero correlator, while $\mathcal A_t^{N}(O)=W_t/N$
+has $C(0)=N^{-2}\operatorname{Var}_\pi W>0$. For item 3, the retained series
+is $\mathcal A(R_{n_j})$ along the random times $n_j$ with $W_{n_j}>0$; when
+$\pi(W=0)=0$ these are almost surely all times. When $0<\pi(W>0)<1$, the
+stationary chain started in $\{W>0\}$ returns to that set almost surely by
+the Poincaré recurrence theorem, the strong Markov property at the successive
+return times makes $(R_{n_j})_j$ a Markov chain with the first-return kernel,
+and $\pi(\cdot\mid W>0)$ is invariant for it. A position in the record
+fixed before the run does not depend on the state, so its removal leaves the
+chain law of the retained frames unchanged. $\square$
+:::
+
+:::{div} feynman-prose
+You might think dividing by the number of valid pairs instead of by the fixed
+$N$ is a cosmetic choice — a constant, near enough, that cancels out of any
+ratio. It is not, and item 2 says exactly why. The valid-pair count $W_t$ is
+itself a fluctuating function of the state. Dividing by it does not rescale
+the series; it *multiplies the series by a second random observable*, and the
+correlator of a product is not the product of correlators. The two
+normalizations agree only in the degenerate case where $W_t$ never moves.
+
+Item 3 is subtler and it catches people. Suppose you throw away the frames
+where nothing was valid. You have not cleaned your data — you have sampled
+your chain at times chosen by the chain itself. The retained frames follow the
+first-return kernel, not $K$, and a lag now counts retained frames instead of
+steps, so the rate you fit belongs to a different chain. It is harmless only when those
+frames are almost never there to begin with. And there is one honest
+exception worth separating out: a frame that cannot be evaluated for a reason
+fixed before the run — the first frame of a segment, say — is missing data.
+Do not record it as a zero. A zero is a measurement; a gap is not.
+:::
+
+:::{prf:proposition} Component contraction versus component mean
+:label: prop-qft-component-contraction
+
+Let $A_t\in\mathbb R^{d}$ be the component series of a channel, with
+$C_{kl}(\ell)=\operatorname{Cov}(A_0^{k},A_\ell^{l})$. Under an orthogonal
+change of the component basis $A_t\mapsto RA_t$, $R\in O(d)$:
+
+1. the contracted correlator $\sum_kC_{kk}(\ell)=\operatorname{tr}C(\ell)$ is
+   invariant;
+2. the correlator of the component mean
+   $\bar A_t=d^{-1}\sum_kA_t^{k}$ is
+   $d^{-2}\,\mathbf 1^{\mathsf T}C(\ell)\mathbf 1$ and becomes
+   $d^{-2}(R^{\mathsf T}\mathbf 1)^{\mathsf T}C(\ell)(R^{\mathsf T}\mathbf 1)$.
+   For $d\ge2$ it is invariant under all of $O(d)$ if and only if the
+   symmetric part of $C(\ell)$ is a multiple of the identity, in which case
+   it equals $d^{-2}\operatorname{tr}C(\ell)$.
+
+The component mean is the projection of the vector series on the fixed
+direction $\mathbf 1/d$ of the recorded basis. Vector channels are therefore
+correlated by contraction, as in {prf:ref}`def-sm-direct-correlations` and
+{prf:ref}`def-effective-twistor-correlators`. The statement concerns the
+component index. Covariance of the underlying observable under rotations of
+the particle system is a separate property, which the componentwise colour
+encoding does not have ({prf:ref}`thm-sm-su3-emergence`).
+:::
+
+:::{prf:proof}
+$\operatorname{Cov}(RA_0,RA_\ell)=RC(\ell)R^{\mathsf T}$ and the trace is
+cyclic. The mean is $d^{-1}\mathbf 1^{\mathsf T}A_t$, which gives the
+quadratic form; only the symmetric part of $C(\ell)$ contributes to it. The
+orbit of $\mathbf 1/\sqrt d$ under $O(d)$ is the unit sphere, and a quadratic
+form that is constant on the unit sphere is a multiple of the identity; the
+constant is $\operatorname{tr}C(\ell)/d$. $\square$
+:::
+
+:::{div} feynman-prose
+Here is a habit worth breaking. You have a three-component vector channel,
+and the tempting move is to average the three components into one number and
+correlate that. Don't. Averaging the components is *dotting your vector
+series with the fixed direction* $(1,1,1)/3$ — a direction that has no
+meaning except that it is where your array indices happened to point. Rotate
+the component basis and that direction moves with the labels, and your
+correlator changes.
+
+Contract instead: correlate each component with itself and add the results.
+That is a trace, and a trace does not care what basis you wrote the matrix
+in. The two agree only when the symmetric part of the correlation matrix is
+already a multiple of the identity — that is, only when the channel had no
+preferred direction to begin with, which is precisely the assumption you were
+trying to avoid making.
+
+And now the caveat, because an analogy is about to run away with itself. This
+is a statement about the *component index*, not about physical rotations. The
+colour encoding is not covariant under rotating the particle system; see
+{prf:ref}`thm-sm-su3-emergence`. Contraction buys you independence from how
+you labelled three slots in an array. It does not buy you a rotational
+quantum number. Those are different claims, and only the first one is proved.
+:::
+
+:::{prf:remark} Conventions that a reported rate declares
+:label: rem-qft-declared-conventions
+
+The definitions of this volume leave the following choices open. Each is part
+of the channel of {prf:ref}`def-qft-channel-decay-rate`, and a reported rate
+states them.
+
+1. The colour alignment of {prf:ref}`def-sm-color-alignment`; the primary one
+   is $\mathsf A_{\mathrm{PK}}$.
+2. The frame normalization, $\mathcal A_t$ or $\mathcal A_t^{N}$, and the
+   treatment of frames with $W_t=0$
+   ({prf:ref}`prop-qft-frame-normalizations`).
+3. The estimator: frame-average correlator or source-frozen pair correlator
+   ({prf:ref}`def-effective-twistor-correlators`). Only the former is covered
+   by {prf:ref}`prop-qft-decay-rate-scope`.
+4. The centring: one empirical mean of the series
+   ({prf:ref}`def-sm-direct-correlations`) or separate means of the two lag
+   windows. The two differ at finite record length.
+5. For the colour-gamma form, the sign pattern of $\Gamma_5$ and the recorded
+   part; for the determinant channel, the recorded part of $b$.
+6. The scales $h_S$ and $\hbar_{\text{eff}}$ of the score and fitness phases
+   ({prf:ref}`rem-qft-ew-ranges`), and the amplitude
+   $\sqrt{w}$ of this chapter versus the normalized $\sqrt{P_i(k)}$ of
+   {prf:ref}`thm-sm-u1-emergence`.
+7. The time unit $\Delta\tau$ per lag ({prf:ref}`thm-qft-ratio-rescale`).
+:::
+
+:::{div} feynman-prose
+Seven items, and every one of them is a place where two honest people using
+the same code can produce two different numbers and both be right. That is
+not a defect in the framework; it is what it looks like when a measurement is
+specified completely enough to be reproduced. A rate reported without them is
+not wrong so much as unfalsifiable — nobody can rerun it.
+
+The practical advice is boring and I will give it anyway: write the seven down
+next to the number, in the file, every time. It costs you a line. It is the
+difference between a result and an anecdote.
+:::
 
 (sec-qft-calibration-couplings)=
 ## Couplings and interaction ranges
@@ -100,8 +531,9 @@ Channel operators are built from Fractal Set ingredients:
   {prf:ref}`def-fractal-set-cloning-score`).
 - Viscous coupling and color state ({prf:ref}`def-fractal-set-viscous-force`,
   {prf:ref}`thm-sm-su3-emergence`).
-- Gauge loops for glueball channels ({prf:ref}`def-fractal-set-plaquette`,
-  {prf:ref}`def-fractal-set-wilson-loop`).
+- Colour triangle products for glueball channels
+  ({prf:ref}`def-sm-direct-color-contractions`,
+  {prf:ref}`prop-sm-direct-triangle-projectors`).
 
 The table below summarizes which knobs primarily move which channel families. The suggested directions are sweep hypotheses. Their signs and magnitudes require validation for the chosen observable, generating run, and fit window.
 
@@ -109,7 +541,7 @@ The table below summarizes which knobs primarily move which channel families. Th
 | --- | --- | --- | --- |
 | Meson / pseudoscalar (color bilinear) | Color state from viscous force ({prf:ref}`thm-sm-su3-emergence`) | $\nu$, $\rho$, $\gamma$, $\beta$, $\Delta t$ | Shorter $\rho$ or larger $\nu$ increases color coupling, typically shortening correlators (heavier masses). |
 | Baryon / nucleon (color determinant) | SU(3) invariant of three color vectors ({prf:ref}`thm-sm-su3-emergence`) | $\nu$, $\rho$, neighbor selection | Trilinear color invariants are sensitive to color coherence; adjust $\nu$ and $\rho$ first. |
-| Glueball / gauge channel | Gauge field strength and Wilson loops ({prf:ref}`def-fractal-set-viscous-force`, {prf:ref}`def-fractal-set-wilson-loop`) | $\nu$, $\rho$ | Stronger viscous coupling or shorter $\rho$ tends to increase glueball mass scales. |
+| Glueball / gauge channel | Colour triangle product; alternative: viscous force norm ({prf:ref}`def-sm-direct-color-contractions`, {prf:ref}`def-fractal-set-viscous-force`) | $\nu$, $\rho$ | Stronger viscous coupling or shorter $\rho$ tends to increase glueball mass scales. |
 | Cloning/diversity-dominated channels | Companion kernel + cloning score ({prf:ref}`def-fractal-set-companion-kernel`, {prf:ref}`def-fractal-set-cloning-score`) | $\epsilon_c$, $\epsilon_d$, $\lambda_{\text{alg}}$, $\epsilon_{\text{clone}}$, $p_{\max}$ | Decreasing $\epsilon_c$ or $\epsilon_d$ strengthens the corresponding coupling and can shift correlator decay. |
 | Fitness/U(1) phase channels | Phase potential and fitness coupling ({prf:ref}`def-fractal-set-phase-potential`, {prf:ref}`thm-u1-coupling-constant`) | $\epsilon_F$, fitness weights $(\alpha,\beta)$ | Larger $\epsilon_F$ weakens the fitness coupling, softening phase-driven oscillations. |
 
@@ -128,7 +560,7 @@ C_\chi(\tau) = \langle O_\chi(\tau)\,O_\chi(0)\rangle_{\text{conn}}
 $$
 ({prf:ref}`def-euclidean-correlator-fg`, {prf:ref}`def-two-point-connected`).
 
-For a channel with a nonzero leading exponential contribution in the selected regime, write the asymptotic form and effective-mass estimator as:
+For a channel whose decay rate exists ({prf:ref}`def-qft-channel-decay-rate`), write the asymptotic form and effective-rate estimator as:
 
 $$
 C_\chi(\tau) \sim Z_\chi e^{-m_\chi \tau},
@@ -139,7 +571,9 @@ m_\chi(\tau) = -\frac{1}{\Delta \tau}\log\frac{C_\chi(\tau+\Delta\tau)}{C_\chi(\
 $$
 
 using the correlation-length definition {prf:ref}`def-correlation-length` and the mass-scale
-hierarchy {prf:ref}`thm-mass-scales`. The AIC-weighted plateau in the Channels tab is an
+hierarchy {prf:ref}`thm-mass-scales`. Here $\xi_\chi=1/m_\chi$ is a correlation time in units of
+$\Delta\tau$; it is a length only under the Euclidean rotation identification stated in
+{prf:ref}`def-correlation-length`. The AIC-weighted plateau in the Channels tab is an
 implementation of this $m_\chi(\tau)$ extraction, so its output depends on the operator, sampling, and fit window. The operator formulas identify parameters to investigate; they do not establish universal monotonic tuning rules.
 
 :::{div} feynman-prose
@@ -203,7 +637,7 @@ run can still change the trajectory. Distinguish that dynamical effect from
 recomputing an observable on the same recorded frame.
 :::
 
-### Scalar channel (σ, $0^{++}$)
+### Scalar channel (label σ)
 
 | Parameter | Symbol | Code parameter | Sweep hypothesis for the observed mass |
 | --- | --- | --- | --- |
@@ -214,12 +648,15 @@ recomputing an observable on the same recorded frame.
 | Phase mass | $m$ | `CompanionCorrelatorSettings.mass` | Increase $m$ → stronger phase winding → slightly heavier $m_\sigma$. |
 | Phase length | $\ell_0$ | `CompanionCorrelatorSettings.ell0` | Increase $\ell_0$ → stronger phase winding → slightly heavier $m_\sigma$. |
 
-**Operator (bilinear color scalar):**
+**Operator (primary, {prf:ref}`def-sm-direct-color-contractions`):**
 
 $$
-O_{\sigma}(t) = \langle \bar{\psi}_i \psi_j \rangle
-\;\propto\; \sum_a \left(c_i^{(a)}\right)^* c_j^{(a)}.
+O_{\sigma}(t)=\mathcal A_t\bigl(\operatorname{Re}q_{i\,c(i)}\bigr),
+\qquad q_{ij}=c_i^\dagger c_j,
 $$
+
+with $c$ the selected companion map. It is even under pair exchange and under
+inversion ({prf:ref}`cor-sm-direct-exchange-parity`).
 
 The color state $c_i$ is built from the viscous force and momentum-phase encoding
 ({prf:ref}`thm-sm-su3-emergence`):
@@ -231,10 +668,33 @@ $$
 c_i^{(\alpha)} = \frac{\tilde{c}_i^{(\alpha)}}{\|\tilde{c}_i\|}.
 $$
 
+The pairing of the force with the phase velocity is an alignment of
+{prf:ref}`def-sm-color-alignment`.
+
 Therefore the scalar correlator is controlled by the viscous force
 ({prf:ref}`def-fractal-set-viscous-force`) and the $SU(d)$ coupling
 ({prf:ref}`thm-sm-g3-coupling`), with the mean-field range $\rho$ and friction $\gamma$ setting the
 dominant decay scales ({prf:ref}`thm-mass-scales`).
+
+:::{div} feynman-prose
+Look at what the scalar channel actually is once the fog clears. Each walker
+carries a unit complex vector $c_i$ — its colour. You pick its companion,
+form the overlap $q_{ij}=c_i^\dagger c_j$, and take the real part. That is
+the cosine of the angle between two colours, in the complex sense. Average it
+over the frame and you have a single number per step: how aligned the gas is
+with itself, right now.
+
+Two details in that construction are easy to skate past, and both matter.
+First, $\operatorname{Re}q$ and not $q$: the overlap is a complex number, and
+a complex number is not an observable. You must say which real part of it you
+record, and the answer here is the real part, which is symmetric under
+swapping the two walkers and unchanged under inversion. Second, the colour
+itself is built by pairing a *force* with a *phase velocity*
+({prf:ref}`def-sm-color-alignment`). There is more than one defensible way to
+line those two up in time, they give genuinely different numbers, and the
+choice travels with the channel. The alignment is not a detail of the code;
+it is part of what you measured.
+:::
 
 **Sweep hypotheses to check:**
 - Increase $\nu$ or decrease $\rho$ to strengthen the viscous coupling and shorten the scalar
@@ -244,7 +704,7 @@ dominant decay scales ({prf:ref}`thm-mass-scales`).
 - Increasing $\gamma$ raises $m_{\text{friction}}$ and typically shortens scalar plateaus; keep the
   hierarchy $m_{\text{friction}} \ll m_{\text{gap}}$ intact.
 
-### Pseudoscalar channel (π, $0^{-+}$)
+### Pseudoscalar channel (label π)
 
 | Parameter | Symbol | Code parameter | Sweep hypothesis for the observed mass |
 | --- | --- | --- | --- |
@@ -254,18 +714,50 @@ dominant decay scales ({prf:ref}`thm-mass-scales`).
 | Viscous coupling | $\nu$ | `KineticOperator.nu` | Increase $\nu$ → lifts overall meson scale → heavier $m_\pi$. |
 | Viscous range | $\rho$ | `KineticOperator.viscous_length_scale` | Decrease $\rho$ → tighter coupling → heavier $m_\pi$. |
 
-**Operator (bilinear with $\gamma_5$ projection):**
+**Operator (primary, {prf:ref}`def-sm-direct-color-contractions`):**
 
 $$
-O_{\pi}(t) = \langle \bar{\psi}_i \gamma_5 \psi_j \rangle
-\;\propto\; \sum_a \left(c_i^{(a)}\right)^* (\gamma_5)_{aa}\,c_j^{(a)}.
+O_{\pi}(t)=\mathcal A_t\bigl(\operatorname{Im}q_{i\,c(i)}\bigr).
 $$
 
-Because $\gamma_5$ alternates signs across components, the pseudoscalar channel is **phase
-sensitive**: it responds directly to the momentum-phase factor
-$\exp(i\,p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ in the color state
-({prf:ref}`thm-sm-su3-emergence`). This is the cleanest knob for splitting scalar vs.
-pseudoscalar masses **without** changing the overall color coupling.
+At $\kappa=0$ the colours are real and $\operatorname{Im}q_{ij}=0$: this
+channel is generated entirely by the momentum phase
+$\exp(i\,p_i^{(\alpha)}\ell_0/\hbar_{\text{eff}})$ of the color state
+({prf:ref}`thm-sm-su3-emergence`), which makes $\kappa=m\ell_0/\hbar_{\text{eff}}$
+the knob that separates it from the scalar channel without changing the
+viscous coupling. It is odd under pair exchange and under inversion. On a
+mutual pairing its frame series is identically zero
+({prf:ref}`cor-sm-direct-exchange-parity`); a decay rate is then available
+only from an orientation-weighted average or from a source-frozen pair
+correlator ({prf:ref}`rem-exchange-odd-scope`).
+
+**Alternative operator (colour-gamma form):** $O_{\pi}^{\Gamma_5}$ of
+{prf:ref}`def-qft-color-gamma-operators`. Its real part is even under
+inversion ({prf:ref}`prop-qft-color-gamma-parities`).
+
+:::{div} feynman-prose
+The scalar took the real part of the overlap; the pseudoscalar takes the
+imaginary part. That is the whole difference, and it is a beautiful one,
+because the imaginary part has nowhere to come from except the phase. Turn
+$\kappa=m\ell_0/\hbar_{\text{eff}}$ down to zero and every colour becomes a
+real vector, every overlap becomes a real number, and this channel is
+identically nothing. So $\kappa$ is a knob that moves the pseudoscalar while
+leaving the viscous coupling — and therefore the scalar's main driver —
+alone. That is exactly the kind of lever you want in a calibration.
+
+Now the warning, and it is a sharp one. $\operatorname{Im}q$ is *odd* under
+exchanging the two walkers of a pair. If your companion map is mutual — $i$
+points to $j$ and $j$ points right back at $i$ — then every pair contributes
+twice with opposite signs, and the frame average is zero. Not small. Not
+noisy. Algebraically zero, at every step, for every run. You can fit an
+exponential to that series all day and the number you get will be a fit to
+floating-point dust.
+
+So if you want a pseudoscalar rate, you must break the cancellation on
+purpose: weight the pair by an orientation, or freeze the source and use the
+pair correlator of {prf:ref}`rem-exchange-odd-scope`. Either is fine. Doing
+neither and reporting a number is not.
+:::
 
 **Sweep hypotheses to check:**
 - Increase $m$ or $\ell_0$, or decrease $\hbar_{\text{eff}}$, to increase phase winding and shorten
@@ -275,7 +767,7 @@ pseudoscalar masses **without** changing the overall color coupling.
 - Sweep $\nu$ and $\rho$ to measure whether the scalar and pseudoscalar scales move together
   through their dependence on the viscous-force coupling.
 
-### Vector channel (ρ, $1^{--}$)
+### Vector channel (label ρ)
 
 | Parameter | Symbol | Code parameter | Sweep hypothesis for the observed mass |
 | --- | --- | --- | --- |
@@ -286,12 +778,42 @@ pseudoscalar masses **without** changing the overall color coupling.
 | Phase mass | $m$ | `CompanionCorrelatorSettings.mass` | Increase $m$ → stronger phase winding → slightly heavier $m_\rho$. |
 | Phase length | $\ell_0$ | `CompanionCorrelatorSettings.ell0` | Increase $\ell_0$ → stronger phase winding → slightly heavier $m_\rho$. |
 
-**Operator (bilinear with $\gamma_\mu$ projection):**
+**Operator (primary, {prf:ref}`def-sm-direct-color-contractions`):**
 
 $$
-O_{\rho}(t) = \langle \bar{\psi}_i \gamma_\mu \psi_j \rangle
-\;\propto\; \frac{1}{d}\sum_\mu \sum_{a,b} \left(c_i^{(a)}\right)^* (\gamma_\mu)_{ab}\,c_j^{(b)}.
+O_{\rho}^{k}(t)=\mathcal A_t\bigl(\operatorname{Re}q_{i\,c(i)}\,r_{i\,c(i)}^{k}\bigr),
+\qquad k=1,\ldots,d,
+\qquad C_\rho(\ell)=\sum_{k}C_{\rho,kk}(\ell),
 $$
+
+with the contraction of {prf:ref}`prop-qft-component-contraction`. It is odd
+under pair exchange and under inversion; on a mutual pairing every component
+of its frame series is identically zero
+({prf:ref}`cor-sm-direct-exchange-parity`). The axial companion
+$\operatorname{Im}q_{ij}\,r_{ij}$ is even under both and is not constrained.
+
+**Alternative operator (colour-gamma form):** $O_{\rho}^{\Gamma,\mu}$ of
+{prf:ref}`def-qft-color-gamma-operators`, contracted over $\mu$. The series
+$d^{-1}\sum_\mu O_{\rho}^{\Gamma,\mu}$ is its component mean in the sense of
+{prf:ref}`prop-qft-component-contraction`.
+
+:::{div} feynman-prose
+The vector channel is the scalar overlap with the separation vector attached:
+$\operatorname{Re}q_{ij}$ times $r_{ij}^{k}$, the $k$-th component of the
+displacement between the pair. So it does not just ask whether two walkers
+have aligned colours; it asks whether they have aligned colours *and which
+way one lies from the other*. That is what earns it the word "vector".
+
+Two consequences follow immediately from that extra factor. The displacement
+flips sign when you swap the pair, so the whole thing is exchange-odd, and
+the mutual-pairing cancellation of the pseudoscalar bites here too — every
+component, identically zero. And because it now carries a free index, you
+must decide what to do with $d$ series rather than one. Contract them: sum
+the $d$ self-correlators. Do not average the components first.
+{prf:ref}`prop-qft-component-contraction` explains why, and the alternative
+colour-gamma form below is exactly a case where the averaged version has been
+used and deserves its own name.
+:::
 
 The vector projection emphasizes **directional coherence** in the color state, which is driven by
 velocity alignment in the viscous force ({prf:ref}`def-fractal-set-viscous-force`) and damped by
@@ -316,11 +838,59 @@ friction ($m_{\text{friction}}=\gamma$; {prf:ref}`thm-mass-scales`).
 | Pair selection | — | `CompanionCorrelatorSettings.pair_selection` | Measurement: choose distance pairs, clone pairs, or both when building local triplets; this changes the estimator, not the recorded dynamics. |
 | Multiscale locality | — | `CompanionCorrelatorSettings.n_scales`, `kernel_type`, `edge_weight_mode` | Measurement: changes neighborhood weighting and plateau stability for baryon correlators without changing the run itself. |
 
-**Operator (trilinear color invariant):**
+**Operator (primary, {prf:ref}`def-sm-direct-color-contractions`):**
 
 $$
-O_{N}(t) = \det\!\big[c_i, c_j, c_k\big]
+b_{ijk}=\det\!\big[c_i,c_j,c_k\big],\qquad
+(i,j,k)=(i,c^{D}(i),c^{C}(i)),
 $$
+
+read through $\operatorname{Re}b$, $\operatorname{Im}b$, or the complex
+source-frozen correlator $\operatorname{Re}(\overline{B_s}B_t)$ of
+{prf:ref}`prop-sm-baryon-exterior-correlator`. The determinant is invariant
+under common $SU(3)$ frame changes
+({prf:ref}`thm-sm-direct-color-invariants`) and changes sign when the two
+companion roles are exchanged. When the two roles are exchangeable, the frame
+series of $\operatorname{Re}b$ and of $\operatorname{Im}b$ are centred and
+uncorrelated at every nonzero lag ({prf:ref}`prop-sm-direct-role-swap`); the
+decay rate $m_N$ is then defined through the source-frozen correlator only.
+The phase-blind readout obeys, for unit colours,
+
+$$
+|b_{ijk}|^2=1-|q_{ij}|^2-|q_{jk}|^2-|q_{ki}|^2+2\operatorname{Re}\Pi_{ijk},
+$$
+
+because $|\det C|^2=\det(C^\dagger C)$ is the determinant of the Gram matrix
+of the three columns. It is even under role exchange, and its correlator is a
+combination of pair and triangle correlators. The readout $|b|$ of the
+reference operator module is a separately specified function, as stated in
+{prf:ref}`prop-sm-baryon-exterior-correlator`.
+
+:::{div} feynman-prose
+The determinant of three unit colour vectors measures how much *volume* they
+span. Three colours pointing nearly the same way give a determinant near
+zero; three mutually orthogonal ones give modulus one. That is a genuine
+three-body quantity — you cannot build it out of pairs — and it is invariant
+under a common $SU(3)$ rotation of all three, which is why it deserves the
+baryon slot.
+
+But the determinant is complex, and antisymmetric, and this is where you have
+to be careful. Swap the two companion roles and $b$ changes sign. If nothing
+in the algorithm distinguishes those two roles — if they are exchangeable —
+then $\operatorname{Re}b$ and $\operatorname{Im}b$ are centred and, worse,
+uncorrelated at every nonzero lag. Uncorrelated at every lag is a correlator
+that is zero everywhere except at the origin. There is no exponential in
+that. There is no plateau. There is no $m_N$.
+
+The escape is to freeze the source: correlate $\overline{B_s}B_t$ with the
+triplet identity fixed at the source frame, which is a different estimator and
+survives the antisymmetry. And if instead you take the modulus and throw the
+phase away, you get something real and role-even — but look at the Gram
+identity above and see what you have actually bought. $|b|^2$ is one, minus
+the three pair overlaps, plus twice the triangle invariant. It is not an
+independent channel at all; it is a fixed combination of the pair and
+glueball channels wearing a baryon's name.
+:::
 
 This channel is an $SU(3)$-invariant trilinear built from the same color state
 ({prf:ref}`thm-sm-su3-emergence`). It probes **three-body color coherence**, which depends both on
@@ -336,7 +906,7 @@ triplets are local ({prf:ref}`def-fractal-set-companion-kernel`,
   Channels tab reports `n/a`, verify that the run dimension is three and that neighbor sampling is
   adequate.
 
-### Glueball channel ($0^{++}$, gauge sector)
+### Glueball channel (label G)
 
 | Parameter | Symbol | Code parameter | Sweep hypothesis for the observed mass |
 | --- | --- | --- | --- |
@@ -344,28 +914,279 @@ triplets are local ({prf:ref}`def-fractal-set-companion-kernel`,
 | Viscous range | $\rho$ | `KineticOperator.viscous_length_scale` | Decrease $\rho$ → shorter-range force → heavier $m_G$. |
 | Friction | $\gamma$ | `KineticOperator.gamma` | Increase $\gamma$ → faster damping → heavier $m_G$. |
 
-**Operator (force-norm gauge observable):**
+**Operator (primary, {prf:ref}`def-sm-direct-color-contractions`):**
 
 $$
-O_{G}(t) = \sum_i \left\|F^{(\text{visc})}(i,t)\right\|^2,
+O_{G}(t)=\mathcal A_t\bigl(\operatorname{Re}\Pi_{ijk}\bigr),
+\qquad \Pi_{ijk}=q_{ij}q_{jk}q_{ki},
 $$
 
-which is the local gauge-field strength proxy derived from the viscous force
-({prf:ref}`def-fractal-set-viscous-force`) and tied to Wilson-loop observables
-({prf:ref}`def-fractal-set-plaquette`, {prf:ref}`def-fractal-set-wilson-loop`).
-The glueball correlator therefore tracks how quickly the force magnitude decorrelates under the
-viscous coupling.
+or $1-\operatorname{Re}\Pi_{ijk}$, which has the same connected correlator.
+$\Pi_{ijk}=\operatorname{Tr}(P_iP_jP_k)$ is the three-vertex invariant of
+{prf:ref}`prop-sm-direct-triangle-projectors`: it is invariant under
+independent rephasings and common $U(3)$ frame changes, it is conjugated by
+role exchange, so that $\operatorname{Re}\Pi_{ijk}$ is role-even
+({prf:ref}`prop-sm-direct-role-swap`), and its factors are rank-one
+projectors, not unitary comparison links. It is a different object from the plaquette of
+{prf:ref}`def-fractal-set-plaquette` and the holonomy of
+{prf:ref}`def-fractal-set-wilson-loop`.
+
+**Alternative operator (force norm):**
+
+$$
+O_{G}^{F}(t)=\sum_i\left\|F^{(\text{visc})}(i,t)\right\|^2 .
+$$
+
+It contains no colour phase, carries the units of a squared force and scales
+as $\nu^2$, and is unbounded, so its correlator requires a finite second
+moment under the sampled law. Its correlator tracks how quickly the force
+magnitude decorrelates under the viscous coupling
+({prf:ref}`def-fractal-set-viscous-force`).
+
+:::{div} feynman-prose
+The glueball channel is the product of three overlaps around a closed
+triangle: $i$ to $j$ to $k$ and back to $i$. Go around a loop and every
+walker's arbitrary phase appears once with a bar and once without, so it
+cancels. What survives is a phase that belongs to the *loop* and not to any
+walker — which is precisely the structure that makes gauge-invariant
+observables gauge-invariant.
+
+Now, I want to head off an analogy before it does damage. It is tempting to
+call $\Pi$ a Wilson loop, because a Wilson loop is also a product of things
+around a closed path with the phases cancelling. The similarity is real and
+it is where the intuition comes from. But the analogy breaks, and it breaks at
+a place that matters: a Wilson loop multiplies *unitary* comparison links,
+which is why the whole loop is unitary and why the plaquette has the
+expansion in field strength that gives it its meaning. Our factors are
+rank-one projectors. They are not unitary, the product is not a holonomy, and
+$\Pi$ has modulus at most one for reasons of shrinkage, not of phase. It is a
+perfectly good invariant. It is not the plaquette of
+{prf:ref}`def-fractal-set-plaquette`, and the two must not be conflated in
+either direction.
+
+The force norm is kept as a named alternative because it is a real thing the
+code computes, but notice how different an animal it is. No phase anywhere —
+it cannot see colour at all. It carries units, so it is not dimensionless.
+And it is unbounded, which means its correlator does not even exist unless
+the force has a finite second moment under the sampled law. That is a
+hypothesis, and it is one you should check rather than assume.
+:::
 
 **Sweep hypotheses to check:**
 - Increase $\nu$ or decrease $\rho$ to strengthen gauge-field fluctuations and shorten the glueball
   correlator (heavier glueball mass).
 - Use $\gamma$ only to fine-tune decay speed while preserving the mass-scale hierarchy.
 
+### Alternative colour-gamma operators
+
+:::{div} feynman-prose
+Here is a place where notation has done real damage, so let us take it apart
+slowly. Somewhere in the pipeline there are matrices called $\gamma_5$ and
+$\gamma_\mu$, and they are sandwiched between two colour vectors in exactly
+the way a Dirac bilinear sandwiches gamma matrices between two spinors. The
+names, the placement, the shape of the formula — everything invites you to
+read these as Dirac matrices.
+
+They are not. Dirac matrices are $4\times4$ and act on a spinor index, and
+their entire content is the Clifford relation
+$\{\gamma^\mu,\gamma^\nu\}=2\eta^{\mu\nu}$. These are $d\times d$, they act on
+the *colour* index, and they satisfy no Clifford relation at all — you can
+check below that $\Gamma_0^2$ is not even invertible. There is a genuine
+Dirac lift later in this chapter ({prf:ref}`def-qft-dirac-lift`); it is a
+different construction and the two must never be mixed.
+
+The notation is unfortunate, but the operators are real and the code computes
+them, so we define them honestly and work out their symmetries. And the
+symmetries hold a surprise: the thing named "pseudoscalar" in this family is
+even under inversion. It is a second scalar channel. That is not a small
+correction to a label; it is the opposite sign.
+:::
+
+:::{prf:definition} Colour-gamma operators
+:label: def-qft-color-gamma-operators
+
+For $d\ge3$ and colour components indexed by $a=0,\ldots,d-1$ define the
+Hermitian $d\times d$ matrices
+
+$$
+\Gamma_5=\operatorname{diag}\bigl((-1)^{a}\bigr)_{a=0}^{d-1},\qquad
+(\Gamma_\mu)_{ab}=i\,(\delta_{a\mu}\delta_{b\nu}-\delta_{a\nu}\delta_{b\mu}),
+\quad\nu=\mu+1\bmod d,
+$$
+
+and the pair contractions
+
+$$
+g_{ij}=c_i^\dagger\Gamma_5c_j,\qquad
+h_{ij}^{\mu}=c_i^\dagger\Gamma_\mu c_j
+ =i\bigl(\overline{c_i^{\mu}}c_j^{\nu}-\overline{c_i^{\nu}}c_j^{\mu}\bigr).
+$$
+
+The colour-gamma channels are
+$O_{\pi}^{\Gamma_5}=\mathcal A_t(\operatorname{Re}g)$,
+$O_{\pi,-}^{\Gamma_5}=\mathcal A_t(\operatorname{Im}g)$,
+$O_{\rho}^{\Gamma,\mu}=\mathcal A_t(\operatorname{Re}h^{\mu})$ and
+$O_{a}^{\Gamma,\mu}=\mathcal A_t(\operatorname{Im}h^{\mu})$, the last two
+with $d$ components contracted as in
+{prf:ref}`prop-qft-component-contraction`. These matrices act on the colour
+index. They are not Dirac matrices: $\Gamma_0^2=\operatorname{diag}(1,1,0,\ldots,0)\ne I$,
+so they satisfy no Clifford relation. For $d=3$,
+$h^{\mu}=i\,(\overline{c_i}\times c_j)_{\mu+2\bmod3}$.
+:::
+
+:::{prf:proposition} Symmetries of the colour-gamma operators
+:label: prop-qft-color-gamma-parities
+
+1. $g_{ji}=\overline{g_{ij}}$ and $h_{ji}^{\mu}=\overline{h_{ij}^{\mu}}$.
+   Under the inversion of {prf:ref}`prop-sm-direct-parity`,
+   $g\mapsto\overline g$ and $h^{\mu}\mapsto-\overline{h^{\mu}}$. Hence
+
+   | Channel | $X$ | $P$ | On a mutual pairing |
+   |---|---|---|---|
+   | $\operatorname{Re}g$ | $+$ | $+$ | not constrained |
+   | $\operatorname{Im}g$ | $-$ | $-$ | identically zero |
+   | $\operatorname{Re}h^{\mu}$ | $+$ | $-$ | not constrained |
+   | $\operatorname{Im}h^{\mu}$ | $-$ | $+$ | identically zero |
+
+   In particular $O_{\pi}^{\Gamma_5}$ is even under inversion: in the sense of
+   {prf:ref}`prop-sm-direct-parity` it is a second scalar channel,
+   $g_{ij}=q_{ij}-2\sum_{a\ \mathrm{odd}}\overline{c_i^{a}}c_j^{a}$. The
+   colour-gamma vector has the opposite exchange behaviour to the primary
+   vector channel $\operatorname{Re}q\,r$.
+2. $g$ is invariant under a common $A\in U(d)$ if and only if $A$ commutes
+   with $\Gamma_5$, that is
+   $A\in U(\lceil d/2\rceil)\times U(\lfloor d/2\rfloor)$. For $d=3$, under a
+   common real rotation $R\in SO(3)$ of the colour components the vector
+   $\overline{c_i}\times c_j$ rotates with $R$, so
+   $\sum_\mu(\operatorname{Re}h^{\mu})^2$ and the contracted correlators are
+   invariant; $h$ is not invariant under $SU(3)$.
+3. For $d=2$ the same formula gives $\Gamma_1=-\Gamma_0$, so
+   $\sum_\mu h^{\mu}=0$ and the component mean vanishes identically; this is
+   why the definition requires $d\ge3$.
+4. For $d=3$ the antisymmetric colour bilinear
+   $\operatorname{Re}(\overline{c_i^{\mu}}c_j^{\nu})
+    -\operatorname{Re}(\overline{c_i^{\nu}}c_j^{\mu})$, $\mu<\nu$, equals
+   $\operatorname{Im}h^{0}$, $\operatorname{Im}h^{1}$ and
+   $-\operatorname{Im}h^{2}$ for $(\mu\nu)=(01),(12),(02)$. It is the vector
+   $\operatorname{Re}(\overline{c_i}\times c_j)$ up to a relabelling: three
+   components, even under inversion, odd under exchange. It contains no
+   symmetric traceless part and is not a spin-two object.
+:::
+
+:::{prf:proof}
+**Item 1.** $\Gamma_5$ and $\Gamma_\mu$ are Hermitian, so
+$c_j^\dagger\Gamma c_i=\overline{c_i^\dagger\Gamma c_j}$. Under
+$c\mapsto-\overline c$ a contraction $c_i^\dagger Mc_j$ becomes
+$c_i^{\mathsf T}M\overline{c_j}=\overline{c_i^\dagger\overline Mc_j}$.
+$\Gamma_5$ is real, which gives $\overline g$; $\Gamma_\mu$ is purely
+imaginary, $\overline{\Gamma_\mu}=-\Gamma_\mu$, which gives
+$-\overline{h^{\mu}}$. The table follows, and its last column is
+{prf:ref}`prop-exchange-odd-cancellation` applied as in
+{prf:ref}`cor-sm-direct-exchange-parity`. The identity for $g$ is
+$\Gamma_5=I-2\sum_{a\ \mathrm{odd}}e_ae_a^{\mathsf T}$.
+
+**Item 2.** $(Ac_i)^\dagger\Gamma_5(Ac_j)=c_i^\dagger A^\dagger\Gamma_5Ac_j$
+for all unit vectors forces $A^\dagger\Gamma_5A=\Gamma_5$, which for unitary
+$A$ is $[A,\Gamma_5]=0$; the commutant of a diagonal matrix with two
+eigenvalues is block unitary on its eigenspaces. For real $R\in SO(3)$,
+$(R\overline{c_i})\times(Rc_j)=R(\overline{c_i}\times c_j)$. The matrix
+$A=\operatorname{diag}(i,-i,1)\in SU(3)$ multiplies both
+$\overline{c_i^{0}}c_j^{1}$ and $\overline{c_i^{1}}c_j^{0}$ by $-1$, so
+$h^{0}\mapsto-h^{0}$ and $h$ is not invariant.
+
+**Item 3.** For $d=2$, $\mu=1$ has $\nu=0$ and the displayed formula gives
+$(\Gamma_1)_{10}=i=-(\Gamma_0)_{10}$.
+
+**Item 4.** $\operatorname{Im}[i(z-w)]=\operatorname{Re}z-\operatorname{Re}w$
+with $z=\overline{c_i^{\mu}}c_j^{\nu}$, $w=\overline{c_i^{\nu}}c_j^{\mu}$;
+the sign for $(02)$ comes from the cyclic convention $\nu=\mu+1\bmod3$, which
+orders that pair as $(2,0)$. An antisymmetric $3\times3$ array has three
+independent components and is dual to a vector. $\square$
+:::
+
+:::{div} feynman-prose
+Item 1 is worth dwelling on. Why is $\operatorname{Re}g$ inversion-*even*
+when the matrix is called $\Gamma_5$? Because inversion here means
+$c\mapsto-\overline c$ — complex conjugation with a sign — and conjugation
+sends $c_i^\dagger Mc_j$ to the conjugate of $c_i^\dagger\overline Mc_j$. So
+everything turns on whether the matrix is *real* or *imaginary*, not on
+whether it anticommutes with something. $\Gamma_5$ is real. Its real part
+therefore comes back unchanged. The $\Gamma_\mu$ are purely imaginary, and
+their real parts flip.
+
+That is the whole mechanism, and the identity in item 1 makes it concrete:
+$g$ is just $q$ with the odd colour components subtracted twice over. It is a
+reweighted overlap. A reweighted scalar is still a scalar.
+
+Item 4 closes off a second tempting mislabel. The reference code records an
+antisymmetric colour bilinear and calls it a tensor channel, with the
+implication of spin two. But an antisymmetric $3\times3$ array has three
+independent entries, and three entries dual to a vector are a vector. A
+spin-two object would be the *symmetric traceless* part — five components —
+and nothing here constructs it. The antisymmetric pieces are $\pm$ the three
+$\operatorname{Im}h^{\mu}$, no more.
+:::
+
+:::{prf:remark} What a channel label asserts
+:label: rem-qft-channel-labels
+
+The symmetry content established for the channels of this chapter consists
+of two signs: $X$, under exchange of the two walkers of a pair or of the two
+companion roles of a triplet, and $P$, under the inversion of
+{prf:ref}`prop-sm-direct-parity`, valid under the equivariance hypotheses
+stated there. A total spin $J$ is not defined, because the colour encoding is
+not covariant under rotations ({prf:ref}`thm-sm-su3-emergence`) and the lift
+of {prf:ref}`def-qft-dirac-lift` is not equivariant. A charge-conjugation
+sign $C$ is not defined, because no charge conjugation acts on the record.
+The labels $\sigma$, $\pi$, $\rho$, $N$, $G$ name measurement channels, as in
+{prf:ref}`def-sm-direct-color-contractions`.
+
+For the Dirac-lift bilinears the continuum quantum numbers of a fermion
+bilinear $\bar q\Gamma q$ are quoted as analogues only:
+
+| $\Gamma$ | Continuum analogue | $P$ of the lifted bilinear |
+|---|---|---|
+| $I$ | $0^{++}$ | $+$ |
+| $\gamma^5$ | $0^{-+}$ | $-$ |
+| $\gamma^{k}$ | $1^{--}$ | $-$ |
+| $\gamma^5\gamma^{k}$ | $1^{++}$ | $+$ |
+| $\sigma^{jk}$ | $1^{+-}$ | $+$ |
+| $\sigma^{0k}$ | $1^{--}$ | $-$ |
+
+An antisymmetric $\sigma^{\mu\nu}$ has $6=3+3$ components, two spin-one
+multiplets; it contains no spin-two part.
+:::
+
+:::{div} feynman-prose
+Ask yourself what a label like $0^{-+}$ actually claims. It claims three
+things: a total spin $J$, a parity $P$, and a charge-conjugation eigenvalue
+$C$. Now ask which of the three we have earned here.
+
+Parity, yes — there is an honest inversion on the record and the channels have
+definite signs under it. Exchange, yes, and we track it as $X$. Spin? Spin
+requires an action of the rotation group under which the observable
+transforms in a definite representation, and the colour encoding does not have
+one; {prf:ref}`thm-sm-su3-emergence` is explicit about that. Charge
+conjugation? There is no charge conjugation acting on the record at all.
+Nothing to take an eigenvalue of.
+
+So two of the three superscripts in $J^{PC}$ are simply not defined for our
+channels, which is why the headings above carry plain labels. The names
+$\sigma$, $\pi$, $\rho$, $N$, $G$ are not claims about particles; they are
+names for measurements, kept because the measurements were built by analogy
+with those particles' operators. The table of continuum analogues is offered
+in exactly that spirit — this is what the corresponding bilinear would be in
+a relativistic field theory — and it is quoted, not derived.
+:::
+
 ### Empirical calibration status (zero-reward baseline)
 
 The baseline QFT calibration runs in `QFT_CALIBRATION_REPORT.txt` (zero reward, viscosity-only,
-200 walkers, 300 steps, Channels-tab analysis) show a **tradeoff** between the target ratios
-$R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$:
+200 walkers, 300 steps, Channels-tab analysis) report ratios of fitted decay rates from the
+Channels-tab pipeline, with its operators, component treatment, frame normalization and fit
+settings, against the reference ratios of {prf:ref}`def-qft-reference-ratios`. They are
+selection-stage measurements in the sense of
+{prf:ref}`rem-qft-reference-ratio-selection`:
 
 - **Closest $R_{\rho\pi}$**: $\;R_{\rho\pi}\approx 5.437$ (thr=0.9, pen=1.1, $\beta=0.5$), but
   $R_{N\pi}\approx 0.592$ (nucleon suppressed).
@@ -378,11 +1199,11 @@ $R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$:
   step 1), so those results are not admissible for calibration.
 
 **Empirical conclusion.** Within the current viscosity-only baseline and neighbor-threshold/penalty
-parameter space, no configuration achieves both ratios within the ±2% tolerance. High companion
-thresholds move $R_{\rho\pi}$ toward target but suppress $R_{N\pi}$; stable anisotropic settings
-recover $R_{N\pi}$ but leave $R_{\rho\pi}$ low. These findings are measurement-based and do not
-override the theoretical ratio-sieve constraints below; they instead flag where the current
-baseline fails to realize the target point.
+parameter space, no configuration achieves both ratios within ±2% of the reference ratios. High
+companion thresholds move $R_{\rho\pi}$ toward target but suppress $R_{N\pi}$; stable anisotropic
+settings recover $R_{N\pi}$ but leave $R_{\rho\pi}$ low. These findings are measurement-based and do
+not override the theoretical ratio-sieve constraints below; they instead flag where the current
+baseline does not realize the reference ratios.
 
 (sec-qft-calibration-electroweak)=
 ## Electroweak dashboard calibration
@@ -603,8 +1424,202 @@ Taking `abs()` yields the displayed $\mathrm{lr\_coupling\_mag}(t)$. Finally, if
 ### Dirac-spinor electroweak operator layer
 
 The second electroweak layer maps recorded color states to four-component
-vectors $\psi_i \in \mathbb{C}^4$ using the implemented map in
-{prf:ref}`prop-qft-ew-spinor-realization`. Its matrix bilinears use the
+vectors $\psi_i \in \mathbb{C}^4$ using the lift of
+{prf:ref}`def-qft-dirac-lift`.
+
+:::{div} feynman-prose
+We are about to take a three-component colour vector and make a
+four-component Dirac spinor out of it. Before we do, let us be clear-eyed
+about what such a map can and cannot be.
+
+A real three-vector has three numbers; a Weyl spinor has two complex numbers,
+so four real ones. You might hope for a map that *respects rotations* — rotate
+the vector and the spinor rotates with it by the spin-$\tfrac12$
+representation. That is the map you would want, and item 8 below proves it
+does not exist. Not "is hard to construct": does not exist, and the argument
+is two lines. So whatever we build will be a *coordinate* construction — a
+definite recipe in a definite basis — and it will be covariant only about one
+distinguished axis.
+
+That is not a reason to refuse to build it. The code builds it, it produces
+series, and those series have honest symmetry properties worth knowing. It is
+a reason to write the recipe down explicitly, and to keep the word "spinor"
+from smuggling in covariance that was never there.
+:::
+
+:::{prf:definition} Dirac lift of a colour state
+:label: def-qft-dirac-lift
+
+Let $d=3$ and fix the threshold $\delta_c$ of
+{prf:ref}`def-sm-direct-observable-law`. For $w\in\mathbb R^3\setminus\{0\}$
+put
+
+$$
+E(w)=\frac{1}{\sqrt{\|w\|}}\begin{pmatrix}w_1+iw_2\\ w_3\end{pmatrix}
+\in\mathbb C^2,
+$$
+
+and for a valid colour $c$ with $\|\operatorname{Re}c\|>\delta_c$ and
+$\|\operatorname{Im}c\|>\delta_c$ define
+
+$$
+\psi(c)=\begin{pmatrix}E(\operatorname{Im}c)\\E(\operatorname{Re}c)\end{pmatrix}
+\in\mathbb C^4 .
+$$
+
+Colours failing either inequality have no lift and are masked. The numerical
+Clifford matrices are the declared $\widehat\gamma^\mu$ of signature
+$(+,-,-,-)$ in the Dirac representation
+({prf:ref}`thm-sm-ew-operator-layers`),
+
+$$
+\widehat\gamma^0=\begin{pmatrix}I&0\\0&-I\end{pmatrix},\quad
+\widehat\gamma^{k}=\begin{pmatrix}0&\sigma_k\\-\sigma_k&0\end{pmatrix},\quad
+\gamma^5=i\widehat\gamma^0\widehat\gamma^1\widehat\gamma^2\widehat\gamma^3
+        =\begin{pmatrix}0&I\\I&0\end{pmatrix},\quad
+\sigma^{\mu\nu}=\tfrac i2[\widehat\gamma^\mu,\widehat\gamma^\nu],
+$$
+
+and $\bar\psi=\psi^\dagger\widehat\gamma^0$. The **Dirac-lift bilinears** of
+a pair are $D_{ij}^{\Gamma}=\bar\psi_i\Gamma\psi_j$; the recorded parts are
+$D^{S}=\operatorname{Re}D^{I}$, $D^{P}=\operatorname{Im}D^{\gamma^5}$,
+$D^{V,k}=\operatorname{Re}D^{\gamma^k}$,
+$D^{A,k}=\operatorname{Re}D^{\gamma^5\gamma^k}$,
+$D^{T,jk}=\operatorname{Re}D^{\sigma^{jk}}$ and
+$D^{T,0k}=\operatorname{Re}D^{\sigma^{0k}}$, with three-component families
+contracted as in {prf:ref}`prop-qft-component-contraction`. These are
+alternative operators; the primary channels are those of
+{prf:ref}`def-sm-direct-color-contractions`.
+:::
+
+:::{prf:proposition} Properties of the Dirac lift
+:label: prop-qft-dirac-lift-properties
+
+Write $u=\operatorname{Im}c$, $w=\operatorname{Re}c$, $a=E(u)$, $b=E(w)$.
+
+1. $E(w)^\dagger E(w)=\|w\|$ and $E(-w)=-E(w)$. For a unit colour
+   $\psi^\dagger\psi=\|u\|+\|w\|\in[1,\sqrt2]$; the lift does not preserve
+   norms.
+2. Under the inversion $c\mapsto-\overline c$ of
+   {prf:ref}`prop-sm-direct-parity`, $\psi(-\overline c)=\widehat\gamma^0\psi(c)$,
+   hence $D_{ij}^{\Gamma}\mapsto D_{ij}^{\widehat\gamma^0\Gamma\widehat\gamma^0}$.
+   The signs $P$ in {prf:ref}`rem-qft-channel-labels` are those of
+   $\widehat\gamma^0\Gamma\widehat\gamma^0=\pm\Gamma$.
+3. If $\widehat\gamma^0\Gamma$ is Hermitian then
+   $D_{ji}^{\Gamma}=\overline{D_{ij}^{\Gamma}}$: the real part is even and the
+   imaginary part odd under pair exchange. This is the case for
+   $\Gamma\in\{I,\gamma^k,\gamma^5\gamma^k,\sigma^{\mu\nu}\}$. For
+   $\Gamma=\gamma^5$ the matrix $\widehat\gamma^0\gamma^5$ is anti-Hermitian,
+   $D_{ji}=-\overline{D_{ij}}$, and the imaginary part is the even one. Every
+   recorded part listed in {prf:ref}`def-qft-dirac-lift` is exchange-even.
+4. $\widehat\gamma^0P_{L,R}=\tfrac12(\widehat\gamma^0\mp\widehat\gamma^0\gamma^5)$
+   is neither Hermitian nor anti-Hermitian:
+   $\operatorname{Re}(\bar\psi_iP_{L,R}\psi_j)
+    =\tfrac12D^{S}_{ij}\mp\tfrac12\operatorname{Re}D^{\gamma^5}_{ij}$, and the
+   second term is exchange-odd. On a mutual pairing the frame averages of the
+   left and the right scalar bilinear both equal $\tfrac12\mathcal A_t(D^{S})$.
+   The projected currents $\widehat\gamma^0\gamma^kP_{L,R}$ are Hermitian and
+   their real parts are exchange-even.
+5. The upper and lower component pairs of $\psi$ are the eigenspaces of
+   $\widehat\gamma^0$ with eigenvalues $+1$ and $-1$, the inversion-even and
+   inversion-odd components of item 2. They are not chirality eigenspaces:
+   $P_L(\xi,0)^{\mathsf T}=\tfrac12(\xi,-\xi)^{\mathsf T}$. The chiral
+   components of $\psi=(a,b)^{\mathsf T}$ are
+   $P_{L}\psi=\tfrac12(a-b,\,b-a)^{\mathsf T}$ and
+   $P_{R}\psi=\tfrac12(a+b,\,a+b)^{\mathsf T}$.
+6. $D^{P}_{ij}=-D^{T,03}_{ij}$ identically. The recorded pseudoscalar part is
+   one component of the family $D^{T,0k}$ and is not an independent channel.
+7. The bilinears are not invariant under the common phase
+   $c\mapsto e^{i\alpha}c$, hence not under $U(3)$ or $SU(3)$ frame changes:
+   $\alpha=\pi/2$ maps $D^{S}\mapsto-D^{S}$.
+8. There is no nonzero map $E:\mathbb R^3\to\mathbb C^2$ with
+   $E(Rw)=\pm U(R)E(w)$ for the spin-$\tfrac12$ representation $U$. The lift
+   above is covariant only under rotations about the third colour axis,
+   $E(R_z(\phi)w)=\operatorname{diag}(e^{i\phi},1)E(w)$.
+:::
+
+:::{prf:proof}
+**Item 1.** $|w_1+iw_2|^2+w_3^2=\|w\|^2$, divided by $\|w\|$; oddness is
+immediate. For a unit colour $\|u\|^2+\|w\|^2=1$ with both norms
+nonnegative, so their sum lies between $1$ and $\sqrt2$.
+
+**Item 2.** $-\overline c$ has imaginary part $u$ and real part $-w$, so
+$\psi(-\overline c)=(E(u),E(-w))=(a,-b)=\widehat\gamma^0\psi(c)$. Then
+$\bar\psi_i'\Gamma\psi_j'
+ =\psi_i^\dagger\widehat\gamma^0\widehat\gamma^0\Gamma\widehat\gamma^0\psi_j
+ =\bar\psi_i(\widehat\gamma^0\Gamma\widehat\gamma^0)\psi_j$.
+
+**Item 3.** For $M=\widehat\gamma^0\Gamma$,
+$\psi_j^\dagger M\psi_i=\overline{\psi_i^\dagger M^\dagger\psi_j}$. With
+$(\widehat\gamma^0)^\dagger=\widehat\gamma^0$,
+$(\widehat\gamma^k)^\dagger=-\widehat\gamma^k$ and
+$(\gamma^5)^\dagger=\gamma^5$, anticommutation gives $M^\dagger=M$ for the
+listed $\Gamma$ and
+$(\widehat\gamma^0\gamma^5)^\dagger=\gamma^5\widehat\gamma^0
+ =-\widehat\gamma^0\gamma^5$.
+
+**Item 4.** Linearity and item 3; the cancellation is
+{prf:ref}`prop-exchange-odd-cancellation`. For the currents,
+$(\widehat\gamma^0\widehat\gamma^k\gamma^5)^\dagger
+ =\gamma^5(-\widehat\gamma^k)\widehat\gamma^0
+ =\widehat\gamma^0\widehat\gamma^k\gamma^5$ after three anticommutations.
+
+**Item 5.** $\widehat\gamma^0=\operatorname{diag}(I,-I)$ and
+$P_{L,R}=\tfrac12\bigl(\begin{smallmatrix}I&\mp I\\\mp I&I\end{smallmatrix}\bigr)$.
+
+**Item 6.** $\widehat\gamma^0\gamma^5=\bigl(\begin{smallmatrix}0&I\\-I&0\end{smallmatrix}\bigr)$
+gives $D^{\gamma^5}_{ij}=a_i^\dagger b_j-b_i^\dagger a_j$, and
+$\widehat\gamma^0\sigma^{03}=i\bigl(\begin{smallmatrix}0&\sigma_3\\-\sigma_3&0\end{smallmatrix}\bigr)$
+gives $D^{\sigma^{03}}_{ij}=i(a_i^\dagger\sigma_3b_j-b_i^\dagger\sigma_3a_j)$.
+The second components of $a$ and $b$ are real, so
+$a^\dagger b$ and $a^\dagger\sigma_3b$ differ by a real number and have equal
+imaginary parts. Hence
+$\operatorname{Re}D^{\sigma^{03}}=-\operatorname{Im}(a_i^\dagger\sigma_3b_j-b_i^\dagger\sigma_3a_j)
+ =-\operatorname{Im}D^{\gamma^5}$.
+
+**Item 7.** $ic$ has imaginary part $w$ and real part $-u$, so
+$\psi(ic)=(E(w),-E(u))$ and
+$D^{I}=a_i^\dagger a_j-b_i^\dagger b_j$ becomes
+$b_i^\dagger b_j-a_i^\dagger a_j$.
+
+**Item 8.** Rotations about $\hat w$ fix $w$, so $E(w)$ would be an
+eigenvector of $\exp(-i\phi\,\hat w\cdot\sigma/2)$ with eigenvalue $\pm1$
+for every $\phi$; its eigenvalues are $e^{\mp i\phi/2}$. The covariance
+under $R_z(\phi)$ follows from
+$(w_1+iw_2)\mapsto e^{i\phi}(w_1+iw_2)$ with $w_3$ and $\|w\|$ fixed.
+$\square$
+:::
+
+:::{div} feynman-prose
+Item 5 is the one that will save you from a real mistake, so let me spell it
+out. The spinor is built as (upper) $=E(\operatorname{Im}c)$, (lower)
+$=E(\operatorname{Re}c)$, and it is almost irresistible to say "upper is
+left-handed, lower is right-handed". In the Dirac representation used here,
+that is false. The upper and lower pairs are the eigenspaces of
+$\widehat\gamma^0$ — they are the *parity* blocks, which is exactly why item 2
+comes out so cleanly. Chirality is the eigenbasis of $\gamma^5$, and in this
+representation $\gamma^5$ is off-diagonal, so a chirality eigenvector mixes
+upper and lower in equal measure: $P_L\psi=\tfrac12(a-b,\,b-a)$. Take a
+purely-upper spinor and project it left and you get half of it, spread across
+both blocks. The two decompositions are as different as two orthogonal
+bases can be.
+
+Item 6 is a different kind of surprise: the recorded pseudoscalar part is not
+an independent measurement at all. $D^{P}=-D^{T,03}$, identically, walker by
+walker and frame by frame. If you fit both and report two rates, you have
+reported one rate twice with a sign flip, and if you count them as two
+agreeing channels you have double-counted your evidence.
+
+And item 7 should temper any talk of gauge invariance in this layer. Multiply
+every colour by a common phase — the most harmless $U(1)$ transformation you
+can imagine — and the scalar bilinear can flip sign outright at
+$\alpha=\pi/2$. The reason is structural: the lift reads
+$\operatorname{Re}c$ and $\operatorname{Im}c$ separately, and a common phase
+rotates them into each other. Whatever these channels measure, it is not
+invariant under the colour frame.
+:::
+
+The matrix bilinears of this layer use the
 chiral projectors from {prf:ref}`def-lqft-chiral-projectors`. The implementation
 constructs the following measurement channels:
 
@@ -678,8 +1693,9 @@ and compared under their stated definitions.
 
 **Rigor Class:** F (Implementation-Exact)
 
-Assume $d=3$ so that the color states admit the implemented map
-$c_i(t)\mapsto \psi_i(t)\in\mathbb{C}^4$. For each retained frame $t$ and walker index $i$, let
+Assume $d=3$ so that the color states admit the lift
+$c_i(t)\mapsto \psi_i(t)\in\mathbb{C}^4$ of {prf:ref}`def-qft-dirac-lift`.
+For each retained frame $t$ and walker index $i$, let
 
 $$
 j=c_d(i,t)
@@ -690,16 +1706,19 @@ computed from the clone companion data, and define the validity mask
 
 $$
 V_t(i):=
-\mathbf{1}_{\{\mathrm{color\_valid}_i(t)\}}
+\mathbf{1}_{\{\mathrm{spinor\_valid}_i(t)\}}
 \cdot
-\mathbf{1}_{\{\mathrm{color\_valid}_j(t)\}}
+\mathbf{1}_{\{\mathrm{spinor\_valid}_j(t)\}}
 \cdot
 \mathbf{1}_{\{\mathrm{alive}_i(t)\}}
 \cdot
 \mathbf{1}_{\{\mathrm{alive}_j(t)\}}
 \cdot
-\mathbf{1}_{\{j\neq i\}}.
+\mathbf{1}_{\{j\neq i\}},
 $$
+
+where $\mathrm{spinor\_valid}$ is colour validity together with the two
+inequalities of {prf:ref}`def-qft-dirac-lift`.
 
 Let the pair classes be
 
@@ -859,8 +1878,8 @@ distance companions for the spinor pairing. It then sets
 the pair for walker $i$ is exactly $(i,c_d(i,t))$.
 
 Inside `compute_electroweak_spinor_operators`, the validity mask is
-`valid = v_i & v_j & (first_nb != sample_indices)`, with `v_i` and `v_j` requiring both color
-validity and `alive`. This is precisely $V_t(i)$. The chirality masks `both_L`, `both_R`,
+`valid = v_i & v_j & (first_nb != sample_indices)`, with `v_i` and `v_j` requiring spinor
+validity, which includes color validity, and `alive`. This is precisely $V_t(i)$. The chirality masks `both_L`, `both_R`,
 `cross_LR`, and `cross_RL` are exactly the four sets $LL_t$, $RR_t$, $LR_t$, and $RL_t$ above.
 
 The helper `_compute_chiral_bilinear` builds the matrix
@@ -884,6 +1903,43 @@ The `_count` helper simultaneously returns the displayed cardinalities
 Finally, the function squares the already averaged current series and inserts them into the two
 rational expressions defining `parity_violation_dirac` and `parity_violation_walker`, with the
 regularizer `eps_pv = 1e-30`. This proves the claim. $\square$
+:::
+
+:::{prf:remark} Component means and exchange-mixed parts of the recorded spinor series
+:label: rem-qft-ew-spinor-series
+
+Each current series of {prf:ref}`prop-qft-ew-spinor-realization` is the
+component mean $\tfrac13\sum_kB_{\gamma^k,P}$ of a three-component family. By
+{prf:ref}`prop-qft-component-contraction` its correlator depends on the
+recorded component basis; the basis-independent statistic of the same family
+is the contracted correlator of the three component series. By
+{prf:ref}`prop-qft-dirac-lift-properties`, on a mutual distance pairing
+$o_{\mathrm{scalar},L}$ and $o_{\mathrm{scalar},R}$ are the same series
+$\tfrac12\operatorname{Avg}_{V_t}[B_{I,I}]$, while the unsplit current series
+are exchange-even. Role-restricted averages use masks that differ at the two
+ends of a pair and are not constrained.
+:::
+
+:::{div} feynman-prose
+Two things worth noticing about the series this pipeline actually records.
+
+The currents all carry that $\tfrac13\sum_k$ out front — a component mean,
+the very thing {prf:ref}`prop-qft-component-contraction` warned about. Their
+correlators are not statistics of the three-component family; they are
+statistics of one projection of it, onto a direction fixed by how the array
+indices were laid out. The basis-independent alternative is right there: keep
+the three series, correlate each with itself, add. It costs nothing but
+bookkeeping.
+
+The second is sharper. On a mutual distance pairing, the left-projected and
+right-projected scalar bilinears are *the same series*. Not similar, not
+close — equal, because the part that distinguishes them is exchange-odd and
+cancels in the frame average, leaving both equal to half the unprojected
+scalar. So a left-right asymmetry built from those two is identically zero,
+and no amount of running will make it nonzero. If you want a parity
+diagnostic with content, it has to come from the role-restricted averages,
+whose masks genuinely differ at the two ends of a pair, and those are not
+constrained by this argument either way.
 :::
 
 ### Legacy phase/doublet proxy construction
@@ -938,7 +1994,7 @@ legacy U(1) and SU(2) phases are constructed from the fitness differences as
 
 $$
 \phi_i^{(U1)} = -\frac{F_{c_d(i)} - F_i}{\hbar_{\text{eff}}}, \qquad
-\phi_i^{(SU2)} = \frac{F_{c_c(i)} - F_i}{(F_i + \epsilon_{\text{clone}})\,\hbar_{\text{eff}}}.
+\phi_i^{(SU2)} = \frac{F_{c_c(i)} - F_i}{(|F_i| + \epsilon_{\text{clone}})\,h_S}.
 $$
 
 The companion-localized amplitudes use the algorithmic distance
@@ -958,6 +2014,59 @@ $$
 and amplitudes $A_{d,i}=\sqrt{w_{d,i}}$, $A_{c,i}=\sqrt{w_{c,i}}$. The dashboard computes
 correlators from these complex phase series and extracts masses using the same effective-mass
 relation and correlation-length definition {prf:ref}`def-correlation-length`.
+
+:::{prf:remark} Ranges, regularizer and phase scales of the proxy family
+:label: rem-qft-ew-ranges
+
+The three numbers $\epsilon_d$, $\epsilon_c$ and $\epsilon_{\text{clone}}$ are
+distinct. $\epsilon_d$ and $\epsilon_c$ are the ranges of the distance and
+cloning companion kernels, in the units of the algorithmic distance; they are
+the amplitude widths $\ell_d$, $\ell_c$ of
+{prf:ref}`def-sm-direct-companion-doublet`. $\epsilon_{\text{clone}}$ has the
+units of a fitness and enters the score denominator only. When a companion
+law has no range, as for the uniform matchings of the Einstein–Hilbert Gas
+({prf:ref}`rem-variants-measurability`), the run does not determine the
+amplitude width; the analysis declares either the modulus one or an explicit
+width, and the coupling estimates $g_1^{\text{est}}$, $g_2^{\text{est}}$ below
+are undefined.
+
+The score phase uses the dimensionless scale $h_S$ of
+{ref}`(SM.U1) <eq-fg-sm-u1>`. The dashboard sets $h_S=\hbar_{\text{eff}}$
+numerically; this identification is a declared nondimensionalization. For
+positive fitness $|F_i|=F_i$.
+
+On a mutual distance pairing the imaginary parts of $O_{u1}$ and $O_{u1,d}$
+vanish identically and the measured observables are
+$\langle\cos\phi^{(U1)}\rangle$ and $\langle A_d\cos\phi^{(U1)}\rangle$
+({prf:ref}`cor-sm-direct-exchange-parity`). On a mutual cloning pairing with
+pair-symmetric weights the frame average of the difference doublet vanishes
+and the frame average of the sum doublet is twice that of the component
+({prf:ref}`cor-sm-paired-doublet-cancellation`).
+:::
+
+:::{div} feynman-prose
+Three epsilons, and they are not three names for one idea. Two of them —
+$\epsilon_d$ and $\epsilon_c$ — are *ranges*: they live in the units of the
+algorithmic distance and they set how far a companion kernel reaches. The
+third, $\epsilon_{\text{clone}}$, lives in the units of a *fitness* and never
+leaves the denominator of a score. They cannot be traded off against each
+other, they do not have the same dimensions, and the fact that they share a
+letter is an accident of naming.
+
+The denominator deserves one more look: it is $|F_i|+\epsilon_{\text{clone}}$,
+with the absolute value. If the fitness can go negative and you drop those
+bars, the phase flips sign on exactly the walkers where it matters most, and
+worse, the denominator can pass through zero and take the whole score with
+it. When fitness is positive the two forms agree, which is precisely why the
+difference is easy to miss and expensive to find.
+
+Finally, the rangeless case. Some variants match companions uniformly, with
+no kernel width at all. Then $\epsilon_d$ is not a small number — it is not a
+number. The amplitude envelope is undetermined, and the coupling estimates
+that divide by it have nothing to divide by. Declare a width or declare the
+modulus one, and say which you did; do not let a missing parameter default
+silently to something.
+:::
 
 The dashboard proxies are computed from phase dispersion (a diagnostic for phase coherence, not a
 direct measurement of the physical couplings in {doc}`07_qft_calibration_report`):
@@ -1151,12 +2260,71 @@ R_{G\pi} := \frac{m_G}{m_\pi}, \qquad
 R_{N\pi} := \frac{m_N}{m_\pi}.
 $$
 
-For the current calibration targets, fix
+:::{prf:definition} Reference ratios and the hadron-label hypothesis
+:label: def-qft-reference-ratios
+
+The **reference ratios** are the external numbers
 
 $$
-R_{\rho\pi} = 5.5, \qquad R_{N\pi} = 6.7,
+R_{\rho\pi}^{\mathrm{ref}}=5.5,\qquad R_{N\pi}^{\mathrm{ref}}=6.7,
 $$
-and treat $R_{\sigma\pi}, R_{G\pi}$ as symbolic until anchored by data.
+
+the two-digit truncations of the measured mass ratios
+$m_\rho/m_{\pi^\pm}=5.5546$ and $m_p/m_{\pi^\pm}=6.7226$. The **hadron-label
+hypothesis** is the statement that the decay rates of the channels labelled
+$\pi$, $\rho$, $N$ of a gas variant stand in these ratios. It is a hypothesis
+about a labelling; {prf:ref}`def-sm-direct-color-contractions` assigns no
+particle to a channel.
+
+The reference ratios enter this chapter in two places only: as the hypothesis
+of {prf:ref}`cor-qft-ratio-numeric-bounds` and of item 4 of
+{prf:ref}`cor-qft-parameter-sieve`, and as comparison values for measured
+ratios. They enter no operator definition, no estimator, no fit prior and no
+fit window. A ratio $R_{\chi\pi}$ is defined only when both channels have a
+decay rate ({prf:ref}`def-qft-channel-decay-rate`) obtained with one
+estimator, one frame normalization and one time unit.
+$R_{\sigma\pi}$ and $R_{G\pi}$ remain symbolic until measured.
+:::
+
+:::{prf:remark} Selection and evidence
+:label: rem-qft-reference-ratio-selection
+
+A parameter set retained because its measured ratios lie near the reference
+ratios has been selected on that outcome; its agreement with them is not
+evidence for the hadron-label hypothesis. Evidence requires ratios measured
+on runs and seeds that played no part in the selection, with the channel,
+estimator, normalization, fit window and priors fixed beforehand, and with
+the number of compared ratios stated. On a mutual pairing the primary $\pi$
+and $\rho$ frame series vanish identically
+({prf:ref}`cor-sm-direct-exchange-parity`) and the $N$ frame series has no
+decay rate under exchangeable companion roles
+({prf:ref}`prop-sm-direct-role-swap`); the ratios are then undefined for
+frame-average estimators.
+:::
+
+:::{div} feynman-prose
+Where do $5.5$ and $6.7$ come from? Not from the gas. They are
+$m_\rho/m_{\pi^\pm}$ and $m_p/m_{\pi^\pm}$ from the particle data tables, cut
+to two digits. That is a perfectly respectable thing to compare against — but
+notice that comparing against them presumes something substantial: that the
+channel we call $\pi$ should be read as a pion, $\rho$ as a rho, $N$ as a
+nucleon. Nothing in the definition of those channels says so. They were built
+by analogy, and the analogy is the hypothesis, not a result.
+
+Now the part that requires real discipline. Suppose you sweep a thousand
+parameter sets, keep the ones whose $R_{\rho\pi}$ lands near $5.5$, and then
+report that the survivors have $R_{\rho\pi}$ near $5.5$. You have discovered
+nothing except that your filter works. This is not a subtle statistical
+point; it is the whole point. Selection on an outcome destroys that outcome's
+value as evidence for the hypothesis that motivated the selection.
+
+What would count as evidence? Fix everything first — channel, estimator,
+normalization, fit window, priors — then measure on runs and seeds that took
+no part in the selection, and say how many ratios you compared. That last bit
+matters too: compare enough quantities and one of them will land on target by
+luck. There is nothing wrong with using the reference ratios as a sieve. Just
+do not then hand the sieve's output back as a confirmation.
+:::
 
 :::{div} feynman-prose
 These numbers are chosen calibration targets. The following algebra supplies necessary constraints within a specified scale and coupling model. It does not establish that every selected dashboard channel has an asymptotic mass, or that satisfying the constraints reproduces the targets.
@@ -1268,7 +2436,10 @@ Apply the preceding theorem to every included nonzero asymptotic channel rate an
 :::{prf:corollary} Explicit Pruning Bounds for $R_{\rho\pi}=5.5$, $R_{N\pi}=6.7$
 :label: cor-qft-ratio-numeric-bounds
 
-With the fixed targets $R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$,
+Assume the hadron-label hypothesis of {prf:ref}`def-qft-reference-ratios`,
+$R_{\rho\pi}=R_{\rho\pi}^{\mathrm{ref}}=5.5$ and
+$R_{N\pi}=R_{N\pi}^{\mathrm{ref}}=6.7$, for channels that possess decay
+rates. Then
 
 $$
 m_\rho = 5.5\,m_\pi, \qquad m_N = 6.7\,m_\pi,
@@ -1291,7 +2462,7 @@ $$
 $$
 \kappa \geq \frac{1}{\rho\,m_\pi\,\min(1, R_{\sigma\pi}, R_{G\pi})}.
 $$
-In particular, if future calibration anchors give $R_{\sigma\pi} \geq 1$ and
+In particular, if measurements give $R_{\sigma\pi} \geq 1$ and
 $R_{G\pi} \geq 1$, then
 
 $$
@@ -1328,10 +2499,13 @@ $$
 3. **Gap lower bound (all channels)** ({prf:ref}`thm-qft-channel-gap-bound`):
 
 $$
-m_\chi \geq \hbar_{\text{eff}} \lambda_{\text{gap}} \quad \text{for } \chi \in \{\pi,\sigma,\rho,G,N\}.
+m_\chi \geq \hbar_{\text{eff}} \lambda_{\text{gap}} \quad \text{for } \chi \in \{\pi,\sigma,\rho,G,N\},
 $$
 
-4. **Ratio-sieve bounds** (from {prf:ref}`cor-qft-ratio-numeric-bounds`):
+for each listed channel that possesses a decay rate.
+
+4. **Ratio-sieve bounds under the hadron-label hypothesis**
+({prf:ref}`def-qft-reference-ratios`, {prf:ref}`cor-qft-ratio-numeric-bounds`):
 
 $$
 R_{\rho\pi} = 5.5, \qquad R_{N\pi} = 6.7,
@@ -1371,12 +2545,15 @@ Use the checklist above as a deterministic filter before running large parameter
    $(\sigma_{\text{sep}}, \eta_{\text{time}}, \kappa)$ from
    {prf:ref}`thm-dimensionless-ratios`. Discard candidates outside the stable regime indicated by
    prior calibrated runs.
-4. **Pilot estimate of $m_\pi$**: run a short QSD‑valid trajectory and extract $m_\pi$ from the
-   pseudoscalar correlator ({prf:ref}`def-euclidean-correlator-fg`,
+4. **Pilot estimate of $m_\pi$**: run a short QSD‑valid trajectory and extract the decay rate
+   $m_\pi$ of a declared pseudoscalar channel — operator, companion map, alignment, estimator and
+   normalization — whose correlator is not identically zero
+   ({prf:ref}`cor-sm-direct-exchange-parity`) ({prf:ref}`def-euclidean-correlator-fg`,
    {prf:ref}`def-two-point-connected`, {prf:ref}`def-correlation-length`).
 5. **Apply ratio bounds**: enforce {prf:ref}`cor-qft-ratio-numeric-bounds` using the pilot
    estimate of $m_\pi$ (and symbolic $R_{\sigma\pi}, R_{G\pi}$ if still unanchored). Discard
-   candidates that violate the inequalities.
+   candidates that violate the inequalities. These bounds are consequences of the hadron-label
+   hypothesis; they do not test it ({prf:ref}`rem-qft-reference-ratio-selection`).
 
 :::{div} feynman-prose
 Treat a pilot fit as an estimate with uncertainty. Exclusion by an asymptotic spectral constraint is justified only when its hypotheses and the error margin hold for that channel. A missing plateau or an identically zero observable supplies no mass estimate.

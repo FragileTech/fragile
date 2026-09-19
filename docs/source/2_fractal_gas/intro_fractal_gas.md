@@ -61,15 +61,38 @@ The order of these operations, the noise law, and the boundary rule define the
 transition kernel. They are part of the mathematical model.
 :::
 
+:::{div} feynman-prose
+Three words get used for three different things, and it is worth separating them
+before they start colliding. The **Fractal Gas** is the family: every algorithm
+in this volume is one choice of components for a single step operator. The
+**Fragile Gas** and its instantiated **Fragile Swarm** are the abstract Markov
+chain and axioms of
+{doc}`the framework chapter <convergence_program/01_fragile_gas_framework>` —
+a set of assumptions you verify for a model, not a model itself. And the
+**Algorithmic Gas** is the Rust engine of
+{doc}`the architecture chapter <architecture/01_algorithmic_gas>`; it executes a
+variant, and it is never a variant.
+
+A **variant** is what you get when all twelve components are fixed: the
+**Euclidean Gas**, the **Viscous Euclidean Gas**, the **Einstein–Hilbert Gas**,
+the **Geometric Gas**, the **Latent Fractal Gas**, and the **Environment Gas**.
+Mean-field and continuum limits are limits *of* a variant, never variants of
+their own. {doc}`1_the_algorithm/04_gas_variants` gives each one as a component
+tuple and states, variant by variant, which theorems of this volume have been
+proved for it and which have not.
+:::
+
 The {doc}`algorithm introduction <1_the_algorithm/01_algorithm_intuition>` gives
-the operational description. The
+the operational description, and
+{doc}`the variants chapter <1_the_algorithm/04_gas_variants>` fixes the named
+variants and the vocabulary just described. The
 {doc}`general framework <convergence_program/01_fragile_gas_framework>` specifies
 the operators and their assumptions. The
 {doc}`Euclidean model <convergence_program/02_euclidean_gas>` provides the main
 setting for the convergence analysis, and the
 {doc}`single-particle chapter <convergence_program/04_single_particle>` isolates
 the underlying kinetic behavior. The
-{doc}`latent-space model <1_the_algorithm/02_fractal_gas_latent>` introduces the
+{doc}`Latent Fractal Gas <1_the_algorithm/02_fractal_gas_latent>` introduces the
 geometric choices needed when positions and velocities live on a manifold.
 
 :::{note}
@@ -212,10 +235,14 @@ to examine what a finite simulation actually measures.
 
 ### Part I: Algorithms and foundations
 
-{doc}`Part I <parts/01_foundations>` contains the algorithm intuition, general
-framework, Euclidean model, single-particle analysis, and latent-space model.
-Read it to identify the state space, the update order, and the assumptions attached
-to each variant.
+{doc}`Part I <parts/01_foundations>` contains the algorithm intuition, the
+{doc}`catalogue of variants <1_the_algorithm/04_gas_variants>`, the general
+framework, the Euclidean Gas, the single-particle analysis, and the Latent
+Fractal Gas. Read it to identify the state space, the update order, and the
+assumptions attached to each variant. The variants chapter is the place where
+the Euclidean, Viscous Euclidean, Einstein–Hilbert, Geometric, Latent and
+Environment gases are written as component tuples and their established results
+are listed.
 
 ### Part II: Finite-particle convergence
 
@@ -247,7 +274,7 @@ residual of a proposed stationary density into a quantitative error bound.
 {doc}`third-order regularity <convergence_program/14_a_geometric_gas_c3_regularity>`,
 {doc}`smooth regularity <convergence_program/14_b_geometric_gas_cinf_regularity_full>`,
 and {doc}`LSI-based entropy estimates <convergence_program/15_kl_convergence>`.
-It also contains the {doc}`geometric gas <convergence_program/17_geometric_gas>`,
+It also contains the {doc}`Geometric Gas <convergence_program/17_geometric_gas>`,
 {doc}`finite-population error bounds <convergence_program/13_quantitative_error_bounds>`,
 and {doc}`parameter constraints <1_the_algorithm/03_parameter_constraints>`.
 The complete LSI and kinetic hypocoercivity proofs supply explicit sufficient
@@ -355,14 +382,14 @@ precise implications. In particular:
 ## Reading guide
 
 :::{div} feynman-prose
-For a first pass, read the algorithm introduction and the Euclidean model before
-following the convergence chapters. Keep one question beside each theorem:
+For a first pass, read the algorithm introduction, the variants chapter, and the
+Euclidean Gas before following the convergence chapters. Keep one question beside each theorem:
 which part of the update rule does this hypothesis control? That question makes
 the constants easier to interpret.
 
 The probabilistic development starts from the definitions in this volume. The
-latent-space variant connects to the learned representations of Volume I;
-readers working in Euclidean space can begin directly with the Euclidean model.
+Latent Fractal Gas connects to the learned representations of Volume I;
+readers working in Euclidean space can begin directly with the Euclidean Gas.
 :::
 
 ::::{div} feynman-added

@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Algorithmic Gas · QFT Simulator</title>
+    <link rel="stylesheet" href="./lecture/style.css" />
+    <link rel="stylesheet" href="./qft/style.css" />
+  </head>
+  <body class="qft">
+    <a class="skip" href="#workbench">Skip to the workbench</a>
+    <header class="masthead">
+      <a href="./">ALGORITHMIC GAS / LAB</a><a href="./lecture.html">LECTURES</a
+      ><span>QFT SIMULATOR · RUST/WASM SPECTROSCOPY</span>
+      <div id="engine" class="engine" role="status" aria-live="polite">
+        Starting worker
+      </div>
+    </header>
+    <main id="workbench">
+      <div class="eyebrow">ALGORITHMIC GAS · QFT SIMULATOR</div>
+      <h1>QFT Simulator</h1>
+      <p class="question">
+        Run a gas variant, measure gauge-invariant channel correlators on its
+        recorded companions and viscous-force colour, and read the decay rates
+        of those algorithm-time correlators. Every number on this page is
+        computed by the compiled Rust engine.
+      </p>
+      <div id="error" role="alert" hidden></div>
+      <div id="tabs" role="tablist" aria-label="Workbench sections">
+        <button
+          type="button"
+          role="tab"
+          id="tab-setup"
+          data-tab="setup"
+          aria-controls="panel-setup"
+          aria-selected="true"
+        >
+          1 · Setup</button
+        ><button
+          type="button"
+          role="tab"
+          id="tab-run"
+          data-tab="run"
+          aria-controls="panel-run"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          2 · Run</button
+        ><button
+          type="button"
+          role="tab"
+          id="tab-correlators"
+          data-tab="correlators"
+          aria-controls="panel-correlators"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          3 · Correlators</button
+        ><button
+          type="button"
+          role="tab"
+          id="tab-fits"
+          data-tab="fits"
+          aria-controls="panel-fits"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          4 · Rates &amp; fits</button
+        ><button
+          type="button"
+          role="tab"
+          id="tab-physics"
+          data-tab="physics"
+          aria-controls="panel-physics"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          5 · Physics comparison
+        </button>
+      </div>
+
+      <section
+        id="panel-setup"
+        role="tabpanel"
+        aria-labelledby="tab-setup"
+        tabindex="0"
+      >
+        <form id="setup" aria-label="Run configuration">
+          <fieldset class="group">
+            <legend>Gas variant</legend>
+            <label class="control"
+              ><span>Variant</span
+              ><select id="variant" name="variant"></select
+            ></label>
+            <div id="variant-list"></div>
+          </fieldset>
+          <fieldset class="group">
+            <legend>Run</legend>
+            <div class="control-grid">
+              <label class="control"
+                ><span>Walkers</span
+                ><input name="walkers" type="number" min="2" step="1" required
+              /></label>
+              <label class="control"
+                ><span>Dimensions</span
+                ><input
+                  name="dimensions"
+                  type="number"
+                  min="1"
+                  step="1"
+                  required
+              /></label>
+              <label class="control"
+                ><span>Steps per replica</span
+                ><input name="steps" type="number" min="1" step="1" required
+              /></label>
+              <label class="control"
+                ><span>Replicas</span
+                ><input
+                  name="replicas"
+                  type="number"
+                  min="1"
+                  max="32"
+                  step="1"
+                  required
+              /></label>
+              <label class="control"
+                ><span>Seed</span
+                ><input
+                  name="seed"
+                  type="number"
+                  min="0"
+                  max="4294967295"
+                  step="1"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend>Colour and time</legend>
+            <div class="control-grid">
+              <label class="control"
+                ><span>Colour source</span
+                ><select name="colorSource"></select
+              ></label>
+              <div id="color-fields" class="control-slot"></div>
+              <label class="control"
+                ><span>Time axis</span
+                ><select name="timeAxis"></select
+              ></label>
+            </div>
+          </fieldset>
+          <fieldset class="group">
+            <legend>Channels</legend>
+            <p class="footnote">
+              Availability is computed by Rust for the configuration above. An
+              unavailable channel is disabled and shows the engine’s reason.
+            </p>
+            <div id="capability-error" role="alert" hidden></div>
+            <div id="channels"></div>
+            <details>
+              <summary>Capabilities of this configuration</summary>
+              <div id="capabilities"></div>
+            </details>
+          </fieldset>
+          <div class="toolbar">
+            <button id="create" type="submit" disabled>Create and run</button>
+            <span id="setup-status" class="status" role="status"></span>
+          </div>
+        </form>
+        <div id="setup-notes"></div>
+      </section>
+
+      <section
+        id="panel-run"
+        role="tabpanel"
+        aria-labelledby="tab-run"
+        tabindex="0"
+        hidden
+      >
+        <div class="toolbar">
+          <button id="run" type="button" disabled>Run</button
+          ><button id="step" type="button" disabled>Step</button
+          ><button id="restart" type="button" disabled>Restart</button>
+          <span id="status" role="status" aria-live="polite"
+            >No session yet</span
+          >
+        </div>
+        <label class="progress"
+          ><span id="progress-label">Completed steps</span
+          ><progress id="progress" value="0" max="1"></progress
+        ></label>
+        <div id="run-metrics" class="metrics"></div>
+        <fieldset class="group">
+          <legend>Channels in the live charts</legend>
+          <div id="live-select" class="anchor-list"></div>
+        </fieldset>
+        <h2>Swarm and live correlators</h2>
+        <div id="run-charts" class="charts"></div>
+        <h2>Coverage counters</h2>
+        <div id="coverage"></div>
+        <details>
+          <summary>Per-replica progress</summary>
+          <div id="replicas"></div>
+        </details>
+        <div class="exports">
+          <button id="export-evidence" type="button" disabled>
+            Export evidence (CBOR)</button
+          ><button id="export-checkpoint" type="button" disabled>
+            Save checkpoint</button
+          ><label class="file-button"
+            >Restore checkpoint<input
+              id="restore-checkpoint"
+              type="file"
+              accept=".agc,.cbor,application/octet-stream,application/cbor" /></label
+          ><label class="file-button"
+            >Import evidence<input
+              id="import-evidence"
+              type="file"
+              accept=".cbor,application/octet-stream,application/cbor" /></label
+          ><label class="file-button"
+            >Import run archive<input
+              id="import-archive"
+              type="file"
+              accept=".cbor,application/octet-stream,application/cbor"
+          /></label>
+        </div>
+        <p class="footnote">
+          Pause stops requesting updates; the session stays resumable. A
+          checkpoint restores the complete session. Evidence holds the request,
+          configurations and measurements, and is re-analysed in Rust on import;
+          it does not resume.
+        </p>
+        <div id="run-notes"></div>
+      </section>
+
+      <section
+        id="panel-correlators"
+        role="tabpanel"
+        aria-labelledby="tab-correlators"
+        tabindex="0"
+        hidden
+      >
+        <form
+          id="analysis"
+          class="control-grid"
+          aria-label="Analysis controls"
+        ></form>
+        <p class="footnote">
+          These controls re-analyse the accumulated measurement in Rust. They
+          never advance or restart the gas.
+        </p>
+        <div class="toolbar">
+          <label class="seed"
+            >Channel
+            <select id="correlator-channel"></select
+          ></label>
+          <label class="check"
+            ><input id="log-y" type="checkbox" /> Logarithmic C(τ)</label
+          >
+          <button id="presentation" type="button" disabled>
+            Rust presentation plots
+          </button>
+          <span id="analysis-status" class="status" role="status"></span>
+        </div>
+        <h2>Correlators and effective decay rates</h2>
+        <div id="correlator-charts" class="charts"></div>
+        <div id="correlator-table"></div>
+        <h2>Resampling summary</h2>
+        <div id="samples-table"></div>
+        <div id="flow-table"></div>
+        <div id="presentation-charts" class="charts"></div>
+        <div id="correlator-notes"></div>
+      </section>
+
+      <section
+        id="panel-fits"
+        role="tabpanel"
+        aria-labelledby="tab-fits"
+        tabindex="0"
+        hidden
+      >
+        <form
+          id="fit-controls"
+          class="control-grid"
+          aria-label="Fit controls"
+        ></form>
+        <h2>Decay rates and fit diagnostics</h2>
+        <div id="fit-table"></div>
+        <div class="toolbar">
+          <label class="seed"
+            >Channel
+            <select id="fit-channel"></select
+          ></label>
+        </div>
+        <div id="window-charts" class="charts"></div>
+        <div id="window-table"></div>
+        <h2>Joint fits</h2>
+        <div id="group-table"></div>
+        <h2>GEVP</h2>
+        <div id="gevp-charts" class="charts"></div>
+        <div id="gevp-table"></div>
+        <div id="fit-notes"></div>
+      </section>
+
+      <section
+        id="panel-physics"
+        role="tabpanel"
+        aria-labelledby="tab-physics"
+        tabindex="0"
+        hidden
+      >
+        <form id="mapping" aria-label="Hypothesis mapping"></form>
+        <div id="comparison"></div>
+        <h2>Calibration</h2>
+        <div id="calibration"></div>
+        <div id="couplings"></div>
+        <div id="physics-notes"></div>
+      </section>
+    </main>
+    <script type="module" src="./qft/main.js"></script>
+  </body>
+</html>

@@ -125,7 +125,11 @@ fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let replicas = args.first().and_then(|x| x.parse().ok()).unwrap_or(128);
     let seed_start = args.get(1).and_then(|x| x.parse().ok()).unwrap_or(0);
-    let case = args.get(2).map(String::as_str).unwrap_or("canonical");
+    // `canonical` is the former name of the `euclidean` study.
+    let case = match args.get(2).map(String::as_str) {
+        None | Some("canonical") => "euclidean",
+        Some(other) => other,
+    };
     let sizes = args
         .get(3)
         .map(|s| {
@@ -134,7 +138,7 @@ fn main() -> Result<()> {
                 .collect()
         })
         .unwrap_or_else(|| {
-            if case == "canonical" {
+            if case == "euclidean" {
                 vec![16, 32, 64, 128, 256]
             } else {
                 vec![16, 64, 256]

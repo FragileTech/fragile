@@ -11,10 +11,39 @@ forces and noise, and the tessellation graph with its edge arrays. This tool
 only renames and reshapes them into
 ``fragile.physics.fractal_gas.history.RunHistory``.
 
+Array layout follows ``VectorizedHistoryRecorder``: ``*_before_clone``, ``*_final``,
+``U_before``, ``U_final`` and ``n_alive`` have one row per recorded frame (row 0 is
+the state before the first recorded step); every other array, including
+``x_after_clone`` and ``v_after_clone``, has one row per recorded step.
+
+Colour alignment. The engine evaluates the B1 viscous force on the velocities
+left by cloning and the collision, recorded as the B1 ``force_input_velocity``,
+while ``v_before_clone`` is the pre-clone velocity of the same step. The history
+therefore declares ``params["history_conventions"]["force_stage"] = "after_clone"``
+(the convention ``EuclideanGas.run`` writes), under which
+``qft_utils.color_states`` pairs ``force_viscous[k]`` with ``v_after_clone[k]``,
+and ``v_after_clone`` holds the recorded B1 ``force_input_velocity``: the phase
+and the force of a colour state use the same velocity. Companions, scores,
+fitness and ``x_before_clone`` of that step remain pre-clone quantities, so the
+walkers flagged in ``will_clone`` carry a post-clone colour at a pre-clone
+position. Without a B1 ``force_input_velocity`` record the collision output (on
+the rows it covers), then the pre-clone velocity, are used;
+``params["native_run"]["v_after_clone"]`` names the records that were read.
+
+``cloning_scores`` is the unclipped, ungated score ``S_i = (V_c - V_i) / (V_i + epsilon)``
+with ``V_i`` the recorded pre-clone fitness, ``V_c`` the recorded pool-aligned
+``donor_fitness`` of the cloning companion (historical donors keep the fitness
+the engine rescored them with) and ``epsilon`` from ``gas_config.clone_decision``.
+``cloning_probs`` is the engine's recorded acceptance probability, which is
+clipped and zero off the ``clone_decision.every`` period. Walkers without a
+cloning companion and ineligible walkers (revived unconditionally) get score 0.
+``companions_*`` store the companion's slot; for a historical donor that slot
+belongs to an earlier frame, and ``params["native_run"]["historical_companions"]``
+counts them.
+
 Post-cloning positions are reconstructed from the clone plan (exact without
-position jitter); post-cloning velocities come from the recorded collision
-output. Fields with no counterpart in the archive are zero-filled and listed
-under ``params["native_run"]["zero_filled"]``.
+position jitter). Fields with no counterpart in the archive are zero-filled and
+listed under ``params["native_run"]["zero_filled"]``.
 
 Usage:
     uv run python algorithmic-gas/tools/eh_archive_to_history.py run.json history.pt
@@ -32,6 +61,11 @@ from fragile.physics.fractal_gas.history import RunHistory
 
 
 CURVATURE_PREFIX = "geometry.curvature."
+# Records of the velocity the B1 viscous force acts on, by preference.
+KICK_INPUT_VELOCITY = (
+    ("B1", "force_input_velocity"),
+    ("component_collision", "collision_output_velocity"),
+)
 
 
 def _load(path: Path) -> dict:
@@ -60,13 +94,60 @@ def _evaluation(step: dict, stage: str, name: str, dtype: torch.dtype) -> torch.
     return None
 
 
+def _kick_input_velocity(step: dict, before: torch.Tensor) -> tuple[str, torch.Tensor]:
+    """Velocity the B1 force was evaluated on and the record it was read from.
+
+    Rows a record does not cover keep the pre-clone velocity: the collision
+    record covers only the walkers of a collision component and stores zeros
+    elsewhere.
+    """
+    for stage, name in KICK_INPUT_VELOCITY:
+        for entry in step["field_evaluations"]:
+            if entry["stage"] == stage and entry["field"] == name:
+                values = _evaluation(step, stage, name, before.dtype)
+                covered = torch.tensor(entry["available"], dtype=torch.bool)
+                return f"{stage}.{name}", torch.where(covered[:, None], values, before)
+    return "before", before
+
+
+def _first_companion(batch: dict, i: int) -> int | None:
+    """Pool index of the first valid companion of walker ``i``, as the engine reads a row."""
+    for k in range(i * batch["count"], (i + 1) * batch["count"]):
+        if batch["valid"][k]:
+            return batch["indices"][k]
+    return None
+
+
 def _companions(batch: dict, sources: list[dict], n: int) -> torch.Tensor:
     """Slot of the first companion of every walker (itself when unmatched)."""
     out = torch.arange(n, dtype=torch.long)
     for i in range(n):
-        if batch["valid"][i * batch["count"]]:
-            out[i] = sources[batch["indices"][i * batch["count"]]]["slot"]
+        index = _first_companion(batch, i)
+        if index is not None:
+            out[i] = sources[index]["slot"]
     return out
+
+
+def _historical(batch: dict, sources: list[dict], step: dict) -> int:
+    """Number of walkers whose first companion is a source of an earlier frame."""
+    current = step["report"]["step"] - 1
+    found = (_first_companion(batch, i) for i in range(batch["rows"]))
+    return sum(index is not None and sources[index]["frame"] != current for index in found)
+
+
+def _cloning_scores(step: dict, epsilon: float, dtype: torch.dtype) -> torch.Tensor:
+    """Unclipped score (V_c - V_i) / (V_i + epsilon) against the recorded donor fitness."""
+    report = step["report"]
+    batch = report["cloning_companions"]
+    own = torch.tensor(report["pre_clone_fitness"]["fitness"], dtype=dtype)
+    donor = torch.tensor(step["donor_fitness"], dtype=dtype)
+    eligible = report["pre_clone_eligible"]
+    scores = torch.zeros_like(own)
+    for i in range(own.shape[0]):
+        index = _first_companion(batch, i)
+        if eligible[i] and index is not None:
+            scores[i] = (donor[index] - own[i]) / (own[i] + epsilon)
+    return scores
 
 
 def convert(archive: dict, curvature: str | None = None) -> RunHistory:
@@ -96,7 +177,9 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
     v_before = [_field(s["before"], velocities, dtype) for s in steps]
     x_final = [_field(s["final_population"], positions, dtype) for s in steps]
     v_final = [_field(s["final_population"], velocities, dtype) for s in steps]
-    x_after, v_after, will_clone, probs = [], [], [], []
+    epsilon = gas["clone_decision"]["epsilon"]
+    x_after, v_after, will_clone, probs, scores = [], [], [], [], []
+    velocity_sources = set()
     for s, xb, vb in zip(steps, x_before, v_before):
         plan = s["report"]["clone_plan"]
         accepted = torch.tensor([c["accepted"] for c in plan["choices"]], dtype=torch.bool)
@@ -108,10 +191,12 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
             dtype=torch.long,
         )
         x_after.append(torch.where(accepted[:, None], xb[donors], xb))
-        collided = _evaluation(s, "component_collision", "collision_output_velocity", dtype)
-        v_after.append(collided if collided is not None else vb)
+        source, kicked = _kick_input_velocity(s, vb)
+        velocity_sources.add(source)
+        v_after.append(kicked)
         will_clone.append(accepted)
         probs.append(torch.tensor([c["probability"] or 0.0 for c in plan["choices"]], dtype=dtype))
+        scores.append(_cloning_scores(s, epsilon, dtype))
 
     def report(path: tuple[str, ...]) -> torch.Tensor:
         rows = []
@@ -135,7 +220,6 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
     noise, has_noise = recorded("O", "executed_noise", (d,))
     friction = integrator["friction"]
     zero_filled = [
-        "cloning_scores",
         "clone_jitter",
         "pos_squared_differences",
         "vel_squared_differences",
@@ -162,6 +246,14 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
         return torch.stack([sources, torch.tensor(graph["graph"]["neighbors"], dtype=torch.long)], 1)
 
     recorded_steps = [s["report"]["step"] for s in steps]
+    historical_distance = sum(
+        _historical(s["report"]["distance_companions"], s["report"]["distance_sources"], s)
+        for s in steps
+    )
+    historical_clone = sum(
+        _historical(s["report"]["cloning_companions"], s["report"]["clone_plan"]["sources"], s)
+        for s in steps
+    )
     x_clone_delta = stack(x_after) - stack(x_before)
     rewards_before = report(("pre_clone_rewards", "raw"))
     rewards_final = report(("final_rewards", "raw"))
@@ -177,31 +269,42 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
         delta_t=integrator["dt"],
         params={
             "gas_config": gas,
+            "history_conventions": {
+                "version": 2,
+                "force_stage": "after_clone",
+                "delta_t_unit": "iteration",
+                "fitness_stage": "before_clone",
+            },
             "native_run": {
                 "engine": "algorithmic-gas",
                 "providers": archive["providers"],
                 "curvature_field": curvature_field,
                 "zero_filled": zero_filled,
+                "v_after_clone": sorted(velocity_sources),
+                "historical_companions": {
+                    "distance": historical_distance,
+                    "clone": historical_clone,
+                },
             },
         },
         rng_seed=gas["seed"],
         x_before_clone=torch.cat([x0[None], stack(x_before)]),
         v_before_clone=torch.cat([v_before[0][None], stack(v_before)]),
-        x_after_clone=torch.cat([x0[None], stack(x_after)]),
-        v_after_clone=torch.cat([v_before[0][None], stack(v_after)]),
+        x_after_clone=stack(x_after),
+        v_after_clone=stack(v_after),
         x_final=torch.cat([x0[None], stack(x_final)]),
         v_final=torch.cat([v_before[0][None], stack(v_final)]),
-        U_before=-rewards_before,
+        U_before=torch.cat([zeros[:1], -rewards_before]),
         U_after_clone=-rewards_final,
-        U_final=-rewards_final,
+        U_final=torch.cat([zeros[:1], -rewards_final]),
         n_alive=torch.tensor(
             [n, *[s["report"]["eligible"] for s in steps]], dtype=torch.long
         ),
-        num_cloned=torch.tensor([0, *[s["report"]["clones"] for s in steps]], dtype=torch.long),
-        step_times=torch.zeros(len(steps) + 1, dtype=dtype),
+        num_cloned=torch.tensor([s["report"]["clones"] for s in steps], dtype=torch.long),
+        step_times=torch.zeros(len(steps), dtype=torch.float32),
         fitness=report(("pre_clone_fitness", "fitness")),
         rewards=rewards_before,
-        cloning_scores=zeros,
+        cloning_scores=stack(scores),
         cloning_probs=stack(probs),
         will_clone=stack(will_clone),
         alive_mask=stack(

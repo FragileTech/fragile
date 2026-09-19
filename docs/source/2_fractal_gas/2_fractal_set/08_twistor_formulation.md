@@ -915,8 +915,9 @@ unselected executed law, retaining probability lost through killing.
 :label: cor-effective-twistor-positive-transfer
 
 Suppose the actual kernel and observable in {prf:ref}`thm-effective-twistor-spectral-meaning`
-have the positive self-adjoint transfer representation specified in {doc}`09_qft_calibration`,
-with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis. For a
+have a positive self-adjoint transfer representation,
+with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis; this
+is a sufficient condition for {prf:ref}`assm-qft-positive-transfer`. For a
 self-adjoint frame observable with its vacuum mean removed,
 
 $$

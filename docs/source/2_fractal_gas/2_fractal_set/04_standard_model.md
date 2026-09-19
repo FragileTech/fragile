@@ -184,14 +184,20 @@ $$
 If the scalar kernel $K_{ij}$ is unchanged under a simultaneous orthogonal
 change $(x_i,v_i)\mapsto(Ox_i,Ov_i)$, then
 $F_i^{\mathrm{visc}}\mapsto OF_i^{\mathrm{visc}}$.
-For $F_i^{\mathrm{visc}}\ne0$, the componentwise encoding
+For $F_i^{\mathrm{visc}}\ne0$ consider the componentwise encoding
 
 $$
 c_i^{(a)}=\frac{F_i^{\mathrm{visc},a}}{\|F_i^{\mathrm{visc}}\|}
- \exp\!\left(\frac{imv_i^a\ell_0}{\hbar_{\mathrm{eff}}}\right)
+ \exp\!\left(\frac{imv_i^a\ell_0}{\hbar_{\mathrm{eff}}}\right).
 $$
 
-has unit norm in $\mathbb C^d$. The encoding is generally nonlinear under
+Here $v_i$ is the velocity at which the displayed force sum is evaluated, its
+force-input velocity: one velocity field enters the force and the phase.
+A readout that takes the phase velocity from a different stage is a different
+observable map; the admissible pairings are listed in
+{prf:ref}`def-sm-color-alignment`.
+
+This encoding has unit norm in $\mathbb C^d$. The encoding is generally nonlinear under
 orthogonal mixing of components. It therefore requires an additional
 representation map before it can be used as a covariant color field.
 At zero force it is undefined; any zero-force replacement must be specified.
@@ -337,7 +343,22 @@ $$
 \end{cases}
 $$
 
-The zero-denominator indicator is retained with the average. Different pair
+The zero-denominator indicator is retained with the average.
+
+With $W_t=\sum_Iw_Im_I$ and $N$ the number of recorded rows, the
+fixed-normalization companion of this average is
+
+$$
+\mathcal A_t^{N}(O)=\frac1N\sum_Iw_Im_IO_I=\frac{W_t}{N}\,\mathcal A_t(O).
+$$
+
+$\mathcal A_t$ is the primary frame average of this chapter;
+$\mathcal A_t^{N}$ is the frame observable of
+{prf:ref}`thm-effective-twistor-spectral-meaning`. Both are functions of the
+complete recorded state, and {prf:ref}`prop-qft-frame-normalizations` states
+what each of them satisfies.
+
+Different pair
 selection, score orientation, weighting, or invalid-sample conventions define
 different observable maps. The result is a law of numerical fields before its
 exterior representation is introduced. Its normalization follows
@@ -345,6 +366,136 @@ from that of $\mathbb P_{\mathrm{rec}}$. Each application specifies whether
 this is a finite recorded law, a conservative stationary history,
 a survival-conditioned history, or a history of the established
 Doob-transformed process.
+:::
+
+:::{div} feynman-prose
+Before we contract anything, we have to settle a question that sounds like
+bookkeeping and is not. The color of a walker is built from two recorded
+things: a viscous force and a velocity. Inside one update step the kinetic
+operator touches the velocities several times — it kicks, it clones, it kicks
+again. So when you write down $F_i$ and $v_i$ you have to say *which* $F$ and
+*which* $v$, and there is more than one defensible answer.
+
+The theorem above already told you what it wants. Look at where $v_i$ appears:
+it sits inside $F_i^{\mathrm{visc}}=\nu\sum_jK_{ij}(v_j-v_i)$ and again in the
+phase $e^{i\kappa v_i^a}$. That is the *same* $v_i$. The construction is a
+single object — a direction the crowd is pulling, phased by the motion that
+produced the pull. Take the phase from a later stage and you have not made a
+small numerical change; you have built a different observable.
+
+How different? That is the content of the proposition. Pairing the same force
+with a different velocity multiplies each *component* of the color by its own
+phase. If it multiplied the whole vector by one phase, nothing would happen:
+all our invariants are built to ignore exactly that. But a *componentwise*
+phase is not a global one, and it is not an $SU(3)$ frame change either. It
+slides the vector around inside the sphere. Two walkers that were perfectly
+aligned can end up orthogonal, and $|q|^2$, the determinant, the triangle
+product all move. So the alignment is not a detail of the pipeline. It is part
+of the definition of the observable, and every reported number has to name it.
+:::
+
+:::{prf:definition} Colour record alignments
+:label: def-sm-color-alignment
+
+Index a frame by the update step whose input population it is: frame $t$
+holds the positions $x_t$, velocities $v_t$, companion maps, fitness values
+and clone decisions of step $t$ before its clone transform. Inside step $t$
+the kinetic operator evaluates the viscous force at its B stages. For
+$s\in\{\mathrm{B1},\mathrm{B2}\}$, the first B stage after the clone
+transform and the last B stage of the step, write $v_t^{s}$ for the velocity
+field at which stage $s$ evaluates the force, its force-input velocity, and
+$F_t^{s}=F^{\mathrm{visc}}(x_t^{s},v_t^{s})$ for the recorded force.
+
+An alignment assigns to frame $t$ a pair $(F,u)$ of recorded fields and sets
+$\widetilde c_i^{\,a}=F_i^{a}e^{i\kappa u_i^{a}}$ in
+{prf:ref}`def-sm-direct-observable-law`.
+
+| Alignment | Force $F$ | Phase velocity $u$ | Rows masked in addition to $m_i$ |
+|---|---|---|---|
+| $\mathsf A_{\mathrm{PK}}$, preceding kick (primary) | $F_{t-1}^{\mathrm{B2}}$ | $v_{t-1}^{\mathrm{B2}}$ | rows without a contiguous record of step $t-1$; rows whose walker at that stage is not the walker of frame $t$ |
+| $\mathsf A_{\mathrm{MK}}(s)$, matched kick | $F_t^{s}$ | $v_t^{s}$ | rows whose clone decision at step $t$ is accepted |
+| $\mathsf A_{\mathrm{PF}}$, preceding force | $F_{t-1}^{\mathrm{B2}}$ | $v_t$ | as $\mathsf A_{\mathrm{PK}}$ |
+| $\mathsf A_{\mathrm{RO}}$, reference offset | $F_t^{\mathrm{B1}}$ | $v_t$ | as $\mathsf A_{\mathrm{MK}}$ |
+
+$\mathsf A_{\mathrm{PK}}$ and $\mathsf A_{\mathrm{MK}}(s)$ are
+**single-velocity** alignments: the phase velocity is the force-input
+velocity, as the encoding of {prf:ref}`thm-sm-su3-emergence` requires.
+$\mathsf A_{\mathrm{PF}}$ and $\mathsf A_{\mathrm{RO}}$ are **two-velocity**
+alignments.
+
+Under $\mathsf A_{\mathrm{PK}}$ the colour of frame $t$ is a function of the
+history before the companion draws of step $t$, and it belongs to the
+population, slots and positions of frame $t$ whenever the step applies no
+position update after its last B stage; a final position diffusion, velocity
+cap or boundary map must be declared with the readout. Under
+$\mathsf A_{\mathrm{MK}}(s)$ the force is evaluated after the clone transform
+of step $t$, while the companions, fitness values and positions of frame $t$
+are pre-clone; a row that accepted a clone carries its donor's state and is
+masked. The first frame of a recorded segment has no colour under
+$\mathsf A_{\mathrm{PK}}$ and $\mathsf A_{\mathrm{PF}}$; it is a missing
+record, not a zero.
+:::
+
+:::{prf:proposition} Two-velocity alignments are componentwise rephasings
+:label: prop-sm-color-alignment-rephasing
+
+Let $(F,u)$ and $(F,u')$ be alignments with the same force field, with
+colours $c_i$ and $c_i'$, and put $\delta_i=u_i'-u_i\in\mathbb R^d$. Then:
+
+1. The validity masks coincide, $|c_i'^{\,a}|=|c_i^{a}|$ for every
+   component, and
+
+   $$
+   c_i'=D_ic_i,\qquad
+   D_i=\operatorname{diag}\bigl(e^{i\kappa\delta_i^{1}},\ldots,
+                                   e^{i\kappa\delta_i^{d}}\bigr),\qquad
+   q_{ij}'=\sum_a\overline{c_i^{a}}\,c_j^{a}\,
+             e^{i\kappa(\delta_j^{a}-\delta_i^{a})}.
+   $$
+
+2. For fixed $\delta_i,\delta_j$, the equality $q_{ij}'=q_{ij}$ holds for all
+   unit vectors $c_i,c_j$ if and only if
+   $\kappa(\delta_j^{a}-\delta_i^{a})\in2\pi\mathbb Z$ for every $a$.
+3. $D_i$ is a scalar phase only if $\kappa\delta_i^{a}$ is independent of $a$
+   modulo $2\pi$. In general the two colours are therefore not related by the
+   independent rephasings of {prf:ref}`thm-sm-direct-color-invariants`, and
+   $|q_{ij}|^2$, $|b_{ijk}|^2$ and $\Pi_{ijk}$ differ between the alignments.
+4. If $u$ and $u'$ both change sign under the inversion of
+   {prf:ref}`prop-sm-direct-parity`, that proposition holds for both
+   alignments.
+
+For $\mathsf A_{\mathrm{PF}}$ against $\mathsf A_{\mathrm{PK}}$ one has
+$\delta_i=v_{t,i}-v_{t-1,i}^{\mathrm{B2}}$, the velocity change produced by
+the last kick and every later stage of step $t-1$; for
+$\mathsf A_{\mathrm{RO}}$ against $\mathsf A_{\mathrm{MK}}(\mathrm{B1})$,
+$\delta_i=v_{t,i}-v_{t,i}^{\mathrm{B1}}$, the negative of the velocity change
+produced by the clone transform of step $t$.
+:::
+
+:::{prf:proof}
+Since $|e^{i\kappa u_i^{a}}|=1$, one has
+$\|\widetilde c_i\|=\|F_i\|=\|\widetilde c_i'\|$, so the masks and the
+normalizers agree and
+$c_i'^{\,a}=c_i^{a}e^{i\kappa\delta_i^{a}}$. Substitution into
+$q_{ij}'=\sum_a\overline{c_i'^{\,a}}c_j'^{\,a}$ gives item 1. For item 2 take
+$c_i=c_j=e_a$: then $q_{ij}=1$ and
+$q_{ij}'=e^{i\kappa(\delta_j^{a}-\delta_i^{a})}$, which proves necessity;
+sufficiency is immediate from the displayed sum. For item 3 take $d=3$,
+$c_i=c_j=(1,1,1)/\sqrt3$, $\delta_i=0$ and
+$\kappa\delta_j=(0,2\pi/3,4\pi/3)$. Then $q_{ij}=1$ and
+$q_{ij}'=(1+\omega+\omega^2)/3=0$ with $\omega=e^{2\pi i/3}$, so
+$|q_{ij}'|^2\ne|q_{ij}|^2$. Take moreover $\delta_k=0$, so that $c_i'=c_i$
+and $c_k'=c_k$. The vectors $c_i$ and $c_j'=(1,\omega,\omega^2)/\sqrt3$ are
+orthogonal, so for any $c_k$ outside their span
+$b_{ijk}'=\det[c_i,c_j',c_k]\ne0$, whereas $b_{ijk}=\det[c_i,c_j,c_k]=0$ has
+two equal columns; and
+$\Pi_{ijk}'=q_{ij}'q_{jk}'q_{ki}'=0$, whereas
+$\Pi_{ijk}=q_{jk}q_{ki}=|q_{ik}|^2\ne0$ whenever $c_k$ is not orthogonal to
+$c_i$. Item 4 repeats the
+componentwise computation in the proof of {prf:ref}`prop-sm-direct-parity`
+with $u$ replaced by $u'$: $F\mapsto-F$ and $u'\mapsto-u'$ give
+$c_i'\mapsto-\overline{c_i'}$. The two closing identities are the definitions
+of the fields in {prf:ref}`def-sm-color-alignment`. $\square$
 :::
 
 :::{prf:definition} Direct color contractions
@@ -374,11 +525,23 @@ These formulas are the standard modes of
 `vector_operators.py`, `baryon_operators.py`, and `glueball_operators.py`.
 Score-directed and score-weighted modes additionally transform their
 orientation and weights according to the configured rule. The color input
-is formed in `src/fragile/physics/qft_utils/color_states.py`: the selected
-`v_before_clone` frame is paired with its preceding `force_viscous` entry.
-That time alignment is part of the observable map.
+is a colour record in the sense of
+{prf:ref}`def-variant-measurement-families`: a B-stage viscous force together
+with a velocity field. Its admissible pairings are the alignments of
+{prf:ref}`def-sm-color-alignment`; the alignment is part of the observable
+map. The primary alignment of this chapter is the preceding kick
+$\mathsf A_{\mathrm{PK}}$. The reference routine
+`src/fragile/physics/qft_utils/color_states.py` reads `v_before_clone[t]`
+with `force_viscous[t-1]`; its per-step arrays are stored one row behind its
+per-frame arrays, so that entry is the first B-stage force of step $t$ itself
+and the routine forms the fields $(F,u)$ of $\mathsf A_{\mathrm{RO}}$. With
+`history_conventions.force_stage = "after_clone"` it reads `v_after_clone`
+and forms the fields of $\mathsf A_{\mathrm{MK}}(\mathrm{B1})$. In both cases
+the routine returns the mask $m_i$ only. The additional row mask of
+{prf:ref}`def-sm-color-alignment` is not part of the routine; a readout that
+omits it is a different observable map and declares the omission.
 
-The names scalar, pseudoscalar, baryon, and glueball label measurement
+The names scalar, pseudoscalar, vector, axial, baryon, and glueball label measurement
 channels. A spin, charge-conjugation, or physical-particle assignment requires
 the corresponding transformations and spectral identification of this law.
 :::
@@ -621,6 +784,240 @@ In particular an integrable odd channel has zero expectation.
 $\square$
 :::
 
+:::{div} feynman-prose
+Parity was one symmetry of these channels. There is a second one, and it is
+cheaper and more dangerous: what happens if you swap the two walkers of a
+pair.
+
+Look at $q_{ij}=c_i^\dagger c_j$. Swap $i$ and $j$ and you get the complex
+conjugate. So the real part does not care, and the imaginary part flips sign.
+The displacement $r_{ij}$ flips too. Nothing deep so far — it is one line of
+algebra.
+
+Now put that together with how companions are drawn. In a *mutual* pairing,
+walkers are matched two by two: if $i$'s companion is $j$, then $j$'s
+companion is $i$. So your frame sum contains both the term for $(i,j)$ and
+the term for $(j,i)$. For a channel that flips sign, those two terms are
+exact negatives. They cancel. Every pair cancels. The frame average is zero —
+not small, not zero on average, but *identically* zero, for every
+realization, at every step, for every parameter setting.
+
+That is the corollary below, and I want you to feel how brutal it is. The
+imaginary part of $q$ is the natural pseudoscalar channel. On a mutual
+pairing it is the zero series. Its autocorrelation is zero, its
+cross-correlations are zero, and it has no decay rate to fit. If you fit one
+anyway you are fitting numerical noise and giving it a particle's name.
+
+There are three ways out, and the corollary names them: don't use a mutual
+pairing, don't weight both ends of a pair the same way, or don't use a frame
+sum at all — the source-frozen two-time correlators are products of two
+sign-flipping factors, so they are even, and they survive untouched.
+:::
+
+:::{prf:corollary} Exchange parity of the direct pair channels and mutual-pair cancellation
+:label: cor-sm-direct-exchange-parity
+
+Exchange of the two walkers of a pair gives
+$q_{ji}=\overline{q_{ij}}$ and $r_{ji}=-r_{ij}$. With $X$ the sign under this
+exchange and $P$ the sign under the inversion of
+{prf:ref}`prop-sm-direct-parity`:
+
+| Channel | $X$ | $P$ |
+|---|---|---|
+| $\operatorname{Re}q_{ij}$ | $+$ | $+$ |
+| $\operatorname{Im}q_{ij}$ | $-$ | $-$ |
+| $\lvert q_{ij}\rvert^2$ | $+$ | $+$ |
+| $\operatorname{Re}q_{ij}\,r_{ij}$ | $-$ | $-$ |
+| $\operatorname{Im}q_{ij}\,r_{ij}$ | $+$ | $+$ |
+
+Let the pair elements of a frame be $I_i=(i,c(i))$ for a companion map with
+$c\circ c=\mathrm{id}$ on the recorded rows, and let $w_Im_I$ take the same
+value on $(i,c(i))$ and on $(c(i),i)$; this holds for $w_I=1$ and
+$m_I=m_im_{c(i)}$. Then every channel $O$ with $X=-$ satisfies
+
+$$
+\sum_Iw_Im_IO_I=0,\qquad
+\mathcal A_t(O)=0,\qquad\mathcal A_t^{N}(O)=0
+$$
+
+for every realization, every frame and every parameter value. Its frame
+series is the zero series: all its autocorrelations and all its
+cross-correlations with other series vanish, and it has no decay rate. Among
+the standard channels this applies to $\operatorname{Im}q_{ij}$ and to every
+component of $\operatorname{Re}q_{ij}\,r_{ij}$, for the raw and for the unit
+displacement. The channels with $X=+$ are not constrained.
+
+The same conclusion holds for the imaginary part of any pair amplitude with
+$a_{ji}=\overline{a_{ij}}$. For the diversity amplitude
+$a_{ij}=\exp[-D_{ij}^2/(4\ell_d^2)]\,e^{-i(F_j-F_i)/\hbar_{\mathrm{eff}}}$ with
+a symmetric distance, the frame average on a mutual distance pairing is the
+real number $\mathcal A_t(\exp[-D^2/(4\ell_d^2)]\cos[(F_j-F_i)/\hbar_{\mathrm{eff}}])$.
+It does not hold for the score amplitude of {ref}`(SM.U1) <eq-fg-sm-u1>`,
+whose phases obey only
+$(|F_i|+\varepsilon_{\mathrm{clone}})\vartheta_{ij}
+ +(|F_j|+\varepsilon_{\mathrm{clone}})\vartheta_{ji}=0$.
+
+A product of one channel evaluated on a fixed source pair at two times,
+$O_I(t)\,O_I(t+\ell)$, has $X=+$ for every channel. The source-frozen pair
+correlators of {prf:ref}`def-effective-twistor-correlators` are therefore not
+constrained, and for a channel with $X=-$ on a mutual pairing with
+exchange-symmetric joint masks their disconnected term vanishes.
+
+The hypothesis $c\circ c=\mathrm{id}$ holds for the mutual-pair sampler of
+{prf:ref}`cor-sm-physics-paired-cloning` and for both companion maps of the
+Einstein–Hilbert Gas ({prf:ref}`prop-variant-eh-identities`). It fails in
+general for independent companion draws, and the conclusion fails for
+weights that differ at the two ends of a pair, such as score-directed
+orientations and role masks; the residual is then the first identity of
+{prf:ref}`prop-exchange-odd-cancellation`.
+:::
+
+:::{prf:proof}
+$q_{ji}=c_j^\dagger c_i=\overline{c_i^\dagger c_j}$, and $r_{ji}=x_i-x_j=-r_{ij}$;
+division by $\|r_{ij}\|=\|r_{ji}\|$ preserves the sign change. Conjugation
+fixes the real part and the modulus and negates the imaginary part, and the
+sign of a product is the product of the signs. This gives the column $X$; the
+column $P$ is {prf:ref}`prop-sm-direct-parity`.
+
+Extend a channel with $X=-$ to all ordered pairs of rows by $O_{ij}=0$ when
+$m_im_j=0$; the extension is still exchange-odd. Apply
+{prf:ref}`prop-exchange-odd-cancellation` with the index set of recorded
+rows, the map $c$, and the weight $i\mapsto w_{I_i}m_{I_i}$, which is
+pair-symmetric by hypothesis. The numerator of the frame average vanishes.
+If $W_t>0$ the quotient is zero; if $W_t=0$ the average is zero by the
+convention of {prf:ref}`def-sm-direct-observable-law`; and
+$\mathcal A_t^{N}$ is the numerator divided by $N$. Self-companions contribute
+$\operatorname{Im}q_{ii}=0$ and $r_{ii}=0$. A series that is zero at every
+frame has zero covariance with every series at every lag.
+
+For an amplitude with $a_{ji}=\overline{a_{ij}}$ the imaginary part is
+exchange-odd and the real part is
+$\exp[-D^2/(4\ell_d^2)]\cos[(F_j-F_i)/\hbar_{\mathrm{eff}}]$. The score phases
+have different denominators at the two ends, which gives the displayed
+weighted relation and no conjugation symmetry.
+
+Under exchange both factors of $O_I(t)\,O_I(t+\ell)$ change sign, because the
+sink factor is evaluated on the same ordered pair of slots; the product is
+therefore exchange-even and {prf:ref}`prop-exchange-odd-cancellation` does
+not apply to it. The raw source-frozen correlator is the mean of this product
+over the jointly valid source set. The connected correlator subtracts the
+mean $\overline{\mathcal O}$ of the channel over the valid source elements,
+and its expansion contains in addition the means of the source factor and of
+the sink factor over the jointly valid set. When these sets contain both
+orientations of each pair with equal weights, each of the three means is a
+pair-symmetric sum of an exchange-odd quantity and vanishes by the first
+part, so the connected and the raw correlator coincide. $\square$
+:::
+
+:::{div} feynman-prose
+The determinant channel has the same disease, but it presents differently,
+and you have to be careful not to state more than is true.
+
+A baryon-type observable needs three walkers: an anchor $i$, its distance
+companion $j$, and its cloning companion $k$. Then you take
+$b_{ijk}=\det[c_i,c_j,c_k]$. Now, a determinant changes sign when you swap
+two of its columns. So if you exchange the *roles* of the two companions —
+call the cloning one the distance one and vice versa — $b$ flips sign.
+
+Here is the part that requires care. In the pair case we got an exact
+cancellation inside a single frame, because the mutual pairing put both
+orientations into the same sum. Here that does not happen: as item 3 shows,
+no other anchor reproduces the same triple, so each triple appears once and
+there is nothing to cancel against. What we have instead is a statement about
+*probability*. If the two companion roles are drawn from the same law — same
+kernel, same range, same recipient set — then the configuration with the
+roles swapped is exactly as likely as the one you got. The role-odd channels
+are therefore centred: their conditional expectation is zero.
+
+And then the second half follows almost for free. If the conditional mean at
+time $t$ is zero given everything earlier, the series is uncorrelated with
+its own past at every nonzero lag. That is white noise. It has no decay rate.
+You can fit an exponential to a white-noise autocorrelation and you will get
+a number; the number will be about your sample size, not about the gas.
+:::
+
+:::{prf:proposition} Role-swap antisymmetry of determinant frame averages
+:label: prop-sm-direct-role-swap
+
+At frame $t$ let the triplet elements be
+$I_i=(i,j,k)=(i,c_t^{D}(i),c_t^{C}(i))$, with weights and masks invariant
+under exchange of the last two entries; this holds for $w_I=1$ and
+$m_I=m_im_jm_k\mathbf 1_{\{i,j,k\ \mathrm{distinct}\}}$. Let $\mathsf s$ be the
+swap $(c^{D},c^{C})\mapsto(c^{C},c^{D})$.
+
+1. $b_{ikj}=-b_{ijk}$ and $\Pi_{ikj}=\overline{\Pi_{ijk}}$. Hence
+   $\operatorname{Re}b$, $\operatorname{Im}b$ and $\operatorname{Im}\Pi$ are
+   odd under $\mathsf s$, while $|b|^2$, $\operatorname{Re}\Pi$,
+   $1-\operatorname{Re}\Pi$, $1-\cos(\arg\Pi)$ and $\sin^2(\arg\Pi)$ are even.
+2. Let $\mathcal G_t$ be a $\sigma$-algebra for which the colours and the row
+   masks $m_i$ of frame $t$ are measurable, let $w_I$ and $m_I$ be
+   $\mathcal G_t$-measurable functions of the element $I$, and suppose that
+   the conditional law
+   of $(c_t^{D},c_t^{C})$ given $\mathcal G_t$ is invariant under $\mathsf s$.
+   Then every channel $O$ that is odd under $\mathsf s$ satisfies
+   $\mathbb E[\mathcal A_t(O)\mid\mathcal G_t]=0$ and
+   $\mathbb E[\mathcal A_t^{N}(O)\mid\mathcal G_t]=0$. If moreover
+   $\mathcal A_s(O)$ is $\mathcal G_t$-measurable for every $s<t$, then
+   $\mathbb E[\mathcal A_s(O)\,\mathcal A_t(O)]=0$ for all $s<t$: the frame
+   series is centred and uncorrelated at every nonzero lag, and it has no
+   decay rate in the sense of {prf:ref}`def-qft-channel-decay-rate`.
+3. If $c_t^{D}$ and $c_t^{C}$ are involutions and $I_i$ has distinct entries,
+   no anchor $i'\ne i$ produces the same unordered triple. The statement of
+   item 2 is therefore about conditional expectations; unlike
+   {prf:ref}`cor-sm-direct-exchange-parity` it is not an identity of each
+   realization.
+4. The source-frozen product $O_I(t)\,O_I(t+\ell)$ is even under $\mathsf s$
+   for every channel. In particular the complex determinant correlator
+   $\operatorname{Re}(\overline{B_s}B_t)$ of
+   {prf:ref}`prop-sm-baryon-exterior-correlator` is not constrained.
+
+The hypothesis of item 2 holds when the two companion maps are drawn
+independently from one conditional law given the history before the draws,
+on one recipient set, and the colour alignment is determined before the
+draws ($\mathsf A_{\mathrm{PK}}$ or $\mathsf A_{\mathrm{PF}}$ of
+{prf:ref}`def-sm-color-alignment`). Examples are the two independent uniform
+matchings of {prf:ref}`alg-einstein-hilbert-gas` and independent row draws
+from one companion kernel with equal ranges and distances for both roles. It
+is not implied for $\mathsf A_{\mathrm{MK}}$ and $\mathsf A_{\mathrm{RO}}$,
+whose force is evaluated after a clone transform that uses $c^{C}$ alone, so
+that the colours of frame $t$ depend on one of the two maps, nor for roles
+with different kernels, ranges or recipient sets.
+:::
+
+:::{prf:proof}
+**Item 1.** Exchanging two columns negates a determinant. Since
+$q_{ba}=\overline{q_{ab}}$,
+$\Pi_{ikj}=q_{ik}q_{kj}q_{ji}
+ =\overline{q_{ki}}\,\overline{q_{jk}}\,\overline{q_{ij}}
+ =\overline{\Pi_{ijk}}$. The listed parities follow.
+
+**Item 2.** Regard $\mathcal A_t(O)$ as a function of the pair of maps with
+the colours held fixed. Under $\mathsf s$ every element $(i,j,k)$ becomes
+$(i,k,j)$; the denominator $\sum_Iw_Im_I$ is unchanged by the symmetry of the
+weights and masks, every numerator term changes sign, and the
+zero-denominator convention is preserved. Thus
+$\mathcal A_t(O)\circ\mathsf s=-\mathcal A_t(O)$, and the same holds for
+$\mathcal A_t^{N}$. Invariance of the conditional law gives
+$\mathbb E[\mathcal A_t(O)\mid\mathcal G_t]
+ =\mathbb E[\mathcal A_t(O)\circ\mathsf s\mid\mathcal G_t]
+ =-\mathbb E[\mathcal A_t(O)\mid\mathcal G_t]$. The averages are bounded by
+one for unit colours, so all expectations exist. For $s<t$ the tower property
+gives
+$\mathbb E[\mathcal A_s\mathcal A_t]
+ =\mathbb E[\mathcal A_s\,\mathbb E(\mathcal A_t\mid\mathcal G_t)]=0$.
+
+**Item 3.** Put $j=c^{D}(i)$ and $k=c^{C}(i)$. Anchor $j$ produces
+$(j,i,c^{C}(j))$; equality of the unordered triples requires $c^{C}(j)=k$,
+but $c^{C}(k)=i$ and $c^{C}$ is a bijection, so $j=i$, a contradiction.
+Anchor $k$ produces $(k,c^{D}(k),i)$; equality requires $c^{D}(k)=j$, but
+$c^{D}(j)=i$ forces $k=i$, a contradiction.
+
+**Item 4.** Both factors are evaluated on the same ordered element and both
+change sign. For the examples, a product of two copies of one law is
+invariant under exchange of its factors, and under the stated alignments the
+colours of frame $t$ are functions of the history before the draws. $\square$
+:::
+
 ### Companion doublets without Dirac matrices
 
 :::{prf:definition} Direct companion amplitudes and two-hop doublets
@@ -645,16 +1042,29 @@ one. Define $z_i=d_i/\|d_i\|$ on nonzero doublets.
 In the standard mode of
 `src/fragile/physics/operators/electroweak_operators.py`, `su2_component`
 uses $a_i$, `su2_doublet` uses $a_i+a_{k(i)}$, and `su2_doublet_diff` uses
-$a_i-a_{k(i)}$, followed by masked frame averaging. The code uses the same
-numerical `epsilon_clone` as the denominator regularizer and the spatial
-amplitude width in this operator path; the displayed $\ell_c$ separates
-these roles for dimensional bookkeeping. Equality of their numerical values
-is an implementation convention in its chosen units. The normalized $z_i$
+$a_i-a_{k(i)}$, followed by masked frame averaging. The width $\ell_c$ is the
+range of the cloning-companion kernel: for the
+Gaussian kernel of {prf:ref}`def-fractal-set-companion-kernel`,
+$\ell_c=\epsilon_c$, so that
+$|a_i|=\exp[-D_i^2/(4\epsilon_c^2)]=\sqrt{w_{i\,k(i)}}$ is the square root of
+the unnormalized companion weight. The regularizer
+$\varepsilon_{\mathrm{clone}}$ has the units of a fitness and enters the
+phase denominator only. A companion law without a range, such as a uniform
+matching, does not determine $\ell_c$; the readout then declares either the
+modulus one or an explicit width. In
+`src/fragile/physics/operators/electroweak_operators.py` one argument,
+`epsilon_clone`, supplies both numbers, so that path realizes this definition
+only when the supplied value equals $\epsilon_c$. For
+$D_i/\ell_c>55$ the modulus $\exp[-D_i^2/(4\ell_c^2)]$ is below the smallest
+positive double-precision number and evaluates to zero; every
+amplitude-weighted channel of that path is then the zero series.
+The normalized $z_i$
 and its determinant contractions below are additional mathematical
 observables; the current scalar channel names do not assert their computation.
 
 The diversity amplitude is constructed analogously with the distance
-companion, its configured bandwidth, and the fitness-difference phase.
+companion, its configured bandwidth $\ell_d=\epsilon_d$, and the
+fitness-difference phase.
 All exponents require the stated dimensionless normalization of the scores
 and fitness variables. These are observable definitions at a fixed record.
 :::
@@ -2800,11 +3210,12 @@ entire phase-augmented space would fail. A convergence estimate for observations
 at one scheduling phase uses the actual $q$-step kernel on that phase;
 intermediate observations retain their ordered phase-dependent kernels.
 
-The fixed-step gate in {ref}`(SM.K7) <eq-fg-sm-k7>` has order-one acceptance probability. The
-finite-attempt-rate equation of {prf:ref}`def-cloning-generator` is the
-continuous realization specified in
-{prf:ref}`rem-mean-field-attempt-scaling`. Its infinitesimal acceptance
-scaling is used only in that realization or a proved scaling limit.
+The fixed-step gate in {ref}`(SM.K7) <eq-fg-sm-k7>` has order-one acceptance probability. A
+finite-attempt-rate differential equation for cloning is a different,
+continuous-time model. By {prf:ref}`rem-mean-field-attempt-scaling` it is
+identified with the configured algorithm only through a proved scaling limit
+of these same iterates, and its infinitesimal acceptance scaling is used only
+in such a limit.
 All finite-step identities above hold at the implemented timestep.
 :::
 
@@ -3255,6 +3666,11 @@ Further details of these recorded formulas appear in
 {prf:ref}`prop-qft-ew-spinor-realization`. Their use in
 {prf:ref}`thm-qft-ew-active-pipeline` must retain the distinction between
 role statistics, supplied spinor algebra, and scalar phase proxies.
+The four-component vectors are supplied by the lift of
+{prf:ref}`def-qft-dirac-lift`; its symmetry properties, and the fact that in
+the declared representation the upper and lower component pairs are
+eigenspaces of $\widehat\gamma^0$ and not of $\gamma^5$, are
+{prf:ref}`prop-qft-dirac-lift-properties`.
 
 (sec-sm-coupling-matching)=
 ## 7. Recorded Coupling Statistics and Symmetry

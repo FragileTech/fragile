@@ -4,6 +4,8 @@
 ## 1. Derivative bounds at every order
 
 :::{div} feynman-prose
+The object under the microscope in this chapter is the localized two-channel fitness of {prf:ref}`def-c3-fitness-laws`: $\rho$-localized Z-scores pushed through a bounded logistic map, which is the fitness of the Latent Fractal Gas ({prf:ref}`def-variant-latent`) and, with uniform weights, has the global-statistics form of the Euclidean Gas. The Geometric Gas ({prf:ref}`def-variant-geometric`) feeds Z-scores of the same form into an exponential field instead, so what it takes from this chapter is the Z-score bound of {prf:ref}`thm-cinf-regularity-zscore-full`, not the channel bounds. Other variants of the family use other fitness components, and each bound below is stated for the object it names. What is family-level is the *shape* of the argument — normalized weights, standardization, a bounded positive nonlinearity — and where a statement below is genuinely about that shape, it says so.
+
 The third-derivative calculation showed how normalization controls the dependence on the number of walkers. We now ask whether that calculation can continue indefinitely, and how fast its constants grow.
 
 These are two questions. A function can have derivatives of every order while those derivatives grow too quickly for its Taylor series to recover the function. An analytic function has the stronger bound: the order-$n$ derivative grows at most like a fixed exponential times $n!$. The factorial counts the ways derivatives can be distributed; the exponential determines the radius within which the Taylor series works.

@@ -108,7 +108,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     while let Some(arg) = args.next() {
         if arg == "--help" {
             println!(
-                "gas-benchmark [--config FILE] [--einstein-hilbert] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark ID] [--instance N] [--param KEY=VALUE] [--walkers N] [--dimensions D] [--seed N] [--record FILE.cbor|FILE.json] [--record-steps N] [--record-bytes N] [--record-graph]\n--list-benchmarks prints the objective catalog (ids, domains, dimension rules, parameters).\n--einstein-hilbert selects the free gas rewarded with the Einstein-Hilbert action of its tessellation geometry.\n--record writes the run archive; --record-graph adds the tessellation graph of every step.\nGPU profiles are explicitly host-orchestrated and report transfers."
+                "gas-benchmark [--config FILE] [--variant NAME] [--einstein-hilbert] [--steps N] [--precision f32|f64] [--backend cpu|wgpu|cuda] [--benchmark ID] [--instance N] [--param KEY=VALUE] [--walkers N] [--dimensions D] [--seed N] [--record FILE.cbor|FILE.json] [--record-steps N] [--record-bytes N] [--record-graph]\n--list-benchmarks prints the objective catalog (ids, domains, dimension rules, parameters).\n--list-variants prints the gas variant registry (names, book labels, reference instances).\n--variant selects the reference instance of a variant, like --config: its domain and dimension are kept.\n--einstein-hilbert is --variant einstein_hilbert, the free gas rewarded with the Einstein-Hilbert action of its tessellation geometry.\n--record writes the run archive; --record-graph adds the tessellation graph of every step.\nGPU profiles are explicitly host-orchestrated and report transfers."
             );
             return Ok(());
         }
@@ -119,8 +119,15 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
             );
             return Ok(());
         }
+        if arg == "--list-variants" {
+            println!(
+                "{}",
+                serde_json::to_string_pretty(&algorithmic_gas::variants::catalog())?
+            );
+            return Ok(());
+        }
         if arg == "--einstein-hilbert" {
-            config = RunConfig::einstein_hilbert()?;
+            config = RunConfig::variant("einstein_hilbert")?;
             from_file = true;
             continue;
         }
@@ -132,6 +139,10 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         match arg.as_str() {
             "--config" => {
                 config = serde_json::from_str(&std::fs::read_to_string(value)?)?;
+                from_file = true;
+            }
+            "--variant" => {
+                config = RunConfig::variant(&value)?;
                 from_file = true;
             }
             "--steps" => steps = value.parse()?,

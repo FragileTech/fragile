@@ -23,6 +23,43 @@ cargo run --release -p algorithmic-gas-benchmarks --features cuda --bin gas-benc
 
 These profiles require a compatible adapter/driver. Compilation alone does not verify GPU execution. The WGPU adapter rejects software CPU adapters. CUDA `f64` must pass the device's dtype and primitive-operation checks; it is not promised to be fast.
 
+## Variants
+
+Fractal Gas is the family; Algorithmic Gas is this engine, which executes the
+instance a `GasConfig` describes and is not itself a variant. The named variants
+are registered in `algorithmic_gas::variants::Variant` (`name`, `title`,
+`book_label`, `implemented`, `summary`, `reference`, `config(dimensions, dt)`,
+`default_config`), in the order of the book chapter
+`docs/source/2_fractal_gas/1_the_algorithm/04_gas_variants.md`.
+
+| Variant | `name` | Book label | `GasConfig` constructor | Reference instance (`RunConfig`) |
+|---|---|---|---|---|
+| Euclidean Gas | `euclidean` | `def-variant-euclidean` | `GasConfig::euclidean(dimensions, dt)` | `RunConfig::euclidean()`: N = 64, d = 2, dt = 0.04, quadratic objective |
+| Viscous Euclidean Gas | `viscous_euclidean` | `def-variant-viscous-euclidean` | `GasConfig::viscous_euclidean(dimensions, dt, viscosity)` | `RunConfig::viscous_euclidean()`: N = 200, d = 3, dt = 0.04, quadratic objective, `variants::viscous_euclidean::reference_viscosity()` |
+| Einstein–Hilbert Gas | `einstein_hilbert` | `def-variant-einstein-hilbert` | `GasConfig::einstein_hilbert(temperature, dt)` | `RunConfig::einstein_hilbert()`: N = 500, d = 3, T = 0.33, dt = 0.002, free gas started at the origin |
+| Geometric Gas | `geometric` | `def-variant-geometric` | not implemented | — |
+| Latent Fractal Gas | `latent` | `def-variant-latent` | not implemented | — |
+| Environment Gas | `environment` | `def-variant-environment` | not implemented | — |
+
+The Viscous Euclidean Gas is the Euclidean Gas with one field changed,
+`qft.viscosity`: the dense Gaussian-kernel viscous force added to both B kicks.
+Its coupling, bandwidth and normalization are free parameters; the reference
+value is coefficient 0.3, bandwidth 1 and eligible-count normalization, which
+conserves the summed momentum. It is the Euclidean variant whose recorded
+viscous force is non-zero, as the colour channels of the spectroscopy subsystem
+require. The theorems stated for the Euclidean Gas are stated for zero viscosity.
+Requesting the configuration of a variant that is not implemented returns
+`GasError::Capability`.
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --list-variants
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- --variant viscous_euclidean --steps 100
+```
+
+`--variant NAME` selects the reference instance (`RunConfig::variant(NAME)`) and,
+like `--config`, keeps its domain and dimension; `--walkers`, `--seed` and
+`--steps` still apply. `--einstein-hilbert` is `--variant einstein_hilbert`.
+
 ## Canonical Euclidean Gas and population diagnostics
 
 `GasConfig::euclidean(dimensions, dt)` selects the fixed-step kernel analyzed in
@@ -47,12 +84,13 @@ Part III experiments expose these calculations with configuration and seed
 provenance. Reproduce the population study with:
 
 ```sh
-cargo run --release -p algorithmic-gas-benchmarks --example mean_field_validation -- 128 0 canonical
+cargo run --release -p algorithmic-gas-benchmarks --example mean_field_validation -- 128 0 euclidean
 ```
 
-The other study names are `boundary_stress`, `shared_initial`, and
-`shifted_initial`. An optional fourth argument selects comma-separated population
-sizes. [Validation results](MEAN_FIELD_VALIDATION.md) separate independent-run
+`canonical` is accepted as the former name of the `euclidean` study. The other
+study names are `boundary_stress`, `shared_initial`, and `shifted_initial`. An
+optional fourth argument selects comma-separated population sizes.
+[Validation results](MEAN_FIELD_VALIDATION.md) separate independent-run
 uncertainty, exact conditional balances and population comparisons; the
 [engineering audit](MEAN_FIELD_AUDIT.md) records the repaired proof steps.
 

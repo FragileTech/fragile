@@ -16,6 +16,23 @@ and editor, {doc}`control_lab_replay` explains recordings, and
 {doc}`control_lab_experiments` explains controlled comparisons.
 :::
 
+(sec-lab-controls-mobile)=
+## Mobile layout
+
+On phones, the environment occupies most of the screen, with Run, Step, and
+Restart always accessible. Secondary panels start closed and overlay the world.
+Opening a panel does not pause execution or change the recording.
+
+| Entry point | Controls |
+|---|---|
+| **Menu** | Tasks, Settings, Save / Open |
+| **Tools** | Inspect, Edit, Drive, camera controls, Experiments, Inspector |
+| **Replay** | World motion, planner decisions, events and notes |
+
+Use a panel's **Close** button or Escape to dismiss it. Only one panel opens at
+a time. Short landscape windows on touch devices use the same compact layout;
+desktop keeps the expanded controls.
+
 (sec-lab-controls-running)=
 ## Choose a task, run, and inspect a Wave
 

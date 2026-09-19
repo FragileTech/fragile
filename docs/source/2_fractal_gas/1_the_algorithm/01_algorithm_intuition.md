@@ -17,8 +17,8 @@ an adaptive search that automatically concentrates effort in promising regions.
 
 **Flexible Instantiation Framework**: The core mechanisms (companion selection, fitness computation, cloning, kinetics)
 define an abstract framework that admits multiple instantiations: the Latent Fractal Gas (learned latent space with
-Riemannian geometry), the Fragile Gas (RL with environment feedback), and the Abstract Fractal Gas (minimal
-specification for theoretical analysis).
+Riemannian geometry), the Environment Gas (RL with environment feedback), and the family-level specification used for
+theoretical analysis. The named variants are catalogued in {doc}`04_gas_variants`.
 
 ## Introduction
 
@@ -994,44 +994,59 @@ extremely unlikely, and the single-survivor regime can be handled explicitly (se
 ## 8. Algorithm Variants
 
 :::{div} feynman-prose
-The Fractal Gas is not one algorithm but a *family* of algorithms. The core mechanisms---soft companion selection,
-dual-channel fitness, momentum-conserving cloning---are fixed. But the state space, the reward function, and the kinetic
-operator are all customizable.
+The Fractal Gas is not one algorithm but a *family* of algorithms. The skeleton---measure, score, clone, move,
+check---is fixed. What you are free to choose is what a walker *is*, what its reward *means*, and how it *moves*
+between steps. Fill those in and you get a **variant**.
 
-Companion lower bounds, revival rules, and momentum identities are inputs to the analysis. Mixing also needs recurrence, forced revival needs an available alive companion, and later boundary checks determine whether the offspring remain alive, and momentum conservation does not by itself conserve kinetic energy. The chosen state space and kinetic operator determine which convergence theorem applies.
+Now, here is the thing to be careful about, and it is the reason the variants get their own chapter. Changing a
+component is not like changing a font. Companion lower bounds, revival rules, and momentum identities are inputs to
+the analysis: mixing also needs recurrence, forced revival needs an available alive companion, later boundary checks
+decide whether the offspring stay alive, and conserving momentum does not by itself conserve kinetic energy. So a
+theorem proved for one variant is a theorem about *that* component tuple. Switch the kinetic operator and you owe a
+new verification, not a new paragraph.
 
-Let me describe three important variants. They are not fundamentally different algorithms---they are the same algorithm
-applied to different settings.
+The catalog below is deliberately thin. Each variant is written out component by component, with the results that
+actually hold for it and the hypotheses still owed, in {doc}`04_gas_variants`.
 :::
 
-The Fractal Gas framework admits several instantiations depending on the choice of state space, reward function, and kinetic operator.
+The Fractal Gas is the family of gas variants of {prf:ref}`def-gas-variant`; a variant is a tuple of twelve components,
+and the vocabulary separating family, framework, engine, variant and limit is fixed in {prf:ref}`def-gas-taxonomy`. Its
+minimal member---an arbitrary metric state space $(\mathcal{X}, d)$, an arbitrary measurable reward
+$r : \mathcal{X} \to \mathbb{R}$, position-only kinetics and no geometry stage---is the family-level specification,
+developed as an abstract Markov chain in {doc}`../convergence_program/01_fragile_gas_framework`. The six named variants
+are these.
 
-### Latent Fractal Gas
+- **Euclidean Gas** ({prf:ref}`def-variant-euclidean`): walkers $(x,v) \in \mathbb{R}^d \times \mathbb{R}^d$ in an
+  absorbing box with BAOAB kinetics and a caller-supplied objective; this is the variant the convergence program
+  analyzes. See {ref}`sec-variants-euclidean`.
+- **Viscous Euclidean Gas** ({prf:ref}`def-variant-viscous-euclidean`): the Euclidean Gas with one component changed, a
+  Gaussian-kernel viscous coupling inside the kinetic operator. See {ref}`sec-variants-viscous-euclidean`.
+- **Einstein–Hilbert Gas** ({prf:ref}`def-variant-einstein-hilbert`): a free gas whose reward is each walker's share of
+  the Einstein–Hilbert action of the geometry estimated from the walker positions. See
+  {ref}`sec-variants-einstein-hilbert`.
+- **Geometric Gas** ({prf:ref}`def-variant-geometric`): force and noise covariance adapted to the measured fitness
+  landscape, stated as a Stratonovich SDE. See {ref}`sec-variants-geometric` and
+  {doc}`../convergence_program/17_geometric_gas`.
+- **Latent Fractal Gas** ({prf:ref}`def-variant-latent`): walkers on a latent chart $(z,v) \in T\mathcal{Z}$ with
+  metric $G$, reward $r_i = \langle \mathcal{R}(z_i), v_i\rangle_G$ from a reward 1-form, and Boris-BAOAB kinetics. See
+  {ref}`sec-variants-latent` and {doc}`02_fractal_gas_latent`.
+- **Environment Gas** ({prf:ref}`def-variant-environment`): the reinforcement-learning member, where the kinetic
+  operator is one transition of an external environment and the reward is the environment's reward signal. See
+  {ref}`sec-variants-environment`.
 
-The **Latent Fractal Gas** operates in a learned latent space $\mathcal{Z}$ with Riemannian metric $G$. Key features:
-- Position $z$ is a latent representation (e.g., from a VAE encoder)
-- Metric $G(z)$ may be learned or derived from the latent structure
-- Reward $r_i = \langle \mathcal{R}(z_i), v_i \rangle_G$ is the inner product of a reward 1-form with velocity
-- Kinetics: Boris-BAOAB with anisotropic diffusion
-
-This is the variant formally treated in {doc}`02_fractal_gas_latent`.
-
-### Fragile Gas
-
-The **Fragile Gas** is the RL instantiation where reward comes from environment interaction:
-- Position $z$ encodes environment state
-- Reward $r_i$ is the environment reward signal
-- The swarm explores the state-action space guided by environment feedback
-
-### Abstract Fractal Gas
-
-The **Abstract Fractal Gas** is the minimal specification:
-- Arbitrary state space $\mathcal{X}$ with distance $d$
-- Arbitrary reward function $r: \mathcal{X} \to \mathbb{R}$
-- Minimal kinetics (e.g., Brownian motion)
+Which theorems hold for which variant, and under which hypotheses, is stated per variant in {doc}`04_gas_variants` and
+summarized in {prf:ref}`rem-variants-comparison`. A mean-field or continuum limit is always the limit of a named
+variant, never a variant of its own.
 
 :::{div} feynman-prose
-The generic specification is developed in {doc}`../convergence_program/01_fragile_gas_framework`. Its concrete instantiations use the recurrence and coupling arguments in {doc}`../convergence_program/06_convergence` and {doc}`../convergence_program/09_propagation_chaos`.
+Notice what that last line is protecting you from. It is tempting to read "the Fractal Gas converges" as a statement
+about the family. It is not. The convergence statements live with the Euclidean Gas and, conditionally, with the
+Geometric Gas; for the others the honest answer in this volume is *not established*, and the chapter says so out loud
+for each one.
+
+The generic specification is developed in {doc}`../convergence_program/01_fragile_gas_framework`. Its concrete
+instantiations use the recurrence and coupling arguments in {doc}`../convergence_program/06_convergence` and
+{doc}`../convergence_program/09_propagation_chaos`.
 :::
 
 

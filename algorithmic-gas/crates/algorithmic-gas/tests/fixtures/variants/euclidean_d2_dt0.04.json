@@ -1,0 +1,152 @@
+{
+  "backend": "cpu",
+  "precision": "f64",
+  "seed": 7,
+  "boundary": {
+    "kind": "absorbing_box",
+    "field": "positions",
+    "domain": {
+      "lower": [
+        -2.0,
+        -2.0
+      ],
+      "upper": [
+        2.0,
+        2.0
+      ]
+    }
+  },
+  "distance_donors": {
+    "distance": {
+      "kind": "squashed_phase_space",
+      "positions": "positions",
+      "velocities": "velocities",
+      "position_radius": 2.0,
+      "velocity_radius": 2.0,
+      "lambda": 1.0
+    },
+    "kernel": {
+      "kind": "gaussian",
+      "width": 2.0
+    },
+    "law": "independent",
+    "count": 1,
+    "allow_self": false,
+    "replacement": true,
+    "insufficient": "use_available",
+    "odd": "self_companion",
+    "pivot": "ascending",
+    "history_window": 0,
+    "tile_edges": 4096
+  },
+  "cloning_donors": {
+    "distance": {
+      "kind": "squashed_phase_space",
+      "positions": "positions",
+      "velocities": "velocities",
+      "position_radius": 2.0,
+      "velocity_radius": 2.0,
+      "lambda": 1.0
+    },
+    "kernel": {
+      "kind": "gaussian",
+      "width": 2.0
+    },
+    "law": "independent",
+    "count": 1,
+    "allow_self": false,
+    "replacement": true,
+    "insufficient": "use_available",
+    "odd": "self_companion",
+    "pivot": "ascending",
+    "history_window": 0,
+    "tile_edges": 4096
+  },
+  "reducer": {
+    "kind": "mean"
+  },
+  "fitness": {
+    "direction": "minimize",
+    "reward_standardizer": {
+      "kind": "global",
+      "sigma_min": 0.1
+    },
+    "diversity_standardizer": {
+      "kind": "global",
+      "sigma_min": 0.1
+    },
+    "reward_map": {
+      "kind": "logistic",
+      "amplitude": 2.0,
+      "floor": 0.1
+    },
+    "diversity_map": {
+      "kind": "logistic",
+      "amplitude": 2.0,
+      "floor": 0.1
+    },
+    "reward_exponent": 1.0,
+    "diversity_exponent": 1.0,
+    "distance_floor": 0.001
+  },
+  "clone_decision": {
+    "epsilon": 1e-6,
+    "saturation": 1.0,
+    "revival_from_companion": true,
+    "every": 1
+  },
+  "clone_transform": {
+    "position_field": "positions",
+    "jitter": {
+      "innovation": "gaussian",
+      "geometry": {
+        "kind": "isotropic",
+        "scale": {
+          "kind": "constant",
+          "values": [
+            1.0
+          ]
+        }
+      }
+    },
+    "jitter_amplitude": 0.1,
+    "velocity_field": "velocities",
+    "restitution": 0.5,
+    "collision_rotation": "haar"
+  },
+  "kinetic": {
+    "integrator": {
+      "kind": "baoab",
+      "positions": "positions",
+      "velocities": "velocities",
+      "dt": 0.04,
+      "friction": 1.0
+    },
+    "noise": {
+      "innovation": "gaussian",
+      "geometry": {
+        "kind": "isotropic",
+        "scale": {
+          "kind": "constant",
+          "values": [
+            1.0
+          ]
+        }
+      }
+    },
+    "position_diffusion": 0.1,
+    "velocity_cap": 2.0,
+    "boundary_schedule": "end_of_step"
+  },
+  "qft": {
+    "viscosity": null,
+    "innovation_shifts": [],
+    "graph_viscosity": null,
+    "curl": null
+  },
+  "geometry": null,
+  "include_truncated": false,
+  "invalid_reward": "error",
+  "max_batch_elements": 16777216,
+  "max_memory_bytes": 536870912
+}

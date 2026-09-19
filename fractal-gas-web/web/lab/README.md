@@ -27,6 +27,13 @@ is used only for rendering.
 The Lab starts paused with a first-visit task chooser. Its persistent toolbar keeps
 Run, Step, Restart, and Save / Open beside the simulation. Setup, Controller,
 Rewards, and View panels expose common controls before advanced settings.
+On phones, the environment fills most of the screen. **Menu** opens Tasks,
+Settings, and Save / Open; **Tools** opens interaction modes, camera controls,
+and Inspector; **Replay** opens recorded motion, decisions, and notes. Panels
+start closed and overlay the world without changing its size. Close a panel
+or press Escape to return to the environment. Run, Step, and Restart remain
+visible. Touch devices use the same layout in short landscape windows.
+
 Under **View**, **Cargo signs** toggles the harvested-item readouts above vehicles
 in Ants & Drops, and **Checkpoint signs** toggles crossing-progress readouts in
 Tandem Flight. Both switches apply immediately and persist on this device.

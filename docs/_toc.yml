@@ -80,6 +80,7 @@ parts:
     title: Part I — Algorithms and Foundations
     sections:
     - file: source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition
+    - file: source/2_fractal_gas/1_the_algorithm/04_gas_variants
     - file: source/2_fractal_gas/convergence_program/01_fragile_gas_framework
     - file: source/2_fractal_gas/convergence_program/02_euclidean_gas
     - file: source/2_fractal_gas/convergence_program/04_single_particle

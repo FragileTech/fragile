@@ -13,6 +13,7 @@ mod lecture_taylor;
 pub mod mixture;
 mod mt64;
 pub mod physics_metric;
+pub mod spectroscopy;
 use algorithmic_gas::{
     AlgorithmicGas, ComputeBackend, ExecutionContext, GasBuilder, GasConfig, GasError, InputBatch,
     ObservationBatch, Population, Provenance, Real, Result, RewardBatch, TensorBatch,
@@ -414,6 +415,54 @@ impl RunConfig {
             gas: GasConfig::einstein_hilbert(0.33, 0.002)?,
             ..Self::default()
         })
+    }
+    /// The canonical Euclidean Gas of `GasConfig::euclidean`: 64 walkers in
+    /// two dimensions with time step 0.04, started uniformly in [-1, 1]^2 at
+    /// rest, minimizing the quadratic objective whose gradient is the force.
+    pub fn euclidean() -> Result<Self> {
+        Ok(Self {
+            benchmark: Benchmark::Quadratic,
+            walkers: 64,
+            dimensions: 2,
+            initial_lower: -1.,
+            initial_upper: 1.,
+            gas: GasConfig::euclidean(2, 0.04)?,
+            ..Self::default()
+        })
+    }
+    /// The Viscous Euclidean Gas of `GasConfig::viscous_euclidean` with the
+    /// reference coupling: 200 walkers in three dimensions with time step
+    /// 0.04 on the quadratic objective. Its B kicks record a non-zero viscous
+    /// force, which the colour state of the spectroscopy channels needs.
+    pub fn viscous_euclidean() -> Result<Self> {
+        Ok(Self {
+            benchmark: Benchmark::Quadratic,
+            walkers: 200,
+            dimensions: 3,
+            initial_lower: -1.,
+            initial_upper: 1.,
+            gas: GasConfig::viscous_euclidean(
+                3,
+                0.04,
+                algorithmic_gas::variants::viscous_euclidean::reference_viscosity(),
+            )?,
+            ..Self::default()
+        })
+    }
+    /// Reference instance of a variant of the registry
+    /// (`algorithmic_gas::variants::Variant`), by name. A variant the book
+    /// specifies and the engine does not implement is a capability error.
+    pub fn variant(name: &str) -> Result<Self> {
+        use algorithmic_gas::variants::Variant;
+        match Variant::from_name(name)? {
+            Variant::Euclidean => Self::euclidean(),
+            Variant::ViscousEuclidean => Self::viscous_euclidean(),
+            Variant::EinsteinHilbert => Self::einstein_hilbert(),
+            book_only => book_only.default_config().map(|gas| Self {
+                gas,
+                ..Self::default()
+            }),
+        }
     }
     pub async fn build<T: Real>(&self) -> Result<AlgorithmicGas<T>> {
         if let Some(reward) = &self.geometry_reward {

@@ -1,3 +1,4 @@
+import { mountMobileWorkspace } from "./mobile-workspace.js";
 import { readPreference, savePreference } from "./workspace-state.js";
 const $ = (id) => document.getElementById(id);
 function element(tag, cls, html = "") {
@@ -269,6 +270,7 @@ export function mountWorkspace() {
       if (dialog.open) document.dispatchEvent(new Event("lab-modal"));
     }).observe(dialog, { attributes: true, attributeFilter: ["open"] }),
   );
+  mountMobileWorkspace();
   return {
     async tasks(entries, choose) {
       const watch = {
