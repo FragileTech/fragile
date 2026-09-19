@@ -6,7 +6,8 @@ or any integer up to the walker count. Use **Apply & reset** after changing it.
 
 Before each subsequent step, elites return to the first population slots. They
 are protected from cloning, remain available as donors, and still undergo normal
-motion. Ranking uses the objective's minimize/maximize direction, with older
+motion. After each step, the updated best-ever bank is copied back into the
+first slots in rank order. Ranking uses the objective's minimize/maximize direction, with older
 elites winning ties. The retained bank stores historical scores, including for
 stochastic objectives.
 

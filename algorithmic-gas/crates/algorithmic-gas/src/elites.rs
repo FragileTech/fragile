@@ -94,6 +94,25 @@ impl<T: Real> EliteBank<T> {
         p.rewards.provenance.population_version = p.version;
         Ok(bank.len())
     }
+    /// Restore physical state without creating a clone incarnation. The new
+    /// population version identifies this explicit elite selection stage.
+    pub(crate) fn restore(&self, p: &mut Population<T>) -> Result<()> {
+        let Some(bank) = &self.population else {
+            return Ok(());
+        };
+        for i in 0..bank.len() {
+            let generation = p.generations[i];
+            copy_row(bank, i, p, i)?;
+            p.generations[i] = generation;
+        }
+        p.version = p
+            .version
+            .checked_add(1)
+            .ok_or_else(|| crate::GasError::Numerical("population version overflow".into()))?;
+        p.observations.provenance.population_version = p.version;
+        p.rewards.provenance.population_version = p.version;
+        Ok(())
+    }
     pub(crate) fn select(&self, config: &GasConfig, current: &Population<T>) -> Result<Self> {
         if config.n_elite == 0 {
             return Ok(Self { population: None });

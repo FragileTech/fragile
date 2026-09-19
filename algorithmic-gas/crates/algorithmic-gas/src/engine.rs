@@ -1104,6 +1104,20 @@ impl<T: Real> AlgorithmicGas<T> {
             .await?;
         evals += destination.len() as u64;
         validate_rewards(&mut destination, &self.config)?;
+        let next_elites = self.elites.select(&self.config, &destination)?;
+        if next_elites.population.is_some() {
+            self.cx.trace_population("elite_selection", &destination);
+            next_elites.restore(&mut destination)?;
+            let fields = destination
+                .observations
+                .fields
+                .keys()
+                .cloned()
+                .collect::<Vec<_>>();
+            self.domain.reconcile(&mut destination, &fields)?;
+            self.domain.refresh_observations(&mut destination)?;
+            step_graph = self.refresh_geometry(&mut destination)?;
+        }
         destination.observations.provenance.population_version = destination.version;
         destination.observations.provenance.stage = "post_kinetic".into();
         self.config
@@ -1135,7 +1149,6 @@ impl<T: Real> AlgorithmicGas<T> {
             reward_evaluations: evals,
             execution: self.cx.stats.clone(),
         };
-        let next_elites = self.elites.select(&self.config, &destination)?;
         next_elites.validate(&self.config, &destination)?;
         let mut retained = self
             .config

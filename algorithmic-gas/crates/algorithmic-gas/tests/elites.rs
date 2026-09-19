@@ -88,14 +88,6 @@ fn elites_checkpoint_recording_motion_rollback_and_reset() {
                 .iter()
                 .any(|s| s.frame == 1 && s.slot < 2)
         );
-        assert_ne!(
-            &gas.population()
-                .observations
-                .field("positions")
-                .unwrap()
-                .values()[..2],
-            &positions
-        );
         let record = gas.recording().unwrap().steps.last().unwrap();
         assert_eq!(
             &record
@@ -105,6 +97,28 @@ fn elites_checkpoint_recording_motion_rollback_and_reset() {
                 .unwrap()
                 .values()[..2],
             &positions
+        );
+        let moved = record
+            .stages
+            .iter()
+            .find(|s| s.stage == "elite_selection")
+            .unwrap();
+        assert_ne!(&moved.fields["positions"].values[..2], &positions);
+        assert_eq!(
+            &gas.population()
+                .observations
+                .field("positions")
+                .unwrap()
+                .values()[..2],
+            gas.checkpoint()
+                .elites
+                .unwrap()
+                .population
+                .unwrap()
+                .observations
+                .field("positions")
+                .unwrap()
+                .values()
         );
         gas.recording().unwrap().validate().unwrap();
         let mut resumed = build(2, failure.clone());
@@ -237,7 +251,7 @@ fn retained_elites_recover_an_extinct_population() {
         assert_eq!(gas.elite_count(), 0);
         gas.step().await.unwrap();
         invalid.store(true, Ordering::Relaxed);
-        assert_eq!(gas.step().await.unwrap().eligible, 0);
+        assert_eq!(gas.step().await.unwrap().eligible, 2);
         assert_eq!(gas.elite_count(), 2);
         let saved = gas.checkpoint().to_bytes().unwrap();
         gas.restore(Checkpoint::from_bytes(&saved).unwrap())
@@ -245,5 +259,129 @@ fn retained_elites_recover_an_extinct_population() {
         invalid.store(false, Ordering::Relaxed);
         assert_eq!(gas.step().await.unwrap().eligible, 4);
         assert_eq!(gas.elite_count(), 2);
+    });
+}
+
+#[test]
+fn twenty_elites_move_then_best_walkers_are_copied_back_after_every_step() {
+    block_on(async {
+        for direction in [
+            fitness::ObjectiveDirection::Minimize,
+            fitness::ObjectiveDirection::Maximize,
+        ] {
+            let initial: Vec<f64> = (1..=64).map(f64::from).collect();
+            let p = Population::new(ObservationBatch::positions(
+                TensorBatch::scalars(initial).unwrap(),
+            ))
+            .unwrap();
+            let mut config = GasConfig {
+                n_elite: 20,
+                precision: Precision::F64,
+                ..Default::default()
+            };
+            config.fitness.direction = direction;
+            config.kinetic.integrator = kinetic::KineticKind::DirectJump {
+                field: "positions".into(),
+                amplitude: 10.,
+            };
+            let mut gas = GasBuilder::new(p, Objective(Arc::new(AtomicBool::new(false))))
+                .config(config)
+                .build()
+                .await
+                .unwrap();
+            gas.start_recording(RecordingConfig::default()).unwrap();
+            let mut best: Vec<f64> = vec![];
+            for step in 0..12 {
+                let report = gas.step().await.unwrap();
+                if step > 0 {
+                    assert!(report.clone_plan.choices[..20].iter().all(|c| !c.accepted));
+                    assert!(report.clone_plan.sources.iter().any(|s| s.slot < 20));
+                }
+                let record = gas.recording().unwrap().steps.last().unwrap();
+                let moved = record
+                    .stages
+                    .iter()
+                    .find(|s| s.stage == "elite_selection")
+                    .unwrap();
+                let positions = &moved.fields["positions"].values;
+                assert_ne!(
+                    &positions[..20],
+                    &record
+                        .before
+                        .observations
+                        .field("positions")
+                        .unwrap()
+                        .values()[..20]
+                );
+                best.extend_from_slice(positions);
+                // Match C++: prior bank first on ties, then population order;
+                // no deduplication or freezing of the kinetic candidates.
+                best.sort_by(|a, b| {
+                    direction
+                        .orient(b * b)
+                        .partial_cmp(&direction.orient(a * a))
+                        .unwrap()
+                });
+                best.truncate(20);
+                assert_eq!(
+                    &gas.population()
+                        .observations
+                        .field("positions")
+                        .unwrap()
+                        .values()[..20],
+                    &best
+                );
+            }
+            gas.checkpoint().validate().unwrap();
+            gas.recording().unwrap().validate().unwrap();
+        }
+    });
+}
+
+#[test]
+fn tied_elites_return_to_saved_positions_after_moving() {
+    block_on(async {
+        let p = Population::new(ObservationBatch::positions(
+            TensorBatch::scalars((1..=20).map(f64::from).collect()).unwrap(),
+        ))
+        .unwrap();
+        let config = GasConfig {
+            n_elite: 20,
+            precision: Precision::F64,
+            ..Default::default()
+        };
+        let mut gas = GasBuilder::new(p, InvalidatingObjective(Arc::new(AtomicBool::new(false))))
+            .config(config)
+            .build()
+            .await
+            .unwrap();
+        gas.start_recording(RecordingConfig::default()).unwrap();
+        gas.step().await.unwrap();
+        let saved = gas
+            .population()
+            .observations
+            .field("positions")
+            .unwrap()
+            .values()
+            .to_vec();
+        for _ in 0..5 {
+            assert_eq!(gas.step().await.unwrap().clones, 0);
+            let record = gas.recording().unwrap().steps.last().unwrap();
+            let moved = record
+                .stages
+                .iter()
+                .find(|s| s.stage == "elite_selection")
+                .unwrap();
+            assert_ne!(moved.fields["positions"].values, saved);
+            assert_eq!(
+                gas.population()
+                    .observations
+                    .field("positions")
+                    .unwrap()
+                    .values(),
+                saved
+            );
+        }
+        gas.recording().unwrap().validate().unwrap();
     });
 }

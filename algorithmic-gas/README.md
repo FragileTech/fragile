@@ -545,7 +545,9 @@ is zero; counts above the population size are rejected. Prior elites win ties,
 followed by population order. If fewer eligible candidates exist, selected
 candidates repeat to fill the bank. Before the next step the bank replaces the
 first slots, which cannot clone away but remain donors and undergo normal kinetics.
-All numerical fields and opaque state snapshots travel together.
+After kinetics, the updated best-ever bank is also copied into the first slots
+before the step returns, so the visible population contains the retained best
+walkers. All numerical fields and opaque state snapshots travel together.
 
 Retention commits with the step, participates in memory admission, survives
 checkpoints, and clears when the population is explicitly replaced. Recordings

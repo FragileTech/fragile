@@ -402,3 +402,50 @@ test("Elite count validation, clone protection and checkpoint continuation", asy
     resumed?.free();
   }
 });
+
+for (const precision of ["f32", "f64"])
+  test(`Twenty elites move and the best bank returns after each CPU ${precision} step`, async () => {
+    const config = JSON.parse(default_config());
+    config.walkers = 32;
+    config.gas.n_elite = 20;
+    config.gas.precision = precision;
+    const gas = await BrowserGas.create(JSON.stringify(config));
+    try {
+      gas.start_recording("{}");
+      let previous;
+      const sign = config.gas.fitness.direction === "minimize" ? 1 : -1;
+      for (let step = 0; step < 4; step++) {
+        const frame = await gas.step(1);
+        const record = gas.archive().steps.at(-1);
+        const moved = record.stages.find((s) => s.stage === "elite_selection");
+        const prefix = 20 * config.dimensions;
+        if (previous) {
+          assert.ok(
+            frame.report.clone_plan.choices
+              .slice(0, 20)
+              .every((c) => !c.accepted),
+          );
+          assert.notDeepEqual(
+            moved.fields.positions.values.slice(0, prefix),
+            record.before.observations.fields.positions.values.slice(0, prefix),
+          );
+        }
+        const rewards = frame.population.rewards.raw.slice(0, 20);
+        assert.deepEqual(
+          rewards,
+          [...rewards].sort((a, b) => sign * (a - b)),
+        );
+        if (previous)
+          assert.ok(
+            rewards.every((value, i) => sign * (value - previous[i]) <= 0),
+          );
+        previous = rewards;
+        assert.deepEqual(
+          frame.population.observations.fields.positions.values.slice(prefix),
+          moved.fields.positions.values.slice(prefix),
+        );
+      }
+    } finally {
+      gas.free();
+    }
+  });
