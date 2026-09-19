@@ -84,6 +84,9 @@ pub fn extend(
             for p in out.coords.chunks_exact_mut(d) {
                 for k in 0..d {
                     p[k] = bounds.lower[k] + (p[k] - bounds.lower[k]).rem_euclid(length[k]);
+                    if p[k] >= bounds.upper[k] {
+                        p[k] = bounds.lower[k];
+                    }
                 }
             }
             let shifts = 3usize.pow(d as u32);

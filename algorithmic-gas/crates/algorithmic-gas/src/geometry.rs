@@ -249,12 +249,17 @@ impl Distance {
                 })
                 .collect());
         }
+        // Every pair appends to one buffer: a tile is one allocation, not one
+        // per edge.
         let mut values = Vec::new();
         let mut width = 0;
         for &(i, j) in pairs {
-            let delta = self.deltas(a, i as usize, b, j as usize)?;
-            width = delta.len();
-            values.extend(delta);
+            let start = values.len();
+            self.push_deltas(a, i as usize, b, j as usize, &mut values)?;
+            width = values.len() - start;
+            if start == 0 {
+                values.reserve(width.saturating_mul(pairs.len() - 1));
+            }
         }
         let input = TensorBatch::vectors(pairs.len(), width, values)?;
         let mut e = Expression::default();
@@ -277,14 +282,15 @@ impl Distance {
             _ => ComparisonKind::Distance,
         }
     }
-    fn deltas<T: Real>(
+    /// Append the scaled coordinate differences of one pair to `delta`.
+    fn push_deltas<T: Real>(
         &self,
         a: &ObservationBatch<T>,
         i: usize,
         b: &ObservationBatch<T>,
         j: usize,
-    ) -> Result<Vec<T>> {
-        let mut delta = Vec::new();
+        delta: &mut Vec<T>,
+    ) -> Result<()> {
         match self {
             Self::SquashedPhaseSpace {
                 positions,
@@ -384,22 +390,19 @@ impl Distance {
             }
             Self::Cosine { .. } => unreachable!(),
         }
-        Ok(delta)
+        Ok(())
     }
-}
-impl<T: Real> AlgorithmicDistance<T> for Distance {
-    fn comparison_kind(&self) -> ComparisonKind {
-        self.comparison_kind_for()
-    }
-    fn compare(
+    /// `compare` for schemas the caller has already validated, reusing
+    /// `scratch` between calls. Dense O(k²) consumers such as local
+    /// standardization validate once instead of once per pair.
+    pub(crate) fn compare_validated<T: Real>(
         &self,
         a: &ObservationBatch<T>,
         i: usize,
         b: &ObservationBatch<T>,
         j: usize,
+        scratch: &mut Vec<T>,
     ) -> Result<T> {
-        self.validate(a)?;
-        self.validate(b)?;
         if let Self::Cosine {
             field,
             zero_tolerance,
@@ -420,10 +423,9 @@ impl<T: Real> AlgorithmicDistance<T> for Distance {
                 },
             );
         }
-        let sum = self
-            .deltas(a, i, b, j)?
-            .iter()
-            .fold(T::ZERO, |s, &x| s + x * x);
+        scratch.clear();
+        self.push_deltas(a, i, b, j, scratch)?;
+        let sum = scratch.iter().fold(T::ZERO, |s, &x| s + x * x);
         if !sum.is_finite() {
             return Err(GasError::Numerical("distance overflow".into()));
         }
@@ -434,6 +436,22 @@ impl<T: Real> AlgorithmicDistance<T> for Distance {
                 sum.sqrt()
             },
         )
+    }
+}
+impl<T: Real> AlgorithmicDistance<T> for Distance {
+    fn comparison_kind(&self) -> ComparisonKind {
+        self.comparison_kind_for()
+    }
+    fn compare(
+        &self,
+        a: &ObservationBatch<T>,
+        i: usize,
+        b: &ObservationBatch<T>,
+        j: usize,
+    ) -> Result<T> {
+        self.validate(a)?;
+        self.validate(b)?;
+        self.compare_validated(a, i, b, j, &mut Vec::new())
     }
 }
 pub trait InteractionKernel<T: Real> {

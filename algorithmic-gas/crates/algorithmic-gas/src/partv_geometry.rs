@@ -1614,8 +1614,14 @@ pub fn graph_distance(
     };
     let count = resolution * resolution;
     let radius = (resolution as f64).sqrt().ceil() as isize;
+    // Checked: the product exceeds a 32-bit usize well inside the admitted
+    // input range, and a wrapped value would pass the budget.
+    let stencil = (2 * radius as u64 + 1).pow(2) * radius as u64;
     require(
-        points.len() * count * (2 * radius + 1).pow(2) as usize * radius as usize <= 32_000_000,
+        (points.len() as u64)
+            .checked_mul(count as u64)
+            .and_then(|work| work.checked_mul(stencil))
+            .is_some_and(|work| work <= 32_000_000),
         "variable metric graph work budget exceeded",
     )?;
     let metric_at = |x: f64, y: f64| -> Mat2 {

@@ -158,6 +158,10 @@ impl AtomicMeanField {
             "atomic component reference requires current weighted revival",
         )?;
         require(
+            config.clone_decision.every == 1,
+            "atomic component reference requires cloning on every step",
+        )?;
+        require(
             matches!(config.reducer, CompanionReducer::Mean),
             "atomic component reference requires one-companion mean measurement",
         )?;

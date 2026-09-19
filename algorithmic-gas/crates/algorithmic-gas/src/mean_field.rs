@@ -93,7 +93,7 @@ pub fn step_diagnostics(step: &RecordedStep<f64>) -> Result<MeanFieldStep> {
     let component_sizes: Vec<_> = counts.into_iter().filter(|&s| s > 0).collect();
     let shared = component_sizes
         .iter()
-        .map(|&s| (s * (s - 1)) as f64)
+        .map(|&s| s as f64 * (s - 1) as f64)
         .sum::<f64>();
     let observable = population_observables(&step.final_population)?;
     let mut expected = 0.;
@@ -123,7 +123,7 @@ pub fn step_diagnostics(step: &RecordedStep<f64>) -> Result<MeanFieldStep> {
         expected_clones: expected,
         clone_count_variance: variance,
         shared_component_probability: if n > 1 {
-            shared / (n * (n - 1)) as f64
+            shared / (n as f64 * (n - 1) as f64)
         } else {
             0.
         },

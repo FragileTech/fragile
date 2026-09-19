@@ -270,11 +270,12 @@ fn recorded_force<T: Real>(
         let bandwidth = T::from_f64(config.bandwidth);
         let denominator = T::from_f64(2.) * bandwidth * bandwidth;
         let coefficient = T::from_f64(config.coefficient);
+        // Reused per row: both loops below skip the same entries.
+        let mut weights = vec![T::ZERO; n];
         for i in 0..n {
             if !eligible[i] {
                 continue;
             }
-            let mut weights = vec![T::ZERO; n];
             let mut mass = T::ZERO;
             for j in 0..n {
                 if i == j || !eligible[j] {

@@ -4,7 +4,7 @@ use crate::{Benchmark, RunConfig};
 use algorithmic_gas::{
     AlgorithmicGas, GasError, Precision, Result, RunArchive, TensorBatch,
     boundary::{BoundaryPolicy, BoxDomain},
-    donor::SamplingLaw,
+    donor::{PivotOrder, SamplingLaw},
     fitness::{PositiveMap, Standardizer},
     geometry::Kernel,
     kinetic::{KineticKind, ViscousForceConfig},
@@ -124,7 +124,11 @@ pub fn config(id: &str, p: &Value, seed: u64) -> Result<RunConfig> {
             c.gas.distance_donors.kernel = Kernel::Uniform;
             SamplingLaw::FisherYates
         }
-        "greedy" | "shuffled_greedy" => SamplingLaw::GaussianGreedy,
+        "greedy" => SamplingLaw::GaussianGreedy,
+        "shuffled_greedy" => {
+            c.gas.distance_donors.pivot = PivotOrder::Random;
+            SamplingLaw::GaussianGreedy
+        }
         _ => SamplingLaw::Independent,
     };
     c.gas.distance_donors.count = number(p, "count", 1.) as usize;
@@ -283,7 +287,14 @@ pub fn configs(id: &str, p: &Value, seed: u64) -> Result<Vec<RunConfig>> {
 }
 pub fn steps(id: &str, p: &Value, c: &RunConfig) -> usize {
     if matches!(id, "IV-13" | "IV-14") {
-        (number(p, "T", 5.) / dt(c)).ceil() as usize
+        // A horizon that is an exact multiple of the step must not round up
+        // through its division error (21 / 0.35 = 60.000000000000007).
+        let updates = number(p, "T", 5.) / dt(c);
+        if (updates - updates.round()).abs() < 1e-9 {
+            updates.round() as usize
+        } else {
+            updates.ceil() as usize
+        }
     } else {
         number(p, "steps", number(p, "updates", 64.)) as usize
     }
@@ -1453,13 +1464,33 @@ pub fn analyze_ensemble(
             points.push([i as f64, m]);
             means.push(m);
         }
+        // Paired protocols (translations, timestep refinement) deliberately
+        // share one seed: only distinct seeds make the runs independent.
+        let mut seeds: Vec<_> = archives.iter().map(|a| a.gas_config.seed).collect();
+        seeds.sort_unstable();
+        seeds.dedup();
+        let independent = seeds.len() == archives.len();
         result.plot(
-            "Independent run endpoint means",
+            if independent {
+                "Independent run endpoint means"
+            } else {
+                "Common-seed run endpoint means"
+            },
             "run index",
             "mean position",
             vec![series("Executed runs", points)],
         );
-        result.metric("Across-run endpoint variance", variance(&means), "");
+        if !independent && id != "IV-14" {
+            result.note("Runs share one seed (common random numbers): their spread is not an independent-run sampling variance.");
+        }
+        // Runs are a sample of the run law: the unbiased estimator, undefined
+        // for a single run.
+        let across = if means.len() > 1 {
+            variance(&means) * means.len() as f64 / (means.len() - 1) as f64
+        } else {
+            f64::NAN
+        };
+        result.metric("Across-run endpoint variance", across, "");
         result.details["run_seeds"] = json!(
             archives
                 .iter()

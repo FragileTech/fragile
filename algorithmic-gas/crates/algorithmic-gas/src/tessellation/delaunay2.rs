@@ -24,6 +24,11 @@ pub fn triangulate(coords: &[f64], n: usize) -> Result<SiteMesh> {
             "planar Delaunay merged sites that must be distinct".into(),
         ));
     }
+    // Spade accepts exactly collinear sites and returns no face; the edges
+    // below come from faces, so that mesh would be a silently empty graph.
+    if n >= 3 && t.num_inner_faces() == 0 {
+        return Err(GasError::Numerical("sites are exactly collinear".into()));
+    }
     let mut simplices = Vec::with_capacity(t.num_inner_faces() * 3);
     for face in t.inner_faces() {
         let mut v = face.vertices().map(|h| h.index() as u32);

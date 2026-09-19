@@ -65,6 +65,19 @@ impl CloneDecision {
             "invalid clone acceptance regularizers or period",
         )
     }
+    /// Acceptance probability of a living walker of positive fitness `own`
+    /// proposing a donor of positive fitness `donor` at `step`: the clipped
+    /// relative score on cloning steps and zero on every other step. Analyses
+    /// of recorded runs use this same law.
+    pub fn acceptance_probability<T: Real>(&self, step: u64, own: T, donor: T) -> T {
+        if step.is_multiple_of(self.every) {
+            ((donor - own) / (own + T::from_f64(self.epsilon)) / T::from_f64(self.saturation))
+                .max(T::ZERO)
+                .min(T::ONE)
+        } else {
+            T::ZERO
+        }
+    }
     #[allow(clippy::too_many_arguments)]
     pub fn plan<T: Real>(
         &self,
@@ -140,13 +153,7 @@ impl CloneDecision {
                         "clone fitness must be positive and finite".into(),
                     ));
                 }
-                let probability = if step.is_multiple_of(self.every) {
-                    ((d - f) / (f + T::from_f64(self.epsilon)) / T::from_f64(self.saturation))
-                        .max(T::ZERO)
-                        .min(T::ONE)
-                } else {
-                    T::ZERO
-                };
+                let probability = self.acceptance_probability(step, f, d);
                 acceptance_probability = probability;
                 let mut rng = RandomStream::new(seed, step, Stream::Accept, i as u64, 0);
                 accepted = rng.uniform::<T>() < probability;

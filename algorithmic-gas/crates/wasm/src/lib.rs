@@ -24,7 +24,9 @@ impl LectureExperiment {
         if request.len() > 1024 * 1024 {
             return Err(error("Lecture request too large"));
         }
-        let request = serde_json::from_str(&request).map_err(error)?;
+        let request: algorithmic_gas::lecture::LectureRequest =
+            serde_json::from_str(&request).map_err(error)?;
+        browser_seed(request.seed)?;
         Ok(Self {
             session: algorithmic_gas_benchmarks::lecture::LectureSession::create(request)
                 .await
@@ -127,6 +129,18 @@ pub struct BrowserGas {
 fn error(e: impl std::fmt::Display) -> JsValue {
     JsValue::from_str(&e.to_string())
 }
+/// Results cross into JavaScript as numbers, which are exact only below 2^53,
+/// and a larger seed makes every export of its configuration fail. The margin
+/// covers the seeds ensembles and paired protocols derive from the request.
+const MAX_BROWSER_SEED: u64 = (1 << 53) - (1 << 32);
+fn browser_seed(seed: u64) -> Result<(), JsValue> {
+    if seed > MAX_BROWSER_SEED {
+        return Err(error(format!(
+            "seed {seed} is not exactly representable in the browser; use at most {MAX_BROWSER_SEED}"
+        )));
+    }
+    Ok(())
+}
 fn js(value: &impl Serialize) -> Result<JsValue, JsValue> {
     value
         .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
@@ -212,6 +226,7 @@ impl BrowserGas {
     #[wasm_bindgen(js_name=create)]
     pub async fn create(config_json: String) -> Result<BrowserGas, JsValue> {
         let config: RunConfig = serde_json::from_str(&config_json).map_err(error)?;
+        browser_seed(config.gas.seed)?;
         if config.gas.backend == BackendKind::Cuda {
             return Err(error("CUDA is native-only; choose WASM CPU or WebGPU"));
         }

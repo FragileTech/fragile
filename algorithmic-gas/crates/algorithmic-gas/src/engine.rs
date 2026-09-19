@@ -615,19 +615,26 @@ impl<T: Real> AlgorithmicGas<T> {
         extracted: Option<Population<T>>,
     ) -> Result<StepReport<T>> {
         let previous_trace = self.cx.stage_trace.clone();
-        let previous_stages = self.cx.recorded_stages.clone();
-        let previous_noise = self.cx.recorded_noise.clone();
-        let previous_fields = self.cx.recorded_fields.clone();
-        let previous_influences = self.cx.recorded_influences.clone();
         let previous_stats = self.cx.stats.clone();
         let previous_allowance = self.cx.max_memory_bytes;
         let result = self.execute_transaction(input, extracted).await;
         if result.is_err() {
+            // Recording buffers are per-transaction scratch: a committed step
+            // moves them into the archive and the next step clears them, so a
+            // failed step only has to discard its partial records.
             self.cx.stage_trace = previous_trace;
-            self.cx.recorded_stages = previous_stages;
-            self.cx.recorded_noise = previous_noise;
-            self.cx.recorded_fields = previous_fields;
-            self.cx.recorded_influences = previous_influences;
+            if let Some(stages) = &mut self.cx.recorded_stages {
+                stages.clear();
+            }
+            if let Some(noise) = &mut self.cx.recorded_noise {
+                noise.clear();
+            }
+            if let Some(fields) = &mut self.cx.recorded_fields {
+                fields.clear();
+            }
+            if let Some(influences) = &mut self.cx.recorded_influences {
+                influences.clear();
+            }
             self.cx.stats = previous_stats;
             self.cx.max_memory_bytes = previous_allowance;
         }
@@ -1078,10 +1085,30 @@ impl<T: Real> AlgorithmicGas<T> {
                 epoch: archive.epoch,
                 before: p.clone(),
                 final_population: destination.clone(),
-                stages: self.cx.recorded_stages.clone().unwrap_or_default(),
-                noise: self.cx.recorded_noise.clone().unwrap_or_default(),
-                field_evaluations: self.cx.recorded_fields.clone().unwrap_or_default(),
-                influences: self.cx.recorded_influences.clone().unwrap_or_default(),
+                stages: self
+                    .cx
+                    .recorded_stages
+                    .as_mut()
+                    .map(std::mem::take)
+                    .unwrap_or_default(),
+                noise: self
+                    .cx
+                    .recorded_noise
+                    .as_mut()
+                    .map(std::mem::take)
+                    .unwrap_or_default(),
+                field_evaluations: self
+                    .cx
+                    .recorded_fields
+                    .as_mut()
+                    .map(std::mem::take)
+                    .unwrap_or_default(),
+                influences: self
+                    .cx
+                    .recorded_influences
+                    .as_mut()
+                    .map(std::mem::take)
+                    .unwrap_or_default(),
                 report: report.clone(),
                 donor_fitness,
                 graph: kinetic_graph

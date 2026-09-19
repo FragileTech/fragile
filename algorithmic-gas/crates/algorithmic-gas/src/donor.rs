@@ -169,6 +169,16 @@ pub enum OddPolicy {
     Unmatched,
     Reject,
 }
+/// Pivot order of sequential greedy matching. Changing it changes the law.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PivotOrder {
+    /// The first remaining eligible slot in ascending slot id.
+    #[default]
+    Ascending,
+    /// An independent uniform permutation of the eligible slots.
+    Random,
+}
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum InsufficientPolicy {
@@ -187,6 +197,9 @@ pub struct DonorModule {
     #[serde(default)]
     pub insufficient: InsufficientPolicy,
     pub odd: OddPolicy,
+    /// Pivot order of `SamplingLaw::GaussianGreedy`.
+    #[serde(default)]
+    pub pivot: PivotOrder,
     pub history_window: usize,
     pub tile_edges: usize,
 }
@@ -201,6 +214,7 @@ impl Default for DonorModule {
             replacement: true,
             insufficient: InsufficientPolicy::UseAvailable,
             odd: OddPolicy::SelfCompanion,
+            pivot: PivotOrder::Ascending,
             history_window: 0,
             tile_edges: 4096,
         }
@@ -298,6 +312,10 @@ impl DonorModule {
                 "uniform matching/permutation requires the uniform kernel",
             )?;
         }
+        require(
+            self.law == SamplingLaw::GaussianGreedy || self.pivot == PivotOrder::default(),
+            "a pivot order applies only to greedy matching",
+        )?;
         if self.law != SamplingLaw::Independent && self.count > 1 && !self.replacement {
             return Err(GasError::Topology(
                 "repeated matching rounds allow repeated companions; select replacement explicitly"
@@ -340,16 +358,6 @@ impl<T: Real> CompanionSampler<T> for DonorModule {
                 self.law,
                 SamplingLaw::FisherYates | SamplingLaw::GaussianGreedy
             ),
-        };
-        let candidates = |i: usize| {
-            (0..m)
-                .filter(|&j| {
-                    self.allow_self
-                        || r.pool.sources[j].frame != r.pool.current_frame
-                        || r.pool.sources[j].slot as usize != i
-                })
-                .map(|j| j as u32)
-                .collect::<Vec<_>>()
         };
         if self.law == SamplingLaw::Independent && matches!(self.kernel, Kernel::Uniform) {
             for (i, &own_index) in current.iter().enumerate() {
@@ -416,18 +424,28 @@ impl<T: Real> CompanionSampler<T> for DonorModule {
                 if !r.eligible[i] {
                     continue;
                 }
-                let mut c = candidates(i);
-                if c.is_empty() {
-                    c.push(current_index(i)?);
-                }
+                // Every pool row except the query's own current snapshot; a
+                // singleton compares with itself. Enumerated without an O(M)
+                // list per walker.
+                let own = if self.allow_self { None } else { current[i] };
+                let singleton = if m == usize::from(own.is_some()) {
+                    Some(current_index(i)?)
+                } else {
+                    None
+                };
+                let available = (m - usize::from(own.is_some())).max(1);
                 require(
                     self.replacement
                         || self.insufficient == InsufficientPolicy::UseAvailable
-                        || k <= c.len(),
+                        || k <= available,
                     "not enough distinct eligible companions",
                 )?;
-                *expected_count = if self.replacement { k } else { k.min(c.len()) };
-                for j in c {
+                *expected_count = if self.replacement {
+                    k
+                } else {
+                    k.min(available)
+                };
+                for j in (0..m as u32).filter(|&j| Some(j) != own).chain(singleton) {
                     edges.push((i as u32, j));
                     if edges.len() == self.tile_edges {
                         self.score_tile(&r, &edges, &mut best, &mut out, cx).await?;
@@ -437,6 +455,22 @@ impl<T: Real> CompanionSampler<T> for DonorModule {
             }
             if !edges.is_empty() {
                 self.score_tile(&r, &edges, &mut best, &mut out, cx).await?;
+            }
+            if !self.replacement && k > 1 {
+                // The top-K Gumbel scores are the sequential weighted draws in
+                // decreasing order. Entry `a` must be draw `a`, as in the
+                // uniform law: positional consumer weights depend on it.
+                let mut ranked = Vec::with_capacity(k);
+                for i in 0..n {
+                    ranked.clear();
+                    ranked.extend((i * k..(i + 1) * k).map(|s| (best[s], out.indices[s])));
+                    ranked.sort_by(|a, b| b.0.partial_cmp(&a.0).unwrap().then(a.1.cmp(&b.1)));
+                    for (a, &(score, donor)) in ranked.iter().enumerate() {
+                        best[i * k + a] = score;
+                        out.indices[i * k + a] = donor;
+                        out.valid[i * k + a] = score > T::from_f64(f64::NEG_INFINITY);
+                    }
+                }
             }
             for (i, &alive) in r.eligible.iter().enumerate() {
                 if alive && out.row(i).count() != expected[i] {
@@ -463,10 +497,17 @@ impl<T: Real> CompanionSampler<T> for DonorModule {
                     .all(|s| s.frame == r.pool.current_frame),
                 "matching requires current sources",
             )?;
+            // Greedy pivots are popped from the back of `order`.
+            let ascending =
+                self.law == SamplingLaw::GaussianGreedy && self.pivot == PivotOrder::Ascending;
             for round in 0..k {
                 let mut rng = RandomStream::new(r.seed, r.step, r.stream, 0, round as u64);
                 let mut order = alive.clone();
-                rng.shuffle(&mut order);
+                if ascending {
+                    order.reverse();
+                } else {
+                    rng.shuffle(&mut order);
+                }
                 if self.law == SamplingLaw::LegacyPermutation {
                     // Exact legacy distinction: permutation with no deaths;
                     // independent replacement draws if any slot is dead.
@@ -518,7 +559,12 @@ impl<T: Real> CompanionSampler<T> for DonorModule {
                             GasError::Numerical("greedy kernel has no finite weight".into())
                         })?
                     };
-                    let j = order.swap_remove(choice);
+                    // An ordered removal keeps the remaining pivots ascending.
+                    let j = if ascending {
+                        order.remove(choice)
+                    } else {
+                        order.swap_remove(choice)
+                    };
                     out.indices[i * k + round] = current_index(j)?;
                     out.indices[j * k + round] = current_index(i)?;
                     out.valid[i * k + round] = true;
@@ -683,8 +729,16 @@ impl CompanionReducer {
         for i in 0..sums.len() {
             if denom[i] > T::ZERO {
                 sums[i] = sums[i] / denom[i];
-            } else if population.validity[i].eligible(false) && companions.row(i).next().is_some() {
-                return Err(GasError::Numerical("zero total companion weight".into()));
+            } else if population.validity[i].eligible(false) {
+                // An active row without a valid donor has no diversity
+                // measurement; zero separation would fabricate one.
+                return Err(if companions.row(i).next().is_some() {
+                    GasError::Numerical("zero total companion weight".into())
+                } else {
+                    GasError::Topology(format!(
+                        "walker {i} has no valid distance donor; an unmatched walker cannot be measured"
+                    ))
+                });
             }
         }
         Ok(sums)

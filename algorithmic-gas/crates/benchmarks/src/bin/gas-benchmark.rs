@@ -21,10 +21,21 @@ async fn run<T: Real>(config: RunConfig, steps: usize, recording: Option<Recordi
         .iter()
         .map(|x| x.to_f64())
         .fold(f64::INFINITY, f64::min);
+    // The first step runs every kernel for the first time (compilation and
+    // autotuning on accelerators): it is reported apart from the steady state.
+    // A failed step commits nothing, so the committed steps, their archive and
+    // the summary are still written before the error is returned.
     let start = Instant::now();
+    let mut first_step_seconds = None;
+    let mut failure = None;
     for _ in 0..steps {
-        gas.step().await?;
+        if let Err(error) = gas.step().await {
+            failure = Some(error);
+            break;
+        }
+        first_step_seconds.get_or_insert_with(|| start.elapsed().as_secs_f64());
     }
+    let elapsed_seconds = start.elapsed().as_secs_f64();
     let best = gas
         .population()
         .rewards
@@ -80,9 +91,11 @@ async fn run<T: Real>(config: RunConfig, steps: usize, recording: Option<Recordi
         std::fs::write(&recording.path, bytes)
             .map_err(|e| algorithmic_gas::GasError::Execution(e.to_string()))?;
     }
-    let output = serde_json::json!({"config":config,"geometry":geometry,"steps":gas.step_number(),"initialization_seconds":initialization_seconds,"elapsed_seconds":start.elapsed().as_secs_f64(),"initial_minimum":initial,"final_best":best,"reward_evaluations":gas.reward_evaluations(),"execution":gas.execution_stats(),"execution_model":"host-orchestrated Burn batches; accelerator transfers included"});
+    let steady_steps = gas.step_number().saturating_sub(1);
+    let steady_state_seconds = first_step_seconds.map(|first| (elapsed_seconds - first).max(0.));
+    let output = serde_json::json!({"config":config,"geometry":geometry,"steps":gas.step_number(),"error":failure.as_ref().map(ToString::to_string),"initialization_seconds":initialization_seconds,"first_step_seconds":first_step_seconds,"steady_state_seconds":steady_state_seconds,"steady_state_steps":steady_steps,"steady_state_steps_per_second":steady_state_seconds.filter(|&t| t > 0. && steady_steps > 0).map(|t| steady_steps as f64 / t),"elapsed_seconds":elapsed_seconds,"initial_minimum":initial,"final_best":best,"reward_evaluations":gas.reward_evaluations(),"execution":gas.execution_stats(),"execution_model":"host-orchestrated Burn batches; accelerator transfers included"});
     println!("{}", serde_json::to_string_pretty(&output).unwrap());
-    Ok(())
+    failure.map_or(Ok(()), Err)
 }
 fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let mut config = RunConfig::default();

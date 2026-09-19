@@ -82,6 +82,20 @@ fn affine_rank(coords: &[f64], n: usize, d: usize) -> (Vec<f64>, usize, Vec<f64>
     for m in &mut mean {
         *m /= n as f64;
     }
+    // The rounded mean of a constant coordinate differs from that constant, and
+    // the residual column can exceed the rank tolerance of a tightly clustered
+    // swarm. The tessellators use exact predicates: an exactly flat swarm must
+    // be exactly flat here as well.
+    for (k, m) in mean.iter_mut().enumerate() {
+        let (lo, hi) = coords
+            .iter()
+            .skip(k)
+            .step_by(d)
+            .fold((f64::INFINITY, f64::NEG_INFINITY), |(lo, hi), &x| {
+                (lo.min(x), hi.max(x))
+            });
+        *m = m.clamp(lo, hi);
+    }
     let centered: Vec<f64> = coords
         .chunks_exact(d)
         .flat_map(|p| p.iter().zip(&mean).map(|(x, m)| x - m))
@@ -341,6 +355,35 @@ mod tests {
         )
         .unwrap();
         assert!(absorbed.graph.is_empty() && absorbed.failure.is_some());
+    }
+    #[test]
+    fn a_tight_cluster_with_one_constant_coordinate_is_exactly_flat() {
+        // The rounded mean of a constant coordinate is not that constant. With a
+        // small in-plane spread the residual column exceeded the rank tolerance
+        // and the exact tessellator rejected the "full rank" swarm as coplanar.
+        let cloud = |n: usize, constant: f64, d: usize| -> Vec<f64> {
+            (0..n)
+                .flat_map(|i| {
+                    let t = i as f64;
+                    let mut p = vec![
+                        0.5 + 1e-3 * (0.618_033_988_749_895 * t).fract(),
+                        0.5 + 1e-3 * (0.754_877_666_246_693 * t).fract(),
+                        constant,
+                    ];
+                    p.swap(d - 1, 2);
+                    p.truncate(d);
+                    p
+                })
+                .collect()
+        };
+        for (n, constant) in [(100, 0.3), (50, 0.7), (30, 5.1), (200, 0.1)] {
+            let t = run(3, cloud(n, constant, 3), DegeneracyPolicy::default()).unwrap();
+            assert_eq!((t.rank, t.mesh.dimension), (2, 2), "n={n} z={constant}");
+            assert!(t.failure.is_none() && t.graph.edges() > 2 * n);
+            // A constant second coordinate in the plane leaves a path.
+            let t = run(2, cloud(n, constant, 2), DegeneracyPolicy::default()).unwrap();
+            assert_eq!((t.rank, t.graph.edges()), (1, 2 * (n - 1)));
+        }
     }
     #[test]
     fn duplicate_groups_lift_to_products_and_cliques() {

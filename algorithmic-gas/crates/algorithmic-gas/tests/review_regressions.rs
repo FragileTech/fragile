@@ -1,9 +1,9 @@
 use algorithmic_gas::{
     donor::{
         CompanionBatch, CompanionReducer, CompanionRequest, CompanionSampler, DonorModule,
-        DonorPool, InsufficientPolicy, SamplingLaw,
+        DonorPool, InsufficientPolicy, OddPolicy, PivotOrder, SamplingLaw,
     },
-    fitness::{FitnessPipeline, Standardizer},
+    fitness::{FitnessPipeline, PositiveMap, Standardizer},
     geometry::{AlgorithmicDistance, Distance, Kernel},
     random::Stream,
     *,
@@ -323,4 +323,173 @@ fn memory_limits_cover_graph_totals_and_checked_population_reservations() {
         );
         assert_eq!(cx.stats.evaluations, 0);
     });
+}
+
+/// Sequential weighted sampling without replacement is an ordered law: entry
+/// `a` is draw `a`, so the first entry is categorical in the kernel weights.
+/// Positional consumer weights (`WeightedMean`) depend on that order.
+#[test]
+fn gaussian_without_replacement_rows_are_in_draw_order() {
+    block_on(async {
+        let p = population::<f64>(&[0., 1., 2.]);
+        let pool = DonorPool::freeze(&p, 0, &[], 0, false).unwrap();
+        let mut cx = ExecutionContext::new(BackendKind::Cpu, Precision::F64)
+            .await
+            .unwrap();
+        let mut module = DonorModule {
+            kernel: Kernel::Gaussian { width: 1. },
+            count: 2,
+            replacement: false,
+            ..Default::default()
+        };
+        let mut nearest_first = 0usize;
+        for seed in 0..4000 {
+            let request = || CompanionRequest {
+                population: &p,
+                pool: &pool,
+                eligible: &[true; 3],
+                seed,
+                step: 1,
+                stream: Stream::Distance,
+            };
+            module.tile_edges = 4096;
+            let batch = module.sample(request(), &mut cx).await.unwrap();
+            let row = batch.row(0).collect::<Vec<_>>();
+            assert_eq!(row.len(), 2);
+            assert!(row.contains(&1) && row.contains(&2));
+            nearest_first += usize::from(row[0] == 1);
+            // The order is a property of the draws, not of tile traversal.
+            module.tile_edges = 1;
+            assert_eq!(batch, module.sample(request(), &mut cx).await.unwrap());
+        }
+        // w1 = exp(-1/2), w2 = exp(-2): P(first = 1) = 0.8176, sigma = 24.4.
+        assert!((3150..3390).contains(&nearest_first), "{nearest_first}");
+    });
+}
+
+/// Greedy matching pivots on the first remaining slot in ascending order by
+/// default; a random pivot permutation is a different, explicit law.
+#[test]
+fn greedy_pivot_order_is_explicit() {
+    block_on(async {
+        let p = population::<f64>(&[0., 1., 1.2]);
+        let pool = DonorPool::freeze(&p, 0, &[], 0, false).unwrap();
+        let mut cx = ExecutionContext::new(BackendKind::Cpu, Precision::F64)
+            .await
+            .unwrap();
+        let mut module = DonorModule {
+            law: SamplingLaw::GaussianGreedy,
+            kernel: Kernel::Gaussian { width: 1. },
+            ..Default::default()
+        };
+        assert_eq!(module.pivot, PivotOrder::Ascending);
+        let mut chose_one = 0usize;
+        let mut leftover = [0usize; 2];
+        for (law, pivot) in [PivotOrder::Ascending, PivotOrder::Random]
+            .into_iter()
+            .enumerate()
+        {
+            module.pivot = pivot;
+            for seed in 0..3000 {
+                let batch = module
+                    .sample(
+                        CompanionRequest {
+                            population: &p,
+                            pool: &pool,
+                            eligible: &[true; 3],
+                            seed,
+                            step: 1,
+                            stream: Stream::Distance,
+                        },
+                        &mut cx,
+                    )
+                    .await
+                    .unwrap();
+                assert!(batch.mutual);
+                let partner = batch.row(0).next().unwrap();
+                leftover[law] += usize::from(partner == 0);
+                if pivot == PivotOrder::Ascending {
+                    chose_one += usize::from(partner == 1);
+                    assert_eq!(batch.row(partner as usize).next(), Some(0));
+                }
+            }
+        }
+        // Slot 0 is the first ascending pivot: it is always matched and its
+        // partner is categorical in w01 = exp(-0.5), w02 = exp(-0.72).
+        assert_eq!(leftover[0], 0);
+        assert!((1500..1830).contains(&chose_one), "{chose_one}");
+        // Under a uniform pivot permutation it is left over when slot 1 picks
+        // slot 2 or slot 2 picks slot 1, w12 = exp(-0.02):
+        // (0.6178 + 0.6682) / 3 = 0.4287, sigma = 27.1.
+        assert!((1150..1422).contains(&leftover[1]), "{leftover:?}");
+        module.law = SamplingLaw::Independent;
+        assert!(module.validate(&p.observations).is_err());
+    });
+}
+
+/// An unmatched walker has no donor: reporting zero separation would fabricate
+/// a diversity measurement.
+#[test]
+fn unmatched_walker_has_no_diversity_measurement() {
+    block_on(async {
+        let p = population::<f64>(&[0., 1., 2.]);
+        let pool = DonorPool::freeze(&p, 0, &[], 0, false).unwrap();
+        let mut cx = ExecutionContext::new(BackendKind::Cpu, Precision::F64)
+            .await
+            .unwrap();
+        let mut module = DonorModule {
+            law: SamplingLaw::FisherYates,
+            kernel: Kernel::Uniform,
+            odd: OddPolicy::Unmatched,
+            ..Default::default()
+        };
+        let request = || CompanionRequest {
+            population: &p,
+            pool: &pool,
+            eligible: &[true; 3],
+            seed: 3,
+            step: 1,
+            stream: Stream::Distance,
+        };
+        let unmatched = module.sample(request(), &mut cx).await.unwrap();
+        assert!(matches!(
+            CompanionReducer::Mean
+                .measure(&Distance::default(), &p, &pool, &unmatched, &mut cx)
+                .await,
+            Err(GasError::Topology(_))
+        ));
+        module.odd = OddPolicy::SelfCompanion;
+        let matched = module.sample(request(), &mut cx).await.unwrap();
+        let separation = CompanionReducer::Mean
+            .measure(&Distance::default(), &p, &pool, &matched, &mut cx)
+            .await
+            .unwrap();
+        assert_eq!(separation.iter().filter(|&&d| d == 0.).count(), 1);
+    });
+}
+
+/// A disabled channel contributes one and is not evaluated: its positive map
+/// cannot fail a run that does not consume it.
+#[test]
+fn disabled_fitness_channel_is_not_evaluated() {
+    let mut pipeline = FitnessPipeline {
+        diversity_map: PositiveMap::LegacyAsymmetric { floor: 0. },
+        ..Default::default()
+    };
+    // exp(-200) underflows to zero in f32, which the unfloored map rejects.
+    let (reward_z, diversity_z) = ([0.5_f32], [-200_f32]);
+    assert!(pipeline.combine(&reward_z, &diversity_z, &[true]).is_err());
+    pipeline.diversity_exponent = 0.;
+    let reward_only = pipeline.combine(&reward_z, &diversity_z, &[true]).unwrap();
+    let mut both = pipeline.clone();
+    both.diversity_exponent = 1.;
+    both.diversity_map = PositiveMap::default();
+    let reference = both.combine(&reward_z, &[0_f32], &[true]).unwrap();
+    // Logistic(0) + floor is the second factor of the reference.
+    assert!((reward_only[0] * (1. + 1e-6) - reference[0]).abs() < 1e-6);
+    pipeline.reward_exponent = 0.;
+    assert_eq!(
+        pipeline.combine(&reward_z, &diversity_z, &[true]).unwrap(),
+        vec![1.]
+    );
 }

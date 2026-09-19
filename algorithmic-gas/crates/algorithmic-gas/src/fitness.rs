@@ -125,20 +125,28 @@ impl Standardizer {
                     sigma_min: *sigma_min,
                 }
                 .apply(values, alive, obs)?;
+                // The schema was validated above; the dense O(k²) loop reuses
+                // its buffers and exponentiates every log-weight once.
+                let mut scratch = Vec::new();
+                let mut weights: Vec<T> = Vec::with_capacity(indices.len());
                 for &i in &indices {
-                    let neighbors: Vec<_> = indices
-                        .iter()
-                        .copied()
-                        .filter(|&j| *include_self || j != i)
-                        .collect();
-                    let mut logs = Vec::with_capacity(indices.len());
+                    let neighbors = || {
+                        indices
+                            .iter()
+                            .copied()
+                            .filter(move |&j| *include_self || j != i)
+                    };
+                    weights.clear();
                     let mut max = T::from_f64(f64::NEG_INFINITY);
-                    for &j in &neighbors {
-                        let w = kernel.log_weight(distance.compare(obs, i, obs, j)?, kind)?;
+                    for j in neighbors() {
+                        let w = kernel.log_weight(
+                            distance.compare_validated(obs, i, obs, j, &mut scratch)?,
+                            kind,
+                        )?;
                         max = max.max(w);
-                        logs.push(w);
+                        weights.push(w);
                     }
-                    if neighbors.is_empty() {
+                    if weights.is_empty() {
                         stats.mean[i] = global.mean[i];
                         stats.scale[i] = global.scale[i];
                         stats.global_fallback[i] = true;
@@ -152,16 +160,16 @@ impl Standardizer {
                     )?;
                     let mut total = T::ZERO;
                     let mut mean = T::ZERO;
-                    for (&j, &w) in neighbors.iter().zip(&logs) {
-                        let w = (w - max).exp();
-                        total = total + w;
-                        mean = mean + w * values[j];
+                    for (j, w) in neighbors().zip(&mut weights) {
+                        *w = (*w - max).exp();
+                        total = total + *w;
+                        mean = mean + *w * values[j];
                     }
                     mean = mean / total;
                     let mut var = T::ZERO;
-                    for (&j, &w) in neighbors.iter().zip(&logs) {
+                    for (j, &w) in neighbors().zip(&weights) {
                         let d = values[j] - mean;
-                        var = var + (w - max).exp() * d * d;
+                        var = var + w * d * d;
                     }
                     let eps = T::from_f64(*sigma_min);
                     stats.mean[i] = mean;
@@ -389,13 +397,20 @@ impl FitnessPipeline {
             reward_z.len() == alive.len() && diversity_z.len() == alive.len(),
             "fitness channel shape",
         )?;
+        // A disabled channel contributes one and is not evaluated, so its map
+        // cannot fail a run that does not consume it.
+        let channel = |map: &PositiveMap, z: T, exponent: f64| -> Result<T> {
+            if exponent == 0. {
+                Ok(T::ONE)
+            } else {
+                Ok(map.map(z)?.powf(T::from_f64(exponent)))
+            }
+        };
         let mut output = vec![T::ZERO; alive.len()];
         for i in 0..alive.len() {
             if alive[i] {
-                let r = self.reward_map.map(reward_z[i])?;
-                let d = self.diversity_map.map(diversity_z[i])?;
-                let f = r.powf(T::from_f64(self.reward_exponent))
-                    * d.powf(T::from_f64(self.diversity_exponent));
+                let f = channel(&self.reward_map, reward_z[i], self.reward_exponent)?
+                    * channel(&self.diversity_map, diversity_z[i], self.diversity_exponent)?;
                 if !f.is_finite() || f <= T::ZERO {
                     return Err(GasError::Numerical(
                         "fitness channel combination overflow".into(),

@@ -264,3 +264,63 @@ fn configured_position_diffusion_cap_and_terminal_boundary_have_required_coverag
         }
     });
 }
+
+/// The recorded-run analyses must use the executed acceptance law, including
+/// `CloneDecision.every`: off-period steps have probability zero.
+#[test]
+fn clone_analyses_follow_the_configured_cloning_period() {
+    use algorithmic_gas::physics::{partvi::ExperimentRequest, qft};
+    futures_lite::future::block_on(async {
+        let mut config = lecture::gas_config("VI-51", &json!({"walkers":16}), 7).unwrap();
+        config.physics_metric = None;
+        config.gas.clone_decision.every = 3;
+        let mut gas = config.build::<f64>().await.unwrap();
+        gas.start_recording(RecordingConfig::default()).unwrap();
+        for _ in 0..6 {
+            gas.step().await.unwrap();
+        }
+        let archive = gas.recording().unwrap().clone();
+        let mut gated_with_fitter_donor = 0;
+        let mut open = 0.;
+        for step in &archive.steps {
+            let period = step.report.step.is_multiple_of(3);
+            for (i, choice) in step.report.clone_plan.choices.iter().enumerate() {
+                if choice.revival {
+                    continue;
+                }
+                let probability = choice.probability.unwrap();
+                if period {
+                    open += probability;
+                } else {
+                    assert_eq!(probability, 0., "off-period step {}", step.report.step);
+                    let own = step.report.pre_clone_fitness.fitness[i];
+                    gated_with_fitter_donor += choice
+                        .donors
+                        .iter()
+                        .filter(|d| step.donor_fitness[d.pool_index as usize] > own)
+                        .count();
+                }
+            }
+            let balance = clone_field_balance(&archive, step, &observable()).unwrap();
+            assert!(balance.max_acceptance_probability_residual <= 1e-12);
+        }
+        // The run exercises both branches: gated proposals that an ungated law
+        // would accept with positive probability, and open cloning steps.
+        assert!(gated_with_fitter_donor > 0 && open > 0.);
+        let clones = qft::analyze(
+            &ExperimentRequest {
+                experiment: 2,
+                parameters: json!({}),
+            },
+            Some(&archive),
+        )
+        .unwrap();
+        let residual = clones
+            .metrics
+            .iter()
+            .find(|m| m.label == "Recorded acceptance probability residual")
+            .and_then(|m| m.value)
+            .unwrap();
+        assert!(residual < 1e-12, "{residual}");
+    });
+}

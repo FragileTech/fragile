@@ -286,18 +286,41 @@ impl<T: Real> RunArchive<T> {
             }
             for f in &s.field_evaluations {
                 bytes = checked_add(bytes, checked_add(256, checked_mul(f.values.len(), 8)?)?)?;
-            }
-            for noise in &s.noise {
-                bytes = checked_add(bytes, checked_mul(noise.applied_source_shifts.len(), 64)?)?;
+                // One availability flag per row, plus the item shape.
                 bytes = checked_add(
                     bytes,
-                    checked_mul(
-                        noise.sample.len()
-                            + noise.raw_innovation.as_ref().map_or(0, Vec::len)
-                            + noise.factor.as_ref().map_or(0, Vec::len),
-                        8,
-                    )?,
+                    checked_add(f.available.len(), checked_mul(f.item_shape.len(), 8)?)?,
                 )?;
+            }
+            for noise in &s.noise {
+                bytes = checked_add(bytes, 256)?;
+                bytes = checked_add(bytes, checked_mul(noise.applied_source_shifts.len(), 64)?)?;
+                // The recorded geometry owns its factor values: a per-walker
+                // factor is as large as the sample it scaled.
+                let geometry = match &noise.geometry {
+                    Some(
+                        crate::noise::NoiseGeometry::Isotropic { scale: values }
+                        | crate::noise::NoiseGeometry::Diagonal { factor: values }
+                        | crate::noise::NoiseGeometry::Full { factor: values }
+                        | crate::noise::NoiseGeometry::LowRank { factor: values, .. },
+                    ) => match values {
+                        crate::noise::FactorValues::Constant { values }
+                        | crate::noise::FactorValues::PerWalker { values } => values.len(),
+                        crate::noise::FactorValues::ObservationField { field } => {
+                            field.len().div_ceil(8)
+                        }
+                    },
+                    None => 0,
+                };
+                let scalars = [
+                    noise.sample.len(),
+                    noise.raw_innovation.as_ref().map_or(0, Vec::len),
+                    noise.factor.as_ref().map_or(0, Vec::len),
+                    geometry,
+                ]
+                .into_iter()
+                .try_fold(0, checked_add)?;
+                bytes = checked_add(bytes, checked_mul(scalars, 8)?)?;
             }
             for stage in &s.stages {
                 bytes = checked_add(bytes, checked_mul(stage.generations.len(), 128)?)?;
@@ -579,17 +602,18 @@ impl<T: Real> RunArchive<T> {
                     )?;
                 }
             }
+            // Resolved once per step: a dense viscous graph records O(N²)
+            // influences against the same two input stages.
+            let force_inputs = ["B1_input", "B2_input"]
+                .map(|name| s.stages.iter().find(|stage| stage.stage == name));
             for influence in &s.influences {
                 if influence.field == "viscous_force" {
                     require(
                         matches!(influence.stage.as_str(), "B1" | "B2"),
                         "viscous influence requires a B-stage",
                     )?;
-                    let input = s
-                        .stages
-                        .iter()
-                        .find(|stage| stage.stage == format!("{}_input", influence.stage))
-                        .ok_or_else(|| {
+                    let input =
+                        force_inputs[usize::from(influence.stage == "B2")].ok_or_else(|| {
                             GasError::Checkpoint(
                                 "viscous influence lacks executed input stage".into(),
                             )
@@ -946,7 +970,7 @@ impl<T: Real> RecordedStep<T> {
             .get(velocities)
             .ok_or_else(|| GasError::MissingField(velocities.into()))?;
         require(
-            a.item_shape.len() == 1 && a.item_shape == b.item_shape,
+            a.item_shape.len() == 1 && a.item_shape == b.item_shape && a.item_shape[0] > 0,
             "thermostat velocity shape",
         )?;
         let d = a.item_shape[0];

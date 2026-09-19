@@ -37,7 +37,12 @@ async fn run(seed_start: u64) -> Result<serde_json::Value> {
                         gas.start_recording(RecordingConfig::default())?;
                         match gas.step().await {
                             Ok(_) => {}
-                            Err(algorithmic_gas::GasError::Extinction) => extinction += 1,
+                            // Extinction commits no step: there is nothing to diagnose.
+                            Err(algorithmic_gas::GasError::Extinction) => {
+                                extinction += 1;
+                                gas.stop_recording();
+                                continue;
+                            }
                             Err(error) => return Err(error),
                         }
                         let archive = gas.stop_recording().unwrap();

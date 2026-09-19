@@ -94,7 +94,11 @@ pub(super) fn analyze(r: &ExperimentRequest, a: &RunArchive<f64>) -> Result<Expe
         )
         .metric(
             "Projector trace residual",
-            if cs.is_empty() { f64::NAN } else { projectors },
+            if triples.is_empty() {
+                f64::NAN
+            } else {
+                projectors
+            },
             "",
         )
         .metric(
@@ -113,8 +117,8 @@ pub(super) fn analyze(r: &ExperimentRequest, a: &RunArchive<f64>) -> Result<Expe
     Ok(out)
 }
 fn cloning(a: &RunArchive<f64>) -> Result<ExperimentResult> {
-    let eps = a.gas_config.clone_decision.epsilon;
-    let saturation = a.gas_config.clone_decision.saturation;
+    let decision = &a.gas_config.clone_decision;
+    let eps = decision.epsilon;
     let mut o = ExperimentResult::new(
         2,
         "Executed cloning scores, clipping and gates",
@@ -146,7 +150,8 @@ fn cloning(a: &RunArchive<f64>) -> Result<ExperimentResult> {
                 let sij = (vj - vi) / (vi + eps);
                 let sji = (vi - vj) / (vj + eps);
                 anti = anti.max(((vi + eps) * sij + (vj + eps) * sji).abs());
-                (sij / saturation).clamp(0., 1.)
+                // The executed law: zero outside the configured cloning period.
+                decision.acceptance_probability(step.report.step, vi, vj)
             } else {
                 0.
             };
@@ -187,7 +192,7 @@ fn cloning(a: &RunArchive<f64>) -> Result<ExperimentResult> {
             Series::line("Conditional clipped score", predicted),
         ],
     );
-    o.details = json!({"status":"available","stage":"pre_clone to literal_clone","epsilon":eps,"saturation":saturation,"rows":rows,"theory_labels":["thm-cloning-antisymmetry-lqft"],"derivation":"Given actual selected companions and pool-aligned fitness, each ordinary gate is a Bernoulli draw with the clipped directed score. Revival is a separate deterministic gate.","validation":"Stored probabilities and realized gates are read independently of reconstructed probabilities. Predictable variance describes conditional gate noise; no independent-time sampling assumption is used."});
+    o.details = json!({"status":"available","stage":"pre_clone to literal_clone","epsilon":eps,"saturation":decision.saturation,"every":decision.every,"rows":rows,"theory_labels":["thm-cloning-antisymmetry-lqft"],"derivation":"Given actual selected companions and pool-aligned fitness, each ordinary gate is a Bernoulli draw with the clipped directed score. Revival is a separate deterministic gate.","validation":"Stored probabilities and realized gates are read independently of reconstructed probabilities. Predictable variance describes conditional gate noise; no independent-time sampling assumption is used."});
     Ok(o)
 }
 fn writes(a: &RunArchive<f64>) -> Result<ExperimentResult> {

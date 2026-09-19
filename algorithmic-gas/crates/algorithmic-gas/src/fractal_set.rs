@@ -188,6 +188,9 @@ impl FractalSet {
             ..Self::default()
         };
         let mut triangle_indices = BTreeMap::<[EventRef; 3], usize>::new();
+        // Keys of `unresolved_sources`: a recording started mid-run refers to
+        // the same missing historical sources once per recipient.
+        let mut unresolved = BTreeSet::new();
         for s in &archive.steps {
             let before = events(s.epoch, s.report.step - 1, &s.before);
             let after = events(s.epoch, s.report.step, &s.final_population);
@@ -202,10 +205,13 @@ impl FractalSet {
                     ))
                     .copied();
                 if found.is_none()
-                    && !result
-                        .unresolved_sources
-                        .iter()
-                        .any(|m| m.epoch == s.epoch && m.source == source)
+                    && unresolved.insert((
+                        s.epoch,
+                        source.frame,
+                        source.slot,
+                        source.generation,
+                        source.version,
+                    ))
                 {
                     result.unresolved_sources.push(MissingSource {
                         epoch: s.epoch,
@@ -259,7 +265,13 @@ impl FractalSet {
                                 attributes: EdgeAttributes {
                                     weight: Some(1.),
                                     weight_provenance: Some(
-                                        "actual uniform current-eligible revival donor".into(),
+                                        if archive.gas_config.clone_decision.revival_from_companion
+                                        {
+                                            "actual kernel-weighted sampled current revival donor"
+                                        } else {
+                                            "actual uniform current-eligible revival donor"
+                                        }
+                                        .into(),
                                     ),
                                     ..Default::default()
                                 },

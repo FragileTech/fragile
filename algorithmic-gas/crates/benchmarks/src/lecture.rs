@@ -195,7 +195,13 @@ impl LectureSession {
                 }
             }
         }
-        let evidence = self.evidence();
+        self.refresh().await?;
+        self.snapshot()
+    }
+    /// Recompute the measurements of the recorded state. They are a function of
+    /// the archives alone, so a restored session reports what it reported
+    /// before its checkpoint.
+    async fn refresh(&mut self) -> Result<()> {
         if self.request.id.starts_with("VI-") && matches!(self.number(), 19 | 22 | 45) {
             if self.done() && self.result.is_none() {
                 self.result = Some(
@@ -208,6 +214,7 @@ impl LectureSession {
                 );
             }
         } else {
+            let evidence = self.evidence();
             // Spectral and predictive fits need their declared sample window.
             let needs_window = self.request.id.starts_with("VI-")
                 && matches!(self.number(), 4 | 12 | 13 | 32 | 35 | 36);
@@ -215,7 +222,7 @@ impl LectureSession {
                 self.result = Some(analyze(&evidence)?);
             }
         }
-        self.snapshot()
+        Ok(())
     }
     fn number(&self) -> u32 {
         self.request.id.split('-').nth(1).unwrap().parse().unwrap()
@@ -331,14 +338,24 @@ impl LectureSession {
             r.restore(state)?;
             runs.push(r);
         }
-        Ok(Self {
+        let mut session = Self {
             request: saved.request.resolve()?,
             configs: saved.configs,
             budgets: saved.budgets,
             runs,
             result: None,
             terminal: saved.terminal,
-        })
+        };
+        // A session checkpointed before its first step had no result either. A
+        // state whose analysis is unavailable restores, as it was, without one.
+        if session
+            .runs
+            .iter()
+            .any(|run| run.recording().is_some_and(|a| !a.steps.is_empty()))
+        {
+            session.refresh().await.ok();
+        }
+        Ok(session)
     }
 }
 pub fn analyze(e: &ExperimentEvidence) -> Result<ExperimentResult> {

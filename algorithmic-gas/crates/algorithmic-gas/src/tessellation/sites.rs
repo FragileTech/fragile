@@ -84,6 +84,11 @@ impl SiteSet {
                 if let Some(b) = wrap {
                     // Walkers one period apart are the same periodic site.
                     v = b.lower[k] + (v - b.lower[k]).rem_euclid(b.upper[k] - b.lower[k]);
+                    // rem_euclid rounds a tiny negative offset up to the period:
+                    // that point is the lower face, as in the boundary repair.
+                    if v >= b.upper[k] {
+                        v = b.lower[k];
+                    }
                 }
                 let v = v + 0.;
                 if !v.is_finite() {

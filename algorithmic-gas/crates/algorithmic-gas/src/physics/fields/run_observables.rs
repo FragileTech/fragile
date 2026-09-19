@@ -792,7 +792,10 @@ fn mechanics(r: &ExperimentRequest, a: &RunArchive<f64>) -> Result<ExperimentRes
             second.push([time, (0..d).map(|j| vc[j * d + j]).sum::<f64>()]);
             reports.push(json!({"step":s.report.step,"mean_position":xm,"mean_velocity":vm,"position_covariance":xc,"velocity_covariance":vc,"crossing_time":if speed>0.{Some(radius/speed)}else{None}}));
         } else {
-            measured.push([time, if radius > 0. { dt * speed / radius } else { 0. }]);
+            // A degenerate empirical unit is a gap in the series, not a zero.
+            if radius > 0. {
+                measured.push([time, dt * speed / radius]);
+            }
             predicted.push([time, count as f64 / s.before.len() as f64]);
             reports.push(json!({"step":s.report.step,"length_unit":radius,"speed_unit":speed,"time_unit":if speed>0.{Some(radius/speed)}else{None},"dimensionless_step":if radius>0.{Some(dt*speed/radius)}else{None},"scale_status":if radius>0.&&speed>0.{"available"}else{"degenerate empirical unit"}}));
         }

@@ -75,6 +75,11 @@ impl JetSpace {
             products,
         }))
     }
+    /// Dimension and order determine the coefficient layout, so jets of two
+    /// separately constructed but equal spaces combine.
+    pub fn matches(&self, other: &Self) -> bool {
+        self.dimension == other.dimension && self.order == other.order
+    }
     pub fn constant<T: Real>(self: &Arc<Self>, value: T) -> Jet<T> {
         let mut coefficients = vec![T::ZERO; self.indices.len()];
         coefficients[0] = value;
@@ -109,7 +114,7 @@ impl<T: Real> Jet<T> {
         self.space.constant(T::from_f64(x))
     }
     pub fn add(&self, rhs: &Self) -> Self {
-        assert!(Arc::ptr_eq(&self.space, &rhs.space), "different jet spaces");
+        assert!(self.space.matches(&rhs.space), "different jet spaces");
         Self {
             space: self.space.clone(),
             coefficients: self
@@ -130,7 +135,7 @@ impl<T: Real> Jet<T> {
         self.add(&rhs.scale(-T::ONE))
     }
     pub fn mul(&self, rhs: &Self) -> Self {
-        assert!(Arc::ptr_eq(&self.space, &rhs.space), "different jet spaces");
+        assert!(self.space.matches(&rhs.space), "different jet spaces");
         let coefficients = self
             .space
             .products
@@ -149,8 +154,13 @@ impl<T: Real> Jet<T> {
     fn compose(&self, coefficients: &[T]) -> Self {
         let mut delta = self.clone();
         delta.coefficients[0] = T::ZERO;
-        let mut out = self.space.constant(T::ZERO);
-        for &c in coefficients.iter().rev() {
+        // Horner, seeded with the leading coefficient instead of a product
+        // with the zero jet.
+        let mut terms = coefficients.iter().rev();
+        let mut out = self
+            .space
+            .constant(terms.next().copied().unwrap_or(T::ZERO));
+        for &c in terms {
             out = out.mul(&delta);
             out.coefficients[0] = out.coefficients[0] + c;
         }
@@ -162,8 +172,9 @@ impl<T: Real> Jet<T> {
         }
         // Integer powers also work at zero and for negative arguments.
         if (0. ..=16.).contains(&exponent) && exponent.floor() == exponent {
-            let mut out = self.constant(1.);
-            for _ in 0..exponent as usize {
+            // exponent >= 1 here: start from the jet, not from 1 * jet.
+            let mut out = self.clone();
+            for _ in 1..exponent as usize {
                 out = out.mul(self);
             }
             return out;

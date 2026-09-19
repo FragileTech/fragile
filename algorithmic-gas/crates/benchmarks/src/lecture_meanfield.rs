@@ -362,7 +362,7 @@ pub fn analyze(id: &str, archives: &[RunArchive<f64>]) -> Result<ExperimentResul
             m * m
         };
         let pair_cov = mean(&pair_products) - independent_product;
-        estimates.push(json!({"N":n,"runs":r,"mean_sin":m,"mean_standard_error":(v/r as f64).sqrt(),"variance_of_population_mean":v,"distinct_pair_covariance":(r>1&&n>1).then_some(pair_cov),"seeds":indices.iter().map(|i|archives[*i].gas_config.seed).collect::<Vec<_>>()}));
+        estimates.push(json!({"N":n,"runs":r,"mean_sin":m,"mean_standard_error":(r>1).then(||(v/r as f64).sqrt()),"variance_of_population_mean":(r>1).then_some(v),"distinct_pair_covariance":(r>1&&n>1).then_some(pair_cov),"seeds":indices.iter().map(|i|archives[*i].gas_config.seed).collect::<Vec<_>>()}));
         if r > 1 {
             variance_points.push([n as f64, v]);
             correlation_points.push([n as f64, pair_cov]);

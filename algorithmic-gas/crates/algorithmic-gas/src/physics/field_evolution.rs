@@ -496,7 +496,12 @@ fn deterministic_prediction<T: Real>(
             let scale = row.iter().fold(0_f64, |m, x| m.max(x.abs()));
             if scale > 0. {
                 let length = row.iter().map(|x| (x / scale).powi(2)).sum::<f64>().sqrt();
-                let factor = (radius / scale) / (radius / scale + length);
+                // The engine's two branches: neither ratio can overflow.
+                let factor = if scale <= radius {
+                    1. / (1. + (scale / radius) * length)
+                } else {
+                    (radius / scale) / (radius / scale + length)
+                };
                 for (a, &value) in row.iter().enumerate() {
                     target.values[i * d + a] = value * factor;
                 }
@@ -768,7 +773,7 @@ pub fn weak_field_balance<T: Real>(
             predicted[j] += row_mean[j] / n as f64;
         }
         for j in 0..4 {
-            covariance[j] += row_covariance[j] / (n * n) as f64;
+            covariance[j] += row_covariance[j] / (n as f64 * n as f64);
         }
     }
     let input = evaluate(
@@ -1061,13 +1066,12 @@ pub fn clone_field_balance<T: Real>(
                 f.is_finite() && f > T::ZERO && donor.is_finite() && donor > T::ZERO,
                 "clone conditional fitness positivity",
             )?;
-            // Same scalar precision as the executed acceptance law.
-            ((donor - f)
-                / (f + T::from_f64(config.clone_decision.epsilon))
-                / T::from_f64(config.clone_decision.saturation))
-            .max(T::ZERO)
-            .min(T::ONE)
-            .to_f64()
+            // The executed acceptance law, including its cloning period, in
+            // the same scalar precision.
+            config
+                .clone_decision
+                .acceptance_probability(step.report.step, f, donor)
+                .to_f64()
         };
         let probability_error = (probability - recorded_probability).abs();
         result.max_acceptance_probability_residual = result
@@ -1102,7 +1106,7 @@ pub fn clone_field_balance<T: Real>(
             }
             for b in 0..2 {
                 result.martingale_covariance[a * 2 + b] +=
-                    probability * (1. - probability) * delta[a] * delta[b] / (n * n) as f64;
+                    probability * (1. - probability) * delta[a] * delta[b] / (n as f64 * n as f64);
             }
         }
     }
@@ -1483,7 +1487,7 @@ pub fn collision_field_balance<T: Real>(
                         [v * ci * cj, v * ci * sj, v * si * cj, v * si * sj]
                     };
                 for a in 0..4 {
-                    covariance[a] += pair[a] / (n * n) as f64;
+                    covariance[a] += pair[a] / (n as f64 * n as f64);
                 }
             }
         }
