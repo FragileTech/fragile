@@ -114,6 +114,12 @@ try {
   await landscape.goto(
     process.env.CONTROL_TEST_URL || "http://127.0.0.1:8089/lab/",
   );
+  // This fresh context loads the scenario catalog before opening onboarding.
+  // Wait for that startup boundary, as the desktop page waits for readiness.
+  await landscape.locator("#task-chooser").waitFor({
+    state: "visible",
+    timeout: 60000,
+  });
   await landscape.locator("#chooser-explore").click();
   assert.equal(
     await landscape
