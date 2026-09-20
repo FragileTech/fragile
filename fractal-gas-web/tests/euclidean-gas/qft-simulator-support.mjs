@@ -1,517 +1,88 @@
-// Canned Rust-shaped JSON and a fake engine for the QFT Simulator host tests.
-// The numbers are arbitrary fixtures: they test routing and rendering, not
-// physics. The shapes follow the frozen Phase-0 contracts: `spectroscopy/
-// {config,contract,report}.rs`, `operators::CatalogEntry`, and the
-// `SessionSnapshot` / `defaults()` / `capabilities()` payloads of
-// `benchmarks/src/spectroscopy.rs`.
-const available = { status: "available" };
-const unavailable = (reason) => ({ status: "unavailable", reason });
-
-export const COLOR_REASON =
-  "viscous force is identically zero: configure qft.viscosity or qft.graph_viscosity, or select an explicit RecordedField colour source";
-export const ODD_REASON = "exchange-odd operator cancels on a mutual pairing";
-export const RATE_QUANTITY = "decay rate of the algorithm-time autocorrelation";
-export const REPORT_NOTE =
-  "Rates are the " +
-  RATE_QUANTITY +
-  "; they are masses only under the positive transfer representation <cor-effective-twistor-positive-transfer>.";
-
-const analysis = {
-  connected: true,
-  resampling: { kind: "block_jackknife", block: { kind: "auto" } },
-  svd_cut: 1e-6,
-  combine: "pooled_blocks",
-  estimator: "auto",
-  effective_mass: "log_ratio",
-  fit: "window_scan",
-  window_scan: {
-    t_min: 1,
-    t_max: null,
-    min_points: 4,
-    min_point_snr: 2,
-    min_rate_snr: 2,
-    correlated: true,
-  },
-  multi_exponential: {
-    nexp: 1,
-    t_min: 1,
-    t_max: null,
-    log_gap_mean: -2.302585092994046,
-    log_gap_sigma: 3,
-    log_amplitude_sigma: 5,
-    dominance_ratio: 0.7,
-  },
-  groups: [],
-  gevp: [],
-  stability: null,
-  reference: {
-    unit: "MeV",
-    entries: [
-      { name: "pion", value: 139.57039, error: 0.00018, source: "PDG 2024" },
-      { name: "nucleon", value: 938.272088, error: 3e-7, source: "PDG 2024" },
-    ],
-  },
-  assignments: {
-    "meson/pseudoscalar/standard": "pion",
-    "baryon/real": "nucleon",
-  },
-  anchors: ["nucleon"],
-  time_unit: "frames",
-  channels: [],
-  report_covariance: false,
-};
-
-// `operators::CatalogEntry`: one row per (specification, element kind).
-const entry = (id, kind, spec, extra = {}) => ({
-  id,
-  spec,
-  kind,
-  family: spec.kind,
-  standard: true,
-  availability: available,
-  descriptor: {
-    definition: "\\operatorname{Re}\\, c_i^\\dagger c_j",
-    book_label: "def-sm-meson-operators",
-    spatial_parity: null,
-    note: "",
-  },
-  exchange: "even",
-  requirements: { records: ["color", "distance_companions"], dimension: null },
-  components: 1,
-  correlatable: true,
-  assignment: null,
-  ...extra,
-});
-const SCALAR = { kind: "meson", quantum: "scalar", mode: "standard" };
-const PSEUDOSCALAR = {
-  kind: "meson",
-  quantum: "pseudoscalar",
-  mode: "standard",
-};
-
-const request = {
-  variant: "viscous_euclidean_gas",
-  run: { walkers: 64, dimensions: 3, initial_lower: -1, initial_upper: 1 },
-  steps: 256,
-  replicas: 1,
-  seed: 7,
-  chunk: 16,
-  spectroscopy: {
-    measurement: {
-      warmup: 16,
-      max_lag: 8,
-      stride: 1,
-      color: {
-        kind: "viscous_force",
-        alignment: { kind: "preceding_kick" },
-        threshold: 1e-12,
-      },
-      time: { kind: "monte_carlo" },
-      channels: [SCALAR, PSEUDOSCALAR],
-    },
-    analysis,
-  },
-};
-
-// `defaults()` = {schema_version, request, variants: [{name, title,
-// implemented, request}], catalog: [CatalogEntry], reference}.
-export const defaults = {
-  schema_version: 1,
-  request,
-  variants: [
-    {
-      name: "euclidean_gas",
-      title: "Euclidean Gas",
-      implemented: true,
-      request: {
-        ...request,
-        variant: "euclidean_gas",
-        run: {
-          walkers: 32,
-          dimensions: 2,
-          initial_lower: -2,
-          initial_upper: 2,
-        },
-        steps: 128,
-      },
-    },
-    {
-      name: "viscous_euclidean_gas",
-      title: "Viscous Euclidean Gas",
-      implemented: true,
-      request,
-    },
-    {
-      name: "latent_fractal_gas",
-      title: "Latent Fractal Gas",
-      implemented: false,
-      request: null,
-    },
-  ],
-  catalog: [
-    entry("meson/scalar/standard/distance", "distance_pair", SCALAR, {
-      assignment: "f0_500",
-    }),
-    entry("meson/scalar/standard/cloning", "cloning_pair", SCALAR, {
-      requirements: {
-        records: ["color", "cloning_companions"],
-        dimension: null,
-      },
-    }),
-    entry(
-      "meson/pseudoscalar/standard/distance",
-      "distance_pair",
-      PSEUDOSCALAR,
-      { assignment: "pion" },
-    ),
-    entry(
-      "baryon/real/triplet",
-      "triplet",
-      { kind: "baryon", mode: "real", flux_alpha: 1 },
-      {
-        standard: false,
-        requirements: {
-          records: ["color", "distance_companions", "cloning_companions"],
-          dimension: 3,
-        },
-      },
-    ),
-    entry(
-      "u1/phase/q1/distance",
-      "distance_pair",
-      { kind: "u1", mode: "phase", charge: 1 },
-      {
-        standard: false,
-        exchange: "odd",
-        correlatable: false,
-        descriptor: {
-          definition: "e^{i q \\varphi_{ij}}",
-          book_label: "",
-          spatial_parity: "odd",
-          note: "",
-        },
-      },
-    ),
-  ],
-  reference: analysis.reference,
-};
-
-// `capabilities(request)` = {capabilities, channels: [{id, availability}], chunk}.
-export const capabilities = {
-  capabilities: {
-    dimension: 3,
-    missing: { graph: "no geometry stage" },
-    mutual_distance: true,
-    mutual_cloning: false,
-    euclidean_axis: null,
-    distance_kernel_width: null,
-    cloning_kernel_width: null,
-    dense_viscosity: true,
-  },
-  channels: [
-    { id: "meson/scalar/standard/distance", availability: available },
-    { id: "meson/scalar/standard/cloning", availability: available },
-    { id: "meson/pseudoscalar/standard/distance", availability: available },
-    { id: "baryon/real/triplet", availability: unavailable(COLOR_REASON) },
-    { id: "u1/phase/q1/distance", availability: unavailable(ODD_REASON) },
-  ],
-  chunk: 4,
-};
-
-const coverage = {
-  frames: 40,
-  empty_frames: 0,
-  valid: 2400,
-  masked_historical: 12,
-  masked_ineligible: 3,
-  masked_color: 0,
-  masked_identity: 0,
-  masked_self: 1,
-  masked_scale: 0,
-};
-// Lag 3 is undefined (`None` in Rust): it must stay a gap in every view.
-const correlator = {
-  lags: [0, 1, 2, 3, 4],
-  time_unit: "frames",
-  time_step: 1,
-  value: [1.0, 0.61, 0.37, null, 0.14],
-  error: [0.02, 0.03, 0.04, null, 0.06],
-  covariance: null,
-  samples_meta: {
-    resampling: "jackknife",
-    effective_block: 8,
-    blocks: 5,
-    tau_int: 1.7,
-    covariance_rank: 4,
-    replicas: 1,
-  },
-  connected: true,
-  connected_bias: -0.001,
-};
-const effectiveMass = [[0.49, 0.05], [0.5, 0.08], null, null, null];
-
-const noCoverage = Object.fromEntries(
-  Object.keys(coverage).map((key) => [key, 0]),
+// Payloads recorded from the COMPILED engine (`make algorithmic-gas-web`, cpu
+// profile) and replayed here, so the host tests run against the shapes Rust
+// really emits: `spectroscopy_defaults()`, `spectroscopy_capabilities(request)`
+// and the `snapshot()`, `analyze()` and `presentation()` of one 400-step,
+// two-replica, 48-walker Einstein–Hilbert session (warm-up 16, max_lag 8,
+// `fit: "both"` with a stability scan, one channel group and one GEVP basis).
+//
+// Only whole rows were dropped, to keep the file readable: the catalog keeps
+// 6 of its 117 entries, the snapshot and the report 3 of their 21 channels and
+// the presentation 5 of its 25 results. Every field inside a kept row is
+// verbatim, numbers included; nothing here is invented or rounded. Re-record
+// the payloads rather than editing them by hand. The one exception is
+// `schema_version`, which the recording caught at 1 a minute before
+// `SPECTROSCOPY_VERSION` was raised to 2 and which was carried forward here
+// by hand: the shape it labels is already the version-2 one, `Signature`
+// included.
+//
+// The kept channels cover the three states the page must render:
+// `meson/scalar/standard/distance` is measured but fits nothing
+// (`no_signal`), `meson/pseudoscalar/standard/distance` carries a
+// source-frozen rate with fit windows, and `u1/dressed/q1/distance` is
+// unavailable, with `correlator`, `effective_mass` and `mass` all null.
+export const defaults = JSON.parse(
+  `{"schema_version":2,"request":{"chunk":16,"replicas":4,"run":{"benchmark":"rastrigin","dimensions":3,"gas":{"backend":"cpu","boundary":{"kind":"unbounded"},"clone_decision":{"epsilon":0,"every":20,"revival_from_companion":false,"saturation":1},"clone_transform":{"collision_rotation":"identity","jitter":null,"jitter_amplitude":0,"position_field":null,"restitution":1,"velocity_field":"velocities"},"cloning_donors":{"allow_self":false,"count":1,"distance":{"field":"positions","kind":"euclidean","periodic":null,"scales":[],"squared":false},"history_window":0,"insufficient":"use_available","kernel":{"kind":"uniform"},"law":"fisher_yates","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"distance_donors":{"allow_self":false,"count":1,"distance":{"field":"positions","kind":"euclidean","periodic":null,"scales":[],"squared":false},"history_window":0,"insufficient":"use_available","kernel":{"kind":"uniform"},"law":"fisher_yates","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"fitness":{"direction":"maximize","distance_floor":1e-30,"diversity_exponent":1,"diversity_map":{"amplitude":2,"floor":0,"kind":"logistic"},"diversity_standardizer":{"epsilon":1e-30,"kind":"legacy_sample"},"reward_exponent":1,"reward_map":{"amplitude":2,"floor":0,"kind":"logistic"},"reward_standardizer":{"epsilon":1e-30,"kind":"legacy_sample"}},"geometry":{"pipeline":{"cells":null,"curvature":[{"estimator":{"det_floor":1e-12,"kind":"conformal_laplacian","weights":"inverse_riemannian_distance"},"name":"ricci_scalar"}],"degeneracy":{"duplicates":"lift_cliques","on_failure":"error","rank_projection":true},"domain":{"kind":"open"},"metric":{"kind":"neighbor_covariance","max_eig":null,"min_eig":0.000001,"ridge":0.00001},"parallelism":"auto","positions":"positions","projection":{"kind":"drop_last","min_ambient":3},"tessellator":"auto","volume":{"det_floor":1e-12,"kind":"sqrt_det_metric"},"weights":[{"length_scale":1,"mode":"inverse_riemannian_distance","name":null,"normalize":true},{"length_scale":1,"mode":"riemannian_kernel_volume","name":null,"normalize":true}]},"schedule":{"kind":"every_stage"},"write_diffusion":true},"include_truncated":false,"invalid_reward":"error","kinetic":{"boundary_schedule":"substeps","integrator":{"dt":0.002,"friction":1,"kind":"baoab","positions":"positions","velocities":"velocities"},"noise":{"geometry":{"kind":"isotropic","scale":{"kind":"constant","values":[0.812403840463596]}},"innovation":"gaussian"},"position_diffusion":0,"velocity_cap":null},"max_batch_elements":16777216,"max_memory_bytes":536870912,"precision":"f64","qft":{"curl":{"beta_curl":1},"graph_viscosity":{"coefficient":3,"weights":"riemannian_kernel_volume"},"innovation_shifts":[],"viscosity":null},"reducer":{"kind":"mean"},"seed":7},"geometry_reward":{"allocation":{"kind":"einstein_hilbert_density","scale":1},"curvature":"ricci_scalar"},"initial_lower":0,"initial_upper":0,"physics_metric":null,"potential":null,"reward_shift":[],"walkers":200},"seed":7,"spectroscopy":{"analysis":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"window_scan","frame_subtraction":"global_mean","gevp":[],"groups":[],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":null,"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"measurement":{"budget":{"max_bytes":67108864,"max_frames":20000},"channels":[{"kind":"meson","mode":"standard","quantum":"scalar"},{"kind":"meson","mode":"standard","quantum":"pseudoscalar"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"vector"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"axial"},{"flux_alpha":1,"kind":"baryon","mode":"complex"},{"flux_alpha":1,"kind":"baryon","mode":"abs2"},{"kind":"glueball","momentum":null,"observable":"re_plaquette"},{"kind":"glueball","momentum":null,"observable":"force_norm"},{"kind":"tensor","mode":"components"},{"charge":1,"kind":"u1","mode":"phase"},{"charge":1,"kind":"u1","mode":"dressed"},{"directed":false,"kind":"su2","mode":"phase"},{"directed":false,"kind":"su2","mode":"doublet"},{"kind":"fitness_phase"},{"kind":"clone_indicator"},{"kind":"chirality","observable":"chi"}],"color":{"alignment":{"kind":"preceding_kick"},"kind":"viscous_force","threshold":1e-12},"companions":"first","electroweak":{"distance":"raw","epsilon_c":{"kind":"from_kernel"},"epsilon_d":{"kind":"from_kernel"},"h_eff":1,"h_s":null,"lambda":null},"flow":null,"historical":"mask","identity":"slot","max_lag":80,"normalization":"valid_count","pairs":"both","phase":{"h_eff":1,"length":{"kind":"warmup_companion_median"},"mass":1},"propagators":{"enabled_for":["meson/pseudoscalar/standard","vector/vector/full/raw","baryon/complex","tensor/components"],"lag_stride":1,"max_blocks":256},"scales":null,"stride":1,"time":{"kind":"monte_carlo"},"warmup":16}},"steps":2000,"variant":"einstein_hilbert"},"variants":[{"book_label":"def-variant-euclidean","implemented":true,"name":"euclidean","reference":{"dimensions":2,"dt":0.04,"walkers":64},"request":{"chunk":16,"replicas":4,"run":{"benchmark":"quadratic","dimensions":2,"gas":{"backend":"cpu","boundary":{"domain":{"lower":[-2,-2],"upper":[2,2]},"field":"positions","kind":"absorbing_box"},"clone_decision":{"epsilon":0.000001,"every":1,"revival_from_companion":true,"saturation":1},"clone_transform":{"collision_rotation":"haar","jitter":{"geometry":{"kind":"isotropic","scale":{"kind":"constant","values":[1]}},"innovation":"gaussian"},"jitter_amplitude":0.1,"position_field":"positions","restitution":0.5,"velocity_field":"velocities"},"cloning_donors":{"allow_self":false,"count":1,"distance":{"kind":"squashed_phase_space","lambda":1,"position_radius":2,"positions":"positions","velocities":"velocities","velocity_radius":2},"history_window":0,"insufficient":"use_available","kernel":{"kind":"gaussian","width":2},"law":"independent","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"distance_donors":{"allow_self":false,"count":1,"distance":{"kind":"squashed_phase_space","lambda":1,"position_radius":2,"positions":"positions","velocities":"velocities","velocity_radius":2},"history_window":0,"insufficient":"use_available","kernel":{"kind":"gaussian","width":2},"law":"independent","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"fitness":{"direction":"minimize","distance_floor":0.001,"diversity_exponent":1,"diversity_map":{"amplitude":2,"floor":0.1,"kind":"logistic"},"diversity_standardizer":{"kind":"global","sigma_min":0.1},"reward_exponent":1,"reward_map":{"amplitude":2,"floor":0.1,"kind":"logistic"},"reward_standardizer":{"kind":"global","sigma_min":0.1}},"geometry":null,"include_truncated":false,"invalid_reward":"error","kinetic":{"boundary_schedule":"end_of_step","integrator":{"dt":0.04,"friction":1,"kind":"baoab","positions":"positions","velocities":"velocities"},"noise":{"geometry":{"kind":"isotropic","scale":{"kind":"constant","values":[1]}},"innovation":"gaussian"},"position_diffusion":0.1,"velocity_cap":2},"max_batch_elements":16777216,"max_memory_bytes":536870912,"precision":"f64","qft":{"curl":null,"graph_viscosity":null,"innovation_shifts":[],"viscosity":null},"reducer":{"kind":"mean"},"seed":7},"geometry_reward":null,"initial_lower":-1,"initial_upper":1,"physics_metric":null,"potential":null,"reward_shift":[],"walkers":64},"seed":7,"spectroscopy":{"analysis":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"window_scan","frame_subtraction":"global_mean","gevp":[],"groups":[],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":null,"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"measurement":{"budget":{"max_bytes":67108864,"max_frames":20000},"channels":[{"kind":"meson","mode":"standard","quantum":"scalar"},{"kind":"meson","mode":"standard","quantum":"pseudoscalar"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"vector"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"axial"},{"flux_alpha":1,"kind":"baryon","mode":"complex"},{"flux_alpha":1,"kind":"baryon","mode":"abs2"},{"kind":"glueball","momentum":null,"observable":"re_plaquette"},{"kind":"glueball","momentum":null,"observable":"force_norm"},{"kind":"tensor","mode":"components"},{"charge":1,"kind":"u1","mode":"phase"},{"charge":1,"kind":"u1","mode":"dressed"},{"directed":false,"kind":"su2","mode":"phase"},{"directed":false,"kind":"su2","mode":"doublet"},{"kind":"fitness_phase"},{"kind":"clone_indicator"},{"kind":"chirality","observable":"chi"}],"color":{"alignment":{"kind":"preceding_kick"},"kind":"viscous_force","threshold":1e-12},"companions":"first","electroweak":{"distance":"raw","epsilon_c":{"kind":"from_kernel"},"epsilon_d":{"kind":"from_kernel"},"h_eff":1,"h_s":null,"lambda":null},"flow":null,"historical":"mask","identity":"slot","max_lag":80,"normalization":"valid_count","pairs":"both","phase":{"h_eff":1,"length":{"kind":"warmup_companion_median"},"mass":1},"propagators":{"enabled_for":["meson/pseudoscalar/standard","vector/vector/full/raw","baryon/complex","tensor/components"],"lag_stride":1,"max_blocks":256},"scales":null,"stride":1,"time":{"kind":"monte_carlo"},"warmup":16}},"steps":2000,"variant":"euclidean"},"summary":"Walkers (x, v) in an absorbing box with BAOAB kinetics and a caller-supplied objective; the variant analyzed by the convergence program.","title":"Euclidean Gas"},{"book_label":"def-variant-einstein-hilbert","implemented":true,"name":"einstein_hilbert","reference":{"dimensions":3,"dt":0.002,"walkers":500},"request":{"chunk":16,"replicas":4,"run":{"benchmark":"rastrigin","dimensions":3,"gas":{"backend":"cpu","boundary":{"kind":"unbounded"},"clone_decision":{"epsilon":0,"every":20,"revival_from_companion":false,"saturation":1},"clone_transform":{"collision_rotation":"identity","jitter":null,"jitter_amplitude":0,"position_field":null,"restitution":1,"velocity_field":"velocities"},"cloning_donors":{"allow_self":false,"count":1,"distance":{"field":"positions","kind":"euclidean","periodic":null,"scales":[],"squared":false},"history_window":0,"insufficient":"use_available","kernel":{"kind":"uniform"},"law":"fisher_yates","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"distance_donors":{"allow_self":false,"count":1,"distance":{"field":"positions","kind":"euclidean","periodic":null,"scales":[],"squared":false},"history_window":0,"insufficient":"use_available","kernel":{"kind":"uniform"},"law":"fisher_yates","odd":"self_companion","pivot":"ascending","replacement":true,"tile_edges":4096},"fitness":{"direction":"maximize","distance_floor":1e-30,"diversity_exponent":1,"diversity_map":{"amplitude":2,"floor":0,"kind":"logistic"},"diversity_standardizer":{"epsilon":1e-30,"kind":"legacy_sample"},"reward_exponent":1,"reward_map":{"amplitude":2,"floor":0,"kind":"logistic"},"reward_standardizer":{"epsilon":1e-30,"kind":"legacy_sample"}},"geometry":{"pipeline":{"cells":null,"curvature":[{"estimator":{"det_floor":1e-12,"kind":"conformal_laplacian","weights":"inverse_riemannian_distance"},"name":"ricci_scalar"}],"degeneracy":{"duplicates":"lift_cliques","on_failure":"error","rank_projection":true},"domain":{"kind":"open"},"metric":{"kind":"neighbor_covariance","max_eig":null,"min_eig":0.000001,"ridge":0.00001},"parallelism":"auto","positions":"positions","projection":{"kind":"drop_last","min_ambient":3},"tessellator":"auto","volume":{"det_floor":1e-12,"kind":"sqrt_det_metric"},"weights":[{"length_scale":1,"mode":"inverse_riemannian_distance","name":null,"normalize":true},{"length_scale":1,"mode":"riemannian_kernel_volume","name":null,"normalize":true}]},"schedule":{"kind":"every_stage"},"write_diffusion":true},"include_truncated":false,"invalid_reward":"error","kinetic":{"boundary_schedule":"substeps","integrator":{"dt":0.002,"friction":1,"kind":"baoab","positions":"positions","velocities":"velocities"},"noise":{"geometry":{"kind":"isotropic","scale":{"kind":"constant","values":[0.812403840463596]}},"innovation":"gaussian"},"position_diffusion":0,"velocity_cap":null},"max_batch_elements":16777216,"max_memory_bytes":536870912,"precision":"f64","qft":{"curl":{"beta_curl":1},"graph_viscosity":{"coefficient":3,"weights":"riemannian_kernel_volume"},"innovation_shifts":[],"viscosity":null},"reducer":{"kind":"mean"},"seed":7},"geometry_reward":{"allocation":{"kind":"einstein_hilbert_density","scale":1},"curvature":"ricci_scalar"},"initial_lower":0,"initial_upper":0,"physics_metric":null,"potential":null,"reward_shift":[],"walkers":500},"seed":7,"spectroscopy":{"analysis":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"window_scan","frame_subtraction":"global_mean","gevp":[],"groups":[],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":null,"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"measurement":{"budget":{"max_bytes":67108864,"max_frames":20000},"channels":[{"kind":"meson","mode":"standard","quantum":"scalar"},{"kind":"meson","mode":"standard","quantum":"pseudoscalar"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"vector"},{"displacement":"raw","kind":"vector","projection":"full","quantum":"axial"},{"flux_alpha":1,"kind":"baryon","mode":"complex"},{"flux_alpha":1,"kind":"baryon","mode":"abs2"},{"kind":"glueball","momentum":null,"observable":"re_plaquette"},{"kind":"glueball","momentum":null,"observable":"force_norm"},{"kind":"tensor","mode":"components"},{"charge":1,"kind":"u1","mode":"phase"},{"charge":1,"kind":"u1","mode":"dressed"},{"directed":false,"kind":"su2","mode":"phase"},{"directed":false,"kind":"su2","mode":"doublet"},{"kind":"fitness_phase"},{"kind":"clone_indicator"},{"kind":"chirality","observable":"chi"}],"color":{"alignment":{"kind":"preceding_kick"},"kind":"viscous_force","threshold":1e-12},"companions":"first","electroweak":{"distance":"raw","epsilon_c":{"kind":"from_kernel"},"epsilon_d":{"kind":"from_kernel"},"h_eff":1,"h_s":null,"lambda":null},"flow":null,"historical":"mask","identity":"slot","max_lag":80,"normalization":"valid_count","pairs":"both","phase":{"h_eff":1,"length":{"kind":"warmup_companion_median"},"mass":1},"propagators":{"enabled_for":["meson/pseudoscalar/standard","vector/vector/full/raw","baryon/complex","tensor/components"],"lag_stride":1,"max_blocks":256},"scales":null,"stride":1,"time":{"kind":"monte_carlo"},"warmup":16}},"steps":2000,"variant":"einstein_hilbert"},"summary":"A free gas rewarded with each walker's share of the Einstein-Hilbert action of the tessellation geometry, with graph viscosity and Boris curl rotation.","title":"Einstein–Hilbert Gas"},{"book_label":"def-variant-latent","implemented":false,"name":"latent","reference":null,"request":null,"summary":"Walkers on a latent chart with a metric, a reward 1-form and Boris-BAOAB kinetics.","title":"Latent Fractal Gas"}],"catalog":[{"assignment":"f0_500","availability":{"status":"available"},"family":"meson","id":"meson/scalar/standard/distance","kind":"distance_pair","signature":{"auxiliary":null,"components":1,"correlatable":true,"degenerate":false,"descriptor":{"book_label":"def-sm-direct-color-contractions","definition":"\\\\operatorname{Re}\\\\, c_i^\\\\dagger c_j","note":"","spatial_parity":"even"},"exchange":"even","normalization":null,"propagatable":true,"requires":{"dimension":null,"records":["color","distance_companions"]}},"spec":{"kind":"meson","mode":"standard","quantum":"scalar"},"standard":true},{"assignment":"f0_500","availability":{"status":"available"},"family":"meson","id":"meson/scalar/standard/cloning","kind":"cloning_pair","signature":{"auxiliary":null,"components":1,"correlatable":true,"degenerate":false,"descriptor":{"book_label":"def-sm-direct-color-contractions","definition":"\\\\operatorname{Re}\\\\, c_i^\\\\dagger c_j","note":"","spatial_parity":"even"},"exchange":"even","normalization":null,"propagatable":true,"requires":{"dimension":null,"records":["color","cloning_companions"]}},"spec":{"kind":"meson","mode":"standard","quantum":"scalar"},"standard":true},{"assignment":"pion","availability":{"status":"available"},"family":"meson","id":"meson/pseudoscalar/standard/distance","kind":"distance_pair","signature":{"auxiliary":null,"components":1,"correlatable":true,"degenerate":false,"descriptor":{"book_label":"def-sm-direct-color-contractions","definition":"\\\\operatorname{Im}\\\\, c_i^\\\\dagger c_j","note":"","spatial_parity":"odd"},"exchange":"odd","normalization":null,"propagatable":true,"requires":{"dimension":null,"records":["color","distance_companions"]}},"spec":{"kind":"meson","mode":"standard","quantum":"pseudoscalar"},"standard":true},{"assignment":null,"availability":{"reason":"the squared modulus of the overlap has no imaginary part","status":"unavailable"},"family":"meson","id":"meson/pseudoscalar/abs2/distance","kind":"distance_pair","signature":null,"spec":{"kind":"meson","mode":"abs2","quantum":"pseudoscalar"},"standard":false},{"assignment":null,"availability":{"status":"available"},"family":"tensor","id":"tensor/envelope/distance","kind":"distance_pair","signature":{"auxiliary":null,"components":1,"correlatable":false,"degenerate":false,"descriptor":{"book_label":"","definition":"\\\\sum_{\\\\mu<\\\\nu} (O^{\\\\mu\\\\nu}_{ij})^2 = |\\\\operatorname{Re}(\\\\bar c_i \\\\times c_j)|^2","note":"antisymmetric colour bilinear of the reference code, dual to the vector Re(conj(c_i) x c_j): three components and no spin-two part; invariant under a common phase and covariant under a common real rotation of the colour components, not invariant under SU(3) or under per-walker phases; squared norm over the kept components, at most 1 for unit colours; the envelope is the square root of its frame mean, an equal-time magnitude","spatial_parity":"even"},"exchange":"even","normalization":null,"propagatable":true,"requires":{"dimension":3,"records":["color","distance_companions"]}},"spec":{"kind":"tensor","mode":"envelope"},"standard":false},{"assignment":"nucleon","availability":{"status":"available"},"family":"baryon","id":"baryon/complex/triplet","kind":"triplet","signature":{"auxiliary":null,"components":2,"correlatable":true,"degenerate":false,"descriptor":{"book_label":"prop-sm-baryon-exterior-correlator","definition":"(\\\\operatorname{Re}\\\\, b_{ijk},\\\\, \\\\operatorname{Im}\\\\, b_{ijk}),\\\\quad b_{ijk} = \\\\det[c_i, c_j, c_k]","note":"the contracted correlator is the real part of the conjugate source determinant times the sink determinant, which a time-independent determinant phase leaves fixed; the real part is parity odd and the imaginary part parity even; antisymmetric under exchange of the distance and cloning roles: with identically distributed independent roles the frame mean has zero expectation at every lag, and the signal is in the source-frozen propagator; not invariant under per-site rephasing or a common velocity boost, which rotate the phase of the determinant","spatial_parity":null},"exchange":"odd","normalization":null,"propagatable":true,"requires":{"dimension":3,"records":["color","distance_companions","cloning_companions"]}},"spec":{"flux_alpha":1,"kind":"baryon","mode":"complex"},"standard":true}],"reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"}}`,
 );
-// `SessionSnapshot`: live channels carry plain `Option<f64>` arrays per lag;
-// walker positions are one flat row-major array. The middle walker is not
-// eligible.
-export function snapshot(step, steps = 256) {
+
+export const capabilities = JSON.parse(
+  `{"capabilities":{"cloning_kernel_width":null,"dense_viscosity":false,"dimension":3,"distance_kernel_width":null,"euclidean_axis":2,"missing":{"periodic_box":"momentum projection needs a periodic box"},"mutual_cloning":true,"mutual_distance":true,"time_step":0.002},"channels":[{"availability":{"status":"available"},"id":"meson/scalar/standard/distance","requested":true,"spec":{"kind":"meson","mode":"standard","quantum":"scalar"}},{"availability":{"status":"available"},"id":"meson/scalar/standard/cloning","requested":true,"spec":{"kind":"meson","mode":"standard","quantum":"scalar"}},{"availability":{"status":"available"},"id":"meson/pseudoscalar/standard/distance","requested":true,"spec":{"kind":"meson","mode":"standard","quantum":"pseudoscalar"}},{"availability":{"reason":"the squared modulus of the overlap has no imaginary part","status":"unavailable"},"id":"meson/pseudoscalar/abs2/distance","requested":false,"spec":{"kind":"meson","mode":"abs2","quantum":"pseudoscalar"}},{"availability":{"status":"available"},"id":"tensor/envelope/distance","requested":false,"spec":{"kind":"tensor","mode":"envelope"}},{"availability":{"status":"available"},"id":"baryon/complex/triplet","requested":true,"spec":{"flux_alpha":1,"kind":"baryon","mode":"complex"}}],"chunk":8}`,
+);
+
+const SNAPSHOT = JSON.parse(
+  `{"calibration":{"dt":0.002,"electroweak_h_eff":1,"epsilon_c":null,"epsilon_clone":0,"epsilon_d":null,"euclidean_range":null,"h_eff":1,"h_s":1,"kappa":0.0012485573370718908,"length":0.0012485573370718908,"length_source":"warmup_companion_median: 768 samples over 16 warm-up frames","mass":1,"pair_weight_n1":null,"phase_wrapping":0,"scales":[],"viscous_kernel_second_moment":null,"warmup_frames":16},"capabilities":{"cloning_kernel_width":null,"dense_viscosity":false,"dimension":3,"distance_kernel_width":null,"euclidean_axis":2,"missing":{"periodic_box":"momentum projection needs a periodic box"},"mutual_cloning":true,"mutual_distance":true,"time_step":0.002},"channels":[{"availability":{"status":"available"},"correlator":[0.014346676465382801,-0.00013039053991154373,0.0008374127524600434,0.00019284450674883383,-0.0008978334083221212,-0.0006692756851431963,0.0008517927424114662,-0.000812377623019082,0.0004343326949682565],"coverage":{"empty_frames":0,"frames":768,"masked_color":0,"masked_historical":0,"masked_identity":0,"masked_ineligible":0,"masked_scale":0,"masked_self":0,"valid":36864},"effective_mass":[null,null,1.4684328824364017,null,null,null,null,null,null],"estimator":"frame_mean","id":"meson/scalar/standard/distance","note":null},{"availability":{"status":"available"},"correlator":[1.314220450800323e-7,1.1835745064755536e-7,1.0733124188454729e-7,9.774269455284576e-8,8.914717553612876e-8,8.100804015999238e-8,7.486544773106724e-8,6.88123621765942e-8,6.438558128214605e-8],"coverage":{"empty_frames":0,"frames":768,"masked_color":0,"masked_historical":0,"masked_identity":0,"masked_ineligible":0,"masked_scale":0,"masked_self":0,"valid":36864},"effective_mass":[0.10470457442465035,0.09778951719166158,0.09358131109842649,0.09204979838530021,0.09574025067418801,0.07885593889655748,0.08430906048667312,0.06649369668949139,null],"estimator":"source_frozen","id":"meson/pseudoscalar/standard/distance","note":"exchange-odd operator cancels on a mutual pairing: the source-frozen propagator is reported instead of the frame mean"},{"availability":{"reason":"range epsilon_d is the width of a Gaussian companion kernel and the kernel of this role has none; set electroweak.epsilon_d to a fixed value","status":"unavailable"},"correlator":[],"coverage":{"empty_frames":0,"frames":0,"masked_color":0,"masked_historical":0,"masked_identity":0,"masked_ineligible":0,"masked_scale":0,"masked_self":0,"valid":0},"effective_mass":[],"estimator":null,"id":"u1/dressed/q1/distance","note":null}],"chunk":16,"done":true,"notes":[],"replicas":[{"frames":384,"seed":7,"segments":1,"step":400,"terminal":null},{"frames":384,"seed":104736,"segments":1,"step":400,"terminal":null}],"schema_version":2,"step":400,"steps":400,"walkers":{"dimension":3,"eligible":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"positions":[-0.03959743259125044,0.04265327945979015,-0.2603866314055174,0.2702339026485576,-0.15225079901485367,-0.013151892891748406,-0.12348150931145156,0.08483169883106353,-0.1802751184539014,-0.15295864209370413,-0.027363479107808262,-0.2504054744566387,-0.1506958410413152,0.07074087383673139,-0.16606664021587914,0.14827776954145386,0.03537611153685037,0.06947328689997324,0.23903338859504963,0.12732765831566067,-0.03233226891034517,0.08431375166254355,-0.10176532106310954,-0.2136270839086569,0.17649039316663215,-0.11827949744960006,-0.0014091759218658882,0.11589628892379522,-0.12746420292434787,-0.10373872499052675,0.15789054133331143,-0.1322294082232421,0.06389364634177741,-0.06618578718900955,-0.23491583946108563,0.11103460672915165,0.19827375296501326,0.11738323275720562,-0.044259210697341664,0.16811276736026462,-0.023240027216680746,0.26573015156863544,-0.053291230687520084,-0.1881291586756732,0.1410383828710217,0.20007658051951777,-0.13728100854151754,-0.008798422357114961,-0.08729214157634206,0.15013735600553696,-0.1850274060322485,0.15703250515189038,-0.13213872795966966,0.06379142904218459,-0.22872465647511217,0.06569529895307903,-0.17629326083155483,0.14798810123058523,0.03557018519744776,0.06928226600593348,0.053663720996721176,0.009123327412975469,0.26803376300823656,-0.12642478993231923,-0.003417574052951891,-0.26838472312576267,-0.10096302792369106,0.0999488380476138,-0.16786265395213137,-0.15401310193122875,-0.02739366238941953,-0.24978882315504566,0.14418579029358353,-0.016481756104104565,0.2604668660037226,0.052565241968175046,-0.05765078377954149,-0.18371144322969524,0.2685181492772419,-0.1850392785108244,0.03135141525696484,0.041303853999274644,0.01050996848283956,0.12009899548584327,-0.06605122171425189,-0.23326363138702835,0.11153613788322661,-0.1491933196413345,0.07117398061508745,-0.16526146474375522,0.17392986867348378,-0.10952683780337213,0.02753276386144942,0.14481254623947723,-0.015961869069074153,0.26126521725305335,0.19932743151450083,-0.13771505637273806,-0.008089029492245315,0.17614382748715335,-0.10799121512938165,0.028156225782334537,-0.14306511451888107,0.05384477903262149,-0.03262132129563915,0.22508570098576056,0.1483893416196806,-0.05855147522387515,0.17594933690971895,-0.11899107244204858,-0.0014688491789233615,-0.10975041261823998,0.18667109256134204,0.04573946797121259,0.11538227804485647,-0.15718992634370205,-0.10274890906271875,0.27115231007564183,-0.1940134450744653,0.02305245115452447,-0.0876465046082007,0.14788885580804098,-0.1863774027992226,-0.1361580953649633,0.21435435152155644,0.02149361941602277,-0.06969070779493204,-0.2216786595290238,0.09897915677303751,-0.12409699141519531,0.08379171988140886,-0.18144203286142324,0.27555047552791667,-0.11169315425419667,0.00058080672325437,-0.20269455807589612,-0.04961640608488708,0.11858295596509619,-0.1720511214410696,-0.047098610065432964,-0.247013314964719,0.15792577468830482,0.07143415133711309,0.08502987413499735]}}`,
+);
+
+const REPORT = JSON.parse(
+  `{"schema_version":2,"calculation_origin":"executed_algorithm_archive","precision":"f64","measurement_fingerprint":"d1117ea002a8793f","analysis":{"connected":true,"frame_subtraction":"global_mean","propagator_subtraction":"lag_means","resampling":{"kind":"block_jackknife","block":{"kind":"auto"}},"svd_cut":0.01,"combine":"pooled_blocks","estimator":"auto","effective_mass":"log_ratio","fit":"both","window_scan":{"t_min":1,"t_max":null,"min_points":4,"min_point_snr":2,"min_rate_snr":2,"correlated":true,"max_usable":128},"multi_exponential":{"nexp":1,"t_min":1,"t_max":null,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"log_amplitude_sigma":5,"dominance_ratio":0.7},"groups":[{"id":"scalar_pair","channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"]}],"gevp":[{"id":"mesons","channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"t0":1,"cut":0.000001,"projection":"fixed_vector","t_ref":null}],"stability":{"t_min":[1,4],"nexp_max":2,"svd_cuts":[0.000001,0.001]},"reference":{"unit":"MeV","entries":[{"name":"pion","value":139.57039,"error":0.00018,"source":"PDG 2024"},{"name":"f0_500","value":500,"error":100,"source":"PDG 2024 pole estimate 400-550"},{"name":"rho","value":775.26,"error":0.23,"source":"PDG 2024"},{"name":"a1","value":1230,"error":40,"source":"PDG 2024"},{"name":"nucleon","value":938.272088,"error":3e-7,"source":"PDG 2024"},{"name":"glueball_0pp","value":1710,"error":80,"source":"quenched lattice QCD"},{"name":"electron","value":0.51099895,"error":1.5e-10,"source":"PDG 2024"},{"name":"muon","value":105.6583755,"error":0.0000023,"source":"PDG 2024"},{"name":"tau","value":1776.93,"error":0.09,"source":"PDG 2024"},{"name":"w_boson","value":80369.2,"error":13.3,"source":"PDG 2024"},{"name":"z_boson","value":91188,"error":2,"source":"PDG 2024"},{"name":"higgs","value":125200,"error":110,"source":"PDG 2024"}]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"sin2_theta_w":[0.23121,0.00004],"alpha_s":[0.1179,0.0009],"scale":"M_Z","hypercharge":"hypercharge","source":"PDG 2022 electroweak review"},"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"anchors":["nucleon"],"time_unit":"frames","channels":[],"report_covariance":false},"capabilities":{"dimension":3,"missing":{"periodic_box":"momentum projection needs a periodic box"},"mutual_distance":true,"mutual_cloning":true,"euclidean_axis":2,"distance_kernel_width":null,"cloning_kernel_width":null,"dense_viscosity":false,"time_step":0.002},"calibration":{"warmup_frames":16,"length":0.0012485573370718908,"length_source":"warmup_companion_median: 768 samples over 16 warm-up frames","kappa":0.0012485573370718908,"phase_wrapping":0,"mass":1,"h_eff":1,"electroweak_h_eff":1,"h_s":1,"epsilon_d":null,"epsilon_c":null,"epsilon_clone":0,"dt":0.002,"euclidean_range":null,"scales":[],"pair_weight_n1":null,"viscous_kernel_second_moment":null},"replicas":2,"frames":768,"channels":[{"id":"meson/scalar/standard/distance","spec":{"kind":"meson","quantum":"scalar","mode":"standard"},"kind":"distance_pair","scale":null,"definition":"\\\\operatorname{Re}\\\\, c_i^\\\\dagger c_j","book_label":"def-sm-direct-color-contractions","exchange":"even","spatial_parity":"even","availability":{"status":"available"},"coverage":{"frames":768,"empty_frames":0,"valid":36864,"masked_historical":0,"masked_ineligible":0,"masked_color":0,"masked_identity":0,"masked_self":0,"masked_scale":0},"estimator":"frame_mean","normalization":"valid_count","correlator":{"lags":[0,1,2,3,4,5,6,7,8],"time_unit":"frames","time_step":1,"value":[0.014346676465382801,-0.00013039053991154373,0.0008374127524600434,0.00019284450674883383,-0.0008978334083221212,-0.0006692756851431963,0.0008517927424114662,-0.000812377623019082,0.0004343326949682565],"error":[0.0006849892660377065,0.0004663824062737427,0.0004855766201456229,0.0005049276166744955,0.0006266948449266675,0.0005505731086031274,0.0005307699124286342,0.000587174811678814,0.0004628513747971641],"covariance":null,"samples_meta":{"resampling":"jackknife","effective_block":10,"blocks":78,"tau_int":0.5627118855274668,"covariance_rank":9,"replicas":2,"sampling_unit":"time blocks of 10 origins pooled over 2 independently seeded runs"},"connected":true,"connected_bias":-0.000021023555637729395},"effective_mass":[null,null,[1.4684328824364017,3.3272735439128343],null,null,null,null,null,null],"mass":null,"fits":[{"method":"window_scan","mass":null,"excited":[],"diagnostics":{"chi2":null,"dof":null,"q":null,"window":null,"n_windows":0,"correlated":true,"svd_cut":0.01,"covariance_rank":null,"prior_dominance":null,"model_rejected":null,"no_signal":"too few usable lags"},"windows":[],"notes":[]},{"method":"multi_exponential","mass":null,"excited":[],"diagnostics":{"chi2":null,"dof":null,"q":null,"window":null,"n_windows":0,"correlated":true,"svd_cut":0.01,"covariance_rank":null,"prior_dominance":null,"model_rejected":null,"no_signal":"too few usable lags"},"windows":[],"notes":[]},{"method":"stability","mass":null,"excited":[],"diagnostics":{"chi2":null,"dof":null,"q":null,"window":null,"n_windows":0,"correlated":true,"svd_cut":0.01,"covariance_rank":null,"prior_dominance":null,"model_rejected":null,"no_signal":"too few usable lags"},"windows":[],"notes":["the configured fit states no rate, so the variations have no reference"]}],"notes":[]},{"id":"meson/pseudoscalar/standard/distance","spec":{"kind":"meson","quantum":"pseudoscalar","mode":"standard"},"kind":"distance_pair","scale":null,"definition":"\\\\operatorname{Im}\\\\, c_i^\\\\dagger c_j","book_label":"def-sm-direct-color-contractions","exchange":"odd","spatial_parity":"odd","availability":{"status":"available"},"coverage":{"frames":768,"empty_frames":0,"valid":36864,"masked_historical":0,"masked_ineligible":0,"masked_color":0,"masked_identity":0,"masked_self":0,"masked_scale":0},"estimator":"source_frozen","normalization":"valid_count","correlator":{"lags":[0,1,2,3,4,5,6,7,8],"time_unit":"frames","time_step":1,"value":[1.319264540286101e-7,1.1876567015890652e-7,1.0783948673597336e-7,9.818695185071864e-8,8.966714726492967e-8,8.136820582576873e-8,7.51041056376354e-8,6.896197029426264e-8,6.438558128214614e-8],"error":[9.069246974168797e-9,9.010237928539356e-9,8.685041698687676e-9,8.440175894672604e-9,8.203487989111609e-9,7.782641480523372e-9,7.379821290251382e-9,7.043379357875712e-9,6.5682401478325594e-9],"covariance":null,"samples_meta":{"resampling":"jackknife","effective_block":48,"blocks":16,"tau_int":5.838422261373052,"covariance_rank":1,"replicas":2,"sampling_unit":"time blocks of 48 origins pooled over 2 independently seeded runs"},"connected":true,"connected_bias":null},"effective_mass":[[0.10509220741974826,0.008845775560859095],[0.09650850578491935,0.005282965578753202],[0.09377055433548577,0.00843924639524971],[0.09076888257009372,0.008951687041689244],[0.09711984586467756,0.008884848954715228],[0.08010937866760617,0.008441734890160174],[0.08532002871920005,0.008488089617798173],[0.06866548259168939,0.0070142832594306415],null],"mass":{"quantity":"decay rate of the source-frozen pair correlator (no transfer-matrix reading)","value":0.08881404767228902,"error":0.006880637273902697,"statistical":0.006404377081424802,"systematic":0.0025153774058657426,"method":"window_scan","time_unit":"frames","prior_dominance":null},"fits":[{"method":"window_scan","mass":{"quantity":"decay rate of the source-frozen pair correlator (no transfer-matrix reading)","value":0.08881404767228902,"error":0.006880637273902697,"statistical":0.006404377081424802,"systematic":0.0025153774058657426,"method":"window_scan","time_unit":"frames","prior_dominance":null},"excited":[],"diagnostics":{"chi2":0.9319898958811105,"dof":6,"q":0.9880595085122523,"window":[1,8],"n_windows":15,"correlated":true,"svd_cut":0.01,"covariance_rank":1,"prior_dominance":null,"model_rejected":null,"no_signal":null},"windows":[{"t_min":1,"t_max":4,"value":0.0938515647878726,"error":0.009058780692399819,"chi2":0.02961922706263096,"dof":2,"weight":0.009966897123737361,"aic":12.029619227062632,"nexp":1,"svd_cut":null},{"t_min":1,"t_max":5,"value":0.09414655623193702,"error":0.007831712420468321,"chi2":0.026244882753655403,"dof":3,"weight":0.027138584197192513,"aic":10.026244882753655,"nexp":1,"svd_cut":null},{"t_min":1,"t_max":6,"value":0.09227095257640061,"error":0.006856509098314467,"chi2":0.17886661499986947,"dof":4,"weight":0.06835027730373298,"aic":8.178866614999869,"nexp":1,"svd_cut":null},{"t_min":1,"t_max":7,"value":0.09089112657930953,"error":0.006245888960664297,"chi2":0.30729205760458433,"dof":5,"weight":0.17423986754081425,"aic":6.307292057604585,"nexp":1,"svd_cut":null},{"t_min":1,"t_max":8,"value":0.08818246351851378,"error":0.005556968452506874,"chi2":0.9319898958811105,"dof":6,"weight":0.34656970936871445,"aic":4.93198989588111,"nexp":1,"svd_cut":null},{"t_min":2,"t_max":5,"value":0.09354023662488731,"error":0.009348262650332667,"chi2":0.021231077353023445,"dof":2,"weight":0.01000878681919944,"aic":12.021231077353024,"nexp":1,"svd_cut":null},{"t_min":2,"t_max":6,"value":0.09116755027130041,"error":0.007747933561728085,"chi2":0.1453070615779317,"dof":3,"weight":0.025570143388868413,"aic":10.145307061577931,"nexp":1,"svd_cut":null},{"t_min":2,"t_max":7,"value":0.08969675942981203,"error":0.006826170003422635,"chi2":0.2231114566025943,"dof":4,"weight":0.06685480641545077,"aic":8.223111456602595,"nexp":1,"svd_cut":null},{"t_min":2,"t_max":8,"value":0.08671325328221297,"error":0.0059140822158616066,"chi2":0.7331602609719593,"dof":5,"weight":0.14082229794747117,"aic":6.733160260971959,"nexp":1,"svd_cut":null},{"t_min":3,"t_max":6,"value":0.09016464793108567,"error":0.009185326895576853,"chi2":0.15138668379126752,"dof":2,"weight":0.009378178795267244,"aic":12.151386683791268,"nexp":1,"svd_cut":null},{"t_min":3,"t_max":7,"value":0.08850522436571277,"error":0.007699644949965052,"chi2":0.18801151604928465,"dof":3,"weight":0.025029951549656298,"aic":10.188011516049285,"nexp":1,"svd_cut":null},{"t_min":3,"t_max":8,"value":0.08508584268570837,"error":0.006445208267750234,"chi2":0.5974724046178534,"dof":4,"weight":0.0554422936326742,"aic":8.597472404617854,"nexp":1,"svd_cut":null},{"t_min":4,"t_max":7,"value":0.08690820142544647,"error":0.009300526604300318,"chi2":0.16569432428584321,"dof":2,"weight":0.009311328392900785,"aic":12.165694324285843,"nexp":1,"svd_cut":null},{"t_min":4,"t_max":8,"value":0.0828554825107898,"error":0.0074016332107536935,"chi2":0.4582042751209646,"dof":3,"weight":0.02186695930876235,"aic":10.458204275120965,"nexp":1,"svd_cut":null},{"t_min":5,"t_max":8,"value":0.07875262086239043,"error":0.009137675301666969,"chi2":0.1361456814913376,"dof":2,"weight":0.009449918215557702,"aic":12.136145681491339,"nexp":1,"svd_cut":null}],"notes":["The SVD floor is active on 7 of 8 directions of the lag covariance: chi^2 is deflated and its probability is not calibrated.","Rates come from a log-linear fit; the logarithm of a point at signal-to-noise s carries a bias of about -1/(2 s^2)."]},{"method":"multi_exponential","mass":{"quantity":"decay rate of the source-frozen pair correlator (no transfer-matrix reading)","value":0.08856460598803152,"error":0.0055615435429477705,"statistical":0.0055615435429477705,"systematic":0,"method":"multi_exponential","time_unit":"frames","prior_dominance":{"width_ratio":0.02093215260168134,"shift_sigma":-0.04047929637951745,"dominated":false}},"excited":[],"diagnostics":{"chi2":0.9543164077672343,"dof":1,"q":0.32862302110783137,"window":[1,8],"n_windows":1,"correlated":true,"svd_cut":0.01,"covariance_rank":1,"prior_dominance":{"width_ratio":0.02093215260168134,"shift_sigma":-0.04047929637951745,"dominated":false},"model_rejected":null,"no_signal":null},"windows":[],"notes":["the SVD floor is active on 7 of 8 directions of the joint covariance: chi2 is deflated, its probability is not calibrated, and the degrees of freedom count the rank rather than the fitted points","augmented chi2 carries a prior part of 0.001945","amplitude priors are Gaussians of width 5 about the logarithm of each channel's first fitted value: they read the data"]},{"method":"stability","mass":null,"excited":[],"diagnostics":{"chi2":0.9543164077672343,"dof":1,"q":0.32862302110783137,"window":[1,8],"n_windows":16,"correlated":true,"svd_cut":0.01,"covariance_rank":1,"prior_dominance":{"width_ratio":0.02093215260168134,"shift_sigma":-0.04047929637951745,"dominated":false},"model_rejected":null,"no_signal":null},"windows":[{"t_min":1,"t_max":8,"value":0.07698899744926753,"error":0.0019503060506876524,"chi2":76.66506416567503,"dof":8,"weight":2.0518511486389927e-15,"aic":80.66506416567503,"nexp":1,"svd_cut":0.000001},{"t_min":2,"t_max":8,"value":0.07695202245741709,"error":0.002424981419454952,"chi2":14.792082167818895,"dof":7,"weight":0.020577788543074682,"aic":20.792082167818897,"nexp":1,"svd_cut":0.000001},{"t_min":3,"t_max":8,"value":0.07873824311661422,"error":0.0029781100357470927,"chi2":12.99796407097311,"dof":6,"weight":0.018564874293490238,"aic":20.99796407097311,"nexp":1,"svd_cut":0.000001},{"t_min":4,"t_max":8,"value":0.07728124424988568,"error":0.0032343390732278193,"chi2":11.738654448058746,"dof":5,"weight":0.012818970292993833,"aic":21.738654448058746,"nexp":1,"svd_cut":0.000001},{"t_min":1,"t_max":8,"value":0.023900908912495814,"error":0.06333101193075355,"chi2":6.876798807892823,"dof":8,"weight":0.39617417403995475,"aic":14.876798807892822,"nexp":2,"svd_cut":0.000001},{"t_min":2,"t_max":8,"value":0.023882287231451957,"error":0.06505509058498068,"chi2":6.762292968123026,"dof":7,"weight":0.15433211448402703,"aic":16.762292968123027,"nexp":2,"svd_cut":0.000001},{"t_min":3,"t_max":8,"value":0.03070120389661749,"error":0.07854543473482271,"chi2":4.547380906230422,"dof":6,"weight":0.17183984319624984,"aic":16.547380906230423,"nexp":2,"svd_cut":0.000001},{"t_min":4,"t_max":8,"value":0.06170316012395834,"error":0.03533794964250102,"chi2":2.002162144231516,"dof":5,"weight":0.22569223515020767,"aic":16.002162144231516,"nexp":2,"svd_cut":0.000001},{"t_min":1,"t_max":8,"value":0.08381869475081684,"error":0.004016709222566916,"chi2":8.245189156955476,"dof":2,"weight":0.09955389903506244,"aic":12.245189156955476,"nexp":1,"svd_cut":0.001},{"t_min":2,"t_max":8,"value":0.08247006960326758,"error":0.003952604135000215,"chi2":6.104830451946178,"dof":2,"weight":0.10679152280045434,"aic":12.104830451946178,"nexp":1,"svd_cut":0.001},{"t_min":3,"t_max":8,"value":0.08245925128434752,"error":0.003935518421474512,"chi2":5.421795936963642,"dof":2,"weight":0.05527915018046095,"aic":13.421795936963642,"nexp":1,"svd_cut":0.001},{"t_min":4,"t_max":8,"value":0.08024710241984126,"error":0.004046832003050364,"chi2":3.798000656573031,"dof":2,"weight":0.04580042847999405,"aic":13.79800065657303,"nexp":1,"svd_cut":0.001},{"t_min":1,"t_max":8,"value":0.037558379414232124,"error":0.08954245123131543,"chi2":1.3170575932271864,"dof":2,"weight":0.4304215073499411,"aic":9.317057593227187,"nexp":2,"svd_cut":0.001},{"t_min":2,"t_max":8,"value":0.03856947453876578,"error":0.09154202270830289,"chi2":1.2446575006531233,"dof":2,"weight":0.1641802688572174,"aic":11.244657500653123,"nexp":2,"svd_cut":0.001},{"t_min":3,"t_max":8,"value":0.04118414943363422,"error":0.0929723326276279,"chi2":0.9747849990452977,"dof":2,"weight":0.06912395037637405,"aic":12.974784999045298,"nexp":2,"svd_cut":0.001},{"t_min":4,"t_max":8,"value":0.04531488996346942,"error":0.09030164532343782,"chi2":0.7224179684945717,"dof":2,"weight":0.028849272920495748,"aic":14.722417968494572,"nexp":2,"svd_cut":0.001}],"notes":["the SVD floor is active on 7 of 8 directions of the joint covariance: chi2 is deflated, its probability is not calibrated, and the degrees of freedom count the rank rather than the fitted points","augmented chi2 carries a prior part of 0.001945","amplitude priors are Gaussians of width 5 about the logarithm of each channel's first fitted value: they read the data","row 0: converged=true q=2.287e-13 width_ratio=0.0084","row 1: converged=true q=3.876e-2 width_ratio=0.0105","row 2: converged=true q=4.307e-2 width_ratio=0.0126","row 3: converged=true q=3.855e-2 width_ratio=0.0140","row 4: converged=true q=5.500e-1 width_ratio=0.8832","row 5: converged=true q=4.540e-1 width_ratio=0.9080","row 6: converged=false q=6.030e-1 width_ratio=0.8528","row 7: converged=true q=8.488e-1 width_ratio=0.1909","row 8: converged=true q=1.620e-2 width_ratio=0.0160","row 9: converged=true q=4.724e-2 width_ratio=0.0160","row 10: converged=true q=6.648e-2 width_ratio=0.0159","row 11: converged=true q=1.497e-1 width_ratio=0.0168","row 12: converged=true q=5.176e-1 width_ratio=0.7947","row 13: converged=true q=5.367e-1 width_ratio=0.7911","row 14: converged=false q=6.142e-1 width_ratio=0.7525","row 15: converged=true q=6.968e-1 width_ratio=0.6643","stable: 1 of 7 accepted variations agree with the reference; disagreeing: t_min=2 nexp=1 svd_cut=1e-6, t_min=3 nexp=1 svd_cut=1e-6, t_min=4 nexp=1 svd_cut=1e-6, t_min=2 nexp=1 svd_cut=1e-3, t_min=3 nexp=1 svd_cut=1e-3, t_min=4 nexp=1 svd_cut=1e-3"]}],"notes":["exchange-odd operator cancels on a mutual pairing: the source-frozen propagator is reported instead of the frame mean"]},{"id":"u1/dressed/q1/distance","spec":{"kind":"u1","mode":"dressed","charge":1},"kind":"distance_pair","scale":null,"definition":"","book_label":"","exchange":"even","spatial_parity":null,"availability":{"status":"unavailable","reason":"range epsilon_d is the width of a Gaussian companion kernel and the kernel of this role has none; set electroweak.epsilon_d to a fixed value"},"coverage":{"frames":0,"empty_frames":0,"valid":0,"masked_historical":0,"masked_ineligible":0,"masked_color":0,"masked_identity":0,"masked_self":0,"masked_scale":0},"estimator":null,"normalization":"valid_count","correlator":null,"effective_mass":null,"mass":null,"fits":[],"notes":[]}],"groups":[{"id":"scalar_pair","channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"availability":{"status":"available"},"levels":[],"diagnostics":{"chi2":null,"dof":null,"q":null,"window":null,"n_windows":0,"correlated":true,"svd_cut":0.01,"covariance_rank":null,"prior_dominance":null,"model_rejected":null,"no_signal":"too few usable lags"},"notes":["levels are not measurements: too few usable lags"]}],"gevp":[{"id":"mesons","channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"availability":{"status":"unavailable","reason":"metric of the generalized eigenproblem has a nonpositive diagonal"},"t0":1,"lags":[],"eigenvalues":[],"effective_mass":[],"levels":[],"rank":0,"antisymmetric_norm":[],"notes":[]}],"comparison":{"label":"hypothesis mapping","reference":[{"name":"pion","channel":"meson/pseudoscalar/standard/distance","reference":139.57039,"reference_error":0.00018,"unit":"MeV","measured":[0.08881404767228902,0.006880637273902697],"estimator":"source_frozen","normalization":"valid_count"},{"name":"f0_500","channel":"meson/scalar/standard/distance","reference":500,"reference_error":100,"unit":"MeV","measured":null,"estimator":null,"normalization":null},{"name":"rho","channel":"vector/vector/full/raw/distance","reference":775.26,"reference_error":0.23,"unit":"MeV","measured":[0.10627523092297964,0.010933011287779279],"estimator":"source_frozen","normalization":"valid_count"},{"name":"a1","channel":"vector/axial/full/raw/distance","reference":1230,"reference_error":40,"unit":"MeV","measured":null,"estimator":null,"normalization":null},{"name":"nucleon","channel":"baryon/complex/triplet","reference":938.272088,"reference_error":3e-7,"unit":"MeV","measured":[0.1623732544204941,0.010523958850293847],"estimator":"source_frozen","normalization":"valid_count"},{"name":"glueball_0pp","channel":"glueball/re_plaquette/triplet","reference":1710,"reference_error":80,"unit":"MeV","measured":null,"estimator":null,"normalization":null}],"anchors":[{"anchor":"nucleon","scale":[5778.48914434011,374.52339173063655],"predictions":[{"name":"pion","predicted":[513.2110103392272,51.838748463589575],"reference":139.57039,"tension_sigma":7.207747706320725},{"name":"f0_500","predicted":null,"reference":500,"tension_sigma":null},{"name":"rho","predicted":[614.1102682006763,74.66918388659263],"reference":775.26,"tension_sigma":-2.1581723399894215},{"name":"a1","predicted":null,"reference":1230,"tension_sigma":null},{"name":"glueball_0pp","predicted":null,"reference":1710,"tension_sigma":null}]}],"ratios":[{"numerator":"f0_500","denominator":"pion","measured":null,"reference":3.5824217443255693,"tension_sigma":null},{"numerator":"rho","denominator":"pion","measured":[1.1966038448683236,0.154102577866327],"reference":5.554616563011682,"tension_sigma":-28.278330046395098},{"numerator":"a1","denominator":"pion","measured":null,"reference":8.8127574910409,"tension_sigma":null},{"numerator":"nucleon","denominator":"pion","measured":[1.8282384225931003,0.1846678847704946],"reference":6.7225726602899085,"tension_sigma":-26.503440153578943},{"numerator":"glueball_0pp","denominator":"pion","measured":null,"reference":12.251882365593447,"tension_sigma":null},{"numerator":"rho","denominator":"f0_500","measured":null,"reference":1.55052,"tension_sigma":null},{"numerator":"a1","denominator":"f0_500","measured":null,"reference":2.46,"tension_sigma":null},{"numerator":"nucleon","denominator":"f0_500","measured":null,"reference":1.8765441760000001,"tension_sigma":null},{"numerator":"glueball_0pp","denominator":"f0_500","measured":null,"reference":3.42,"tension_sigma":null},{"numerator":"a1","denominator":"rho","measured":null,"reference":1.5865645073910688,"tension_sigma":null},{"numerator":"nucleon","denominator":"rho","measured":[1.5278560489618709,0.18577081377655294],"reference":1.210267636663829,"tension_sigma":1.7095678951945492},{"numerator":"glueball_0pp","denominator":"rho","measured":null,"reference":2.205711632226608,"tension_sigma":null},{"numerator":"nucleon","denominator":"a1","measured":null,"reference":0.7628228357723578,"tension_sigma":null},{"numerator":"glueball_0pp","denominator":"a1","measured":null,"reference":1.3902439024390243,"tension_sigma":null},{"numerator":"glueball_0pp","denominator":"nucleon","measured":null,"reference":1.8224990617007462,"tension_sigma":null}],"anchor_spread":[{"name":"pion","spread":null},{"name":"f0_500","spread":null},{"name":"rho","spread":null},{"name":"a1","spread":null},{"name":"nucleon","spread":null},{"name":"glueball_0pp","spread":null}],"notes":["Hypothesis mapping: every channel-to-reference assignment is an input of this analysis, fixed in the analysis configuration. No reference value enters a prior, a fit window or a channel selection.","The compared quantity is the decay rate of the algorithm-time autocorrelation. It is a mass only under the positive transfer representation (cor-effective-twistor-positive-transfer); the gas is a non-reversible Markov chain and that assumption is not tested here.","Ratios of rates do not depend on the time unit assigned to a lag (thm-qft-ratio-rescale). They do depend on the integrator step, the recording stride, the estimator, the frame normalisation and the smearing scale, so only channels that share the time unit, the estimator, the scale and the frame normalisation are compared.","Anchor rescaling uses one reference value as an input; the anchor's own row is not a prediction and is omitted. Of the 3 ratio rows only 2 are algebraically independent, and rows that share a channel are statistically correlated.","Tensions are (measured - reference)/sigma with sigma^2 = sigma_measured^2 + sigma_reference^2 from first-order error propagation. They carry no look-elsewhere correction for the number of rows or for the choice among operator variants, fit windows and assignments. A tension below 1 is expected in 68% of rows when the hypothesis is true and is also produced by a large error bar; it is not evidence for the assignment.","Channel rates are estimated on the same frames but are treated as uncorrelated because the report carries no cross-channel covariance. A positive correlation makes the quoted ratio errors too large and the tensions too small in magnitude; a negative correlation does the opposite.","Reference 'f0_500' (PDG 2024 pole estimate 400-550) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation.","Reference 'a1' (PDG 2024) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation.","Reference 'glueball_0pp' (quenched lattice QCD) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation."]},"couplings":{"scales":[{"name":"dimension","symbol":"d","value":3,"error":null,"unit":"1","definition":"position dimension of the run","book_label":""},{"name":"time_step","symbol":"τ","value":0.002,"error":null,"unit":"time","definition":"integrator time step, when the kinetic operator has one","book_label":""},{"name":"friction","symbol":"γ","value":1,"error":null,"unit":"1/time","definition":"BAOAB friction","book_label":""},{"name":"noise_scale","symbol":"σ_v","value":0.812403840463596,"error":null,"unit":"length/time^(3/2)","definition":"sigma_v of dv = -gamma v dt + sigma_v dW; defined for an isotropic constant noise","book_label":""},{"name":"temperature","symbol":"T","value":0.33,"error":null,"unit":"length^2/time^2","definition":"thermostat target sigma_v^2/(2 gamma), the stationary velocity variance per component of the O step; cloning, viscous forces and a velocity cap change the velocity law, so it is not a measured temperature","book_label":""},{"name":"viscosity","symbol":"ν","value":3,"error":null,"unit":"1/time","definition":"viscous coefficient as configured: graph force on tessellation edge weights","book_label":"def-fractal-set-viscous-force"},{"name":"viscous_range","symbol":"ρ","value":null,"error":null,"unit":"length","definition":"bandwidth of the dense viscous kernel exp(-|dx|^2/(2 rho^2)); graph viscosity has none","book_label":"def-fractal-set-viscous-force"},{"name":"epsilon_d","symbol":"ε_d","value":null,"error":null,"unit":"length","definition":"range of the distance-companion kernel the measurement used: width times the position scale of a Gaussian kernel, or a fixed value","book_label":"def-sm-coupling-definition"},{"name":"epsilon_c","symbol":"ε_c","value":null,"error":null,"unit":"length","definition":"range of the cloning-companion kernel the measurement used","book_label":"def-sm-coupling-definition"},{"name":"velocity_weight","symbol":"λ_alg","value":0,"error":null,"unit":"1","definition":"velocity weight of d^2 = |dx|^2 + lambda |dv|^2 in the companion distance","book_label":""},{"name":"epsilon_clone","symbol":"ε_clone","value":0,"error":null,"unit":"1","definition":"regulariser of the cloning score (V_c - V_i)/(V_i + epsilon_clone); never a range","book_label":""},{"name":"clone_saturation","symbol":"p_max","value":1,"error":null,"unit":"1","definition":"cloning probability is clip(score/p_max)","book_label":""},{"name":"clone_period","symbol":"","value":20,"error":null,"unit":"steps","definition":"living walkers clone on steps divisible by this period","book_label":""},{"name":"position_diffusion","symbol":"","value":0,"error":null,"unit":"length/time^(1/2)","definition":"independent Brownian diffusion of positions after the integrator","book_label":""},{"name":"mass","symbol":"m","value":1,"error":null,"unit":"mass","definition":"mass of the colour phase, an analysis parameter","book_label":""},{"name":"phase_length","symbol":"ℓ₀","value":0.0012485573370718908,"error":null,"unit":"length","definition":"length of the colour phase kappa = m l0/h_eff, fixed in the warm-up by the arm \`warmup_companion_median: 768 samples over 16 warm-up frames\`; a geodesic arm measures it in the recorded tessellation metric, which is named in the notes","book_label":""},{"name":"action_scale","symbol":"ħ_eff","value":1,"error":null,"unit":"action","definition":"action scale of the U(1) fitness phase, an analysis parameter; used by every proxy","book_label":""},{"name":"color_action_scale","symbol":"ħ_eff","value":1,"error":null,"unit":"action","definition":"action scale of the colour phase kappa = m l0/h_eff, an analysis parameter","book_label":""},{"name":"clone_action_scale","symbol":"h_S","value":1,"error":null,"unit":"action","definition":"action scale of the SU(2) cloning phase, an analysis parameter","book_label":""},{"name":"fitness_force_scale","symbol":"ε_F","value":null,"error":null,"unit":"energy","definition":"no fitness-force scale epsilon_F in this configuration","book_label":"thm-u1-coupling-constant"},{"name":"kernel_action_scale","symbol":"ħ_kernel","value":null,"error":null,"unit":"action","definition":"m epsilon_c^2/(2 tau), the action scale of the Gaussian-phase convention; undefined here: no epsilon_c","book_label":"thm-effective-planck-constant"},{"name":"energy_clone","symbol":"E_c","value":null,"error":null,"unit":"energy","definition":"h_eff/epsilon_c; a scale, not a particle mass; undefined here: no epsilon_c","book_label":"thm-mass-scales"},{"name":"energy_viscous","symbol":"E_ρ","value":null,"error":null,"unit":"energy","definition":"h_eff/rho; a scale, not a particle mass; undefined here: no rho","book_label":"thm-mass-scales"},{"name":"energy_friction","symbol":"E_γ","value":1,"error":null,"unit":"energy","definition":"h_eff gamma; a scale, not a particle mass","book_label":"thm-mass-scales"},{"name":"separation","symbol":"σ_sep","value":null,"error":null,"unit":"1","definition":"epsilon_c/rho; undefined here: no epsilon_c, rho","book_label":"thm-dimensionless-ratios"},{"name":"pair_statistic_n1","symbol":"N₁","value":null,"error":null,"unit":"1","definition":"N1 = E exp(-D^2/epsilon_d^2), the squared companion kernel weight, uniform over the valid first distance-companion pairs of the warm-up frames, D the distance the measurement selected; absent without epsilon_d or a calibration","book_label":"def-sm-coupling-definition"},{"name":"kernel_second_moment","symbol":"⟨K²⟩","value":null,"error":null,"unit":"1","definition":"E K_ij^2 of the unnormalised kernel K_ij = exp(-|x_i - x_j|^2/(2 rho^2)) <= 1, uniform over the ordered eligible pairs i != j of the warm-up frames; the engine divides K by the eligible count or the row sum, so this bounds the engine's moment from above; dense viscosity only","book_label":"def-sm-coupling-definition"}],"couplings":[{"name":"g1","symbol":"g₁","value":null,"error":null,"unit":"1","definition":"g1^2 = h_eff N1/epsilon_d^2 with the warm-up pair statistic N1; undefined here: no epsilon_d, N1","book_label":"def-sm-coupling-definition"},{"name":"g1_upper","symbol":"g₁","value":null,"error":null,"unit":"1","definition":"upper bound sqrt(h_eff)/epsilon_d of g1, from N1 <= 1; undefined here: no epsilon_d","book_label":"thm-sm-g1-coupling"},{"name":"g2_casimir","symbol":"g₂","value":null,"error":null,"unit":"1","definition":"g2^2 = (2 h_eff/epsilon_c^2) C2(2)/C2(d), C2(n) = (n^2 - 1)/(2n); the Casimir ratio is a normalisation of the proxy; undefined here: no epsilon_c","book_label":"thm-sm-g2-coupling"},{"name":"g2_clock","symbol":"ĝ₂","value":null,"error":null,"unit":"1","definition":"g^2 = m tau rho^2/epsilon_c^2; undefined here: no rho, epsilon_c","book_label":"thm-su2-coupling-constant"},{"name":"g2_clock_over_casimir","symbol":"","value":null,"error":null,"unit":"1","definition":"ratio of the squared weak proxies, m tau rho^2 C2(d)/(2 h_eff C2(2)); undefined here: no g2_clock, g2_casimir","book_label":"prop-ym-weak-proxy-comparison"},{"name":"g3","symbol":"g_d","value":null,"error":null,"unit":"1","definition":"g_d^2 = (nu^2/h_eff^2) d(d^2 - 1)/12 <K^2> with nu as configured and the warm-up moment of the unnormalised kernel, which bounds the engine's normalised kernel from above; the factor d(d^2 - 1)/12 is an assigned normalisation; undefined here: no dense viscosity, <K^2>","book_label":"thm-sm-g3-coupling"},{"name":"g3_upper","symbol":"g_d","value":null,"error":null,"unit":"1","definition":"upper bound (nu/h_eff) sqrt(d(d^2 - 1)/12) from K <= 1; loose by the eligible population size under the engine's population normalisation, which no configuration fixes; undefined here: no dense viscosity","book_label":"thm-sm-g3-coupling"},{"name":"e_fitness","symbol":"ê","value":null,"error":null,"unit":"1","definition":"e^2 = m/epsilon_F; undefined here: no fitness-force scale epsilon_F","book_label":"thm-u1-coupling-constant"},{"name":"alpha_1","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of g1; a hypercharge-type proxy, not alpha_em; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_1_upper","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of g1_upper; a hypercharge-type proxy, not alpha_em; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_2_casimir","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of g2_casimir; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_2_clock","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of g2_clock; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_3","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of the strong proxy; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_3_upper","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of the upper bound of the strong proxy; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"alpha_fitness","symbol":"α̂","value":null,"error":null,"unit":"1","definition":"g^2/(4 pi) of e_fitness; undefined here: no that proxy","book_label":"def-fine-structure-constant-ym"},{"name":"sin2_theta_proxy_upper","symbol":"","value":null,"error":null,"unit":"1","definition":"derived here from the target convention applied to the range proxies: g1^2/(g1^2 + g2^2) with g1_upper and g2_casimir, a function of epsilon_d/epsilon_c and d alone that carries no information about the run; undefined here: no g1_upper, g2_casimir","book_label":"def-qft-report-target-convention"}],"inversion":[{"name":"alpha_em","symbol":"α_em","value":0.007815491867980712,"error":5.497372182462537e-7,"unit":"1","definition":"input: electromagnetic coupling at M_Z (PDG 2022 electroweak review), from its inverse","book_label":"def-qft-report-target-convention"},{"name":"sin2_theta_w","symbol":"sin²θ_W","value":0.23121,"error":0.00004,"unit":"1","definition":"input: weak mixing angle at M_Z (PDG 2022 electroweak review)","book_label":"def-qft-report-target-convention"},{"name":"alpha_s","symbol":"α_s","value":0.1179,"error":0.0009,"unit":"1","definition":"input: strong coupling at M_Z (PDG 2022 electroweak review)","book_label":"def-qft-report-target-convention"},{"name":"e_em","symbol":"e","value":0.31338852459296573,"error":0.000011021784594636587,"unit":"1","definition":"input: e = sqrt(4 pi alpha_em)","book_label":"def-qft-report-target-convention"},{"name":"g1","symbol":"g₁","value":0.3574203098408815,"error":0.000015635592803425785,"unit":"1","definition":"input: g1 = e/cos(theta_W), the hypercharge coupling gY","book_label":"def-qft-report-target-convention"},{"name":"g2","symbol":"g₂","value":0.6517481137412039,"error":0.00006085879060184686,"unit":"1","definition":"input: g2 = e/sin(theta_W)","book_label":"def-qft-report-target-convention"},{"name":"g3","symbol":"g₃","value":1.2171996941475736,"error":0.004645800359341884,"unit":"1","definition":"input: g3 = sqrt(4 pi alpha_s)","book_label":"def-qft-report-target-convention"},{"name":"dimension","symbol":"d","value":3,"error":null,"unit":"1","definition":"input: position dimension of the run","book_label":""},{"name":"mass","symbol":"m","value":1,"error":null,"unit":"mass","definition":"input: mass, a free choice of unit that rescales only target_fitness_scale, target_time_step and target_viscous_range","book_label":""},{"name":"action_scale","symbol":"ħ_eff","value":1,"error":null,"unit":"action","definition":"input: action scale of the U(1) fitness phase, an analysis parameter","book_label":""},{"name":"pair_statistic_n1","symbol":"N₁","value":1,"error":null,"unit":"1","definition":"input: placeholder 1 for N1, which was not measured; N1 <= 1 makes target_epsilon_d an upper bound","book_label":"def-sm-coupling-definition"},{"name":"kernel_second_moment","symbol":"⟨K²⟩","value":1,"error":null,"unit":"1","definition":"input: placeholder 1 for <K_visc^2>, which was not measured; K <= 1 makes target_viscosity a lower bound","book_label":"def-sm-coupling-definition"},{"name":"target_epsilon_c","symbol":"ε_c","value":1.6274081188994252,"error":null,"unit":"length","definition":"target: sqrt(2 h_eff C2(2)/C2(d))/g2","book_label":"prop-qft-report-inversion"},{"name":"target_epsilon_d","symbol":"ε_d","value":2.797826459400659,"error":null,"unit":"length","definition":"target: sqrt(h_eff N1)/g1; an upper bound","book_label":"prop-qft-report-inversion"},{"name":"target_viscosity","symbol":"ν","value":0.8606901577899408,"error":null,"unit":"1/time","definition":"target: h_eff g3/sqrt(d(d^2 - 1)/12 <K^2>) for the unnormalised kernel; a lower bound","book_label":"prop-qft-report-inversion"},{"name":"target_fitness_scale","symbol":"ε_F","value":10.18201706177555,"error":null,"unit":"energy","definition":"target: m/e^2; the configuration has no fitness-force scale","book_label":"prop-qft-report-inversion"},{"name":"target_time_step","symbol":"τ","value":1.3242285927298827,"error":null,"unit":"time","definition":"target: m epsilon_c^2/(2 h_eff), imposing both weak proxies and the Gaussian-phase action scale","book_label":"prop-qft-report-inversion"},{"name":"target_viscous_range","symbol":"ρ","value":0.9217110217038932,"error":null,"unit":"length","definition":"target: sqrt(2 h_eff) g2/m, imposing both weak proxies and the Gaussian-phase action scale","book_label":"prop-qft-report-inversion"}],"notes":["Scales are read from the gas configuration and from the warm-up calibration of the measurement. Couplings are the book's parameter proxies (def-sm-coupling-definition, thm-su2-coupling-constant, thm-u1-coupling-constant) evaluated on those scales and pair statistics: functions of chosen parameters with conventional normalisation factors, not measurements of a gauge coupling.","A proxy equals a physical gauge coupling only after a field normalisation and a matching calculation (thm-sm-g1-coupling, prop-sm-coupling-correspondence); none is performed here, and no tension against Standard Model values is reported for any proxy.","Inversion: Standard Model inputs (M_Z; g1 = gY) are mapped to target gas parameters by prop-qft-report-inversion. Targets are inputs of a calibration, not results of this run; agreement between configured and target parameters is a choice of configuration, not evidence.","The inversion holds the pair statistics fixed: N1 at the placeholder value 1, so target_epsilon_d is an upper bound and <K_visc^2> at the placeholder value 1, so target_viscosity is a lower bound. A new run changes these statistics; a calibration must be iterated and its convergence checked (sec-qft-calibration-qsd).","The distance companion kernel is uniform, not Gaussian: epsilon_d is undefined and every proxy depending on it is omitted.","The cloning companion kernel is uniform, not Gaussian: epsilon_c is undefined and every proxy depending on it is omitted.","Graph viscosity uses tessellation edge weights and has no Gaussian bandwidth: rho, the clock proxy, the viscous energy scale and the strong proxy with its upper bound are undefined.","The recorded tessellation metric is the inverse neighbour covariance: a density object built from the neighbour geometry alone: it reads no fitness, and its lengths are not distances of the fitness manifold of def-adaptive-diffusion-tensor-latent. Every geodesic length of this run is a distance of that metric."]},"flow":null,"notes":["Fitted values are decay rates of the algorithm-time autocorrelation. They are masses only under the positive self-adjoint transfer representation (cor-effective-twistor-positive-transfer); the gas is not reversible, so complex or oscillating modes are expected and reject the exponential model.","errors are block-resampling errors inside fewer than 4 independently seeded runs; they are not replica standard errors","warm-up calibration differs between replicas; the first replica's is reported"]}`,
+);
+
+const PRESENTATION = JSON.parse(
+  `[{"experiment":0,"title":"Spectroscopy report","model":"decay rates of correlators of a recorded run","metrics":[{"label":"replicas","value":2,"unit":"1"},{"label":"frames","value":768,"unit":"1"}],"plots":[],"notes":["Fitted values are decay rates of the algorithm-time autocorrelation. They are masses only under the positive self-adjoint transfer representation (cor-effective-twistor-positive-transfer); the gas is not reversible, so complex or oscillating modes are expected and reject the exponential model.","errors are block-resampling errors inside fewer than 4 independently seeded runs; they are not replica standard errors","warm-up calibration differs between replicas; the first replica's is reported","u1/dressed/q1/distance: unavailable: range epsilon_d is the width of a Gaussian companion kernel and the kernel of this role has none; set electroweak.epsilon_d to a fixed value","su2/doublet/cloning: unavailable: range epsilon_c is the width of a Gaussian companion kernel and the kernel of this role has none; set electroweak.epsilon_c to a fixed value","GEVP mesons: unavailable: metric of the generalized eigenproblem has a nonpositive diagonal"],"details":{"calculation_origin":"executed_algorithm_archive","precision":"f64","request":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"both","frame_subtraction":"global_mean","gevp":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"cut":0.000001,"id":"mesons","projection":"fixed_vector","t0":1,"t_ref":null}],"groups":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"id":"scalar_pair"}],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":{"nexp_max":2,"svd_cuts":[0.000001,0.001],"t_min":[1,4]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"schema_version":2}},{"experiment":0,"title":"meson/scalar/standard/distance","model":"decay rate of the algorithm-time autocorrelation","metrics":[{"label":"rate","value":null,"unit":""},{"label":"valid elements","value":36864,"unit":"1"},{"label":"masked elements","value":0,"unit":"1"},{"label":"tau_int","value":0.5627118855274668,"unit":"frames"},{"label":"block length","value":10,"unit":"1"},{"label":"blocks","value":78,"unit":"1"},{"label":"covariance rank","value":9,"unit":"1"},{"label":"lags","value":9,"unit":"1"},{"label":"replicas","value":2,"unit":"1"},{"label":"connected bias","value":-0.000021023555637729395,"unit":"C"},{"label":"window scan rate","value":null,"unit":""},{"label":"window scan chi2","value":null,"unit":"1"},{"label":"window scan dof","value":null,"unit":"1"},{"label":"window scan Q","value":null,"unit":"1"},{"label":"window scan window t_min","value":null,"unit":"frames"},{"label":"window scan window t_max","value":null,"unit":"frames"},{"label":"window scan windows","value":0,"unit":"1"},{"label":"window scan covariance rank","value":null,"unit":"1"},{"label":"window scan svd cut","value":0.01,"unit":"1"},{"label":"multi-exponential rate","value":null,"unit":""},{"label":"multi-exponential chi2","value":null,"unit":"1"},{"label":"multi-exponential dof","value":null,"unit":"1"},{"label":"multi-exponential Q","value":null,"unit":"1"},{"label":"multi-exponential window t_min","value":null,"unit":"frames"},{"label":"multi-exponential window t_max","value":null,"unit":"frames"},{"label":"multi-exponential windows","value":0,"unit":"1"},{"label":"multi-exponential covariance rank","value":null,"unit":"1"},{"label":"multi-exponential svd cut","value":0.01,"unit":"1"},{"label":"stability scan chi2","value":null,"unit":"1"},{"label":"stability scan dof","value":null,"unit":"1"},{"label":"stability scan Q","value":null,"unit":"1"},{"label":"stability scan window t_min","value":null,"unit":"frames"},{"label":"stability scan window t_max","value":null,"unit":"frames"},{"label":"stability scan windows","value":0,"unit":"1"},{"label":"stability scan covariance rank","value":null,"unit":"1"},{"label":"stability scan svd cut","value":0.01,"unit":"1"}],"plots":[{"title":"Correlator","x_label":"lag (frames)","y_label":"C","series":[{"name":"C","points":[[0,0.014346676465382801],[1,-0.00013039053991154373],[2,0.0008374127524600434],[3,0.00019284450674883383],[4,-0.0008978334083221212],[5,-0.0006692756851431963],[6,0.0008517927424114662],[7,-0.000812377623019082],[8,0.0004343326949682565]],"kind":"line"},{"name":"C + error","points":[[0,0.015031665731420507],[1,0.000335991866362199],[2,0.0013229893726056663],[3,0.0006977721234233293],[4,-0.00027113856339545375],[5,-0.00011870257654006888],[6,0.0013825626548401005],[7,-0.00022520281134026806],[8,0.0008971840697654205]],"kind":"line"},{"name":"C - error","points":[[0,0.013661687199345095],[1,-0.0005967729461852865],[2,0.00035183613231442055],[3,-0.00031208310992566167],[4,-0.0015245282532487887],[5,-0.0012198487937463238],[6,0.00032102282998283194],[7,-0.001399552434697896],[8,-0.00002851867982890758]],"kind":"line"}]},{"title":"Effective rate","x_label":"lag (frames)","y_label":"rate","series":[{"name":"rate","points":[[2,1.4684328824364017]],"kind":"line"},{"name":"rate + error","points":[[2,4.795706426349236]],"kind":"line"},{"name":"rate - error","points":[[2,-1.8588406614764326]],"kind":"line"}]}],"notes":["Definition: \\\\operatorname{Re}\\\\, c_i^\\\\dagger c_j","Exchange parity: even; spatial parity: even.","Frame normalisation: the sum of valid element weights (04). The valid-count and fixed-N averages are different observables and only the fixed-N one has a transfer-matrix reading.","Errors are resampling errors over time blocks of 10 origins pooled over 2 independently seeded runs.","window scan: no rate: too few usable lags","multi-exponential: no rate: too few usable lags","stability scan: no rate: too few usable lags","stability scan: the configured fit states no rate, so the variations have no reference"],"details":{"calculation_origin":"executed_algorithm_archive","precision":"f64","request":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"both","frame_subtraction":"global_mean","gevp":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"cut":0.000001,"id":"mesons","projection":"fixed_vector","t0":1,"t_ref":null}],"groups":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"id":"scalar_pair"}],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":{"nexp_max":2,"svd_cuts":[0.000001,0.001],"t_min":[1,4]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"schema_version":2}},{"experiment":0,"title":"meson/pseudoscalar/standard/distance","model":"decay rate of the source-frozen pair correlator (no transfer-matrix reading)","metrics":[{"label":"rate","value":0.08881404767228902,"unit":"1/frame"},{"label":"rate error","value":0.006880637273902697,"unit":"1/frame"},{"label":"rate statistical","value":0.006404377081424802,"unit":"1/frame"},{"label":"rate systematic","value":0.0025153774058657426,"unit":"1/frame"},{"label":"valid elements","value":36864,"unit":"1"},{"label":"masked elements","value":0,"unit":"1"},{"label":"tau_int","value":5.838422261373052,"unit":"frames"},{"label":"block length","value":48,"unit":"1"},{"label":"blocks","value":16,"unit":"1"},{"label":"covariance rank","value":1,"unit":"1"},{"label":"lags","value":9,"unit":"1"},{"label":"replicas","value":2,"unit":"1"},{"label":"connected bias","value":null,"unit":"C"},{"label":"window scan rate","value":0.08881404767228902,"unit":"1/frame"},{"label":"window scan rate error","value":0.006880637273902697,"unit":"1/frame"},{"label":"window scan rate statistical","value":0.006404377081424802,"unit":"1/frame"},{"label":"window scan rate systematic","value":0.0025153774058657426,"unit":"1/frame"},{"label":"window scan chi2","value":0.9319898958811105,"unit":"1"},{"label":"window scan dof","value":6,"unit":"1"},{"label":"window scan Q","value":0.9880595085122523,"unit":"1"},{"label":"window scan window t_min","value":1,"unit":"frames"},{"label":"window scan window t_max","value":8,"unit":"frames"},{"label":"window scan windows","value":15,"unit":"1"},{"label":"window scan covariance rank","value":1,"unit":"1"},{"label":"window scan svd cut","value":0.01,"unit":"1"},{"label":"multi-exponential rate","value":0.08856460598803152,"unit":"1/frame"},{"label":"multi-exponential rate error","value":0.0055615435429477705,"unit":"1/frame"},{"label":"multi-exponential rate statistical","value":0.0055615435429477705,"unit":"1/frame"},{"label":"multi-exponential rate systematic","value":0,"unit":"1/frame"},{"label":"multi-exponential rate posterior/prior width","value":0.02093215260168134,"unit":"1"},{"label":"multi-exponential rate prior shift","value":-0.04047929637951745,"unit":"prior sigma"},{"label":"multi-exponential chi2","value":0.9543164077672343,"unit":"1"},{"label":"multi-exponential dof","value":1,"unit":"1"},{"label":"multi-exponential Q","value":0.32862302110783137,"unit":"1"},{"label":"multi-exponential window t_min","value":1,"unit":"frames"},{"label":"multi-exponential window t_max","value":8,"unit":"frames"},{"label":"multi-exponential windows","value":1,"unit":"1"},{"label":"multi-exponential covariance rank","value":1,"unit":"1"},{"label":"multi-exponential svd cut","value":0.01,"unit":"1"},{"label":"stability scan chi2","value":0.9543164077672343,"unit":"1"},{"label":"stability scan dof","value":1,"unit":"1"},{"label":"stability scan Q","value":0.32862302110783137,"unit":"1"},{"label":"stability scan window t_min","value":1,"unit":"frames"},{"label":"stability scan window t_max","value":8,"unit":"frames"},{"label":"stability scan windows","value":16,"unit":"1"},{"label":"stability scan covariance rank","value":1,"unit":"1"},{"label":"stability scan svd cut","value":0.01,"unit":"1"}],"plots":[{"title":"Correlator","x_label":"lag (frames)","y_label":"C","series":[{"name":"C","points":[[0,1.319264540286101e-7],[1,1.1876567015890652e-7],[2,1.0783948673597336e-7],[3,9.818695185071864e-8],[4,8.966714726492967e-8],[5,8.136820582576873e-8],[6,7.51041056376354e-8],[7,6.896197029426264e-8],[8,6.438558128214614e-8]],"kind":"line"},{"name":"C + error","points":[[0,1.4099570100277888e-7],[1,1.2777590808744588e-7],[2,1.1652452843466103e-7],[3,1.0662712774539125e-7],[4,9.787063525404128e-8],[5,8.91508473062921e-8],[6,8.248392692788678e-8],[7,7.600534965213835e-8],[8,7.09538214299787e-8]],"kind":"line"},{"name":"C - error","points":[[0,1.228572070544413e-7],[1,1.0975543223036716e-7],[2,9.915444503728568e-8],[3,8.974677595604603e-8],[4,8.146365927581806e-8],[5,7.358556434524536e-8],[6,6.772428434738402e-8],[7,6.191859093638692e-8],[8,5.781734113431358e-8]],"kind":"line"}]},{"title":"Effective rate","x_label":"lag (frames)","y_label":"rate","series":[{"name":"rate","points":[[0,0.10509220741974826],[1,0.09650850578491935],[2,0.09377055433548577],[3,0.09076888257009372],[4,0.09711984586467756],[5,0.08010937866760617],[6,0.08532002871920005],[7,0.06866548259168939]],"kind":"line"},{"name":"rate + error","points":[[0,0.11393798298060735],[1,0.10179147136367254],[2,0.10220980073073548],[3,0.09972056961178297],[4,0.10600469481939279],[5,0.08855111355776635],[6,0.09380811833699823],[7,0.07567976585112003]],"kind":"line"},{"name":"rate - error","points":[[0,0.09624643185888916],[1,0.09122554020616615],[2,0.08533130794023606],[3,0.08181719552840447],[4,0.08823499690996234],[5,0.071667643777446],[6,0.07683193910140187],[7,0.06165119933225875]],"kind":"line"}]},{"title":"window scan: rate per window","x_label":"window (table order)","y_label":"rate","series":[{"name":"rate","points":[[0,0.0938515647878726],[1,0.09414655623193702],[2,0.09227095257640061],[3,0.09089112657930953],[4,0.08818246351851378],[5,0.09354023662488731],[6,0.09116755027130041],[7,0.08969675942981203],[8,0.08671325328221297],[9,0.09016464793108567],[10,0.08850522436571277],[11,0.08508584268570837],[12,0.08690820142544647],[13,0.0828554825107898],[14,0.07875262086239043]],"kind":"line"},{"name":"rate + error","points":[[0,0.10291034548027242],[1,0.10197826865240534],[2,0.09912746167471508],[3,0.09713701553997384],[4,0.09373943197102065],[5,0.10288849927521998],[6,0.09891548383302849],[7,0.09652292943323466],[8,0.09262733549807457],[9,0.09934997482666252],[10,0.09620486931567783],[11,0.0915310509534586],[12,0.0962087280297468],[13,0.09025711572154349],[14,0.0878902961640574]],"kind":"line"},{"name":"rate - error","points":[[0,0.08479278409547278],[1,0.0863148438114687],[2,0.08541444347808615],[3,0.08464523761864523],[4,0.0826254950660069],[5,0.08419197397455463],[6,0.08341961670957233],[7,0.0828705894263894],[8,0.08079917106635136],[9,0.08097932103550881],[10,0.08080557941574772],[11,0.07864063441795814],[12,0.07760767482114615],[13,0.0754538493000361],[14,0.06961494556072347]],"kind":"line"}]},{"title":"window scan: window weights","x_label":"window (table order)","y_label":"weight","series":[{"name":"weight","points":[[0,0.009966897123737361],[1,0.027138584197192513],[2,0.06835027730373298],[3,0.17423986754081425],[4,0.34656970936871445],[5,0.01000878681919944],[6,0.025570143388868413],[7,0.06685480641545077],[8,0.14082229794747117],[9,0.009378178795267244],[10,0.025029951549656298],[11,0.0554422936326742],[12,0.009311328392900785],[13,0.02186695930876235],[14,0.009449918215557702]],"kind":"line"}]},{"title":"stability scan: rate per window","x_label":"window (table order)","y_label":"rate","series":[{"name":"rate","points":[[0,0.07698899744926753],[1,0.07695202245741709],[2,0.07873824311661422],[3,0.07728124424988568],[4,0.023900908912495814],[5,0.023882287231451957],[6,0.03070120389661749],[7,0.06170316012395834],[8,0.08381869475081684],[9,0.08247006960326758],[10,0.08245925128434752],[11,0.08024710241984126],[12,0.037558379414232124],[13,0.03856947453876578],[14,0.04118414943363422],[15,0.04531488996346942]],"kind":"line"},{"name":"rate + error","points":[[0,0.07893930349995518],[1,0.07937700387687203],[2,0.08171635315236131],[3,0.0805155833231135],[4,0.08723192084324936],[5,0.08893737781643264],[6,0.1092466386314402],[7,0.09704110976645935],[8,0.08783540397338375],[9,0.0864226737382678],[10,0.08639476970582202],[11,0.08429393442289163],[12,0.12710083064554756],[13,0.13011149724706866],[14,0.13415648206126213],[15,0.13561653528690723]],"kind":"line"},{"name":"rate - error","points":[[0,0.07503869139857988],[1,0.07452704103796214],[2,0.07576013308086713],[3,0.07404690517665787],[4,-0.03943010301825774],[5,-0.04117280335352873],[6,-0.04784423083820523],[7,0.02636521048145732],[8,0.07980198552824992],[9,0.07851746546826736],[10,0.07852373286287301],[11,0.0762002704167909],[12,-0.05198407181708331],[13,-0.05297254816953711],[14,-0.05178818319399368],[15,-0.0449867553599684]],"kind":"line"}]},{"title":"stability scan: window weights","x_label":"window (table order)","y_label":"weight","series":[{"name":"weight","points":[[0,2.0518511486389927e-15],[1,0.020577788543074682],[2,0.018564874293490238],[3,0.012818970292993833],[4,0.39617417403995475],[5,0.15433211448402703],[6,0.17183984319624984],[7,0.22569223515020767],[8,0.09955389903506244],[9,0.10679152280045434],[10,0.05527915018046095],[11,0.04580042847999405],[12,0.4304215073499411],[13,0.1641802688572174],[14,0.06912395037637405],[15,0.028849272920495748]],"kind":"line"}]}],"notes":["Definition: \\\\operatorname{Im}\\\\, c_i^\\\\dagger c_j","Exchange parity: odd; spatial parity: odd.","Errors are resampling errors over time blocks of 48 origins pooled over 2 independently seeded runs.","window scan: The SVD floor is active on 7 of 8 directions of the lag covariance: chi^2 is deflated and its probability is not calibrated.","window scan: Rates come from a log-linear fit; the logarithm of a point at signal-to-noise s carries a bias of about -1/(2 s^2).","multi-exponential: the SVD floor is active on 7 of 8 directions of the joint covariance: chi2 is deflated, its probability is not calibrated, and the degrees of freedom count the rank rather than the fitted points","multi-exponential: augmented chi2 carries a prior part of 0.001945","multi-exponential: amplitude priors are Gaussians of width 5 about the logarithm of each channel's first fitted value: they read the data","stability scan: the SVD floor is active on 7 of 8 directions of the joint covariance: chi2 is deflated, its probability is not calibrated, and the degrees of freedom count the rank rather than the fitted points","stability scan: augmented chi2 carries a prior part of 0.001945","stability scan: amplitude priors are Gaussians of width 5 about the logarithm of each channel's first fitted value: they read the data","stability scan: row 0: converged=true q=2.287e-13 width_ratio=0.0084","stability scan: row 1: converged=true q=3.876e-2 width_ratio=0.0105","stability scan: row 2: converged=true q=4.307e-2 width_ratio=0.0126","stability scan: row 3: converged=true q=3.855e-2 width_ratio=0.0140","stability scan: row 4: converged=true q=5.500e-1 width_ratio=0.8832","stability scan: row 5: converged=true q=4.540e-1 width_ratio=0.9080","stability scan: row 6: converged=false q=6.030e-1 width_ratio=0.8528","stability scan: row 7: converged=true q=8.488e-1 width_ratio=0.1909","stability scan: row 8: converged=true q=1.620e-2 width_ratio=0.0160","stability scan: row 9: converged=true q=4.724e-2 width_ratio=0.0160","stability scan: row 10: converged=true q=6.648e-2 width_ratio=0.0159","stability scan: row 11: converged=true q=1.497e-1 width_ratio=0.0168","stability scan: row 12: converged=true q=5.176e-1 width_ratio=0.7947","stability scan: row 13: converged=true q=5.367e-1 width_ratio=0.7911","stability scan: row 14: converged=false q=6.142e-1 width_ratio=0.7525","stability scan: row 15: converged=true q=6.968e-1 width_ratio=0.6643","stability scan: stable: 1 of 7 accepted variations agree with the reference; disagreeing: t_min=2 nexp=1 svd_cut=1e-6, t_min=3 nexp=1 svd_cut=1e-6, t_min=4 nexp=1 svd_cut=1e-6, t_min=2 nexp=1 svd_cut=1e-3, t_min=3 nexp=1 svd_cut=1e-3, t_min=4 nexp=1 svd_cut=1e-3","exchange-odd operator cancels on a mutual pairing: the source-frozen propagator is reported instead of the frame mean"],"details":{"calculation_origin":"executed_algorithm_archive","precision":"f64","request":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"both","frame_subtraction":"global_mean","gevp":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"cut":0.000001,"id":"mesons","projection":"fixed_vector","t0":1,"t_ref":null}],"groups":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"id":"scalar_pair"}],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":{"nexp_max":2,"svd_cuts":[0.000001,0.001],"t_min":[1,4]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"schema_version":2}},{"experiment":0,"title":"Group scalar_pair","model":"joint fit with shared gaps of meson/scalar/standard/distance, meson/scalar/standard/cloning","metrics":[{"label":"chi2","value":null,"unit":"1"},{"label":"dof","value":null,"unit":"1"},{"label":"Q","value":null,"unit":"1"}],"plots":[],"notes":["levels are not measurements: too few usable lags"],"details":{"calculation_origin":"executed_algorithm_archive","precision":"f64","request":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"both","frame_subtraction":"global_mean","gevp":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"cut":0.000001,"id":"mesons","projection":"fixed_vector","t0":1,"t_ref":null}],"groups":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"id":"scalar_pair"}],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":{"nexp_max":2,"svd_cuts":[0.000001,0.001],"t_min":[1,4]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"schema_version":2}},{"experiment":0,"title":"Reference comparison (hypothesis mapping)","model":"channel-to-reference assignments are inputs of the analysis; tensions carry no look-elsewhere correction","metrics":[{"label":"pion rate [meson/pseudoscalar/standard/distance]","value":0.08881404767228902,"unit":"lattice"},{"label":"pion rate error","value":0.006880637273902697,"unit":"lattice"},{"label":"pion reference","value":139.57039,"unit":"MeV"},{"label":"f0_500 rate [meson/scalar/standard/distance]","value":null,"unit":"lattice"},{"label":"f0_500 rate error","value":null,"unit":"lattice"},{"label":"f0_500 reference","value":500,"unit":"MeV"},{"label":"rho rate [vector/vector/full/raw/distance]","value":0.10627523092297964,"unit":"lattice"},{"label":"rho rate error","value":0.010933011287779279,"unit":"lattice"},{"label":"rho reference","value":775.26,"unit":"MeV"},{"label":"a1 rate [vector/axial/full/raw/distance]","value":null,"unit":"lattice"},{"label":"a1 rate error","value":null,"unit":"lattice"},{"label":"a1 reference","value":1230,"unit":"MeV"},{"label":"nucleon rate [baryon/complex/triplet]","value":0.1623732544204941,"unit":"lattice"},{"label":"nucleon rate error","value":0.010523958850293847,"unit":"lattice"},{"label":"nucleon reference","value":938.272088,"unit":"MeV"},{"label":"glueball_0pp rate [glueball/re_plaquette/triplet]","value":null,"unit":"lattice"},{"label":"glueball_0pp rate error","value":null,"unit":"lattice"},{"label":"glueball_0pp reference","value":1710,"unit":"MeV"},{"label":"f0_500/pion measured","value":null,"unit":"1"},{"label":"f0_500/pion error","value":null,"unit":"1"},{"label":"f0_500/pion reference","value":3.5824217443255693,"unit":"1"},{"label":"f0_500/pion tension","value":null,"unit":"sigma"},{"label":"rho/pion measured","value":1.1966038448683236,"unit":"1"},{"label":"rho/pion error","value":0.154102577866327,"unit":"1"},{"label":"rho/pion reference","value":5.554616563011682,"unit":"1"},{"label":"rho/pion tension","value":-28.278330046395098,"unit":"sigma"},{"label":"a1/pion measured","value":null,"unit":"1"},{"label":"a1/pion error","value":null,"unit":"1"},{"label":"a1/pion reference","value":8.8127574910409,"unit":"1"},{"label":"a1/pion tension","value":null,"unit":"sigma"},{"label":"nucleon/pion measured","value":1.8282384225931003,"unit":"1"},{"label":"nucleon/pion error","value":0.1846678847704946,"unit":"1"},{"label":"nucleon/pion reference","value":6.7225726602899085,"unit":"1"},{"label":"nucleon/pion tension","value":-26.503440153578943,"unit":"sigma"},{"label":"glueball_0pp/pion measured","value":null,"unit":"1"},{"label":"glueball_0pp/pion error","value":null,"unit":"1"},{"label":"glueball_0pp/pion reference","value":12.251882365593447,"unit":"1"},{"label":"glueball_0pp/pion tension","value":null,"unit":"sigma"},{"label":"rho/f0_500 measured","value":null,"unit":"1"},{"label":"rho/f0_500 error","value":null,"unit":"1"},{"label":"rho/f0_500 reference","value":1.55052,"unit":"1"},{"label":"rho/f0_500 tension","value":null,"unit":"sigma"},{"label":"a1/f0_500 measured","value":null,"unit":"1"},{"label":"a1/f0_500 error","value":null,"unit":"1"},{"label":"a1/f0_500 reference","value":2.46,"unit":"1"},{"label":"a1/f0_500 tension","value":null,"unit":"sigma"},{"label":"nucleon/f0_500 measured","value":null,"unit":"1"},{"label":"nucleon/f0_500 error","value":null,"unit":"1"},{"label":"nucleon/f0_500 reference","value":1.8765441760000001,"unit":"1"},{"label":"nucleon/f0_500 tension","value":null,"unit":"sigma"},{"label":"glueball_0pp/f0_500 measured","value":null,"unit":"1"},{"label":"glueball_0pp/f0_500 error","value":null,"unit":"1"},{"label":"glueball_0pp/f0_500 reference","value":3.42,"unit":"1"},{"label":"glueball_0pp/f0_500 tension","value":null,"unit":"sigma"},{"label":"a1/rho measured","value":null,"unit":"1"},{"label":"a1/rho error","value":null,"unit":"1"},{"label":"a1/rho reference","value":1.5865645073910688,"unit":"1"},{"label":"a1/rho tension","value":null,"unit":"sigma"},{"label":"nucleon/rho measured","value":1.5278560489618709,"unit":"1"},{"label":"nucleon/rho error","value":0.18577081377655294,"unit":"1"},{"label":"nucleon/rho reference","value":1.210267636663829,"unit":"1"},{"label":"nucleon/rho tension","value":1.7095678951945492,"unit":"sigma"},{"label":"glueball_0pp/rho measured","value":null,"unit":"1"},{"label":"glueball_0pp/rho error","value":null,"unit":"1"},{"label":"glueball_0pp/rho reference","value":2.205711632226608,"unit":"1"},{"label":"glueball_0pp/rho tension","value":null,"unit":"sigma"},{"label":"nucleon/a1 measured","value":null,"unit":"1"},{"label":"nucleon/a1 error","value":null,"unit":"1"},{"label":"nucleon/a1 reference","value":0.7628228357723578,"unit":"1"},{"label":"nucleon/a1 tension","value":null,"unit":"sigma"},{"label":"glueball_0pp/a1 measured","value":null,"unit":"1"},{"label":"glueball_0pp/a1 error","value":null,"unit":"1"},{"label":"glueball_0pp/a1 reference","value":1.3902439024390243,"unit":"1"},{"label":"glueball_0pp/a1 tension","value":null,"unit":"sigma"},{"label":"glueball_0pp/nucleon measured","value":null,"unit":"1"},{"label":"glueball_0pp/nucleon error","value":null,"unit":"1"},{"label":"glueball_0pp/nucleon reference","value":1.8224990617007462,"unit":"1"},{"label":"glueball_0pp/nucleon tension","value":null,"unit":"sigma"},{"label":"scale at nucleon","value":5778.48914434011,"unit":"MeV per lattice unit"},{"label":"scale error at nucleon","value":374.52339173063655,"unit":"MeV per lattice unit"},{"label":"pion at nucleon predicted","value":513.2110103392272,"unit":"MeV"},{"label":"pion at nucleon error","value":51.838748463589575,"unit":"MeV"},{"label":"pion at nucleon reference","value":139.57039,"unit":"MeV"},{"label":"pion at nucleon tension","value":7.207747706320725,"unit":"sigma"},{"label":"f0_500 at nucleon predicted","value":null,"unit":"MeV"},{"label":"f0_500 at nucleon error","value":null,"unit":"MeV"},{"label":"f0_500 at nucleon reference","value":500,"unit":"MeV"},{"label":"f0_500 at nucleon tension","value":null,"unit":"sigma"},{"label":"rho at nucleon predicted","value":614.1102682006763,"unit":"MeV"},{"label":"rho at nucleon error","value":74.66918388659263,"unit":"MeV"},{"label":"rho at nucleon reference","value":775.26,"unit":"MeV"},{"label":"rho at nucleon tension","value":-2.1581723399894215,"unit":"sigma"},{"label":"a1 at nucleon predicted","value":null,"unit":"MeV"},{"label":"a1 at nucleon error","value":null,"unit":"MeV"},{"label":"a1 at nucleon reference","value":1230,"unit":"MeV"},{"label":"a1 at nucleon tension","value":null,"unit":"sigma"},{"label":"glueball_0pp at nucleon predicted","value":null,"unit":"MeV"},{"label":"glueball_0pp at nucleon error","value":null,"unit":"MeV"},{"label":"glueball_0pp at nucleon reference","value":1710,"unit":"MeV"},{"label":"glueball_0pp at nucleon tension","value":null,"unit":"sigma"},{"label":"pion anchor spread","value":null,"unit":"1"},{"label":"f0_500 anchor spread","value":null,"unit":"1"},{"label":"rho anchor spread","value":null,"unit":"1"},{"label":"a1 anchor spread","value":null,"unit":"1"},{"label":"nucleon anchor spread","value":null,"unit":"1"},{"label":"glueball_0pp anchor spread","value":null,"unit":"1"}],"plots":[{"title":"Ratios of rates","x_label":"ratio row (table order)","y_label":"ratio","series":[{"name":"measured","points":[[1,1.1966038448683236]],"kind":"line"},{"name":"measured","points":[[3,1.8282384225931003]],"kind":"line"},{"name":"measured","points":[[10,1.5278560489618709]],"kind":"line"},{"name":"measured + error","points":[[1,1.3507064227346506]],"kind":"line"},{"name":"measured + error","points":[[3,2.012906307363595]],"kind":"line"},{"name":"measured + error","points":[[10,1.713626862738424]],"kind":"line"},{"name":"measured - error","points":[[1,1.0425012670019966]],"kind":"line"},{"name":"measured - error","points":[[3,1.6435705378226058]],"kind":"line"},{"name":"measured - error","points":[[10,1.3420852351853179]],"kind":"line"},{"name":"reference","points":[[0,3.5824217443255693],[1,5.554616563011682],[2,8.8127574910409],[3,6.7225726602899085],[4,12.251882365593447],[5,1.55052],[6,2.46],[7,1.8765441760000001],[8,3.42],[9,1.5865645073910688],[10,1.210267636663829],[11,2.205711632226608],[12,0.7628228357723578],[13,1.3902439024390243],[14,1.8224990617007462]],"kind":"line"}]},{"title":"Rates rescaled by the anchor nucleon (an input)","x_label":"prediction row (table order)","y_label":"MeV","series":[{"name":"rescaled rate","points":[[0,513.2110103392272]],"kind":"line"},{"name":"rescaled rate","points":[[2,614.1102682006763]],"kind":"line"},{"name":"rescaled rate + error","points":[[0,565.0497588028168]],"kind":"line"},{"name":"rescaled rate + error","points":[[2,688.779452087269]],"kind":"line"},{"name":"rescaled rate - error","points":[[0,461.3722618756376]],"kind":"line"},{"name":"rescaled rate - error","points":[[2,539.4410843140836]],"kind":"line"},{"name":"reference","points":[[0,139.57039],[1,500],[2,775.26],[3,1230],[4,1710]],"kind":"line"}]}],"notes":["Hypothesis mapping: every channel-to-reference assignment is an input of this analysis, fixed in the analysis configuration. No reference value enters a prior, a fit window or a channel selection.","The compared quantity is the decay rate of the algorithm-time autocorrelation. It is a mass only under the positive transfer representation (cor-effective-twistor-positive-transfer); the gas is a non-reversible Markov chain and that assumption is not tested here.","Ratios of rates do not depend on the time unit assigned to a lag (thm-qft-ratio-rescale). They do depend on the integrator step, the recording stride, the estimator, the frame normalisation and the smearing scale, so only channels that share the time unit, the estimator, the scale and the frame normalisation are compared.","Anchor rescaling uses one reference value as an input; the anchor's own row is not a prediction and is omitted. Of the 3 ratio rows only 2 are algebraically independent, and rows that share a channel are statistically correlated.","Tensions are (measured - reference)/sigma with sigma^2 = sigma_measured^2 + sigma_reference^2 from first-order error propagation. They carry no look-elsewhere correction for the number of rows or for the choice among operator variants, fit windows and assignments. A tension below 1 is expected in 68% of rows when the hypothesis is true and is also produced by a large error bar; it is not evidence for the assignment.","Channel rates are estimated on the same frames but are treated as uncorrelated because the report carries no cross-channel covariance. A positive correlation makes the quoted ratio errors too large and the tensions too small in magnitude; a negative correlation does the opposite.","Reference 'f0_500' (PDG 2024 pole estimate 400-550) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation.","Reference 'a1' (PDG 2024) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation.","Reference 'glueball_0pp' (quenched lattice QCD) is not a narrow experimental state: its table error is a range, not a Gaussian standard deviation."],"details":{"calculation_origin":"executed_algorithm_archive","precision":"f64","request":{"anchors":["nucleon"],"assignments":{"baryon/complex":"nucleon","glueball/re_plaquette":"glueball_0pp","meson/pseudoscalar/standard":"pion","meson/scalar/standard":"f0_500","vector/axial/full/raw":"a1","vector/vector/full/raw":"rho"},"channels":[],"combine":"pooled_blocks","connected":true,"effective_mass":"log_ratio","estimator":"auto","fit":"both","frame_subtraction":"global_mean","gevp":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"cut":0.000001,"id":"mesons","projection":"fixed_vector","t0":1,"t_ref":null}],"groups":[{"channels":["meson/scalar/standard/distance","meson/scalar/standard/cloning"],"id":"scalar_pair"}],"multi_exponential":{"dominance_ratio":0.7,"log_amplitude_sigma":5,"log_gap_mean":-2.3025850929940455,"log_gap_sigma":3,"nexp":1,"t_max":null,"t_min":1},"propagator_subtraction":"lag_means","reference":{"entries":[{"error":0.00018,"name":"pion","source":"PDG 2024","value":139.57039},{"error":100,"name":"f0_500","source":"PDG 2024 pole estimate 400-550","value":500},{"error":0.23,"name":"rho","source":"PDG 2024","value":775.26},{"error":40,"name":"a1","source":"PDG 2024","value":1230},{"error":3e-7,"name":"nucleon","source":"PDG 2024","value":938.272088},{"error":80,"name":"glueball_0pp","source":"quenched lattice QCD","value":1710},{"error":1.5e-10,"name":"electron","source":"PDG 2024","value":0.51099895},{"error":0.0000023,"name":"muon","source":"PDG 2024","value":105.6583755},{"error":0.09,"name":"tau","source":"PDG 2024","value":1776.93},{"error":13.3,"name":"w_boson","source":"PDG 2024","value":80369.2},{"error":2,"name":"z_boson","source":"PDG 2024","value":91188},{"error":110,"name":"higgs","source":"PDG 2024","value":125200}],"unit":"MeV"},"report_covariance":false,"resampling":{"block":{"kind":"auto"},"kind":"block_jackknife"},"stability":{"nexp_max":2,"svd_cuts":[0.000001,0.001],"t_min":[1,4]},"standard_model":{"alpha_em_inverse":[127.951,0.009],"alpha_s":[0.1179,0.0009],"hypercharge":"hypercharge","scale":"M_Z","sin2_theta_w":[0.23121,0.00004],"source":"PDG 2022 electroweak review"},"svd_cut":0.01,"time_unit":"frames","window_scan":{"correlated":true,"max_usable":128,"min_point_snr":2,"min_points":4,"min_rate_snr":2,"t_max":null,"t_min":1}},"schema_version":2}}]`,
+);
+
+// Strings Rust wrote, read back out of the payloads instead of repeated here.
+export const RATE_QUANTITY = REPORT.channels[1].mass.quantity;
+export const NO_SIGNAL = REPORT.channels[0].fits[0].diagnostics.no_signal;
+export const UNAVAILABLE_REASON = REPORT.channels[2].availability.reason;
+export const CATALOG_REASON = defaults.catalog[3].availability.reason;
+export const ESTIMATOR_NOTE = SNAPSHOT.channels[1].note;
+export const REPORT_NOTE = REPORT.notes[0];
+export const FIT_NOTE = REPORT.channels[1].fits[0].notes[0];
+export const OVERVIEW_TITLE = PRESENTATION[0].title;
+export const FITTED = REPORT.channels[1].id;
+export const UNFITTED = REPORT.channels[0].id;
+export const UNAVAILABLE = REPORT.channels[2].id;
+
+// The recorded snapshot is the finished one; a live snapshot differs from it
+// only in the step counters, which is what `advance` moves.
+export function snapshot(step, steps = SNAPSHOT.steps) {
   return {
-    schema_version: 1,
+    ...SNAPSHOT,
     step,
     steps,
     done: step >= steps,
-    chunk: 16,
-    replicas: [
-      {
-        seed: 7,
-        step,
-        frames: step > 16 ? step - 16 : 0,
-        segments: 1,
-        terminal: null,
-      },
-    ],
-    capabilities: capabilities.capabilities,
-    calibration: null,
-    walkers: {
-      dimension: 3,
-      positions: [0.1, -0.2, 0.9, 0.4, 0.3, 0.8, -0.5, 0.2, 0.7],
-      eligible: [true, false, true],
-    },
-    channels: [
-      {
-        id: "meson/scalar/standard/distance",
-        availability: available,
-        coverage,
-        correlator: [1.0, 0.61, 0.37, null, 0.14],
-        effective_mass: [0.49, 0.5, null, null, null],
-      },
-      {
-        id: "u1/phase/q1/distance",
-        availability: unavailable(ODD_REASON),
-        coverage: noCoverage,
-        correlator: [],
-        effective_mass: [],
-      },
-    ],
-    notes: ["Live correlators use the frame average without resampling."],
+    replicas: SNAPSHOT.replicas.map((replica) => ({
+      ...replica,
+      step,
+      frames: Math.min(replica.frames, step),
+    })),
   };
 }
-
-const rate = {
-  quantity: RATE_QUANTITY,
-  value: 0.495,
-  error: 0.04,
-  statistical: 0.03,
-  systematic: 0.026,
-  method: "window_scan",
-  time_unit: "frames",
-};
-const diagnostics = {
-  chi2: 2.4,
-  dof: 3,
-  q: 0.49,
-  window: [1, 4],
-  n_windows: 2,
-  correlated: true,
-  svd_cut: 1e-6,
-  covariance_rank: 4,
-  prior_dominance: null,
-  model_rejected: null,
-  no_signal: null,
-};
-const channelReport = (id, spec, extra) => ({
-  id,
-  spec,
-  kind: "distance_pair",
-  scale: null,
-  definition: "\\operatorname{Re}\\, c_i^\\dagger c_j",
-  book_label: "def-sm-meson-operators",
-  exchange: "even",
-  spatial_parity: null,
-  availability: available,
-  coverage,
-  estimator: "frame_mean",
-  correlator,
-  effective_mass: effectiveMass,
-  mass: null,
-  fits: [],
-  notes: [],
-  ...extra,
-});
-
-export const REJECTED =
-  "correlator changes sign at lag 2: a single decaying exponential is rejected";
-
-export function report(analysisConfig = analysis) {
-  return {
-    schema_version: 1,
-    measurement_fingerprint: "fixture",
-    analysis: analysisConfig,
-    capabilities: capabilities.capabilities,
-    calibration: {
-      warmup_frames: 16,
-      length: 0.31,
-      length_source: "warmup_companion_median",
-      kappa: 0.31,
-      phase_wrapping: 0,
-      h_eff: 1,
-      h_s: 1,
-      epsilon_d: null,
-      epsilon_c: null,
-      epsilon_clone: 1e-8,
-      dt: 0.05,
-      euclidean_range: null,
-      scales: [],
-    },
-    replicas: 1,
-    frames: 240,
-    channels: [
-      channelReport(
-        "meson/scalar/standard/distance",
-        defaults.catalog[0].spec,
-        {
-          mass: rate,
-          fits: [
-            {
-              method: "window_scan",
-              mass: rate,
-              excited: [],
-              diagnostics,
-              windows: [
-                {
-                  t_min: 1,
-                  t_max: 4,
-                  value: 0.49,
-                  error: 0.04,
-                  chi2: 2.4,
-                  dof: 3,
-                  weight: 0.7,
-                },
-                {
-                  t_min: 2,
-                  t_max: 4,
-                  value: 0.51,
-                  error: 0.07,
-                  chi2: 1.1,
-                  dof: 2,
-                  weight: 0.3,
-                },
-              ],
-              notes: ["Window average with exp(-AIC/2) weights."],
-            },
-          ],
-        },
-      ),
-      channelReport(
-        "meson/pseudoscalar/standard/distance",
-        defaults.catalog[2].spec,
-        {
-          fits: [
-            {
-              method: "window_scan",
-              mass: null,
-              excited: [],
-              diagnostics: {
-                ...diagnostics,
-                chi2: null,
-                dof: null,
-                q: null,
-                window: null,
-                model_rejected: REJECTED,
-              },
-              windows: [],
-              notes: [],
-            },
-          ],
-        },
-      ),
-      channelReport("u1/phase/q1/distance", defaults.catalog[4].spec, {
-        availability: unavailable(ODD_REASON),
-        estimator: null,
-        correlator: null,
-        effective_mass: null,
-      }),
-    ],
-    groups: [],
-    gevp: [],
-    comparison: {
-      label: "hypothesis mapping",
-      reference: [
-        {
-          name: "pion",
-          channel: "meson/pseudoscalar/standard",
-          reference: 139.57039,
-          reference_error: 0.00018,
-          unit: "MeV",
-          measured: null,
-        },
-        {
-          name: "nucleon",
-          channel: "baryon/real",
-          reference: 938.272088,
-          reference_error: 3e-7,
-          unit: "MeV",
-          measured: null,
-        },
-      ],
-      anchors: [
-        {
-          anchor: "nucleon",
-          scale: null,
-          predictions: [
-            {
-              name: "pion",
-              predicted: null,
-              reference: 139.57039,
-              tension_sigma: null,
-            },
-          ],
-        },
-      ],
-      ratios: [
-        {
-          numerator: "pion",
-          denominator: "nucleon",
-          measured: null,
-          reference: 0.14875,
-          tension_sigma: null,
-        },
-      ],
-      anchor_spread: [{ name: "pion", spread: null }],
-      notes: ["The anchor channel reports no rate; no scale is set."],
-    },
-    couplings: null,
-    flow: null,
-    notes: [REPORT_NOTE],
-  };
+// `analyze` echoes the `AnalysisConfig` it was given back in the report.
+export function report(analysisConfig = REPORT.analysis) {
+  return { ...REPORT, analysis: analysisConfig };
 }
-
-// `presentation::present` returns `Vec<partvi::ExperimentResult>`.
-export function presentation() {
-  return [
-    {
-      experiment: 0,
-      title: "Spectroscopy",
-      model: "",
-      metrics: [],
-      plots: [
-        {
-          title: "C(τ)",
-          x_label: "Lag",
-          y_label: "C",
-          series: [{ name: "scalar", kind: "line", points: [[0, 1]] }],
-        },
-      ],
-      notes: [REPORT_NOTE],
-      details: null,
-    },
-  ];
+// `presentation` re-analyses, so its provenance `details.request` echoes the
+// same configuration.
+export function presentation(analysisConfig = REPORT.analysis) {
+  return PRESENTATION.map((result) => ({
+    ...result,
+    details: { ...result.details, request: analysisConfig },
+  }));
 }
 
 // Records every call; `advance` moves a counter, nothing else does.
-export function createFakeEngine({ steps = 64, delays = {} } = {}) {
+export function createFakeEngine({ steps = SNAPSHOT.steps, delays = {} } = {}) {
   const calls = [];
   let step = null,
     imported = false;
@@ -523,6 +94,9 @@ export function createFakeEngine({ steps = 64, delays = {} } = {}) {
   };
   const live = () => {
     if (step === null) throw new Error("no live session");
+  };
+  const analysed = () => {
+    if (step === null && !imported) throw new Error("nothing to analyse");
   };
   return {
     calls,
@@ -554,15 +128,20 @@ export function createFakeEngine({ steps = 64, delays = {} } = {}) {
       live();
       return snapshot(step, steps);
     },
+    async request() {
+      await record("request");
+      live();
+      return defaults.request;
+    },
     async analyze(analysisConfig) {
       await record("analyze", analysisConfig);
-      if (step === null && !imported) throw new Error("nothing to analyse");
+      analysed();
       return report(analysisConfig);
     },
     async presentation(analysisConfig) {
       await record("presentation", analysisConfig);
-      live();
-      return presentation();
+      analysed();
+      return presentation(analysisConfig);
     },
     async evidence() {
       await record("evidence");
@@ -601,7 +180,8 @@ export function createFakeEngine({ steps = 64, delays = {} } = {}) {
   };
 }
 
-// A module shaped like the wasm bundle, for `createWasmEngine(load)`.
+// A module shaped like the wasm bundle `wasm/src/spectroscopy_bindings.rs`
+// exports, for `createWasmEngine(load)`.
 export function createFakeWasm() {
   const log = [];
   let freed = 0;
@@ -621,13 +201,19 @@ export function createFakeWasm() {
     snapshot() {
       return snapshot(0);
     }
+    request() {
+      return defaults.request;
+    }
+    done() {
+      return false;
+    }
     analyze(json) {
       log.push(["analyze", json]);
       return report(JSON.parse(json));
     }
     presentation(json) {
       log.push(["presentation", json]);
-      return [];
+      return presentation(JSON.parse(json));
     }
     evidence() {
       return new Uint8Array([1, 2, 3]);
@@ -653,9 +239,17 @@ export function createFakeWasm() {
         log.push(["spectroscopy_analyze", bytes, json]);
         return report(JSON.parse(json));
       },
+      spectroscopy_presentation: (bytes, json) => {
+        log.push(["spectroscopy_presentation", bytes, json]);
+        return presentation(JSON.parse(json));
+      },
       spectroscopy_archive: (json, bytes) => {
         log.push(["spectroscopy_archive", json, bytes]);
         return report(JSON.parse(json).analysis);
+      },
+      spectroscopy_archive_presentation: (json, bytes) => {
+        log.push(["spectroscopy_archive_presentation", json, bytes]);
+        return presentation(JSON.parse(json).analysis);
       },
     },
   };

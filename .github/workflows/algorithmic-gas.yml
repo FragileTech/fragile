@@ -77,3 +77,4 @@ jobs:
       - run: npm --prefix fractal-gas-web ci --ignore-scripts
       - run: npm --prefix fractal-gas-web run build:euclidean-gas
       - run: npm --prefix fractal-gas-web run test:euclidean-gas
+      - run: npm --prefix fractal-gas-web run test:euclidean-qft-simulator

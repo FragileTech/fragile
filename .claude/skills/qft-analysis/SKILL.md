@@ -1,805 +1,274 @@
 ---
 name: qft-analysis
-description: Analyze QFT experiment results from RunHistory files. Computes particle masses and fundamental constants using multiple mass scale anchors (electron, Z boson, tau), validates against Standard Model values, and generates comprehensive comparison reports. Use when analyzing QFT simulation results or validating calibrations.
-allowed-tools: Bash(python:*), Read, Write, Glob
-argument-hint: [--history-path PATTERN] [--anchors ANCHORS] [--anchor-mass MASS] [--anchor-label LABEL]
+description: Measure and analyze QFT channel spectroscopy of Algorithmic Gas runs through the native Rust route (the gas-spectroscopy CLI and SpectroscopySession) - channel correlators, decay rates, fit and coverage diagnostics, and a hypothesis-labelled Standard Model comparison - and re-analyze stored evidence or recorded run archives without running the gas again. Use when analyzing QFT simulation results, extracting particle masses or spectra, comparing channels with Standard Model values, or validating a calibration. Also documents the legacy Python RunHistory route and why its strong-sector masses are unreliable.
+allowed-tools: Bash(cargo:*), Bash(uv:*), Read, Write, Glob
+argument-hint: "[--request FILE] [--variant NAME] [--steps N] [--replicas N] [--channels LIST] [--evidence FILE] [--archive GLOB] [--analysis FILE] [--output DIR] [--legacy-python]"
 disable-model-invocation: false
 ---
 
 # QFT Analysis Skill
 
-Orchestrate QFT experiment analysis, calibration validation, and multi-run comparison workflows.
+Drive the Rust spectroscopy subsystem of the Algorithmic Gas: measure gauge-theory
+operators on a recorded run, fit their correlators, and report the result with its
+diagnostics. Work from `/home/guillem/fragile/algorithmic-gas` unless told otherwise.
 
-## Your Task
+## What the numbers are
 
-Process QFT experiment RunHistory files to:
-1. Calibrate algorithmic parameters from Standard Model constants using different mass scale anchors
-2. Analyze particle masses and field correlations from simulation data
-3. Compare results to measured Standard Model values
-4. Generate comprehensive comparison reports with quality assessments
+The fitted quantity is the **decay rate of the algorithm-time autocorrelation**. It is a
+mass only under a positive self-adjoint transfer representation; the gas is not
+reversible, so complex or oscillating modes are expected and reject the exponential
+model instead of producing a number. Every report repeats this in `notes[0]`.
 
-## Available Scripts
+Three rules follow, and they are not negotiable:
 
-You orchestrate these existing Python scripts:
-- `src/experiments/calibrate_fractal_gas_qft.py` - Maps SM constants → algorithmic parameters
-- `src/experiments/analyze_fractal_gas_qft.py` - Computes particle masses & observables from RunHistory
-- `src/experiments/constants_check.py` - Reference SM constants for validation
+1. Never relabel a rate as a particle mass. The channel → particle assignment is an
+   input hypothesis (`AnalysisConfig.assignments`), carried through the report with the
+   label `hypothesis mapping`.
+2. Never choose a channel, a fit window, a prior or an anchor because the result agrees
+   better with a Standard Model value. That is the audited defect D2.
+3. Never print an undefined value as zero. `null` in the JSON stays an empty cell or a
+   gap in a curve.
 
-## Mass Scale Anchors
+## Route selection
 
-| Anchor   | Mass (GeV)      | Label      | Use Case                          |
-|----------|-----------------|------------|-----------------------------------|
-| Electron | 0.000510998950  | `electron` | Light fermion scale               |
-| Z Boson  | 91.1876         | `z`        | Electroweak scale (default)       |
-| Tau      | 1.77686         | `tau`      | Heavy lepton scale                |
-| Custom   | User-specified  | User-set   | Experimental (e.g., Higgs: 125.1) |
+**Native (default).** The Rust subsystem in
+`crates/algorithmic-gas/src/physics/spectroscopy` plus
+`crates/benchmarks/src/spectroscopy.rs`, driven by the `gas-spectroscopy` binary. It is
+f64 throughout, streams the recording in bounded chunks, declares per-channel
+availability instead of returning a number it cannot justify, and pins the corrections
+to every confirmed defect of the Python pipeline.
 
-## Standard Model Reference Constants
+**Legacy Python.** Only when the user explicitly asks for it, or when the input is an
+existing `RunHistory` `.pt` file that cannot be re-run. See
+[Legacy Python route](#legacy-python-route) — its strong-sector masses are not
+trustworthy.
 
-From `src/experiments/constants_check.py`:
-- α_em = 1/137.035999084 ≈ 0.007297352564 (fine structure constant)
-- sin²θ_W = 0.23121 (weak mixing angle at M_Z)
-- α_s(M_Z) = 0.1179 (strong coupling at M_Z)
+## Native workflow
 
-## Workflow
+Spectroscopy analyses an f64 run on the CPU backend and refuses anything else before it
+builds a gas, so keep `run.gas.precision` at `"f64"` and `run.gas.backend` at `"cpu"`.
 
-### Step 1: Parse Arguments
+### Step 1 — Orient
 
-Extract parameters from `$ARGUMENTS`:
+Ask the subsystem what it can do before writing a request:
 
-**History Path:**
-- `--history-path <path>` - Single file, glob pattern, or omit for auto-detect latest
-- Examples:
-  - `outputs/my_run_history.pt` (single file)
-  - `"outputs/sweep_*.pt"` (glob pattern - quote it!)
-  - Omit to auto-detect latest `.pt` file in `outputs/`
-
-**Anchors:**
-- `--anchors <list>` - Comma-separated: `electron,z,tau,custom,all`
-- Default: `z` (Z boson scale)
-- `all` expands to `electron,z,tau` (+ custom if provided)
-
-**Custom Anchor:**
-- `--anchor-mass <float>` - Required if `custom` in anchors
-- `--anchor-label <string>` - Default: "Custom"
-
-**Optional Flags:**
-- `--no-particles` - Skip particle mass computation (faster, field correlations only)
-- `--particle-max-lag <int>` - Override default lag points
-- `--particle-fit-stop <int>` - Override default fit range
-
-**Example Parsing:**
-```
-$ARGUMENTS = "--history-path outputs/sweep_*.pt --anchors z,electron"
-→ history_pattern = "outputs/sweep_*.pt"
-→ anchors = ["z", "electron"]
-```
-
-### Step 2: Pre-flight Validation
-
-Before running analysis:
-
-1. **Ensure output directories exist:**
-   ```bash
-   mkdir -p outputs/qft_calibration
-   mkdir -p outputs/fractal_gas_potential_well_analysis
-   mkdir -p outputs/qft_analysis_reports
-   ```
-
-2. **Resolve history files:**
-   ```bash
-   # If glob pattern
-   ls outputs/sweep_*.pt
-
-   # If auto-detect latest
-   ls -t outputs/*history*.pt | head -1
-   ```
-
-   Verify all files exist and are readable.
-
-3. **Validate custom anchor:**
-   If `custom` in anchors and no `--anchor-mass`, error:
-   ```
-   Error: --anchor-mass required when using custom anchor
-   Example: /qft-analysis --anchors custom --anchor-mass 125.1 --anchor-label Higgs
-   ```
-
-4. **Verify scripts are executable:**
-   ```bash
-   python src/experiments/calibrate_fractal_gas_qft.py --help >/dev/null 2>&1
-   ```
-
-### Step 3: Run Calibration Pipeline
-
-For each `(history_file, anchor)` pair:
-
-**Generate unique run_id:**
-```
-Format: <anchor_label>_<timestamp>
-Example: z_boson_170125
-```
-
-**Map anchor to mass/label:**
-```python
-ANCHORS = {
-    'electron': (0.000510998950, 'Electron'),
-    'z': (91.1876, 'Z_Boson'),
-    'tau': (1.77686, 'Tau'),
-    'custom': (user_mass, user_label)
-}
-```
-
-**Run calibration:**
 ```bash
-python src/experiments/calibrate_fractal_gas_qft.py \
-  --history-path <history_file> \
-  --m-gev <anchor_mass> \
-  --scale-label <anchor_label> \
-  --run-id <unique_run_id> \
-  --qsd-iter 4
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- defaults --output /tmp/spectroscopy-defaults.json
 ```
 
-**Output location:**
-```
-outputs/qft_calibration/<run_id>_calibration.json
-```
+The document holds the default request, one default request per implemented variant of
+the variants registry, the channel catalog with the records each channel requires and
+its availability under the default request, and the reference table. `variants` prints
+the registry on its own. Read the catalog before selecting channels: a channel whose
+records the chosen variant does not write is unavailable, and the reason says why.
 
-**Error Handling:**
-- If calibration fails for one (history, anchor) pair, log error and continue with others
-- Collect all errors to report at end
+### Step 2 — Build the request
 
-### Step 4: Run Analysis Pipeline
+A `SpectroscopyRequest` is `{variant, run, steps, replicas, seed, chunk, spectroscopy}`;
+`run` is an ordinary `RunConfig` and is authoritative, `variant` only labels it. Missing
+fields take the defaults, so `{}` is the Einstein–Hilbert reference instance with 200
+walkers in f64, 2000 steps, four replicas, seed 7, chunk 16 and the standard channel set
+(`warmup: 16`, `max_lag: 80`).
 
-For each unique history file (once per file, not per anchor):
-
-**Generate unique analysis_id:**
-```
-Format: <basename>_<timestamp>
-Example: sweep_nu10_170125
-```
-
-**Build command:**
-```bash
-python src/experiments/analyze_fractal_gas_qft.py \
-  --history-path <history_file> \
-  --analysis-id <unique_analysis_id> \
-  --compute-particles \
-  --build-fractal-set \
-  --particle-operators "baryon,meson,glueball" \
-  --use-connected \
-  --use-local-fields
-```
-
-**Optional flags (based on user input):**
-- If `--no-particles`: Omit `--compute-particles` and particle-related flags
-- If `--particle-max-lag N`: Add `--particle-max-lag N`
-- If `--particle-fit-stop N`: Add `--particle-fit-stop N`
-
-**Output location:**
-```
-outputs/fractal_gas_potential_well_analysis/<analysis_id>_metrics.json
-```
-
-**Error Handling:**
-- If particle computation fails but field analysis succeeds, accept partial results
-- If entire analysis fails, skip this history file and continue with others
-
-### Step 5: Load and Parse Results
-
-**Load calibration JSONs:**
-
-For each successful calibration, read JSON from `outputs/qft_calibration/<run_id>_calibration.json`:
-
-Key fields:
 ```json
 {
-  "algorithmic_parameters": {
-    "epsilon_c": float,
-    "epsilon_d": float,
-    "rho": float,
-    "tau": float,
-    "nu": float,
-    "epsilon_F": float
-  },
-  "couplings": {
-    "e_em": float,
-    "g1": float,
-    "g2": float,
-    "g3": float,
-    "sin_theta_w": float,
-    "cos_theta_w": float
-  },
-  "inputs": {
-    "constants": {
-      "alpha_em": float,
-      "sin2_theta_w": float,
-      "alpha_s": float,
-      "scale_label": string
-    },
-    "calibration": {
-      "m_gev": float,
-      "lambda_gap": float
-    }
-  },
-  "stability": {
-    "stable": bool,
-    "alive_fraction": float,
-    "finite_positions": bool,
-    "finite_velocities": bool,
-    "finite_fitness": bool
-  },
-  "qsd_estimates": {
-    "samples": int
-  }
+  "variant": "einstein_hilbert",
+  "steps": 512,
+  "replicas": 4,
+  "seed": 7,
+  "chunk": 16
 }
 ```
 
-**Compute gauge couplings from couplings:**
-- α_em = e_em² / (4π)
-- sin²θ_W = sin_theta_w²
-- α_s = g3² / (4π)
-
-**Load analysis JSONs:**
-
-For each analysis, read JSON from `outputs/fractal_gas_potential_well_analysis/<analysis_id>_metrics.json`:
-
-Key fields (may be nested deeper):
-```json
-{
-  "particle_masses": {
-    "meson": {"mass": float, "r_squared": float},
-    "baryon": {"mass": float, "r_squared": float},
-    "glueball": {"mass": float, "r_squared": float}
-  },
-  "correlations": {
-    "d_prime": {"xi": float, "r_squared": float},
-    "r_prime": {"xi": float, "r_squared": float},
-    "density": {"xi": float},
-    "kinetic": {"xi": float}
-  },
-  "lyapunov_ratio": float,
-  "plots": {
-    "correlations": string,
-    "wilson_loops": string
-  }
-}
-```
-
-**Note:** The actual JSON structure may be nested. Navigate carefully and handle missing fields.
-
-**Match calibrations to analyses:**
-- Group by history file basename
-- For each history file: collect all anchor calibrations + single analysis result
-
-### Step 6: Generate Terminal Tables
-
-Display these five tables in the terminal:
-
-#### Table 1: Run Summary
-
-```
-QFT Analysis Run Summary
-========================
-
-| Run ID              | History File                  | Anchor    | Stable | Alive % | QSD Samples |
-|---------------------|-------------------------------|-----------|--------|---------|-------------|
-| electron_170125     | sweep_nu10_history.pt         | Electron  | ✓      | 100.0%  | 200         |
-| z_boson_170125      | sweep_nu10_history.pt         | Z Boson   | ✓      | 100.0%  | 200         |
-| tau_170125          | sweep_nu10_history.pt         | Tau       | ✓      | 100.0%  | 200         |
-```
-
-**Data sources:**
-- Run ID: From calibration filename
-- History File: From calibration JSON `inputs.calibration` or command
-- Anchor: From calibration JSON `inputs.constants.scale_label`
-- Stable: ✓ if `stability.stable == true`, ✗ otherwise
-- Alive %: `stability.alive_fraction * 100`
-- QSD Samples: `qsd_estimates.samples`
-
-#### Table 2: Gauge Coupling Validation
-
-```
-Gauge Coupling Validation
-=========================
-(Input couplings should match exactly; validates inversion formulas)
-
-| Run ID          | Anchor    | α_em      | sin²θ_W   | α_s      | Match Quality |
-|-----------------|-----------|-----------|-----------|----------|---------------|
-| electron_170125 | Electron  | 0.007297  | 0.2312    | 0.1179   | ✓✓✓ Exact     |
-| z_boson_170125  | Z Boson   | 0.007297  | 0.2312    | 0.1179   | ✓✓✓ Exact     |
-| tau_170125      | Tau       | 0.007297  | 0.2312    | 0.1179   | ✓✓✓ Exact     |
-```
-
-**Data sources:**
-- From calibration JSON `inputs.constants`
-- Compare to reference values
-
-**Match Quality:**
-```python
-def match_quality(alpha_em, sin2_theta_w, alpha_s):
-    ref = {"alpha_em": 0.007297352564, "sin2_theta_w": 0.23121, "alpha_s": 0.1179}
-
-    max_error = max(
-        abs(alpha_em - ref["alpha_em"]) / ref["alpha_em"],
-        abs(sin2_theta_w - ref["sin2_theta_w"]) / ref["sin2_theta_w"],
-        abs(alpha_s - ref["alpha_s"]) / ref["alpha_s"]
-    )
-
-    if max_error < 0.001: return "✓✓✓ Exact"
-    if max_error < 0.01: return "✓✓ Good"
-    if max_error < 0.05: return "✓ Fair"
-    return "✗ Poor"
-```
-
-#### Table 3: Algorithmic Parameters by Anchor
-
-```
-Algorithmic Parameters by Anchor
-=================================
-
-| Parameter | Electron Scale | Z Boson Scale | Tau Scale | Physical Meaning           |
-|-----------|----------------|---------------|-----------|----------------------------|
-| ε_c       | 1.684          | 1.684         | 1.684     | Clone coupling scale       |
-| ε_d       | 2.799          | 2.799         | 2.799     | Distance coupling scale    |
-| ρ         | 1742.9         | 0.0096        | 0.540     | Mass-field coupling        |
-| τ         | 0.000725       | 1317.8        | 0.833     | Time scale                 |
-| ν         | 84.5           | 84.5          | 84.5      | Viscosity parameter        |
-| ε_F       | 0.00557        | 10123         | 63.9      | Fermion mass scale         |
-```
-
-**Data sources:**
-- From calibration JSON `algorithmic_parameters`
-- One column per anchor
-- Parameters: epsilon_c, epsilon_d, rho, tau, nu, epsilon_F
-
-**Formatting:**
-- Use scientific notation if |value| < 0.001 or |value| > 10000
-- Otherwise 3-4 significant figures
-
-**Physical meanings (hardcoded):**
-```python
-PARAM_MEANINGS = {
-    "epsilon_c": "Clone coupling scale",
-    "epsilon_d": "Distance coupling scale",
-    "rho": "Mass-field coupling",
-    "tau": "Time scale",
-    "nu": "Viscosity parameter",
-    "epsilon_F": "Fermion mass scale"
-}
-```
-
-#### Table 4: Particle Mass Predictions
-
-```
-Particle Mass Predictions
-=========================
-
-| Run ID          | Anchor   | Meson Mass | Meson R² | Baryon Mass | Baryon R² | Glueball Mass | Glueball R² | Quality    |
-|-----------------|----------|------------|----------|-------------|-----------|---------------|-------------|------------|
-| electron_170125 | Electron | 70.0       | 0.128    | 60.2        | 0.178     | 3.37          | 0.243       | Poor       |
-| z_boson_170125  | Z Boson  | 63.9       | 0.867    | 58.4        | 0.791     | 3.21          | 0.682       | Good       |
-| tau_170125      | Tau      | 65.1       | 0.654    | 59.3        | 0.612     | 3.28          | 0.571       | Fair       |
-```
-
-**Data sources:**
-- From analysis JSON `particle_masses.{meson,baryon,glueball}`
-- Match analysis to calibration via history file
-
-**Quality Scoring:**
-```python
-def particle_quality(r2_meson, r2_baryon, r2_glueball):
-    avg_r2 = (r2_meson + r2_baryon + r2_glueball) / 3
-
-    if avg_r2 > 0.8: return "Excellent"
-    if avg_r2 > 0.5: return "Good"
-    if avg_r2 > 0.3: return "Fair"
-    return "Poor"
-```
-
-**Missing data:**
-- If `--no-particles` used, show "N/A" for all masses/R²
-- If specific operator missing, show "—"
-
-#### Table 5: Correlation & Field Diagnostics
-
-```
-Correlation & Field Diagnostics
-================================
-
-| Run ID          | d_prime ξ | d_prime R² | r_prime ξ | r_prime R² | Density ξ | Kinetic ξ | Lyapunov Ratio |
-|-----------------|-----------|------------|-----------|------------|-----------|-----------|----------------|
-| electron_170125 | 0.0       | 0.0        | 0.426     | 0.973      | 0.125     | 0.016     | 0.0084         |
-```
-
-**Data sources:**
-- From analysis JSON `correlations` and `lyapunov_ratio`
-- One row per unique history file (analysis run once per file)
-
-**Note:**
-Correlation length ξ indicates spatial structure strength. R² indicates exponential fit quality.
-
-### Step 7: Generate Summary Assessment
-
-Compute overall quality:
-
-**1. Stability Check:**
-```python
-all_stable = all(cal["stability"]["stable"] for cal in calibrations)
-unstable_runs = [cal["run_id"] for cal in calibrations if not cal["stability"]["stable"]]
-```
-
-**2. Particle Fit Quality:**
-```python
-r2_values = []
-for analysis in analyses:
-    for operator in ["meson", "baryon", "glueball"]:
-        if operator in analysis["particle_masses"]:
-            r2_values.append(analysis["particle_masses"][operator]["r_squared"])
-
-avg_particle_r2 = sum(r2_values) / len(r2_values) if r2_values else 0
-
-if avg_particle_r2 > 0.8: particle_quality = "EXCELLENT"
-elif avg_particle_r2 > 0.5: particle_quality = "GOOD"
-elif avg_particle_r2 > 0.3: particle_quality = "MODERATE"
-else: particle_quality = "POOR"
-```
-
-**3. Field Correlation Quality:**
-```python
-correlation_r2 = []
-for analysis in analyses:
-    for field in ["r_prime", "d_prime"]:
-        if field in analysis["correlations"] and "r_squared" in analysis["correlations"][field]:
-            correlation_r2.append(analysis["correlations"][field]["r_squared"])
-
-avg_correlation_r2 = sum(correlation_r2) / len(correlation_r2) if correlation_r2 else 0
-
-if avg_correlation_r2 > 0.8: correlation_quality = "EXCELLENT"
-elif avg_correlation_r2 > 0.5: correlation_quality = "GOOD"
-elif avg_correlation_r2 > 0.3: correlation_quality = "MODERATE"
-else: correlation_quality = "POOR"
-```
-
-**4. QSD Convergence:**
-```python
-lyapunov_ratios = [analysis["lyapunov_ratio"] for analysis in analyses if "lyapunov_ratio" in analysis]
-max_lyapunov = max(lyapunov_ratios) if lyapunov_ratios else 0
-qsd_convergent = max_lyapunov < 0.01
-```
-
-**Overall Quality:**
-```python
-qualities = [particle_quality, correlation_quality]
-if "POOR" in qualities: overall = "POOR"
-elif "MODERATE" in qualities: overall = "MODERATE"
-elif "GOOD" in qualities: overall = "GOOD"
-else: overall = "EXCELLENT"
-```
-
-**Display Assessment:**
-
-```
-Calibration Quality Assessment
-===============================
-
-Overall: GOOD
-
-- Stability: ✓ All runs stable (100% alive, finite positions/velocities)
-- Particle Masses: MODERATE (Average R² = 0.46, some operators have poor fits)
-- Field Correlations: EXCELLENT (Average R² = 0.85, strong exponential decay)
-- QSD Convergence: ✓ Lyapunov ratio 0.0084 << 1
-
-Recommendations:
-- Increase simulation time for better particle mass statistics
-- Consider higher N for baryon operator (currently low R²)
-- Correlation lengths indicate well-formed QSD structure
-```
-
-**Recommendation Logic:**
-
-Generate 2-4 specific recommendations:
-
-```python
-recommendations = []
-
-if avg_particle_r2 < 0.5:
-    recommendations.append("Increase simulation time for better particle mass statistics")
-
-    # Check which operator is worst
-    worst_operator = min(particle_masses.items(), key=lambda x: x[1]["r_squared"])
-    if worst_operator[1]["r_squared"] < 0.3:
-        recommendations.append(f"Consider higher N for {worst_operator[0]} operator (currently low R²)")
-
-if avg_correlation_r2 < 0.5:
-    recommendations.append("Check spatial boundary conditions")
-
-if max_lyapunov > 0.01:
-    recommendations.append("Increase QSD iterations (--qsd-iter) for better convergence")
-
-if unstable_runs:
-    recommendations.append("Review parameter ranges for unstable runs")
-
-if not recommendations:
-    recommendations.append("Results are robust; consider production runs")
-
-# Also check correlation lengths
-avg_xi = sum(analysis["correlations"][f]["xi"]
-             for analysis in analyses
-             for f in ["r_prime", "density", "kinetic"]
-             if f in analysis["correlations"] and "xi" in analysis["correlations"][f])
-avg_xi /= (3 * len(analyses))
-
-if avg_xi > 0.05:
-    recommendations.append("Correlation lengths indicate well-formed QSD structure")
-```
-
-### Step 8: Generate Markdown Report
-
-Create report at `outputs/qft_analysis_reports/<timestamp>_qft_analysis_report.md`:
-
-**Timestamp format:** `YYYYMMDD_HHMMSS` (e.g., `20260125_170000`)
-
-**Report Structure:**
-
-````markdown
-# QFT Analysis Report
-
-**Generated:** 2026-01-25 17:00:00
-
-## Executive Summary
-
-{Overall quality assessment from Step 7}
-
-## Run Configuration
-
-- **History Files:** {list of files}
-- **Anchors:** {list of anchors}
-- **Analysis Options:** {particle computation enabled/disabled, etc.}
-
-## Results
-
-### Run Summary
-
-{Table 1 in markdown format}
-
-### Gauge Coupling Validation
-
-{Table 2 in markdown format}
-
-### Algorithmic Parameters
-
-{Table 3 in markdown format}
-
-### Particle Mass Predictions
-
-{Table 4 in markdown format}
-
-### Correlation & Field Diagnostics
-
-{Table 5 in markdown format}
-
-## Detailed Analysis
-
-### QSD Convergence
-
-- **Lyapunov Ratios:** {list values for each run}
-- **QSD Samples:** {list samples for each run}
-- **Convergence Quality:** {assessment}
-
-### Stability Checks
-
-- **Stable Runs:** {count}
-- **Unstable Runs:** {list if any}
-- **Alive Fractions:** {range across all runs}
-
-### Plot References
-
-{For each analysis, list plot links}
-
-**Run: {analysis_id}**
-- Correlations: `{plot_path}`
-- Wilson Loops: `{plot_path}`
-
-## Recommendations
-
-{Detailed recommendations from Step 7}
-
-## Appendix
-
-### Calibration Parameters (JSON)
-
-<details>
-<summary>Run: {run_id}</summary>
-
-```json
-{full calibration JSON}
-```
-
-</details>
-
-### Analysis Metrics (JSON)
-
-<details>
-<summary>Analysis: {analysis_id}</summary>
-
-```json
-{full analysis JSON}
-```
-
-</details>
-````
-
-After generating report, inform user:
-
-```
-✓ Analysis complete!
-
-Report saved to: outputs/qft_analysis_reports/{timestamp}_qft_analysis_report.md
-
-Summary: {One-sentence overall assessment}
-```
-
-## Error Handling
-
-### Common Errors and Solutions
-
-**1. History file not found:**
-```
-Error: History file not found: {path}
-
-Available history files in outputs/:
-{list .pt files}
-
-Suggestion: Use --history-path to specify correct file, or omit to auto-detect latest
-```
-
-**2. Calibration script failure:**
-```
-Error: Calibration failed for run {run_id}
-Details: {stderr from script}
-
-Troubleshooting:
-- Check history file is valid RunHistory object
-- Verify QSD data exists in history
-- Try reducing --qsd-iter if convergence issues
-
-Continuing with remaining runs...
-```
-
-**3. Analysis script failure:**
-```
-Error: Analysis failed for {history_file}
-Details: {stderr from script}
-
-Troubleshooting:
-- Ensure --build-fractal-set if using glueball operator
-- Check simulation has sufficient data (N > 10, steps > 100)
-- Try --no-particles for faster field-only analysis
-
-Skipping this history file...
-```
-
-**4. Missing JSON outputs:**
-```
-Warning: Expected calibration JSON not found: {path}
-This may indicate the calibration script didn't complete successfully.
-Check script output above for errors.
-```
-
-**5. Custom anchor without mass:**
-```
-Error: --anchor-mass required when using 'custom' anchor
-
-Example usage:
-/qft-analysis --anchors custom --anchor-mass 125.1 --anchor-label Higgs
-```
-
-### Graceful Degradation
-
-**Partial Calibration Failure:**
-- Continue with successful calibrations
-- Generate tables with available data
-- Note missing runs in report
-
-**Partial Analysis Failure:**
-- Use field correlations if particle computation failed
-- Show "N/A" for missing particle data in tables
-
-**All Calibrations Failed:**
-- Display clear error message
-- Show troubleshooting steps
-- Do not generate report
-
-**All Analyses Failed:**
-- Show calibration results only
-- Note particle/correlation data unavailable
-- Provide troubleshooting guidance
-
-## Quality Thresholds Reference
-
-| Metric          | Excellent | Good  | Fair  | Poor  |
-|-----------------|-----------|-------|-------|-------|
-| R² (fit)        | > 0.8     | > 0.5 | > 0.3 | ≤ 0.3 |
-| Lyapunov ratio  | < 0.005   | < 0.01| < 0.05| ≥ 0.05|
-| Correlation ξ   | > 0.1     | > 0.05| > 0.01| ≤ 0.01|
-| Alive %         | 100%      | > 95% | > 90% | ≤ 90% |
-| Gauge match     | < 0.1%    | < 1%  | < 5%  | ≥ 5%  |
-
-## Example Invocations
-
-### Basic Usage
+Constraints to respect when the user asks for something else:
+
+- `run.gas.precision` must be `"f64"`. There is no precision fallback.
+- Replicas 1..32, steps 1..10000000, chunk 1..32. Replica `r` runs with
+  `seed + r * 104729`; `run.gas.seed` is ignored.
+- Under dense viscosity (`qft.viscosity`) the chunk must be 1..4: that configuration
+  records `2 N (N - 1)` influence rows per step.
+- Fewer than four replicas makes the reported errors block-resampling errors inside one
+  run, not replica standard errors. The report says so; repeat it to the user.
+- Colour channels need a non-zero viscous force. `euclidean` has none, so choose
+  `viscous_euclidean` or `einstein_hilbert`, or set an explicit
+  `ColorSource::RecordedField`.
+
+### Step 3 — Run and keep the evidence
 
 ```bash
-# Analyze latest run with default Z anchor
-/qft-analysis
-
-# Analyze specific run with electron anchor
-/qft-analysis --history-path outputs/sweep_nu1.00_vls1.00_history.pt --anchors electron
-
-# Compare all anchors for one run
-/qft-analysis --history-path outputs/my_run_history.pt --anchors all
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- \
+  run /tmp/spectroscopy-request.json --output /tmp/spectroscopy-report.json --evidence /tmp/spectroscopy-evidence.cbor
 ```
 
-### Multi-Run Comparison
+Always write the evidence. It is the CBOR `{schema_version, request, configs,
+measurements}` that makes every later analysis free.
+
+### Step 4 — Re-analyze without running the gas
+
+Resampling, fit windows, the estimator, the reference table, the anchors and the channel
+selection are analysis parameters. Changing any of them is a re-analysis of the same
+measurement:
 
 ```bash
-# Compare parameter sweep with Z boson anchor
-/qft-analysis --history-path "outputs/sweep_nu*.pt" --anchors z
-
-# Compare sweep across multiple anchors (QUOTE the glob!)
-/qft-analysis --history-path "outputs/sweep_*.pt" --anchors electron,z,tau
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- \
+  analyze /tmp/spectroscopy-evidence.cbor /tmp/analysis.json --output /tmp/spectroscopy-narrow.json
 ```
 
-### Advanced Options
+Never re-run the gas to change a fit window. If the user wants several windows, priors
+or estimators compared, run once and analyze many times.
+
+### Step 5 — Measure an existing archive
+
+A run already recorded by the benchmark runner can be measured directly:
 
 ```bash
-# Custom anchor (Higgs mass)
-/qft-analysis --anchors custom --anchor-mass 125.1 --anchor-label Higgs
-
-# Skip particle computation (faster, field correlations only)
-/qft-analysis --no-particles
-
-# High-resolution particle analysis
-/qft-analysis --particle-max-lag 200 --particle-fit-stop 50
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-benchmark -- \
+  --variant einstein_hilbert --precision f64 --steps 750 --record /tmp/run.cbor --record-graph
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- \
+  archive /tmp/spectroscopy-request.json /tmp/run.cbor --output /tmp/spectroscopy-report.json
 ```
 
-## Output Format
+Pass one archive per replica. The archive must be an f64 run — the Einstein–Hilbert
+preset runs in `Precision::F32` unless `--precision f64` says otherwise, and spectroscopy
+refuses an f32 archive rather than promoting it. `--record-graph` is needed for the
+graph-based diagnostics (geodesic scales, smoothing).
 
-Always conclude with:
+### Step 6 — Read the report before reporting it
 
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-QFT ANALYSIS COMPLETE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Read in this order and do not skip ahead:
 
-Summary: {one-line overall quality}
+1. `notes` — the interpretation note, the replica-count note and every measurement note.
+2. `capabilities` and `calibration` — what the run could support at all.
+3. Per channel: `availability` first. An unavailable channel has a reason string; print
+   it verbatim and do not substitute a number from elsewhere.
+4. `coverage` — frames, valid elements, masked counts. Thin coverage invalidates a fit
+   before its χ² does.
+5. `estimator` — `frame_mean`, `source_frozen` or `euclidean_time`. An exchange-odd
+   channel on a mutual pairing legitimately falls back to the source-frozen propagator;
+   say which estimator produced each number.
+6. `fits` / `mass` — with χ², dof, Q, the window, the effective block, τ_int and the
+   prior-dominance diagnostic. A prior-dominated ground state or a below-threshold
+   signal-to-noise reports **no rate**; report that as the result, not as a failure to
+   be worked around.
+7. `groups`, `gevp`, `comparison`, `couplings`, `flow`.
 
-Report: outputs/qft_analysis_reports/{timestamp}_qft_analysis_report.md
+In the coupling report keep the three kinds of number apart: a **scale** is configured or
+fixed in the warm-up, a **proxy** is a book formula on those scales and is never compared
+with a Standard Model coupling, and a **target** is a Standard Model input re-expressed
+as a gas parameter. The Standard Model map is an inversion from reference inputs to gas
+parameters, never a measurement of them — do not present α_em, sin²θ_W or α_s as outputs.
 
-{If errors occurred, list them here}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+The graph smoothing diagnostic (`flow`) sets no length scale. Do not read a `w0` or any
+other scale off its roughness curve.
 
-## Implementation Tips
+### Step 7 — Summarize
 
-**JSON Parsing:**
-Use Python one-liners or small scripts:
+Produce one channel table (id, availability or its reason, estimator, coverage, rate ±
+error, χ²/dof and Q, prior dominance), the comparison table if assignments were given
+(always labelled a hypothesis mapping), and the notes verbatim. Write the report file
+only where the user asked; otherwise show the tables and cite the JSON paths.
+
+## Current interface status
+
+Every subcommand and every library entry point listed above is implemented and runs end to
+end. What a request still cannot ask for: a run in f32 or on a GPU backend (refused, not
+promoted), a momentum projection on a non-periodic box, and the book-only variants
+`geometric`, `latent` and `environment`, which the registry marks unimplemented. Channels
+whose inputs a variant does not record come back `unavailable` with a sentence; that is
+the normal outcome, not a failure, and the sentence is what to report. Never synthesize the
+JSON a command would have printed, and never fall back to the Python route silently.
+
+## Library entry points
+
+For work inside the workspace rather than through the CLI:
+
+- `algorithmic_gas::physics::spectroscopy::measure_archive(&MeasurementConfig, &RunArchive<f64>)`
+  and `measure_archive_with(.., Extensions)` for injected operators or field sources.
+- `algorithmic_gas::physics::spectroscopy::analyze(&[Measurement], &AnalysisConfig)`,
+  and `select_estimator` for a live view.
+- `algorithmic_gas_benchmarks::spectroscopy::{SpectroscopySession, analyze_evidence, analyze_archive}`.
+- `spectroscopy::presentation::present` for the plot and metric descriptors the SVG
+  adapters render.
+- The browser equivalent is `/euclidean-gas/qft.html` over the same Rust through
+  `crates/wasm/src/spectroscopy_bindings.rs`.
+
+Measurements combine only when their fingerprints agree — measurement configuration, gas
+configuration with the seed cleared, resolved capabilities, injected component identities
+— with equal population size and schema version. Do not attempt to merge measurements of
+different configurations; the analysis rejects it.
+
+## Legacy Python route
+
+`src/experiments/calibrate_fractal_gas_qft.py` (Standard Model constants → algorithmic
+parameters) and `src/experiments/analyze_fractal_gas_qft.py` (masses and observables from
+a `RunHistory` `.pt` file), with reference constants in
+`src/experiments/constants_check.py`. Anchors: electron `0.000510998950`, Z `91.1876`,
+tau `1.77686`, or a custom mass and label.
+
 ```bash
-python -c "import json; data = json.load(open('file.json')); print(data['field'])"
+uv run python src/experiments/calibrate_fractal_gas_qft.py \
+  --history-path outputs/<run>_history.pt --m-gev 91.1876 --scale-label Z_Boson --run-id <id> --qsd-iter 4
+uv run python src/experiments/analyze_fractal_gas_qft.py \
+  --history-path outputs/<run>_history.pt --analysis-id <id> \
+  --compute-particles --build-fractal-set --particle-operators "baryon,meson,glueball" \
+  --use-connected --use-local-fields
 ```
 
-**Timestamp Generation:**
-```bash
-date +"%Y%m%d_%H%M%S"
-```
+Outputs land in `outputs/qft_calibration/<run_id>_calibration.json` and
+`outputs/fractal_gas_potential_well_analysis/<analysis_id>_metrics.json`.
 
-**Glob Expansion:**
-```bash
-ls outputs/sweep_*.pt 2>/dev/null
-```
+**State these limitations whenever you report a number from this route.** The operator
+audit is recorded in
+[`algorithmic-gas/QFT_VALIDATION.md`](../../../algorithmic-gas/QFT_VALIDATION.md),
+section "Algorithmic spectroscopy: scope, parity exclusions and open conventions", with
+the fixture-level exclusion list in
+[`algorithmic-gas/crates/algorithmic-gas/tests/fixtures/qft/README.md`](../../../algorithmic-gas/crates/algorithmic-gas/tests/fixtures/qft/README.md).
+The two findings that make the strong-sector masses unreliable:
 
-**Table Formatting:**
-Use simple string formatting or Python's tabulate. Ensure columns align properly.
+- **D1 — exchange-odd channels cancel.** The Fisher–Yates pairing is an involution
+  (`c(i)=j`, `c(j)=i`), and `z_ji = conj(z_ij)`, so a frame mean over both orientations
+  of an exchange-odd quantity vanishes exactly. The pseudoscalar (`Im z_ij`), the vector
+  (`Re z_ij · (x_j − x_i)`) and the imaginary part of every U(1) channel are float32
+  roundoff — measured `1.3e-8` and `1.5e-8` against `0.14` and `0.35` for the scalar and
+  axial channels. A fit on them returns a rate of the noise. The pion and rho numbers of
+  this pipeline are therefore not measurements of anything.
+- **D2 — PDG-tuned priors.** The per-channel `dE_ground` priors (π 0.024, σ 0.09, ρ 0.13,
+  N 0.16, G 0.29) reproduce PDG ratios by construction (π/N 0.150 against 0.149). Any
+  agreement with the Standard Model that this route reports is built into the prior and
+  is not evidence.
 
-**Error Collection:**
-Keep a list of errors during processing, display summary at end if any occurred.
+Further confirmed defects that affect its error bars and its GEVP levels: D3 (GEVP
+bootstrap shuffles time points independently), D6 (block size hard-coded to 10 and a
+jackknife that reuses the full-sample mean; nominal 68 % intervals cover 0.41), D4 (the
+SU(2) and mixed electroweak amplitudes are identically zero because `epsilon_clone`
+doubles as the Gaussian range) and D8 (vector, axial and tensor components averaged
+before correlating, which is not rotation invariant). Rust pins the corrected behaviour
+for all of them.
+
+Do not "fix" the Python pipeline as part of an analysis task. If a user needs corrected
+numbers, re-run the measurement through the native route.
+
+## Troubleshooting
+
+| Symptom | Cause and action |
+|---|---|
+| Every colour channel unavailable, "viscous force is identically zero" | The variant has no viscous force. Use `viscous_euclidean` or `einstein_hilbert`, or configure `qft.viscosity` / `qft.graph_viscosity`, or select an explicit `RecordedField` colour source. |
+| "spectroscopy requires an f64 recorded run" | The archive or request is f32. Set `run.gas.precision` to `"f64"` and record again. |
+| "momentum projection needs a periodic box" | A momentum-projected glueball needs a periodic boundary. Drop the projection or change the boundary. |
+| "no Euclidean-time axis declared" | The Euclidean-time estimator needs a geometry projection that drops a coordinate. Use another estimator or another variant. |
+| "exchange-odd operator cancels on a mutual pairing" | Expected on an involutive pairing. The source-frozen propagator is the estimator to use; a non-involutive companion law would restore the frame mean. |
+| "Dense viscosity requires chunk 1..4" | Lower `chunk`. |
+| "measurements of different configurations ... cannot be combined" | The fingerprints differ. Re-measure the replicas with one configuration. |
+| "runs-as-samples requires at least 8 replicas" | Use `pooled_blocks`, or raise `replicas`. |
+| "analysis windows exceed the measured lag range" | Raise `measurement.max_lag` and re-measure, or narrow the fit window. |
+| "spectroscopy analyses an f64 CPU run" | The request asks for f32 or a GPU backend. Set `run.gas.precision` to `"f64"` and `run.gas.backend` to `"cpu"`. |
+
+## References
+
+- `algorithmic-gas/README.md`, section "Algorithmic spectroscopy" — the subsystem, the
+  channel families and their requirements, and the CLI.
+- `algorithmic-gas/QFT_VALIDATION.md` — validated identities, parity exclusions and the
+  conventions still open.
+- `docs/source/2_fractal_gas/2_fractal_set/04_standard_model.md` — the normative operator
+  definitions; `09_qft_calibration.md` — channel knobs and mass plateaus;
+  `1_the_algorithm/04_gas_variants.md` — which variant supports what.

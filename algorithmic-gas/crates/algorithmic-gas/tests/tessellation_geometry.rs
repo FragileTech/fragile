@@ -2,10 +2,11 @@
 use algorithmic_gas::{
     ObservationBatch, TensorBatch,
     boundary::BoxDomain,
+    partv_geometry::MetricPolicy,
     tessellation::{
-        CurvatureKind, CurvatureSpec, GeometryPipelineConfig, MetricKind, Parallelism,
-        ReggeLengths, TessellationDomain, TessellationGeometry, VolumeKind, VoronoiCellsConfig,
-        WeightMode, WeightSpec,
+        CurvatureKind, CurvatureSpec, GeometryPipelineConfig, GraphSnapshot, MetricKind,
+        Parallelism, ReggeLengths, RidgeScale, TessellationDomain, TessellationGeometry,
+        VolumeKind, VoronoiCellsConfig, WeightMode, WeightSpec, sites::NO_SITE,
     },
 };
 
@@ -140,6 +141,7 @@ fn quadratic_fit_recovers_conformally_flat_curvature() {
                 field: "g".into(),
                 min_eig: None,
                 max_eig: None,
+                policy: MetricPolicy::default(),
             },
             curvature: vec![spec(
                 "fit",
@@ -461,4 +463,188 @@ fn configuration_round_trips_and_rejects_dangling_references() {
     // Four projected coordinates have no tessellator.
     assert!(config.validate::<f64>(4).is_err());
     assert!(serde_json::from_str::<GeometryPipelineConfig>(r#"{"unknown":1}"#).is_err());
+    // The ridge units are an arm of their own. The relative one is the default
+    // and is omitted, exactly as the metric policy is; the absolute one is
+    // written out, so a configuration that asks for the coordinate convention
+    // of the reference estimators says so in its own payload.
+    let relative = MetricKind::default();
+    assert!(matches!(
+        relative,
+        MetricKind::NeighborCovariance {
+            scale: RidgeScale::RelativeToTrace,
+            ..
+        }
+    ));
+    let json = serde_json::to_string(&relative).unwrap();
+    assert!(!json.contains("scale"), "{json}");
+    assert_eq!(serde_json::from_str::<MetricKind>(&json).unwrap(), relative);
+    let absolute = MetricKind::NeighborCovariance {
+        ridge: 1e-5,
+        min_eig: Some(1e-6),
+        max_eig: None,
+        scale: RidgeScale::Absolute,
+        policy: MetricPolicy::Clipped,
+    };
+    let json = serde_json::to_string(&absolute).unwrap();
+    assert!(json.contains(r#""scale":"absolute""#), "{json}");
+    assert_eq!(serde_json::from_str::<MetricKind>(&json).unwrap(), absolute);
+    assert_eq!(
+        serde_json::from_str::<MetricKind>(
+            r#"{"kind":"neighbor_covariance","ridge":1e-5,"min_eig":1e-6,"scale":"absolute"}"#
+        )
+        .unwrap(),
+        absolute
+    );
+    assert!(
+        serde_json::from_str::<MetricKind>(
+            r#"{"kind":"neighbor_covariance","scale":"relative_to_span"}"#
+        )
+        .is_err()
+    );
+    assert!(
+        serde_json::from_str::<MetricKind>(r#"{"kind":"neighbor_covariance","scaled":true}"#)
+            .is_err()
+    );
+}
+
+#[test]
+fn the_emergent_metric_scales_with_the_cloud() {
+    for d in [2usize, 3] {
+        let n = if d == 2 { 120 } else { 200 };
+        let x = cloud(n, d);
+        let config = GeometryPipelineConfig::default();
+        let reference = run(&config, &observations(d, x.clone()));
+        let exponent = -2. * d as f64;
+        for lambda in [1e-1, 1e-2, 1e-3] {
+            let scaled = run(
+                &config,
+                &observations(d, x.iter().map(|v| lambda * v).collect()),
+            );
+            // A similarity leaves the Delaunay topology alone; only then do the
+            // per-walker rows compare.
+            assert_eq!(
+                scaled.graph().coo(),
+                reference.graph().coo(),
+                "d={d} lambda={lambda}: topology"
+            );
+            let factor = lambda.powf(exponent);
+            for i in 0..n {
+                let expected = factor * reference.metric.determinant[i];
+                assert!(
+                    (scaled.metric.determinant[i] - expected).abs() <= 1e-10 * expected.abs(),
+                    "d={d} lambda={lambda} i={i}: det {} vs {expected}",
+                    scaled.metric.determinant[i]
+                );
+            }
+            // The metric length of an edge is dimensionless, so a rescaled
+            // cloud has exactly the geodesic lengths of the original.
+            for (e, (a, b)) in scaled
+                .lengths
+                .geodesic()
+                .iter()
+                .zip(reference.lengths.geodesic())
+                .enumerate()
+            {
+                assert!(
+                    (a - b).abs() <= 1e-12 * b.abs(),
+                    "d={d} lambda={lambda} e={e}: geodesic {a} vs {b}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn dead_walkers_leave_the_geometry_of_the_live_ones_untouched() {
+    for d in [2usize, 3] {
+        let (live, dead) = (60usize, 12usize);
+        let bits = |v: &[f64]| v.iter().map(|x| x.to_bits()).collect::<Vec<_>>();
+        let x = cloud(live, d);
+        let config = GeometryPipelineConfig::default();
+        // The dead walkers sit far outside the live cloud and carry the last
+        // indices, so the live walkers keep their CSR rows either way.
+        let mut wider = x.clone();
+        wider.extend(cloud(dead, d).iter().map(|v| 40. + v));
+        let alive = run(&config, &observations(d, x));
+        let padded = observations(d, wider);
+        let n = live + dead;
+        let mut eligible = vec![true; n];
+        eligible[live..].fill(false);
+        let masked = config.evaluate(&padded, &eligible, None, 1 << 24).unwrap();
+        let (a, b) = (GraphSnapshot::of(&alive), GraphSnapshot::of(&masked));
+        // An ineligible walker is no site and the endpoint of no edge.
+        for i in live..n {
+            assert_eq!(masked.tessellation.sites.site_of_walker[i], NO_SITE);
+            assert_eq!(b.graph.degree(i), 0);
+        }
+        assert_eq!(a.graph.edges(), b.graph.edges(), "d={d}: edge count");
+        assert_eq!(a.graph.offsets(), &b.graph.offsets()[..=live], "d={d}: CSR");
+        assert_eq!(a.graph.neighbors(), b.graph.neighbors(), "d={d}: CSR");
+        assert_eq!(bits(&a.euclidean_length), bits(&b.euclidean_length));
+        assert_eq!(bits(&a.geodesic_length), bits(&b.geodesic_length));
+        let width = alive.dimension * alive.dimension;
+        assert_eq!(
+            bits(&alive.metric.metric),
+            bits(&masked.metric.metric[..live * width]),
+            "d={d}: metric rows of the live walkers"
+        );
+        // Accumulating over every edge and masking after the reduction, the
+        // Python behavior, is what the bit comparisons above exclude.
+        let unmasked = config
+            .evaluate(&padded, &vec![true; n], None, 1 << 24)
+            .unwrap();
+        assert_ne!(
+            bits(&alive.metric.metric),
+            bits(&unmasked.metric.metric[..live * width]),
+            "d={d}: eligible far walkers must reach the live rows"
+        );
+    }
+}
+
+#[test]
+fn an_indefinite_metric_is_refused_or_flagged_never_silently_positive() {
+    let d = 2usize;
+    let n = 8;
+    let mut obs = observations(d, cloud(n, d));
+    // Eigenvalues (+2, -3), already diagonal so the eigensolver keeps the order.
+    let g: Vec<f64> = (0..n).flat_map(|_| [2., 0., 0., -3.]).collect();
+    obs.fields
+        .insert("g".into(), TensorBatch::new(n, vec![d, d], g).unwrap());
+    let indefinite = |policy| GeometryPipelineConfig {
+        metric: MetricKind::ObservationField {
+            field: "g".into(),
+            min_eig: Some(1e-6),
+            max_eig: None,
+            policy,
+        },
+        curvature: vec![],
+        ..GeometryPipelineConfig::default()
+    };
+    let strict = indefinite(MetricPolicy::Strict)
+        .evaluate(&obs, &vec![true; n], None, 1 << 24)
+        .unwrap_err();
+    assert!(
+        matches!(strict, algorithmic_gas::GasError::Numerical(_)),
+        "{strict}"
+    );
+    // Under the clipping policy the repair stands, but it is on the record.
+    let field = run(&indefinite(MetricPolicy::Clipped), &obs).metric;
+    for i in 0..n {
+        assert!(field.repaired(i));
+        assert_eq!(&field.clipped[i * d..(i + 1) * d], [false, true]);
+        assert_eq!(field.determinant[i], 2. * 1e-6);
+    }
+    // A positive definite field inside the clamp is never flagged.
+    let mut definite = observations(d, cloud(n, d));
+    definite.fields.insert(
+        "g".into(),
+        TensorBatch::new(
+            n,
+            vec![d, d],
+            (0..n).flat_map(|_| [2., 0., 0., 3.]).collect(),
+        )
+        .unwrap(),
+    );
+    let field = run(&indefinite(MetricPolicy::Strict), &definite).metric;
+    assert!(field.clipped.iter().all(|&moved| !moved));
 }

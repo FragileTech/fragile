@@ -10,25 +10,27 @@ use algorithmic_gas::{
             AnalysisConfig, Availability, Capabilities, ChannelReport, ChannelSpec, Measurement,
             MeasurementConfig, SPECTROSCOPY_VERSION, SpectroscopyReport, analyze,
             config::{
-                HyperchargeNormalization, Range, ReferenceEntry, ReferenceTable,
-                StandardModelInputs, TimeUnit,
+                FrameNormalization, HyperchargeNormalization, Range, ReferenceEntry,
+                ReferenceTable, StandardModelInputs, TimeUnit,
             },
             contract::EXCHANGE_ODD_REASON,
             couplings::{
                 self, AlgorithmicScales, CalibrationTargets, TargetCouplings, casimir, g1_squared,
                 g2_casimir_squared, g2_clock_squared, gd_squared, kernel_action_scale,
-                kernel_factor,
+                kernel_factor, presupposed_kernel_second_moment,
             },
             presentation::{EXPERIMENT, present},
-            reference::{compare, prediction, ratio, spread, tension},
+            reference::{assigned, compare, prediction, ratio, spread, tension},
             report::{
                 CALCULATION_ORIGIN, Calibration, Comparison, CorrelatorEstimate, CouplingReport,
-                EstimatorKind, FitDiagnostics, FitMethodKind, FitOutcome, FlowDiagnostic,
+                Coverage, EstimatorKind, FitDiagnostics, FitMethodKind, FitOutcome, FlowDiagnostic,
                 GevpReport, GroupFit, HYPOTHESIS_LABEL, MassEstimate, PriorDominance, Quantity,
-                RATE_QUANTITY, RatioRow, SamplesMeta,
+                RATE_QUANTITY, RATE_QUANTITY_EUCLIDEAN, RATE_QUANTITY_SOURCE_FROZEN, RatioRow,
+                SamplesMeta, WindowFit,
             },
         },
     },
+    tessellation::MetricKind,
     variants::Variant,
 };
 
@@ -345,8 +347,8 @@ fn the_notes_label_the_mapping_and_state_the_look_elsewhere_and_correlation_cave
          that assumption is not tested here.",
         "Ratios of rates do not depend on the time unit assigned to a lag \
          (thm-qft-ratio-rescale). They do depend on the integrator step, the recording stride, \
-         the estimator and the smearing scale, so only channels that share the time unit, the \
-         estimator and the scale are compared.",
+         the estimator, the frame normalisation and the smearing scale, so only channels that \
+         share the time unit, the estimator, the scale and the frame normalisation are compared.",
         "Anchor rescaling uses one reference value as an input; the anchor's own row is not a \
          prediction and is omitted. Of the 6 ratio rows only 3 are algebraically independent, \
          and rows that share a channel are statistically correlated.",
@@ -639,7 +641,10 @@ fn channels_without_a_common_unit_estimator_or_scale_are_never_divided() {
         "'rho' and 'nucleon'",
     ] {
         assert!(comparison.notes.iter().any(|n| n
-            == &format!("{pair} differ in time unit, estimator or scale and are not compared.")));
+            == &format!(
+                "{pair} differ in time unit, estimator, scale or frame normalisation and are \
+                 not compared."
+            )));
     }
     assert_eq!(
         comparison.reference[2].estimator,
@@ -1273,6 +1278,213 @@ fn the_calibration_is_an_inversion_of_inputs_and_never_a_result_of_the_run() {
     );
 }
 
+/// The audit's calibration pair: `nu = 0.948271` with `l_visc = 0.00976705`
+/// was advertised as `alpha_s = 0.1179` while the kernel at that width has
+/// `<K_visc^2> = 1.3596989447251e-05`, so the realised coupling is
+/// `1.945932764315832e-06`, sixty thousand times smaller. Nothing in the
+/// reference pipeline stated or checked the moment `nu` presupposes.
+#[test]
+fn a_configured_viscosity_states_the_kernel_moment_it_presupposes_and_flags_a_disagreement() {
+    let inputs = StandardModelInputs::default();
+    let g3 = TargetCouplings::of(&inputs).unwrap().g3[0];
+    let presupposed = presupposed_kernel_second_moment(0.948271, 1., 3, g3).unwrap();
+    assert!(close(presupposed, 0.823813178557852));
+    // It is the proxy solved for the moment: at it, nu returns the input.
+    assert!(close(
+        gd_squared(0.948271, 1., 3, presupposed).unwrap(),
+        g3 * g3
+    ));
+    assert_eq!(presupposed_kernel_second_moment(0., 1., 3, g3), None);
+    assert_eq!(presupposed_kernel_second_moment(0.948271, 1., 1, g3), None);
+
+    let measured = 1.3596989447251e-05;
+    let calibrated = |k2: f64| Calibration {
+        mass: 1.,
+        h_eff: 1.,
+        electroweak_h_eff: 1.,
+        h_s: 1.,
+        dt: Some(0.01),
+        viscous_kernel_second_moment: Some(k2),
+        ..Calibration::default()
+    };
+    let gas = viscous(0.01, 0.948271, 0.00976705);
+    let advertised = couplings::report(
+        &measurement(gas.clone(), 3, Some(calibrated(measured))),
+        &inputs,
+    )
+    .unwrap();
+    assert!(close(
+        value(&advertised.couplings, "g3"),
+        0.004945029050169188
+    ));
+    assert!(close(
+        value(&advertised.couplings, "alpha_3"),
+        1.945932764315832e-06
+    ));
+    let check = |report: &CouplingReport| -> String {
+        report
+            .notes
+            .iter()
+            .find(|n| n.starts_with("Calibration check:"))
+            .unwrap()
+            .clone()
+    };
+    let note = check(&advertised);
+    assert!(note.contains(&format!("nu = {}", 0.948271)));
+    assert!(note.contains(&format!("presupposes <K_visc^2> = {presupposed}")));
+    assert!(note.contains(&format!(
+        "rho = {} measured <K_visc^2> = {measured}",
+        0.00976705
+    )));
+    assert!(note.contains(&format!("a factor {}", presupposed / measured)));
+    assert!(note.contains(&format!("realised alpha_3 is {}", 1.945932764315832e-06)));
+    let flag = advertised
+        .notes
+        .iter()
+        .find(|n| n.starts_with("The viscous calibration of this run is inconsistent"))
+        .unwrap();
+    assert!(flag.contains(&format!("is not the input alpha_s = {}", 0.1179)));
+    assert!(flag.contains("meaningful only together with the <K_visc^2> of the kernel that runs"));
+
+    // At the moment it presupposes, the pair is consistent: the realised
+    // proxy is the input and no flag is raised. A factor of two is the
+    // tolerance and is still accepted.
+    for k2 in [presupposed, presupposed / 2., 2. * presupposed] {
+        let consistent =
+            couplings::report(&measurement(gas.clone(), 3, Some(calibrated(k2))), &inputs).unwrap();
+        assert!(
+            !consistent
+                .notes
+                .iter()
+                .any(|n| n.starts_with("The viscous calibration"))
+        );
+        assert!(check(&consistent).contains("Calibration check:"));
+    }
+    assert!(close(
+        value(
+            &couplings::report(
+                &measurement(gas.clone(), 3, Some(calibrated(presupposed))),
+                &inputs
+            )
+            .unwrap()
+            .couplings,
+            "alpha_3"
+        ),
+        0.1179
+    ));
+    // Without a warm-up moment nothing is checked, and the check says so
+    // instead of assuming the presupposition holds.
+    let bare = couplings::report(&measurement(gas, 3, None), &inputs).unwrap();
+    let note = check(&bare);
+    assert!(note.contains(&format!("realises the input alpha_s = {} only if", 0.1179)));
+    assert!(note.contains("no warm-up measurement of <K_visc^2>"));
+    assert_eq!(row(&bare.couplings, "alpha_3").value, None);
+}
+
+/// What the recorded geodesic lengths are made of. The reference
+/// implementation recorded a metric built from neighbour displacements alone,
+/// with a zero fitness field, and called its distances a fitness manifold.
+#[test]
+fn the_recorded_metric_is_named_and_no_parameter_row_claims_a_fitness_manifold() {
+    let geodesic = Calibration {
+        length: 0.25,
+        length_source: "warmup_edge_mean_geodesic".into(),
+        mass: 1.,
+        h_eff: 1.,
+        electroweak_h_eff: 1.,
+        h_s: 1.,
+        ..Calibration::default()
+    };
+    let gas = GasConfig::einstein_hilbert(0.33, 0.002).unwrap();
+    assert!(matches!(
+        gas.geometry.as_ref().unwrap().pipeline.metric,
+        MetricKind::NeighborCovariance { .. }
+    ));
+    let report = couplings::report(
+        &measurement(gas.clone(), 3, Some(geodesic.clone())),
+        &StandardModelInputs::default(),
+    )
+    .unwrap();
+    let named = |report: &CouplingReport| -> String {
+        report
+            .notes
+            .iter()
+            .find(|n| n.starts_with("The recorded tessellation metric is"))
+            .unwrap()
+            .clone()
+    };
+    let note = named(&report);
+    assert!(note.contains("the inverse neighbour covariance"));
+    assert!(note.contains("it reads no fitness"));
+    assert!(note.contains("not distances of the fitness manifold"));
+    assert!(note.contains(&format!("l0 = {} is a mean of its edge lengths", 0.25)));
+    let length = row(&report.scales, "phase_length");
+    assert_eq!(length.value, Some(0.25));
+    assert!(length.definition.contains("warmup_edge_mean_geodesic"));
+    assert!(length.definition.contains("kappa = m l0/h_eff"));
+    // No row of either parameter table claims what the metric does not carry.
+    for rows in [&report.scales, &report.couplings] {
+        assert!(rows.iter().all(|q| {
+            !q.definition.contains("fitness manifold") && !q.name.contains("fitness_manifold")
+        }));
+    }
+    // The companion-median arm measures no geodesic, so the sentence about
+    // the edge lengths is dropped while the metric is still named.
+    let median = Calibration {
+        length_source: "warmup_companion_median".into(),
+        ..geodesic.clone()
+    };
+    let report = couplings::report(
+        &measurement(gas.clone(), 3, Some(median)),
+        &StandardModelInputs::default(),
+    )
+    .unwrap();
+    assert!(!named(&report).contains("edge lengths"));
+    assert!(
+        row(&report.scales, "phase_length")
+            .definition
+            .contains("warmup_companion_median")
+    );
+    // The Hessian arm is the one the book's definition asks for, and is named
+    // as such; a gas with no geometry stage has no such note, and without a
+    // calibration the length is an explicit gap.
+    let mut hessian = gas;
+    hessian.geometry.as_mut().unwrap().pipeline.metric = MetricKind::HessianFd {
+        scalar_field: "fitness".into(),
+        full: true,
+        epsilon_sigma: 1e-3,
+        min_eig: Some(1e-6),
+        max_eig: None,
+        policy: Default::default(),
+    };
+    let report = couplings::report(
+        &measurement(hessian, 3, Some(geodesic)),
+        &StandardModelInputs::default(),
+    )
+    .unwrap();
+    let note = named(&report);
+    assert!(note.contains("a finite-difference Hessian of `fitness`"));
+    assert!(note.contains("fitness-manifold arm of def-adaptive-diffusion-tensor-latent"));
+    let flat = couplings::report(
+        &measurement(viscous(0.01, 1.5, 0.8), 3, None),
+        &StandardModelInputs::default(),
+    )
+    .unwrap();
+    assert!(
+        !flat
+            .notes
+            .iter()
+            .any(|n| n.starts_with("The recorded tessellation metric"))
+    );
+    let length = row(&flat.scales, "phase_length");
+    assert_eq!(length.value, None);
+    assert!(
+        length
+            .definition
+            .contains("undefined here: no warm-up calibration")
+    );
+}
+
 #[test]
 fn every_implemented_variant_yields_its_scales_and_explains_what_it_lacks() {
     for variant in Variant::all().iter().filter(|v| v.implemented()) {
@@ -1649,6 +1861,9 @@ fn a_presentation_draws_gaps_for_undefined_points_and_carries_the_provenance() {
         scalar.notes,
         [
             "Exchange parity: not defined; spatial parity: not verified.",
+            "Frame normalisation: not stated by the measurement. The valid-count and fixed-N \
+             averages are different observables and only the fixed-N one has a transfer-matrix \
+             reading.",
             "Errors are resampling errors over time blocks."
         ]
     );
@@ -1754,6 +1969,78 @@ fn an_analysis_attaches_the_coupling_report_and_no_comparison_without_a_rate() {
     );
     let results = present(&report).unwrap();
     assert_eq!(results.len(), 4);
+}
+
+/// `09_qft_calibration` asks every reported rate to state the frame
+/// normalization it used, because the valid-count average of chapter 04 and
+/// the fixed-`1/N` average of chapter 08 are two different observables. The
+/// reference implementation divided by a frame-varying denominator that is
+/// neither, and printed nothing.
+#[test]
+fn every_frame_mean_rate_states_its_normalisation_and_two_of_them_are_never_divided() {
+    let mut channels = near_channels();
+    channels[0].normalization = Some(FrameNormalization::ValidCount);
+    channels[1].normalization = Some(FrameNormalization::FixedN);
+    channels[2].estimator = Some(EstimatorKind::SourceFrozen);
+    channels[3].estimator = Some(EstimatorKind::EuclideanTime);
+    let mut report = report();
+    report.channels = channels.clone();
+    let results = present(&report).unwrap();
+    let notes = |title: &str| -> Vec<String> {
+        results
+            .iter()
+            .find(|r| r.title == title)
+            .unwrap()
+            .notes
+            .clone()
+    };
+    let stated = |notes: &[String]| -> Option<String> {
+        notes
+            .iter()
+            .find(|n| n.starts_with("Frame normalisation:"))
+            .cloned()
+    };
+    let first = stated(&notes(&format!("{PION}/distance"))).unwrap();
+    assert!(first.starts_with("Frame normalisation: the sum of valid element weights (04)."));
+    assert!(first.contains("only the fixed-N one has a transfer-matrix reading"));
+    assert!(
+        stated(&notes(&format!("{SIGMA}/distance")))
+            .unwrap()
+            .starts_with("Frame normalisation: the population size N (08).")
+    );
+    // A source-frozen propagator has no frame denominator; a channel whose
+    // measurement did not record one says so rather than implying a default.
+    assert_eq!(stated(&notes(&format!("{RHO}/distance"))), None);
+    assert!(
+        stated(&notes(&format!("{NUCLEON}/distance")))
+            .unwrap()
+            .contains("not stated by the measurement")
+    );
+
+    // Two normalizations are two observables: their ratio is not formed, and
+    // the reference rows carry the normalization behind each rate.
+    let mut analysis = AnalysisConfig::default();
+    assignments(&mut analysis, &["pion", "f0_500"]);
+    let comparison = compare(&channels[..2], &analysis).unwrap().unwrap();
+    assert_eq!(comparison.ratios.len(), 1);
+    assert_eq!(comparison.ratios[0].measured, None);
+    assert!(comparison.notes.iter().any(|n| n
+        == "'pion' and 'f0_500' differ in time unit, estimator, scale or frame normalisation \
+            and are not compared."));
+    assert_eq!(
+        comparison.reference[0].normalization,
+        Some(FrameNormalization::ValidCount)
+    );
+    assert_eq!(
+        comparison.reference[1].normalization,
+        Some(FrameNormalization::FixedN)
+    );
+    assert!(comparison.notes[2].contains("the scale and the frame normalisation are compared"));
+    // The same two channels under one normalization are compared again.
+    let mut shared = channels[..2].to_vec();
+    shared[1].normalization = Some(FrameNormalization::ValidCount);
+    let comparison = compare(&shared, &analysis).unwrap().unwrap();
+    assert!(comparison.ratios[0].measured.is_some());
 }
 
 #[test]
@@ -1983,4 +2270,924 @@ fn groups_bases_and_the_smoothing_diagnostic_are_presented_with_their_prior_diag
     assert!(flow.model.contains("defines no length scale"));
     assert_eq!(flow.plots[0].series.len(), 2);
     assert_eq!(flow.plots[0].series[1].points, [[2., 0.25]]);
+}
+
+/// `light` 10(0), `heavy` 30(3) and `narrow` 100(1) on the scalar, vector and
+/// baryon channels, anchored at `light`.
+fn three_entries() -> AnalysisConfig {
+    let entry = |name: &str, value: f64, error: f64| ReferenceEntry {
+        name: name.into(),
+        value,
+        error,
+        source: "test".into(),
+    };
+    AnalysisConfig {
+        reference: ReferenceTable {
+            unit: "GeV".into(),
+            entries: vec![
+                entry("light", 10., 0.),
+                entry("heavy", 30., 3.),
+                entry("narrow", 100., 1.),
+            ],
+        },
+        assignments: [(SIGMA, "light"), (RHO, "heavy"), (NUCLEON, "narrow")]
+            .map(|(k, v)| (k.to_string(), v.to_string()))
+            .into(),
+        anchors: vec!["light".into()],
+        ..AnalysisConfig::default()
+    }
+}
+fn three_channels(light: [f64; 2], heavy: [f64; 2]) -> [ChannelReport; 3] {
+    [
+        channel(SIGMA, Some(light)),
+        channel(RHO, Some(heavy)),
+        channel(NUCLEON, Some([5., 0.5])),
+    ]
+}
+fn measured(comparison: &Comparison) -> Vec<bool> {
+    comparison
+        .ratios
+        .iter()
+        .map(|r| r.measured.is_some())
+        .collect()
+}
+
+#[test]
+fn a_rate_at_exactly_three_sigma_is_a_denominator_and_an_anchor_and_a_range_is_flagged_by_its_error()
+ {
+    // 0.75/0.25 = 3 exactly. R = 2/0.75 with relative errors 0.1 and 1/3:
+    // sigma_R = R sqrt(0.01 + 1/9); the reference ratio is 3(0.3).
+    let analysis = three_entries();
+    let comparison = compare(&three_channels([0.75, 0.25], [2., 0.2]), &analysis)
+        .unwrap()
+        .unwrap();
+    assert_eq!(measured(&comparison), [true, true, true]);
+    let row = &comparison.ratios[0];
+    assert_eq!(label(row), "heavy/light");
+    assert!(pair_close(
+        row.measured,
+        [2.6666666666666665, 0.9280272452364933]
+    ));
+    assert!((row.tension_sigma.unwrap() + 0.34177078284690643).abs() < 1e-12);
+    let anchor = &comparison.anchors[0];
+    assert!(pair_close(
+        anchor.scale,
+        [13.333333333333334, 4.444444444444445]
+    ));
+    assert!(pair_close(
+        anchor.predictions[0].predicted,
+        [26.666666666666664, 9.280272452364933]
+    ));
+    assert!(comparison.notes.iter().all(|n| !n.contains("3 sigma")));
+    // The fraction rule alone: 10% is a range, 1% and 0 are not.
+    let flagged: Vec<&String> = comparison
+        .notes
+        .iter()
+        .filter(|n| n.starts_with("Reference '"))
+        .collect();
+    assert_eq!(flagged.len(), 1);
+    assert!(flagged[0].starts_with("Reference 'heavy' (test) is not a narrow experimental state"));
+    // A hair below three sigma the rate is a numerator only.
+    let below = compare(&three_channels([0.75, 0.2500001], [2., 0.2]), &analysis)
+        .unwrap()
+        .unwrap();
+    assert_eq!(measured(&below), [false, false, true]);
+    assert!(below.anchors[0].scale.is_none());
+    assert!(below.notes.iter().any(|n| n.contains("3 sigma")));
+}
+
+#[test]
+fn a_rate_without_a_positive_finite_error_enters_no_ratio_on_either_side() {
+    let analysis = three_entries();
+    // A vanishing error is no infinite significance: neither a denominator
+    // nor an anchor. The row still shows the number that was reported.
+    let exact = compare(&three_channels([0.75, 0.], [2., 0.2]), &analysis)
+        .unwrap()
+        .unwrap();
+    assert_eq!(measured(&exact), [false, false, true]);
+    assert!(exact.ratios[..2].iter().all(|r| r.tension_sigma.is_none()));
+    assert!(exact.anchors[0].scale.is_none() && exact.anchors[0].predictions.is_empty());
+    assert_eq!(exact.reference[0].measured, Some([0.75, 0.]));
+    assert!(
+        exact
+            .notes
+            .iter()
+            .any(|n| n.starts_with("'light': rate 0.75 +- 0 is not finite and positive"))
+    );
+    // narrow/heavy = 5/2 with relative errors 0.1 and 0.1.
+    assert!(pair_close(
+        exact.ratios[2].measured,
+        [2.5, 0.35355339059327373]
+    ));
+    assert!(exact.notes[3].contains("Of the 1 ratio rows only 1 are"));
+    // The same gate on the numerator side.
+    let numerator = compare(&three_channels([0.75, 0.25], [2., 0.]), &analysis)
+        .unwrap()
+        .unwrap();
+    assert_eq!(measured(&numerator), [false, true, false]);
+    assert_eq!(numerator.anchors[0].predictions[0].predicted, None);
+    assert!(numerator.anchors[0].predictions[1].predicted.is_some());
+    // A NaN error is a gap in the reference row as well and the comparison
+    // stays a valid report value.
+    let undefined = compare(&three_channels([0.75, 0.25], [2., f64::NAN]), &analysis)
+        .unwrap()
+        .unwrap();
+    assert_eq!(measured(&undefined), [false, true, false]);
+    assert_eq!(undefined.reference[1].measured, None);
+    assert_eq!(undefined.reference[0].measured, Some([0.75, 0.25]));
+    assert!(serde_json::to_string(&undefined).is_ok());
+}
+
+#[test]
+fn ratio_and_prediction_errors_are_positive_and_carry_the_reference_error_of_the_anchor() {
+    // A negative ratio keeps a positive error.
+    let [r, error] = ratio([-2., 0.2], [1., 0.1], 0.);
+    assert!(close(r, -2.) && close(error, 0.282842712474619));
+    // P = 10 * 2 = 20; sigma_P^2 = (10 * 0.2828)^2 + (2 * 1)^2 = 8 + 4.
+    let [p, error] = prediction([2., 0.2], [1., 0.1], [10., 1.], 0.);
+    assert!(close(p, 20.) && close(error, 3.4641016151377544));
+    // Fully correlated equal relative errors leave the anchor's error alone.
+    let [p, error] = prediction([2., 0.2], [1., 0.1], [10., 1.], 1.);
+    assert_eq!((p, error), (20., 2.));
+    // The anchor's reference error enters the prediction, not the scale's
+    // rate error twice: scale = 10(1)/1(0.1) has relative error sqrt(0.02).
+    let scale = ratio([10., 1.], [1., 0.1], 0.);
+    assert!(close(scale[0], 10.) && close(scale[1], std::f64::consts::SQRT_2));
+}
+
+#[test]
+fn an_assignment_key_selects_a_channel_id_first_and_then_the_first_rated_channel_of_a_specification()
+ {
+    let mut rated = channel(SIGMA, Some([0.35, 0.06]));
+    rated.id = format!("{SIGMA}/clone");
+    let channels = [channel(SIGMA, None), rated, channel(RHO, None)];
+    assert_eq!(
+        assigned(&channels, SIGMA).unwrap().id,
+        format!("{SIGMA}/clone")
+    );
+    let exact = assigned(&channels, &format!("{SIGMA}/distance")).unwrap();
+    assert_eq!(exact.id, format!("{SIGMA}/distance"));
+    assert!(exact.mass.is_none());
+    // Without any rate the first channel of the specification is kept.
+    assert_eq!(
+        assigned(&channels, RHO).unwrap().id,
+        format!("{RHO}/distance")
+    );
+    assert!(assigned(&channels, "meson/unknown").is_none());
+    assert!(assigned(&[], SIGMA).is_none());
+    // The comparison reads the rated copy: same ratios as the plain table.
+    let mut copies = near_channels();
+    copies[1].mass = None;
+    let mut clone = channel(SIGMA, Some([0.35, 0.06]));
+    clone.id = format!("{SIGMA}/clone");
+    copies.push(clone);
+    let analysis = four_names(&["nucleon"]);
+    let comparison = compare(&copies, &analysis).unwrap().unwrap();
+    assert_eq!(comparison.reference[1].channel, format!("{SIGMA}/clone"));
+    assert_eq!(
+        comparison.ratios,
+        compare(&near_channels(), &analysis)
+            .unwrap()
+            .unwrap()
+            .ratios
+    );
+}
+
+#[test]
+fn a_repeated_anchor_gives_one_table_and_does_not_weigh_twice_in_the_spread() {
+    let comparison = compare(
+        &near_channels(),
+        &four_names(&["nucleon", "pion", "nucleon"]),
+    )
+    .unwrap()
+    .unwrap();
+    let names: Vec<&str> = comparison
+        .anchors
+        .iter()
+        .map(|a| a.anchor.as_str())
+        .collect();
+    assert_eq!(names, ["nucleon", "pion"]);
+    // Two anchors with lattice scales s1, s2: spread = |s1 - s2|/(s1 + s2).
+    let (s1, s2) = (1395.7039f64, 1340.38869714286f64);
+    let expected = (s1 - s2) / (s1 + s2);
+    assert!((expected - 0.0202168606847974).abs() < 1e-12);
+    let spreads: Vec<Option<f64>> = comparison.anchor_spread.iter().map(|s| s.spread).collect();
+    // The pion and the nucleon are each predicted by one anchor only.
+    assert_eq!((spreads[0], spreads[3]), (None, None));
+    for spread in [spreads[1], spreads[2]] {
+        assert!((spread.unwrap() - expected).abs() < 1e-12);
+    }
+}
+
+fn with_friction(mut gas: GasConfig, gamma: f64) -> GasConfig {
+    if let KineticKind::Baoab { friction, .. } = &mut gas.kinetic.integrator {
+        *friction = gamma;
+    }
+    gas
+}
+
+#[test]
+fn every_scale_reaches_its_own_row_when_the_action_scales_and_the_calibrated_ranges_differ() {
+    // Every ingredient differs from its neighbours and from 1: h_eff = 0.4,
+    // colour 0.5, h_S = 0.3, m = 2, gamma = 1.3, tau = 0.02 against the
+    // configured 0.01, ranges 1 and 4 against the kernel's 2, nu = 1.5,
+    // rho = 0.8, N1 = 0.5, <K^2> = 0.25, d = 3 with C2(2)/C2(3) = 0.5625.
+    let gas = with_friction(viscous(0.01, 1.5, 0.8), 1.3);
+    let calibration = Calibration {
+        mass: 2.,
+        h_eff: 0.5,
+        electroweak_h_eff: 0.4,
+        h_s: 0.3,
+        epsilon_d: Some(1.),
+        epsilon_c: Some(4.),
+        dt: Some(0.02),
+        pair_weight_n1: Some(0.5),
+        viscous_kernel_second_moment: Some(0.25),
+        ..Calibration::default()
+    };
+    let report =
+        couplings::report(&measurement(gas.clone(), 3, Some(calibration)), &thomson()).unwrap();
+    for (name, expected) in [
+        ("action_scale", 0.4),
+        ("color_action_scale", 0.5),
+        ("clone_action_scale", 0.3),
+        ("mass", 2.),
+        ("time_step", 0.02),
+        ("friction", 1.3),
+        ("temperature", 0.3846153846153846),
+        ("epsilon_d", 1.),
+        ("epsilon_c", 4.),
+        ("energy_clone", 0.1),
+        ("energy_viscous", 0.5),
+        ("energy_friction", 0.52),
+        ("separation", 5.),
+        ("kernel_action_scale", 800.),
+        ("pair_statistic_n1", 0.5),
+        ("kernel_second_moment", 0.25),
+    ] {
+        assert!(close(value(&report.scales, name), expected), "{name}");
+    }
+    for (name, expected) in [
+        // sqrt(0.4 * 0.5)/1 and sqrt(0.4)/1.
+        ("g1", 0.4472135954999579),
+        ("g1_upper", 0.6324555320336759),
+        // sqrt(2 * 0.4 * 0.5625/16).
+        ("g2_casimir", 0.16770509831248423),
+        // sqrt(2 * 0.02 * (0.8/4)^2).
+        ("g2_clock", 0.04),
+        ("g2_clock_over_casimir", 0.0568888888888889),
+        // (1.5/0.4) sqrt(2 * 0.25) and (1.5/0.4) sqrt(2).
+        ("g3", 2.6516504294495533),
+        ("g3_upper", 5.303300858899107),
+        ("alpha_1", 0.015915494309189534),
+        ("alpha_3", 0.5595290968074446),
+        ("sin2_theta_proxy_upper", 0.9343065693430657),
+    ] {
+        assert!(close(value(&report.couplings, name), expected), "{name}");
+    }
+    for (name, expected) in [
+        ("action_scale", 0.4),
+        ("mass", 2.),
+        ("pair_statistic_n1", 0.5),
+        ("kernel_second_moment", 0.25),
+        ("target_epsilon_c", 1.065177457794901),
+        ("target_epsilon_d", 1.2948851903548098),
+        ("target_viscosity", 0.6885521262319527),
+        ("target_fitness_scale", 21.80995663575504),
+        ("target_time_step", 2.8365075414860197),
+        ("target_viscous_range", 0.2816432114711207),
+    ] {
+        assert!(close(value(&report.inversion, name), expected), "{name}");
+    }
+    for note in [
+        "The measurement has three action scales: h_eff = 0.4 of the U(1) phase, 0.5 of the \
+         colour phase and h_S = 0.3 of the cloning phase. The book's proxies have one; the first \
+         is used for every proxy and for the inversion.",
+        "The measurement used epsilon_d = 1 while the companion kernel gives 2.",
+        "The measurement used epsilon_c = 4 while the companion kernel gives 2.",
+    ] {
+        assert!(report.notes.iter().any(|n| n == note), "{note}");
+    }
+    // Without a calibration the same numbers come from the measurement
+    // configuration, and an unset cloning scale is the U(1) one.
+    let mut bare = measurement(gas, 3, None);
+    bare.config.phase.mass = 2.;
+    bare.config.phase.h_eff = 0.5;
+    bare.config.electroweak.h_eff = 0.4;
+    bare.fingerprint = bare
+        .config
+        .fingerprint(&bare.gas, &bare.capabilities, &[])
+        .unwrap();
+    let configured = couplings::report(&bare, &thomson()).unwrap();
+    for (name, expected) in [
+        ("action_scale", 0.4),
+        ("color_action_scale", 0.5),
+        ("clone_action_scale", 0.4),
+        ("mass", 2.),
+        ("time_step", 0.01),
+        ("kernel_action_scale", 400.),
+        ("energy_friction", 0.52),
+    ] {
+        assert!(close(value(&configured.scales, name), expected), "{name}");
+    }
+    for (name, expected) in [
+        ("g1_upper", 0.31622776601683794),
+        ("g2_casimir", 0.33541019662496846),
+        ("g2_clock", 0.05656854249492381),
+    ] {
+        assert!(
+            close(value(&configured.couplings, name), expected),
+            "{name}"
+        );
+    }
+    assert!(close(
+        value(&configured.inversion, "target_fitness_scale"),
+        21.80995663575504
+    ));
+    bare.config.electroweak.h_s = Some(0.3);
+    bare.fingerprint = bare
+        .config
+        .fingerprint(&bare.gas, &bare.capabilities, &[])
+        .unwrap();
+    let configured = couplings::report(&bare, &thomson()).unwrap();
+    assert_eq!(value(&configured.scales, "clone_action_scale"), 0.3);
+    assert_eq!(value(&configured.scales, "action_scale"), 0.4);
+}
+
+#[test]
+fn the_comparison_tables_carry_the_numbers_of_the_report_row_by_row() {
+    let results = present(&report()).unwrap();
+    let comparison = results
+        .iter()
+        .find(|r| r.title.starts_with("Reference comparison"))
+        .unwrap();
+    let of = |label: &str| {
+        let found: Vec<_> = comparison
+            .metrics
+            .iter()
+            .filter(|m| m.label == label)
+            .collect();
+        assert_eq!(found.len(), 1, "{label}");
+        (found[0].value, found[0].unit.as_str())
+    };
+    for (label, expected, unit) in [
+        (
+            "pion rate [meson/pseudoscalar/standard/distance]",
+            0.10,
+            "lattice",
+        ),
+        ("pion rate error", 0.01, "lattice"),
+        ("pion reference", 139.57039, "MeV"),
+        ("rho/pion measured", 5.6, "1"),
+        ("rho/pion error", 0.68818602136341, "1"),
+        ("rho/pion reference", 5.55461656301168, "1"),
+        ("scale at nucleon", 1340.38869714286, "MeV per lattice unit"),
+        (
+            "scale error at nucleon",
+            95.7420497959184,
+            "MeV per lattice unit",
+        ),
+        ("rho at nucleon predicted", 750.6176704, "MeV"),
+        ("rho at nucleon error", 75.8238349740413, "MeV"),
+        ("rho at nucleon reference", 775.26, "MeV"),
+    ] {
+        let (value, found) = of(label);
+        assert!(close(value.unwrap(), expected), "{label}");
+        assert_eq!(found, unit, "{label}");
+    }
+    for (label, expected) in [
+        ("rho/pion tension", 0.0659462782784833),
+        ("rho at nucleon tension", -0.324993008330335),
+    ] {
+        let (value, unit) = of(label);
+        assert!((value.unwrap() - expected).abs() < 1e-9, "{label}");
+        assert_eq!(unit, "sigma");
+    }
+    assert_eq!(of("a1 at nucleon predicted").0, None);
+    assert_eq!(of("a1 at nucleon reference").0, Some(1230.));
+    assert_eq!(of("rho anchor spread").0, None);
+    // Row 2 (a1/pion) and the other rows without a rate are gaps.
+    let ratios = &comparison.plots[0];
+    let runs = |name: &str| -> Vec<Vec<[f64; 2]>> {
+        ratios
+            .series
+            .iter()
+            .filter(|s| s.name == name)
+            .map(|s| s.points.clone())
+            .collect()
+    };
+    let expected = [
+        vec![[0., 3.5], [1., 5.6]],
+        vec![[3., 7.]],
+        vec![[5., 1.6]],
+        vec![[7., 2.]],
+        vec![[10., 1.25]],
+    ];
+    let central = runs("measured");
+    assert_eq!(central.len(), expected.len());
+    for (run, target) in central.iter().zip(&expected) {
+        assert_eq!(run.len(), target.len());
+        for (point, at) in run.iter().zip(target) {
+            assert_eq!(point[0], at[0]);
+            assert!(close(point[1], at[1]), "{point:?}");
+        }
+    }
+    let upper = runs("measured + error");
+    let lower = runs("measured - error");
+    assert!(close(upper[0][1][1], 5.6 + 0.68818602136341));
+    assert!(close(lower[0][1][1], 5.6 - 0.68818602136341));
+    let reference = runs("reference");
+    assert_eq!(reference.len(), 1);
+    assert_eq!(reference[0].len(), 15);
+    assert!(close(reference[0][1][1], 5.55461656301168));
+    let rescaled = &comparison.plots[1];
+    assert_eq!(
+        rescaled.title,
+        "Rates rescaled by the anchor nucleon (an input)"
+    );
+    assert_eq!(rescaled.y_label, "MeV");
+    let central: Vec<&[[f64; 2]]> = rescaled
+        .series
+        .iter()
+        .filter(|s| s.name == "rescaled rate")
+        .map(|s| s.points.as_slice())
+        .collect();
+    assert_eq!(central.len(), 1);
+    assert_eq!(central[0].len(), 3);
+    assert!(close(central[0][2][1], 750.6176704));
+    let references = rescaled
+        .series
+        .iter()
+        .find(|s| s.name == "reference")
+        .unwrap();
+    assert_eq!(
+        references.points,
+        [
+            [0., 139.57039],
+            [1., 500.],
+            [2., 775.26],
+            [3., 1230.],
+            [4., 1710.]
+        ]
+    );
+}
+
+#[test]
+fn every_fit_shows_its_own_rate_errors_window_table_and_reasons_and_each_estimator_its_quantity() {
+    let mut report = report();
+    let estimate = MassEstimate {
+        error: 0.05,
+        statistical: 0.04,
+        systematic: 0.03,
+        ..rate(0.35, 0.05, TimeUnit::Frames)
+    };
+    let window = |t_min: usize, value: f64, error: f64, weight: f64| WindowFit {
+        t_min,
+        t_max: 9,
+        value,
+        error,
+        chi2: 3.5,
+        dof: 4,
+        weight,
+        // chi^2 + 2k + 2 N_cut for a window ending at the last lag: every lag
+        // below `t_min` is a cut point.
+        aic: 7.5 + 2. * (t_min - 1) as f64,
+        nexp: 1,
+        svd_cut: None,
+    };
+    let scan = FitOutcome {
+        method: FitMethodKind::WindowScan,
+        mass: Some(estimate.clone()),
+        excited: vec![rate(0.9, 0.2, TimeUnit::Frames)],
+        diagnostics: FitDiagnostics {
+            chi2: Some(3.5),
+            dof: Some(4),
+            q: Some(0.48),
+            window: Some([2, 9]),
+            n_windows: 2,
+            correlated: true,
+            svd_cut: 1e-3,
+            covariance_rank: Some(5),
+            ..FitDiagnostics::default()
+        },
+        windows: vec![window(2, 0.375, 0.125, 0.75), window(3, 0.5, 0.25, 0.25)],
+        ..FitOutcome::default()
+    };
+    let silent = FitOutcome {
+        method: FitMethodKind::MultiExponential,
+        diagnostics: FitDiagnostics {
+            correlated: true,
+            prior_dominance: Some(PriorDominance {
+                width_ratio: 0.98,
+                shift_sigma: 0.05,
+                dominated: true,
+            }),
+            model_rejected: Some("sign change".into()),
+            no_signal: Some("signal below noise".into()),
+            ..FitDiagnostics::default()
+        },
+        ..FitOutcome::default()
+    };
+    let stability = FitOutcome {
+        method: FitMethodKind::Stability,
+        diagnostics: FitDiagnostics {
+            n_windows: 1,
+            correlated: true,
+            ..FitDiagnostics::default()
+        },
+        windows: vec![window(2, 0.375, 0.125, 1.)],
+        notes: vec!["scan note".into()],
+        ..FitOutcome::default()
+    };
+    {
+        let scalar = &mut report.channels[1];
+        scalar.mass = Some(estimate);
+        scalar.fits = vec![scan, silent, stability];
+        scalar.coverage = Coverage {
+            frames: 128,
+            valid: 100,
+            masked_self: 3,
+            masked_color: 4,
+            ..Coverage::default()
+        };
+        scalar.correlator.as_mut().unwrap().connected = false;
+        let vector = &mut report.channels[2];
+        vector.estimator = Some(EstimatorKind::EuclideanTime);
+        vector.mass.as_mut().unwrap().time_unit = TimeUnit::Coordinate;
+        let mut slabs = correlator(vec![Some(1.), Some(0.5)], vec![Some(0.1), Some(0.05)]);
+        slabs.time_unit = TimeUnit::Coordinate;
+        slabs.time_step = 0.25;
+        slabs.samples_meta.tau_int = Some(2.5);
+        slabs.samples_meta.replicas = 3;
+        slabs.connected_bias = Some(0.001);
+        vector.correlator = Some(slabs);
+        let baryon = &mut report.channels[3];
+        baryon.estimator = Some(EstimatorKind::SourceFrozen);
+        baryon.mass.as_mut().unwrap().time_unit = TimeUnit::StepDt;
+    }
+    report.groups = vec![GroupFit {
+        id: "g".into(),
+        availability: Availability::unavailable("no common window"),
+        ..GroupFit::default()
+    }];
+    report.gevp = vec![GevpReport {
+        id: "b".into(),
+        availability: Availability::unavailable("singular C(t0)"),
+        ..GevpReport::default()
+    }];
+    let results = present(&report).unwrap();
+    assert!(
+        results
+            .iter()
+            .all(|r| r.title != "Group g" && r.title != "GEVP b")
+    );
+    for note in [
+        "group g: unavailable: no common window",
+        "GEVP b: unavailable: singular C(t0)",
+    ] {
+        assert!(results[0].notes.iter().any(|n| n == note), "{note}");
+    }
+    let overview: Vec<(&str, Option<f64>)> = results[0]
+        .metrics
+        .iter()
+        .map(|m| (m.label.as_str(), m.value))
+        .collect();
+    assert_eq!(overview, [("replicas", Some(1.)), ("frames", Some(128.))]);
+    let of = |result: &ExperimentResult, label: &str| {
+        let found: Vec<_> = result.metrics.iter().filter(|m| m.label == label).collect();
+        assert_eq!(found.len(), 1, "{label}");
+        found[0].value
+    };
+    let scalar = &results[2];
+    for (label, expected) in [
+        ("rate", 0.35),
+        ("rate error", 0.05),
+        ("rate statistical", 0.04),
+        ("rate systematic", 0.03),
+        ("valid elements", 100.),
+        ("masked elements", 7.),
+        ("window scan rate", 0.35),
+        ("window scan rate error", 0.05),
+        ("window scan rate statistical", 0.04),
+        ("window scan rate systematic", 0.03),
+        ("window scan excited rate 1", 0.9),
+        ("window scan excited rate 1 error", 0.2),
+        ("window scan chi2", 3.5),
+        ("window scan dof", 4.),
+        ("window scan Q", 0.48),
+        ("window scan window t_min", 2.),
+        ("window scan window t_max", 9.),
+        ("window scan windows", 2.),
+        ("window scan covariance rank", 5.),
+        ("window scan svd cut", 1e-3),
+        ("multi-exponential gap posterior/prior width", 0.98),
+        ("multi-exponential gap prior shift", 0.05),
+        ("stability scan windows", 1.),
+    ] {
+        assert_eq!(of(scalar, label), Some(expected), "{label}");
+    }
+    for label in [
+        "multi-exponential rate",
+        "multi-exponential chi2",
+        "multi-exponential window t_min",
+        "stability scan covariance rank",
+    ] {
+        assert_eq!(of(scalar, label), None, "{label}");
+    }
+    // A stability scan is never a rate, and an unsubtracted correlator has no
+    // connected bias.
+    assert!(
+        scalar
+            .metrics
+            .iter()
+            .all(|m| !m.label.starts_with("stability scan rate") && m.label != "connected bias")
+    );
+    for note in [
+        "multi-exponential gap returned its prior",
+        "multi-exponential: no rate: sign change",
+        "multi-exponential: no rate: signal below noise",
+        "stability scan: scan note",
+    ] {
+        assert!(scalar.notes.iter().any(|n| n == note), "{note}");
+    }
+    assert!(scalar.notes.iter().all(|n| !n.contains("diagonal chi2")));
+    let titles: Vec<&str> = scalar.plots.iter().map(|p| p.title.as_str()).collect();
+    assert_eq!(
+        titles,
+        [
+            "Correlator",
+            "Effective rate",
+            "window scan: rate per window",
+            "window scan: window weights",
+            "stability scan: rate per window",
+            "stability scan: window weights",
+        ]
+    );
+    let shape = |plot: usize| -> Vec<(&str, &[[f64; 2]])> {
+        scalar.plots[plot]
+            .series
+            .iter()
+            .map(|s| (s.name.as_str(), s.points.as_slice()))
+            .collect()
+    };
+    assert_eq!(
+        shape(2),
+        [
+            ("rate", &[[0., 0.375], [1., 0.5]][..]),
+            ("rate + error", &[[0., 0.5], [1., 0.75]][..]),
+            ("rate - error", &[[0., 0.25], [1., 0.25]][..]),
+        ]
+    );
+    assert_eq!(shape(3), [("weight", &[[0., 0.75], [1., 0.25]][..])]);
+    // A Euclidean rate is per length on a separation axis of lag * bin width.
+    let vector = &results[3];
+    assert_eq!(vector.model, RATE_QUANTITY_EUCLIDEAN);
+    assert_eq!(vector.metrics[0].unit, "1/length");
+    assert_eq!(vector.plots[0].x_label, "separation (length)");
+    assert_eq!(vector.plots[0].series[0].points, [[0., 1.], [0.25, 0.5]]);
+    assert_eq!(of(vector, "tau_int"), Some(2.5));
+    assert_eq!(of(vector, "replicas"), Some(3.));
+    assert_eq!(of(vector, "connected bias"), Some(0.001));
+    let baryon = &results[4];
+    assert_eq!(baryon.model, RATE_QUANTITY_SOURCE_FROZEN);
+    assert_eq!(baryon.metrics[0].unit, "1/time");
+    assert_ne!(RATE_QUANTITY_SOURCE_FROZEN, RATE_QUANTITY);
+    assert_ne!(RATE_QUANTITY_EUCLIDEAN, RATE_QUANTITY);
+}
+
+#[test]
+fn independent_ratios_are_counted_per_group_and_a_range_starts_above_two_percent() {
+    // Two estimators split the four names into two pairs that are never
+    // divided by each other: 2 measured rows, both independent.
+    let mut channels = near_channels();
+    for channel in &mut channels[2..] {
+        channel.estimator = Some(EstimatorKind::SourceFrozen);
+    }
+    let comparison = compare(&channels, &four_names(&["nucleon"]))
+        .unwrap()
+        .unwrap();
+    assert_eq!(
+        measured(&comparison),
+        [true, false, false, false, false, true]
+    );
+    assert!(comparison.notes[3].contains("Of the 2 ratio rows only 2 are"));
+    let rescaled: Vec<(&str, bool)> = comparison.anchors[0]
+        .predictions
+        .iter()
+        .map(|p| (p.name.as_str(), p.predicted.is_some()))
+        .collect();
+    assert_eq!(
+        rescaled,
+        [("pion", false), ("f0_500", false), ("rho", true)]
+    );
+    // 3% is a range; exactly 2% and 1% are not.
+    let flagged = |error: f64| -> Vec<String> {
+        let mut analysis = three_entries();
+        analysis.reference.entries[2].error = error;
+        let comparison = compare(&three_channels([0.75, 0.25], [2., 0.2]), &analysis)
+            .unwrap()
+            .unwrap();
+        comparison
+            .notes
+            .iter()
+            .filter(|n| n.starts_with("Reference '"))
+            .map(|n| n.split('\'').nth(1).unwrap().to_string())
+            .collect()
+    };
+    assert_eq!(flagged(3.), ["heavy", "narrow"]);
+    assert_eq!(flagged(2.), ["heavy"]);
+    assert_eq!(flagged(1.), ["heavy"]);
+}
+
+#[test]
+fn an_undefined_error_stays_undefined_through_a_ratio_a_prediction_and_a_tension() {
+    let [r, error] = ratio([2., f64::NAN], [1., 0.1], 0.);
+    assert_eq!(r, 2.);
+    assert!(error.is_nan());
+    let [r, error] = ratio([2., 0.2], [1., f64::NAN], 0.5);
+    assert_eq!(r, 2.);
+    assert!(error.is_nan());
+    let [p, error] = prediction([2., f64::NAN], [1., 0.1], [10., 1.], 0.);
+    assert_eq!(p, 20.);
+    assert!(error.is_nan());
+    assert_eq!(tension([2., f64::NAN], [3., 0.3]), None);
+    assert_eq!(tension([f64::NAN, 0.2], [3., 0.3]), None);
+    assert_eq!(spread(&[1., f64::NAN]), None);
+    assert_eq!(spread(&[0., 0.]), None);
+    assert_eq!(spread(&[]), None);
+}
+
+#[test]
+fn a_vanishing_friction_or_viscous_coefficient_is_a_gap_and_never_an_infinite_or_zero_scale() {
+    let frictionless = with_friction(viscous(0.01, 1.5, 0.8), 0.);
+    let scales = AlgorithmicScales::from_config(&frictionless, 3);
+    assert_eq!((scales.friction, scales.temperature), (Some(0.), None));
+    let mut inviscid = viscous(0.01, 1.5, 0.8);
+    inviscid.qft.viscosity.as_mut().unwrap().coefficient = 0.;
+    assert_eq!(AlgorithmicScales::from_config(&inviscid, 3).viscosity, None);
+    let report = couplings::report(
+        &measurement(inviscid, 3, None),
+        &StandardModelInputs::default(),
+    )
+    .unwrap();
+    assert_eq!(row(&report.scales, "viscosity").value, None);
+    assert_eq!(value(&report.scales, "viscous_range"), 0.8);
+    for name in ["g3", "g3_upper", "alpha_3", "alpha_3_upper"] {
+        assert_eq!(row(&report.couplings, name).value, None, "{name}");
+    }
+    assert!(
+        row(&report.couplings, "g3_upper")
+            .definition
+            .contains("undefined here: no dense viscosity")
+    );
+    assert!(
+        report
+            .notes
+            .iter()
+            .all(|n| !n.contains("dense viscous force is"))
+    );
+}
+
+#[test]
+fn every_curve_carries_its_own_values_and_an_overflowing_band_edge_is_an_error() {
+    let mut report = report();
+    report.channels[0].correlator = Some(CorrelatorEstimate {
+        time_unit: TimeUnit::Frames,
+        time_step: 1.,
+        ..correlator(vec![Some(1.), Some(0.25)], vec![Some(0.5), Some(0.125)])
+    });
+    report.gevp = vec![GevpReport {
+        id: "basis".into(),
+        channels: vec![format!("{SIGMA}/distance"), format!("{RHO}/distance")],
+        t0: 1,
+        lags: vec![2, 3, 4],
+        eigenvalues: vec![
+            vec![Some([0.5, 0.0625]), None, Some([0.125, 0.03125])],
+            vec![Some([0.25, 0.125]), None, None],
+        ],
+        effective_mass: vec![vec![Some([0.75, 0.25]), None, None], vec![None; 3]],
+        rank: 2,
+        antisymmetric_norm: vec![Some(0.01), None, Some(0.04)],
+        ..GevpReport::default()
+    }];
+    let results = present(&report).unwrap();
+    let shape = |result: &ExperimentResult, plot: usize| -> Vec<(String, Vec<[f64; 2]>)> {
+        result.plots[plot]
+            .series
+            .iter()
+            .map(|s| (s.name.clone(), s.points.clone()))
+            .collect()
+    };
+    let curve = |name: &str, points: &[[f64; 2]]| (name.to_string(), points.to_vec());
+    // A lag in frames is its own abscissa.
+    let pion = &results[1];
+    assert_eq!(pion.plots[0].x_label, "lag (frames)");
+    assert_eq!(
+        shape(pion, 0),
+        [
+            curve("C", &[[0., 1.], [1., 0.25]]),
+            curve("C + error", &[[0., 1.5], [1., 0.375]]),
+            curve("C - error", &[[0., 0.5], [1., 0.125]]),
+        ]
+    );
+    // The effective rate is drawn from its own values and errors.
+    let scalar = &results[2];
+    assert_eq!(scalar.plots[1].title, "Effective rate");
+    assert_eq!(scalar.plots[1].x_label, "lag (time)");
+    let effective = shape(scalar, 1);
+    let expected = [("rate", 0.7), ("rate + error", 0.8), ("rate - error", 0.6)];
+    assert_eq!(effective.len(), 3);
+    for ((name, points), (target, y)) in effective.iter().zip(expected) {
+        assert_eq!(name, target);
+        assert_eq!(points.len(), 1);
+        assert!(points[0][0] == 0. && close(points[0][1], y), "{target}");
+    }
+    let basis = results.iter().find(|r| r.title == "GEVP basis").unwrap();
+    let titles: Vec<&str> = basis.plots.iter().map(|p| p.title.as_str()).collect();
+    assert_eq!(
+        titles,
+        [
+            "Generalized eigenvalues",
+            "Effective rates",
+            "Discarded antisymmetric part"
+        ]
+    );
+    assert_eq!(
+        shape(basis, 0),
+        [
+            curve("state 0", &[[2., 0.5]]),
+            curve("state 0", &[[4., 0.125]]),
+            curve("state 0 + error", &[[2., 0.5625]]),
+            curve("state 0 + error", &[[4., 0.15625]]),
+            curve("state 0 - error", &[[2., 0.4375]]),
+            curve("state 0 - error", &[[4., 0.09375]]),
+            curve("state 1", &[[2., 0.25]]),
+            curve("state 1 + error", &[[2., 0.375]]),
+            curve("state 1 - error", &[[2., 0.125]]),
+        ]
+    );
+    assert_eq!(
+        shape(basis, 1),
+        [
+            curve("state 0", &[[2., 0.75]]),
+            curve("state 0 + error", &[[2., 1.]]),
+            curve("state 0 - error", &[[2., 0.5]]),
+        ]
+    );
+    assert_eq!(
+        shape(basis, 2),
+        [
+            curve("antisymmetric norm", &[[2., 0.01]]),
+            curve("antisymmetric norm", &[[4., 0.04]]),
+        ]
+    );
+    // An input of the inversion shows its error; a scale and a proxy have none,
+    // and only a row without a value is explained outside the inversion.
+    let find = |title: &str| results.iter().find(|r| r.title == title).unwrap();
+    let inversion = find("Calibration inversion");
+    let error = inversion
+        .metrics
+        .iter()
+        .find(|m| m.label == "alpha_em error")
+        .unwrap();
+    assert!((error.value.unwrap() - 5.49737218246254e-07).abs() < 1e-18);
+    assert_eq!(error.unit, "1");
+    let scales = find("Algorithmic scales");
+    assert!(scales.metrics.iter().all(|m| !m.label.ends_with(" error")));
+    let range = scales
+        .metrics
+        .iter()
+        .find(|m| m.label == "epsilon_d")
+        .unwrap();
+    assert_eq!((range.value, range.unit.as_str()), (Some(2.), "length"));
+    let explained: Vec<&str> = scales
+        .notes
+        .iter()
+        .take(4)
+        .map(|n| n.split(": ").next().unwrap())
+        .collect();
+    assert_eq!(
+        explained,
+        [
+            "phase_length",
+            "fitness_force_scale",
+            "pair_statistic_n1",
+            "kernel_second_moment"
+        ]
+    );
+    assert_eq!(
+        scales.notes[4..],
+        report.couplings.as_ref().unwrap().notes[..]
+    );
+    // Two finite numbers whose sum is not: the band edge is rejected after the
+    // report itself passed its validation.
+    let mut overflow = report.clone();
+    let estimate = overflow.channels[0].correlator.as_mut().unwrap();
+    estimate.value[0] = Some(1.5e308);
+    estimate.error[0] = Some(1.5e308);
+    assert!(overflow.validate().is_ok());
+    assert!(matches!(
+        present(&overflow),
+        Err(GasError::Configuration(message)) if message == "nonfinite plotted result"
+    ));
 }

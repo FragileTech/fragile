@@ -6,6 +6,7 @@ export const MESSAGE_TYPES = Object.freeze([
   "create",
   "advance",
   "snapshot",
+  "request",
   "analyze",
   "presentation",
   "evidence",
@@ -89,8 +90,26 @@ export function createWasmEngine(load = loadWasm) {
         "Create a session or import evidence before requesting an analysis.",
       );
     },
+    // The plots of the same analysis, including their error bands: imported
+    // evidence and archives have their own binding, so a page holding one
+    // instead of a session draws the same curves.
     async presentation(analysis) {
-      return live().presentation(JSON.stringify(analysis));
+      const json = JSON.stringify(analysis);
+      if (session) return session.presentation(json);
+      if (imported?.kind === "evidence")
+        return (await load()).spectroscopy_presentation(imported.bytes, json);
+      if (imported?.kind === "archive")
+        return (await load()).spectroscopy_archive_presentation(
+          JSON.stringify({ ...imported.config, analysis }),
+          imported.bytes,
+        );
+      throw new Error(
+        "Create a session or import evidence before requesting the plots.",
+      );
+    },
+    // The request the session is running, as Rust resolved it.
+    async request() {
+      return live().request();
     },
     async evidence() {
       return live().evidence();

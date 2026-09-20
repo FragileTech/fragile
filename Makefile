@@ -76,6 +76,7 @@ algorithmic-gas-test:
 # Requires `make algorithmic-gas-lab` serving on $(ALGORITHMIC_GAS_PORT).
 algorithmic-gas-browser-test:
 	LECTURE_BASE_URL=http://127.0.0.1:$(ALGORITHMIC_GAS_PORT) npm --prefix fractal-gas-web run test:euclidean-gas-browser
+	LECTURE_BASE_URL=http://127.0.0.1:$(ALGORITHMIC_GAS_PORT) npm --prefix fractal-gas-web run test:euclidean-qft-simulator-browser
 
 algorithmic-gas-targets:
 	cd algorithmic-gas && cargo check -p algorithmic-gas-benchmarks --features wgpu --locked

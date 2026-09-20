@@ -197,6 +197,7 @@ jobs:
       - run: cargo install wasm-bindgen-cli --version 0.2.114 --locked
       - run: make algorithmic-gas-web
       - run: npm --prefix fractal-gas-web run test:euclidean-gas
+      - run: npm --prefix fractal-gas-web run test:euclidean-qft-simulator
       - run: npm --prefix fractal-gas-web run test:euclidean-lectures
       - uses: actions/upload-artifact@v4
         with:
@@ -264,7 +265,7 @@ jobs:
           name: llm-lab
           path: site/llm
 
-      - name: Download Euclidean Gas Lab artifact
+      - name: Download Algorithmic Gas Lab artifact
         uses: actions/download-artifact@v4
         with:
           name: euclidean-gas-lab

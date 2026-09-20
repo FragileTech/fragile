@@ -12,8 +12,8 @@ use algorithmic_gas::{
                 MomentumPhase,
             },
             contract::{
-                Capabilities, Element, ElementKind, ExchangeParity, FrameState, LocalOperator,
-                OperatorContext, Record, SpatialParity,
+                Auxiliary, Capabilities, Element, ElementKind, ExchangeParity, FrameState,
+                LocalOperator, OperatorContext, Record, SpatialParity,
             },
             fields::color::det3,
             operators::channels,
@@ -117,8 +117,36 @@ fn sampled() -> Vec<Element> {
         .map(|i| triplet(i, DISTANCE[i] as usize, CLONING[i] as usize))
         .collect()
 }
-/// Components of `spec` on `element`, `None` when masked. An element of a
-/// kind the specification is not measured on has no signature.
+/// One row of `evaluate` on `element`, auxiliary column included, `None` when
+/// masked. An element of a kind the specification is not measured on has no
+/// signature.
+fn raw_in(
+    gas: &GasConfig,
+    spec: &ChannelSpec,
+    element: &Element,
+    state: &FrameState,
+) -> Option<Vec<f64>> {
+    let (measurement, capabilities) = (MeasurementConfig::default(), Capabilities::nominal());
+    let context = OperatorContext {
+        gas,
+        measurement: &measurement,
+        capabilities: &capabilities,
+    };
+    let width = spec
+        .signature(element.kind, &context)
+        .map_or(1, |signature| signature.width());
+    let mut out = vec![0.; width];
+    spec.evaluate(element, state, &context, &mut out)
+        .then_some(out)
+}
+fn raw(spec: &ChannelSpec, element: &Element, state: &FrameState) -> Option<Vec<f64>> {
+    raw_in(&GasConfig::default(), spec, element, state)
+}
+/// Components of `spec` on `element` with its auxiliary column folded in, as
+/// the measurement folds it at a source time: the momentum weight or the score
+/// factor multiplies the value, an element without a score factor is masked,
+/// and a momentum arm is shown here without the frame-mean subtraction that
+/// the measurement applies before projecting.
 fn value_in(
     gas: &GasConfig,
     spec: &ChannelSpec,
@@ -131,16 +159,27 @@ fn value_in(
         measurement: &measurement,
         capabilities: &capabilities,
     };
-    let components = spec
-        .signature(element.kind, &context)
-        .map_or(1, |s| s.components);
-    let mut out = vec![0.; components];
-    spec.evaluate(element, state, &context, &mut out)
-        .then_some(out)
+    let row = raw_in(gas, spec, element, state)?;
+    let signature = spec.signature(element.kind, &context).ok()?;
+    let Some(auxiliary) = signature.auxiliary else {
+        return Some(row);
+    };
+    let factor = row[signature.components];
+    if !factor.is_finite() || (auxiliary == Auxiliary::ScoreOrientation && factor == 0.) {
+        return None;
+    }
+    Some(
+        row[..signature.components]
+            .iter()
+            .map(|value| value * factor)
+            .collect(),
+    )
 }
 fn value(spec: &ChannelSpec, element: &Element, state: &FrameState) -> Option<Vec<f64>> {
     value_in(&GasConfig::default(), spec, element, state)
 }
+/// `evaluate_all` with the auxiliary column folded in element by element, as
+/// `value_in` folds one row: `[elements, components]` and `[elements]`.
 fn values(spec: &ChannelSpec, elements: &[Element], state: &FrameState) -> (Vec<f64>, Vec<bool>) {
     let (gas, measurement, capabilities) = (
         GasConfig::default(),
@@ -152,13 +191,28 @@ fn values(spec: &ChannelSpec, elements: &[Element], state: &FrameState) -> (Vec<
         measurement: &measurement,
         capabilities: &capabilities,
     };
-    let components = spec
-        .signature(elements[0].kind, &context)
-        .unwrap()
-        .components;
-    let mut values = vec![0.; elements.len() * components];
+    let signature = spec.signature(elements[0].kind, &context).unwrap();
+    let (components, width) = (signature.components, signature.width());
+    let mut raw = vec![0.; elements.len() * width];
     let mut valid = vec![false; elements.len()];
-    spec.evaluate_all(elements, state, &context, &mut values, &mut valid);
+    spec.evaluate_all(elements, state, &context, &mut raw, &mut valid);
+    let mut values = vec![0.; elements.len() * components];
+    for (index, row) in raw.chunks_exact(width).enumerate() {
+        let factor = match signature.auxiliary {
+            None => 1.,
+            Some(auxiliary) => {
+                let factor = row[components];
+                if !factor.is_finite() || (auxiliary == Auxiliary::ScoreOrientation && factor == 0.)
+                {
+                    valid[index] = false;
+                }
+                factor
+            }
+        };
+        for k in 0..components {
+            values[index * components + k] = row[k] * factor;
+        }
+    }
     (values, valid)
 }
 fn scalar(spec: &ChannelSpec, element: &Element, state: &FrameState) -> f64 {
@@ -702,6 +756,16 @@ fn signatures_state_the_relabelling_parity_the_measured_values_obey() {
         );
         assert!(signature.correlatable && !signature.degenerate);
         assert_eq!(signature.normalization, None);
+        // The column order of `score_ordered` is frozen with the element, so
+        // it enters the lag product squared and the source-frozen propagator
+        // of the arm is the one of `baryon/real`: the arm is a frame-mean
+        // channel only, and no configuration gives it a propagator of its own.
+        assert_eq!(
+            signature.propagatable,
+            mode != BaryonMode::ScoreOrdered,
+            "{}",
+            spec.id()
+        );
         let book = !matches!(
             mode,
             BaryonMode::Abs | BaryonMode::ScoreOrdered | BaryonMode::FluxWeighted
@@ -1154,25 +1218,36 @@ fn walkers_outside_the_state_and_nonfinite_inputs_mask_the_element_explicitly() 
     assert_eq!(value_in(&short, &cosine, &sampled()[0], &state), None);
 }
 #[test]
-fn score_order_masks_ties_and_walkers_without_a_score_and_reads_the_evaluated_frame() {
+fn score_order_reports_the_permutation_sign_apart_from_the_determinant() {
+    // The columns stay in the sampled order and the sign of the permutation
+    // that sorts them by score is the second column, so that the measurement
+    // can freeze it with the element instead of re-deriving it at a sink.
     let spec = baryon(BaryonMode::ScoreOrdered);
     let (state, element) = (recorded(), triplet(0, 1, 2));
     let real = scalar(&baryon(BaryonMode::Real), &element, &state);
-    assert_eq!(scalar(&spec, &element, &state), -real);
+    assert_eq!(raw(&spec, &element, &state), Some(vec![real, -1.]));
     let mut crossed = state.clone();
     crossed.score.as_mut().unwrap()[1] = 0.7;
-    assert_eq!(scalar(&spec, &element, &crossed), real);
+    assert_eq!(raw(&spec, &element, &crossed), Some(vec![real, 1.]));
+    // A tie leaves the element without an orientation: the factor is 0 and the
+    // measurement masks it at a source time.
     let mut tied = state.clone();
     tied.score.as_mut().unwrap()[1] = 0.5;
+    assert_eq!(raw(&spec, &element, &tied), Some(vec![real, 0.]));
     assert_eq!(value(&spec, &element, &tied), None);
     tied.score.as_mut().unwrap()[1] = 1.1;
-    assert_eq!(value(&spec, &element, &tied), None);
+    assert_eq!(raw(&spec, &element, &tied), Some(vec![real, 0.]));
+    // A walker without a score is missing data, not a tie: the factor is not
+    // a number and the measurement masks the element wherever it reads one.
     let mut unscored = state.clone();
     unscored.score_valid[2] = false;
+    let row = raw(&spec, &element, &unscored).unwrap();
+    assert_eq!(row[0], real);
+    assert!(row[1].is_nan());
     assert_eq!(value(&spec, &element, &unscored), None);
     unscored.score_valid[2] = true;
     unscored.score = None;
-    assert_eq!(value(&spec, &element, &unscored), None);
+    assert!(raw(&spec, &element, &unscored).unwrap()[1].is_nan());
     assert!(value(&baryon(BaryonMode::Real), &element, &unscored).is_some());
 }
 #[test]
@@ -1308,8 +1383,10 @@ fn momentum_projection_weights_the_anchor_coordinate_on_the_periodic_box() {
             / count
     };
     let plaquette = GlueballObservable::RePlaquette;
+    // Mode 0 is no arm of its own: the connected projection vanishes on it in
+    // both phases, and `the_connected_projection_refuses_the_vanishing_cosine_
+    // of_mode_zero` pins the refusal.
     for (mode, phase, expected) in [
-        (0, MomentumPhase::Cos, -0.0168665356647827),
         (1, MomentumPhase::Cos, -0.00643181919974239),
         (1, MomentumPhase::Sin, 0.00055055942711571),
         (2, MomentumPhase::Cos, -0.00724836173282051),
@@ -1333,14 +1410,17 @@ fn momentum_projection_weights_the_anchor_coordinate_on_the_periodic_box() {
         wrapped.x[i * 3] += 5.;
     }
     for &i in &VALID {
+        // The observable column of a projected row is the unprojected arm
+        // itself, whatever the mode: the weight travels beside it.
         assert_eq!(
-            value_in(
+            raw_in(
                 &gas,
-                &projected(plaquette, 0, MomentumPhase::Cos),
+                &projected(plaquette, 2, MomentumPhase::Cos),
                 &elements[i],
                 &state
-            ),
-            value(&glueball(plaquette), &elements[i], &state)
+            )
+            .map(|row| row[0]),
+            value(&glueball(plaquette), &elements[i], &state).map(|row| row[0])
         );
         for phase in [MomentumPhase::Cos, MomentumPhase::Sin] {
             let spec = projected(plaquette, 2, phase);
@@ -1425,21 +1505,78 @@ fn momentum_projection_requires_a_periodic_box_and_rejects_the_vanishing_sine_mo
         assert!(signature.descriptor.book_label.is_empty());
         assert_eq!(signature.descriptor.spatial_parity, Some(parity));
     }
-    let planar = Capabilities {
-        dimension: 2,
-        ..Capabilities::nominal()
-    };
-    let context = OperatorContext {
-        capabilities: &planar,
-        ..context
-    };
-    let listed = channels(&context, &[]).unwrap();
-    assert!(listed[3].availability.is_available());
-    assert_eq!(
-        listed[4].availability.reason(),
-        Some("defined in 3 position dimensions; the run has 2")
-    );
+    // The determinant is defined in three colour components and the plaquette
+    // in every dimension, on both sides of three: a run of four coordinates
+    // refuses the baryon and keeps the plaquette, exactly as a planar one does.
+    for dimension in [2, 4] {
+        let other = Capabilities {
+            dimension,
+            euclidean_axis: Some(dimension - 1),
+            ..Capabilities::nominal()
+        };
+        let context = OperatorContext {
+            capabilities: &other,
+            ..context
+        };
+        let listed = channels(&context, &[]).unwrap();
+        assert!(listed[3].availability.is_available(), "{dimension}");
+        assert_eq!(
+            listed[4].availability.reason(),
+            Some(format!("defined in 3 position dimensions; the run has {dimension}").as_str()),
+            "{dimension}"
+        );
+    }
 }
+#[test]
+fn the_connected_projection_refuses_the_vanishing_cosine_of_mode_zero() {
+    // The projection is taken of the element minus the frame mean, so the
+    // cosine of mode 0 — which weights every element by 1 — sums to zero by
+    // construction, exactly as the sine of mode 0 does. A channel of exact
+    // zeros carried at full weight is the failure the score arms are refused
+    // for, so the arm is a `Capability` refusal and the reader is sent to the
+    // unprojected channel, which is the zero-momentum observable.
+    let plaquette = GlueballObservable::RePlaquette;
+    let gas = GasConfig::default();
+    let measurement = MeasurementConfig {
+        channels: vec![
+            projected(plaquette, 0, MomentumPhase::Cos),
+            projected(GlueballObservable::ForceNorm, 0, MomentumPhase::Cos),
+            projected(plaquette, 1, MomentumPhase::Cos),
+        ],
+        ..MeasurementConfig::default()
+    };
+    let capabilities = Capabilities::nominal();
+    let context = OperatorContext {
+        gas: &gas,
+        measurement: &measurement,
+        capabilities: &capabilities,
+    };
+    let refusal = "the connected projection on momentum mode 0 vanishes identically; measure \
+                   the unprojected arm for the zero mode";
+    for (spec, kind) in [
+        (&measurement.channels[0], ElementKind::Triplet),
+        (&measurement.channels[1], ElementKind::Site),
+    ] {
+        // The configuration is well formed: only the operator knows that the
+        // combination has no value.
+        spec.validate().unwrap();
+        match spec.signature(kind, &context) {
+            Err(GasError::Capability(reason)) => assert_eq!(reason, refusal),
+            other => panic!("{}: {other:?}", spec.id()),
+        }
+    }
+    // Every other mode of the same axis is untouched.
+    measurement.channels[2]
+        .signature(ElementKind::Triplet, &context)
+        .unwrap();
+    // The refusal reaches the channel list, which keeps the arm with its
+    // reason instead of publishing a series of zeros.
+    let listed = channels(&context, &[]).unwrap();
+    assert_eq!(listed[0].availability.reason(), Some(refusal));
+    assert_eq!(listed[1].availability.reason(), Some(refusal));
+    assert!(listed[2].availability.is_available());
+}
+
 #[test]
 fn every_slot_of_a_triplet_is_checked_for_coincidence_eligibility_and_colour_validity() {
     let state = recorded();
@@ -1667,4 +1804,50 @@ fn declared_spatial_parity_is_the_one_the_mirrored_frame_obeys() {
             "glueball/force_norm/p0_sin2"
         ]
     );
+}
+
+#[test]
+fn a_projected_arm_reports_the_observable_and_its_mode_weight_apart() {
+    // The momentum weight is the second column, so that the measurement can
+    // subtract the frame mean of the observable before projecting it.
+    let (gas, state, elements) = (periodic(), recorded(), sampled());
+    let length = 5.;
+    for observable in [
+        GlueballObservable::RePlaquette,
+        GlueballObservable::OneMinusRe,
+    ] {
+        for (mode, phase) in [
+            (1, MomentumPhase::Cos),
+            (1, MomentumPhase::Sin),
+            (2, MomentumPhase::Cos),
+        ] {
+            let spec = projected(observable, mode, phase);
+            for &i in &VALID {
+                let row = raw_in(&gas, &spec, &elements[i], &state).unwrap();
+                assert_eq!(row.len(), 2, "{}", spec.id());
+                let bare = value(&glueball(observable), &elements[i], &state).unwrap()[0];
+                let angle = std::f64::consts::TAU * f64::from(mode) * state.x[i * 3] / length;
+                let weight = match phase {
+                    MomentumPhase::Cos => angle.cos(),
+                    MomentumPhase::Sin => angle.sin(),
+                };
+                assert!(close(row[0], bare), "{} {i}", spec.id());
+                assert!(close(row[1], weight), "{} {i}", spec.id());
+            }
+        }
+    }
+    // An additive shift of the observable moves only the first column, so the
+    // element sum of the connected mode is the same for the two arms.
+    let connected = |observable| {
+        let spec = projected(observable, 1, MomentumPhase::Cos);
+        let rows: Vec<Vec<f64>> = VALID
+            .iter()
+            .map(|&i| raw_in(&gas, &spec, &elements[i], &state).unwrap())
+            .collect();
+        let bare = rows.iter().map(|r| r[0]).sum::<f64>() / rows.len() as f64;
+        rows.iter().map(|r| (r[0] - bare) * r[1]).sum::<f64>() / rows.len() as f64
+    };
+    let re = connected(GlueballObservable::RePlaquette);
+    let one_minus = connected(GlueballObservable::OneMinusRe);
+    assert!(close(re, -one_minus) && re.abs() > 1e-9, "{re} {one_minus}");
 }

@@ -9,7 +9,7 @@ use super::{
     par::{Parallelism, try_map_indexed},
     voronoi::VoronoiCells,
 };
-use crate::{GasError, Real, Result, error::require};
+use crate::{GasError, Real, Result, error::require, partv_geometry::MetricPolicy};
 use serde::{Deserialize, Serialize};
 
 /// Metric, determinant and diffusion factor g^{-1/2} of every walker.
@@ -21,6 +21,9 @@ pub struct MetricField<T: Real> {
     pub determinant: Vec<T>,
     /// `[walkers, dimension, dimension]`.
     pub diffusion: Vec<T>,
+    /// `[walkers, dimension]`: the eigenvalues a clamp or a sign repair moved,
+    /// so a positive definite estimate is never confused with a repaired one.
+    pub clipped: Vec<bool>,
 }
 impl<T: Real> MetricField<T> {
     pub fn walkers(&self) -> usize {
@@ -30,17 +33,25 @@ impl<T: Real> MetricField<T> {
         let w = self.dimension * self.dimension;
         &self.metric[i * w..(i + 1) * w]
     }
+    /// True when the metric of walker `i` had to be repaired to be positive.
+    pub fn repaired(&self, i: usize) -> bool {
+        self.clipped[i * self.dimension..(i + 1) * self.dimension]
+            .iter()
+            .any(|&moved| moved)
+    }
     fn assemble(dimension: usize, spectra: Vec<SpdSpectrum<T>>, diffusion_floor: T) -> Self {
         let mut out = Self {
             dimension,
             metric: Vec::with_capacity(spectra.len() * dimension * dimension),
             determinant: Vec::with_capacity(spectra.len()),
             diffusion: Vec::with_capacity(spectra.len() * dimension * dimension),
+            clipped: Vec::with_capacity(spectra.len() * dimension),
         };
         for s in spectra {
             out.metric.extend(s.matrix());
             out.determinant.push(s.determinant());
             out.diffusion.extend(s.power(-0.5, diffusion_floor));
+            out.clipped.extend(s.clipped);
         }
         out
     }
@@ -68,6 +79,32 @@ fn default_min_eig() -> Option<f64> {
 fn default_epsilon_sigma() -> f64 {
     1e-3
 }
+fn is_relative(scale: &RidgeScale) -> bool {
+    *scale == RidgeScale::RelativeToTrace
+}
+fn is_clipped(policy: &MetricPolicy) -> bool {
+    *policy == MetricPolicy::Clipped
+}
+
+/// Units of the ridge and of the eigenvalue bounds of a covariance metric.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum RidgeScale {
+    /// The numbers are coordinates: a ridge in length^2 and bounds in
+    /// length^-2. The convention of the reference estimators, and the one a
+    /// recorded archive was measured with; the metric it produces does not
+    /// scale with the cloud.
+    Absolute,
+    /// The numbers multiply the scale `tau = tr(C)/d` of the displacement
+    /// covariance: the ridge is `ridge * tau` and the bounds are `min_eig /
+    /// tau` and `max_eig / tau`. Under `x -> lambda x` the covariance scales as
+    /// `lambda^2` and the regularized metric as `lambda^-2`, so the scale
+    /// ladder, the gate and the smearing width built on it are covariant.
+    /// Displacements with no scale, a coincident group or a walker with no
+    /// neighbor, keep `tau = 1` and therefore the absolute convention.
+    #[default]
+    RelativeToTrace,
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
@@ -80,6 +117,10 @@ pub enum MetricKind {
         min_eig: Option<f64>,
         #[serde(default)]
         max_eig: Option<f64>,
+        #[serde(default, skip_serializing_if = "is_relative")]
+        scale: RidgeScale,
+        #[serde(default, skip_serializing_if = "is_clipped")]
+        policy: MetricPolicy,
     },
     /// Flat space: curvature estimators must return zero.
     Identity,
@@ -90,6 +131,8 @@ pub enum MetricKind {
         min_eig: Option<f64>,
         #[serde(default)]
         max_eig: Option<f64>,
+        #[serde(default, skip_serializing_if = "is_clipped")]
+        policy: MetricPolicy,
     },
     /// g = H + epsilon_sigma I from a neighbor finite-difference Hessian of a
     /// scalar observation field.
@@ -103,6 +146,8 @@ pub enum MetricKind {
         min_eig: Option<f64>,
         #[serde(default)]
         max_eig: Option<f64>,
+        #[serde(default, skip_serializing_if = "is_clipped")]
+        policy: MetricPolicy,
     },
     /// Inverse covariance of the Voronoi cell vertices about the walker.
     VoronoiCovariance {
@@ -112,6 +157,10 @@ pub enum MetricKind {
         min_eig: Option<f64>,
         #[serde(default)]
         max_eig: Option<f64>,
+        #[serde(default, skip_serializing_if = "is_relative")]
+        scale: RidgeScale,
+        #[serde(default, skip_serializing_if = "is_clipped")]
+        policy: MetricPolicy,
     },
 }
 impl Default for MetricKind {
@@ -120,6 +169,8 @@ impl Default for MetricKind {
             ridge: default_ridge(),
             min_eig: default_min_eig(),
             max_eig: None,
+            scale: RidgeScale::default(),
+            policy: MetricPolicy::default(),
         }
     }
 }
@@ -138,11 +189,13 @@ impl MetricKind {
                 ridge,
                 min_eig,
                 max_eig,
+                ..
             }
             | Self::VoronoiCovariance {
                 ridge,
                 min_eig,
                 max_eig,
+                ..
             } => {
                 require(
                     ridge.is_finite() && *ridge > 0.,
@@ -155,6 +208,7 @@ impl MetricKind {
                 field,
                 min_eig,
                 max_eig,
+                ..
             } => {
                 require(!field.is_empty(), "metric observation field name")?;
                 clamp_bounds(*min_eig, *max_eig)
@@ -184,15 +238,18 @@ fn identity_spectrum<T: Real>(d: usize) -> SpdSpectrum<T> {
     SpdSpectrum {
         eigenvalues: vec![T::ONE; d],
         eigenvectors: q,
+        clipped: vec![false; d],
     }
 }
-/// Inverse of the ridge-regularized mean outer product of `deltas`.
+/// Inverse of the ridge-regularized mean outer product of `deltas`. `scale`
+/// fixes the units of `ridge` and of the eigenvalue bounds; see `RidgeScale`.
 fn inverse_covariance<T: Real>(
     d: usize,
     deltas: impl Iterator<Item = Vec<T>>,
     ridge: T,
     min_eig: Option<T>,
     max_eig: Option<T>,
+    scale: RidgeScale,
 ) -> Result<SpdSpectrum<T>> {
     let mut c = vec![T::ZERO; d * d];
     let mut count = 0usize;
@@ -204,15 +261,40 @@ fn inverse_covariance<T: Real>(
         }
         count += 1;
     }
-    let scale = T::from_f64(count.max(1) as f64);
+    let edges = T::from_f64(count.max(1) as f64);
     for a in 0..d {
         for b in a..d {
-            let v = c[a * d + b] / scale + if a == b { ridge } else { T::ZERO };
+            let v = c[a * d + b] / edges;
             c[a * d + b] = v;
             c[b * d + a] = v;
         }
     }
-    pinv_clamped(&c, d, T::EPSILON * T::from_f64(d as f64), min_eig, max_eig)
+    let trace = (0..d).fold(T::ZERO, |s, k| s + c[k * d + k]) / T::from_f64(d as f64);
+    let tau = match scale {
+        RidgeScale::RelativeToTrace if trace > T::ZERO => trace,
+        _ => T::ONE,
+    };
+    for k in 0..d {
+        c[k * d + k] = c[k * d + k] + ridge * tau;
+    }
+    let bound = |v: Option<T>| v.map(|b| b / tau);
+    pinv_clamped(
+        &c,
+        d,
+        T::EPSILON * T::from_f64(d as f64),
+        bound(min_eig),
+        bound(max_eig),
+    )
+}
+/// `Strict` refuses a spectrum a clamp or a sign repair had to move; `Clipped`
+/// keeps it and carries the flags, the policy of `metric_from_hessian`.
+fn honour<T: Real>(policy: MetricPolicy, spectrum: SpdSpectrum<T>) -> Result<SpdSpectrum<T>> {
+    if policy == MetricPolicy::Strict && spectrum.repaired() {
+        return Err(GasError::Numerical(
+            "strict metric policy: the estimated metric is not positive definite".into(),
+        ));
+    }
+    Ok(spectrum)
 }
 impl<T: Real> MetricEstimator<T> for MetricKind {
     fn needs_cells(&self) -> bool {
@@ -233,21 +315,27 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                 ridge,
                 min_eig,
                 max_eig,
+                scale,
+                policy,
             } => (
                 try_map_indexed(n, par, |i| {
                     if !frame.eligible[i] {
                         return Ok(identity_spectrum(d));
                     }
-                    inverse_covariance(
-                        d,
-                        frame
-                            .graph
-                            .row(i)
-                            .iter()
-                            .map(|&j| frame.delta(i, j as usize)),
-                        T::from_f64(*ridge),
-                        opt(min_eig),
-                        opt(max_eig),
+                    honour(
+                        *policy,
+                        inverse_covariance(
+                            d,
+                            frame
+                                .graph
+                                .row(i)
+                                .iter()
+                                .map(|&j| frame.delta(i, j as usize)),
+                            T::from_f64(*ridge),
+                            opt(min_eig),
+                            opt(max_eig),
+                            *scale,
+                        )?,
                     )
                 })?,
                 floor(min_eig),
@@ -260,6 +348,7 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                 field,
                 min_eig,
                 max_eig,
+                policy,
             } => {
                 let g = frame.observations.field(field)?;
                 require(
@@ -279,7 +368,10 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                                     (row[a * d + b] + row[b * d + a]) / T::from_f64(2.);
                             }
                         }
-                        clamp_spectrum(&sym, d, opt(min_eig), opt(max_eig))
+                        honour(
+                            *policy,
+                            clamp_spectrum(&sym, d, opt(min_eig), opt(max_eig))?,
+                        )
                     })?,
                     floor(min_eig),
                 )
@@ -290,6 +382,7 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                 epsilon_sigma,
                 min_eig,
                 max_eig,
+                policy,
             } => {
                 let values = frame.observations.field(scalar_field)?;
                 require(
@@ -306,7 +399,7 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                         for a in 0..d {
                             g[a * d + a] = g[a * d + a] + T::from_f64(*epsilon_sigma);
                         }
-                        clamp_spectrum(&g, d, opt(min_eig), opt(max_eig))
+                        honour(*policy, clamp_spectrum(&g, d, opt(min_eig), opt(max_eig))?)
                     })?,
                     floor(min_eig),
                 )
@@ -315,6 +408,8 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                 ridge,
                 min_eig,
                 max_eig,
+                scale,
+                policy,
             } => {
                 let cells = cells.ok_or_else(|| {
                     GasError::Configuration(
@@ -328,14 +423,18 @@ impl<T: Real> MetricEstimator<T> for MetricKind {
                             return Ok(identity_spectrum(d));
                         }
                         let x = frame.position(i);
-                        inverse_covariance(
-                            d,
-                            vertices
-                                .chunks_exact(d)
-                                .map(|v| v.iter().zip(x).map(|(&a, &b)| a - b).collect()),
-                            T::from_f64(*ridge),
-                            opt(min_eig),
-                            opt(max_eig),
+                        honour(
+                            *policy,
+                            inverse_covariance(
+                                d,
+                                vertices
+                                    .chunks_exact(d)
+                                    .map(|v| v.iter().zip(x).map(|(&a, &b)| a - b).collect()),
+                                T::from_f64(*ridge),
+                                opt(min_eig),
+                                opt(max_eig),
+                                *scale,
+                            )?,
                         )
                     })?,
                     floor(min_eig),

@@ -59,6 +59,7 @@ fn g6() -> GraphSnapshot<f64> {
         euclidean_length: G6_EUCLIDEAN.to_vec(),
         geodesic_length: G6_GEODESIC.to_vec(),
         wrap: Vec::new(),
+        stale_steps: 0,
     }
 }
 /// Deterministic hash to the unit interval.
@@ -1187,4 +1188,28 @@ fn smoothing_rejects_an_invalid_configuration_or_a_mismatched_state_explicitly()
         flow::smooth(&unflagged, &g.graph, &FlowConfig::default()),
         Err(GasError::Configuration(_))
     ));
+}
+
+#[test]
+fn a_tessellation_carried_over_from_an_earlier_step_is_declined() {
+    let fresh = g6();
+    assert_eq!(fresh.stale_steps, 0);
+    let stale = GraphSnapshot {
+        stale_steps: 1,
+        ..g6()
+    };
+    assert!(stale.same_geometry(&fresh));
+    for length in [EdgeLength::Euclidean, EdgeLength::Geodesic] {
+        // The same geometry, so the table would be the same; what differs is
+        // that the walkers of this frame are no longer the ones it describes.
+        scales::distances(&fresh, length, INF, BYTES, Parallelism::Serial).unwrap();
+        let declined = scales::distances(&stale, length, INF, BYTES, Parallelism::Serial)
+            .err()
+            .unwrap();
+        assert!(
+            matches!(declined, algorithmic_gas::GasError::Capability(ref reason)
+                if reason.contains("refreshed every step")),
+            "{declined}"
+        );
+    }
 }

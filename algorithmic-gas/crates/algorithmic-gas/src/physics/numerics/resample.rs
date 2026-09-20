@@ -112,21 +112,39 @@ pub fn tau_int_of_correlator(correlator: &[Option<f64>], frames: usize) -> Optio
 /// platform's `powf`.
 pub fn auto_block(tau: f64, base: usize, origins: usize) -> usize {
     let base = base.max(1);
-    let twice = 2. * if tau.is_finite() { tau.max(0.5) } else { 0.5 };
-    let reaches = |multiple: usize| {
-        let block = (base * multiple) as f64;
-        block >= twice && block * block * block >= twice * twice * origins as f64
-    };
+    let twice = twice_tau(tau);
     let most = (origins / base.saturating_mul(8)).max(1);
     let target = twice.max(twice.powf(2. / 3.) * (origins as f64).powf(1. / 3.));
     let mut multiple = ((target / base as f64).ceil() as usize).clamp(1, most);
-    while multiple > 1 && reaches(multiple - 1) {
+    while multiple > 1 && reaches(base * (multiple - 1), twice, origins) {
         multiple -= 1;
     }
-    while multiple < most && !reaches(multiple) {
+    while multiple < most && !reaches(base * multiple, twice, origins) {
         multiple += 1;
     }
     base * multiple
+}
+
+/// True when a block of `block` time origins is short of the batch size of
+/// least mean squared error for an autocorrelation time `tau` over `origins`
+/// origins. `auto_block` reaches it whenever the cap that keeps eight blocks
+/// leaves room; when it does not, the returned block is the largest the data
+/// support and nothing else says so, and a resampled variance over blocks
+/// below the rule is biased low.
+pub fn block_below_target(tau: f64, block: usize, origins: usize) -> bool {
+    !reaches(block, twice_tau(tau), origins)
+}
+
+/// Twice the autocorrelation time an automatic block targets, at least one.
+fn twice_tau(tau: f64) -> f64 {
+    2. * if tau.is_finite() { tau.max(0.5) } else { 0.5 }
+}
+
+/// Whether `block` meets both halves of the batch-size rule, `b ≥ 2 τ` and
+/// `b³ ≥ (2 τ)² origins`.
+fn reaches(block: usize, twice: f64, origins: usize) -> bool {
+    let block = block as f64;
+    block >= twice && block * block * block >= twice * twice * origins as f64
 }
 
 /// Origins per resampling block: a multiple of `base`.
@@ -252,6 +270,13 @@ pub fn resample_blocks(
 /// is estimated from the pooled lag-wise connected correlator, and is 1/2
 /// when that has no variance). Each resample recomputes its own disconnected
 /// part. Fewer than two blocks is `GasError::Numerical`.
+///
+/// A resample deletes or draws whole blocks of time origins, so a pair whose
+/// origin survives keeps its sink even when that sink lies in a deleted block:
+/// beyond `τ = effective_block` the deletion removes no product of a lag at
+/// all and the resampled error is a lower bound. `moments::straddling_pairs`
+/// counts the pairs this leaves in. Excising the observations instead
+/// overshoots, so the geometry stays and is stated rather than changed.
 pub fn resample(
     moments: &BlockMoments,
     subtraction: Subtraction,

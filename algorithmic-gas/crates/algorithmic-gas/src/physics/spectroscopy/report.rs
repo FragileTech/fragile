@@ -6,7 +6,7 @@
 //! autocorrelation. It is a mass only under a positive self-adjoint transfer
 //! representation; `notes` say so.
 use super::{
-    config::{AnalysisConfig, ChannelSpec, Combine, TimeUnit},
+    config::{AnalysisConfig, ChannelSpec, Combine, FrameNormalization, TimeUnit},
     contract::{
         Availability, Capabilities, ElementKind, ExchangeParity, SPECTROSCOPY_VERSION,
         SpatialParity,
@@ -338,6 +338,9 @@ pub struct WindowFit {
     pub dof: usize,
     /// Normalized model weight `∝ exp(−AIC/2)`, `AIC = χ² + 2k + 2 N_cut`.
     pub weight: f64,
+    /// The unshifted `AIC` the weight comes from. A constant offset cancels in
+    /// the normalized weights, so only this field shows the parameter count.
+    pub aic: f64,
     /// Exponentials of the row's model and its SVD cut, which tell the rows
     /// of a stability scan apart. 1 and `None` in a window scan.
     #[serde(default = "one_exponential")]
@@ -350,7 +353,7 @@ fn one_exponential() -> usize {
 }
 impl Finite for WindowFit {
     fn finite(&self) -> bool {
-        [self.value, self.error, self.chi2, self.weight]
+        [self.value, self.error, self.chi2, self.weight, self.aic]
             .iter()
             .all(|x| x.is_finite())
             && self.svd_cut.finite()
@@ -393,6 +396,13 @@ pub struct ChannelReport {
     pub availability: Availability,
     pub coverage: Coverage,
     pub estimator: Option<EstimatorKind>,
+    /// Denominator of the frame averages behind the series: the `Signature`
+    /// override, else `MeasurementConfig::normalization`. The valid-count
+    /// average of `04_standard_model` and the fixed `1/N` average of
+    /// `08_twistor_formulation` are different observables, so a rate states
+    /// which one it used and rates of different denominators are not divided.
+    /// `None` when the measurement did not record it.
+    pub normalization: Option<FrameNormalization>,
     pub correlator: Option<CorrelatorEstimate>,
     /// `[value, error]` per lag of `correlator`.
     pub effective_mass: Option<Vec<Option<[f64; 2]>>>,
@@ -471,6 +481,8 @@ pub struct ReferenceRow {
     /// Estimator behind `measured`; `reference::compare` notes every ratio
     /// that mixes estimators.
     pub estimator: Option<EstimatorKind>,
+    /// Frame normalisation behind `measured`, from the assigned channel.
+    pub normalization: Option<FrameNormalization>,
 }
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -713,6 +725,7 @@ mod tests {
                     chi2: 3.1,
                     dof: 4,
                     weight: 0.31,
+                    aic: 11.1,
                     nexp: 1,
                     svd_cut: None,
                 }],
@@ -777,6 +790,7 @@ mod tests {
                     unit: "MeV".into(),
                     measured: Some([0.21, 0.013]),
                     estimator: Some(EstimatorKind::FrameMean),
+                    normalization: Some(FrameNormalization::ValidCount),
                 }],
                 ..Comparison::default()
             }),

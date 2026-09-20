@@ -1116,6 +1116,34 @@ impl ChannelSpec {
             _ => Ok(()),
         }
     }
+    /// The catalog member measuring the same series as this one, where a
+    /// second id names one observable. `Re q_ij` is unmoved by the
+    /// conjugation a score orientation applies, so off a tie the
+    /// score-directed scalar meson is the standard one; a displacement that
+    /// *is* the score gradient has no transverse part, so its longitudinal
+    /// projection is the whole of it. Two such members of one basis give the
+    /// joint covariance an exact null direction.
+    pub fn twin(&self) -> Option<Self> {
+        match *self {
+            Self::Meson {
+                quantum: MesonQuantum::Scalar,
+                mode: MesonMode::ScoreDirected,
+            } => Some(Self::Meson {
+                quantum: MesonQuantum::Scalar,
+                mode: MesonMode::Standard,
+            }),
+            Self::Vector {
+                quantum,
+                projection: VectorProjection::Longitudinal,
+                displacement: Displacement::ScoreGradient,
+            } => Some(Self::Vector {
+                quantum,
+                projection: VectorProjection::Full,
+                displacement: Displacement::ScoreGradient,
+            }),
+            _ => None,
+        }
+    }
     /// Default channels: the strong sector, the electroweak phases and the
     /// symmetry-breaking scalars as the Standard Model chapter defines them.
     pub fn standard_set() -> Vec<Self> {
@@ -1332,6 +1360,11 @@ pub struct WindowScanConfig {
     pub min_rate_snr: f64,
     /// Correlated χ²; otherwise the diagonal approximation, stated in the notes.
     pub correlated: bool,
+    /// Usable lags the scan fits. The window count is quadratic in it and each
+    /// window costs an eigendecomposition of its own size, so the cost grows as
+    /// the fifth power of it; a usable range beyond this is a `Configuration`
+    /// error naming the cap, not a scan that runs for hours.
+    pub max_usable: usize,
 }
 impl Default for WindowScanConfig {
     fn default() -> Self {
@@ -1342,6 +1375,7 @@ impl Default for WindowScanConfig {
             min_point_snr: 2.,
             min_rate_snr: 2.,
             correlated: true,
+            max_usable: 128,
         }
     }
 }
@@ -1353,8 +1387,10 @@ impl WindowScanConfig {
                 && self.min_point_snr.is_finite()
                 && self.min_point_snr >= 0.
                 && self.min_rate_snr.is_finite()
-                && self.min_rate_snr >= 0.,
-            "window scan needs at least 3 points per window and nonnegative thresholds",
+                && self.min_rate_snr >= 0.
+                && self.max_usable >= self.min_points,
+            "window scan needs at least 3 points per window, nonnegative thresholds and a usable \
+             cap of at least min_points",
         )
     }
 }
@@ -1421,6 +1457,20 @@ impl ChannelGroup {
         )
     }
 }
+named_enum! {
+    /// How a state of the pencil `C(t) v = λ(t, t0) C(t0) v` is told from the
+    /// others at every lag.
+    GevpProjection {
+        /// One eigenvector per state, solved at the reference lag and held
+        /// across lags and resamples: `λ_n(t) = vₙᵀ C(t) vₙ / vₙᵀ C(t0) vₙ`,
+        /// so a state keeps its identity.
+        #[default]
+        FixedVector => "fixed_vector",
+        /// The eigenvalues of the pencil at each lag, descending, a state
+        /// being whatever sits at its place in that order.
+        MaxEigenvalue => "max_eigenvalue",
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct GevpBasis {
@@ -1429,6 +1479,10 @@ pub struct GevpBasis {
     pub t0: usize,
     /// Relative eigenvalue cut on `C(t0)`.
     pub cut: f64,
+    pub projection: GevpProjection,
+    /// Lag `FixedVector` solves its eigenvectors at, beyond `t0`; the first
+    /// measured lag beyond `t0` with a defined matrix when unset.
+    pub t_ref: Option<usize>,
 }
 impl Default for GevpBasis {
     fn default() -> Self {
@@ -1437,6 +1491,8 @@ impl Default for GevpBasis {
             channels: vec![],
             t0: 1,
             cut: 1e-3,
+            projection: GevpProjection::FixedVector,
+            t_ref: None,
         }
     }
 }
@@ -1446,8 +1502,10 @@ impl GevpBasis {
             !self.id.is_empty()
                 && (2..=16).contains(&self.channels.len())
                 && self.cut.is_finite()
-                && (0. ..1.).contains(&self.cut),
-            "a GEVP basis needs an id, 2..=16 channels and a cut in [0, 1)",
+                && (0. ..1.).contains(&self.cut)
+                && self.t_ref.is_none_or(|t| t > self.t0),
+            "a GEVP basis needs an id, 2..=16 channels, a cut in [0, 1) and a reference lag \
+             beyond t0",
         )
     }
 }
@@ -1594,6 +1652,42 @@ impl StandardModelInputs {
         )
     }
 }
+/// The part of a member id beyond the specification it names: empty for the
+/// specification itself, `/<element kind>` for one of its channels.
+fn role<'a>(member: &'a str, spec_id: &str) -> Option<&'a str> {
+    member
+        .strip_prefix(spec_id)
+        .filter(|rest| rest.is_empty() || rest.starts_with('/'))
+}
+/// Whether two members, read against the two specifications of one twin
+/// relation, reach a common channel. A member that names a specification
+/// stands for every measured role of it, so it meets any role of the twin;
+/// two members that each name a role meet on that role alone.
+fn overlap(a: &str, b: &str, [one, other]: &[String; 2]) -> bool {
+    match (role(a, one), role(b, other)) {
+        (Some(x), Some(y)) => x.is_empty() || y.is_empty() || x == y,
+        _ => false,
+    }
+}
+/// The two members of a group or basis that measure the same series, under
+/// the `[id, twin id]` relation of `ChannelSpec::twin`.
+fn twinned<'a>(members: &'a [String], twins: &[[String; 2]]) -> Option<[&'a str; 2]> {
+    members
+        .iter()
+        .flat_map(|a| members.iter().map(move |b| [a.as_str(), b.as_str()]))
+        .find(|[a, b]| twins.iter().any(|twin| overlap(a, b, twin)))
+}
+/// Two members of one group or basis that measure the same series leave the
+/// joint covariance an exact null direction, which no eigenvalue cut tells
+/// from a resolved one.
+fn distinct(id: &str, members: &[String], twins: &[[String; 2]]) -> Result<()> {
+    match twinned(members, twins) {
+        Some([one, other]) => Err(GasError::Configuration(format!(
+            "`{id}` holds `{one}` and `{other}`, which measure the same series"
+        ))),
+        None => Ok(()),
+    }
+}
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct AnalysisConfig {
@@ -1693,12 +1787,17 @@ impl AnalysisConfig {
             "analysis takes at most 64 channel groups and 64 GEVP bases",
         )?;
         let mut ids = BTreeSet::new();
+        let twins: Vec<[String; 2]> = ChannelSpec::all()
+            .iter()
+            .filter_map(|spec| spec.twin().map(|twin| [spec.id(), twin.id()]))
+            .collect();
         for group in &self.groups {
             group.validate()?;
             require(
                 ids.insert(&group.id),
                 format!("duplicate group or GEVP basis `{}`", group.id),
             )?;
+            distinct(&group.id, &group.channels, &twins)?;
         }
         for basis in &self.gevp {
             basis.validate()?;
@@ -1706,6 +1805,7 @@ impl AnalysisConfig {
                 ids.insert(&basis.id),
                 format!("duplicate group or GEVP basis `{}`", basis.id),
             )?;
+            distinct(&basis.id, &basis.channels, &twins)?;
         }
         if let Some(scan) = &self.stability {
             scan.validate()?;
@@ -1725,7 +1825,11 @@ impl AnalysisConfig {
         [
             self.window_scan.t_max,
             self.multi_exponential.t_max,
-            self.gevp.iter().map(|b| b.t0).max(),
+            self.gevp
+                .iter()
+                .flat_map(|b| [Some(b.t0), b.t_ref])
+                .max()
+                .flatten(),
         ]
         .into_iter()
         .flatten()
@@ -1846,6 +1950,7 @@ mod tests {
             EffectiveMassKind,
             FitMethod,
             TimeUnit,
+            GevpProjection,
             PairDistance,
             HyperchargeNormalization
         );

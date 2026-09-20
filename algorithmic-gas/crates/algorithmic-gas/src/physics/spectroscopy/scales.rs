@@ -28,6 +28,11 @@ pub const SMEAR_CUTOFF: f64 = 8.;
 /// `numerics::shortest_paths::all_pairs`; the accumulator passes what remains
 /// of `MeasurementBudget::max_bytes`. Warm-up frames use an infinite radius,
 /// gated frames the largest scale and smeared frames `SMEAR_CUTOFF` times it.
+///
+/// A snapshot the recording carried over from an earlier step is declined: the
+/// walkers of this frame moved away from the graph that would gate and smear
+/// them, so the table is not this frame's geometry. Scales need a geometry
+/// schedule that tessellates every step.
 pub fn distances(
     graph: &GraphSnapshot<f64>,
     length: EdgeLength,
@@ -35,6 +40,11 @@ pub fn distances(
     max_bytes: usize,
     par: Parallelism,
 ) -> Result<Vec<f64>> {
+    if graph.stale_steps > 0 {
+        return Err(GasError::Capability(
+            "scale gating needs a tessellation refreshed every step".into(),
+        ));
+    }
     let length = match length {
         EdgeLength::Geodesic => &graph.geodesic_length,
         EdgeLength::Euclidean => &graph.euclidean_length,
@@ -47,6 +57,13 @@ pub fn distances(
 /// the whole triangle, so no tail of walkers is left out. The choice is a
 /// function of the frame alone, so a warm-up sample does not depend on how
 /// the run is chunked. Coincident walkers at distance zero are no sample.
+///
+/// A table whose flattened pair sequence carries an arithmetic period
+/// commensurate with the stride would be read at one phase of that period;
+/// shortest-path lengths carry no such period, and on geodesic tables the
+/// quantiles of the strided sample deviate from the full ones by about as
+/// much as those of an independent uniform subsample of the same size, which
+/// is ordinary quantile sampling noise rather than aliasing.
 pub fn pair_samples(distances: &[f64], n: usize, cap: usize) -> Vec<f64> {
     debug_assert_eq!(distances.len(), n * n);
     let pairs = || {

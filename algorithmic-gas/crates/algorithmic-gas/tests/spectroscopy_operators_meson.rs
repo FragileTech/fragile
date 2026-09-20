@@ -11,9 +11,11 @@ use algorithmic_gas::{
                 PropagatorConfig, VectorProjection, VectorQuantum,
             },
             contract::{
-                Capabilities, Element, ElementKind, ExchangeParity, FrameState, LocalOperator,
-                OperatorContext, Record, Signature, SpatialParity, channel_id,
+                Auxiliary, Capabilities, Companions, Element, ElementKind, ExchangeParity, Frame,
+                FrameState, LocalOperator, OperatorContext, Record, Signature, SpatialParity,
+                channel_id,
             },
+            fields::score,
             operators::channels,
         },
     },
@@ -98,7 +100,7 @@ fn gradient(state: &FrameState, maps: &[&[usize]]) -> Vec<f64> {
             if length > 0. {
                 count += 1.;
                 for a in 0..d {
-                    out[i * d + a] += (score[j] - score[i]) * r[a] / length;
+                    out[i * d + a] += (score[j] - score[i]) * r[a] / (length * length);
                 }
             }
         }
@@ -200,18 +202,47 @@ fn evaluated_in(
     spec.evaluate(element, state, &context, out)
 }
 /// Components of `spec` on `element`, `None` when masked.
+fn raw_in(
+    gas: &GasConfig,
+    spec: &ChannelSpec,
+    element: &Element,
+    state: &FrameState,
+) -> Option<Vec<f64>> {
+    let mut out = vec![0.; width_of(spec, element.kind, state.d)];
+    evaluated_in(gas, spec, element, state, &mut out).then_some(out)
+}
+fn raw(spec: &ChannelSpec, element: &Element, state: &FrameState) -> Option<Vec<f64>> {
+    raw_in(&GasConfig::default(), spec, element, state)
+}
+/// Width of one row of `evaluate`: the components of the arm in `dimension`
+/// position dimensions, and its auxiliary column when it has one.
+fn width_of(spec: &ChannelSpec, kind: ElementKind, dimension: usize) -> usize {
+    signature_in(spec, kind, dimension).map_or(1, |signature| signature.width())
+}
+/// Components of `spec` on `element` with its auxiliary column folded in, as
+/// the measurement folds it at a source time: the score factor multiplies the
+/// value, and an element the frame cannot orient is masked.
 fn value_in(
     gas: &GasConfig,
     spec: &ChannelSpec,
     element: &Element,
     state: &FrameState,
 ) -> Option<Vec<f64>> {
-    let components = match spec {
-        ChannelSpec::Vector { .. } => state.d,
-        _ => 1,
+    let row = raw_in(gas, spec, element, state)?;
+    let signature = signature_in(spec, element.kind, state.d).ok()?;
+    let Some(auxiliary) = signature.auxiliary else {
+        return Some(row);
     };
-    let mut out = vec![0.; components];
-    evaluated_in(gas, spec, element, state, &mut out).then_some(out)
+    let factor = row[signature.components];
+    if !factor.is_finite() || (auxiliary == Auxiliary::ScoreOrientation && factor == 0.) {
+        return None;
+    }
+    Some(
+        row[..signature.components]
+            .iter()
+            .map(|value| value * factor)
+            .collect(),
+    )
 }
 fn value(spec: &ChannelSpec, element: &Element, state: &FrameState) -> Option<Vec<f64>> {
     value_in(&GasConfig::default(), spec, element, state)
@@ -228,23 +259,30 @@ fn frame(spec: &ChannelSpec, elements: &[Element], state: &FrameState) -> (Vec<f
         measurement: &measurement,
         capabilities: &capabilities,
     };
-    let components = match spec {
-        ChannelSpec::Vector { .. } => state.d,
-        _ => 1,
-    };
-    let mut values = vec![0.; elements.len() * components];
+    let signature = signature_in(spec, elements[0].kind, state.d).unwrap();
+    let (components, width) = (signature.components, signature.width());
+    let mut values = vec![0.; elements.len() * width];
     let mut valid = vec![false; elements.len()];
     spec.evaluate_all(elements, state, &context, &mut values, &mut valid);
     let (mut sum, mut weight) = (vec![0.; components], 0.);
-    for ((element, row), ok) in elements
-        .iter()
-        .zip(values.chunks_exact(components))
-        .zip(valid)
-    {
+    for ((element, row), ok) in elements.iter().zip(values.chunks_exact(width)).zip(valid) {
+        // The auxiliary column folds into the value exactly as it does in the
+        // measurement, and an element without a score factor is masked.
+        let factor = match signature.auxiliary {
+            None => 1.,
+            Some(auxiliary) => {
+                let factor = row[components];
+                if !factor.is_finite() || (auxiliary == Auxiliary::ScoreOrientation && factor == 0.)
+                {
+                    continue;
+                }
+                factor
+            }
+        };
         if ok {
             weight += element.weight;
-            for (s, v) in sum.iter_mut().zip(row) {
-                *s += element.weight * v;
+            for (s, v) in sum.iter_mut().zip(&row[..components]) {
+                *s += element.weight * v * factor;
             }
         }
     }
@@ -407,51 +445,88 @@ fn pair_contractions_match_the_closed_forms_and_the_reference_table() {
 }
 
 #[test]
-fn score_modes_orient_and_weight_the_pair_from_the_scores_of_the_evaluated_state() {
+fn score_modes_report_the_score_factor_apart_from_the_contraction() {
+    // The contraction is read in the sampled order and the factor the score
+    // contributes is the second column, so that the measurement can freeze it
+    // with the element instead of re-deriving it at a sink.
     let state = reference(&[&CYCLE]);
-    let arm = |quantum, mode, i, j, state: &FrameState| scalar(&meson(quantum, mode), i, j, state);
+    let arm =
+        |quantum, mode, i, j, state: &FrameState| raw(&meson(quantum, mode), &pair(i, j), state);
     let directed =
         |i, j, state: &FrameState| arm(PSEUDOSCALAR, MesonMode::ScoreDirected, i, j, state);
-    // S_3 − S_2 = −1.8: the pair (2, 3) is read from 3 to 2.
-    assert!((directed(2, 3, &state).unwrap() - 0.317887765695611).abs() < 1e-12);
-    assert_eq!(directed(2, 3, &state), directed(3, 2, &state));
-    assert_eq!(
-        arm(SCALAR, MesonMode::ScoreDirected, 2, 3, &state),
-        arm(SCALAR, MesonMode::Standard, 2, 3, &state)
+    // S_3 − S_2 = −1.8: the pair (2, 3) is read from 3 to 2, which is the sign
+    // −1 on the imaginary part and no factor at all on the real part.
+    let row = directed(2, 3, &state).unwrap();
+    close(&row, &[-0.317887765695611, -1.], 1e-12);
+    close(
+        &directed(3, 2, &state).unwrap(),
+        &[0.317887765695611, 1.],
+        1e-12,
     );
-    let weighted = arm(SCALAR, MesonMode::ScoreWeighted, 2, 3, &state).unwrap();
-    assert!((weighted + 0.476831648543416).abs() < 1e-12);
-    let weighted = arm(PSEUDOSCALAR, MesonMode::ScoreWeighted, 2, 3, &state).unwrap();
-    assert!((weighted + 0.572197978252100).abs() < 1e-12);
-    // The tie S_0 = S_4 masks the directed arms at both ends; a weighted arm
-    // keeps the element with the value 0.
+    close(
+        &arm(SCALAR, MesonMode::ScoreDirected, 2, 3, &state).unwrap(),
+        &[-0.264906471413009, 1.],
+        1e-12,
+    );
+    close(
+        &arm(SCALAR, MesonMode::ScoreWeighted, 2, 3, &state).unwrap(),
+        &[-0.264906471413009, 1.8],
+        1e-12,
+    );
+    close(
+        &arm(PSEUDOSCALAR, MesonMode::ScoreWeighted, 2, 3, &state).unwrap(),
+        &[-0.317887765695611, 1.8],
+        1e-12,
+    );
+    // The tie S_0 = S_4 leaves the pair without an orientation and without a
+    // score dispersion: the factor is exactly 0 at both ends.
     for (i, j) in [(0, 4), (4, 0)] {
-        assert_eq!(directed(i, j, &state), None);
-        assert_eq!(arm(SCALAR, MesonMode::ScoreDirected, i, j, &state), None);
-        assert_eq!(
-            arm(SCALAR, MesonMode::ScoreWeighted, i, j, &state),
-            Some(0.)
-        );
+        for mode in [MesonMode::ScoreDirected, MesonMode::ScoreWeighted] {
+            for quantum in [SCALAR, PSEUDOSCALAR] {
+                assert_eq!(arm(quantum, mode, i, j, &state).unwrap()[1], 0.);
+            }
+        }
     }
-    // A sink state with the scores reversed reverses the orientation of the
-    // same frozen element.
+    // A sink state with the scores reversed reverses the factor of the same
+    // element; only the frozen factor of the source reaches a propagator.
     let mut sink = state.clone();
     sink.score = Some(S.iter().map(|s| -s).collect());
-    assert_eq!(
-        directed(2, 3, &sink).unwrap().to_bits(),
-        (-directed(2, 3, &state).unwrap()).to_bits()
-    );
-    // A walker without a valid score masks every score mode and no other.
+    assert_eq!(directed(2, 3, &sink).unwrap()[1], 1.);
+    assert_eq!(directed(2, 3, &sink).unwrap()[0], row[0]);
+    // A walker without a valid score is missing data, not a tie: the factor is
+    // not a number, and no other mode reads it.
     let mut unscored = state.clone();
     unscored.score_valid[3] = false;
     for mode in [MesonMode::ScoreDirected, MesonMode::ScoreWeighted] {
-        assert_eq!(arm(PSEUDOSCALAR, mode, 2, 3, &unscored), None);
-        assert_eq!(arm(PSEUDOSCALAR, mode, 3, 2, &unscored), None);
-        assert!(arm(PSEUDOSCALAR, mode, 1, 2, &unscored).is_some());
+        assert!(arm(PSEUDOSCALAR, mode, 2, 3, &unscored).unwrap()[1].is_nan());
+        assert!(arm(PSEUDOSCALAR, mode, 3, 2, &unscored).unwrap()[1].is_nan());
+        assert!(arm(PSEUDOSCALAR, mode, 1, 2, &unscored).unwrap()[1].is_finite());
     }
     assert!(arm(PSEUDOSCALAR, MesonMode::Standard, 2, 3, &unscored).is_some());
     unscored.score = None;
-    assert_eq!(arm(SCALAR, MesonMode::ScoreWeighted, 1, 2, &unscored), None);
+    assert!(arm(SCALAR, MesonMode::ScoreWeighted, 1, 2, &unscored).unwrap()[1].is_nan());
+    // The orientation is frozen with the element, so it enters the lag product
+    // squared and the source-frozen propagator of a directed arm is the one of
+    // the standard arm over the same elements: the arm is a frame-mean channel
+    // only, exactly as `baryon/score_ordered` is. The dispersion of a weighted
+    // arm is no sign and its propagator stays its own.
+    for quantum in [SCALAR, PSEUDOSCALAR] {
+        for mode in [
+            MesonMode::Standard,
+            MesonMode::ScoreDirected,
+            MesonMode::ScoreWeighted,
+        ] {
+            let spec = meson(quantum, mode);
+            let signature = signature_in(&spec, ElementKind::CloningPair, 3).unwrap();
+            assert!(signature.correlatable);
+            assert_eq!(
+                signature.propagatable,
+                mode != MesonMode::ScoreDirected,
+                "{}",
+                spec.id()
+            );
+        }
+    }
 }
 
 #[test]
@@ -466,8 +541,8 @@ fn vector_components_match_the_reference_table() {
         [-0.632195422817643, -0.210731807605881, 1.26439084563529],
         [-0.124282839749874, -0.0414276132499581, 0.248565679499748],
         [-0.186424259624811, -0.0621414198749371, 0.372848519249623],
-        [-0.161567691674836, -0.0538558972249455, 0.323135383349673],
-        [-0.242351537512255, -0.0807838458374182, 0.484703075024509],
+        [-0.0476437130239384, -0.0158812376746461, 0.0952874260478767],
+        [-0.0714655695359075, -0.0238218565119692, 0.142931139071815],
     ];
     for ((quantum, displacement), expected) in FULL.into_iter().zip(rows) {
         close(&arm(quantum, displacement, 1, 2, &state), &expected, 1e-12);
@@ -477,8 +552,8 @@ fn vector_components_match_the_reference_table() {
         [-0.794719414239026, 0.794719414239026, 0.476831648543416],
         [-0.172439425125162, 0.172439425125162, 0.103463655075097],
         [-0.206927310150194, 0.206927310150194, 0.124156386090117],
-        [0.310390965225291, -0.310390965225291, -0.186234579135175],
-        [0.37246915827035, -0.37246915827035, -0.22348149496221],
+        [0.0808189234819349, -0.0808189234819349, -0.0484913540891609],
+        [0.0969827081783219, -0.0969827081783219, -0.0581896249069931],
     ];
     for ((quantum, displacement), expected) in FULL.into_iter().zip(rows) {
         close(&arm(quantum, displacement, 2, 3, &state), &expected, 1e-12);
@@ -492,7 +567,8 @@ fn vector_components_match_the_reference_table() {
     close(&arm(VECTOR, raw, 5, 0, &state), &[0.; 3], 1e-15);
     let expected = [-0.117851130197758, -0.353553390593274, 0.942809041582064];
     close(&arm(AXIAL, raw, 5, 0, &state), &expected, 1e-12);
-    // Norm identities on (1, 2): |q|² = 0.2565…, |r|² = 11.5, ΔS² = 1.69.
+    // Norm identities on (1, 2): |q|² = 0.2565…, |r|² = 11.5, ΔS² = 1.69. The
+    // gradient of walker 1 is (ΔS / |r|) r̂, so it carries 1/|r|² of the square.
     let square = |v: Vec<f64>| v.iter().map(|x| x * x).sum::<f64>();
     let both = |displacement| {
         square(arm(VECTOR, displacement, 1, 2, &state))
@@ -501,7 +577,7 @@ fn vector_components_match_the_reference_table() {
     let abs2 = 0.256578947368421;
     assert!((both(Displacement::Raw) - abs2 * 11.5).abs() < 1e-12);
     assert!((both(Displacement::Unit) - abs2).abs() < 1e-12);
-    assert!((both(Displacement::ScoreGradient) - abs2 * 1.69).abs() < 1e-12);
+    assert!((both(Displacement::ScoreGradient) - abs2 * 1.69 / 11.5).abs() < 1e-12);
     // On the mirrored element the gradient of walker 3 alone is the same
     // vector: the raw vector is odd, the raw axial even.
     let mirrored = reference(&[&INVOLUTION]);
@@ -604,6 +680,36 @@ fn exchange_odd_frame_sums_cancel_on_every_involution_and_survive_on_a_cycle() {
             assert!(sum.iter().any(|s| s.abs() > 1e-3), "{}", spec.id());
         }
     }
+    // When both companion maps are the same involution the score gradient of a
+    // pair is the same vector at both of its ends, so an arm that multiplies it
+    // by an exchange-odd colour part cancels element by element although its
+    // declared parity is `Mixed` and the mirror rule does not apply to it. The
+    // descriptor of the arm states it; the frame sum is exactly zero.
+    let state = reference(&[&INVOLUTION, &INVOLUTION]);
+    let gradient = state.score_gradient.as_ref().unwrap();
+    for (i, &j) in INVOLUTION.iter().enumerate() {
+        assert_eq!(gradient[i * 3..i * 3 + 3], gradient[j * 3..j * 3 + 3]);
+    }
+    let axial = full(AXIAL, Displacement::ScoreGradient);
+    assert_eq!(
+        signature_in(&axial, ElementKind::DistancePair, 3)
+            .unwrap()
+            .exchange,
+        ExchangeParity::Mixed
+    );
+    let (sum, weight) = frame(&axial, &elements(&INVOLUTION), &state);
+    assert_eq!(weight, 6.);
+    assert_eq!(sum, vec![0.; 3]);
+    let vector = full(VECTOR, Displacement::ScoreGradient);
+    let (sum, _) = frame(&vector, &elements(&INVOLUTION), &state);
+    assert!(sum.iter().any(|s| s.abs() > 1e-3));
+    assert!(
+        signature_in(&axial, ElementKind::DistancePair, 3)
+            .unwrap()
+            .descriptor
+            .note
+            .contains("cancels element by element over a mutual pairing")
+    );
 }
 
 #[test]
@@ -675,7 +781,11 @@ fn frame_means_match_the_reference_frames() {
             0.0858030626282698,
             0.000999959842346664,
         ],
-        [0.0700845179491302, -0.139932802686262, -0.0118717633408863],
+        [
+            0.0165480111444842,
+            -0.0395171471470958,
+            -0.00121340243252019,
+        ],
         [0., 0., 0.],
         [-0.136177900664667, 0.262956674792458, 0.0154120052789798],
         [0., 0., 0.],
@@ -685,8 +795,8 @@ fn frame_means_match_the_reference_frames() {
         [-0.515213933018263, 0.112495350652003, 0.415836138334662],
         [0.0412283738058501, 0.0703110653281559, -0.0367410529698045],
         [-0.147274611937532, 0.0171964888851223, 0.147759308477306],
-        [0.0418590482449944, -0.0837630610543698, 0.0430993387140878],
-        [-0.0679036700502219, -0.0724438446269237, 0.078903364029921],
+        [0.00978380361455368, -0.0237555060735558, 0.0139244769041525],
+        [-0.0212326892957063, -0.0205139549414484, 0.0273601354034206],
         [-0.22470518809598, 0.2859019286621, 0.0133182379048954],
         [-0.123839665222091, -0.041744977169895, -0.241398475077403],
     ];
@@ -750,8 +860,8 @@ fn a_masked_frame_separates_the_valid_count_from_the_fixed_normalisation() {
         [-0.229415733870562, 0.229415733870562, 1.223550580643],
         [-0.0692975566943813, 0.0692975566943813, 0.3695869690367],
         [-0.055438045355505, 0.055438045355505, 0.29566957522936],
-        [-0.0727624345291004, 0.0727624345291004, 0.388066317488535],
-        [-0.0582099476232803, 0.0582099476232803, 0.310453053990828],
+        [-0.017582957705408, 0.017582957705408, 0.0937757744288428],
+        [-0.0140663661643264, 0.0140663661643264, 0.0750206195430742],
     ];
     for ((quantum, displacement), expected) in FULL.into_iter().zip(whole) {
         check(&full(quantum, displacement), 3., &expected);
@@ -1169,8 +1279,43 @@ fn displacements_take_the_minimum_image_of_a_periodic_box() {
     close(&unit, &image.map(|r| re * r / 4.25_f64.sqrt()), 1e-15);
     let open = value(&raw, &pair(0, 1), &state).unwrap();
     close(&open, &[3., -2.5, 1.].map(|r| re * r), 1e-15);
-    // A box of another dimension cannot wrap these positions.
-    assert_eq!(value_in(&boxed(2), &raw, &pair(0, 1), &state), None);
+    // A box of another dimension cannot wrap these positions, whether it has
+    // fewer axes or more.
+    for width in [2, 4] {
+        for displacement in [Displacement::Raw, Displacement::Unit] {
+            let spec = full(AXIAL, displacement);
+            assert_eq!(value_in(&boxed(width), &spec, &pair(1, 2), &state), None);
+        }
+        assert_eq!(value_in(&boxed(width), &raw, &pair(0, 1), &state), None);
+    }
+    // Each axis wraps by its own length, wherever the box sits, and a periodic
+    // box inside a composed policy wraps as it does alone: the differences
+    // (1.5, 4, −2) against the lengths (2, 10, 3) become (−0.5, 4, 1).
+    let periodic = BoundaryPolicy::PeriodicBox {
+        field: "positions".into(),
+        domain: BoxDomain {
+            lower: vec![-1., 0., 2.],
+            upper: vec![1., 10., 5.],
+        },
+    };
+    let composed = BoundaryPolicy::Composed {
+        policies: vec![BoundaryPolicy::ExternalTermination, periodic.clone()],
+    };
+    state.x[..6].copy_from_slice(&[-0.75, 1., 4.5, 0.75, 5., 2.5]);
+    let image = [-0.5, 4., 1.];
+    for boundary in [periodic, composed] {
+        let gas = GasConfig {
+            boundary,
+            ..GasConfig::default()
+        };
+        let wrapped = value_in(&gas, &raw, &pair(0, 1), &state).unwrap();
+        close(&wrapped, &image.map(|r| re * r), 1e-15);
+        let mirrored = value_in(&gas, &raw, &pair(1, 0), &state).unwrap();
+        close(&mirrored, &image.map(|r| -re * r), 1e-15);
+        let unit = full(VECTOR, Displacement::Unit);
+        let unit = value_in(&gas, &unit, &pair(0, 1), &state).unwrap();
+        close(&unit, &image.map(|r| re * r / 17.25_f64.sqrt()), 1e-15);
+    }
 }
 
 #[test]
@@ -1198,7 +1343,7 @@ fn elements_without_two_valid_distinct_walkers_are_masked() {
                 Err(GasError::Capability(_))
             ));
         }
-        let mut short = vec![0.; signature.components + 1];
+        let mut short = vec![0.; signature.width() + 1];
         let gas = GasConfig::default();
         assert!(!evaluated_in(&gas, &spec, &pair(1, 2), &state, &mut short));
     }
@@ -1269,7 +1414,7 @@ fn four_dimensions_index_walkers_and_components_by_the_state_dimension() {
     close(&arm(VECTOR, Displacement::Raw).unwrap(), &expected, 1e-15);
     let expected = r.map(|r| -r / (5. * scale));
     close(&arm(AXIAL, Displacement::Unit).unwrap(), &expected, 1e-15);
-    let expected = r.map(|r| 4. * 0.7 * r / (5. * scale));
+    let expected = r.map(|r| 4. * 0.7 * r / (25. * scale));
     close(
         &arm(VECTOR, Displacement::ScoreGradient).unwrap(),
         &expected,
@@ -1351,7 +1496,242 @@ fn one_dimension_offers_neither_the_gamma5_contraction_nor_a_part_across_the_gra
         };
         assert!((arm(Displacement::Raw) - 1.5 * re).abs() < 1e-15);
         assert!((arm(Displacement::Unit) - re).abs() < 1e-15);
-        assert!((arm(Displacement::ScoreGradient) - 0.5 * re).abs() < 1e-15);
+        assert!((arm(Displacement::ScoreGradient) - (0.5 / 1.5) * re).abs() < 1e-15);
+    }
+}
+
+#[test]
+fn two_dimensions_keep_the_gamma5_contraction_and_the_part_across_the_gradient() {
+    // c_0 = (3, 4i)/5, c_1 = (1 + 2i, 2 − i)/√10: 5√10 q_01 = −1 − 2i and
+    // 5√10 g_01 = 7 + 14i. r_01 = (3, 4); the recorded gradients (0, 2) of
+    // walker 0 and (0, −3) of walker 1 lie on the second axis.
+    let root = 10_f64.sqrt();
+    let color = vec![
+        C::new(0.6, 0.),
+        C::new(0., 0.8),
+        C::new(1. / root, 2. / root),
+        C::new(2. / root, -1. / root),
+    ];
+    let mut state = swarm(color, vec![0., 0., 3., 4.], vec![0.1, 0.6], &[&[1, 0]]);
+    state.score_gradient = Some(vec![0., 2., 0., -3.]);
+    let scale = 5. * root;
+    let arm = |quantum, mode| scalar(&meson(quantum, mode), 0, 1, &state).unwrap();
+    assert!((arm(SCALAR, MesonMode::Standard) + 1. / scale).abs() < 1e-15);
+    assert!((arm(PSEUDOSCALAR, MesonMode::Standard) + 2. / scale).abs() < 1e-15);
+    assert!((arm(SCALAR, MesonMode::Gamma5Diagonal) - 7. / scale).abs() < 1e-15);
+    assert!((arm(PSEUDOSCALAR, MesonMode::Gamma5Diagonal) - 14. / scale).abs() < 1e-15);
+    assert!((arm(SCALAR, MesonMode::Abs2) - 0.02).abs() < 1e-15);
+    assert!((arm(SCALAR, MesonMode::ScoreWeighted) + 0.5 / scale).abs() < 1e-15);
+    // Rows: quantum, projection, displacement, anchor, scale × components.
+    let (along, across) = (VectorProjection::Longitudinal, VectorProjection::Transverse);
+    let rows = [
+        (
+            VECTOR,
+            VectorProjection::Full,
+            Displacement::Raw,
+            0,
+            [-3., -4.],
+        ),
+        (VECTOR, along, Displacement::Raw, 0, [0., -4.]),
+        (VECTOR, across, Displacement::Raw, 0, [-3., 0.]),
+        (AXIAL, along, Displacement::Unit, 0, [0., -1.6]),
+        (AXIAL, across, Displacement::Unit, 0, [-1.2, 0.]),
+        (
+            VECTOR,
+            VectorProjection::Full,
+            Displacement::ScoreGradient,
+            0,
+            [0., -2.],
+        ),
+        (AXIAL, along, Displacement::ScoreGradient, 0, [0., -4.]),
+        // From walker 1: q_10 = conj(q_01), r_10 = −r_01.
+        (VECTOR, along, Displacement::Raw, 1, [0., 4.]),
+        (AXIAL, across, Displacement::Raw, 1, [-6., 0.]),
+        (
+            VECTOR,
+            VectorProjection::Full,
+            Displacement::ScoreGradient,
+            1,
+            [0., 3.],
+        ),
+    ];
+    for (quantum, projection, displacement, i, expected) in rows {
+        let spec = vector(quantum, projection, displacement);
+        let measured = value(&spec, &pair(i, 1 - i), &state).unwrap();
+        close(&measured, &expected.map(|v| v / scale), 1e-15);
+    }
+    // Only the colour-space matrices and the two arms without an operator in
+    // any dimension are refused.
+    let mut available = 0;
+    for spec in family() {
+        let refused = matches!(
+            &spec,
+            ChannelSpec::Meson {
+                quantum: MesonQuantum::Pseudoscalar,
+                mode: MesonMode::Abs2,
+            } | ChannelSpec::Vector {
+                displacement: Displacement::ColorGamma,
+                ..
+            } | ChannelSpec::Vector {
+                projection: VectorProjection::Transverse,
+                displacement: Displacement::ScoreGradient,
+                ..
+            }
+        );
+        let signature = signature_in(&spec, ElementKind::CloningPair, 2);
+        assert_eq!(signature.is_err(), refused, "{}", spec.id());
+        assert_eq!(
+            value(&spec, &pair(0, 1), &state).is_none(),
+            refused,
+            "{}",
+            spec.id()
+        );
+        available += usize::from(signature.is_ok());
+    }
+    assert_eq!(available, 9 + 2 * (3 * 2 + 2));
+    let spec = vector(AXIAL, across, Displacement::Unit);
+    let signature = signature_in(&spec, ElementKind::DistancePair, 2).unwrap();
+    assert_eq!(
+        (signature.components, signature.exchange),
+        (2, ExchangeParity::Mixed)
+    );
+}
+
+#[test]
+fn only_the_anchor_lends_its_score_and_gradient_to_a_projected_arm() {
+    // Walker 2 has neither a valid score nor a gradient: it anchors no arm
+    // that reads them and remains the companion of walker 1 in all of them.
+    let state = reference(&[&CYCLE, &INVOLUTION]);
+    let mut bare = state.clone();
+    bare.score_valid[2] = false;
+    bare.score.as_mut().unwrap()[2] = 0.;
+    bare.score_gradient.as_mut().unwrap()[6..9].fill(0.);
+    let mut reading = 0;
+    for spec in family() {
+        let ChannelSpec::Vector {
+            projection,
+            displacement,
+            ..
+        } = &spec
+        else {
+            continue;
+        };
+        if signature_in(&spec, ElementKind::DistancePair, 3).is_err() {
+            continue;
+        }
+        let reads =
+            *projection != VectorProjection::Full || *displacement == Displacement::ScoreGradient;
+        let kept = value(&spec, &pair(1, 2), &bare);
+        assert!(kept.is_some(), "{}", spec.id());
+        assert_eq!(kept, value(&spec, &pair(1, 2), &state), "{}", spec.id());
+        let anchored = value(&spec, &pair(2, 1), &bare);
+        assert_eq!(anchored.is_none(), reads, "{}", spec.id());
+        reading += usize::from(reads);
+    }
+    assert_eq!(reading, 2 * (2 * 2 + 2));
+    // The score modes of the overlap need the scores of both walkers.
+    for mode in [MesonMode::ScoreDirected, MesonMode::ScoreWeighted] {
+        assert_eq!(scalar(&meson(SCALAR, mode), 1, 2, &bare), None);
+    }
+    // Walker 5 sits on walker 4, which keeps its recorded gradient: a zero
+    // displacement is the value 0 of every raw arm, along or across the
+    // gradient, and has no unit vector to project.
+    let mut stacked = state.clone();
+    let (left, right) = stacked.x.split_at_mut(15);
+    right.copy_from_slice(&left[12..]);
+    for projection in [
+        VectorProjection::Full,
+        VectorProjection::Longitudinal,
+        VectorProjection::Transverse,
+    ] {
+        let arm = |displacement| {
+            value(
+                &vector(AXIAL, projection, displacement),
+                &pair(4, 5),
+                &stacked,
+            )
+        };
+        assert_eq!(arm(Displacement::Raw), Some(vec![0.; 3]));
+        assert_eq!(arm(Displacement::Unit), None);
+    }
+    let gradient = value(
+        &full(AXIAL, Displacement::ScoreGradient),
+        &pair(4, 5),
+        &stacked,
+    );
+    assert!(gradient.unwrap().iter().any(|v| v.abs() > 1e-3));
+}
+
+#[test]
+fn a_displacement_of_any_nonzero_length_has_a_unit_vector() {
+    // q_01 = 1/√48 is real; walker 0 sits at the origin.
+    let mut state = reference(&[&CYCLE]);
+    let re = 1. / 48_f64.sqrt();
+    let arm =
+        |displacement, state: &FrameState| value(&full(VECTOR, displacement), &pair(0, 1), state);
+    for length in [1e-200, 1e-12, 1e200] {
+        state.x[3..6].copy_from_slice(&[3. * length, -4. * length, 0.]);
+        let unit = arm(Displacement::Unit, &state).unwrap();
+        close(&unit, &[0.6 * re, -0.8 * re, 0.], 1e-15);
+        let raw = arm(Displacement::Raw, &state).unwrap();
+        let scaled: Vec<f64> = raw.iter().map(|r| r / length).collect();
+        close(&scaled, &[3. * re, -4. * re, 0.], 1e-15);
+    }
+    // A difference beyond the largest number is not a displacement.
+    state.x[..6].copy_from_slice(&[-1.5e308, 0., 0., 1.5e308, 0., 0.]);
+    assert_eq!(arm(Displacement::Raw, &state), None);
+    assert_eq!(arm(Displacement::Unit, &state), None);
+}
+
+#[test]
+fn descriptors_cite_the_book_definitions_and_refusals_are_plain_ascii() {
+    let twins = "never shares a fit basis";
+    for spec in family() {
+        let (label, twin) = match &spec {
+            ChannelSpec::Meson { quantum, mode } => (
+                match mode {
+                    MesonMode::Standard => "def-sm-direct-color-contractions",
+                    MesonMode::Gamma5Diagonal => "def-qft-color-gamma-operators",
+                    MesonMode::Abs2 => "cor-sm-direct-exchange-parity",
+                    _ => "",
+                },
+                (*quantum, *mode) == (SCALAR, MesonMode::ScoreDirected),
+            ),
+            ChannelSpec::Vector {
+                projection,
+                displacement,
+                ..
+            } => (
+                match (projection, displacement) {
+                    (_, Displacement::ColorGamma) => "def-qft-color-gamma-operators",
+                    (VectorProjection::Full, Displacement::Raw | Displacement::Unit) => {
+                        "def-sm-direct-color-contractions"
+                    }
+                    _ => "",
+                },
+                (*projection, *displacement)
+                    == (VectorProjection::Longitudinal, Displacement::ScoreGradient),
+            ),
+            _ => continue,
+        };
+        for dimension in 1..=4 {
+            for kind in [
+                ElementKind::DistancePair,
+                ElementKind::CloningPair,
+                ElementKind::Site,
+                ElementKind::Triplet,
+            ] {
+                match signature_in(&spec, kind, dimension) {
+                    Ok(signature) => {
+                        let descriptor = signature.descriptor;
+                        assert_eq!(descriptor.book_label, label, "{}", spec.id());
+                        // A series equal to another element by element says so.
+                        assert_eq!(descriptor.note.contains(twins), twin, "{}", spec.id());
+                    }
+                    Err(error) => assert!(error.to_string().is_ascii(), "{error}"),
+                }
+            }
+        }
     }
 }
 
@@ -1362,12 +1742,14 @@ fn nonfinite_inputs_mask_the_element_and_never_reach_a_series() {
         .into_iter()
         .filter(|s| signature_in(s, ElementKind::DistancePair, 3).is_ok())
         .collect();
-    let spoils: [fn(&mut FrameState); 5] = [
+    let spoils: [fn(&mut FrameState); 7] = [
         |s| s.color[4] = C::new(f64::NAN, 0.),
         |s| s.color[7] = C::new(0., f64::INFINITY),
         |s| s.x[5] = f64::NAN,
         |s| s.score.as_mut().unwrap()[2] = f64::NAN,
         |s| s.score_gradient.as_mut().unwrap()[3] = f64::INFINITY,
+        |s| s.x[6] = f64::NEG_INFINITY,
+        |s| s.score_gradient.as_mut().unwrap()[4] = f64::NAN,
     ];
     for (case, spoil) in spoils.into_iter().enumerate() {
         let mut spoiled = state.clone();
@@ -1391,7 +1773,7 @@ fn nonfinite_inputs_mask_the_element_and_never_reach_a_series() {
                 ),
                 _ => continue,
             };
-            let masked = [true, true, spatial, scored, directed][case];
+            let masked = [true, true, spatial, scored, directed, spatial, directed][case];
             let measured = value(spec, &pair(1, 2), &spoiled);
             assert_eq!(measured.is_none(), masked, "{} {case}", spec.id());
             assert!(measured.iter().flatten().all(|v| v.is_finite()));
@@ -1410,6 +1792,103 @@ fn equal_scores_leave_the_directed_arms_without_a_frame_value() {
         let weighted = meson(quantum, MesonMode::ScoreWeighted);
         let (sum, weight) = frame(&weighted, &elements(&INVOLUTION), &state);
         assert_eq!((sum[0], weight), (0., 6.));
+    }
+}
+
+#[test]
+fn a_score_difference_of_any_nonzero_size_orients_the_pair() {
+    // Im q_23 = −0.3178…. One unit in the last place of S_2 = 1.1 decides the
+    // orientation, as does the smallest positive number against zero: only
+    // S_2 = S_3 is a tie. The fitness runs the other way and is not read.
+    let state = reference(&[&CYCLE]);
+    let im = -0.317887765695611;
+    let directed = meson(PSEUDOSCALAR, MesonMode::ScoreDirected);
+    let above = f64::from_bits(1.1_f64.to_bits() + 1);
+    let cases = [
+        (1.1, above, 1.),
+        (above, 1.1, -1.),
+        (0., 5e-324, 1.),
+        (5e-324, 0., -1.),
+        (-1e300, 1e300, 1.),
+    ];
+    for (lower, upper, sign) in cases {
+        let mut near = state.clone();
+        let score = near.score.as_mut().unwrap();
+        (score[2], score[3]) = (lower, upper);
+        near.fitness = Some(score.iter().map(|s| -s).collect());
+        let value = scalar(&directed, 2, 3, &near).unwrap();
+        assert!((value - sign * im).abs() < 1e-12, "{lower} {upper}");
+        assert_eq!(scalar(&directed, 3, 2, &near), Some(value));
+        let even = meson(SCALAR, MesonMode::ScoreDirected);
+        assert!((scalar(&even, 2, 3, &near).unwrap() + 0.264906471413009).abs() < 1e-12);
+    }
+    // The weighted arm carries the difference itself, here 2⁻⁵² exactly.
+    let mut near = state.clone();
+    near.score.as_mut().unwrap()[3] = above;
+    let weighted = meson(PSEUDOSCALAR, MesonMode::ScoreWeighted);
+    for (i, j, sign) in [(2, 3, 1.), (3, 2, -1.)] {
+        let value = scalar(&weighted, i, j, &near).unwrap();
+        assert!((value / f64::EPSILON - sign * im).abs() < 1e-12);
+    }
+}
+
+#[test]
+fn records_shorter_than_the_population_mask_the_walkers_they_do_not_cover() {
+    // Each record in turn covers the walkers 0 and 1 alone. Walker 2 is then
+    // outside that record: no arm reading it there has a value, no other arm
+    // changes, and nothing is indexed out of range.
+    let state = reference(&[&CYCLE, &INVOLUTION]);
+    let cuts: [fn(&mut FrameState); 6] = [
+        |s| s.color.truncate(6),
+        |s| s.color_valid.truncate(2),
+        |s| s.x.truncate(6),
+        |s| s.score.as_mut().unwrap().truncate(2),
+        |s| s.score_valid.truncate(2),
+        |s| s.score_gradient.as_mut().unwrap().truncate(6),
+    ];
+    for (case, cut) in cuts.into_iter().enumerate() {
+        let mut short = state.clone();
+        cut(&mut short);
+        for spec in family() {
+            if signature_in(&spec, ElementKind::DistancePair, 3).is_err() {
+                continue;
+            }
+            let (spatial, directed, scored) = match &spec {
+                ChannelSpec::Meson { mode, .. } => (
+                    false,
+                    false,
+                    matches!(mode, MesonMode::ScoreDirected | MesonMode::ScoreWeighted),
+                ),
+                ChannelSpec::Vector {
+                    projection,
+                    displacement,
+                    ..
+                } => (
+                    matches!(displacement, Displacement::Raw | Displacement::Unit),
+                    *projection != VectorProjection::Full
+                        || *displacement == Displacement::ScoreGradient,
+                    false,
+                ),
+                _ => continue,
+            };
+            // Masked with walker 2 as the companion, then as the anchor: the
+            // gradient and its validity are those of the anchor alone.
+            let masked = [
+                [true; 2],
+                [true; 2],
+                [spatial; 2],
+                [scored; 2],
+                [scored, scored || directed],
+                [false, directed],
+            ][case];
+            for ((i, j), masked) in [(1, 2), (2, 1)].into_iter().zip(masked) {
+                let measured = value(&spec, &pair(i, j), &short);
+                assert_eq!(measured.is_none(), masked, "{} {case}", spec.id());
+                if !masked {
+                    assert_eq!(measured, value(&spec, &pair(i, j), &state));
+                }
+            }
+        }
     }
 }
 
@@ -1545,4 +2024,117 @@ fn exchange_odd_members_of_the_standard_set_are_propagated_by_default() {
         .iter()
         .filter(|id| id.starts_with("meson/") || id.starts_with("vector/"));
     assert_eq!(named.count(), odd.len());
+}
+
+/// A frame whose cloning scores are the prescribed values: with `fitness = 1`
+/// and `epsilon = 0` the score `(V_c − V_i) / (V_i + ε)` is `V_c − 1`, so a
+/// companion fitness of `1 + S_i` gives walker `i` the score `S_i` exactly.
+/// Positions are the rows of `x`, scaled by `stretch`.
+fn scored_frame(x: &[[f64; 3]], s: &[f64], stretch: f64) -> (GasConfig, Frame, FrameState) {
+    let (n, d) = (s.len(), 3);
+    let mut gas = GasConfig::default();
+    gas.clone_decision.epsilon = 0.;
+    let positions: Vec<f64> = x.iter().flatten().map(|a| a * stretch).collect();
+    let cloning = Companions {
+        count: 1,
+        slot: (0..n as u32).map(|i| (i + 1) % n as u32).collect(),
+        generation: vec![0; n],
+        valid: vec![true; n],
+        historical: vec![false; n],
+        mutual: false,
+    };
+    let frame = Frame {
+        step: 1,
+        n,
+        d,
+        x: positions.clone(),
+        eligible: vec![true; n],
+        generation: vec![0; n],
+        fitness: Some(vec![1.; n]),
+        cloning: Some(cloning),
+        companion_fitness: Some(s.iter().map(|s| 1. + s).collect()),
+        cloned: vec![false; n],
+        revived: vec![false; n],
+        ..Frame::default()
+    };
+    frame.validate().unwrap();
+    let state = FrameState {
+        n,
+        d,
+        x: positions,
+        eligible: vec![true; n],
+        // Walker 0 sees walker 1 through the distance map and walker 2 through
+        // the cloning map: the two companions of the linear-field oracle.
+        distance_companion: Some((0..n as u32).map(|i| (i + 1) % n as u32).collect()),
+        cloning_companion: Some((0..n as u32).map(|i| (i + 2) % n as u32).collect()),
+        ..FrameState::default()
+    };
+    (gas, frame, state)
+}
+/// Anchor at the origin with the companions `(4, 0, 0)` and `(0, 1, 0)` of the
+/// linear score field `S(x) = (1, 1, 0) · x`.
+fn linear_score_field(stretch: f64) -> (GasConfig, Frame, FrameState) {
+    scored_frame(
+        &[[0., 0., 0.], [4., 0., 0.], [0., 1., 0.]],
+        &[0., 4., 1.],
+        stretch,
+    )
+}
+fn filled_gradient(stretch: f64) -> Vec<f64> {
+    let (gas, frame, mut state) = linear_score_field(stretch);
+    assert!(score::fill(&frame, &gas, &mut state).is_available());
+    assert_eq!(state.score_valid, vec![true; 3]);
+    state.score_gradient.unwrap()
+}
+
+#[test]
+fn the_score_gradient_is_the_finite_difference_quotient_of_the_score_field() {
+    // S(x) = x + y, anchor at the origin, companions at (4, 0, 0) and (0, 1, 0):
+    // mean_p (ΔS_p / |r_p|) r̂_p = ((1, 0, 0) + (0, 1, 0)) / 2.
+    let gradient = filled_gradient(1.);
+    close(&gradient[..3], &[0.5, 0.5, 0.], 1e-15);
+    // The angle against the true direction (1, 1, 0)/√2, through the cross
+    // product, which keeps its digits near zero where an arc cosine loses them.
+    let length = gradient[..3].iter().map(|g| g * g).sum::<f64>().sqrt();
+    let unit = [1. / 2f64.sqrt(), 1. / 2f64.sqrt(), 0.];
+    let cross = [
+        gradient[1] * unit[2] - gradient[2] * unit[1],
+        gradient[2] * unit[0] - gradient[0] * unit[2],
+        gradient[0] * unit[1] - gradient[1] * unit[0],
+    ];
+    let sine = cross.iter().map(|c| c * c).sum::<f64>().sqrt() / length;
+    let degrees = sine.asin().to_degrees();
+    assert!(degrees < 1e-5, "{degrees} degrees off the true direction");
+}
+
+#[test]
+fn the_score_gradient_scales_as_the_inverse_of_a_length() {
+    let (plain, stretched) = (filled_gradient(1.), filled_gradient(7.));
+    for (a, b) in plain.iter().zip(&stretched) {
+        assert!((a / 7. - b).abs() < 1e-14, "{a} vs {b}");
+    }
+    assert!(plain.iter().any(|g| g.abs() > 1e-3));
+}
+
+#[test]
+fn vector_series_are_invariant_under_a_translation_of_the_swarm() {
+    let state = reference(&[&CYCLE]);
+    for offset in [1e3, 1e5] {
+        let moved = FrameState {
+            x: state.x.iter().map(|a| a + offset).collect(),
+            ..state.clone()
+        };
+        for quantum in [VECTOR, AXIAL] {
+            let spec = full(quantum, Displacement::Raw);
+            let here = mean(&spec, &CYCLE, &state);
+            let there = mean(&spec, &CYCLE, &moved);
+            for (a, b) in here.iter().zip(&there) {
+                assert!(
+                    (a - b).abs() <= 1e-12 * a.abs().max(1e-12),
+                    "{a} vs {b} at offset {offset}"
+                );
+            }
+            assert!(here.iter().any(|v| v.abs() > 1e-3));
+        }
+    }
 }

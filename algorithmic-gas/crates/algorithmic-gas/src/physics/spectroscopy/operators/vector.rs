@@ -153,9 +153,11 @@ pub(super) fn signature(
         ),
         Displacement::ScoreGradient => (
             "G_i",
-            "G_i is the mean of (S_j − S_i) r̂_ij over the first distance and the first cloning \
-             companion of the anchor, with the scores of each walker against its own cloning \
-             companion at the evaluated time; an anchor without a gradient is masked.",
+            "G_i is the mean of (S_j − S_i) r̂_ij / |r_ij| over the first distance and the first \
+             cloning companion of the anchor, with the scores of each walker against its own \
+             cloning companion at the evaluated time: a finite-difference quotient of the score \
+             field, of the units of a score over a length, which scales as 1/λ under x → λx; an \
+             anchor without a gradient is masked.",
         ),
         Displacement::ColorGamma => (
             "",
@@ -184,9 +186,18 @@ pub(super) fn signature(
         ),
         _ => note.push_str(
             " n̂_i = G_i / |G_i| is the direction of the score gradient of the anchor, the mean \
-             of (S_j − S_i) r̂_ij over its first distance and first cloning companion; an anchor \
-             without a gradient is masked.",
+             of (S_j − S_i) r̂_ij / |r_ij| over its first distance and first cloning companion; \
+             an anchor without a gradient is masked.",
         ),
+    }
+    if *displacement == Displacement::ScoreGradient {
+        note.push_str(
+            " The gradient of a pair whose two companion maps agree is the same vector at both \
+             ends, because both the score difference and the displacement change sign together: \
+             on such a frame this arm inherits the exchange parity of its colour part, the \
+             imaginary one cancels element by element over a mutual pairing, and only the \
+             source-frozen propagator carries a signal.",
+        );
     }
     let book_label = match (displacement, projection) {
         (Displacement::ColorGamma, _) => "def-qft-color-gamma-operators",

@@ -64,6 +64,13 @@ pub struct GraphSnapshot<T: Real> {
     /// (ambient axis, box length) of every periodic coordinate.
     #[serde(default)]
     pub wrap: Vec<(usize, f64)>,
+    /// Steps this tessellation has been carried over. A schedule that does not
+    /// tessellate every step hands the same graph to several consecutive steps
+    /// while the walkers move: `0` marks the step the graph was measured on and
+    /// `1..every` the steps that inherited it, so a consumer reading the
+    /// archive can tell a frame's own geometry from a frozen one.
+    #[serde(default)]
+    pub stale_steps: u32,
 }
 impl<T: Real> GraphSnapshot<T> {
     pub fn of(geometry: &TessellationGeometry<T>) -> Self {
@@ -73,7 +80,16 @@ impl<T: Real> GraphSnapshot<T> {
             euclidean_length: geometry.lengths.euclidean.clone(),
             geodesic_length: geometry.lengths.geodesic(),
             wrap: geometry.wrap.clone(),
+            stale_steps: 0,
         }
+    }
+    /// True when `other` is the same tessellation, staleness aside.
+    pub fn same_geometry(&self, other: &Self) -> bool {
+        self.graph == other.graph
+            && self.weights == other.weights
+            && self.euclidean_length == other.euclidean_length
+            && self.geodesic_length == other.geodesic_length
+            && self.wrap == other.wrap
     }
     pub fn validate(&self, walkers: usize) -> Result<()> {
         self.graph.validate()?;

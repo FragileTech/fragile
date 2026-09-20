@@ -8,6 +8,16 @@ different Delaunay diagonals, so lattices are not comparable edge by edge. The
 degenerate cases (coincident, collinear and coplanar swarms) compare the edge
 sets produced by the documented lifting and projection rules.
 
+The exported metric carries the reference's regularizer: ``_compute_emergent_metric``
+adds an absolute ``epsilon_numerical = 1e-5`` identity to the displacement covariance
+(``fragile/physics/geometry/hessian_estimation.py``), which is hard coded and not a
+multiple of the covariance scale, so the metric it returns does not scale as
+``lambda ** -2`` under ``x -> lambda x``. That is audit defect Q30, and the Rust default
+regularizer is relative to the covariance trace instead. The parity test therefore
+evaluates these fixtures with ``RidgeScale::Absolute``, the convention they were measured
+with, and pins the departure of the shipped default from them separately. Regenerating
+the fixtures does not change that: the convention is the reference's, not this script's.
+
 Usage: uv run python algorithmic-gas/tools/export_tessellation_fixtures.py
 """
 

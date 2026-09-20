@@ -8,17 +8,16 @@ import {
   buildAnalysis,
   buildRequest,
   calibrationTable,
+  channelCharts,
   cloudChart,
   collectNotes,
   colorSourceOfKind,
   comparisonTables,
   controlsFromAnalysis,
-  correlatorChart,
   correlatorTable,
   couplingTables,
   coverageTable,
   createSession,
-  effectiveRateChart,
   fitTable,
   flowTable,
   formFromDefaults,
@@ -27,15 +26,18 @@ import {
   gevpTable,
   groupTable,
   liveCharts,
+  liveNotes,
   measuredLive,
   missingRecords,
   presentationCharts,
+  presentationMetrics,
   presentationNotes,
   progressOf,
+  provenanceTable,
   reportAvailabilityTable,
   samplesTable,
   variantRequest,
-  windowScanCharts,
+  windowCharts,
   windowTable,
 } from "./model.js";
 import {
@@ -82,6 +84,9 @@ let activeTab = "setup",
   report = null,
   presentation = null,
   liveSelected = [],
+  // The Rust presentation holds a plot for every result of the analysis; the
+  // gallery of all of them is built only when it is asked for.
+  showPresentation = false,
   busy = false,
   capabilityToken = 0,
   capabilityTimer = 0,
@@ -244,7 +249,12 @@ function syncButtons() {
   $("#restart").disabled = busy || !request;
   $("#export-evidence").disabled = !session.live;
   $("#export-checkpoint").disabled = !session.live;
-  $("#presentation").disabled = !session.live || !report;
+  // Every analysis brings its plots back with the report, so the button only
+  // opens and closes the gallery of all of them.
+  $("#presentation").disabled = !presentation;
+  $("#presentation").textContent = showPresentation
+    ? "Hide the Rust plot gallery"
+    : "Every Rust presentation plot";
 }
 function renderRun() {
   const snapshot = session.snapshot;
@@ -298,7 +308,7 @@ function renderRun() {
     caption: "Per-replica progress",
   });
   $("#run-notes").innerHTML =
-    notesHTML(snapshot?.notes || [], "Notes from the Rust session") +
+    notesHTML(liveNotes(snapshot), "Notes from the Rust session") +
     notesHTML(collectNotes(report, "report"));
   syncButtons();
 }
@@ -372,17 +382,23 @@ function currentAnalysis() {
     analysedChannels().map((c) => c.id),
   );
 }
+// The tables read the report and the charts read the presentation, so both
+// are requested for the same `AnalysisConfig`: every plotted point, the lag
+// axis and both edges of every error band are produced by Rust.
 async function analyze() {
   if (!session.live && !session.imported) {
     $("#analysis-status").textContent = "Nothing to analyse yet";
     return;
   }
   const token = ++analysisToken;
+  const analysis = currentAnalysis();
   $("#analysis-status").textContent = "Analysing in Rust…";
   try {
-    const next = await session.analyze(currentAnalysis());
+    const next = await session.analyze(analysis);
     if (token !== analysisToken) return;
-    adoptReport(next);
+    const plots = await session.presentation(analysis);
+    if (token !== analysisToken) return;
+    adoptReport(next, plots);
     $("#analysis-status").textContent =
       "Analysed " + format(next.frames) + " measured frames";
   } catch (error) {
@@ -391,9 +407,9 @@ async function analyze() {
     fail(error);
   }
 }
-function adoptReport(next) {
+function adoptReport(next, plots = null) {
   report = next;
-  presentation = null;
+  presentation = plots;
   clearError();
   renderActive();
 }
@@ -423,10 +439,7 @@ function renderCorrelators() {
     "#correlator-charts",
     "correlators",
     shown.flatMap((c) =>
-      [
-        correlatorChart(c, { logY: $("#log-y").checked }),
-        effectiveRateChart(c),
-      ].filter(Boolean),
+      channelCharts(presentation, c.id, { logY: $("#log-y").checked }),
     ),
   );
   $("#correlator-table").innerHTML =
@@ -436,7 +449,10 @@ function renderCorrelators() {
         })
       : "") +
     (report
-      ? tableHTML(reportAvailabilityTable(report), {
+      ? tableHTML(provenanceTable(report), {
+          caption: "Provenance stamped on the report by Rust",
+        }) +
+        tableHTML(reportAvailabilityTable(report), {
           caption: "Channel availability reported by Rust",
         })
       : '<p class="observation">Run or import a measurement to see its correlators.</p>');
@@ -455,8 +471,15 @@ function renderCorrelators() {
   showCharts(
     "#presentation-charts",
     "presentation",
-    presentationCharts(presentation),
+    showPresentation ? presentationCharts(presentation) : [],
   );
+  if (showPresentation)
+    $("#presentation-charts").insertAdjacentHTML(
+      "beforeend",
+      tableHTML(presentationMetrics(presentation), {
+        caption: "Every quantity the Rust presentation reports",
+      }),
+    );
   $("#correlator-notes").innerHTML =
     notesHTML(
       presentationNotes(presentation),
@@ -468,7 +491,7 @@ function renderFits() {
   ensureControls();
   $("#fit-controls").innerHTML = fitControlsHTML(
     controls,
-    analysedChannels().length >= 2,
+    analysedChannels().length,
   );
   $("#fit-table").innerHTML = tableHTML(fitTable(report), {
     caption: "Decay rates of the algorithm-time autocorrelation",
@@ -483,7 +506,7 @@ function renderFits() {
   showCharts(
     "#window-charts",
     "windows",
-    channel ? windowScanCharts(channel) : [],
+    channel ? windowCharts(presentation, channel.id) : [],
   );
   $("#window-table").innerHTML = channel
     ? tableHTML(windowTable(channel), {
@@ -493,7 +516,7 @@ function renderFits() {
   $("#group-table").innerHTML = tableHTML(groupTable(report), {
     caption: "Joint fits with shared gaps",
   });
-  showCharts("#gevp-charts", "gevp", gevpCharts(report));
+  showCharts("#gevp-charts", "gevp", gevpCharts(presentation));
   $("#gevp-table").innerHTML = tableHTML(gevpTable(report), {
     caption: "Generalized eigenvalue levels",
   });
@@ -621,19 +644,26 @@ $("#restore-checkpoint").onchange = async (event) => {
     const bytes = await fileBytes(event.target, "A checkpoint");
     if (!bytes) return;
     const snapshot = await session.restore(bytes);
-    // A `SessionSnapshot` carries no request: the restored run cannot be
-    // restarted from this page and is analysed with the current controls,
-    // over every channel it measured.
-    request = null;
-    ensureControls();
+    // The checkpoint carries its own request: the page adopts the one Rust
+    // resolved, so a restored run shows and restarts its own configuration.
+    // It is analysed over every channel it measured.
+    request = await session.request();
+    requestChannels = [];
+    form = formFromRequest(defaults, request);
+    baseAnalysis = request.spectroscopy.analysis;
+    controls = controlsFromAnalysis(baseAnalysis, request.seed);
     controls.channels = [];
     liveSelected = [];
     report = null;
     presentation = null;
     clearError();
+    renderSetup();
     onSnapshot(snapshot);
     $("#status").textContent = "Checkpoint restored at step " + snapshot.step;
     renderRun();
+    // The restored session already carries a measurement: analyse it so the
+    // other panels show its numbers without touching a control first.
+    await analyze();
   } catch (error) {
     fail(error);
   } finally {
@@ -646,7 +676,11 @@ $("#import-evidence").onchange = async (event) => {
     if (!bytes) return;
     ensureControls();
     controls.channels = [];
-    adoptReport(await session.importEvidence(bytes, currentAnalysis()));
+    const analysis = currentAnalysis();
+    const next = await session.importEvidence(bytes, analysis);
+    // Imported evidence has its own presentation binding: the charts read the
+    // same Rust plots as a live session, so none of them is left empty.
+    adoptReport(next, await session.presentation(analysis));
     $("#status").textContent = "Evidence re-analysed in Rust";
     tabs.select("correlators");
   } catch (error) {
@@ -663,12 +697,9 @@ $("#import-archive").onchange = async (event) => {
       .measurement;
     ensureControls();
     controls.channels = selectedAvailable();
-    adoptReport(
-      await session.importArchive(bytes, {
-        measurement,
-        analysis: currentAnalysis(),
-      }),
-    );
+    const analysis = currentAnalysis();
+    const next = await session.importArchive(bytes, { measurement, analysis });
+    adoptReport(next, await session.presentation(analysis));
     $("#status").textContent = "Archive measured and analysed in Rust";
     tabs.select("correlators");
   } catch (error) {
@@ -701,13 +732,9 @@ $("#mapping").addEventListener("change", () => {
 $("#correlator-channel").onchange = renderActive;
 $("#log-y").onchange = renderActive;
 $("#fit-channel").onchange = renderActive;
-$("#presentation").onclick = async () => {
-  try {
-    presentation = await session.presentation(currentAnalysis());
-    renderCorrelators();
-  } catch (error) {
-    fail(error);
-  }
+$("#presentation").onclick = () => {
+  showPresentation = !showPresentation;
+  renderCorrelators();
 };
 $("#workbench").addEventListener("click", (event) => {
   const button = event.target.closest("[data-export]");

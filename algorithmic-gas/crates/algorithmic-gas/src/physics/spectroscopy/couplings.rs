@@ -19,6 +19,7 @@ use crate::{
     geometry::{Distance, Kernel},
     kinetic::KineticKind,
     noise::{FactorValues, NoiseGeometry},
+    tessellation::MetricKind,
 };
 use std::f64::consts::PI;
 
@@ -40,6 +41,9 @@ const GRAPH_NOTE: &str = "Graph viscosity uses tessellation edge weights and has
     upper bound are undefined.";
 const SQUASH_NOTE: &str = "The companion kernel acts on a squashed phase-space distance; its \
     width is not the range of the book's algorithmic distance.";
+/// Factor between the presupposed and the measured `⟨K_visc²⟩` above which the
+/// viscous calibration is reported as inconsistent.
+const CALIBRATION_TOLERANCE: f64 = 2.;
 
 /// Scales read from the configuration alone.
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -179,6 +183,20 @@ pub fn gd_squared(viscosity: f64, h_eff: f64, d: usize, k2: f64) -> Option<f64> 
     (d >= 2).then(|| (viscosity / h_eff).powi(2) * kernel_factor(d) * k2)
 }
 
+/// The kernel moment a configured `ν` presupposes if it is to realise `g_d`:
+/// `gd_squared` solved for `E K²`, `(ħ g_d/ν)²/(d(d² − 1)/12)`. A viscosity
+/// taken from an inversion is only meaningful together with the moment the
+/// kernel that will actually run has, so the report states this number beside
+/// the measured one. `None` below `d = 2` or without a positive `ν`.
+pub fn presupposed_kernel_second_moment(
+    viscosity: f64,
+    h_eff: f64,
+    d: usize,
+    gd: f64,
+) -> Option<f64> {
+    (d >= 2 && viscosity > 0.).then(|| (h_eff * gd / viscosity).powi(2) / kernel_factor(d))
+}
+
 /// `m ε_c²/(2τ)`, the action scale of the Gaussian-phase convention.
 pub fn kernel_action_scale(mass: f64, epsilon_c: f64, dt: f64) -> f64 {
     mass * epsilon_c * epsilon_c / (2. * dt)
@@ -300,6 +318,39 @@ fn kernel_name(kernel: &Kernel) -> &'static str {
     }
 }
 
+/// The recorded metric of the tessellation, by estimator, and what it is made
+/// of. Every geodesic length of the run — a `WarmupEdgeMean` colour length, a
+/// multiscale gate, a smearing width — is a distance of this metric, so the
+/// report names it instead of calling it a fitness-manifold distance: only the
+/// Hessian arm reads a scalar field at all.
+fn metric_name(metric: &MetricKind) -> (String, &'static str) {
+    let density = "a density object built from the neighbour geometry alone: it reads no \
+                   fitness, and its lengths are not distances of the fitness manifold of \
+                   def-adaptive-diffusion-tensor-latent";
+    match metric {
+        MetricKind::NeighborCovariance { .. } => {
+            ("the inverse neighbour covariance".into(), density)
+        }
+        MetricKind::VoronoiCovariance { .. } => {
+            ("the inverse Voronoi vertex covariance".into(), density)
+        }
+        MetricKind::Identity => (
+            "the identity".into(),
+            "flat space, with no scale of its own",
+        ),
+        MetricKind::ObservationField { field, .. } => (
+            format!("the observation field `{field}`"),
+            "whatever the run recorded under that name; it is a fitness manifold only if that \
+             field is the fitness Hessian",
+        ),
+        MetricKind::HessianFd { scalar_field, .. } => (
+            format!("a finite-difference Hessian of `{scalar_field}`"),
+            "the fitness-manifold arm of def-adaptive-diffusion-tensor-latent when that scalar \
+             field is the fitness",
+        ),
+    }
+}
+
 /// The range a measurement used, against the one the companion kernel gives.
 fn used_range(
     symbol: &str,
@@ -338,6 +389,10 @@ struct Resolved {
     epsilon_d: Option<f64>,
     epsilon_c: Option<f64>,
     epsilon_clone: f64,
+    /// Colour phase length `ℓ₀` fixed in the warm-up, and the arm that fixed
+    /// it: `Calibration::{length, length_source}`.
+    length: Option<f64>,
+    length_source: String,
     nu: Option<f64>,
     /// Coefficient of the dense viscous force alone: the kernel proxies need
     /// its Gaussian kernel.
@@ -387,6 +442,8 @@ impl Resolved {
                 notes,
             ),
             epsilon_clone: configured.epsilon_clone,
+            length: calibration.map(|c| c.length),
+            length_source: calibration.map_or(String::new(), |c| c.length_source.clone()),
             nu: configured.viscosity,
             dense_nu: dense.map(|v| v.coefficient).filter(|nu| *nu > 0.),
             rho: dense.map(|v| v.bandwidth),
@@ -464,6 +521,25 @@ fn configuration_notes(gas: &GasConfig, r: &Resolved, notes: &mut Vec<String>) {
             r.d
         ));
     }
+    if let Some(geometry) = gas.geometry.as_ref() {
+        let (name, made_of) = metric_name(&geometry.pipeline.metric);
+        let used = if r.length_source.starts_with("warmup_edge_mean") {
+            format!(
+                ", and l0 = {} is a mean of its edge lengths",
+                fixed(r.length)
+            )
+        } else {
+            String::new()
+        };
+        notes.push(format!(
+            "The recorded tessellation metric is {name}: {made_of}. Every geodesic length of \
+             this run is a distance of that metric{used}."
+        ));
+    }
+}
+/// A resolved number, or the statement that it is absent.
+fn fixed(value: Option<f64>) -> String {
+    value.map_or("absent".into(), |v| v.to_string())
 }
 fn scale_rows(gas: &GasConfig, r: &Resolved) -> Vec<Quantity> {
     let has = |x: Option<f64>| x.is_some();
@@ -593,6 +669,22 @@ fn scale_rows(gas: &GasConfig, r: &Resolved) -> Vec<Quantity> {
             Some(r.mass),
             "mass",
             "mass of the colour phase, an analysis parameter",
+            "",
+        ),
+        quantity(
+            "phase_length",
+            "ℓ₀",
+            r.length,
+            "length",
+            stated(
+                &format!(
+                    "length of the colour phase kappa = m l0/h_eff, fixed in the warm-up by the \
+                     arm `{}`; a geodesic arm measures it in the recorded tessellation metric, \
+                     which is named in the notes",
+                    r.length_source
+                ),
+                &[("warm-up calibration", r.length.is_some())],
+            ),
             "",
         ),
         quantity(
@@ -888,6 +980,60 @@ fn coupling_rows(r: &Resolved, notes: &mut Vec<String>) -> Vec<Quantity> {
     rows
 }
 
+/// The moment a configured viscosity presupposes, against the one the warm-up
+/// measured. `ν` is only meaningful together with the `⟨K_visc²⟩` of the
+/// kernel that will actually run (`prop-qft-report-inversion`): a pair
+/// `(ν, ρ)` carried over from an inversion made at a different moment realises
+/// a different `g_d`, by the ratio of the two moments. The check states both
+/// numbers and their factor, and flags a disagreement beyond
+/// `CALIBRATION_TOLERANCE`; it never fails the report.
+fn viscosity_consistency(
+    r: &Resolved,
+    inputs: &StandardModelInputs,
+    notes: &mut Vec<String>,
+) -> Result<()> {
+    let targets = TargetCouplings::of(inputs)?;
+    let Some(nu) = r.dense_nu else {
+        return Ok(());
+    };
+    let Some(presupposed) = presupposed_kernel_second_moment(nu, r.h, r.d, targets.g3[0]) else {
+        return Ok(());
+    };
+    let strong = if r.d == 3 { "alpha_3" } else { "alpha_d" };
+    let target = inputs.alpha_s[0];
+    let Some(k2) = r.k2 else {
+        notes.push(format!(
+            "Calibration check: the configured viscosity nu = {nu} realises the input alpha_s = \
+             {target} only if the viscous kernel has <K_visc^2> = {presupposed}. This run has no \
+             warm-up measurement of <K_visc^2>, so nothing checks that presupposition and \
+             {strong} is undefined rather than assumed."
+        ));
+        return Ok(());
+    };
+    let Some(realised) = gd_squared(nu, r.h, r.d, k2).map(|g| g / (4. * PI)) else {
+        return Ok(());
+    };
+    let factor = presupposed / k2;
+    notes.push(format!(
+        "Calibration check: the configured viscosity nu = {nu} presupposes <K_visc^2> = \
+         {presupposed} to realise the input alpha_s = {target}, while the warm-up kernel of \
+         bandwidth rho = {} measured <K_visc^2> = {k2}, a factor {factor}. The realised {strong} \
+         is {realised}.",
+        fixed(r.rho)
+    ));
+    if !(1. / CALIBRATION_TOLERANCE..=CALIBRATION_TOLERANCE).contains(&factor) {
+        notes.push(format!(
+            "The viscous calibration of this run is inconsistent: {strong} = {realised} is not \
+             the input alpha_s = {target}. A value of nu is meaningful only together with the \
+             <K_visc^2> of the kernel that runs (prop-qft-report-inversion), so a (nu, rho) pair \
+             carried over from an inversion made at another moment describes another coupling. \
+             Iterate the inversion at the measured moment before reading the strong sector of \
+             this run."
+        ));
+    }
+    Ok(())
+}
+
 /// Inputs first, then the targets the dictionary assigns to them. Every
 /// definition opens with `input` or `target`.
 fn inversion_rows(r: &Resolved, inputs: &StandardModelInputs) -> Result<Vec<Quantity>> {
@@ -1094,6 +1240,7 @@ pub fn report(measurement: &Measurement, inputs: &StandardModelInputs) -> Result
     let mut conditional = vec![];
     let r = Resolved::of(measurement, &mut conditional);
     configuration_notes(gas, &r, &mut conditional);
+    viscosity_consistency(&r, inputs, &mut conditional)?;
     let couplings = coupling_rows(&r, &mut conditional);
     let fixed = |measured: Option<f64>, consequence: &str| match measured {
         Some(value) => format!("{value}, its warm-up value"),

@@ -349,6 +349,30 @@ impl LagMoments {
     }
 }
 
+/// Pairs `(t, t+τ)` of `origins` consecutive time origins, over the lags
+/// `τ = 0..lags`, whose two frames fall in different blocks of `block`
+/// origins. A pair belongs to the block of its origin, so a delete-one
+/// jackknife that drops one block keeps counting these pairs through their
+/// origin while their sink sits inside the deleted block: the deletion removes
+/// origins, not observations, and beyond `τ = block` it removes none of the
+/// products a lag holds. Zero weights and segment breaks only drop pairs, so
+/// the count bounds a masked series from above. A lag of `origins` or more
+/// reaches no sink at all, so the sum runs over the shorter of the two and
+/// costs `O(min(lags, origins))`.
+pub fn straddling_pairs(lags: usize, block: usize, origins: usize) -> u64 {
+    let block = block.max(1);
+    (1..lags.min(origins))
+        .map(|lag| {
+            // A pair straddles when its origin sits in the last min(τ, block)
+            // positions of its block; the last lag of the series has no sink.
+            let last = lag.min(block);
+            let reach = origins.saturating_sub(lag);
+            let whole = (reach / block * last) as u64;
+            whole + (reach % block).saturating_sub(block - last) as u64
+        })
+        .sum()
+}
+
 /// Autocorrelation moments of a series, contracted over components, with one
 /// block per `block` consecutive origins inside each segment. The pair weight
 /// is `w_t w_{t+τ}`; pairs that span two segments are dropped.

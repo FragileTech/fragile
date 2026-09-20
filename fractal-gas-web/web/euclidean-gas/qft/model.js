@@ -1,7 +1,8 @@
 // Session adapter and pure Rust-JSON -> view-descriptor mappings of the QFT
-// Simulator. Nothing here samples, fits or estimates: values and errors are
-// copied from the Rust report; the only arithmetic is drawing geometry (lag
-// axis in the reported time unit, the two edges of an error band).
+// Simulator. Nothing here samples, fits, estimates or arranges numbers: every
+// plotted point, the lag axis in the reported time unit and both edges of every
+// error band are produced by `spectroscopy/presentation.rs` and copied here.
+// The tables copy the fields of the report as they are.
 import { COLORS, format } from "../lecture/plots.js";
 
 // Wire names of `spectroscopy/config.rs` enums with their UI labels. A value
@@ -63,6 +64,13 @@ export const VOCABULARY = Object.freeze({
   ],
 });
 
+// `GevpBasis::validate` of `spectroscopy/config.rs` accepts 2..=16 channels
+// ("a GEVP basis needs an id, 2..=16 channels, a cut in [0, 1) and a reference
+// lag beyond t0"). The page never sends a basis Rust would reject.
+export const GEVP_BASIS = Object.freeze({ min: 2, max: 16 });
+export const gevpReady = (count) =>
+  count >= GEVP_BASIS.min && count <= GEVP_BASIS.max;
+
 const ESTIMATOR_LABEL = {
   frame_mean: "frame average",
   source_frozen: "source-frozen propagator",
@@ -72,6 +80,13 @@ const METHOD_LABEL = {
   window_scan: "Window scan",
   multi_exponential: "Multi-exponential",
   gevp: "GEVP",
+  stability: "Stability scan",
+};
+// `ChannelReport.normalization` is the denominator the frame averages used;
+// only the fixed-N arm has a transfer-matrix reading (09_qft_calibration).
+const NORMALIZATION_LABEL = {
+  valid_count: "sum of valid element weights",
+  fixed_n: "population size N",
 };
 const clone = (value) =>
   value === undefined ? undefined : JSON.parse(JSON.stringify(value));
@@ -261,11 +276,14 @@ export function buildAnalysis(base, controls, gevpChannels = []) {
   analysis.time_unit = controls.timeUnit;
   // `{}` asks Rust for its own default scan; the grid is never chosen here.
   analysis.stability = controls.stability ? (base.stability ?? {}) : null;
-  analysis.gevp = controls.gevp
-    ? base.gevp?.length
-      ? clone(base.gevp)
-      : [{ id: "selected", channels: [...gevpChannels] }]
-    : [];
+  // A synthesised basis is sent only inside the bounds Rust validates; outside
+  // them the fit control is disabled and no basis is requested.
+  analysis.gevp =
+    controls.gevp && (base.gevp?.length || gevpReady(gevpChannels.length))
+      ? base.gevp?.length
+        ? clone(base.gevp)
+        : [{ id: "selected", channels: [...gevpChannels] }]
+      : [];
   analysis.assignments = Object.fromEntries(
     Object.entries(controls.assignments).filter(([, name]) => name),
   );
@@ -280,110 +298,6 @@ export function buildAnalysis(base, controls, gevpChannels = []) {
 // marker. They are never replaced by zero.
 export function gapPoints(xs, ys) {
   return xs.map((x, i) => [x, orNull(ys?.[i])]);
-}
-export function lagAxis(correlator) {
-  const step = finite(correlator?.time_step) ? correlator.time_step : 1;
-  return (correlator?.lags || []).map((lag) => lag * step);
-}
-function bandSeries(xs, values, errors, name, color) {
-  const edge = (sign) =>
-    xs.map((x, i) => [
-      x,
-      finite(values[i]) && finite(errors[i])
-        ? values[i] + sign * errors[i]
-        : null,
-    ]);
-  return [
-    {
-      name: name + " + error",
-      style: "line",
-      dashed: true,
-      geometry: true,
-      color,
-      points: edge(1),
-    },
-    {
-      name: name + " − error",
-      style: "line",
-      dashed: true,
-      geometry: true,
-      color,
-      points: edge(-1),
-    },
-  ];
-}
-function channelTitle(channel) {
-  const estimator = ESTIMATOR_LABEL[channel.estimator];
-  return channel.id + (estimator ? " · " + estimator : "");
-}
-
-export function correlatorChart(channel, { logY = false } = {}) {
-  const c = channel.correlator;
-  if (!c) return null;
-  const xs = lagAxis(c),
-    points = gapPoints(xs, c.value);
-  return {
-    title: "C(τ) · " + channelTitle(channel),
-    xLabel: "Lag τ (" + unitLabel(c.time_unit) + ")",
-    yLabel: c.connected ? "Connected C(τ)" : "C(τ)",
-    yScale: logY ? "log" : "linear",
-    series: [
-      {
-        name: "C(τ)",
-        style: "line",
-        color: COLORS[0],
-        points,
-        errors: (c.error || []).map(orNull),
-      },
-      {
-        name: "Measured lags",
-        style: "points",
-        color: COLORS[0],
-        points,
-        geometry: true,
-      },
-      ...bandSeries(xs, c.value, c.error || [], "C(τ)", COLORS[2]),
-    ],
-  };
-}
-
-const pairValues = (pairs) => (pairs || []).map((p) => orNull(p?.[0]));
-const pairErrors = (pairs) => (pairs || []).map((p) => orNull(p?.[1]));
-
-export function effectiveRateChart(channel) {
-  const c = channel.correlator;
-  if (!c || !channel.effective_mass) return null;
-  const xs = lagAxis(c),
-    values = pairValues(channel.effective_mass),
-    points = gapPoints(xs, values);
-  return {
-    title: "Effective decay rate · " + channelTitle(channel),
-    xLabel: "Lag τ (" + unitLabel(c.time_unit) + ")",
-    yLabel: "Effective rate (1/" + unitLabel(c.time_unit) + ")",
-    series: [
-      {
-        name: "Effective rate",
-        style: "line",
-        color: COLORS[1],
-        points,
-        errors: pairErrors(channel.effective_mass),
-      },
-      {
-        name: "Defined lags",
-        style: "points",
-        color: COLORS[1],
-        points,
-        geometry: true,
-      },
-      ...bandSeries(
-        xs,
-        values,
-        pairErrors(channel.effective_mass),
-        "Effective rate",
-        COLORS[3],
-      ),
-    ],
-  };
 }
 
 // `SessionSnapshot.channels[]` is a `LiveChannel`: `correlator` and
@@ -490,23 +404,43 @@ const COVERAGE_COLUMNS = [
   ["masked_self", "Masked: self"],
   ["masked_scale", "Masked: scale"],
 ];
+// `LiveChannel.estimator` is null when the live estimator reports no
+// correlator for a measured channel; `LiveChannel.note` then says why.
 export function coverageTable(channels = []) {
   return {
-    columns: ["Channel", ...COVERAGE_COLUMNS.map(([, label]) => label)],
+    columns: [
+      "Channel",
+      "Estimator",
+      ...COVERAGE_COLUMNS.map(([, label]) => label),
+    ],
     rows: channels.map((c) => [
       c.id,
+      ESTIMATOR_LABEL[c.estimator] ?? "—",
       ...COVERAGE_COLUMNS.map(([key]) => c.coverage?.[key] ?? "—"),
     ]),
   };
 }
+// Notes of a live session: the session's own notes, then the sentence Rust
+// attached to a channel the live charts cannot draw.
+export function liveNotes(snapshot) {
+  return [
+    ...(snapshot?.notes || []),
+    ...(snapshot?.channels || [])
+      .filter((c) => c.note)
+      .map((c) => ({ owner: c.id, text: c.note })),
+  ];
+}
 
+// `CorrelatorEstimate.lags` are lag indices; the axis in the reported time
+// unit belongs to the Rust presentation plots, so no lag is rescaled here.
 export function correlatorTable(channel) {
   const c = channel.correlator;
   if (!c) return { columns: [], rows: [] };
   return {
     columns: [
-      "Lag (frames)",
-      "τ (" + unitLabel(c.time_unit) + ")",
+      "Lag",
+      "Time unit",
+      "Time step",
       "C(τ)",
       "Error",
       "Effective rate",
@@ -514,7 +448,8 @@ export function correlatorTable(channel) {
     ],
     rows: c.lags.map((lag, i) => [
       lag,
-      lagAxis(c)[i],
+      unitLabel(c.time_unit),
+      orNull(c.time_step),
       orNull(c.value[i]),
       orNull(c.error?.[i]),
       orNull(channel.effective_mass?.[i]?.[0]),
@@ -528,12 +463,14 @@ export function samplesTable(channels = []) {
     columns: [
       "Channel",
       "Estimator",
+      "Frame normalisation",
       "Resampling",
       "Effective block",
       "Blocks",
       "τ_int",
       "Covariance rank",
       "Replicas",
+      "Sampling unit",
       "Connected",
       "Connected bias",
     ],
@@ -544,12 +481,14 @@ export function samplesTable(channels = []) {
         return [
           c.id,
           ESTIMATOR_LABEL[c.estimator] ?? "—",
+          NORMALIZATION_LABEL[c.normalization] ?? "—",
           meta.resampling ?? "—",
           meta.effective_block ?? "—",
           meta.blocks ?? "—",
           orNull(meta.tau_int),
           meta.covariance_rank ?? "—",
           meta.replicas ?? "—",
+          meta.sampling_unit ?? "—",
           c.correlator.connected ? "yes" : "no",
           orNull(c.correlator.connected_bias),
         ];
@@ -559,14 +498,43 @@ export function samplesTable(channels = []) {
 
 export function reportAvailabilityTable(report) {
   return {
-    columns: ["Channel", "Book label", "Definition", "Availability", "Reason"],
+    columns: [
+      "Channel",
+      "Elements",
+      "Book label",
+      "Definition",
+      "Exchange",
+      "Spatial parity",
+      "Availability",
+      "Reason",
+    ],
     rows: (report?.channels || []).map((c) => [
       c.id,
+      c.kind ?? "—",
       c.book_label || "—",
       c.definition || "—",
+      c.exchange ?? "—",
+      c.spatial_parity ?? "—",
       c.availability?.status ?? "—",
       c.availability?.reason ?? "—",
     ]),
+  };
+}
+
+// The provenance Rust stamps on every report: `analyze` refuses to build one
+// from anything but an executed run, and `present` repeats it on every result.
+export function provenanceTable(report) {
+  if (!report) return null;
+  return {
+    columns: ["Provenance", "Value"],
+    rows: [
+      ["Calculation origin", report.calculation_origin ?? "—"],
+      ["Precision", report.precision ?? "—"],
+      ["Schema version", report.schema_version ?? "—"],
+      ["Measurement fingerprint", report.measurement_fingerprint ?? "—"],
+      ["Replicas", report.replicas ?? "—"],
+      ["Measured frames", report.frames ?? "—"],
+    ],
   };
 }
 
@@ -680,40 +648,6 @@ export function fitTable(report) {
   };
 }
 
-export function windowScanCharts(channel) {
-  const charts = [];
-  for (const fit of channel.fits || []) {
-    if (!fit.windows?.length) continue;
-    const label = METHOD_LABEL[fit.method] ?? fit.method;
-    charts.push(
-      {
-        title: label + " rates by window start · " + channel.id,
-        xLabel: "Window start t_min (frames)",
-        yLabel: "Fitted decay rate",
-        series: [
-          {
-            name: "Window fits",
-            style: "points",
-            points: fit.windows.map((w) => [w.t_min, orNull(w.value)]),
-          },
-        ],
-      },
-      {
-        title: label + " model weights · " + channel.id,
-        xLabel: "Window index (see table)",
-        yLabel: "Normalized weight exp(−AIC/2)",
-        series: [
-          {
-            name: "Weight",
-            style: "bars",
-            points: fit.windows.map((w, i) => [i, orNull(w.weight)]),
-          },
-        ],
-      },
-    );
-  }
-  return charts;
-}
 export function windowTable(channel) {
   return {
     columns: [
@@ -774,20 +708,6 @@ export function groupTable(report) {
   };
 }
 
-export function gevpCharts(report) {
-  return (report?.gevp || [])
-    .filter((g) => g.availability?.status !== "unavailable")
-    .map((g) => ({
-      title: "GEVP effective decay rates · " + g.id + " (t0 = " + g.t0 + ")",
-      xLabel: "Lag τ (frames)",
-      yLabel: "Effective rate",
-      series: (g.effective_mass || []).map((state, n) => ({
-        name: "State " + n,
-        style: "line",
-        points: gapPoints(g.lags, pairValues(state)),
-      })),
-    }));
-}
 export function gevpTable(report) {
   return {
     columns: [
@@ -846,6 +766,8 @@ export function comparisonTables(report) {
         "Reference error",
         "Unit",
         "Measured rate (lattice units)",
+        "Estimator",
+        "Frame normalisation",
       ],
       rows: comparison.reference.map((r) => [
         r.name,
@@ -854,6 +776,8 @@ export function comparisonTables(report) {
         r.reference_error,
         r.unit,
         pair(r.measured),
+        ESTIMATOR_LABEL[r.estimator] ?? "—",
+        NORMALIZATION_LABEL[r.normalization] ?? "—",
       ]),
     },
     anchors: comparison.anchors.map((a) => ({
@@ -934,7 +858,9 @@ export function calibrationTable(report) {
       ["ℓ₀ source", c.length_source],
       ["Phase factor κ = m ℓ₀ / ħ_eff", c.kappa],
       ["Phase wrapping fraction", orNull(c.phase_wrapping)],
-      ["ħ_eff", c.h_eff],
+      ["Mass m", c.mass],
+      ["ħ_eff (colour phase)", c.h_eff],
+      ["ħ_eff (electroweak)", c.electroweak_h_eff],
       ["ħ_s", c.h_s],
       ["ε_d", orNull(c.epsilon_d)],
       ["ε_c", orNull(c.epsilon_c)],
@@ -944,7 +870,15 @@ export function calibrationTable(report) {
         "Euclidean-time range",
         c.euclidean_range ? c.euclidean_range.map(format).join(" … ") : null,
       ],
-      ["Multiscale geodesic scales", (c.scales || []).map(format).join(", ")],
+      [
+        "Multiscale geodesic scales",
+        c.scales?.length ? c.scales.map(format).join(", ") : null,
+      ],
+      ["Pair weight N₁ = E exp(−D²/ε_d²)", orNull(c.pair_weight_n1)],
+      [
+        "Viscous kernel second moment ⟨K²⟩",
+        orNull(c.viscous_kernel_second_moment),
+      ],
     ],
   };
 }
@@ -964,8 +898,24 @@ export function flowTable(report) {
   };
 }
 
-// `presentation()` returns `Vec<partvi::ExperimentResult>`: one lecture-shaped
-// result (`title`, `plots`, `metrics`, `notes`) per report section.
+// ------------------------------------------------------- presentation
+//
+// `presentation()` returns `Vec<partvi::ExperimentResult>`:
+// `{experiment, title, model, metrics: [{label, value, unit}], plots, notes,
+// details}`. A `Plot` is `{title, x_label, y_label, series}` and a `Series` is
+// `{name, points: [[x, y]], kind}`. Rust splits a curve at every undefined
+// point into consecutive series of the SAME name and emits the two edges of a
+// band as `"<name> + error"` and `"<name> - error"`, so every drawn number,
+// the lag axis included, is already the one Rust reported.
+//
+// One result per available channel (`title` = the channel id), preceded by the
+// overview "Spectroscopy report" and followed by `Group <id>`, `GEVP <id>`,
+// `Reference comparison (<label>)`, the three coupling tables and
+// "Graph smoothing". An unavailable channel, group or basis has no result: its
+// reason is a note of the overview.
+const BAND = / [+-] error$/;
+const GAP = [null, null];
+
 const presentationResults = (results) =>
   Array.isArray(results) ? results : results ? [results] : [];
 export function presentationNotes(results) {
@@ -973,24 +923,112 @@ export function presentationNotes(results) {
     (r.notes || []).map((text) => ({ owner: r.title, text })),
   );
 }
-export function presentationCharts(results) {
-  return presentationResults(results)
-    .flatMap((r) => r.plots || [])
-    .map((p) => ({
-      title: p.title,
-      xLabel: p.x_label,
-      yLabel: p.y_label,
-      series: p.series.map((s) => ({
-        name: s.name,
-        points: s.points,
+export function presentationMetrics(results) {
+  return {
+    columns: ["Result", "Quantity", "Value", "Unit"],
+    rows: presentationResults(results).flatMap((r) =>
+      (r.metrics || []).map((m) => [
+        r.title,
+        m.label,
+        orNull(m.value),
+        m.unit || "—",
+      ]),
+    ),
+  };
+}
+
+// The consecutive runs Rust emitted under one name become one series whose
+// points are joined by a `[null, null]` gap: chartSVG restarts the line there
+// and chartTable skips it. Nothing is interpolated across the gap.
+const chartOfPlot = (plot, { logY = false, owner = "" } = {}) => {
+  const order = [];
+  const merged = new Map();
+  for (const s of plot.series || []) {
+    if (!merged.has(s.name)) {
+      order.push(s.name);
+      merged.set(s.name, { name: s.name, kind: s.kind, points: [] });
+    }
+    const series = merged.get(s.name);
+    if (series.points.length) series.points.push(GAP);
+    series.points.push(...(s.points || []));
+  }
+  const bases = [...new Set(order.map((name) => name.replace(BAND, "")))];
+  return {
+    // Rust titles a plot inside its result ("Correlator"); the card names the
+    // result it belongs to so several channels can be shown side by side.
+    title: owner ? owner + " · " + plot.title : plot.title,
+    xLabel: plot.x_label,
+    yLabel: plot.y_label,
+    ...(logY ? { yScale: "log" } : {}),
+    series: order.map((name) => {
+      const series = merged.get(name);
+      const band = BAND.test(name);
+      return {
+        name,
+        points: series.points,
         style:
-          s.kind === "bars"
+          series.kind === "bars"
             ? "bars"
-            : ["scatter", "points"].includes(s.kind)
+            : ["scatter", "points"].includes(series.kind)
               ? "points"
               : "line",
-      })),
-    }));
+        color: COLORS[bases.indexOf(name.replace(BAND, "")) % COLORS.length],
+        // A band edge is drawing geometry: dashed, and left out of the
+        // numeric fallback, which lists the reported value and error instead.
+        ...(band ? { dashed: true, geometry: true } : {}),
+      };
+    }),
+  };
+};
+
+const resultOf = (results, title) =>
+  presentationResults(results).find((r) => r.title === title) ?? null;
+// A plot whose points are all undefined carries no number and is left out.
+const charts = (results, options = {}) =>
+  results.flatMap((result) =>
+    (result.plots || [])
+      .map((plot) =>
+        chartOfPlot(plot, {
+          ...options,
+          owner: options.owned ? result.title : "",
+          // `logY` applies to the correlator only: an effective rate, a
+          // weight and a residual all cross zero.
+          logY: Boolean(options.logY) && plot.title === CORRELATOR,
+        }),
+      )
+      .filter((chart) => chart.series.length),
+  );
+
+// Every plot of every result, in Rust's order.
+export function presentationCharts(results, options) {
+  return charts(presentationResults(results), { owned: true, ...options });
+}
+const CORRELATOR = "Correlator";
+const CURVE_PLOTS = [CORRELATOR, "Effective rate"];
+const curves = (result, wanted) => ({
+  ...result,
+  plots: (result.plots || []).filter(
+    (plot) => CURVE_PLOTS.includes(plot.title) === wanted,
+  ),
+});
+// The correlator and effective-rate plots of one channel, and separately its
+// fit-window plots: both live in the result Rust titled with the channel id.
+export function channelCharts(results, id, options) {
+  const result = resultOf(results, id);
+  return result
+    ? charts([curves(result, true)], { owned: true, ...options })
+    : [];
+}
+export function windowCharts(results, id) {
+  const result = resultOf(results, id);
+  return result ? charts([curves(result, false)], { owned: true }) : [];
+}
+// One result per basis, titled `GEVP <id>`; an unavailable basis has none.
+export function gevpCharts(results) {
+  return charts(
+    presentationResults(results).filter((r) => r.title.startsWith("GEVP ")),
+    { owned: true },
+  );
 }
 
 // Every `notes` array of a report, in report order, tagged with its owner.
@@ -1035,19 +1073,23 @@ export function collectNotes(report, scope = "all") {
 }
 
 // Numeric fallback of any chart descriptor. Band edges are drawing geometry
-// (value ± error), not reported numbers: the tables list value and error.
+// (Rust's `value ± error` curves), not reported numbers: the tables next to
+// the chart list the value and the error. The `[null, null]` that separates
+// two runs of one curve is a gap, not a point.
 export function chartTable(chart) {
   const series = (chart.series || []).filter((s) => !s.geometry);
   const errors = series.some((s) => s.errors);
   return {
     columns: ["Series", "x", "y", ...(errors ? ["Error"] : [])],
     rows: series.flatMap((s) =>
-      (s.points || []).map((p, i) => [
-        s.name,
-        p[0],
-        orNull(p[1]),
-        ...(errors ? [orNull(s.errors?.[i])] : []),
-      ]),
+      (s.points || [])
+        .map((p, i) => [
+          s.name,
+          orNull(p?.[0]),
+          orNull(p?.[1]),
+          ...(errors ? [orNull(s.errors?.[i])] : []),
+        ])
+        .filter((row) => row[1] !== null),
     ),
   };
 }
@@ -1116,6 +1158,11 @@ export function createSession(
     async refresh() {
       snapshot = await engine.snapshot();
       return snapshot;
+    },
+    // The request Rust resolved for the live session, so a restored one shows
+    // and restarts its own configuration instead of the page's last form.
+    request() {
+      return engine.request();
     },
     // Re-analysis never advances the gas: it reads the accumulated measurement.
     analyze(analysis) {

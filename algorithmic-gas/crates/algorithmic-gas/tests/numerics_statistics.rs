@@ -4,11 +4,13 @@ use algorithmic_gas::{
         numerics::{
             BlockMoments, BlockSize, LagMoments, ResampleKind, Resampling, Samples, SeriesView,
             Subtraction, TauInt, Whitener, auto_block, chi2_q, cross_moments, errors, gamma_q,
-            resample, resample_blocks, sample_covariance, series_moments, special::ln_gamma,
-            submatrix, tau_int, tau_int_of_correlator,
+            moments::straddling_pairs, resample, resample::block_below_target, resample_blocks,
+            sample_covariance, series_moments, special::ln_gamma, submatrix, tau_int,
+            tau_int_of_correlator,
         },
         qft::math::Rng,
     },
+    random::{RandomStream, Stream},
 };
 use std::cell::RefCell;
 
@@ -529,7 +531,11 @@ fn contracted_vector_correlator_is_the_sum_of_component_correlators() {
     let first: Vec<f64> = y.iter().step_by(2).copied().collect();
     let second: Vec<f64> = y.iter().skip(1).step_by(2).copied().collect();
     let (w, g) = ([1.; 12], [0; 12]);
-    for subtraction in [Subtraction::None, Subtraction::LagMeans] {
+    for subtraction in [
+        Subtraction::None,
+        Subtraction::LagMeans,
+        Subtraction::GlobalMean,
+    ] {
         let joint = some(
             &series_moments(view(&y, &w, &g, 2), 2, 3)
                 .unwrap()
@@ -928,6 +934,40 @@ fn automatic_block_rounds_the_batch_size_rule_up_to_whole_stored_blocks() {
             auto_block(tau, base, origins),
             block,
             "{tau} {base} {origins}"
+        );
+    }
+    // The cap that keeps eight blocks binds before the batch-size rule is
+    // reached on the rows above whose block is origins / 8; the returned
+    // block says nothing about it and `block_below_target` does.
+    for (tau, base, origins) in [
+        (100., 1, 1000),
+        (9.5, 1, 40),
+        (3.2, 4, 64),
+        (f64::MAX, 1, 1000),
+        (1e150, 3, 1000),
+    ] {
+        let block = auto_block(tau, base, origins);
+        assert!(
+            block_below_target(tau, block, origins),
+            "{tau} {base} {origins} {block}"
+        );
+    }
+    for (tau, base, origins) in [
+        (19.5, 1, 1000),
+        (19.5, 8, 1000),
+        (0.5, 1, 2000),
+        (9.5, 1, 4000),
+        (19.5, 1, 4000),
+        (9.48203755648973, 1, 4000),
+        (11.7781737864465, 1, 1000),
+        (0.5, 1, 1000),
+        (4., 1, 8000),
+        (13.5, 1, 1000),
+    ] {
+        let block = auto_block(tau, base, origins);
+        assert!(
+            !block_below_target(tau, block, origins),
+            "{tau} {base} {origins} {block}"
         );
     }
     assert_eq!(auto_block(f64::NAN, 0, 0), 1);
@@ -1595,10 +1635,355 @@ fn incomplete_gamma_function_matches_reference_values_and_closed_forms() {
     assert!(ln_gamma(1e300).is_some_and(f64::is_finite));
 }
 
+#[test]
+fn fractional_pair_weights_enter_every_sum_and_cancel_when_uniform() {
+    // Exact fractions from the definition, every weight dyadic.
+    let w = [0.5, 2., 1., 0.25, 1.5, 0., 1., 0.75];
+    let g = [0; 8];
+    let m = series_moments(view(&D, &w, &g, 1), 2, 3).unwrap();
+    let pooled = m.pooled(None);
+    assert_eq!(pooled.n, [9.125, 4.375, 4.]);
+    assert_eq!(pooled.ab, [37.375, 22.5, 5.]);
+    assert_eq!(pooled.a, [15., 8.625, 7.5]);
+    assert_eq!(pooled.b, [15., 11.5, 6.5]);
+    close(
+        &some(&m.estimate(Subtraction::None)),
+        &[299. / 73., 36. / 7., 1.25],
+        1e-14,
+    );
+    close(
+        &some(&m.estimate(Subtraction::LagMeans)),
+        &[7427. / 5329., -48. / 1225., -115. / 64.],
+        1e-13,
+    );
+    close(
+        &some(&m.estimate(Subtraction::GlobalMean)),
+        &[7427. / 5329., 10572. / 37303., -38395. / 21316.],
+        1e-13,
+    );
+    // The origin carries the first series' weight, the partner the second's.
+    let e = [2., 0., 5., 1., 1., 6., 4., 3.];
+    let v = [1., 0.5, 0., 2., 0.25, 1., 3., 0.5];
+    let cross = cross_moments(view(&D, &w, &g, 1), view(&e, &v, &g, 1), 2, 3).unwrap();
+    let pooled = cross.pooled(None);
+    assert_eq!(pooled.n, [5.75, 4.3125, 9.]);
+    assert_eq!(pooled.ab, [27.625, 11.1875, 13.5]);
+    assert_eq!(pooled.a, [10.375, 9.4375, 9.75]);
+    assert_eq!(pooled.b, [15., 12.5625, 23.75]);
+    close(
+        &some(&cross.estimate(Subtraction::LagMeans)),
+        &[103. / 1058., -2000. / 529., -587. / 432.],
+        1e-13,
+    );
+    close(
+        &some(&cross.estimate(Subtraction::GlobalMean)),
+        &[103. / 1058., -11629. / 3174., -52583. / 38088.],
+        1e-13,
+    );
+    // A uniform weight cancels between the sums and the pair count.
+    let unit = series_moments(view(&D, &[1.; 8], &g, 1), 2, 3).unwrap();
+    for subtraction in [
+        Subtraction::None,
+        Subtraction::LagMeans,
+        Subtraction::GlobalMean,
+    ] {
+        let halves = series_moments(view(&D, &[0.5; 8], &g, 1), 2, 3).unwrap();
+        assert_eq!(halves.estimate(subtraction), unit.estimate(subtraction));
+        let thirds = series_moments(view(&D, &[1. / 3.; 8], &g, 1), 2, 3).unwrap();
+        close(
+            &some(&thirds.estimate(subtraction)),
+            &some(&unit.estimate(subtraction)),
+            1e-13,
+        );
+    }
+}
+
+#[test]
+fn blocks_cut_by_misaligned_segment_breaks_are_all_held() {
+    let g = [0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3];
+    let m = series_moments(view(&X, &[1.; 12], &g, 1), 1, 2).unwrap();
+    assert_eq!(
+        (m.blocks, m.origins_per_block, m.max_blocks, m.open),
+        (8, 2, 8, 1)
+    );
+    assert_eq!(
+        m.n,
+        [
+            2., 2., 1., 0., 2., 2., 1., 0., 2., 2., 1., 0., 2., 2., 1., 0.
+        ]
+    );
+    assert_eq!(
+        m.ab,
+        [
+            10., 9., 4., 0., 41., 44., 36., 0., 58., 56., 25., 0., 100., 102., 81., 0.
+        ]
+    );
+    let s = resample(&m, Subtraction::LagMeans, &jackknife(2), None).unwrap();
+    assert_eq!((s.blocks, s.count, s.effective_block), (8, 8, 2));
+    for block in 0..8 {
+        let direct = m.pooled(Some(block)).estimate(Subtraction::LagMeans);
+        close(s.sample(block), &some(&direct), 1e-13);
+    }
+}
+
+#[test]
+fn autocorrelation_window_closes_at_equality_and_stops_at_half_the_frames() {
+    // rho = 1/4, 1/8, 1/8, 0, 0, 1/8: tau(5) = 1 and 5 = 5 tau closes the window.
+    let correlator = [8., 2., 1., 1., 0., 0., 1.].map(Some);
+    assert_eq!(
+        tau_int_of_correlator(&correlator, 100),
+        Some(TauInt { tau: 1., window: 5 })
+    );
+    assert_eq!(
+        tau_int_of_correlator(&correlator, 6),
+        Some(TauInt { tau: 1., window: 3 })
+    );
+    assert_eq!(
+        tau_int_of_correlator(&correlator, 4),
+        Some(TauInt {
+            tau: 0.875,
+            window: 2
+        })
+    );
+    assert_eq!(tau_int_of_correlator(&correlator, 3), None);
+    // A ramp of m frames has lag-wise connected variance (m^2 - 1) / 12, so
+    // rho(l) = ((8 - l)^2 - 1) / 63 and the window never closes within the
+    // 8 / 2 lags searched: tau = 1/2 + (48 + 35 + 24 + 15) / 63.
+    let ramp: Vec<f64> = (0..8).map(f64::from).collect();
+    let t = tau_int(view(&ramp, &[1.; 8], &[0; 8], 1)).unwrap();
+    assert!(
+        (t.tau - 307. / 126.).abs() < 1e-13 && t.window == 4,
+        "{t:?}"
+    );
+    // Four valid frames are the least that give an estimate.
+    let t = tau_int(view(&ramp[..4], &[1.; 4], &[0; 4], 1)).unwrap();
+    assert!((t.tau - (0.5 + 8. / 15. + 3. / 15.)).abs() < 1e-13 && t.window == 2);
+    assert_eq!(
+        tau_int(view(&ramp[..5], &[1., 1., 0., 1., 0.], &[0; 5], 1)),
+        None
+    );
+}
+
+#[test]
+fn a_fixed_block_rounds_up_to_whole_stored_blocks() {
+    let m = series_moments(view(&X, &[1.; 12], &[0; 12], 1), 2, 3).unwrap();
+    for (frames, block, groups, held) in [
+        (1, 3, 4, [1., 1., 1., 0.]),
+        (4, 6, 2, [1., 1., 0., 0.]),
+        (5, 6, 2, [1., 1., 0., 0.]),
+        (7, 9, 2, [1., 1., 1., 0.]),
+    ] {
+        let s = resample(&m, Subtraction::LagMeans, &jackknife(frames), None).unwrap();
+        assert_eq!(
+            (s.effective_block, s.blocks, s.count),
+            (block, groups, groups)
+        );
+        let last = m.weighted(&held).estimate(Subtraction::LagMeans);
+        close(s.sample(groups - 1), &some(&last), 1e-13);
+    }
+}
+
+#[test]
+fn bootstrap_resample_draws_its_blocks_from_the_addressed_stream() {
+    let (seed, blocks, group) = (41, 10, 3);
+    let bootstrap = Resampling::Bootstrap {
+        block: BlockSize::Fixed { frames: group },
+        samples: 16,
+        seed,
+    };
+    let multiplicities = |m: &[f64]| m.iter().map(|m| Some(*m)).collect();
+    let s = resample_blocks(blocks, 1, blocks, &bootstrap, None, &multiplicities).unwrap();
+    assert_eq!((s.count, s.blocks, s.dimension), (16, 4, blocks));
+    assert_eq!(s.central, [1.; 10]);
+    for r in 0..s.count {
+        let mut stream = RandomStream::new(seed, 0, Stream::Initialize, r as u64, 811);
+        let mut drawn = [0.; 4];
+        for _ in 0..4 {
+            drawn[stream.index(4)] += 1.;
+        }
+        let expected: Vec<f64> = (0..blocks).map(|stored| drawn[stored / group]).collect();
+        assert_eq!(s.sample(r), expected, "resample {r}");
+    }
+    assert!((1..s.count).any(|r| s.sample(r) != s.sample(0)));
+}
+
+#[test]
+fn automatic_block_without_an_override_uses_the_pooled_autocorrelation_time() {
+    let frames = 4000;
+    let x = ar1(2024, frames, 0.9);
+    let (w, g) = (vec![1.; frames], vec![0; frames]);
+    let m = series_moments(view(&x, &w, &g, 1), 100, 1).unwrap();
+    let s = resample(&m, Subtraction::None, &Resampling::default(), None).unwrap();
+    assert_eq!((s.effective_block, s.blocks), (113, 36));
+    assert!(
+        s.tau_int
+            .is_some_and(|tau| (tau - 9.48203755648973).abs() < 1e-9)
+    );
+    // No variance: tau = 1/2 and the block is 64^(1/3) = 4.
+    let flat = series_moments(view(&[2.; 64], &[1.; 64], &[0; 64], 1), 3, 1).unwrap();
+    let s = resample(&flat, Subtraction::LagMeans, &Resampling::default(), None).unwrap();
+    assert_eq!((s.effective_block, s.blocks, s.tau_int), (4, 16, Some(0.5)));
+    assert_eq!(errors(&s), [Some(0.); 4]);
+}
+
+#[test]
+fn whitener_maps_each_column_of_a_tall_matrix_like_a_residual() {
+    let w = Whitener::diagonal(&[0.5, 2., 4.]).unwrap();
+    assert_eq!(
+        w.apply_columns(&[1., 2., 3., 4., 5., 6.], 2),
+        [2., 4., 1.5, 2., 1.25, 1.5]
+    );
+    let covariance = [4., 1.2, 1.2, 1.];
+    let w = Whitener::new(&covariance, 2, 0.).unwrap();
+    let design = [1., -2., 0.5, 3., 4., -1.];
+    let whitened = w.apply_columns(&design, 3);
+    // chi2 of each column against the closed-form inverse of a 2 x 2 matrix.
+    let det = 4. * 1. - 1.2 * 1.2;
+    for c in 0..3 {
+        let (x, y) = (design[c], design[3 + c]);
+        let expected = (x * x - 2. * 1.2 * x * y + 4. * y * y) / det;
+        let chi2 = whitened[c].powi(2) + whitened[3 + c].powi(2);
+        assert!((chi2 - expected).abs() < 1e-12 * expected, "{c}");
+        assert!((w.chi2(&[x, y]) - expected).abs() < 1e-12 * expected);
+    }
+}
+
+#[test]
+fn bootstrap_multiplicities_scale_every_block_sum() {
+    // Blocks of the first test: block 0 twice, block 1 never, blocks 2 and 3 once.
+    let m = series_moments(view(&X, &[1.; 12], &[0; 12], 1), 2, 3).unwrap();
+    let sums = m.weighted(&[2., 0., 1., 1.]);
+    assert_eq!(sums.ab, [292., 236., 223.]);
+    assert_eq!(sums.a, [50., 41., 35.]);
+    assert_eq!(sums.b, [50., 55., 50.]);
+    assert_eq!(sums.n, [12., 11., 10.]);
+    close(
+        &some(&sums.estimate(Subtraction::LagMeans)),
+        &[
+            292. / 12. - 2500. / 144.,
+            236. / 11. - 2255. / 121.,
+            22.3 - 17.5,
+        ],
+        1e-13,
+    );
+    // Two vector components keep their own leg sums under a multiplicity.
+    let y: Vec<f64> = (0..12).flat_map(|t| [X[t], 0.5 * X[11 - t]]).collect();
+    let joint = series_moments(view(&y, &[1.; 12], &[0; 12], 2), 0, 6).unwrap();
+    let sums = joint.weighted(&[3., 1.]);
+    assert_eq!(sums.n, [24.]);
+    assert_eq!(sums.a, [3. * 21. + 38., 0.5 * (3. * 38. + 21.)]);
+    assert_eq!(sums.ab, [3. * (91. + 0.25 * 264.) + 264. + 0.25 * 91.]);
+}
+
+#[test]
+fn a_segment_id_that_returns_after_a_gap_starts_a_new_run() {
+    let x = [1., 3., 2., 5., 4., 6.];
+    let returning = series_moments(view(&x, &[1.; 6], &[7, 7, 3, 3, 7, 7], 1), 5, 2).unwrap();
+    let pooled = returning.pooled(None);
+    assert_eq!(pooled.n, [6., 3., 0., 0., 0., 0.]);
+    assert_eq!(pooled.ab, [91., 37., 0., 0., 0., 0.]);
+    assert_eq!(
+        returning,
+        series_moments(view(&x, &[1.; 6], &[0, 0, 1, 1, 2, 2], 1), 5, 2).unwrap()
+    );
+    // Runs of three frames around a lone frame: rho(1) = (15/16) / (40/7),
+    // rho(2) = 0 from the pairs (0, 2) and (4, 6), and no pair at lag 3.
+    let x = [1., 2., 4., 9., 3., 5., 4.];
+    let t = tau_int(view(&x, &[1.; 7], &[0, 0, 0, 1, 0, 0, 0], 1)).unwrap();
+    assert!((t.tau - 85. / 128.).abs() < 1e-14 && t.window == 2, "{t:?}");
+    assert_eq!(
+        tau_int(view(&x, &[1.; 7], &[0, 0, 0, 1, 2, 2, 2], 1)),
+        Some(t)
+    );
+}
+
+#[test]
+fn undefined_entries_and_single_resamples_give_zero_covariance_and_no_error() {
+    let table = |kind, count: usize| Samples {
+        kind,
+        dimension: 2,
+        count,
+        central: vec![3., 0.],
+        values: vec![1., 5., 2., 9., 4., -3., 7., 40.][..2 * count].to_vec(),
+        defined: vec![true, false],
+        effective_block: 1,
+        blocks: 4,
+        tau_int: None,
+    };
+    assert_eq!(
+        sample_covariance(&table(ResampleKind::Bootstrap, 4)),
+        [7., 0., 0., 0.]
+    );
+    assert_eq!(
+        sample_covariance(&table(ResampleKind::Jackknife, 4)),
+        [15.75, 0., 0., 0.]
+    );
+    assert_eq!(
+        errors(&table(ResampleKind::Jackknife, 4)),
+        [Some(15.75f64.sqrt()), None]
+    );
+    for kind in [ResampleKind::Bootstrap, ResampleKind::Jackknife] {
+        assert_eq!(sample_covariance(&table(kind, 1)), [0.; 4]);
+        assert_eq!(errors(&table(kind, 1)), [None, None]);
+    }
+}
+
+#[test]
+fn global_mean_is_undefined_without_equal_time_pairs() {
+    // The legs are never valid on the same frame: lag 0 is empty, lag 1 holds
+    // the pairs (0, 1) and (2, 3).
+    let (a, b) = ([1., 2., 3., 4.], [5., 6., 7., 8.]);
+    let g = [0; 4];
+    let m = cross_moments(
+        view(&a, &[1., 0., 1., 0.], &g, 1),
+        view(&b, &[0., 1., 0., 1.], &g, 1),
+        1,
+        2,
+    )
+    .unwrap();
+    assert_eq!(m.pooled(None).n, [0., 2.]);
+    assert_eq!(m.estimate(Subtraction::None), [None, Some(15.)]);
+    assert_eq!(m.estimate(Subtraction::LagMeans), [None, Some(1.)]);
+    assert_eq!(m.estimate(Subtraction::GlobalMean), [None, None]);
+}
+
+#[test]
+fn joining_an_empty_run_changes_nothing() {
+    let series = view(&X, &[1.; 12], &[0; 12], 1);
+    let built = series_moments(series, 2, 5).unwrap();
+    assert_eq!((built.blocks, built.open, built.origins()), (3, 2, 12));
+    let empty = BlockMoments::new(3, 1, 5, 4).unwrap();
+    assert_eq!(BlockMoments::concat(&[&built, &empty]).unwrap(), built);
+    assert_eq!(BlockMoments::concat(&[&empty, &built]).unwrap(), built);
+    let nothing = BlockMoments::concat(&[&empty]).unwrap();
+    assert_eq!((nothing.blocks, nothing.origins()), (0, 0));
+    assert_eq!(nothing.estimate(Subtraction::LagMeans), [None; 3]);
+}
+
+#[test]
+fn corrupted_block_moments_are_rejected_before_any_sum_is_read() {
+    let sound = series_moments(view(&X, &[1.; 12], &[0; 12], 1), 2, 3).unwrap();
+    let corrupt: [&dyn Fn(&mut BlockMoments); 6] = [
+        &|m| m.n[4] = -1.,
+        &|m| m.ab[0] = f64::INFINITY,
+        &|m| m.a[7] = f64::NAN,
+        &|m| m.b.pop().map_or((), drop),
+        &|m| m.open = m.origins_per_block + 1,
+        &|m| m.max_blocks = m.blocks - 1,
+    ];
+    for damage in corrupt {
+        let mut m = sound.clone();
+        damage(&mut m);
+        assert!(matches!(m.validate(), Err(GasError::Configuration(_))));
+        assert!(resample(&m, Subtraction::LagMeans, &jackknife(3), None).is_err());
+        assert!(BlockMoments::concat(&[&sound, &m]).is_err());
+    }
+    sound.validate().unwrap();
+}
+
 /// Study: fraction of one-sigma jackknife intervals that hold the exact
 /// autocovariance `phi^l / (1 - phi^2)` of an AR(1) series with `phi = 0.95`.
 #[test]
-#[ignore = "statistical study over 500 series of 4000 frames"]
 fn automatic_blocks_cover_a_slowly_mixing_series_and_blocks_of_ten_do_not() {
     let (frames, replicas, phi) = (4000, 500, 0.95f64);
     let lags = [0, 5, 10];
@@ -1632,5 +2017,125 @@ fn automatic_blocks_cover_a_slowly_mixing_series_and_blocks_of_ten_do_not() {
     for slot in 0..3 {
         assert!((0.60..=0.76).contains(&coverage[0][slot]), "{coverage:?}");
         assert!(coverage[1][slot] < 0.52, "{coverage:?}");
+    }
+}
+
+#[test]
+fn a_slowly_mixing_series_keeps_the_automatic_block_far_above_ten() {
+    // The cheap guard of the coverage study above: a block of ten is below
+    // twice the integrated autocorrelation time of an AR(1) series with
+    // phi = 0.95, where the automatic rule stands near 183.
+    let (frames, phi) = (4000, 0.95f64);
+    let x = ar1(1000, frames, phi);
+    let (w, g) = (vec![1.; frames], vec![0; frames]);
+    let tau = tau_int(view(&x, &w, &g, 1)).unwrap().tau;
+    let block = auto_block(tau, 1, frames);
+    assert!(block >= 40 && block as f64 >= 2. * tau, "{block} {tau}");
+    assert!(10. < 2. * tau, "{tau}");
+    assert!(block_below_target(tau, 10, frames), "{tau}");
+    assert!(!block_below_target(tau, block, frames), "{block} {tau}");
+}
+
+#[test]
+fn a_straddling_pair_is_the_one_a_deleted_block_keeps() {
+    // Oracle: the pairs of a contiguous series counted one origin at a time,
+    // a pair straddling when its two frames sit in different blocks.
+    let counted = |lags: usize, block: usize, origins: usize| {
+        (0..lags)
+            .flat_map(|lag| (0..origins.saturating_sub(lag)).map(move |t| (lag, t)))
+            .filter(|&(lag, t)| t / block != (t + lag) / block)
+            .count() as u64
+    };
+    for (lags, block, origins) in [
+        (3, 2, 7),
+        (41, 24, 200),
+        (11, 10, 40),
+        (1, 5, 9),
+        (5, 1, 6),
+        (21, 8, 64),
+        (13, 7, 5),
+    ] {
+        assert_eq!(
+            straddling_pairs(lags, block, origins),
+            counted(lags, block, origins),
+            "{lags} {block} {origins}"
+        );
+    }
+    // Beyond the block every pair of a lag straddles it, so a delete-one
+    // resample removes none of the products that lag holds.
+    assert_eq!(straddling_pairs(9, 8, 64) - straddling_pairs(8, 8, 64), 56);
+    assert_eq!(
+        straddling_pairs(21, 8, 64) - straddling_pairs(20, 8, 64),
+        44
+    );
+    assert_eq!(straddling_pairs(1, 8, 64), 0);
+    assert_eq!(straddling_pairs(3, 0, 7), straddling_pairs(3, 1, 7));
+    // A lag of `origins` or more reaches no sink, so a lag range longer than
+    // the series adds nothing and costs nothing: the sum stops at the shorter
+    // of the two rather than walking a caller's range to its end.
+    assert_eq!(straddling_pairs(usize::MAX, 8, 64), 1792);
+    assert_eq!(straddling_pairs(64, 8, 64), 1792);
+    assert_eq!(straddling_pairs(21, 8, 64), 846);
+    assert_eq!(straddling_pairs(9, 8, 0), 0);
+}
+
+/// Study: quoted against true one-sigma jackknife errors of an AR(1)
+/// correlator at lags beyond the resampling block. The deletion removes time
+/// origins, so every straddling pair survives it and the quoted error is a
+/// lower bound there.
+#[test]
+fn automatic_blocks_at_lags_beyond_the_block_are_a_stated_lower_bound() {
+    let (frames, replicas, phi, max_lag) = (200, 600, 0.9f64, 40);
+    let lags = [0, 10, 30, 40];
+    let mut central = vec![vec![]; lags.len()];
+    let mut quoted = vec![vec![vec![]; lags.len()]; 2];
+    let mut blocks = 0;
+    for replica in 0..replicas {
+        let x = ar1(3000 + replica as u64, frames, phi);
+        let (w, g) = (vec![1.; frames], vec![0; frames]);
+        let series = view(&x, &w, &g, 1);
+        let tau = tau_int(series).unwrap().tau;
+        let m = series_moments(series, max_lag, 1).unwrap();
+        blocks += auto_block(tau, 1, frames);
+        for (scheme, resampling) in [Resampling::default(), jackknife(10)].iter().enumerate() {
+            let s = resample(&m, Subtraction::LagMeans, resampling, Some(tau)).unwrap();
+            let e = errors(&s);
+            for (slot, &lag) in lags.iter().enumerate() {
+                quoted[scheme][slot].push(e[lag].unwrap());
+                if scheme == 0 {
+                    central[slot].push(s.central[lag]);
+                }
+            }
+        }
+    }
+    let scatter = |values: &[f64]| {
+        let mean = values.iter().sum::<f64>() / values.len() as f64;
+        let spread: f64 = values.iter().map(|x| (x - mean).powi(2)).sum();
+        (spread / (values.len() - 1) as f64).sqrt()
+    };
+    let median = |values: &mut [f64]| {
+        values.sort_by(f64::total_cmp);
+        values[values.len() / 2]
+    };
+    let block = blocks as f64 / replicas as f64;
+    let ratio: Vec<[f64; 2]> = (0..lags.len())
+        .map(|slot| {
+            let true_error = scatter(&central[slot]);
+            [0, 1].map(|scheme| median(&mut quoted[scheme][slot]) / true_error)
+        })
+        .collect();
+    eprintln!("mean automatic block {block}, quoted/true per lag {ratio:?}");
+    // The automatic block is 24.3 here, so lags 30 and 40 lie beyond it and no
+    // product of theirs is ever deleted. The seeded study gives 0.756, 0.684,
+    // 0.830, 0.834 for the automatic block, a lower bound that stays inside a
+    // third of the truth, against 0.668, 0.611, 0.739, 0.718 for a fixed
+    // block of ten, which is under 2 tau_int = 19 and worse at every lag.
+    assert!((20. ..30.).contains(&block), "{block}");
+    for slot in 0..lags.len() {
+        assert!((0.60..=0.95).contains(&ratio[slot][0]), "{ratio:?}");
+        assert!(
+            ratio[slot][1] < ratio[slot][0] && ratio[slot][1] < 0.76,
+            "{ratio:?}"
+        );
     }
 }

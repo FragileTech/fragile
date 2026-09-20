@@ -6,7 +6,13 @@ import {
   escapeXML as esc,
   format,
 } from "../lecture/plots.js";
-import { VOCABULARY, catalogFamilies, chartTable } from "./model.js";
+import {
+  GEVP_BASIS,
+  VOCABULARY,
+  catalogFamilies,
+  chartTable,
+  gevpReady,
+} from "./model.js";
 
 const cell = (value) =>
   value === null || value === undefined
@@ -193,6 +199,11 @@ function requirementText(requirements) {
   );
 }
 
+const NORMALIZATION_LABEL = {
+  valid_count: "sum of valid element weights",
+  fixed_n: "population size N",
+};
+
 export function channelListHTML(catalog, selected, availability) {
   const chosen = new Set(selected);
   return catalogFamilies(catalog)
@@ -203,9 +214,12 @@ export function channelListHTML(catalog, selected, availability) {
         "</legend><ul>" +
         channels
           .map((entry, index) => {
-            // `CatalogEntry.descriptor` = {definition, book_label,
-            // spatial_parity, note}; `kind` is the element kind of the row.
-            const text = entry.descriptor || {};
+            // `CatalogEntry` = {id, spec, kind, family, standard,
+            // availability, signature, assignment}. The signature is the one
+            // of `Capabilities::nominal()` and is null for a channel that
+            // does not exist at all, so every read of it is optional.
+            const signature = entry.signature || {};
+            const text = signature.descriptor || {};
             const state = availability.get(entry.id);
             const blocked = state?.available === false;
             const reasonId = "reason-" + family + "-" + index;
@@ -231,18 +245,31 @@ export function channelListHTML(catalog, selected, availability) {
                 ? "<span>Elements: " + esc(entry.kind) + "</span>"
                 : "") +
               "<span>Exchange: " +
-              esc(entry.exchange ?? "—") +
+              esc(signature.exchange ?? "—") +
               "</span>" +
               (text.spatial_parity
                 ? "<span>Spatial parity: " +
                   esc(text.spatial_parity) +
                   "</span>"
                 : "") +
-              "<span>Requires: " +
-              esc(requirementText(entry.requirements)) +
-              "</span>" +
-              (entry.correlatable === false
+              (signature.requires
+                ? "<span>Requires: " +
+                  esc(requirementText(signature.requires)) +
+                  "</span>"
+                : "") +
+              (signature.normalization
+                ? "<span>Frame normalisation: " +
+                  esc(
+                    NORMALIZATION_LABEL[signature.normalization] ??
+                      signature.normalization,
+                  ) +
+                  "</span>"
+                : "") +
+              (signature.correlatable === false
                 ? "<span>No correlator</span>"
+                : "") +
+              (entry.assignment
+                ? "<span>Assigned: " + esc(entry.assignment) + "</span>"
                 : "") +
               "</div>" +
               (text.note
@@ -277,6 +304,7 @@ export function capabilitySummaryHTML(response, missing) {
     ["Distance kernel width ε_d", c.distance_kernel_width ?? "—"],
     ["Cloning kernel width ε_c", c.cloning_kernel_width ?? "—"],
     ["Dense viscosity", c.dense_viscosity],
+    ["Integrator step dt", c.time_step ?? "—"],
     ["Updates per recording chunk", response.chunk],
   ].filter(([, value]) => value !== undefined);
   return (
@@ -363,17 +391,29 @@ export function analysisControlsHTML(controls) {
   );
 }
 
-export function fitControlsHTML(controls, gevpReady) {
+// `analysed` is the number of channels the report carries a correlator for:
+// Rust solves a basis of GEVP_BASIS.min..=GEVP_BASIS.max of them, so outside
+// that range the control is disabled and says which bound was missed.
+export function fitControlsHTML(controls, analysed = 0) {
+  const ready = gevpReady(analysed);
   return (
     '<label class="control"><span>Fit method</span><select name="fit">' +
     optionsHTML(VOCABULARY.fit, controls.fit) +
     '</select></label><label class="check"><input type="checkbox" name="stability"' +
     (controls.stability ? " checked" : "") +
     '> Stability scan (Rust default grid)</label><label class="check"><input type="checkbox" name="gevp"' +
-    (controls.gevp ? " checked" : "") +
-    (gevpReady ? "" : " disabled") +
+    (controls.gevp && ready ? " checked" : "") +
+    (ready ? "" : " disabled") +
     "> GEVP over the analysed channels" +
-    (gevpReady ? "" : " (needs at least two)") +
+    (ready
+      ? ""
+      : " (Rust solves " +
+        GEVP_BASIS.min +
+        " to " +
+        GEVP_BASIS.max +
+        " channels; " +
+        analysed +
+        " analysed)") +
     "</label>"
   );
 }

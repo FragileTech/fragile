@@ -283,7 +283,10 @@ pub fn roles(frame: &Frame, score: &[f64]) -> Vec<WalkerRole> {
 
 /// Write `score` and `score_valid` (from `fitness`, `companion_fitness` and
 /// `gas.clone_decision.epsilon`), `role` and `score_gradient` (from
-/// `state.{distance,cloning}_companion`) into `state`. A row without a valid
+/// `state.{distance,cloning}_companion`) into `state`. The gradient of a
+/// walker is the mean of `(S_j − S_i) r̂_ij / |r_ij|` over its pairs, the
+/// finite-difference quotient of the score field: it has the units of a score
+/// over a length and scales as `1/λ` under `x → λx`. A row without a valid
 /// score holds 0, never NaN, and a nonfinite score is not valid. Displacements
 /// of the gradient take the minimum image of
 /// `contract::periodic_box(&gas.boundary)`, as the vector channels do; a box
@@ -347,7 +350,8 @@ pub fn fill(frame: &Frame, gas: &GasConfig, state: &mut FrameState) -> Availabil
                 continue;
             }
             for (g, r) in gradient[i * d..(i + 1) * d].iter_mut().zip(&direction) {
-                *g += (values[j] - values[i]) * r / length;
+                // (ΔS / |r|) r̂ : a difference quotient, not a difference.
+                *g += (values[j] - values[i]) * r / (length * length);
             }
             pairs += 1.;
         }

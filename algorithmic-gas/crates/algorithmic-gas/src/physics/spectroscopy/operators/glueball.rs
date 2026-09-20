@@ -9,8 +9,8 @@ use crate::{
         spectroscopy::{
             config::{ChannelSpec, GlueballObservable, Momentum, MomentumPhase},
             contract::{
-                Descriptor, Element, ElementKind, ExchangeParity, FrameState, OperatorContext,
-                Record, Requirements, Signature, SpatialParity, periodic_box,
+                Auxiliary, Descriptor, Element, ElementKind, ExchangeParity, FrameState,
+                OperatorContext, Record, Requirements, Signature, SpatialParity, periodic_box,
             },
         },
     },
@@ -19,9 +19,9 @@ use std::f64::consts::TAU;
 
 /// `ChannelSpec::Glueball`: plaquette observables on triplets, `ForceNorm`
 /// on sites. Requires `Color`; a momentum projection adds `PeriodicBox` and
-/// is `GasError::Capability` when its axis is outside the position
-/// coordinates. All arms are `ExchangeParity::Even`. The plaquette exists in
-/// every dimension.
+/// `Auxiliary::MomentumMode`, and is `GasError::Capability` when its axis is
+/// outside the position coordinates. All arms are `ExchangeParity::Even`. The
+/// plaquette exists in every dimension.
 pub(super) fn signature(
     spec: &ChannelSpec,
     kind: ElementKind,
@@ -56,6 +56,17 @@ pub(super) fn signature(
                 momentum.axis
             )));
         }
+        // The projection is taken of the element minus the frame mean, and the
+        // cosine of mode 0 weights every element by 1: the sum `Σ_I w_I (O_I −
+        // Ō_t)` is zero by construction, as the sine of mode 0 is, so the arm
+        // is no observable. The unprojected arm is the zero-momentum channel.
+        if momentum.mode == 0 {
+            return Err(GasError::Capability(
+                "the connected projection on momentum mode 0 vanishes identically; measure the \
+                 unprojected arm for the zero mode"
+                    .into(),
+            ));
+        }
         requires = requires.with(Record::PeriodicBox);
         if momentum.phase == MomentumPhase::Sin {
             spatial_parity = SpatialParity::Odd;
@@ -73,8 +84,9 @@ pub(super) fn signature(
         GlueballObservable::OneMinusRe => (
             format!(r"1 - \operatorname{{Re}}\, \Pi_{{ijk}},\quad {plaquette}"),
             "def-sm-direct-color-contractions",
-            "its connected correlator equals that of the real part of the plaquette: the two \
-             channels are one piece of evidence",
+            "an affine image of the real part of the plaquette: its connected correlator equals \
+             that arm's, unprojected and in every momentum mode, because the projection is taken \
+             of the element minus the frame mean; the two channels are one piece of evidence",
         ),
         GlueballObservable::OneMinusCos => (
             format!(r"1 - \cos(\arg \Pi_{{ijk}}),\quad {plaquette}"),
@@ -117,14 +129,18 @@ pub(super) fn signature(
             spatial_parity: Some(spatial_parity),
             note: format!(
                 "{note}; Fourier weight at the raw anchor coordinate, L the periodic box length, \
-                 not a Volume II definition; a single cosine or sine correlator depends on the \
-                 origin of the axis, only their sum at equal mode is translation invariant, and \
-                 the cosine mode 0 duplicates the unprojected channel"
+                 not a Volume II definition; the connected element A_t = Σ_I w_I (O_I − Ō_t) e_I \
+                 / Σ_I w_I is projected, with Ō_t the frame mean of the observable, so that an \
+                 additive shift of O leaves the series fixed and the walker-density Fourier mode \
+                 does not enter it; a single cosine or sine correlator depends on the origin of \
+                 the axis, only their sum at equal mode is translation invariant, and mode 0 is \
+                 refused in both phases because the connected projection vanishes on it"
             ),
         },
     };
     Ok(Signature {
         descriptor,
+        auxiliary: momentum.map(|_| Auxiliary::MomentumMode),
         ..Signature::new(requires, 1, ExchangeParity::Even)
     })
 }
@@ -132,9 +148,11 @@ pub(super) fn signature(
 /// Invalid colours mask a plaquette; the phase observables also mask a
 /// triplet with a link overlap of modulus at most `1e-12`, where `arg Π` is
 /// undefined. `ForceNorm` reads `state.force` where `state.force_valid`,
-/// whatever the colour validity, and masks a norm that overflows. The
-/// momentum weight reads the anchor position of `state` and masks the element
-/// without a periodic box of positive length or with a nonfinite coordinate.
+/// whatever the colour validity, and masks a norm that overflows. A projected
+/// arm writes the observable and the momentum weight of the element apart, so
+/// that the measurement subtracts the frame mean before projecting; the weight
+/// reads the anchor position of `state` and masks the element without a
+/// periodic box of positive length or with a nonfinite coordinate.
 pub(super) fn evaluate(
     spec: &ChannelSpec,
     element: &Element,
@@ -160,18 +178,25 @@ pub(super) fn evaluate(
             .and_then(plaquette_phase)
             .map(|u| u.im * u.im),
     };
+    let Some(value) = value else {
+        return false;
+    };
     // The weight is read after the value exists, so its anchor is a walker of `state`.
-    let projected = value.and_then(|value| match momentum {
-        None => Some(value),
-        Some(momentum) => Some(value * fourier_weight(momentum, element, state, context)?),
-    });
-    match projected {
-        Some(projected) => {
-            out[0] = projected;
-            true
-        }
-        None => false,
+    let mode = match momentum {
+        None => None,
+        Some(momentum) => match fourier_weight(momentum, element, state, context) {
+            Some(weight) => Some(weight),
+            None => return false,
+        },
+    };
+    if out.len() != 1 + usize::from(mode.is_some()) {
+        return false;
     }
+    out[0] = value;
+    if let (Some(slot), Some(weight)) = (out.get_mut(1), mode) {
+        *slot = weight;
+    }
+    out.iter().all(|x| x.is_finite())
 }
 
 /// Colours `[c_i, c_j, c_k]` of a triplet read from `state`; `None` when a

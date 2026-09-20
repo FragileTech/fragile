@@ -8,8 +8,8 @@ use crate::{
     physics::spectroscopy::{
         config::{BaryonMode, ChannelSpec},
         contract::{
-            Descriptor, Element, ElementKind, ExchangeParity, FrameState, OperatorContext, Record,
-            Requirements, Signature, SpatialParity,
+            Auxiliary, Descriptor, Element, ElementKind, ExchangeParity, FrameState,
+            OperatorContext, Record, Requirements, Signature, SpatialParity,
         },
         fields::color::det3,
     },
@@ -110,10 +110,14 @@ pub(super) fn signature(
             book_label: String::new(),
             spatial_parity: Some(SpatialParity::Odd),
             note: "not a Volume II mode; the columns are ordered by the cloning score of each \
-                   walker at the evaluated time, so a sink reads the sink-time order and the \
-                   series mixes colour decorrelation with score crossings; a tie or a walker \
-                   without a score masks the triplet; parity odd for parity-even scores; not \
-                   invariant under per-site rephasing or a common velocity boost"
+                   walker at the source time of the element and that order is frozen with it, so \
+                   the series measures colour decorrelation alone and never the score crossings \
+                   of a sink frame; a tie or a walker without a score masks the triplet; because \
+                   a frozen order enters a lag product squared, the source-frozen propagator of \
+                   this arm is the one of baryon/real and is not measured — the frame mean, \
+                   where the canonical order is what stops Re b cancelling under relabelling, is \
+                   the whole channel; parity odd for parity-even scores; not invariant under \
+                   per-site rephasing or a common velocity boost"
                 .into(),
         },
         BaryonMode::FluxWeighted => Descriptor {
@@ -131,16 +135,22 @@ pub(super) fn signature(
             ),
         },
     };
+    let ordered = *mode == BaryonMode::ScoreOrdered;
     Ok(Signature {
         descriptor,
+        propagatable: !ordered,
+        auxiliary: ordered.then_some(Auxiliary::ScoreOrientation),
         ..Signature::new(requires, components, exchange)
     })
 }
 
 /// Invalid colours mask the element, a vanishing determinant does not.
-/// `ScoreOrdered` orders the walkers by `state.score` and masks a tie or a
-/// walker without `state.score_valid`. `FluxWeighted` masks an undefined
-/// plaquette phase and a weight that overflows.
+/// `ScoreOrdered` leaves the columns in the sampled order and writes the sign
+/// of the permutation that sorts them by `state.score` beside the
+/// determinant — `0` on a tie, not a number for a walker without
+/// `state.score_valid` — which the measurement freezes with the element.
+/// `FluxWeighted` masks an undefined plaquette phase and a weight that
+/// overflows.
 pub(super) fn evaluate(
     spec: &ChannelSpec,
     element: &Element,
@@ -168,10 +178,11 @@ pub(super) fn evaluate(
         BaryonMode::Abs2 => out[0] = det.abs2(),
         BaryonMode::Abs => out[0] = det.abs(),
         BaryonMode::ScoreOrdered => {
-            let Some(sign) = order_sign(element, state) else {
+            let [value, sign] = out else {
                 return false;
             };
-            out[0] = sign * det.re;
+            *value = det.re;
+            *sign = order_sign(element, state);
         }
         BaryonMode::FluxWeighted => {
             let Some(phase) = plaquette_phase([a, b, c]) else {
@@ -189,25 +200,29 @@ pub(super) fn evaluate(
 
 /// Sign of the permutation that sorts the three walkers by ascending score:
 /// the determinant with its columns in that order is this sign times
-/// `b_ijk`. `None` on a tie or a walker without a valid score.
-fn order_sign(element: &Element, state: &FrameState) -> Option<f64> {
-    let scores = state.score.as_ref()?;
-    let score = |w: u32| {
-        let w = w as usize;
-        (state.score_valid.get(w) == Some(&true))
-            .then(|| scores.get(w).copied())
-            .flatten()
+/// `b_ijk`. `0` on a tie, where the triplet has no order, and `NaN` where a
+/// walker has no valid score, which is missing data and not a tie.
+fn order_sign(element: &Element, state: &FrameState) -> f64 {
+    let ordered = || {
+        let scores = state.score.as_ref()?;
+        let score = |w: u32| {
+            let w = w as usize;
+            (state.score_valid.get(w) == Some(&true))
+                .then(|| scores.get(w).copied())
+                .flatten()
+        };
+        let [i, j, k] = element.walkers;
+        let s = [score(i)?, score(j)?, score(k)?];
+        let mut sign = 1.;
+        for (a, b) in [(0, 1), (0, 2), (1, 2)] {
+            if s[a] == s[b] {
+                return Some(0.);
+            }
+            if s[a] > s[b] {
+                sign = -sign;
+            }
+        }
+        Some(sign)
     };
-    let [i, j, k] = element.walkers;
-    let s = [score(i)?, score(j)?, score(k)?];
-    let mut sign = 1.;
-    for (a, b) in [(0, 1), (0, 2), (1, 2)] {
-        if s[a] == s[b] {
-            return None;
-        }
-        if s[a] > s[b] {
-            sign = -sign;
-        }
-    }
-    Some(sign)
+    ordered().unwrap_or(f64::NAN)
 }

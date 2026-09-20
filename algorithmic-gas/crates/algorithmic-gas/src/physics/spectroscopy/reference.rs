@@ -35,8 +35,8 @@ const RATE_NOTE: &str = "The compared quantity is the decay rate of the algorith
     assumption is not tested here.";
 const UNIT_NOTE: &str = "Ratios of rates do not depend on the time unit assigned to a lag \
     (thm-qft-ratio-rescale). They do depend on the integrator step, the recording stride, the \
-    estimator and the smearing scale, so only channels that share the time unit, the estimator \
-    and the scale are compared.";
+    estimator, the frame normalisation and the smearing scale, so only channels that share the \
+    time unit, the estimator, the scale and the frame normalisation are compared.";
 const LOOK_ELSEWHERE_NOTE: &str = "Tensions are (measured - reference)/sigma with sigma^2 = \
     sigma_measured^2 + sigma_reference^2 from first-order error propagation. They carry no \
     look-elsewhere correction for the number of rows or for the choice among operator variants, \
@@ -73,12 +73,15 @@ pub fn assigned<'a>(channels: &'a [ChannelReport], key: &str) -> Option<&'a Chan
 /// with nonzero values, to first order:
 /// `σ² = R² [(s_a/a)² + (s_b/b)² − 2 c (s_a/a)(s_b/b)]` with `c` the
 /// correlation of the two estimates. Multiplying both values and errors by one
-/// factor, a change of the time unit, leaves the result unchanged.
+/// factor, a change of the time unit, leaves the result unchanged. A variance
+/// that rounds below zero is an error of 0; an undefined error stays NaN.
 pub fn ratio(numerator: [f64; 2], denominator: [f64; 2], correlation: f64) -> [f64; 2] {
     let r = numerator[0] / denominator[0];
     let (a, b) = (numerator[1] / numerator[0], denominator[1] / denominator[0]);
     let variance = a * a + b * b - 2. * correlation * a * b;
-    [r, r.abs() * variance.max(0.).sqrt()]
+    // `f64::max` drops a NaN operand: it would turn an undefined error into 0.
+    let relative = if variance < 0. { 0. } else { variance.sqrt() };
+    [r, r.abs() * relative]
 }
 
 /// Signed `(measured − reference) / sqrt(σ_measured² + σ_reference²)` of two
@@ -137,14 +140,18 @@ impl Assigned<'_> {
     fn reference(&self) -> [f64; 2] {
         [self.entry.value, self.entry.error]
     }
-    /// Same time unit, estimator and scale: a Euclidean rate is per length, a
-    /// multiscale copy another observable, and only the frame mean has a
-    /// transfer-matrix reading.
+    /// Same time unit, estimator, scale and frame normalisation: a Euclidean
+    /// rate is per length, a multiscale copy another observable, only the
+    /// frame mean has a transfer-matrix reading, and the valid-count and
+    /// fixed-`1/N` frame averages are two different observables
+    /// (`09_qft_calibration`). Two channels that state no normalisation are
+    /// compared as before.
     fn comparable(&self, other: &Self) -> bool {
         match (self.channel, other.channel) {
             (Some(a), Some(b)) => {
                 a.estimator == b.estimator
                     && a.scale == b.scale
+                    && a.normalization == b.normalization
                     && a.mass.as_ref().map(|m| m.time_unit) == b.mass.as_ref().map(|m| m.time_unit)
             }
             _ => false,
@@ -223,7 +230,8 @@ fn gated(rows: &[Assigned<'_>], a: usize, b: usize, notes: &mut Vec<String>) -> 
         once(
             notes,
             format!(
-                "'{}' and '{}' differ in time unit, estimator or scale and are not compared.",
+                "'{}' and '{}' differ in time unit, estimator, scale or frame normalisation and \
+                 are not compared.",
                 first.name(),
                 second.name()
             ),
@@ -342,6 +350,7 @@ pub fn compare(
             unit: table.unit.clone(),
             measured: row.rate().and_then(finite),
             estimator: row.rate().and(row.channel).and_then(|c| c.estimator),
+            normalization: row.rate().and(row.channel).and_then(|c| c.normalization),
         })
         .collect();
     let mut ratios = vec![];

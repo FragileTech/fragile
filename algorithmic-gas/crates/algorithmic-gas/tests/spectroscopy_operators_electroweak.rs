@@ -1264,10 +1264,12 @@ fn score_gradient_averages_the_companion_differences_along_minimum_image_directi
     let mut open = base.clone();
     assert!(score::fill(&frame, &gas, &mut open).is_available());
     // S = (2, 1/3, −3/4, −1/2). Walker 0 sees walker 2 along (0, 1) and
-    // walker 1 along (3, 4)/5; walker 3 sits on both of its companions.
+    // walker 1 along (3, 4)/5; walker 3 sits on both of its companions. The
+    // gradient divides each difference by its own length, so the pair at
+    // distance 5 weighs a fifth of what the pair at distance 2 does.
     let gradient = open.score_gradient.as_ref().unwrap();
-    assert!((gradient[0] + 0.5).abs() < 1e-14);
-    assert!((gradient[1] + 49. / 24.).abs() < 1e-14);
+    assert!((gradient[0] + 0.1).abs() < 1e-14);
+    assert!((gradient[1] + 197. / 240.).abs() < 1e-14);
     assert_eq!(&gradient[6..], [0., 0.]);
     gas.boundary = BoundaryPolicy::PeriodicBox {
         field: "positions".into(),
@@ -1278,11 +1280,10 @@ fn score_gradient_averages_the_companion_differences_along_minimum_image_directi
     };
     let mut wrapped = base.clone();
     assert!(score::fill(&frame, &gas, &mut wrapped).is_available());
-    // In a box of length 5 the image of (3, 4) is (−2, −1).
+    // In a box of length 5 the image of (3, 4) is (−2, −1), of squared length 5.
     let gradient = wrapped.score_gradient.as_ref().unwrap();
-    let root = 5f64.sqrt();
-    assert!((gradient[0] - 0.5 * (10. / 3.) / root).abs() < 1e-14);
-    assert!((gradient[1] - 0.5 * (-2.75 + (5. / 3.) / root)).abs() < 1e-14);
+    assert!((gradient[0] - 0.5 * (10. / 3.) / 5.).abs() < 1e-14);
+    assert!((gradient[1] - 0.5 * (-1.375 + (5. / 3.) / 5.)).abs() < 1e-14);
     assert_eq!(open.score, wrapped.score);
     // A box of another dimension gives no direction, never the open one.
     gas.boundary = BoundaryPolicy::PeriodicBox {
@@ -1296,6 +1297,22 @@ fn score_gradient_averages_the_companion_differences_along_minimum_image_directi
     assert!(score::fill(&frame, &gas, &mut skewed).is_available());
     assert!(skewed.score_gradient.unwrap().iter().all(|g| *g == 0.));
     assert_eq!(open.score, skewed.score);
+    // Every axis wraps with its own length: in a box of 5 by 10 the image of
+    // (3, 4) is (−2, 4), of squared length 20.
+    gas.boundary = BoundaryPolicy::PeriodicBox {
+        field: "positions".into(),
+        domain: BoxDomain {
+            lower: vec![0.; 2],
+            upper: vec![5., 10.],
+        },
+    };
+    let mut oblong = base.clone();
+    assert!(score::fill(&frame, &gas, &mut oblong).is_available());
+    let gradient = oblong.score_gradient.as_ref().unwrap();
+    assert!((gradient[0] - 0.5 * (10. / 3.) / 20.).abs() < 1e-14);
+    assert!((gradient[1] - 0.5 * (-1.375 - (20. / 3.) / 20.)).abs() < 1e-14);
+    assert!((gradient[0] - 0.08333333333333333).abs() < 1e-14);
+    assert!((gradient[1] + 0.8541666666666666).abs() < 1e-14);
 }
 
 #[test]
@@ -1824,4 +1841,1034 @@ fn pair_operators_follow_the_evaluated_state_and_never_read_its_score() {
         let z = values(&su2(Su2Mode::Phase, directed), &pair, &sink, &context);
         assert_eq!(z, [Some([1., 0.])]);
     }
+}
+
+#[test]
+fn mixed_triplet_masks_a_self_distance_companion_whatever_its_cloning_companion() {
+    let setup = setup(scales());
+    let context = context_of(&setup);
+    let (frame, ..) = cycle();
+    let state_a = state(&frame, &setup.0);
+    let mixed = |i, j, k| {
+        values(
+            &ChannelSpec::ElectroweakMixed,
+            &[element(ElementKind::Triplet, i, j, k)],
+            &state_a,
+            &context,
+        )[0]
+    };
+    // The cloning hop 0 → 2 is defined, the distance pair 0 → 0 is not.
+    assert_eq!(mixed(0, 0, 2), None);
+    assert_eq!(mixed(0, 2, 0), None);
+    // Both companions on walker 2: D² = 1.71 + 0.25 · 0.585 in both amplitudes.
+    let squared: f64 = 1.71 + 0.25 * 0.585;
+    let r = (-squared / (4. * 1.3 * 1.3)).exp() * (-squared / (4. * 0.9 * 0.9)).exp();
+    let angle: f64 = -(2.1 - 1.2) / 0.7 + (2.1 - 1.2) / ((1.2 + 0.05) * 0.35);
+    let z = mixed(0, 2, 2).unwrap();
+    assert!(close(z, [r * angle.cos(), r * angle.sin()]));
+    assert!(close(z, [0.30718435174258113, 0.2987195705362341]));
+}
+
+#[test]
+fn infinite_distances_and_overflowing_phases_mask_the_element_never_a_zero_amplitude() {
+    let setup = setup(scales());
+    let context = context_of(&setup);
+    let (frame, ..) = cycle();
+    let state_a = state(&frame, &setup.0);
+    // An infinite coordinate gives D² = ∞, whose Gaussian amplitude would be a valid 0.
+    let mut far = state_a.clone();
+    far.x[3] = f64::INFINITY;
+    let raw = AmplitudeDistance::new(&setup.0, &setup.0.distance_donors.distance, &scales());
+    assert_eq!(raw.as_ref().unwrap().squared(&far, 0, 1), None);
+    assert_eq!(raw.as_ref().unwrap().squared(&far, 1, 0), None);
+    assert!(raw.unwrap().squared(&far, 0, 2).is_some());
+    let mut out = [7.; 2];
+    for (spec, kind, [i, j, k], valid) in [
+        (
+            u1(U1Mode::Dressed, 1),
+            ElementKind::DistancePair,
+            [0, 1, 0],
+            false,
+        ),
+        (
+            u1(U1Mode::Phase, 1),
+            ElementKind::DistancePair,
+            [0, 1, 0],
+            true,
+        ),
+        (
+            su2(Su2Mode::Component, false),
+            ElementKind::CloningPair,
+            [1, 3, 1],
+            false,
+        ),
+        (
+            su2(Su2Mode::Phase, false),
+            ElementKind::CloningPair,
+            [1, 3, 1],
+            true,
+        ),
+        // The first hop 2 → 4 is finite; the second hop 4 → 1 is not.
+        (
+            su2(Su2Mode::Component, false),
+            ElementKind::CloningPair,
+            [2, 4, 2],
+            true,
+        ),
+        (
+            su2(Su2Mode::Doublet, false),
+            ElementKind::CloningPair,
+            [2, 4, 2],
+            false,
+        ),
+        (
+            su2(Su2Mode::DoubletDiff, true),
+            ElementKind::CloningPair,
+            [2, 4, 2],
+            false,
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [0, 1, 2],
+            false,
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [4, 0, 1],
+            false,
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [4, 0, 2],
+            true,
+        ),
+    ] {
+        let element = element(kind, i, j, k);
+        assert_eq!(
+            spec.evaluate(&element, &far, &context, &mut out),
+            valid,
+            "{} on {:?}",
+            spec.id(),
+            element.walkers
+        );
+    }
+    // Finite fitness whose difference or quotient overflows: the phase has no
+    // cosine, and the element is masked instead of carrying NaN.
+    let mut steep = state_a.clone();
+    steep.fitness = Some(vec![1.7e308, -1.7e308, 2.1, 0.8, 1.55]);
+    steep.role = Some(vec![
+        WalkerRole::Cloner,
+        WalkerRole::Persister,
+        WalkerRole::Persister,
+        WalkerRole::Persister,
+        WalkerRole::Persister,
+    ]);
+    for (spec, kind, [i, j, k]) in [
+        (u1(U1Mode::Phase, 1), ElementKind::DistancePair, [0, 1, 0]),
+        (u1(U1Mode::Dressed, 2), ElementKind::DistancePair, [1, 0, 1]),
+        (
+            su2(Su2Mode::Phase, false),
+            ElementKind::CloningPair,
+            [0, 1, 0],
+        ),
+        (
+            su2(Su2Mode::Component, true),
+            ElementKind::CloningPair,
+            [0, 1, 0],
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [0, 1, 2],
+        ),
+        (ChannelSpec::FitnessPhase, ElementKind::Site, [0; 3]),
+        (
+            chirality(ChiralityObservable::LeftRightCoupling),
+            ElementKind::CloningPair,
+            [0, 1, 0],
+        ),
+    ] {
+        let element = element(kind, i, j, k);
+        assert!(
+            !spec.evaluate(&element, &steep, &context, &mut out),
+            "{} on {:?}",
+            spec.id(),
+            element.walkers
+        );
+    }
+    // The same walkers with a representable phase are not masked.
+    assert!(ChannelSpec::FitnessPhase.evaluate(
+        &element(ElementKind::Site, 2, 2, 2),
+        &steep,
+        &context,
+        &mut out
+    ));
+    assert_eq!(out[0], -2.1 / 0.7);
+}
+
+#[test]
+fn score_gradient_is_the_mean_over_the_valid_pairs_not_over_the_two_roles() {
+    let mut gas = GasConfig::default();
+    gas.clone_decision.epsilon = 0.;
+    let cloning = [Some(2), Some(3), Some(0), None];
+    let distance = some(&[1, 0, 1, 0]);
+    let fitness = [1., 3., 2., 5.];
+    let frame = Frame {
+        step: 1,
+        n: 4,
+        d: 2,
+        x: vec![0., 0., 3., 4., 0., 0., 1., 0.],
+        eligible: vec![true; 4],
+        generation: vec![0; 4],
+        fitness: Some(fitness.to_vec()),
+        distance: Some(companions(&distance)),
+        cloning: Some(companions(&cloning)),
+        companion_fitness: Some(
+            cloning
+                .iter()
+                .map(|k| k.map_or(0., |k| fitness[k as usize]))
+                .collect(),
+        ),
+        cloned: vec![false; 4],
+        revived: vec![false; 4],
+        ..Frame::default()
+    };
+    frame.validate().unwrap();
+    let base = FrameState {
+        n: 4,
+        d: 2,
+        x: frame.x.clone(),
+        eligible: frame.eligible.clone(),
+        distance_companion: Some(vec![1, 0, 1, 0]),
+        cloning_companion: Some(vec![2, 3, 0, NO_COMPANION]),
+        ..FrameState::default()
+    };
+    // S = (1, 2/3, −1/2, none). Every walker with a score has one pair left:
+    // 0 and 2 sit on their cloning companion, the cloning companion of 1 has no score.
+    let expected = [
+        [-0.04, -4. / 75.],
+        [-0.04, -4. / 75.],
+        [0.14, 14. / 75.],
+        [0., 0.],
+    ];
+    let check = |state: &FrameState| {
+        assert_eq!(state.score_valid, [true, true, true, false]);
+        for (g, e) in state
+            .score_gradient
+            .as_ref()
+            .unwrap()
+            .chunks_exact(2)
+            .zip(expected)
+        {
+            assert!((g[0] - e[0]).abs() < 1e-15 && (g[1] - e[1]).abs() < 1e-15);
+        }
+    };
+    let mut filled = base.clone();
+    assert!(score::fill(&frame, &gas, &mut filled).is_available());
+    check(&filled);
+    // A map entry beyond the frame is no pair either, and is never indexed.
+    let mut beyond = base.clone();
+    beyond.cloning_companion = Some(vec![99, 3, 99, NO_COMPANION]);
+    assert!(score::fill(&frame, &gas, &mut beyond).is_available());
+    check(&beyond);
+    // One map alone gives the same single pairs.
+    let mut single = base.clone();
+    single.cloning_companion = None;
+    assert!(score::fill(&frame, &gas, &mut single).is_available());
+    check(&single);
+    // The pairs are the ones of the state maps, not of the recorded entries:
+    // a distance companion without a score leaves walker 0 without a pair.
+    let mut moved = base.clone();
+    moved.distance_companion = Some(vec![3, 0, 1, 0]);
+    assert!(score::fill(&frame, &gas, &mut moved).is_available());
+    let gradient = moved.score_gradient.as_ref().unwrap();
+    assert_eq!(&gradient[..2], [0., 0.]);
+    assert!((gradient[2] + 0.04).abs() < 1e-15 && (gradient[4] - 0.14).abs() < 1e-15);
+}
+
+#[test]
+fn each_companion_role_takes_the_range_and_the_distance_of_its_own_donor_module() {
+    let (frame, distance, cloning) = cycle();
+    // Kernel widths 1.3 and 0.9 reproduce the reference vectors of the fixed ranges.
+    let mut kernel = setup(ElectroweakScales {
+        epsilon_d: Range::FromKernel,
+        epsilon_c: Range::FromKernel,
+        ..scales()
+    });
+    kernel.2.distance_kernel_width = Some(1.3);
+    kernel.2.cloning_kernel_width = Some(0.9);
+    let state_a = state(&frame, &kernel.0);
+    let context = context_of(&kernel);
+    let component = values(
+        &su2(Su2Mode::Component, false),
+        &elements(ElementKind::CloningPair, &distance, &cloning),
+        &state_a,
+        &context,
+    );
+    assert_values(&component, &COMPONENT);
+    let dressed = values(
+        &u1(U1Mode::Dressed, 1),
+        &elements(ElementKind::DistancePair, &distance, &cloning),
+        &state_a,
+        &context,
+    );
+    assert!(close(
+        mean(&dressed),
+        [0.146954227163313, 0.123431251890567]
+    ));
+    let mixed = values(
+        &ChannelSpec::ElectroweakMixed,
+        &elements(ElementKind::Triplet, &distance, &cloning),
+        &state_a,
+        &context,
+    );
+    assert!(close(
+        mean(&mixed),
+        [0.0849444262654701, -0.0339751241233209]
+    ));
+    // Two donor modules with different distances: positions alone for the
+    // distance role, D² = 1.6925, a scaled phase space for the cloning role,
+    // D² = 6.81046875, each with the velocity weight of its own module.
+    let mut gas = GasConfig::euclidean(3, 0.01).unwrap();
+    gas.distance_donors.distance = Distance::Euclidean {
+        field: "positions".into(),
+        scales: vec![],
+        squared: false,
+        periodic: None,
+    };
+    gas.cloning_donors.distance = Distance::PhaseSpace {
+        positions: "positions".into(),
+        velocities: "velocities".into(),
+        position_scale: 0.5,
+        velocity_scale: 2.,
+        lambda: 0.25,
+        periodic: None,
+    };
+    let measurement = MeasurementConfig {
+        electroweak: ElectroweakScales {
+            distance: PairDistance::Configured,
+            lambda: None,
+            ..scales()
+        },
+        ..MeasurementConfig::default()
+    };
+    let donors = (gas, measurement, Capabilities::nominal());
+    let context = context_of(&donors);
+    let modulus = |spec: &ChannelSpec, kind| {
+        let z = values(spec, &[element(kind, 0, 1, 0)], &state_a, &context)[0].unwrap();
+        z[0].hypot(z[1])
+    };
+    let dressed = u1(U1Mode::Dressed, 1);
+    let component = su2(Su2Mode::Component, false);
+    let expected_d = (-1.6925f64 / (4. * 1.3 * 1.3)).exp();
+    let expected_c = (-6.81046875f64 / (4. * 0.9 * 0.9)).exp();
+    assert!((modulus(&dressed, ElementKind::DistancePair) - expected_d).abs() < 1e-14);
+    assert!((modulus(&component, ElementKind::CloningPair) - expected_c).abs() < 1e-14);
+    let z = values(
+        &ChannelSpec::ElectroweakMixed,
+        &[element(ElementKind::Triplet, 0, 1, 1)],
+        &state_a,
+        &context,
+    )[0]
+    .unwrap();
+    assert!((z[0].hypot(z[1]) - expected_d * expected_c).abs() < 1e-14);
+    // Only the role whose module weighs velocities reads them.
+    let velocities = |spec: &ChannelSpec, kind| {
+        let signature = spec.signature(kind, &context).unwrap();
+        signature.requires.records.contains(&Record::Velocities)
+    };
+    assert!(!velocities(&dressed, ElementKind::DistancePair));
+    assert!(velocities(&component, ElementKind::CloningPair));
+    assert!(velocities(
+        &ChannelSpec::ElectroweakMixed,
+        ElementKind::Triplet
+    ));
+    let mut still = state_a.clone();
+    still.v = None;
+    let mut out = [0.; 2];
+    let pair = element(ElementKind::DistancePair, 0, 1, 0);
+    assert!(dressed.evaluate(&pair, &still, &context, &mut out));
+    let pair = element(ElementKind::CloningPair, 0, 1, 0);
+    assert!(!component.evaluate(&pair, &still, &context, &mut out));
+}
+
+#[test]
+fn configured_amplitude_distances_agree_with_the_distance_of_the_engine() {
+    use algorithmic_gas::{ObservationBatch, TensorBatch, geometry::AlgorithmicDistance};
+    let (frame, ..) = cycle();
+    let gas = GasConfig::euclidean(3, 0.01).unwrap();
+    let state_a = state(&frame, &gas);
+    let mut observations =
+        ObservationBatch::positions(TensorBatch::vectors(5, 3, X[..15].to_vec()).unwrap());
+    observations.fields.insert(
+        "velocities".into(),
+        TensorBatch::vectors(5, 3, V[..15].to_vec()).unwrap(),
+    );
+    let configured = ElectroweakScales {
+        distance: PairDistance::Configured,
+        ..ElectroweakScales::default()
+    };
+    let cube = |lower: f64, upper: f64, d: usize| BoxDomain {
+        lower: vec![lower; d],
+        upper: vec![upper; d],
+    };
+    // Coordinates above and below the squash radii, a radius per field, a
+    // scale per axis and pairs across the seam of a periodic box.
+    let squashed = |position_radius, velocity_radius, lambda| Distance::SquashedPhaseSpace {
+        positions: "positions".into(),
+        velocities: "velocities".into(),
+        position_radius,
+        velocity_radius,
+        lambda,
+    };
+    let euclidean = |periodic| Distance::Euclidean {
+        field: "positions".into(),
+        scales: vec![0.5, 2., 4.],
+        squared: true,
+        periodic,
+    };
+    let phase_space = |periodic| Distance::PhaseSpace {
+        positions: "positions".into(),
+        velocities: "velocities".into(),
+        position_scale: 0.5,
+        velocity_scale: 2.,
+        lambda: 0.25,
+        periodic,
+    };
+    // Hand values of the pairs (0, 1) and (1, 2); the second crosses the seam.
+    let cases = [
+        (squashed(0.2, 0.05, 1.), 0.07088357408290313, None),
+        (squashed(5., 3., 0.5), 1.456905016138422, None),
+        (
+            euclidean(Some(cube(-1., 1., 3))),
+            2.4125,
+            Some(1.2806250000000001),
+        ),
+        (
+            phase_space(Some(cube(-1., 1., 3))),
+            6.81046875,
+            Some(3.8626562500000006),
+        ),
+        // Every axis wraps with its own length: Δ = (−0.75, −0.7, 0.8) has the
+        // image (−0.75, −0.7, −0.2) in a box of lengths (2, 4, 1).
+        (
+            euclidean(Some(BoxDomain {
+                lower: vec![-1., -2., -0.5],
+                upper: vec![1., 2., 0.5],
+            })),
+            2.375,
+            None,
+        ),
+    ];
+    for (distance, first, second) in &cases {
+        let amplitude = AmplitudeDistance::new(&gas, distance, &configured).unwrap();
+        assert!((amplitude.squared(&state_a, 0, 1).unwrap() - first).abs() < 1e-14);
+        if let Some(second) = second {
+            assert!((amplitude.squared(&state_a, 1, 2).unwrap() - second).abs() < 1e-14);
+        }
+        for i in 0..5 {
+            for j in 0..5 {
+                let engine: f64 = distance
+                    .compare(&observations, i, &observations, j)
+                    .unwrap();
+                let engine = if matches!(distance, Distance::Euclidean { .. }) {
+                    engine
+                } else {
+                    engine * engine
+                };
+                let own = amplitude.squared(&state_a, i, j).unwrap();
+                assert!((own - engine).abs() < 1e-14, "{distance:?} on ({i}, {j})");
+            }
+        }
+    }
+    // A box of another dimension is no distance of these coordinates.
+    for distance in [
+        euclidean(Some(cube(-1., 1., 2))),
+        phase_space(Some(cube(-1., 1., 4))),
+    ] {
+        let amplitude = AmplitudeDistance::new(&gas, &distance, &configured).unwrap();
+        assert_eq!(amplitude.squared(&state_a, 0, 1), None);
+    }
+    // A velocity field the run does not record is unavailable once it has a weight.
+    let foreign = Distance::PhaseSpace {
+        positions: "positions".into(),
+        velocities: "momenta".into(),
+        position_scale: 1.,
+        velocity_scale: 1.,
+        lambda: 0.25,
+        periodic: None,
+    };
+    assert!(matches!(
+        AmplitudeDistance::new(&gas, &foreign, &configured),
+        Err(GasError::Capability(_))
+    ));
+    let weightless = ElectroweakScales {
+        lambda: Some(0.),
+        ..configured
+    };
+    let amplitude = AmplitudeDistance::new(&gas, &foreign, &weightless).unwrap();
+    assert!((amplitude.squared(&state_a, 0, 1).unwrap() - 1.6925).abs() < 1e-14);
+}
+
+#[test]
+fn signatures_require_exactly_the_records_they_read_and_fix_the_frame_mean_only_where_stated() {
+    use std::collections::BTreeSet;
+    let weighted = setup(scales());
+    let weightless = setup(ElectroweakScales {
+        lambda: Some(0.),
+        ..scales()
+    });
+    let records = |setup: &(GasConfig, MeasurementConfig, Capabilities), spec: &ChannelSpec| {
+        let kind = spec.kinds(PairSelection::Both)[0];
+        let signature = spec.signature(kind, &context_of(setup)).unwrap();
+        assert_eq!(signature.requires.dimension, None);
+        signature.requires.records
+    };
+    let (fitness, plan, velocities, companions) = (
+        Record::Fitness,
+        Record::ClonePlan,
+        Record::Velocities,
+        Record::CloningCompanions,
+    );
+    let role = WalkerRole::WeakResister;
+    for (spec, without, with) in [
+        (u1(U1Mode::Phase, 3), vec![fitness], vec![fitness]),
+        (
+            u1(U1Mode::Dressed, 1),
+            vec![fitness],
+            vec![fitness, velocities],
+        ),
+        (
+            su2(Su2Mode::Phase, true),
+            vec![fitness, plan],
+            vec![fitness, plan],
+        ),
+        (
+            su2(Su2Mode::Component, false),
+            vec![fitness, plan],
+            vec![fitness, plan, velocities],
+        ),
+        (
+            su2(Su2Mode::DoubletDiff, false),
+            vec![fitness, plan],
+            vec![fitness, plan, velocities],
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            vec![fitness, plan],
+            vec![fitness, plan, velocities],
+        ),
+        (ChannelSpec::FitnessPhase, vec![fitness], vec![fitness]),
+        (ChannelSpec::CloneIndicator, vec![plan], vec![plan]),
+        (
+            ChannelSpec::ParityVelocity { role },
+            vec![velocities, fitness, companions, plan],
+            vec![velocities, fitness, companions, plan],
+        ),
+        (
+            chirality(ChiralityObservable::Chi),
+            vec![fitness, companions, plan],
+            vec![fitness, companions, plan],
+        ),
+        (
+            chirality(ChiralityObservable::LeftFraction),
+            vec![fitness, companions, plan],
+            vec![fitness, companions, plan],
+        ),
+    ] {
+        assert_eq!(
+            records(&weightless, &spec),
+            BTreeSet::from_iter(without),
+            "{}",
+            spec.id()
+        );
+        assert_eq!(
+            records(&weighted, &spec),
+            BTreeSet::from_iter(with),
+            "{}",
+            spec.id()
+        );
+        // The phases follow the configured frame mean; the book fixes 1/N
+        // for the chirality and the clone indicator only.
+        let kind = spec.kinds(PairSelection::Both)[0];
+        let signature = spec.signature(kind, &context_of(&weighted)).unwrap();
+        let fixed = matches!(
+            spec,
+            ChannelSpec::CloneIndicator | ChannelSpec::Chirality { .. }
+        );
+        assert_eq!(
+            signature.normalization,
+            fixed.then_some(FrameNormalization::FixedN),
+            "{}",
+            spec.id()
+        );
+    }
+}
+
+#[test]
+fn a_revival_flagged_on_a_living_row_is_no_cloner_and_targets_nobody() {
+    use WalkerRole::{Cloner, Persister, StrongResister, WeakResister};
+    let setup = setup(scales());
+    let (frame_a, ..) = cycle();
+    let scores = state(&frame_a, &setup.0).score.unwrap();
+    // Walker 0 points at 2 and is pointed at by the cloner 3. As a revival
+    // it stops being a cloner, walker 2 loses its only cloner and falls back
+    // on its negative score, and walker 0 becomes the strong resister of 3.
+    let mut revived = frame_a.clone();
+    revived.revived[0] = true;
+    revived.validate().unwrap();
+    assert_eq!(
+        score::roles(&revived, &scores),
+        [StrongResister, WeakResister, Persister, Cloner, Persister]
+    );
+}
+
+#[test]
+fn directed_hops_take_the_absolute_phase_not_the_absolute_imaginary_part() {
+    // h_S = 0.17 winds the hop 2 → 1 beyond π: ϑ = −1.65 / (2.15 · 0.17), and
+    // e^{i|ϑ|} lies in the lower half plane, where |Im e^{iϑ}| is not.
+    let setup = setup(ElectroweakScales {
+        h_s: Some(0.17),
+        ..scales()
+    });
+    let context = context_of(&setup);
+    let (frame, ..) = cycle();
+    let state_a = state(&frame, &setup.0);
+    let theta: f64 = (0.45 - 2.1) / ((2.1 + 0.05) * 0.17);
+    assert!((theta + 4.51436388508892).abs() < 1e-14);
+    assert!(theta.abs() > std::f64::consts::PI && theta.abs().sin() < 0.);
+    let pair = [element(ElementKind::CloningPair, 2, 1, 2)];
+    let run = |mode, directed| values(&su2(mode, directed), &pair, &state_a, &context)[0].unwrap();
+    let plain = run(Su2Mode::Phase, false);
+    assert!(close(plain, [theta.cos(), theta.sin()]));
+    let directed = run(Su2Mode::Phase, true);
+    assert!(close(directed, [-0.19673340652844087, -0.980457019331146]));
+    assert!(close(directed, [plain[0], -plain[1]]));
+    // Raw D² = 2.7525 + 0.25 · 0.8425 between walkers 2 and 1, range 0.9.
+    let r = (-2.963125f64 / (4. * 0.9 * 0.9)).exp();
+    assert!(close(
+        run(Su2Mode::Component, true),
+        [r * theta.abs().cos(), r * theta.abs().sin()]
+    ));
+    assert!(close(
+        run(Su2Mode::Component, true),
+        [-0.07883087956914263, -0.39286814871698267]
+    ));
+    // The second hop 1 → 3 has the positive phase 0.35 / (0.5 · 0.17), which
+    // stays as it is, with D² = 3.59625.
+    assert!(close(
+        run(Su2Mode::Doublet, true),
+        [-0.26348966930700124, -0.6658522088048584]
+    ));
+    assert!(close(
+        run(Su2Mode::DoubletDiff, true),
+        [0.105827910168716, -0.11988408862910693]
+    ));
+}
+
+#[test]
+fn a_walker_that_died_before_the_sink_masks_every_element_it_enters() {
+    let setup = setup(scales());
+    let context = context_of(&setup);
+    let (frame, ..) = cycle();
+    let state_a = state(&frame, &setup.0);
+    // The elements are frozen at the source; at the sink walker 2 is dead
+    // while its fitness, role and velocity entries are still finite.
+    let mut sink = state_a.clone();
+    sink.eligible[2] = false;
+    assert_eq!(sink.role.as_ref().unwrap()[2], WalkerRole::StrongResister);
+    let strong = WalkerRole::StrongResister;
+    let weak = WalkerRole::WeakResister;
+    let mut out = [7.; 2];
+    for (spec, kind, [i, j, k], valid) in [
+        (
+            u1(U1Mode::Phase, 1),
+            ElementKind::DistancePair,
+            [1, 2, 1],
+            false,
+        ),
+        (
+            u1(U1Mode::Phase, 1),
+            ElementKind::DistancePair,
+            [2, 3, 2],
+            false,
+        ),
+        (
+            u1(U1Mode::Dressed, 2),
+            ElementKind::DistancePair,
+            [1, 2, 1],
+            false,
+        ),
+        (
+            su2(Su2Mode::Phase, false),
+            ElementKind::CloningPair,
+            [0, 2, 0],
+            false,
+        ),
+        (
+            su2(Su2Mode::Phase, true),
+            ElementKind::CloningPair,
+            [2, 4, 2],
+            false,
+        ),
+        (
+            su2(Su2Mode::Component, false),
+            ElementKind::CloningPair,
+            [0, 2, 0],
+            false,
+        ),
+        // The first hop 3 → 0 lives, the second hop 0 → 2 does not.
+        (
+            su2(Su2Mode::Doublet, false),
+            ElementKind::CloningPair,
+            [3, 0, 3],
+            false,
+        ),
+        (
+            su2(Su2Mode::DoubletDiff, false),
+            ElementKind::CloningPair,
+            [3, 0, 3],
+            false,
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [0, 1, 2],
+            false,
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [1, 2, 3],
+            false,
+        ),
+        (ChannelSpec::FitnessPhase, ElementKind::Site, [2; 3], false),
+        (
+            ChannelSpec::CloneIndicator,
+            ElementKind::Site,
+            [2; 3],
+            false,
+        ),
+        (
+            ChannelSpec::ParityVelocity { role: strong },
+            ElementKind::Site,
+            [2; 3],
+            false,
+        ),
+        (
+            chirality(ChiralityObservable::Chi),
+            ElementKind::Site,
+            [2; 3],
+            false,
+        ),
+        (
+            chirality(ChiralityObservable::LeftFraction),
+            ElementKind::Site,
+            [2; 3],
+            false,
+        ),
+    ] {
+        let element = element(kind, i, j, k);
+        assert!(spec.evaluate(&element, &state_a, &context, &mut [0.; 2]));
+        assert_eq!(
+            spec.evaluate(&element, &sink, &context, &mut out),
+            valid,
+            "{} on {:?}",
+            spec.id(),
+            element.walkers
+        );
+    }
+    assert_eq!(out, [7.; 2]);
+    // Elements of the living walkers keep their values.
+    for (spec, kind, [i, j, k]) in [
+        (u1(U1Mode::Phase, 1), ElementKind::DistancePair, [0, 1, 0]),
+        (
+            su2(Su2Mode::Component, false),
+            ElementKind::CloningPair,
+            [3, 0, 3],
+        ),
+        (
+            ChannelSpec::ElectroweakMixed,
+            ElementKind::Triplet,
+            [4, 0, 1],
+        ),
+        (
+            ChannelSpec::ParityVelocity { role: weak },
+            ElementKind::Site,
+            [1; 3],
+        ),
+    ] {
+        let element = [element(kind, i, j, k)];
+        assert_eq!(
+            values(&spec, &element, &sink, &context),
+            values(&spec, &element, &state_a, &context)
+        );
+        assert!(values(&spec, &element, &sink, &context)[0].is_some());
+    }
+    // A dead row keeps the default role, which is no member of the persisters.
+    let eligible = [true, true, true, true, true, false];
+    let distance = [Some(1), Some(5), Some(0), Some(4), Some(3), None];
+    let cloning = some(&[2, 0, 1, 4, 4, 3]);
+    let frame_c = self::frame(
+        &eligible,
+        &distance,
+        &cloning,
+        &[true, false, false, false, false, true],
+    );
+    let state_c = state(&frame_c, &setup.0);
+    assert_eq!(state_c.role.as_ref().unwrap()[5], WalkerRole::Persister);
+    let role = WalkerRole::Persister;
+    let speeds = values(
+        &ChannelSpec::ParityVelocity { role },
+        &elements(ElementKind::Site, &distance, &cloning),
+        &state_c,
+        &context,
+    );
+    let members: Vec<usize> = (0..6).filter(|&i| speeds[i].is_some()).collect();
+    assert_eq!(members, [4]);
+    assert!((speeds[4].unwrap()[0] - 0.455521678957215).abs() < 1e-14);
+}
+
+#[test]
+fn score_keeps_the_denominator_of_the_engine_and_the_phase_the_absolute_fitness() {
+    // On a negative fitness the two denominators differ: V + ε = −0.25 in the
+    // acceptance law of the engine, |V| + ε = 0.35 in the book's phase.
+    assert!((score::score(-0.3, 0.5, 0.05) + 3.2).abs() < 1e-14);
+    assert!((score::su2_phase(-0.3, 0.5, 0.05, 1.) - 0.8 / 0.35).abs() < 1e-14);
+    let mut decision = GasConfig::default().clone_decision;
+    decision.epsilon = 0.05;
+    decision.saturation = 1.;
+    decision.every = 1;
+    for (own, donor) in [(-0.3, 0.5), (-0.3, -0.5), (-0.04, 0.5), (1.2, 2.1)] {
+        let s = score::score(own, donor, 0.05);
+        assert_eq!(
+            decision.acceptance_probability(0, own, donor),
+            s.clamp(0., 1.)
+        );
+    }
+    assert!((score::score(-0.3, -0.5, 0.05) - 0.8).abs() < 1e-14);
+    // On the positive fitness of a record the phase is the score over h_S.
+    for own in F {
+        for companion in F {
+            let phase = score::su2_phase(own, companion, 0.05, 0.35);
+            assert!((phase * 0.35 - score::score(own, companion, 0.05)).abs() < 1e-15);
+        }
+    }
+}
+
+#[test]
+fn clone_indicator_reads_the_recorded_decisions_and_the_comb_note_needs_a_gated_period() {
+    let mut setup = setup(scales());
+    let (frame, distance, cloning) = cycle();
+    let sites = elements(ElementKind::Site, &distance, &cloning);
+    // The indicator requires the clone plan alone: a record without fitness
+    // has no score and no roles, and the decisions are still the series.
+    let plan_only = FrameState {
+        n: 5,
+        d: 3,
+        x: frame.x.clone(),
+        eligible: frame.eligible.clone(),
+        cloned: frame.cloned.clone(),
+        ..FrameState::default()
+    };
+    assert_eq!(plan_only.role, None);
+    let indicator = ChannelSpec::CloneIndicator;
+    let expected = [[1., 0.], [0.; 2], [0.; 2], [1., 0.], [0.; 2]];
+    let z = values(&indicator, &sites, &plan_only, &context_of(&setup));
+    assert_values(&z, &expected);
+    // Roles of another time do not move it either.
+    let mut stale = state(&frame, &setup.0);
+    stale.role = Some(vec![WalkerRole::Persister; 5]);
+    let z = values(&indicator, &sites, &stale, &context_of(&setup));
+    assert_values(&z, &expected);
+    // Cloning on every step is no comb: the note appears with a period above 1 only.
+    let gated = [
+        indicator,
+        chirality(ChiralityObservable::Chi),
+        chirality(ChiralityObservable::LeftFraction),
+        ChannelSpec::ParityVelocity {
+            role: WalkerRole::Cloner,
+        },
+        ChannelSpec::ParityVelocity {
+            role: WalkerRole::StrongResister,
+        },
+    ];
+    for (every, comb) in [(1, false), (2, true)] {
+        setup.0.clone_decision.every = every;
+        for spec in &gated {
+            let signature = spec
+                .signature(ElementKind::Site, &context_of(&setup))
+                .unwrap();
+            assert_eq!(
+                signature.descriptor.note.contains("comb"),
+                comb,
+                "{} with period {every}",
+                spec.id()
+            );
+        }
+    }
+}
+
+/// End to end on a recorded run whose cloning companions are matched two by
+/// two. `prop-exchange-odd-cancellation` makes the frame mean of
+/// `su2/doublet_diff` identically zero for every realization, and the doublet
+/// is the component counted twice, so the three are not three observables:
+/// the difference reports no rate at all and the doublet carries no
+/// information the component does not. The reference implementation fitted all
+/// three as independent channels.
+#[test]
+fn an_involutive_run_declines_the_su2_doublet_difference_and_doubles_the_component() {
+    use algorithmic_gas::{
+        ExecutionContext, GasBuilder, InputBatch, ObservationBatch, Population, Provenance,
+        RewardBatch, TensorBatch,
+        domain::{GradientProvider, OperatorFuture, RewardSource},
+        donor::SamplingLaw,
+        physics::spectroscopy::{
+            AnalysisConfig, analyze, contract::EXCHANGE_ODD_REASON, estimators, measure_archive,
+            report::EstimatorKind,
+        },
+    };
+    struct Bowl;
+    impl RewardSource<f64> for Bowl {
+        fn id(&self) -> String {
+            "bowl/v1".into()
+        }
+        fn evaluate<'a>(
+            &'a self,
+            p: &'a Population<f64>,
+            _: Option<&'a InputBatch<f64>>,
+            stage: &'a str,
+            _: &'a mut ExecutionContext,
+        ) -> OperatorFuture<'a, RewardBatch<f64>> {
+            Box::pin(async move {
+                let x = p.observations.field("positions")?;
+                let reward = (0..p.len())
+                    .map(|i| Ok(-x.row(i)?.iter().map(|a| a * a).sum::<f64>()))
+                    .collect::<algorithmic_gas::Result<Vec<f64>>>()?;
+                Ok(RewardBatch::new(
+                    reward,
+                    Provenance {
+                        population_version: p.version,
+                        stage: stage.into(),
+                        ..Default::default()
+                    },
+                ))
+            })
+        }
+    }
+    impl GradientProvider<f64> for Bowl {
+        fn id(&self) -> String {
+            "bowl-gradient/v1".into()
+        }
+        fn gradient<'a>(
+            &'a self,
+            p: &'a Population<f64>,
+            _: &'a mut ExecutionContext,
+        ) -> OperatorFuture<'a, TensorBatch<f64>> {
+            Box::pin(async move {
+                let x = p.observations.field("positions")?;
+                let g = (0..p.len())
+                    .map(|i| Ok(x.row(i)?.iter().map(|a| -2. * a).collect::<Vec<f64>>()))
+                    .collect::<algorithmic_gas::Result<Vec<Vec<f64>>>>()?
+                    .concat();
+                TensorBatch::vectors(p.len(), p.observations.field("positions")?.width(), g)
+            })
+        }
+    }
+    let archive = futures_lite::future::block_on(async {
+        let (n, d) = (8, 3);
+        let positions = (0..n * d)
+            .map(|k| -1. + 2. * ((k * 11 + 5) % 89) as f64 / 89.)
+            .collect();
+        let mut observations =
+            ObservationBatch::positions(TensorBatch::vectors(n, d, positions).unwrap());
+        observations.fields.insert(
+            "velocities".into(),
+            TensorBatch::vectors(n, d, vec![0.; n * d]).unwrap(),
+        );
+        let mut config = GasConfig::euclidean(d, 0.05).unwrap();
+        config.seed = 13;
+        // Sequential greedy matching pairs the living walkers two by two;
+        // a revival draws from the same matched law, not a distance weight.
+        config.cloning_donors.law = SamplingLaw::GaussianGreedy;
+        config.clone_decision.revival_from_companion = false;
+        let mut gas = GasBuilder::new(Population::new(observations).unwrap(), Bowl)
+            .config(config)
+            .gradient(Bowl)
+            .build()
+            .await
+            .unwrap();
+        gas.start_recording(RecordingConfig::default()).unwrap();
+        for _ in 0..16 {
+            gas.step().await.unwrap();
+        }
+        gas.recording().unwrap().clone()
+    });
+    let measurement = MeasurementConfig {
+        warmup: 2,
+        max_lag: 4,
+        electroweak: ElectroweakScales {
+            epsilon_c: Range::Fixed { value: 0.9 },
+            epsilon_d: Range::Fixed { value: 1.3 },
+            ..ElectroweakScales::default()
+        },
+        channels: vec![
+            su2(Su2Mode::DoubletDiff, false),
+            su2(Su2Mode::Doublet, false),
+            su2(Su2Mode::Component, false),
+        ],
+        ..MeasurementConfig::default()
+    };
+    let capabilities =
+        Capabilities::of(&archive.gas_config, &archive.config, 3).refine(&measurement);
+    assert!(capabilities.mutual_cloning);
+    let measured = measure_archive(&measurement, &archive).unwrap();
+    let frames = measured.frames();
+    assert!(frames >= 8);
+    let series = |id: &str| measured.channel(id).unwrap();
+    let (diff, doublet, component) = (
+        series("su2/doublet_diff/cloning"),
+        series("su2/doublet/cloning"),
+        series("su2/component/cloning"),
+    );
+    // The difference has no frame with an unmirrored element: no weight, and
+    // therefore no value, on any measured frame.
+    assert_eq!(diff.weight, vec![0.; frames]);
+    assert_eq!(diff.exchange, ExchangeParity::Odd);
+    assert!(diff.involutive_frames > 0);
+    // The doublet and the component are measured, and the doublet frame mean
+    // is the component's counted twice.
+    assert_eq!(doublet.weight, component.weight);
+    assert!(doublet.weight.iter().any(|w| *w > 0.));
+    for (a, b) in doublet.values.iter().zip(&component.values) {
+        assert!(
+            (a - 2. * b).abs() <= 1e-13 * (2. * b).abs() + 1e-15,
+            "{a} {b}"
+        );
+    }
+    // The estimator declines the difference with the algebraic reason, and the
+    // analysis reports it unavailable with no correlator and no rate. No
+    // propagator was measured for it, so nothing replaces the frame mean.
+    let estimated = estimators::estimate(
+        std::slice::from_ref(&measured),
+        "su2/doublet_diff/cloning",
+        EstimatorKind::FrameMean,
+        &AnalysisConfig::default(),
+        None,
+    );
+    assert!(
+        matches!(&estimated, Err(GasError::Capability(reason)) if reason == EXCHANGE_ODD_REASON),
+        "{estimated:?}"
+    );
+    let report = analyze(&[measured], &AnalysisConfig::default()).unwrap();
+    let declined = report.channel("su2/doublet_diff/cloning").unwrap();
+    assert_eq!(declined.availability.reason(), Some(EXCHANGE_ODD_REASON));
+    assert!(declined.mass.is_none() && declined.correlator.is_none());
+    assert!(declined.estimator.is_none());
+    let fitted = report.channel("su2/component/cloning").unwrap();
+    assert_eq!(fitted.estimator, Some(EstimatorKind::FrameMean));
+    assert!(fitted.correlator.is_some());
 }

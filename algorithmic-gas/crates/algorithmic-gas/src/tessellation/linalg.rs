@@ -35,15 +35,25 @@ pub fn mat_vec<T: Real>(a: &[T], x: &[T]) -> Vec<T> {
         .collect()
 }
 
-/// Spectral data of a symmetric positive metric.
+/// Spectral data of a symmetric positive metric, with the eigenvalues a clamp
+/// or a sign repair had to move: a spectrum that was already a positive
+/// definite metric inside its bounds must be distinguishable from one that was
+/// made into one.
 #[derive(Clone, Debug, PartialEq)]
 pub struct SpdSpectrum<T: Real> {
     pub eigenvalues: Vec<T>,
     pub eigenvectors: Vec<T>,
+    /// Per eigenvalue: the raw value was nonpositive, or a bound moved it.
+    pub clipped: Vec<bool>,
 }
 impl<T: Real> SpdSpectrum<T> {
     pub fn dimension(&self) -> usize {
         self.eigenvalues.len()
+    }
+    /// True when the raw spectrum was not a positive definite metric inside
+    /// the clamp, so the returned one is a repair and not a measurement.
+    pub fn repaired(&self) -> bool {
+        self.clipped.iter().any(|&moved| moved)
     }
     pub fn matrix(&self) -> Vec<T> {
         compose(&self.eigenvectors, &self.eigenvalues, self.dimension())
@@ -65,7 +75,10 @@ impl<T: Real> SpdSpectrum<T> {
             .fold(T::ZERO, |s, &v| s + v.max(floor).ln())
     }
 }
-/// Eigen-clamp of a symmetric matrix: eigenvalues limited to [min, max].
+/// Eigen-clamp of a symmetric matrix: eigenvalues limited to [min, max]. An
+/// eigenvalue the clamp moved, and every nonpositive one, is reported through
+/// `clipped`: an indefinite matrix leaves here positive, and the caller, not
+/// this kernel, decides whether that repair is admissible.
 pub fn clamp_spectrum<T: Real>(
     a: &[T],
     d: usize,
@@ -73,22 +86,29 @@ pub fn clamp_spectrum<T: Real>(
     max_eig: Option<T>,
 ) -> Result<SpdSpectrum<T>> {
     let (mut l, q) = symmetric_eigen(a, d)?;
-    for v in &mut l {
+    let mut clipped = vec![false; d];
+    for (v, moved) in l.iter_mut().zip(&mut clipped) {
+        let raw = *v;
         if let Some(lo) = min_eig {
             *v = v.max(lo);
         }
         if let Some(hi) = max_eig {
             *v = v.min(hi);
         }
+        *moved = *v != raw || raw <= T::ZERO;
     }
     Ok(SpdSpectrum {
         eigenvalues: l,
         eigenvectors: q,
+        clipped,
     })
 }
 /// Moore-Penrose inverse of a symmetric PSD matrix followed by an eigenvalue
 /// clamp, from one eigensolve. Eigenvalues at or below `rcond * lambda_max`
 /// invert to zero, the pseudo-inverse convention for a rank-deficient input.
+/// A negative eigenvalue inverts to a negative one that the lower bound then
+/// turns positive, which would hide the sign: `clipped` reports it, together
+/// with every null direction and every eigenvalue a bound moved.
 pub fn pinv_clamped<T: Real>(
     c: &[T],
     d: usize,
@@ -99,26 +119,28 @@ pub fn pinv_clamped<T: Real>(
     let (l, q) = symmetric_eigen(c, d)?;
     let top = l.iter().fold(T::ZERO, |s, v| s.max(v.abs()));
     let cutoff = rcond * top;
+    let mut clipped = vec![false; d];
     let eigenvalues = l
         .into_iter()
-        .map(|v| {
-            let mut inv = if v.abs() > cutoff {
-                T::ONE / v
-            } else {
-                T::ZERO
-            };
+        .zip(&mut clipped)
+        .map(|(v, moved)| {
+            let null = v.abs() <= cutoff;
+            let raw = if null { T::ZERO } else { T::ONE / v };
+            let mut inv = raw;
             if let Some(lo) = min_eig {
                 inv = inv.max(lo);
             }
             if let Some(hi) = max_eig {
                 inv = inv.min(hi);
             }
+            *moved = null || v < T::ZERO || inv != raw;
             inv
         })
         .collect();
     Ok(SpdSpectrum {
         eigenvalues,
         eigenvectors: q,
+        clipped,
     })
 }
 
@@ -271,7 +293,9 @@ mod tests {
     #[test]
     fn pinv_of_full_rank_matrix_is_its_inverse() {
         let a = spd();
-        let g = pinv_clamped(&a, 3, 1e-15, None, None).unwrap().matrix();
+        let s = pinv_clamped(&a, 3, 1e-15, None, None).unwrap();
+        assert!(!s.repaired() && s.clipped == [false; 3]);
+        let g = s.matrix();
         for i in 0..3 {
             for j in 0..3 {
                 let v: f64 = (0..3).map(|k| a[i * 3 + k] * g[k * 3 + j]).sum();
@@ -286,7 +310,24 @@ mod tests {
         let mut l = s.eigenvalues.clone();
         l.sort_by(f64::total_cmp);
         assert_eq!(l, vec![1e-6, 0.5]);
+        assert_eq!(s.clipped, [false, true]);
         assert!((s.log_determinant(1e-300) - (0.5e-6f64).ln()).abs() < 1e-12);
+    }
+    #[test]
+    fn an_indefinite_input_is_reported_and_never_silently_positive() {
+        // 1/v for v < 0 is negative; the lower bound makes it positive.
+        let s = pinv_clamped(&[2., 0., 0., -4.], 2, 1e-12, Some(1e-6), None).unwrap();
+        assert_eq!(s.eigenvalues, [0.5, 1e-6]);
+        assert_eq!(s.clipped, [false, true]);
+        assert!(s.repaired());
+        // The same for a metric given directly, and a clamp that binds above.
+        let s = clamp_spectrum(&[2., 0., 0., -3.], 2, Some(1e-6), None).unwrap();
+        assert_eq!(
+            (s.eigenvalues, s.clipped),
+            (vec![2., 1e-6], vec![false, true])
+        );
+        let s = clamp_spectrum(&spd(), 3, None, Some(1.)).unwrap();
+        assert!(s.repaired() && s.eigenvalues.iter().all(|&v| v <= 1.));
     }
     #[test]
     fn lu_solves_multiple_right_hand_sides() {

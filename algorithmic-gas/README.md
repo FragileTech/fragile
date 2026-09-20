@@ -245,6 +245,305 @@ length built from endpoint metrics; Regge curvature converges with exact
 geodesic lengths (`regge::curvature` accepts any lengths) and is a biased
 indicator with `ReggeLengths::Geodesic`.
 
+## Algorithmic spectroscopy
+
+`algorithmic_gas::physics::spectroscopy` measures gauge-theory operators on the
+companion topology of a recorded run, correlates them in algorithm time, fits
+decay rates and compares them with a reference table. The fitted quantity is the
+decay rate of the algorithm-time autocorrelation. It is a mass only under a
+positive self-adjoint transfer representation
+(`cor-effective-twistor-positive-transfer`); the gas is not reversible, so
+complex or oscillating modes are expected and reject the exponential model
+instead of producing a number. `INTERPRETATION_NOTE` states this in the notes of
+every report, and a fit that declines reports no number rather than a small one.
+
+The subsystem runs end to end. `crates/algorithmic-gas/tests/spectroscopy_pipeline.rs`
+measures Einstein–Hilbert, viscous Euclidean and Euclidean archives with the
+standard channel set and fits rates on them, and
+`crates/benchmarks/tests/spectroscopy_session.rs` and
+`crates/benchmarks/tests/spectroscopy_cli.rs` drive the session and the binary.
+
+The subsystem is split in two halves that meet at a serializable `Measurement`.
+A **measurement** streams recorded steps through an `Accumulator` and retains
+operator series, source-frozen propagator moments and coverage counters; it is
+the expensive half and depends on `MeasurementConfig` alone. An **analysis** is
+pure and deterministic: `analyze(&[Measurement], &AnalysisConfig)` turns the
+measurements of independently seeded replicas of one configuration into a
+`SpectroscopyReport`, and repeats on the same measurements with another
+`AnalysisConfig` without running the gas again. Resampling, fit windows,
+estimator choice, reference table and channel selection are therefore analysis
+parameters, not run parameters.
+
+`measure_archive(&MeasurementConfig, &RunArchive<f64>)` measures a complete
+archive, and `measure_archive_with` injects operators, a field source,
+capabilities or a calibration through `Extensions`. Spectroscopy is `f64`
+throughout: an archive of an `f32` run is a capability error and there is no
+precision fallback. Measurements combine only when
+`MeasurementConfig::fingerprint` agrees — the measurement configuration, the gas
+configuration with the seed cleared, the resolved capabilities and the
+identities of injected components — and only with equal population size and
+schema version (`SPECTROSCOPY_VERSION` is 1).
+
+### What a variant must record
+
+Every variant of the gas can be measured. What a variant does not record makes
+the dependent channels `Unavailable` with a reason instead of failing the run.
+`Capabilities::of(&GasConfig, &RecordingConfig, dimension)` decides this before
+the first step and keeps the reason of every missing `Record`:
+
+| `Record` | Present when |
+|---|---|
+| `Velocities` | the kinetic integrator is BAOAB |
+| `Color` | BAOAB with a non-zero `qft.viscosity` or `qft.graph_viscosity`, or an explicit `ColorSource::RecordedField` |
+| `Graph` | the gas has a geometry stage and `RecordingConfig.graph` is set |
+| `EuclideanTime` | the geometry projection drops a coordinate (`Projection::DropLast`), which becomes the Euclidean-time axis |
+| `PeriodicBox` | the boundary is a periodic box |
+| `Fitness`, `DistanceCompanions`, `CloningCompanions`, `ClonePlan` | every recorded step writes them |
+
+`Capabilities` also carries the position dimension, whether each companion law
+is a mutual pairing (`c(c(i)) = i`), the Gaussian companion kernel widths
+`ε_d`/`ε_c` when the kernels are Gaussian, the integrator time step, and whether
+the run uses dense viscosity. `refine(&MeasurementConfig)` adds what the
+measurement configuration itself decides.
+
+This is what the variants differ in. The Euclidean Gas has an identically zero
+viscous force, so its colour state is invalid everywhere and every colour
+channel is unavailable with that reason; the Viscous Euclidean Gas is the same
+variant with `qft.viscosity` set, which is why it exists. The Einstein–Hilbert
+Gas supplies graph viscosity, a recorded tessellation graph and, through its
+`DropLast` projection, a Euclidean-time axis, and is the default of the
+spectroscopy request.
+
+### Frames, elements and colour
+
+A frame is the pre-clone population of one recorded step together with that
+step's decisions and force records; field names come from the recorded gas
+configuration and stages from the recorded labels. `topology` turns the
+companion records of a frame into elements — a `Site`, a `DistancePair` (a
+walker and its distance companion), a `CloningPair`, or a `Triplet` of the three
+— and applies the structural masks of the companion record only. Masks that
+depend on the evaluated state are applied by the operators, at every source and
+sink time. `PairSelection` chooses which pair kinds are measured and
+`CompanionChoice` whether `K > 1` distance companions contribute one element
+each with weight `1 / K_valid`.
+
+Colour is `c_a = F_a e^{i κ v_a} / max(|F|, threshold)` from a recorded viscous
+force and a recorded velocity, invalid where `|F| ≤ threshold`, an absolute
+bound in force units. `ColorAlignment` chooses which force record and which
+velocity build frame `t`: `PrecedingKick` (the default; the B2 force of step
+`t − 1` with its own input velocity, so one velocity sits in both the force and
+the phase), `MatchedKick { stage }` for a B stage of step `t` itself, and
+`PrecedingForce` / `ReferenceOffset`, which keep the conventions of the Python
+implementation and of the book text. Rows whose recorded generation differs from
+the frame's are masked, as are walkers cloned at `t` under a matched stage.
+`ColorSource::RecordedField` takes any two recorded fields of one stage as
+amplitude and phase and is the only colour route for a variant whose integrator
+is not BAOAB.
+
+### Channel families
+
+`ChannelSpec` is the operator: every family keeps its algebra in one file behind
+`signature` and `evaluate`, and a channel id is the specification id followed by
+the element kind, for example `meson/pseudoscalar/standard/distance`. Each
+family declares the records it reads, so the requirement table and the
+availability of a channel are derived, never asserted.
+
+| Family | Measured | Reads beyond positions and companions |
+|---|---|---|
+| `meson` | `Re q_ij` / `Im q_ij` with `q_ij = c_i† c_j`, plus score-directed, score-weighted, `γ5`-diagonal and modulus-squared arms | `Color`; the score arms also `Fitness` and `CloningCompanions` |
+| `vector` | `Re/Im q_ij · r_ij` with vector/axial quantum numbers, projections and displacement conventions | `Color`; the score arms also `Fitness` and `CloningCompanions` |
+| `baryon` | real, imaginary part or modulus squared of `b_ijk = det[c_i, c_j, c_k]`, optionally flux weighted with exponent `α` | `Color`, exactly three position coordinates; flux weighting also `Fitness` and `CloningCompanions` |
+| `glueball` | `Re Π_ijk` and `1 − Re Π_ijk` on the triangle, and the viscous force norm on a site | `Color`; a momentum projection also `PeriodicBox` |
+| `tensor` | `σ_μν` bilinear components and their RMS envelope | `Color`, exactly three position coordinates |
+| `dirac` | `ψ̄_i Γ P ψ_j`: the chiral currents and Yukawa scalars, optionally on one role class or times an electroweak phase | `Color`, exactly three position coordinates; a role class also `Fitness`, `CloningCompanions` and `ClonePlan`; a phase link also `Fitness` |
+| `u1`, `su2`, `electroweak_mixed` | the fitness phase `θ_ij = −(Φ_j − Φ_i)/ħ_eff` at charge `q`, dressed by a companion-kernel amplitude, and the SU(2) doublet and mixed channels | `Fitness`; `Velocities` when the dressing distance uses them; the doublet and mixed arms also `ClonePlan` |
+| `fitness_phase`, `clone_indicator` | site diagnostics of the fitness phase and of the accepted clone decisions | `Fitness`; `ClonePlan` |
+| `parity_velocity` | speed distribution of one walker role, from the accepted decisions and the ungated score sign | `Velocities`, `Fitness`, `CloningCompanions`, `ClonePlan` |
+| `chirality` | walker chirality `χ`, the left fraction and the left-right coupling | `Fitness`, `CloningCompanions`, `ClonePlan` |
+| `twistor` | edge spinors and the null-mass identity of the twistor chapter, with a velocity scale `α` | `Velocities`, exactly three position coordinates |
+| `custom` | an operator injected through `Extensions::operator`, which states its own element kind | whatever it declares |
+
+Every arm of every documented definition is a specification, the default being
+the one of the Standard Model chapter of Volume 2. `ChannelSpec::all()` is the
+catalog a page greys out against; `ChannelSpec::standard_set()` is the default
+measurement: scalar and pseudoscalar mesons, vector and axial vectors, the
+complex and `|det|²` baryons, the plaquette and force-norm glueballs, tensor
+components, the U(1) phase and dressed channels, the SU(2) phase and doublet,
+the fitness phase, the clone indicator and the chirality. A measurement takes at
+most 256 channels, injected operators included.
+
+An operator also declares its exchange parity, and that decides the estimator. A
+frame mean of an exchange-odd operator cancels exactly on a mutual pairing,
+which is what the Einstein–Hilbert preset draws, so such a channel reports the
+source-frozen propagator when one was measured and otherwise becomes
+`Unavailable("exchange-odd operator cancels on a mutual pairing")`. It never
+reports the roundoff of the cancelled mean. A diagnostic envelope that never
+enters a correlator is marked non-correlatable by type and reported without one.
+
+### Estimators, fits and the report
+
+Three estimators share one output type: the algorithm-time correlation of frame
+averages, the source-frozen pair propagator, and the Euclidean-time slab
+correlation along the declared time axis. `EstimatorChoice::Auto` takes the
+frame mean, or the propagator where the frame mean does not exist;
+`select_estimator` is public and is what a live view calls. Correlators are
+formed at analysis time from retained block moments, so the resampling block
+size stays an analysis parameter. Lags count measured frames by default, or
+`stride · dt` of the integrator under `TimeUnit::StepDt`.
+
+`AnalysisConfig` selects the connected part and its subtraction (lag means or
+one global mean, which differ at order `1/T`), the resampling, the SVD cut of
+the lag correlation matrix, the effective-mass definition, the fit method
+(log-linear window scan with AIC weights, or a multi-exponential fit with
+channel-agnostic scale-free priors and a prior-dominance diagnostic), an
+optional stability scan, joint fits over channel groups, GEVP bases, and the
+reference table with its assignments and anchors. Replicas are combined as
+pooled blocks, or one resampling unit per replica with at least eight replicas.
+A channel assignment (`meson/pseudoscalar/standard` → `pion` and the other
+defaults) is an input hypothesis: no row, order or choice in the comparison
+depends on how well a measured number agrees with a reference.
+
+A `SpectroscopyReport` carries the analysis it was produced with, the
+capabilities and calibration of the measurement, the replica and frame counts,
+one `ChannelReport` per selected channel (coverage, availability, estimator,
+correlator, effective mass, fits and rate), the group fits, the GEVP levels, the
+reference comparison, the coupling report and the graph-smoothing diagnostic,
+plus the notes. It validates itself: a nonfinite number in a result is an error,
+while a channel that cannot be analyzed is `Unavailable` with its reason. With
+fewer than four replicas a note says that the errors are block-resampling errors
+and not replica standard errors. `presentation::present` maps a report to the
+`partvi::ExperimentResult` plots and metrics the existing SVG adapters render;
+its only arithmetic is the lag axis and the band edges `value ± error`.
+
+Two measurement options are diagnostics rather than physics. `scales` adds
+geodesic multiscale copies of a channel over the recorded graph — a shortest
+path over recorded edge lengths, a measurement convention with no claimed
+convergence to a distance on the fitness manifold. `flow` is convex neighbour
+averaging of the colour field on that graph, reported as a graph smoothing
+diagnostic that makes no length-scale claim.
+
+The coupling report keeps three kinds of number apart: a scale is configured or
+fixed in the warm-up, a proxy is a formula of the book on those scales and is
+never compared with a Standard Model coupling, and a target is a Standard Model
+input re-expressed as a gas parameter. The Standard Model map is an inversion
+from reference inputs to gas parameters and is labelled as such.
+
+### Streaming, chunked recording
+
+An accumulator never needs the whole run in memory. The caller records a short
+chunk with the engine's `start_recording`/`stop_recording`, ingests that archive
+and drops it; the archive path calls the same methods. The contract is that one
+64-step archive and eight 8-step chunks give bit-identical measurements, and
+that a checkpoint and restore in the middle of a stream does too; what is
+already tested is the frame level, where
+`spectroscopy_frames::repeated_and_chunked_recordings_yield_identical_frames`
+checks that a whole recording and the same run recorded in chunks extract the
+same frames, and that a repeated run extracts them again.
+`AccumulatorState` holds what the
+accumulator needs beyond the retained records, so a session checkpoint continues
+a partial measurement. A chunk is `1..=32` recorded steps, and at most 4 under
+dense viscosity, which records `2 N (N − 1)` influence rows per step. The first
+`warmup` frames are consumed by calibration only (`ℓ₀`, scales, Euclidean
+range) and enter no correlator.
+
+### Runs, evidence and the `gas-spectroscopy` CLI (interface)
+
+`algorithmic_gas_benchmarks::spectroscopy` runs replicas of one configuration
+and keeps evidence that can be re-analyzed without running again. A
+`SpectroscopyRequest` is `{variant, run, steps, replicas, seed, chunk,
+spectroscopy}`: `run` is an ordinary `RunConfig` and is authoritative, `variant`
+is the label of the variant selector it was derived from, replica `r` runs with
+`seed + r · 104729` and `run.gas.seed` is ignored. Budgets are 1 to 32 replicas,
+1 to 10,000,000 steps and a chunk of 1 to 32. The default request is the
+Einstein–Hilbert reference instance with 200 walkers in `f64`, 2,000 steps, four
+replicas, seed 7, chunk 16 and the standard channel set with `warmup: 16` and
+`max_lag: 80`; four replicas is the fewest whose pooled errors are reported
+without the replica-standard-error note.
+
+`SpectroscopySession::create` builds one gas and one accumulator per replica,
+`advance(count)` executes up to 64 engine steps per call in recorded chunks and
+returns a `SessionSnapshot` (progress, terminal reasons, the walker cloud of the
+first replica, coverage and live unresampled curves for the requested channels),
+`analyze` and `evidence` produce the report and the
+`SpectroscopyEvidence { schema_version, request, configs, measurements }`, and
+`checkpoint`/`restore` continue a session bit-identically. Evidence is CBOR,
+capped at 256 MiB on decode and rejecting trailing data; `analyze_evidence`
+does not trust the payload — the request is validated again, every replica
+configuration must be the request's run with that replica's seed, and every
+measurement must be of that gas and measurement configuration.
+`analyze_archive(&SpectroscopyConfig, &[RunArchive<f64>])` measures and analyzes
+complete archives instead.
+
+The `gas-spectroscopy` binary prints the same JSON the browser receives, in the
+`gas-lecture` subcommand layout with a single `--output PATH` document:
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- defaults --output defaults.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- variants
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- run request.json --output report.json --evidence evidence.cbor
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- analyze evidence.cbor analysis.json --output report.json
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- archive request.json run.cbor --output report.json
+```
+
+`defaults` prints the default request, one default request per implemented
+variant of the registry, the channel catalog with its requirements and the
+availability of each channel under the default request, and the reference table.
+`variants` prints that variant registry (`variants::catalog()`) on its own.
+`run` executes a request, `analyze`
+re-analyzes stored evidence with an optional `AnalysisConfig` document, and
+`archive` measures and analyzes archives (`.cbor`, or `.json`) recorded by
+`gas-benchmark --record --precision f64` — the Einstein–Hilbert preset runs in
+`Precision::F32` unless that flag says otherwise, and an f32 archive is refused
+rather than promoted. A worked example measures 512 steps of the default
+Einstein–Hilbert instance — every omitted field takes the default above — and
+then re-fits the same evidence on a narrower window without touching the gas:
+
+```json
+{
+  "variant": "einstein_hilbert",
+  "steps": 512,
+  "replicas": 4,
+  "seed": 7,
+  "chunk": 16
+}
+```
+
+```sh
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- \
+  run request.json --output report.json --evidence evidence.cbor
+cargo run --release -p algorithmic-gas-benchmarks --bin gas-spectroscopy -- \
+  analyze evidence.cbor window.json --output narrow.json
+```
+
+Every subcommand produces its document; `crates/benchmarks/tests/spectroscopy_cli.rs`
+runs the binary and checks each one, including that an unknown or missing
+command prints the usage line on stderr and nothing on stdout. Spectroscopy
+analyses an f64 CPU run and says so on the first line of every entry point: a
+request whose `run.gas.precision` is f32 or whose `run.gas.backend` is not the
+CPU is refused with a `GasError::Capability` before a gas is built. A field the
+request omits takes the value of the variant's reference instance, so a size
+written equal to that reference cannot be told from an unstated one.
+
+### QFT Simulator page
+
+The browser route is `/euclidean-gas/qft.html`, the third page of the
+Algorithmic Gas section beside the Lab and the Lectures. Its sources are
+`../fractal-gas-web/web/euclidean-gas/qft/` (`worker.js`, `model.js`, `views.js`,
+`main.js`, `style.css`) and its five tabs are setup, run, correlators, rates and
+fits, and physics comparison. The page runs the same Rust through
+`crates/wasm/src/spectroscopy_bindings.rs`: the `SpectroscopyExperiment` class
+(`create`, `advance`, `snapshot`, `done`, `request`, `analyze`, `presentation`,
+`evidence`, `checkpoint`, `restore`) and the free functions
+`spectroscopy_defaults`, `spectroscopy_capabilities`, `spectroscopy_analyze`,
+`spectroscopy_presentation`, `spectroscopy_archive` and
+`spectroscopy_archive_presentation`. Error bands cross as their own series, so
+JavaScript adds nothing to a value. JavaScript performs no
+science — no sampling, no statistics, no fitting; an undefined number stays a
+gap in a line, availability reasons and notes are printed verbatim, and a rate
+is never relabelled a mass. The
+[page contract](../fractal-gas-web/web/euclidean-gas/qft/README.md) states the
+rules and the test that enforces them.
+
 ## Project layout
 
 | Path | Responsibility |

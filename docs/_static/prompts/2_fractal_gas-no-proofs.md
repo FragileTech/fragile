@@ -406,6 +406,474 @@ The **one-step operator** $P_\tau: \Sigma_N \to \Sigma_N$ acts as follows:
 no special case is used, transition to absorbing state $\dagger$.
 :::
 
+## 1_the_algorithm/04_gas_variants.md
+
+:::{prf:definition} Gas variant
+:label: def-gas-variant
+
+A **gas variant** is a tuple
+
+$$
+\mathcal V=\bigl(\mathcal W,\ \mathsf C^{D},\ \mathsf C^{C},\ d_{\mathrm{alg}},\ \mathsf Z,\ \mathsf g,\ \mathsf A,\ \mathsf T,\ \mathsf K,\ \mathsf B,\ \mathsf R,\ \mathsf G\bigr)
+$$
+
+with the following components.
+
+| # | Symbol | Component | Content |
+|---|---|---|---|
+| 1 | $\mathcal W$ | State space and fields | A measurable single-walker state space with its named fields (for example position $x$ and velocity $v$). The marked swarm space is $\Sigma_N=(\mathcal W\times\{0,1\})^N$ |
+| 2 | $\mathsf C^{D}$ | Distance-companion law | A probability kernel from $\Sigma_N$ to companion maps $c^{D}:\mathcal A\to\mathcal A$; $c^{D}(i)$ supplies the separation measurement of row $i$ |
+| 3 | $\mathsf C^{C}$ | Cloning-companion law | A probability kernel from $\Sigma_N$ to companion maps $c^{C}$ assigning one candidate donor in $\mathcal A$ to every row that may clone |
+| 4 | $d_{\mathrm{alg}}$ | Algorithmic distance | A measurable map $\mathcal W\times\mathcal W\to[0,\infty)$ together with a floor $\delta_D\ge0$; the separation of row $i$ is $d_i=\sqrt{d_{\mathrm{alg}}(i,c^{D}(i))^2+\delta_D^2}$ |
+| 5 | $\mathsf Z$ | Standardizer | For each channel $y\in\{r,d\}$, a location $m_y$ and a scale $s_y>0$ computed from the alive measurements, giving $z_i^{y}=(y_i-m_y)/s_y$ |
+| 6 | $\mathsf g$ | Positive map | Maps $g_r,g_d:\mathbb R\to(0,\infty)$ and exponents $\alpha,\beta\ge0$ with $\alpha+\beta>0$; the fitness is $V_{\mathrm{fit},i}=g_r(z_i^{r})^{\alpha}g_d(z_i^{d})^{\beta}$ |
+| 7 | $\mathsf A$ | Clone decision | The acceptance probability $p_i(n)\in[0,1]$ of an alive row as a function of $(V_{\mathrm{fit},i},V_{\mathrm{fit},c^{C}(i)})$, with saturation $p_{\max}>0$, regularizer $\varepsilon_{\mathrm{clone}}\ge0$, and cloning period $q\ge1$: the gate is open only when $n\equiv0\pmod q$. It also fixes the decision of dead rows |
+| 8 | $\mathsf T$ | Clone transform | The fields copied from donor to recipient, the position jitter amplitude $\sigma_{\mathrm{clone}}\ge0$, and the collision rule: restitution $\alpha_{\mathrm{restitution}}\in[0,1]$ and the law of the orthogonal matrix $R_C$ applied to each collision group $C$ |
+| 9 | $\mathsf K$ | Kinetic operator | The integrator and its step $h$; the conservative acceleration $F=-\nabla U$; the thermostat $(\gamma,\sigma_v)$; the viscous coupling $F^{\mathrm{visc}}$ (possibly zero); the curl rotation (possibly absent); the position diffusion $\sigma_x\ge0$; and the velocity cap $V_{\mathrm{alg}}\in(0,\infty]$ |
+| 10 | $\mathsf B$ | Boundary and revival | The valid domain $D$, the stages at which marks are reclassified, the revival rule of dead rows, and the extinction convention |
+| 11 | $\mathsf R$ | Reward source | The map producing the raw reward $r_i$ of every row and its orientation (maximized or minimized) |
+| 12 | $\mathsf G$ | Geometry stage | A map from the swarm to geometric data (neighbor graph, edge weights, metric, volume element, curvature) consumed by $\mathsf R$ or $\mathsf K$, with its evaluation schedule; $\mathsf G=\varnothing$ when no component consumes such data |
+
+A component may be left as a named free parameter. An **instance** of $\mathcal V$ consists of $\mathcal V$, a value of $N$, a value of every free parameter, and the external data (objective, potential, environment). An instance determines a one-step probability kernel on $\Sigma_N$ by composing its components in the stage order of {prf:ref}`def-fg-step-operator`: measurement and fitness, clone decision and clone transform, kinetic operator, boundary classification. When $q>1$ the kernel depends on $n$ through the residue $n\bmod q$ only, so the chain is time-homogeneous on $\Sigma_N\times\mathbb Z/q\mathbb Z$.
+
+Two variants are equal exactly when all twelve components are equal. A statement proved for one variant applies to another variant only after every changed component has been checked against the hypotheses of that statement.
+:::
+
+:::{prf:definition} Family, framework, engine, variant, limit
+:label: def-gas-taxonomy
+
+1. **Family.** The **Fractal Gas** is the family of all gas variants of {prf:ref}`def-gas-variant`. Its minimal member has an arbitrary metric state space $(\mathcal X,d)$, $d_{\mathrm{alg}}=d$, an arbitrary measurable reward $r:\mathcal X\to\mathbb R$, a position-only kinetic operator, no velocity field, and $\mathsf G=\varnothing$.
+2. **Framework.** The **Fragile Gas** is the abstract Markov chain $\mathcal S_{t+1}\sim\Psi_{\mathcal F}(\mathcal S_t,\cdot)$ of {prf:ref}`def-fragile-gas-algorithm`, and a **Fragile Swarm** is the instantiated tuple $\mathcal F$ of {prf:ref}`def-fragile-swarm-instantiation`. The framework consists of that chain together with the axioms of {doc}`../convergence_program/01_fragile_gas_framework`; its estimates apply to an instance only when those axioms have been verified for it.
+3. **Engine.** **Algorithmic Gas** is the Rust engine specified in {doc}`../architecture/01_algorithmic_gas` ({prf:ref}`def-algorithmic-gas-execution-contract`). It executes the instance described by a `GasConfig` value together with a reward source, an optional gradient provider, and a domain adapter. The engine is not a variant: it executes any variant whose components it implements, and a named constructor of `GasConfig` fixes a variant up to the constructor's arguments.
+4. **Variant.** The named variants of this chapter are the **Euclidean Gas** ({prf:ref}`def-variant-euclidean`), the **Viscous Euclidean Gas** ({prf:ref}`def-variant-viscous-euclidean`), the **Einstein–Hilbert Gas** ({prf:ref}`def-variant-einstein-hilbert`), the **Geometric Gas** ({prf:ref}`def-variant-geometric`), the **Latent Fractal Gas** ({prf:ref}`def-variant-latent`), and the **Environment Gas** ({prf:ref}`def-variant-environment`).
+5. **Limit.** A **mean-field limit** ($N\to\infty$ at fixed $h$) or a **continuum limit** (a scaling limit in $h$) is always the limit of a specified variant, written for example "the mean-field limit of the Euclidean Gas". A limit is not a variant, and a result about a limit is a result about the variant from which it is taken.
+:::
+
+:::{prf:remark} Names denoting the same objects
+:label: rem-variants-terminology
+
+In this volume *Fragile Gas* and *Fragile Swarm* have only the framework meaning of {prf:ref}`def-gas-taxonomy`. The reinforcement-learning instantiation of the family, whose reward is an environment signal, is the Environment Gas. The name *Abstract Fractal Gas* denotes the minimal member of the family described in item 1 of {prf:ref}`def-gas-taxonomy`. The name *Adaptive Gas*, used in the literature for a gas with a fitness-adapted force and noise, denotes the Geometric Gas. The equation of {prf:ref}`def-fractal-set-sde` writes the dynamics of the Geometric Gas with a different normalization of the weights and of the adaptive force; the conventions of the two displayed equations are compared in {prf:ref}`def-variant-geometric`.
+:::
+
+:::{prf:remark} The variant registry of the engine
+:label: rem-variants-registry
+
+The engine enumerates the six named variants as the enum `algorithmic_gas::variants::Variant`, in the order of this chapter. Each arm reports `name` (a snake_case identifier, also accepted with hyphens by `Variant::from_name`), `title`, `book_label` — the label of the variant's definition in this chapter, for example `def-variant-euclidean` — `implemented`, a one-sentence `summary`, and, for an implemented variant, the walker count, dimension and time step of its reference instance; `variants::catalog` returns these rows and `Variant::config(dimensions, dt)` returns the corresponding `GasConfig`. The Einstein–Hilbert configuration does not depend on the dimension.
+
+Exactly three arms are implemented, namely the ones with a `GasConfig` constructor: the Euclidean, Viscous Euclidean and Einstein–Hilbert gases. The Geometric, Latent Fractal and Environment gases are registry entries without a constructor, and `Variant::config` returns a `GasError::Capability` naming the variant's title and its book label, so a request for one fails by pointing at the definition that would have to be implemented.
+:::
+
+:::{prf:definition} Euclidean Gas
+:label: def-variant-euclidean
+
+The **Euclidean Gas** in dimension $d$ ($1\le d\le256$) with time step $h>0$ is the gas variant with the following components. Numerical values are those fixed by the constructor `GasConfig::euclidean(d, h)` and agree with {prf:ref}`def-eg-canonical-rust`. Lengths, times and rewards are in the normalized units of the objective.
+
+| # | Component | Specification | Values |
+|---|---|---|---|
+| 1 | $\mathcal W$ | $(x,v)\in\mathbb R^d\times\mathbb R^d$; all coordinates of dead rows are retained | — |
+| 2 | $\mathsf C^{D}$ | Independent draws, one per alive row, from the Gaussian law $P_D^N(i,j)\propto\exp[-d_{\mathrm{alg}}(i,j)^2/(2\epsilon_D^2)]$ on $\mathcal A\setminus\{i\}$ ({prf:ref}`def-eg-frozen-measurements`) | $\epsilon_D=2$ [length] |
+| 3 | $\mathsf C^{C}$ | Independent draws from the same law with width $\epsilon_C$; a dead row draws from all of $\mathcal A$ with its retained coordinates | $\epsilon_C=2$ [length] |
+| 4 | $d_{\mathrm{alg}}$ | $d_{\mathrm{alg}}(i,j)^2=\lVert \psi_x(x_i)-\psi_x(x_j)\rVert ^2+\lambda_v\lVert \psi_v(v_i)-\psi_v(v_j)\rVert ^2$ with the squashing maps of {prf:ref}`lem-squashing-properties-generic` | $R_x=2$ [length], $R_v=2$ [length/time], $\lambda_v=1$ [time$^2$], $\delta_D=10^{-3}$ [length] |
+| 5 | $\mathsf Z$ | Alive-population mean and variance, $s_y=\sqrt{\operatorname{Var}_y+\sigma_{\min,y}^2}$ | $\sigma_{\min,r}=\sigma_{\min,d}=0.1$ |
+| 6 | $\mathsf g$ | $g_r(z)=g_d(z)=A/(1+e^{-z})+\eta$ | $A=2$, $\eta=0.1$, $\alpha=\beta=1$ [dimensionless] |
+| 7 | $\mathsf A$ | $p_i=\min\{1,[V_{\mathrm{fit},c^{C}(i)}-V_{\mathrm{fit},i}]_+/(p_{\max}(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}}))\}$; dead rows accept with probability one ({prf:ref}`def-eg-component-collision`) | $p_{\max}=1$, $\varepsilon_{\mathrm{clone}}=10^{-6}$, $q=1$ |
+| 8 | $\mathsf T$ | Position copy plus Gaussian jitter; one Haar matrix $R_C\in O(d)$ per connected component of the accepted graph, $\widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}R_C(v_i-\bar v_C)$ | $\sigma_{\mathrm{clone}}=0.1$ [length], $\alpha_{\mathrm{restitution}}=0.5$ |
+| 9 | $\mathsf K$ | BAOAB, final position diffusion and smooth radial cap of {prf:ref}`def-eg-baoab-canonical`; $F^{\mathrm{visc}}\equiv0$; no curl rotation | $\gamma=1$ [1/time], $\sigma_v=1$ [length/time$^{3/2}$], $\sigma_x=0.1$ [length/time$^{1/2}$], $V_{\mathrm{alg}}=2$ [length/time] |
+| 10 | $\mathsf B$ | Absorbing box $D$, classified once at the end of the step; revival at the cloning stage through $\mathsf C^{C}$ ({prf:ref}`lem-eg-scheduled-revival`); the all-dead state is absorbing | $D=[-2,2]^d$ |
+| 11 | $\mathsf R$ | $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\lVert v\rVert ^2$ with $R_{\mathrm{pos}}=-U$ for a minimized objective $U$ supplied by the caller, together with its gradient | caller-supplied; $\lambda_{\mathrm{vel}}=0$ in the preset |
+| 12 | $\mathsf G$ | $\varnothing$ | — |
+
+The frozen OU stage has stationary velocity variance $\sigma_v^2/(2\gamma)=1/2$ per coordinate before the cap. The time step $h$ and the dimension $d$ are arguments of the constructor; the quantitative theorems of {doc}`../convergence_program/09_propagation_chaos` name the step for which they are stated.
+:::
+
+:::{prf:remark} Euclidean Gas: component and configuration correspondence
+:label: rem-variant-euclidean-rust
+
+The constructor is `GasConfig::euclidean` in `algorithmic-gas/crates/algorithmic-gas/src/variants/euclidean.rs`. Fields not listed keep the values of `GasConfig::default()`; the preset overrides the default single precision and runs in `Precision::F64`. The reference instance `RunConfig::euclidean()` takes $N=64$, $d=2$, $h=0.04$ and the quadratic objective $U(x)=\lVert x\rVert^2/2$, and starts the walkers uniformly in $[-1,1]^2$ at rest.
+
+| Component | `GasConfig` field | Value or enum arm |
+|---|---|---|
+| $\mathcal W$ | population fields `positions`, `velocities`; `precision` | `Precision::F64` |
+| $\mathsf C^{D}$ | `distance_donors` | `DonorModule { law: SamplingLaw::Independent, kernel: Kernel::Gaussian { width: 2 }, count: 1, allow_self: false, history_window: 0 }` |
+| $\mathsf C^{C}$ | `cloning_donors` | the same `DonorModule` value |
+| $d_{\mathrm{alg}}$ | `DonorModule.distance`, `fitness.distance_floor`, `reducer` | `Distance::SquashedPhaseSpace { position_radius: 2, velocity_radius: 2, lambda: 1 }`, `1e-3`, `CompanionReducer::Mean` |
+| $\mathsf Z$ | `fitness.reward_standardizer`, `fitness.diversity_standardizer` | `Standardizer::Global { sigma_min: 0.1 }` |
+| $\mathsf g$ | `fitness.reward_map`, `fitness.diversity_map`, `fitness.reward_exponent`, `fitness.diversity_exponent`, `fitness.direction` | `PositiveMap::Logistic { amplitude: 2, floor: 0.1 }`, `1`, `1`, `ObjectiveDirection::Minimize` |
+| $\mathsf A$ | `clone_decision` | `CloneDecision { epsilon: 1e-6, saturation: 1, revival_from_companion: true, every: 1 }` |
+| $\mathsf T$ | `clone_transform` | `CloneTransform { position_field: Some("positions"), jitter: Some(Noise::default()), jitter_amplitude: 0.1, velocity_field: Some("velocities"), restitution: Some(0.5), collision_rotation: CollisionRotation::Haar }` |
+| $\mathsf K$ | `kinetic.integrator`, `kinetic.noise.geometry`, `kinetic.position_diffusion`, `kinetic.velocity_cap` | `KineticKind::Baoab { dt: h, friction: 1 }`, `NoiseGeometry::Isotropic` with scale `1`, `0.1`, `Some(2)` |
+| $F^{\mathrm{visc}}$, curl | `qft` | `QftExecutionConfig::default()`: `viscosity: None`, `graph_viscosity: None`, `curl: None` |
+| $\mathsf B$ | `boundary`, `kinetic.boundary_schedule` | `BoundaryPolicy::AbsorbingBox` on `[-2, 2]^d`, `KineticBoundarySchedule::EndOfStep` |
+| $\mathsf R$ | `GasBuilder::new(population, reward)` and `GasBuilder::gradient` | caller-supplied |
+| $\mathsf G$ | `geometry` | `None` |
+:::
+
+:::{prf:definition} Viscous Euclidean Gas
+:label: def-variant-viscous-euclidean
+
+Let $\nu\ge0$ [1/time] be a coupling strength and $\rho>0$ [length] a bandwidth, and let $K_\rho(x,y)=\exp[-\|x-y\|^2/(2\rho^2)]$ be the Gaussian kernel of {prf:ref}`def-fractal-set-viscous-force`, evaluated on physical (unsquashed) positions. For a population $(x,v)$ with eligible set $E$, $|E|=M_E$, define one of the two normalizations
+
+$$
+F_i^{\mathrm{visc}}(x,v)=\frac{\nu}{M_E}\sum_{j\in E\setminus\{i\}}K_\rho(x_i,x_j)(v_j-v_i)
+\qquad\text{(eligible-count normalization)},
+$$
+
+$$
+F_i^{\mathrm{visc}}(x,v)=\nu\sum_{j\in E\setminus\{i\}}\omega_{ij}(v_j-v_i),
+\quad
+\omega_{ij}=\frac{K_\rho(x_i,x_j)}{\sum_{l\in E\setminus\{i\}}K_\rho(x_i,x_l)}
+\qquad\text{(row normalization)},
+$$
+
+with $F_i^{\mathrm{visc}}=0$ when $i\notin E$ or the normalizer vanishes. The **Viscous Euclidean Gas** with parameters $(d,h,\nu,\rho)$ and a declared normalization is the gas variant whose components 1–8 and 10–12 are those of {prf:ref}`def-variant-euclidean`, and whose kinetic operator $\mathsf K$ is {prf:ref}`def-eg-baoab-canonical` with the two B stages replaced by
+
+$$
+v_1=v+\tfrac h2\bigl[F(x)+F^{\mathrm{visc}}(x,v)\bigr],
+\qquad
+v_3=v_2+\tfrac h2\bigl[F(x_2)+F^{\mathrm{visc}}(x_2,v_2)\bigr].
+$$
+
+Here $(x,v)$ is the whole post-collision population at the first kick and $(x_2,v_2)$ is the whole population after the second drift; the coupling is evaluated once per kick and held fixed during it. The A and O stages, the position diffusion, the cap and the terminal classification are unchanged.
+
+In the canonical schedule every row is alive after the cloning stage and no mark changes before the terminal classification, so $E=\{1,\ldots,N\}$ and $M_E=N$ at both kicks. With eligible-count normalization the force is therefore the total pairwise viscous force of {prf:ref}`def-fractal-set-viscous-force` with coupling $\nu/N$; with row normalization it has the weights $\omega_{ij}$ of {prf:ref}`def-latent-fractal-gas-viscous-force`. At $\nu=0$ the variant is the Euclidean Gas.
+:::
+
+:::{prf:remark} Viscous Euclidean Gas: component and configuration correspondence
+:label: rem-variant-viscous-euclidean-rust
+
+The instance is the configuration `GasConfig::euclidean(d, h)` with one changed field; the named constructor is `GasConfig::viscous_euclidean(d, h, viscosity)` in `algorithmic-gas/crates/algorithmic-gas/src/variants/viscous_euclidean.rs`. The engine requires a BAOAB integrator for this field and rejects it together with `qft.graph_viscosity`.
+
+| Component | `GasConfig` field | Value or enum arm |
+|---|---|---|
+| $F^{\mathrm{visc}}$ in $\mathsf K$ | `qft.viscosity` | `Some(ViscousForceConfig { coefficient: ν, bandwidth: ρ, row_normalized })`; `row_normalized: false` selects eligible-count normalization |
+| all other components | as in {prf:ref}`rem-variant-euclidean-rust` | unchanged |
+
+The constructor takes $\nu$, $\rho$ and the normalization as its `viscosity` argument; they are free parameters of the variant. The reference instance `RunConfig::viscous_euclidean()` takes $N=200$, $d=3$, $h=0.04$, the quadratic objective $U(x)=\lVert x\rVert^2/2$, and the coupling `reference_viscosity()`: $\nu=0.3$, $\rho=1$, eligible-count normalization.
+:::
+
+:::{prf:proposition} Transition and momentum balance of the Viscous Euclidean Gas
+:label: prop-variant-viscous-kernel
+
+Let $N\ge1$, $\nu\ge0$, $\rho>0$, and fix either normalization of {prf:ref}`def-variant-viscous-euclidean`.
+
+1. Under the hypotheses of {prf:ref}`thm-eg-canonical-kernel`, the Viscous Euclidean Gas defines a time-homogeneous Markov kernel on the full marked state space, and this kernel is permutation equivariant.
+2. Under the hypotheses of {prf:ref}`thm-euclidean-feller`, this kernel is Feller.
+3. With eligible-count normalization, $\sum_{i\in E}F_i^{\mathrm{visc}}(x,v)=0$ for every population. With row normalization the sum need not vanish.
+:::
+
+:::{prf:definition} Einstein–Hilbert Gas
+:label: def-variant-einstein-hilbert
+
+Let $T>0$ [length$^2$/time$^2$] be a temperature and $h>0$ [time] a time step. Let $d\ge1$ be the position dimension and let $d'$ be the tessellated dimension: $d'=d-1$ if $d\ge3$ and $d'=d$ otherwise, with $1\le d'\le3$. Write $x_i=(\bar x_i,t_i)$ with $\bar x_i\in\mathbb R^{d'}$ when $d\ge3$; the last coordinate $t_i$ is the **Euclidean-time coordinate**. The **Einstein–Hilbert Gas** is the gas variant with the following components. Numerical values are those fixed by the constructor `GasConfig::einstein_hilbert(T, h)`.
+
+| # | Component | Specification | Values |
+|---|---|---|---|
+| 1 | $\mathcal W$ | $(x,v)\in\mathbb R^d\times\mathbb R^d$. The per-walker outputs of $\mathsf G$ (volume element, curvature, diffusion factor) are stored as additional fields; under the schedule of component 12 they are functions of the current positions | — |
+| 2 | $\mathsf C^{D}$ | A uniformly distributed perfect matching of $\mathcal A$: shuffle $\mathcal A$ by the Fisher–Yates algorithm and pair consecutive entries. If $M$ is odd the remaining walker is its own companion. Thus $c^{D}\circ c^{D}=\mathrm{id}_{\mathcal A}$ | uniform kernel |
+| 3 | $\mathsf C^{C}$ | A second perfect matching with the same law, drawn independently of $c^{D}$ given the swarm; $c^{C}\circ c^{C}=\mathrm{id}_{\mathcal A}$ | uniform kernel |
+| 4 | $d_{\mathrm{alg}}$ | $d_{\mathrm{alg}}(i,j)=\lVert x_i-x_j\rVert $ on all $d$ position coordinates; no squashing and no velocity term | $\delta_D=10^{-30}$ [length] |
+| 5 | $\mathsf Z$ | Sample statistics: $\bar y=M^{-1}\sum_{i\in\mathcal A}y_i$, $s_y^2=\max\{M-1,1\}^{-1}\sum_{i\in\mathcal A}(y_i-\bar y)^2$, $z_i^{y}=(y_i-\bar y)/(s_y+\varepsilon_{\mathrm{std}})$. A constant channel standardizes to zero | $\varepsilon_{\mathrm{std}}=10^{-30}$ |
+| 6 | $\mathsf g$ | $g_r(z)=g_d(z)=A/(1+e^{-z})$, no additive floor; the reward is maximized | $A=2$, $\eta=0$, $\alpha=\beta=1$ |
+| 7 | $\mathsf A$ | $p_i(n)=\min\{1,[V_{\mathrm{fit},c^{C}(i)}-V_{\mathrm{fit},i}]_+/V_{\mathrm{fit},i}\}$ if $n\equiv0\pmod{20}$, and $p_i(n)=0$ otherwise. Dead rows accept with probability one at every step | $p_{\max}=1$, $\varepsilon_{\mathrm{clone}}=0$, $q=20$ |
+| 8 | $\mathsf T$ | An accepted row copies every field of its donor. No jitter. Collision on the connected components of the accepted graph with the identity rotation: $\widetilde v_i=\bar v_C+\alpha_{\mathrm{restitution}}(v_i-\bar v_C)$ | $\sigma_{\mathrm{clone}}=0$, $\alpha_{\mathrm{restitution}}=1$, $R_C=I$ |
+| 9 | $\mathsf K$ | BAOAB with $F=-\nabla U\equiv0$. Each B stage is the graph viscous kick with Boris curl rotation of {prf:ref}`alg-einstein-hilbert-gas`. OU thermostat $v\leftarrow cv+\sqrt{T(1-c^2)}\,\xi$, $c=e^{-\gamma h}$. No position diffusion and no velocity cap | $\gamma=1$ [1/time], $\sigma_v=\sqrt{2\gamma T}$, $\nu=3$ [1/time], $\beta_{\mathrm{curl}}=1$, $\sigma_x=0$, $V_{\mathrm{alg}}=\infty$ |
+| 10 | $\mathsf B$ | $D=\mathbb R^d$. A row is dead only if one of its fields is non-finite; marks are checked after the clone transform and after every kinetic substage. A dead row is revived at the cloning stage from a donor drawn uniformly from $\mathcal A$, at every step. The engine halts when $\mathcal A=\varnothing$ | unbounded |
+| 11 | $\mathsf R$ | $r_i=R_i\sqrt{\det g_i}$, the walker's share of the Einstein–Hilbert action, with $R_i$ the scalar curvature and $\sqrt{\det g_i}$ the volume element produced by $\mathsf G$ | scale $\lambda=1$; curvature field `ricci_scalar` |
+| 12 | $\mathsf G$ | Delaunay tessellation of the projected sites $\bar x_i$ (all of $x_i$ if $d<3$); neighbor-covariance metric $g_i$, the ridge-regularized inverse of the covariance of the displacements to the neighbors, with clamped spectrum; volume element $\sqrt{\max\{\det g_i,10^{-12}\}}$; conformal-Laplacian scalar curvature $R_i=-2(d'-1)\sum_{j\sim i}w^{R}_{ij}(u_j-u_i)$ with $u_i=\log\max\{\det g_i,10^{-12}\}/(2d')$; two row-normalized edge-weight families $w^{R}$ and $w^{\mathrm{visc}}$ ({prf:ref}`def-tessellation-rust-representation`). Evaluated whenever positions have changed before a reward evaluation | metric ridge $10^{-5}$, eigenvalue floor $10^{-6}$; kernel length $\ell=1$ [length] |
+
+The edge weights are, before normalization over the neighbors $j\sim i$ of each walker,
+
+$$
+w^{R}_{ij}\propto\frac{1}{\sqrt{\max\{d_g(i,j)^2,10^{-8}\}}+10^{-8}},
+\qquad
+w^{\mathrm{visc}}_{ij}\propto\exp\!\left[-\frac{d_g(i,j)^2}{2\ell^2}\right]\sqrt{\max\{\det g_j,10^{-12}\}},
+$$
+
+where $d_g(i,j)^2=\Delta\bar x_{ij}^{\mathsf T}\tfrac12(g_i+g_j)\Delta\bar x_{ij}$ is the metric edge length. The normalized weight is the raw weight divided by $\max\{\sum_{l\sim i}w^{\mathrm{raw}}_{il},10^{-12}\}$. Hence $w_{ij}\ge0$ and $\sum_{j\sim i}w_{ij}\le1$, with equality whenever the raw row sum is at least $10^{-12}$; a walker without neighbors has an empty row. In general $w_{ij}\ne w_{ji}$.
+
+The reference instance `RunConfig::einstein_hilbert()` takes $N=500$, $d=3$ (so $d'=2$), $T=0.33$, $h=0.002$, and starts every walker at the origin at rest.
+:::
+
+:::{prf:remark} Einstein–Hilbert Gas: component and configuration correspondence
+:label: rem-variant-einstein-hilbert-rust
+
+The constructor is `GasConfig::einstein_hilbert` in `algorithmic-gas/crates/algorithmic-gas/src/variants/einstein_hilbert.rs`, and the reference temperature $T=0.33$ is the constant `einstein_hilbert::REFERENCE_TEMPERATURE`. It is built with `GeometryReward::default()` as the reward source and `ZeroPotential` as the gradient provider. The curvature name `ricci_scalar` is the shared constant `tessellation::presets::RICCI_SCALAR`, which the gas preset and the reward source both read. Fields not listed keep the values of `GasConfig::default()`; unlike `GasConfig::euclidean`, this preset does not override the default precision, so it runs in `Precision::F32`.
+
+| Component | `GasConfig` field | Value or enum arm |
+|---|---|---|
+| $\mathcal W$ | population fields `positions`, `velocities`, `geometry.volume_element`, `geometry.curvature.ricci_scalar`, `geometry.diffusion`; `precision` | `Precision::F32`, the default |
+| $\mathsf C^{D}$ | `distance_donors` | `DonorModule { kernel: Kernel::Uniform, law: SamplingLaw::FisherYates, odd: OddPolicy::SelfCompanion, count: 1 }` |
+| $\mathsf C^{C}$ | `cloning_donors` | the same `DonorModule` value; the two roles use separate random streams |
+| $d_{\mathrm{alg}}$ | `DonorModule.distance`, `fitness.distance_floor`, `reducer` | `Distance::Euclidean { field: "positions", squared: false }`, `1e-30`, `CompanionReducer::Mean` |
+| $\mathsf Z$ | `fitness.reward_standardizer`, `fitness.diversity_standardizer` | `Standardizer::LegacySample { epsilon: 1e-30 }` |
+| $\mathsf g$ | `fitness.reward_map`, `fitness.diversity_map`, exponents, `fitness.direction` | `PositiveMap::Logistic { amplitude: 2, floor: 0 }`, `1`, `1`, `ObjectiveDirection::Maximize` |
+| $\mathsf A$ | `clone_decision` | `CloneDecision { epsilon: 0, saturation: 1, revival_from_companion: false, every: 20 }` |
+| $\mathsf T$ | `clone_transform` | `CloneTransform { position_field: None, jitter: None, velocity_field: Some("velocities"), restitution: Some(1), collision_rotation: CollisionRotation::Identity }` |
+| $\mathsf K$ | `kinetic.integrator`, `kinetic.noise` | `KineticKind::Baoab { dt: h, friction: 1 }`; `InnovationLaw::Gaussian` with `NoiseGeometry::Isotropic` of scale $\sqrt{2\gamma T}$; `position_diffusion: 0`, `velocity_cap: None` |
+| $F^{\mathrm{visc}}$ | `qft.graph_viscosity` | `Some(GraphViscosityConfig { coefficient: 3, weights: "riemannian_kernel_volume" })` |
+| curl rotation | `qft.curl` | `Some(CurlRotationConfig { beta_curl: 1 })` |
+| $\mathsf B$ | `boundary`, `kinetic.boundary_schedule` | `BoundaryPolicy::Unbounded`, `KineticBoundarySchedule::Substeps` |
+| $\mathsf R$ | reward source | `GeometryReward { curvature: "ricci_scalar", allocation: RewardAllocationKind::EinsteinHilbertDensity { scale: 1 } }` |
+| $\mathsf G$ | `geometry` | `Some(GeometryStageConfig { schedule: GeometrySchedule::EveryStage, .. })` with `Projection::DropLast { min_ambient: 3 }`, `MetricKind::NeighborCovariance`, `VolumeKind::SqrtDetMetric { det_floor: 1e-12 }`, weights `[InverseRiemannianDistance, RiemannianKernelVolume]`, `CurvatureKind::ConformalLaplacian { weights: "inverse_riemannian_distance", det_floor: 1e-12 }` |
+:::
+
+:::{prf:algorithm} Einstein–Hilbert Gas Update
+:label: alg-einstein-hilbert-gas
+
+**Input.** The step index $n\ge1$ and the marked swarm $S=((x_i,v_i,a_i))_{i=1}^N$ with alive set $\mathcal A$, $M=|\mathcal A|\ge1$. Let $\mathcal G(x)$ denote the output of the geometry stage at positions $x$: the Delaunay neighbor graph of the projected sites, the weights $w^{R}$ and $w^{\mathrm{visc}}$, and the per-walker fields $g_i$, $\sqrt{\det g_i}$ and $R_i$. All coordinates used in Steps 1–5 are frozen input coordinates.
+
+1. **Reward.** Set $r_i=R_i(x)\sqrt{\det g_i(x)}$ for every row, with the floors of {prf:ref}`def-variant-einstein-hilbert`.
+2. **Distance companions and separation.** Draw a uniformly distributed perfect matching $c^{D}$ of $\mathcal A$; for odd $M$ the unmatched walker has $c^{D}(i)=i$. Set $d_i=\sqrt{\|x_i-x_{c^{D}(i)}\|^2+\delta_D^2}$ with all $d$ coordinates of the positions.
+3. **Fitness.** For $y\in\{r,d\}$ compute the sample mean $\bar y$ and the sample standard deviation $s_y$ over $\mathcal A$, set $z_i^{y}=(y_i-\bar y)/(s_y+\varepsilon_{\mathrm{std}})$, and
+
+   $$
+   V_{\mathrm{fit},i}=\frac{2}{1+e^{-z_i^{r}}}\cdot\frac{2}{1+e^{-z_i^{d}}},\qquad i\in\mathcal A.
+   $$
+
+4. **Cloning companions and decisions.** Draw a second, independent, uniformly distributed perfect matching $c^{C}$ of $\mathcal A$ with the same odd-walker rule, and independent $U_i\sim\operatorname{Unif}[0,1]$. For $i\in\mathcal A$ set
+
+   $$
+   p_i=\begin{cases}\min\{1,[V_{\mathrm{fit},c^{C}(i)}-V_{\mathrm{fit},i}]_+/V_{\mathrm{fit},i}\},&n\equiv0\pmod{20},\\0,&\text{otherwise},\end{cases}
+   \qquad A_i=\mathbf 1_{\{U_i<p_i\}}.
+   $$
+
+   Every dead row draws a donor uniformly from $\mathcal A$ and has $A_i=1$, at every $n$.
+5. **Clone transform.** Every row with $A_i=1$ copies all fields of its donor; in particular $\widetilde x_i=x_{c^{C}(i)}$, with no jitter. On each connected component $C$ of the accepted graph apply the elastic identity-rotation collision
+
+   $$
+   \widetilde v_i=\bar v_C+(v_i-\bar v_C)=v_i,\qquad \bar v_C=|C|^{-1}\sum_{j\in C}v_j,
+   $$
+
+   computed from the frozen input velocities. Rows outside the accepted graph keep $(x_i,v_i)$. Reclassify the marks.
+6. **Geometry and reward refresh.** Evaluate $\mathcal G(\widetilde x)$ and the rewards at $\widetilde x$. Denote by $\mathcal G_\star=\mathcal G(\widetilde x)$ the graph and the weights $w=w^{\mathrm{visc}}$ used by both B stages below.
+7. **B stage** (duration $h/2$), applied to the whole population $(x,v)$ with neighbors $j\sim i$ in $\mathcal G_\star$, restricted to alive rows:
+
+   $$
+   \begin{aligned}
+   F_i(v)&=\nu\sum_{j\sim i}w_{ij}(v_j-v_i),\\
+   v_i^{(1)}&=v_i+\tfrac h4F_i(v),\\
+   \Omega_i&=\tfrac12(J_i-J_i^{\mathsf T}),\qquad J_i(\Xi_i+\varrho_iI)=\Phi_i,\\
+   \Phi_i&=\sum_{j\sim i}w_{ij}\,(F_j(v)-F_i(v))(x_j-x_i)^{\mathsf T},\qquad
+   \Xi_i=\sum_{j\sim i}w_{ij}\,(x_j-x_i)(x_j-x_i)^{\mathsf T},\\
+   v_i^{(2)}&=(I-\Theta_i)^{-1}(I+\Theta_i)\,v_i^{(1)},\qquad \Theta_i=\tfrac{\beta_{\mathrm{curl}}h}{4}\,\Omega_i,\\
+   v_i^{(3)}&=v_i^{(2)}+\tfrac h4F_i(v^{(2)}).
+   \end{aligned}
+   $$
+
+   Here $x_j-x_i$ has all $d$ coordinates, $\varrho_i=\max\{\sqrt{\epsilon_{\mathrm{mach}}}\operatorname{tr}\Xi_i/d,\ \varrho_{\min}\}>0$ is a ridge, with $\epsilon_{\mathrm{mach}}$ the machine epsilon and $\varrho_{\min}$ the smallest positive normal number of the run precision, and $J_i$ is the weighted least-squares Jacobian of the force field at walker $i$. The output velocity is $v^{(3)}$.
+8. **A stage.** $x_i\leftarrow x_i+\tfrac h2v_i$.
+9. **O stage.** With independent $\xi_i\sim\mathcal N(0,I_d)$ and $c=e^{-\gamma h}$, set $v_i\leftarrow cv_i+\sqrt{T(1-c^2)}\,\xi_i$.
+10. **A stage.** Repeat Step 8.
+11. **B stage.** Repeat Step 7 at the current positions and velocities, with the graph and weights of $\mathcal G_\star$.
+12. **Commit.** Reclassify the marks, evaluate $\mathcal G(x^{+})$ and the rewards at the output positions, and return $S^{+}=((x_i^{+},v_i^{+},a_i^{+}))_{i=1}^N$ with step index $n+1$.
+
+The marks are also reclassified after each of Steps 7–11; a row that becomes dead takes no further substage in that step. The reward $r_i$ enters Steps 3–4 only. No force depends on it.
+:::
+
+:::{prf:proposition} Elementary identities of the Einstein–Hilbert update
+:label: prop-variant-eh-identities
+
+For the update of {prf:ref}`alg-einstein-hilbert-gas`:
+
+1. **Collision.** The clone transform leaves every velocity unchanged: $\widetilde v_i=v_i$ for all $i$. An accepted row receives the position of its donor and keeps its own velocity.
+2. **Accepted graph.** At most one member of each pair $\{i,c^{C}(i)\}$ of alive walkers is accepted, a self-companion is never accepted, and the accepted components among alive walkers are pairs.
+3. **Rotation.** For every skew-symmetric $\Theta$, the matrix $Q=(I-\Theta)^{-1}(I+\Theta)$ exists and is orthogonal. Hence $\|v_i^{(2)}\|=\|v_i^{(1)}\|$ in Step 7.
+4. **Thermostat.** The O stage has the unique stationary law $\mathcal N(0,TI_d)$ for each velocity; in particular its stationary velocity variance is $T$ per coordinate.
+5. **Translations and the time split.** Call a configuration *Delaunay-generic* when the Delaunay complex of its distinct projected sites is unique; this holds, for example, when the sites affinely span $\mathbb R^{d'}$ and no $d'+2$ of them lie on a common sphere. Assume that every configuration at which $\mathcal G$ is evaluated in the step is Delaunay-generic. Then the one-step kernel is equivariant under a simultaneous translation $x_i\mapsto x_i+b$ of all positions, and, for $d\ge3$, under the simultaneous maps $(x_i,v_i)\mapsto(Ox_i,Ov_i)$ with $O=\operatorname{diag}(O',\pm1)$, $O'\in O(d-1)$. At the remaining configurations the tessellator selects one Delaunay complex, and equivariance holds there exactly when that selection commutes with the map; this is not established.
+6. **Survival.** Every map of the update is finite-valued on finite inputs. For finite initial data, $M=N$ at every step.
+:::
+
+:::{prf:definition} Geometric Gas
+:label: def-variant-geometric
+
+The **Geometric Gas** is the gas variant with the following components. It has no fixed numerical preset; every listed symbol is a free parameter constrained by the assumptions of {ref}`sec-gg-axioms`.
+
+| # | Component | Specification |
+|---|---|---|
+| 1 | $\mathcal W$ | $(x,v)\in\mathbb R^d\times\mathbb R^d$ |
+| 2–3 | $\mathsf C^{D}$, $\mathsf C^{C}$ | The companion laws contained in the specified jump kernel $r_N(S,dS')$ of {prf:ref}`def-gg-sde`; the reference choice is the soft Gaussian kernel of {prf:ref}`def-fg-soft-companion-kernel` |
+| 4 | $d_{\mathrm{alg}}$ | The phase-space distance of {prf:ref}`def-fg-algorithmic-distance` |
+| 5 | $\mathsf Z$ | The $\rho$-localized moments of {prf:ref}`def-gg-rho-moments` with kernel {prf:ref}`def-gg-localization-kernel` and floor $s_*>0$: $Z_\rho=(d-\mu_\rho)/\sqrt{s_\rho^2+s_*^2}$ |
+| 6 | $\mathsf g$ | The exponential field $V_i=\eta^{\alpha+\beta}\exp[\alpha Z_\rho(R,x_i)+\beta Z_\rho(d_{\mathrm{alg}},x_i)]$ of {prf:ref}`def-gg-fitness-potential`, $\eta>0$ |
+| 7–8 | $\mathsf A$, $\mathsf T$ | The complete cloning update contained in $r_N(S,dS')$, or the discrete cloning operator $P_{\mathrm{clone}}$, as declared ({prf:ref}`axiom-gg-cloning`) |
+| 9 | $\mathsf K$ | The Stratonovich dynamics of {prf:ref}`def-gg-sde`: $dv_i=[-\nabla U(x_i)+F_i(S)-\gamma v_i+\nu\sum_{j\ne i}W_{ij}(X)(v_j-v_i)]dt+\Sigma_i(S)\circ dW_i$ with adaptive force $F_i=\epsilon_F\nabla_{x_i}V_i$, row-normalized viscous weights $W_{ij}=K_{ij}/\sum_{l\ne i}K_{il}$, and $\Sigma_i=(H_i+\epsilon_\Sigma I)^{-1/2}$, $H_i=\nabla_{x_i}^2V_i$. No curl rotation |
+| 10 | $\mathsf B$ | Killing by an interior rate or an absorbing boundary, represented separately from the jump kernel ({prf:ref}`def-gg-sde`) |
+| 11 | $\mathsf R$ | A reward measurement $R$ and a confining potential $U$ ({prf:ref}`axiom-gg-confining-potential`) |
+| 12 | $\mathsf G$ | The fitness-Hessian metric $g_i=H_i+\epsilon_\Sigma I$, evaluated with the declared differentiation convention; it is consumed by the noise factor of $\mathsf K$ |
+
+The equation of {prf:ref}`def-fractal-set-sde` has the same structure: conservative force, adaptive force, viscous coupling, friction, and fitness-adapted Stratonovich noise. It is written with the unnormalized weights $K_\rho(x_i,x_j)$ and the adaptive force $-\nabla V_{\mathrm{fit}}$, whereas {prf:ref}`def-gg-sde` uses the row-normalized weights $W_{ij}$ and $F_i=\epsilon_F\nabla_{x_i}V_i$. The Geometric Gas is defined by {prf:ref}`def-gg-sde`; the results of {doc}`../convergence_program/17_geometric_gas` refer to that convention.
+
+The continuous jump realization and the discrete update are different operators ({prf:ref}`def-gg-sde`). An instance must declare which of them it is. No `GasConfig` constructor of the Algorithmic Gas engine fixes this variant.
+:::
+
+:::{prf:definition} Latent Fractal Gas
+:label: def-variant-latent
+
+The **Latent Fractal Gas** is the gas variant with the following components. The reference parameter values are those of {prf:ref}`def-latent-fractal-gas-parameters`; they are reference choices and are not fixed by a constructor of the Algorithmic Gas engine.
+
+| # | Component | Specification |
+|---|---|---|
+| 1 | $\mathcal W$ | $(z,v)\in T\mathcal Z$ in a specified chart of dimension $d_z$, with positive-definite metric $G(z)$ and momentum $p=G(z)v$ ({prf:ref}`def-latent-fractal-gas-state`). Environment, time or learner variables that affect termination belong to the state |
+| 2–3 | $\mathsf C^{D}$, $\mathsf C^{C}$ | Independent soft Gaussian draws with bandwidth $\epsilon$ on $\mathcal A\setminus\{i\}$, with fresh randomness for each role; dead walkers draw uniformly from $\mathcal A$ ({prf:ref}`def-latent-fractal-gas-companions`) |
+| 4 | $d_{\mathrm{alg}}$ | $d_{\mathrm{alg}}(i,j)^2=\lVert z_i-z_j\rVert ^2+\lambda_{\mathrm{alg}}\lVert v_i-v_j\rVert ^2$ in chart coordinates, with regularizer $\epsilon_{\mathrm{dist}}>0$ |
+| 5 | $\mathsf Z$ | Alive-only statistics, global or localized at scale $\rho$, with $\sigma'=\sqrt{\sigma^2+\sigma_{\min}^2}$ ({prf:ref}`def-latent-fractal-gas-fitness`) |
+| 6 | $\mathsf g$ | $g_A(u)+\eta$ with $g_A(u)=A/(1+e^{-u})$, exponents $\alpha_{\mathrm{fit}},\beta_{\mathrm{fit}}$ |
+| 7 | $\mathsf A$ | $p_i=\min\{1,\max\{0,S_i/p_{\max}\}\}$ with $S_i=(V_{c^{C}(i)}-V_i)/(V_i+\varepsilon_{\mathrm{clone}})$; dead walkers clone with probability one; $q=1$ ({prf:ref}`def-latent-fractal-gas-cloning`) |
+| 8 | $\mathsf T$ | Position copy with jitter $\sigma_x\zeta_i$ in the chart; recipient-group inelastic collision $v_j'=V_{\mathrm{COM}}+\alpha_{\mathrm{rest}}(v_j-V_{\mathrm{COM}})$ without rotation, in the declared recipient order |
+| 9 | $\mathsf K$ | The Boris-BAOAB sequence of {prf:ref}`def-latent-fractal-gas-kinetic`: force $-\nabla\Phi_{\mathrm{eff}}$, row-normalized viscous force of {prf:ref}`def-latent-fractal-gas-viscous-force` with $(\nu_{\mathrm{visc}},\ell_{\mathrm{visc}})$, Boris rotation associated with $\beta_{\mathrm{curl}}G^{-1}\mathcal F$, $\mathcal F=d\mathcal R$; OU stage with friction $\gamma$, temperature $T_c$ and noise factor $\Sigma_{\mathrm{reg}}$ ({prf:ref}`def-latent-fractal-gas-diffusion`); metric velocity cap $\psi_v$ with radius $V_{\mathrm{alg}}$ ({prf:ref}`def-latent-velocity-squashing`) |
+| 10 | $\mathsf B$ | Alive mask $\mathcal A=\{i:z_i\in B\}$; revival at the cloning stage; fewer than two alive walkers sends the swarm to the cemetery state $\dagger$ ({prf:ref}`def-latent-fractal-gas-step`) |
+| 11 | $\mathsf R$ | $r_i=\langle\mathcal R(z_i),v_i\rangle_G=\mathcal R_{z_i}(v_i)$ for the reward 1-form $\mathcal R$ of {prf:ref}`def-reward-1-form` |
+| 12 | $\mathsf G$ | The latent metric $G$ and the clamped fitness-Hessian factor $\Sigma_{\mathrm{reg}}=H_{\mathrm{reg}}^{-1/2}$, consumed by $\mathsf K$ |
+
+The reference implementation is the Python package `src/fragile/fractalai/core`, as cited in the defining chapter.
+:::
+
+:::{prf:definition} Environment Gas
+:label: def-variant-environment
+
+Let $(\mathcal S_{\mathrm{env}},\mathcal B_{\mathrm{env}})$ be a standard Borel space of complete environment snapshots, $\mathcal U$ a measurable action space, $P_{\mathrm{env}}(ds'\mid s,u)$ a probability kernel on $\mathcal S_{\mathrm{env}}$, $\phi:\mathcal S_{\mathrm{env}}\to\mathbb R^{d_o}$ a measurable feature map, $\pi(du\mid o)$ a measurable policy kernel, $\varrho:\mathcal S_{\mathrm{env}}\to\mathbb R$ a measurable reward read from the snapshot, and $\mathrm{term}:\mathcal S_{\mathrm{env}}\to\{0,1\}$ a measurable termination flag. The **Environment Gas** is the gas variant with the following components. It has no fixed numerical preset.
+
+| # | Component | Specification |
+|---|---|---|
+| 1 | $\mathcal W$ | $s\in\mathcal S_{\mathrm{env}}$, with observation $o=\phi(s)$. There is no velocity field. Every quantity that affects the transition, the reward or the termination, including the environment's random-number state and any policy memory, is part of $s$ |
+| 2–3 | $\mathsf C^{D}$, $\mathsf C^{C}$ | Two declared companion laws on $\mathcal A$; free |
+| 4 | $d_{\mathrm{alg}}$ | A declared distance or dissimilarity between observations $o_i,o_j$; free |
+| 5–6 | $\mathsf Z$, $\mathsf g$ | A declared standardizer and positive map; free |
+| 7 | $\mathsf A$ | A declared acceptance rule of the form of {prf:ref}`def-fg-cloning-decision`; terminated rows clone with probability one |
+| 8 | $\mathsf T$ | Literal copy of the complete donor snapshot $s_{c^{C}(i)}$, its observation and its reward. No jitter and no collision: an opaque snapshot admits no coordinate edit |
+| 9 | $\mathsf K$ | One environment transition per row: $u_i\sim\pi(\cdot\mid o_i)$, $s_i'\sim P_{\mathrm{env}}(\cdot\mid s_i,u_i)$. No thermostat, no viscous coupling, no curl rotation, no cap |
+| 10 | $\mathsf B$ | $a_i=1-\mathrm{term}(s_i)$, together with finiteness of the observation; revival at the cloning stage by copying an alive donor |
+| 11 | $\mathsf R$ | $r_i=\varrho(s_i)$, for example the cumulative episode reward, maximized |
+| 12 | $\mathsf G$ | $\varnothing$ |
+:::
+
+:::{prf:remark} Environment Gas: component and configuration correspondence
+:label: rem-variant-environment-rust
+
+No `GasConfig` constructor fixes this variant. The engine components that realize it are listed below; a documented instance is the opaque-simulator profile in {ref}`sec-algorithmic-gas-validation`.
+
+| Component | Engine element | Value or enum arm |
+|---|---|---|
+| $\mathcal W$ | opaque `StateStore` snapshots and the observation field produced by the `DomainAdapter` | domain-defined |
+| $\mathsf K$ | `kinetic.integrator` | `KineticKind::Environment`, which calls `DomainAdapter::transition` on the eligible rows and consumes no numerical noise source |
+| $F^{\mathrm{visc}}$, curl | `qft.viscosity`, `qft.graph_viscosity`, `qft.curl` | each must be `None`: the engine accepts viscosity only with `KineticKind::Baoab`, and curl rotation only with graph viscosity |
+| $\mathsf T$ | `clone_transform` | `CloneTransform::default()`: no jitter and no restitution |
+| $\mathsf B$ | `boundary` | `BoundaryPolicy::ExternalTermination`, optionally composed with other policies |
+| $\mathsf R$ | reward source | a `RewardSource` reading the environment reward |
+| $\mathsf G$ | `geometry` | `None` |
+:::
+
+:::{prf:remark} Component comparison of the named variants
+:label: rem-variants-comparison
+
+Abbreviations: EG Euclidean Gas, VEG Viscous Euclidean Gas, EHG Einstein–Hilbert Gas, GG Geometric Gas, LFG Latent Fractal Gas, EnvG Environment Gas. "Free" means a parameter or a declared choice of the instance.
+
+| Component | EG | VEG | EHG | GG | LFG | EnvG |
+|---|---|---|---|---|---|---|
+| $\mathcal W$ | $(x,v)\in\mathbb R^{2d}$ | as EG | $(x,v)\in\mathbb R^{2d}$, last coordinate Euclidean time for $d\ge3$ | $(x,v)\in\mathbb R^{2d}$ | $(z,v)\in T\mathcal Z$ | snapshot $s$; no velocity |
+| $\mathsf C^{D}$ | independent Gaussian, $\epsilon_D=2$ | as EG | uniform perfect matching | declared; reference soft Gaussian | independent soft Gaussian, $\epsilon$ | free |
+| $\mathsf C^{C}$ | independent Gaussian, $\epsilon_C=2$ | as EG | independent uniform perfect matching | declared | independent soft Gaussian, $\epsilon$ | free |
+| Companion map involutive | no | no | yes | no | no | depends on the law |
+| $d_{\mathrm{alg}}$ | squashed phase space | as EG | Euclidean on positions | phase space | chart phase space | on observations |
+| $\mathsf Z$ | global, $\sqrt{\operatorname{Var}+0.1^2}$ | as EG | sample deviation $+10^{-30}$ | $\rho$-localized, floor $s_*$ | global or $\rho$-localized, $\sigma_{\min}$ | free |
+| $\mathsf g$ | $2/(1+e^{-z})+0.1$ | as EG | $2/(1+e^{-z})$ | $\eta\,e^{Z}$ per channel | $A/(1+e^{-z})+\eta$ | free |
+| Cloning period $q$ | $1$ | $1$ | $20$ | declared | $1$ | free |
+| $\varepsilon_{\mathrm{clone}}$, $p_{\max}$ | $10^{-6}$, $1$ | as EG | $0$, $1$ | declared | free (reference $0.01$, $1$) | free |
+| Jitter $\sigma_{\mathrm{clone}}$ | $0.1$ | $0.1$ | $0$ | declared | free (reference $0.1$) | none |
+| Collision | $\alpha=0.5$, Haar $R_C$, connected components | as EG | $\alpha=1$, $R_C=I$: velocities unchanged | declared | $\alpha_{\mathrm{rest}}$, no rotation, recipient groups | none |
+| Integrator | BAOAB | BAOAB | BAOAB with Boris B stages | SDE of {prf:ref}`def-gg-sde` | Boris-BAOAB on $(T\mathcal Z,G)$ | environment transition |
+| Conservative force | $-\nabla U$ | $-\nabla U$ | $0$ | $-\nabla U$ | $-\nabla\Phi_{\mathrm{eff}}$ | — |
+| Adaptive force | none | none | none | $\epsilon_F\nabla V_i$ | none | — |
+| Thermostat | $\gamma=1$, $\sigma_v=1$; variance $1/2$ | as EG | $\gamma=1$; variance $T$ | $\gamma$, $\Sigma_i=(H_i+\epsilon_\Sigma I)^{-1/2}$ | $\gamma$, $T_c$, $\Sigma_{\mathrm{reg}}$ | — |
+| Viscous coupling | $0$ | Gaussian kernel $K_\rho$, coupling $\nu$ | tessellation graph, $\nu=3$ | row-normalized kernel, $\nu$ | row-normalized kernel, $\nu_{\mathrm{visc}}$ | — |
+| Curl rotation | none | none | $\beta_{\mathrm{curl}}=1$, curl of $F^{\mathrm{visc}}$ | none | $\beta_{\mathrm{curl}}$, $\mathcal F=d\mathcal R$ | — |
+| $\sigma_x$, $V_{\mathrm{alg}}$ | $0.1$, $2$ | as EG | $0$, $\infty$ | not part of the SDE | $0$, free | — |
+| $\mathsf B$ | box $[-2,2]^d$, terminal | as EG | $\mathbb R^d$, unbounded | killing rate or absorbing boundary | alive mask $B$, cemetery for $M<2$ | termination flag |
+| $\mathsf R$ | $-U(x)-\lambda_{\mathrm{vel}}\lVert v\rVert ^2$ | as EG | $R_i\sqrt{\det g_i}$ | $R(x)$ | $\mathcal R_z(v)$ | environment reward |
+| $\mathsf G$ | $\varnothing$ | $\varnothing$ | Delaunay tessellation | fitness-Hessian metric | $G$ and fitness-Hessian factor | $\varnothing$ |
+| Engine constructor | `GasConfig::euclidean` | `GasConfig::viscous_euclidean` | `GasConfig::einstein_hilbert` | none | none | none (`KineticKind::Environment`) |
+| Precision of the preset | `Precision::F64` | `Precision::F64` | `Precision::F32` | no preset | no preset | no preset |
+| Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | not established for $\nu>0$ | not established | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
+:::
+
+:::{prf:definition} Records and measurement families
+:label: def-variant-measurement-families
+
+For a gas variant $\mathcal V$ define the following **records** of one step.
+
+1. **Velocity record**: $\mathcal W$ has a velocity field $v_i\in\mathbb R^d$.
+2. **Colour record**: a velocity record together with the viscous force $F_i^{\mathrm{visc}}$ evaluated at a B stage and paired with the velocity at which it was evaluated. The colour state $c_i$ of {prf:ref}`thm-sm-su3-emergence` is defined on the rows with $F_i^{\mathrm{visc}}\ne0$.
+3. **Fitness and companion records**: $V_{\mathrm{fit},i}$, $c^{D}$, $c^{C}$ and the clone decisions $A_i$. Every variant has them.
+4. **Graph record**: a neighbor graph with edge weights produced by $\mathsf G$.
+5. **Euclidean-time axis**: a position coordinate that the tuple distinguishes from the others.
+
+The **measurement families** and their requirements are:
+
+| Family | Observables | Required records |
+|---|---|---|
+| Colour channels | colour contractions and their correlators ({prf:ref}`def-sm-direct-color-contractions`) | colour record and the companion role or roles entering the contraction |
+| $U(1)$ | companion amplitudes and phases ({prf:ref}`thm-sm-u1-emergence`) | fitness record and $c^{D}$ |
+| $SU(2)$ and chirality | companion doublets ({prf:ref}`def-sm-direct-companion-doublet`) and walker roles ({prf:ref}`def-sm-walker-chirality`) | fitness record, $c^{C}$ and the clone decisions |
+| Multiscale and graph | observables summed over graph neighborhoods or graph distances | graph record |
+| Euclidean-time axis | correlators in the separation $t_i-t_j$ along a position coordinate | Euclidean-time axis |
+
+A family is **available** for $\mathcal V$ when its required records exist and are not identically degenerate, and **unavailable** otherwise. Availability is a property of the tuple; it does not assert that a statistic has a particular value or a physical interpretation.
+:::
+
+:::{prf:proposition} Exchange-odd frame sums vanish on an involutive companion map
+:label: prop-exchange-odd-cancellation
+
+Let $I$ be a finite index set, $c:I\to I$ a map with $c(c(i))=i$ for every $i\in I$, $\mathbb K\in\{\mathbb R,\mathbb C\}$, $\mathbb V$ a vector space over $\mathbb K$, and $O:I\times I\to\mathbb V$ an exchange-odd operator: $O_{ji}=-O_{ij}$ for all $i,j\in I$. Then for every weight $w:I\to\mathbb K$,
+
+$$
+\sum_{i\in I}w_iO_{i\,c(i)}=\frac12\sum_{i\in I}\bigl(w_i-w_{c(i)}\bigr)O_{i\,c(i)}.
+$$
+
+In particular, if the weight is pair-symmetric, $w_i=w_{c(i)}$ for every $i$, then
+
+$$
+\sum_{i\in I}w_iO_{i\,c(i)}=0.
+$$
+
+Each fixed point $i=c(i)$ contributes $O_{ii}=0$.
+:::
+
+:::{prf:remark} Scope of the cancellation
+:label: rem-exchange-odd-scope
+
+1. **Where it applies.** In the Einstein–Hilbert Gas both $c^{D}$ and $c^{C}$ are involutions of $\mathcal A$ and $\mathcal A=\{1,\ldots,N\}$ ({prf:ref}`prop-variant-eh-identities`). An unsplit frame average has $w_i=1$. Hence the frame mean of every exchange-odd operator is identically zero at every step and for every realization: for example $V_{\mathrm{fit},j}-V_{\mathrm{fit},i}$, $v_j-v_i$, $x_j-x_i$, and $\sin[(V_{\mathrm{fit},j}-V_{\mathrm{fit},i})/\hbar_{\mathrm{eff}}]$. All autocorrelations of such a frame-mean series vanish. {prf:ref}`cor-sm-paired-doublet-cancellation` is the case $O_{ij}=a_i-a_j$.
+2. **Where it does not apply.** The normalized score $S_i(j)=(V_{\mathrm{fit},j}-V_{\mathrm{fit},i})/(V_{\mathrm{fit},i}+\varepsilon_{\mathrm{clone}})$ is not exchange-odd, because the two denominators differ. Exchange-even operators are unaffected. With independent companion draws (Euclidean, Viscous Euclidean, Geometric and Latent variants) the map $c$ is in general not an involution and the proposition gives no constraint.
+3. **What remains available on a mutual pairing.** By the first identity, a weight that is not pair-symmetric retains the signal: the oriented weight $w_i=\mathbf 1_{\{V_{\mathrm{fit},c(i)}>V_{\mathrm{fit},i}\}}$ gives $\Sigma=\sum_{i:V_{c(i)}>V_i}O_{i\,c(i)}$, and role masks act in the same way. Correlators that pair an operator at one step with an operator at a later step through a fixed source row are not frame sums of the above form and are not constrained.
+:::
+
+:::{prf:remark} Availability of the measurement families by variant
+:label: rem-variants-measurability
+
+A denotes available and U unavailable in the sense of {prf:ref}`def-variant-measurement-families`. The bracketed numbers refer to the structural reasons listed below the table.
+
+| Variant | Colour channels | $U(1)$ | $SU(2)$ and chirality | Multiscale and graph | Euclidean-time axis |
+|---|---|---|---|---|---|
+| Euclidean Gas | U [1] | A | A | U [5] | U [6] |
+| Viscous Euclidean Gas | A for $\nu>0$ [2] | A | A | U [5] | U [6] |
+| Einstein–Hilbert Gas | A [3] | A [7] | A, with exchange-odd frame means identically zero [8] | A [9] | A for $d\ge3$ [10] |
+| Geometric Gas | A for $\nu>0$ [2] | A | A | U [5] | U [6] |
+| Latent Fractal Gas | A for $\nu_{\mathrm{visc}}>0$; U at the reference value $\nu_{\mathrm{visc}}=0$ [1, 2] | A | A | U [5] | U [6] |
+| Environment Gas | U [4] | A | A | U [5] | U [6] |
+
+Structural reasons:
+
+1. $F^{\mathrm{visc}}\equiv0$. By {prf:ref}`thm-sm-su3-emergence` the colour encoding divides by $\|F_i^{\mathrm{visc}}\|$ and is undefined at zero force, so the colour state is undefined on every row at every step.
+2. The viscous coupling is nonzero for $\nu>0$. The colour state is defined on the rows with $F_i^{\mathrm{visc}}\ne0$; rows with zero force, for example in a population with equal velocities, are excluded, and any replacement at zero force must be declared. The kernel is invariant under simultaneous orthogonal maps of positions and velocities, as the covariance statement of {prf:ref}`thm-sm-su3-emergence` requires.
+3. The graph viscous force with $\nu=3$ is the recorded force. It vanishes on a population at rest, in particular at the reference initial condition, and on rows without neighbors; those rows are excluded. For $d\ge3$ the weights are invariant under $O(d-1)\times O(1)$ only, and on Delaunay-generic configurations (Item 5 of {prf:ref}`prop-variant-eh-identities`), so the covariance hypothesis of {prf:ref}`thm-sm-su3-emergence` holds for that subgroup and not for $O(d)$.
+4. $\mathcal W$ has no velocity field and $\mathsf K$ has no B stage, so neither factor of the colour encoding exists.
+5. $\mathsf G=\varnothing$, or $\mathsf G$ is a per-walker metric without a neighbor graph. No graph record is produced by the tuple.
+6. No component distinguishes a position coordinate: every component treats the $d$ coordinates identically, or $\mathcal W$ has no position coordinates. A Euclidean-time correlator requires an axis declared by the analysis, which is then not a property of the variant.
+7. The companion law is uniform, so the amplitude moduli of {prf:ref}`thm-sm-u1-emergence` carry no information: the matching law is invariant under relabeling of $\mathcal A$, so for even $M$ the marginal is $P_i(k)=1/(M-1)$ for $k\ne i$, and for odd $M$ each walker is the unmatched one with probability $1/M$ and $P_i(k)=1/M$ for every $k\in\mathcal A$ including $k=i$. The phases remain available. Self-companion rows are excluded from pair observables.
+8. {prf:ref}`prop-exchange-odd-cancellation` and {prf:ref}`rem-exchange-odd-scope`. In addition the gate is closed unless $n\equiv0\pmod{20}$, so the clone decisions, and the roles of {prf:ref}`def-sm-walker-role-partition` that depend on them, are nontrivial only on those steps; on all other steps $\Delta_t=\mathrm{SR}_t=\varnothing$.
+9. $\mathsf G$ produces the Delaunay neighbor graph with the weights $w^{R}$ and $w^{\mathrm{visc}}$ and the metric edge lengths.
+10. For $d\ge3$ the last position coordinate is excluded from the tessellation and is the Euclidean-time coordinate of {prf:ref}`def-variant-einstein-hilbert`. For $d<3$ no coordinate is distinguished and reason 6 applies.
+:::
+
 ## convergence_program/01_fragile_gas_framework.md
 
 :::{prf:definition} Walker
@@ -20484,10 +20952,10 @@ its evaluation-stage identifier. Endpoint state data and intermediate force
 evaluations are distinct samples of the split update.
 :::
 
-:::{prf:definition} Adaptive Gas SDE
+:::{prf:definition} Geometric Gas SDE
 :label: def-fractal-set-sde
 
-The Adaptive Gas dynamics for walker $i$ with state $(x_i, v_i)$ is governed by:
+In the notation of this chapter, the dynamics of the Geometric Gas ({prf:ref}`def-variant-geometric`) for walker $i$ with state $(x_i, v_i)$ take the form:
 
 $$dv_i = \left[\mathbf{F}_{\mathrm{stable}}(x_i) + \mathbf{F}_{\mathrm{adapt}}(x_i, S) + \mathbf{F}_{\mathrm{viscous}}(x_i, S) - \gamma v_i\right] dt + \Sigma_{\mathrm{reg}}(x_i, S) \circ dW_i,$$
 
@@ -20498,6 +20966,8 @@ where:
 - $\mathbf{F}_{\mathrm{viscous}}(x, S) = \nu \sum_{j \neq i} K_\rho(x_i, x_j)(v_j - v_i)$ is the viscous coupling force
 - $\Sigma_{\mathrm{reg}}(x, S)$ is the fitness-adapted diffusion tensor
 - $dW_i$ is a standard Wiener process
+
+The variant itself is defined by {prf:ref}`def-gg-sde`, which uses row-normalized viscous weights and the adaptive force $\epsilon_F\nabla_{x_i}V_i$; the two conventions are compared in {prf:ref}`def-variant-geometric`.
 :::
 
 :::{prf:proposition} CST Edge Encodes Complete Kinetic Update
@@ -26075,14 +26545,20 @@ $$
 If the scalar kernel $K_{ij}$ is unchanged under a simultaneous orthogonal
 change $(x_i,v_i)\mapsto(Ox_i,Ov_i)$, then
 $F_i^{\mathrm{visc}}\mapsto OF_i^{\mathrm{visc}}$.
-For $F_i^{\mathrm{visc}}\ne0$, the componentwise encoding
+For $F_i^{\mathrm{visc}}\ne0$ consider the componentwise encoding
 
 $$
 c_i^{(a)}=\frac{F_i^{\mathrm{visc},a}}{\|F_i^{\mathrm{visc}}\|}
- \exp\!\left(\frac{imv_i^a\ell_0}{\hbar_{\mathrm{eff}}}\right)
+ \exp\!\left(\frac{imv_i^a\ell_0}{\hbar_{\mathrm{eff}}}\right).
 $$
 
-has unit norm in $\mathbb C^d$. The encoding is generally nonlinear under
+Here $v_i$ is the velocity at which the displayed force sum is evaluated, its
+force-input velocity: one velocity field enters the force and the phase.
+A readout that takes the phase velocity from a different stage is a different
+observable map; the admissible pairings are listed in
+{prf:ref}`def-sm-color-alignment`.
+
+This encoding has unit norm in $\mathbb C^d$. The encoding is generally nonlinear under
 orthogonal mixing of components. It therefore requires an additional
 representation map before it can be used as a covariant color field.
 At zero force it is undefined; any zero-force replacement must be specified.
@@ -26175,7 +26651,22 @@ $$
 \end{cases}
 $$
 
-The zero-denominator indicator is retained with the average. Different pair
+The zero-denominator indicator is retained with the average.
+
+With $W_t=\sum_Iw_Im_I$ and $N$ the number of recorded rows, the
+fixed-normalization companion of this average is
+
+$$
+\mathcal A_t^{N}(O)=\frac1N\sum_Iw_Im_IO_I=\frac{W_t}{N}\,\mathcal A_t(O).
+$$
+
+$\mathcal A_t$ is the primary frame average of this chapter;
+$\mathcal A_t^{N}$ is the frame observable of
+{prf:ref}`thm-effective-twistor-spectral-meaning`. Both are functions of the
+complete recorded state, and {prf:ref}`prop-qft-frame-normalizations` states
+what each of them satisfies.
+
+Different pair
 selection, score orientation, weighting, or invalid-sample conventions define
 different observable maps. The result is a law of numerical fields before its
 exterior representation is introduced. Its normalization follows
@@ -26183,6 +26674,84 @@ from that of $\mathbb P_{\mathrm{rec}}$. Each application specifies whether
 this is a finite recorded law, a conservative stationary history,
 a survival-conditioned history, or a history of the established
 Doob-transformed process.
+:::
+
+:::{prf:definition} Colour record alignments
+:label: def-sm-color-alignment
+
+Index a frame by the update step whose input population it is: frame $t$
+holds the positions $x_t$, velocities $v_t$, companion maps, fitness values
+and clone decisions of step $t$ before its clone transform. Inside step $t$
+the kinetic operator evaluates the viscous force at its B stages. For
+$s\in\{\mathrm{B1},\mathrm{B2}\}$, the first B stage after the clone
+transform and the last B stage of the step, write $v_t^{s}$ for the velocity
+field at which stage $s$ evaluates the force, its force-input velocity, and
+$F_t^{s}=F^{\mathrm{visc}}(x_t^{s},v_t^{s})$ for the recorded force.
+
+An alignment assigns to frame $t$ a pair $(F,u)$ of recorded fields and sets
+$\widetilde c_i^{\,a}=F_i^{a}e^{i\kappa u_i^{a}}$ in
+{prf:ref}`def-sm-direct-observable-law`.
+
+| Alignment | Force $F$ | Phase velocity $u$ | Rows masked in addition to $m_i$ |
+|---|---|---|---|
+| $\mathsf A_{\mathrm{PK}}$, preceding kick (primary) | $F_{t-1}^{\mathrm{B2}}$ | $v_{t-1}^{\mathrm{B2}}$ | rows without a contiguous record of step $t-1$; rows whose walker at that stage is not the walker of frame $t$ |
+| $\mathsf A_{\mathrm{MK}}(s)$, matched kick | $F_t^{s}$ | $v_t^{s}$ | rows whose clone decision at step $t$ is accepted |
+| $\mathsf A_{\mathrm{PF}}$, preceding force | $F_{t-1}^{\mathrm{B2}}$ | $v_t$ | as $\mathsf A_{\mathrm{PK}}$ |
+| $\mathsf A_{\mathrm{RO}}$, reference offset | $F_t^{\mathrm{B1}}$ | $v_t$ | as $\mathsf A_{\mathrm{MK}}$ |
+
+$\mathsf A_{\mathrm{PK}}$ and $\mathsf A_{\mathrm{MK}}(s)$ are
+**single-velocity** alignments: the phase velocity is the force-input
+velocity, as the encoding of {prf:ref}`thm-sm-su3-emergence` requires.
+$\mathsf A_{\mathrm{PF}}$ and $\mathsf A_{\mathrm{RO}}$ are **two-velocity**
+alignments.
+
+Under $\mathsf A_{\mathrm{PK}}$ the colour of frame $t$ is a function of the
+history before the companion draws of step $t$, and it belongs to the
+population, slots and positions of frame $t$ whenever the step applies no
+position update after its last B stage; a final position diffusion, velocity
+cap or boundary map must be declared with the readout. Under
+$\mathsf A_{\mathrm{MK}}(s)$ the force is evaluated after the clone transform
+of step $t$, while the companions, fitness values and positions of frame $t$
+are pre-clone; a row that accepted a clone carries its donor's state and is
+masked. The first frame of a recorded segment has no colour under
+$\mathsf A_{\mathrm{PK}}$ and $\mathsf A_{\mathrm{PF}}$; it is a missing
+record, not a zero.
+:::
+
+:::{prf:proposition} Two-velocity alignments are componentwise rephasings
+:label: prop-sm-color-alignment-rephasing
+
+Let $(F,u)$ and $(F,u')$ be alignments with the same force field, with
+colours $c_i$ and $c_i'$, and put $\delta_i=u_i'-u_i\in\mathbb R^d$. Then:
+
+1. The validity masks coincide, $|c_i'^{\,a}|=|c_i^{a}|$ for every
+   component, and
+
+   $$
+   c_i'=D_ic_i,\qquad
+   D_i=\operatorname{diag}\bigl(e^{i\kappa\delta_i^{1}},\ldots,
+                                   e^{i\kappa\delta_i^{d}}\bigr),\qquad
+   q_{ij}'=\sum_a\overline{c_i^{a}}\,c_j^{a}\,
+             e^{i\kappa(\delta_j^{a}-\delta_i^{a})}.
+   $$
+
+2. For fixed $\delta_i,\delta_j$, the equality $q_{ij}'=q_{ij}$ holds for all
+   unit vectors $c_i,c_j$ if and only if
+   $\kappa(\delta_j^{a}-\delta_i^{a})\in2\pi\mathbb Z$ for every $a$.
+3. $D_i$ is a scalar phase only if $\kappa\delta_i^{a}$ is independent of $a$
+   modulo $2\pi$. In general the two colours are therefore not related by the
+   independent rephasings of {prf:ref}`thm-sm-direct-color-invariants`, and
+   $|q_{ij}|^2$, $|b_{ijk}|^2$ and $\Pi_{ijk}$ differ between the alignments.
+4. If $u$ and $u'$ both change sign under the inversion of
+   {prf:ref}`prop-sm-direct-parity`, that proposition holds for both
+   alignments.
+
+For $\mathsf A_{\mathrm{PF}}$ against $\mathsf A_{\mathrm{PK}}$ one has
+$\delta_i=v_{t,i}-v_{t-1,i}^{\mathrm{B2}}$, the velocity change produced by
+the last kick and every later stage of step $t-1$; for
+$\mathsf A_{\mathrm{RO}}$ against $\mathsf A_{\mathrm{MK}}(\mathrm{B1})$,
+$\delta_i=v_{t,i}-v_{t,i}^{\mathrm{B1}}$, the negative of the velocity change
+produced by the clone transform of step $t$.
 :::
 
 :::{prf:definition} Direct color contractions
@@ -26212,11 +26781,23 @@ These formulas are the standard modes of
 `vector_operators.py`, `baryon_operators.py`, and `glueball_operators.py`.
 Score-directed and score-weighted modes additionally transform their
 orientation and weights according to the configured rule. The color input
-is formed in `src/fragile/physics/qft_utils/color_states.py`: the selected
-`v_before_clone` frame is paired with its preceding `force_viscous` entry.
-That time alignment is part of the observable map.
+is a colour record in the sense of
+{prf:ref}`def-variant-measurement-families`: a B-stage viscous force together
+with a velocity field. Its admissible pairings are the alignments of
+{prf:ref}`def-sm-color-alignment`; the alignment is part of the observable
+map. The primary alignment of this chapter is the preceding kick
+$\mathsf A_{\mathrm{PK}}$. The reference routine
+`src/fragile/physics/qft_utils/color_states.py` reads `v_before_clone[t]`
+with `force_viscous[t-1]`; its per-step arrays are stored one row behind its
+per-frame arrays, so that entry is the first B-stage force of step $t$ itself
+and the routine forms the fields $(F,u)$ of $\mathsf A_{\mathrm{RO}}$. With
+`history_conventions.force_stage = "after_clone"` it reads `v_after_clone`
+and forms the fields of $\mathsf A_{\mathrm{MK}}(\mathrm{B1})$. In both cases
+the routine returns the mask $m_i$ only. The additional row mask of
+{prf:ref}`def-sm-color-alignment` is not part of the routine; a readout that
+omits it is a different observable map and declares the omission.
 
-The names scalar, pseudoscalar, baryon, and glueball label measurement
+The names scalar, pseudoscalar, vector, axial, baryon, and glueball label measurement
 channels. A spin, charge-conjugation, or physical-particle assignment requires
 the corresponding transformations and spectral identification of this law.
 :::
@@ -26316,6 +26897,112 @@ These parity identities leave rotational spin and charge conjugation to
 their separately specified transformations.
 :::
 
+:::{prf:corollary} Exchange parity of the direct pair channels and mutual-pair cancellation
+:label: cor-sm-direct-exchange-parity
+
+Exchange of the two walkers of a pair gives
+$q_{ji}=\overline{q_{ij}}$ and $r_{ji}=-r_{ij}$. With $X$ the sign under this
+exchange and $P$ the sign under the inversion of
+{prf:ref}`prop-sm-direct-parity`:
+
+| Channel | $X$ | $P$ |
+|---|---|---|
+| $\operatorname{Re}q_{ij}$ | $+$ | $+$ |
+| $\operatorname{Im}q_{ij}$ | $-$ | $-$ |
+| $\lvert q_{ij}\rvert^2$ | $+$ | $+$ |
+| $\operatorname{Re}q_{ij}\,r_{ij}$ | $-$ | $-$ |
+| $\operatorname{Im}q_{ij}\,r_{ij}$ | $+$ | $+$ |
+
+Let the pair elements of a frame be $I_i=(i,c(i))$ for a companion map with
+$c\circ c=\mathrm{id}$ on the recorded rows, and let $w_Im_I$ take the same
+value on $(i,c(i))$ and on $(c(i),i)$; this holds for $w_I=1$ and
+$m_I=m_im_{c(i)}$. Then every channel $O$ with $X=-$ satisfies
+
+$$
+\sum_Iw_Im_IO_I=0,\qquad
+\mathcal A_t(O)=0,\qquad\mathcal A_t^{N}(O)=0
+$$
+
+for every realization, every frame and every parameter value. Its frame
+series is the zero series: all its autocorrelations and all its
+cross-correlations with other series vanish, and it has no decay rate. Among
+the standard channels this applies to $\operatorname{Im}q_{ij}$ and to every
+component of $\operatorname{Re}q_{ij}\,r_{ij}$, for the raw and for the unit
+displacement. The channels with $X=+$ are not constrained.
+
+The same conclusion holds for the imaginary part of any pair amplitude with
+$a_{ji}=\overline{a_{ij}}$. For the diversity amplitude
+$a_{ij}=\exp[-D_{ij}^2/(4\ell_d^2)]\,e^{-i(F_j-F_i)/\hbar_{\mathrm{eff}}}$ with
+a symmetric distance, the frame average on a mutual distance pairing is the
+real number $\mathcal A_t(\exp[-D^2/(4\ell_d^2)]\cos[(F_j-F_i)/\hbar_{\mathrm{eff}}])$.
+It does not hold for the score amplitude of {ref}`(SM.U1) <eq-fg-sm-u1>`,
+whose phases obey only
+$(|F_i|+\varepsilon_{\mathrm{clone}})\vartheta_{ij}
+ +(|F_j|+\varepsilon_{\mathrm{clone}})\vartheta_{ji}=0$.
+
+A product of one channel evaluated on a fixed source pair at two times,
+$O_I(t)\,O_I(t+\ell)$, has $X=+$ for every channel. The source-frozen pair
+correlators of {prf:ref}`def-effective-twistor-correlators` are therefore not
+constrained, and for a channel with $X=-$ on a mutual pairing with
+exchange-symmetric joint masks their disconnected term vanishes.
+
+The hypothesis $c\circ c=\mathrm{id}$ holds for the mutual-pair sampler of
+{prf:ref}`cor-sm-physics-paired-cloning` and for both companion maps of the
+Einstein–Hilbert Gas ({prf:ref}`prop-variant-eh-identities`). It fails in
+general for independent companion draws, and the conclusion fails for
+weights that differ at the two ends of a pair, such as score-directed
+orientations and role masks; the residual is then the first identity of
+{prf:ref}`prop-exchange-odd-cancellation`.
+:::
+
+:::{prf:proposition} Role-swap antisymmetry of determinant frame averages
+:label: prop-sm-direct-role-swap
+
+At frame $t$ let the triplet elements be
+$I_i=(i,j,k)=(i,c_t^{D}(i),c_t^{C}(i))$, with weights and masks invariant
+under exchange of the last two entries; this holds for $w_I=1$ and
+$m_I=m_im_jm_k\mathbf 1_{\{i,j,k\ \mathrm{distinct}\}}$. Let $\mathsf s$ be the
+swap $(c^{D},c^{C})\mapsto(c^{C},c^{D})$.
+
+1. $b_{ikj}=-b_{ijk}$ and $\Pi_{ikj}=\overline{\Pi_{ijk}}$. Hence
+   $\operatorname{Re}b$, $\operatorname{Im}b$ and $\operatorname{Im}\Pi$ are
+   odd under $\mathsf s$, while $|b|^2$, $\operatorname{Re}\Pi$,
+   $1-\operatorname{Re}\Pi$, $1-\cos(\arg\Pi)$ and $\sin^2(\arg\Pi)$ are even.
+2. Let $\mathcal G_t$ be a $\sigma$-algebra for which the colours and the row
+   masks $m_i$ of frame $t$ are measurable, let $w_I$ and $m_I$ be
+   $\mathcal G_t$-measurable functions of the element $I$, and suppose that
+   the conditional law
+   of $(c_t^{D},c_t^{C})$ given $\mathcal G_t$ is invariant under $\mathsf s$.
+   Then every channel $O$ that is odd under $\mathsf s$ satisfies
+   $\mathbb E[\mathcal A_t(O)\mid\mathcal G_t]=0$ and
+   $\mathbb E[\mathcal A_t^{N}(O)\mid\mathcal G_t]=0$. If moreover
+   $\mathcal A_s(O)$ is $\mathcal G_t$-measurable for every $s<t$, then
+   $\mathbb E[\mathcal A_s(O)\,\mathcal A_t(O)]=0$ for all $s<t$: the frame
+   series is centred and uncorrelated at every nonzero lag, and it has no
+   decay rate in the sense of {prf:ref}`def-qft-channel-decay-rate`.
+3. If $c_t^{D}$ and $c_t^{C}$ are involutions and $I_i$ has distinct entries,
+   no anchor $i'\ne i$ produces the same unordered triple. The statement of
+   item 2 is therefore about conditional expectations; unlike
+   {prf:ref}`cor-sm-direct-exchange-parity` it is not an identity of each
+   realization.
+4. The source-frozen product $O_I(t)\,O_I(t+\ell)$ is even under $\mathsf s$
+   for every channel. In particular the complex determinant correlator
+   $\operatorname{Re}(\overline{B_s}B_t)$ of
+   {prf:ref}`prop-sm-baryon-exterior-correlator` is not constrained.
+
+The hypothesis of item 2 holds when the two companion maps are drawn
+independently from one conditional law given the history before the draws,
+on one recipient set, and the colour alignment is determined before the
+draws ($\mathsf A_{\mathrm{PK}}$ or $\mathsf A_{\mathrm{PF}}$ of
+{prf:ref}`def-sm-color-alignment`). Examples are the two independent uniform
+matchings of {prf:ref}`alg-einstein-hilbert-gas` and independent row draws
+from one companion kernel with equal ranges and distances for both roles. It
+is not implied for $\mathsf A_{\mathrm{MK}}$ and $\mathsf A_{\mathrm{RO}}$,
+whose force is evaluated after a clone transform that uses $c^{C}$ alone, so
+that the colours of frame $t$ depend on one of the two maps, nor for roles
+with different kernels, ranges or recipient sets.
+:::
+
 :::{prf:definition} Direct companion amplitudes and two-hop doublets
 :label: def-sm-direct-companion-doublet
 
@@ -26338,16 +27025,29 @@ one. Define $z_i=d_i/\|d_i\|$ on nonzero doublets.
 In the standard mode of
 `src/fragile/physics/operators/electroweak_operators.py`, `su2_component`
 uses $a_i$, `su2_doublet` uses $a_i+a_{k(i)}$, and `su2_doublet_diff` uses
-$a_i-a_{k(i)}$, followed by masked frame averaging. The code uses the same
-numerical `epsilon_clone` as the denominator regularizer and the spatial
-amplitude width in this operator path; the displayed $\ell_c$ separates
-these roles for dimensional bookkeeping. Equality of their numerical values
-is an implementation convention in its chosen units. The normalized $z_i$
+$a_i-a_{k(i)}$, followed by masked frame averaging. The width $\ell_c$ is the
+range of the cloning-companion kernel: for the
+Gaussian kernel of {prf:ref}`def-fractal-set-companion-kernel`,
+$\ell_c=\epsilon_c$, so that
+$|a_i|=\exp[-D_i^2/(4\epsilon_c^2)]=\sqrt{w_{i\,k(i)}}$ is the square root of
+the unnormalized companion weight. The regularizer
+$\varepsilon_{\mathrm{clone}}$ has the units of a fitness and enters the
+phase denominator only. A companion law without a range, such as a uniform
+matching, does not determine $\ell_c$; the readout then declares either the
+modulus one or an explicit width. In
+`src/fragile/physics/operators/electroweak_operators.py` one argument,
+`epsilon_clone`, supplies both numbers, so that path realizes this definition
+only when the supplied value equals $\epsilon_c$. For
+$D_i/\ell_c>55$ the modulus $\exp[-D_i^2/(4\ell_c^2)]$ is below the smallest
+positive double-precision number and evaluates to zero; every
+amplitude-weighted channel of that path is then the zero series.
+The normalized $z_i$
 and its determinant contractions below are additional mathematical
 observables; the current scalar channel names do not assert their computation.
 
 The diversity amplitude is constructed analogously with the distance
-companion, its configured bandwidth, and the fitness-difference phase.
+companion, its configured bandwidth $\ell_d=\epsilon_d$, and the
+fitness-difference phase.
 All exponents require the stated dimensionless normalization of the scores
 and fitness variables. These are observable definitions at a fixed record.
 :::
@@ -27214,11 +27914,12 @@ entire phase-augmented space would fail. A convergence estimate for observations
 at one scheduling phase uses the actual $q$-step kernel on that phase;
 intermediate observations retain their ordered phase-dependent kernels.
 
-The fixed-step gate in {ref}`(SM.K7) <eq-fg-sm-k7>` has order-one acceptance probability. The
-finite-attempt-rate equation of {prf:ref}`def-cloning-generator` is the
-continuous realization specified in
-{prf:ref}`rem-mean-field-attempt-scaling`. Its infinitesimal acceptance
-scaling is used only in that realization or a proved scaling limit.
+The fixed-step gate in {ref}`(SM.K7) <eq-fg-sm-k7>` has order-one acceptance probability. A
+finite-attempt-rate differential equation for cloning is a different,
+continuous-time model. By {prf:ref}`rem-mean-field-attempt-scaling` it is
+identified with the configured algorithm only through a proved scaling limit
+of these same iterates, and its infinitesimal acceptance scaling is used only
+in such a limit.
 All finite-step identities above hold at the implemented timestep.
 :::
 
@@ -33654,8 +34355,9 @@ lag-dependent valid-pair normalization.
 :label: cor-effective-twistor-positive-transfer
 
 Suppose the actual kernel and observable in {prf:ref}`thm-effective-twistor-spectral-meaning`
-have the positive self-adjoint transfer representation specified in {doc}`09_qft_calibration`,
-with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis. For a
+have a positive self-adjoint transfer representation,
+with $K=e^{-\Delta t H}$, a unique zero-energy vacuum, and a complete orthonormal energy basis; this
+is a sufficient condition for {prf:ref}`assm-qft-positive-transfer`. For a
 self-adjoint frame observable with its vacuum mean removed,
 
 $$
@@ -34077,6 +34779,49 @@ must share a dimension and precision. Mixed-sign clipping and clipping
 thresholds are rejected by this method; there is no automatic backend
 fallback. Such mixed-sign queries require the separately invoked
 general metric calculation.
+:::
+
+:::{prf:definition} Computational representation of tessellation geometry
+:label: def-tessellation-rust-representation
+
+The Rust module `algorithmic_gas::tessellation` estimates geometry from
+the walker positions alone, without fitness derivatives. It is the
+discrete counterpart of {ref}`sec-tessellation-to-curvature`: the sites
+are the projections of the eligible walkers onto the tessellated
+coordinates, and every later quantity is a function of their Delaunay
+complex.
+
+| Component | Mathematical input and result |
+|---|---|
+| `TessellatorKind` | Delaunay complex of the distinct sites: sorted path ($d=1$), planar triangulation ($d=2$), tetrahedralization with exact orientation and in-sphere predicates ($d=3$). Coincident walkers share a site and are mutual neighbors; a swarm confined to an affine subspace is triangulated inside that subspace; no coordinate is perturbed |
+| `TessellationDomain` | Open space, a clip box realized by mirror-image sites, or a periodic box realized by translated image sites with minimum-image displacements |
+| `VoronoiCells` | Dual cells from the circumcenters: facet measure $A_{ij}$ and volume $V_i=\sum_j A_{ij}\lVert x_j-x_i\rVert/(2d)$ |
+| `MetricKind::NeighborCovariance` | Emergent metric $g_i=\bigl(\tfrac{1}{\deg i}\sum_{j\sim i}\Delta x_{ij}\Delta x_{ij}^{\mathsf T}+\varepsilon I\bigr)^{+}$ with clamped spectrum, its determinant, and the diffusion factor $g_i^{-1/2}$ |
+| `VolumeKind` | $\sqrt{\det g_i}$, the Voronoi volume $V_i$, or their product |
+| `WeightMode` | Edge weights $w_{ij}$ from Euclidean or metric edge lengths $d_g(i,j)^2=\Delta x_{ij}^{\mathsf T}\tfrac12(g_i+g_j)\Delta x_{ij}$, volumes, or facet measures, optionally normalized over each walker's neighbors |
+| `CurvatureKind::ConformalLaplacian` | With $u_i=\log\det g_i/(2d)$, the conformal scalar curvature $R_i=-2(d-1)\sum_j w_{ij}(u_j-u_i)$ |
+| `CurvatureKind::ConformalQuadraticFit` | Weighted local quadratic fit of $u$ giving $\nabla u$ and $\nabla^2u$; $R=-2(d-1)e^{-2u}\bigl(\Delta u+\tfrac{d-2}{2}\lVert\nabla u\rVert^2\bigr)$ and the coordinate Ricci tensor $R_{ab}=-(d-2)(u_{ab}-u_au_b)-(\Delta u+(d-2)\lVert\nabla u\rVert^2)\delta_{ab}$ |
+| `CurvatureKind::ReggeDeficit` | Deficit angles $\delta_h$ of the hinges (vertices for $d=2$, edges for $d=3$) from edge lengths alone, with $\int R\,dV=2\sum_h\lvert h\rvert\delta_h$ allocated to the sites over their barycentric dual volumes |
+| `CurvatureKind::{VolumeDistortion, ShapeDistortion, RaychaudhuriExpansion}` | Voronoi-cell indicators: $1-V_i/\langle V\rangle$, $1-r_{\mathrm{in}}/r_{\mathrm{circ}}$, and $-\theta_i$ with $\theta_i=(V_i-V_i^{\mathrm{prev}})/(\Delta t\,V_i)$ ({ref}`sec-discrete-raychaudhuri`) |
+| `RewardAllocationKind::EinsteinHilbertDensity` | The walker's share $r_i=\lambda R_i\,\mathrm{vol}_i$ of the Einstein–Hilbert action |
+
+The conformal estimators measure the curvature of the conformal class
+$e^{2u}\delta$ with $\det g=e^{2du}$; they are exact for a conformally
+flat metric and ignore the trace-free part of $g$. The quadratic fit is
+exact for quadratic $u$ up to its ridge, which is absolute and must stay
+far below the squared neighbor spacing. A Regge deficit angle is
+$O(h^2)$ in the neighbor spacing $h$, the same order as the relative
+error of a length built from the endpoint metrics; the Regge action
+converges to the continuum one for exact geodesic edge lengths, and with
+endpoint-metric lengths it is an indicator with an $O(1)$ discretization
+bias. The Voronoi indicators are heuristic. None of these constructions
+imposes a field equation.
+
+Predicates are evaluated exactly in double precision on the exact images
+of the run-precision coordinates; numerical geometry uses the run
+precision. Every per-walker, per-edge and per-cell result is a pure
+function of the tessellation, so serial and thread-parallel evaluation
+return identical bits.
 :::
 
 :::{prf:assumption} Spatial and spacetime geometry used in this chapter
@@ -39117,6 +39862,328 @@ the shorthand units $\hbar_{\rm eff}=c=1$.
 
 ## 2_fractal_set/09_qft_calibration.md
 
+:::{prf:definition} Channel, channel correlator and decay rate
+:label: def-qft-channel-decay-rate
+
+Let $(R_n)_{n\ge0}$ be the complete recorded-state chain of
+{prf:ref}`thm-effective-twistor-spectral-meaning`, with transition kernel $K$
+and an invariant law $\pi$. A **channel** $\chi$ consists of a local operator
+$O$ with $c\ge1$ real components, its element selection, masks, weights and
+colour alignment ({prf:ref}`def-sm-color-alignment`), and one of the frame
+normalizations $\mathcal A_t$ or $\mathcal A_t^{N}$ of
+{prf:ref}`def-sm-direct-observable-law`. These data define a frame observable
+$f_\chi=(f_\chi^{1},\ldots,f_\chi^{c})$, a function of the recorded state.
+Assume $f_\chi^{k}\in L^2(\pi)$. The **channel correlator** is the contracted
+connected autocorrelation
+
+$$
+C_\chi(\ell)=\sum_{k=1}^{c}
+ \operatorname{Cov}_\pi\bigl(f_\chi^{k}(R_0),f_\chi^{k}(R_\ell)\bigr),
+\qquad \ell=0,1,2,\ldots
+$$
+
+For an assigned time $\Delta\tau>0$ per lag, the effective rate is
+
+$$
+m_\chi(\ell)=-\frac1{\Delta\tau}\log\frac{C_\chi(\ell+1)}{C_\chi(\ell)},
+$$
+
+defined at the lags where both correlator values are positive. The channel
+has the **decay rate** $m_\chi\in[0,\infty]$ when $C_\chi(\ell)>0$ for all
+sufficiently large $\ell$ and $m_\chi=\lim_{\ell\to\infty}m_\chi(\ell)$
+exists. A fitted plateau is an estimate of $m_\chi$. A channel whose
+correlator vanishes at every nonzero lag, or changes sign at arbitrarily large
+lags, has no decay rate.
+
+The pair $(K,\pi)$ is a time-homogeneous Markov kernel with an invariant law:
+a conservative executed kernel, or the kernel of the established
+Doob-transformed process, as declared under
+{prf:ref}`def-sm-direct-observable-law`. For a killed chain with almost sure
+extinction every invariant law of the killed kernel is carried by the
+cemetery state, where all frame observables vanish, so that kernel defines no
+channel. For a finite recorded law or a survival-conditioned history the
+correlator is the two-time function $C_O(t,s)$ of
+{prf:ref}`def-sm-direct-correlations`, and the first identity of
+{prf:ref}`thm-effective-twistor-spectral-meaning` replaces item 1 of
+{prf:ref}`prop-qft-decay-rate-scope`.
+
+The same effective-rate formula and limit, applied to a source-frozen pair
+correlator of {prf:ref}`def-effective-twistor-correlators`, define the
+**source-frozen decay rate** of the operator. It is a different quantity from
+the decay rate of the frame channel, and
+{prf:ref}`prop-qft-decay-rate-scope` is not asserted for it.
+
+In this chapter the symbol $m_\chi$ and the words heavier and lighter refer to
+a decay rate in one of these two senses, with the estimator declared
+({prf:ref}`rem-qft-declared-conventions`). The name **channel mass** is
+reserved for the decay rate $m_\chi$ of a frame channel under
+{prf:ref}`assm-qft-positive-transfer`, in the calibrated units required by
+{prf:ref}`def-sm-direct-correlations`.
+:::
+
+:::{prf:assumption} Positive transfer representation of a channel
+:label: assm-qft-positive-transfer
+
+For the channel $\chi$ and each component $k$ there is a finite positive Borel
+measure $\nu_\chi^{k}$ on $[0,1]$ with
+
+$$
+\operatorname{Cov}_\pi\bigl(f_\chi^{k}(R_0),f_\chi^{k}(R_\ell)\bigr)
+ =\int_{[0,1]}\lambda^{\ell}\,d\nu_\chi^{k}(\lambda),
+\qquad\ell\ge0.
+$$
+
+With $\lambda=e^{-E\Delta\tau}$ this is the representation
+$C_O(t)=\int e^{-Et}d\nu_O(E)$ of {prf:ref}`def-sm-direct-correlations`.
+It holds when $K$ is self-adjoint and positive on $L^2(\pi)$, in particular
+under the hypotheses of {prf:ref}`cor-effective-twistor-positive-transfer`.
+No result of this volume establishes it for a gas variant. It is a hypothesis
+on the channel, to be tested through the necessary conditions of
+{prf:ref}`prop-qft-decay-rate-scope`.
+:::
+
+:::{prf:proposition} What a fitted rate measures
+:label: prop-qft-decay-rate-scope
+
+Let $\widetilde f^{k}=f_\chi^{k}-\pi f_\chi^{k}$ and let $L_0^2(\pi)$ be the
+centred subspace.
+
+1. **Without further hypotheses.**
+   $C_\chi(\ell)=\sum_k\langle\widetilde f^{k},K^{\ell}\widetilde f^{k}\rangle_{L^2(\pi)}$
+   and $|C_\chi(\ell)|\le\|K^{\ell}\|_{L_0^2(\pi)}\,C_\chi(0)$. Every decay
+   rate of a channel is a rate of the semigroup of the executed algorithm on
+   the cyclic subspace of its frame observable.
+2. **Under {prf:ref}`assm-qft-positive-transfer`.** $C_\chi(\ell)\ge0$ and
+   $C_\chi(\ell+1)^2\le C_\chi(\ell)\,C_\chi(\ell+2)$ for all $\ell$. If
+   $C_\chi(1)=0$ then $C_\chi(\ell)=0$ for all $\ell\ge1$. If $C_\chi(1)>0$
+   then $C_\chi(\ell)>0$ for all $\ell$, the effective rate
+   $m_\chi(\ell)$ is nonincreasing, and
+
+   $$
+   m_\chi=\lim_{\ell\to\infty}m_\chi(\ell)
+        =-\frac1{\Delta\tau}\log\lambda_\chi^{*},
+   \qquad
+   \lambda_\chi^{*}=\max\operatorname{supp}\nu_\chi,\quad
+   \nu_\chi=\sum_k\nu_\chi^{k}.
+   $$
+
+   Thus the decay rate exists, the effective rate approaches it from above,
+   and $m_\chi$ is the smallest energy carrying spectral weight of the
+   channel.
+3. **The hypothesis can fail for a non-reversible kernel.** On
+   $\mathbb Z/3\mathbb Z$ with uniform $\pi$ let $(Pg)(x)=g(x+1)$,
+   $K=(1-a)I+aP$ with $0<a<1$, and $f(x)=\sqrt2\cos(2\pi x/3)$. Then
+   $C(\ell)=|\lambda|^{\ell}\cos(\ell\varphi)$ with
+   $\lambda=1-\tfrac32a+i\tfrac{\sqrt3}{2}a=|\lambda|e^{i\varphi}$,
+   $0<\varphi<\pi$. The correlator is negative at some lag, no positive
+   representing measure exists, and the effective rate is undefined there,
+   although $|C(\ell)|\le|\lambda|^{\ell}$.
+4. **Normal form of the conclusion.** A fitted rate of a channel is a decay
+   rate of the executed chain in that channel. It is a channel mass when
+   {prf:ref}`assm-qft-positive-transfer` holds for that channel. Negativity
+   of $C_\chi$ beyond its statistical error, failure of log-convexity, or an
+   effective rate that increases with the lag refutes the hypothesis for
+   that channel.
+
+None of these statements is asserted for the source-frozen pair correlators
+of {prf:ref}`def-effective-twistor-correlators`, which are ratios of sums
+with a lag-dependent valid-pair denominator and pair a source observable with
+a different sink observable.
+:::
+
+:::{prf:proposition} The two frame normalizations
+:label: prop-qft-frame-normalizations
+
+Let $O$ be a local operator with
+$\sup_I|O_I|<\infty$, or more generally with both frame observables in
+$L^2(\pi)$.
+
+1. $\mathcal A_t(O)$, including its zero-denominator value, and
+   $\mathcal A_t^{N}(O)=(W_t/N)\mathcal A_t(O)$ are functions of the recorded
+   state $R_t$. Item 1 of {prf:ref}`prop-qft-decay-rate-scope` holds for each
+   of them with the same kernel $K$.
+2. Their correlators are
+   $\operatorname{Cov}(\mathcal A_0,\mathcal A_\ell)$ and
+   $N^{-2}\operatorname{Cov}(W_0\mathcal A_0,W_\ell\mathcal A_\ell)$. They are
+   proportional for every operator when $W_t$ is almost surely constant, and
+   need not be proportional otherwise. A decay rate, and under
+   {prf:ref}`assm-qft-positive-transfer` a spectral weight, is a property of
+   the channel including its normalization.
+3. A series from which the frames with $W_t=0$ have been removed is a
+   function of the recorded state on $\{W>0\}$ only, sampled at
+   state-dependent times. When $\pi(W=0)=0$ it is almost surely the full
+   series and item 1 of {prf:ref}`prop-qft-decay-rate-scope` applies to it
+   with the kernel $K$. When $\pi(W=0)>0$ it is a function of the trace chain
+   of $R$ on $\{W>0\}$, whose kernel is the first-return kernel
+   $K_{W>0}(x,\cdot)=\mathbb P_x(R_{\tau}\in\cdot)$,
+   $\tau=\min\{n\ge1:W(R_n)>0\}$, with invariant law
+   $\pi(\cdot\mid W>0)$; its lag counts retained frames, not steps, and its
+   correlator is not $\langle\widetilde f,K^{\ell}\widetilde f\rangle_{L^2(\pi)}$
+   in general. Frames that the record cannot
+   evaluate for a reason independent of the state, such as the first frame of
+   a segment under $\mathsf A_{\mathrm{PK}}$, are missing data and not
+   zeros.
+
+The chapter-04 average $\mathcal A_t$ is the primary normalization;
+$\mathcal A_t^{N}$ is the alternative of
+{prf:ref}`thm-effective-twistor-spectral-meaning`. Every reported rate states
+which one it uses.
+:::
+
+:::{prf:proposition} Component contraction versus component mean
+:label: prop-qft-component-contraction
+
+Let $A_t\in\mathbb R^{d}$ be the component series of a channel, with
+$C_{kl}(\ell)=\operatorname{Cov}(A_0^{k},A_\ell^{l})$. Under an orthogonal
+change of the component basis $A_t\mapsto RA_t$, $R\in O(d)$:
+
+1. the contracted correlator $\sum_kC_{kk}(\ell)=\operatorname{tr}C(\ell)$ is
+   invariant;
+2. the correlator of the component mean
+   $\bar A_t=d^{-1}\sum_kA_t^{k}$ is
+   $d^{-2}\,\mathbf 1^{\mathsf T}C(\ell)\mathbf 1$ and becomes
+   $d^{-2}(R^{\mathsf T}\mathbf 1)^{\mathsf T}C(\ell)(R^{\mathsf T}\mathbf 1)$.
+   For $d\ge2$ it is invariant under all of $O(d)$ if and only if the
+   symmetric part of $C(\ell)$ is a multiple of the identity, in which case
+   it equals $d^{-2}\operatorname{tr}C(\ell)$.
+
+The component mean is the projection of the vector series on the fixed
+direction $\mathbf 1/d$ of the recorded basis. Vector channels are therefore
+correlated by contraction, as in {prf:ref}`def-sm-direct-correlations` and
+{prf:ref}`def-effective-twistor-correlators`. The statement concerns the
+component index. Covariance of the underlying observable under rotations of
+the particle system is a separate property, which the componentwise colour
+encoding does not have ({prf:ref}`thm-sm-su3-emergence`).
+:::
+
+:::{prf:remark} Conventions that a reported rate declares
+:label: rem-qft-declared-conventions
+
+The definitions of this volume leave the following choices open. Each is part
+of the channel of {prf:ref}`def-qft-channel-decay-rate`, and a reported rate
+states them.
+
+1. The colour alignment of {prf:ref}`def-sm-color-alignment`; the primary one
+   is $\mathsf A_{\mathrm{PK}}$.
+2. The frame normalization, $\mathcal A_t$ or $\mathcal A_t^{N}$, and the
+   treatment of frames with $W_t=0$
+   ({prf:ref}`prop-qft-frame-normalizations`).
+3. The estimator: frame-average correlator or source-frozen pair correlator
+   ({prf:ref}`def-effective-twistor-correlators`). Only the former is covered
+   by {prf:ref}`prop-qft-decay-rate-scope`.
+4. The centring: one empirical mean of the series
+   ({prf:ref}`def-sm-direct-correlations`) or separate means of the two lag
+   windows. The two differ at finite record length.
+5. For the colour-gamma form, the sign pattern of $\Gamma_5$ and the recorded
+   part; for the determinant channel, the recorded part of $b$.
+6. The scales $h_S$ and $\hbar_{\text{eff}}$ of the score and fitness phases
+   ({prf:ref}`rem-qft-ew-ranges`), and the amplitude
+   $\sqrt{w}$ of this chapter versus the normalized $\sqrt{P_i(k)}$ of
+   {prf:ref}`thm-sm-u1-emergence`.
+7. The time unit $\Delta\tau$ per lag ({prf:ref}`thm-qft-ratio-rescale`).
+:::
+
+:::{prf:definition} Colour-gamma operators
+:label: def-qft-color-gamma-operators
+
+For $d\ge3$ and colour components indexed by $a=0,\ldots,d-1$ define the
+Hermitian $d\times d$ matrices
+
+$$
+\Gamma_5=\operatorname{diag}\bigl((-1)^{a}\bigr)_{a=0}^{d-1},\qquad
+(\Gamma_\mu)_{ab}=i\,(\delta_{a\mu}\delta_{b\nu}-\delta_{a\nu}\delta_{b\mu}),
+\quad\nu=\mu+1\bmod d,
+$$
+
+and the pair contractions
+
+$$
+g_{ij}=c_i^\dagger\Gamma_5c_j,\qquad
+h_{ij}^{\mu}=c_i^\dagger\Gamma_\mu c_j
+ =i\bigl(\overline{c_i^{\mu}}c_j^{\nu}-\overline{c_i^{\nu}}c_j^{\mu}\bigr).
+$$
+
+The colour-gamma channels are
+$O_{\pi}^{\Gamma_5}=\mathcal A_t(\operatorname{Re}g)$,
+$O_{\pi,-}^{\Gamma_5}=\mathcal A_t(\operatorname{Im}g)$,
+$O_{\rho}^{\Gamma,\mu}=\mathcal A_t(\operatorname{Re}h^{\mu})$ and
+$O_{a}^{\Gamma,\mu}=\mathcal A_t(\operatorname{Im}h^{\mu})$, the last two
+with $d$ components contracted as in
+{prf:ref}`prop-qft-component-contraction`. These matrices act on the colour
+index. They are not Dirac matrices: $\Gamma_0^2=\operatorname{diag}(1,1,0,\ldots,0)\ne I$,
+so they satisfy no Clifford relation. For $d=3$,
+$h^{\mu}=i\,(\overline{c_i}\times c_j)_{\mu+2\bmod3}$.
+:::
+
+:::{prf:proposition} Symmetries of the colour-gamma operators
+:label: prop-qft-color-gamma-parities
+
+1. $g_{ji}=\overline{g_{ij}}$ and $h_{ji}^{\mu}=\overline{h_{ij}^{\mu}}$.
+   Under the inversion of {prf:ref}`prop-sm-direct-parity`,
+   $g\mapsto\overline g$ and $h^{\mu}\mapsto-\overline{h^{\mu}}$. Hence
+
+   | Channel | $X$ | $P$ | On a mutual pairing |
+   |---|---|---|---|
+   | $\operatorname{Re}g$ | $+$ | $+$ | not constrained |
+   | $\operatorname{Im}g$ | $-$ | $-$ | identically zero |
+   | $\operatorname{Re}h^{\mu}$ | $+$ | $-$ | not constrained |
+   | $\operatorname{Im}h^{\mu}$ | $-$ | $+$ | identically zero |
+
+   In particular $O_{\pi}^{\Gamma_5}$ is even under inversion: in the sense of
+   {prf:ref}`prop-sm-direct-parity` it is a second scalar channel,
+   $g_{ij}=q_{ij}-2\sum_{a\ \mathrm{odd}}\overline{c_i^{a}}c_j^{a}$. The
+   colour-gamma vector has the opposite exchange behaviour to the primary
+   vector channel $\operatorname{Re}q\,r$.
+2. $g$ is invariant under a common $A\in U(d)$ if and only if $A$ commutes
+   with $\Gamma_5$, that is
+   $A\in U(\lceil d/2\rceil)\times U(\lfloor d/2\rfloor)$. For $d=3$, under a
+   common real rotation $R\in SO(3)$ of the colour components the vector
+   $\overline{c_i}\times c_j$ rotates with $R$, so
+   $\sum_\mu(\operatorname{Re}h^{\mu})^2$ and the contracted correlators are
+   invariant; $h$ is not invariant under $SU(3)$.
+3. For $d=2$ the same formula gives $\Gamma_1=-\Gamma_0$, so
+   $\sum_\mu h^{\mu}=0$ and the component mean vanishes identically; this is
+   why the definition requires $d\ge3$.
+4. For $d=3$ the antisymmetric colour bilinear
+   $\operatorname{Re}(\overline{c_i^{\mu}}c_j^{\nu})
+    -\operatorname{Re}(\overline{c_i^{\nu}}c_j^{\mu})$, $\mu<\nu$, equals
+   $\operatorname{Im}h^{0}$, $\operatorname{Im}h^{1}$ and
+   $-\operatorname{Im}h^{2}$ for $(\mu\nu)=(01),(12),(02)$. It is the vector
+   $\operatorname{Re}(\overline{c_i}\times c_j)$ up to a relabelling: three
+   components, even under inversion, odd under exchange. It contains no
+   symmetric traceless part and is not a spin-two object.
+:::
+
+:::{prf:remark} What a channel label asserts
+:label: rem-qft-channel-labels
+
+The symmetry content established for the channels of this chapter consists
+of two signs: $X$, under exchange of the two walkers of a pair or of the two
+companion roles of a triplet, and $P$, under the inversion of
+{prf:ref}`prop-sm-direct-parity`, valid under the equivariance hypotheses
+stated there. A total spin $J$ is not defined, because the colour encoding is
+not covariant under rotations ({prf:ref}`thm-sm-su3-emergence`) and the lift
+of {prf:ref}`def-qft-dirac-lift` is not equivariant. A charge-conjugation
+sign $C$ is not defined, because no charge conjugation acts on the record.
+The labels $\sigma$, $\pi$, $\rho$, $N$, $G$ name measurement channels, as in
+{prf:ref}`def-sm-direct-color-contractions`.
+
+For the Dirac-lift bilinears the continuum quantum numbers of a fermion
+bilinear $\bar q\Gamma q$ are quoted as analogues only:
+
+| $\Gamma$ | Continuum analogue | $P$ of the lifted bilinear |
+|---|---|---|
+| $I$ | $0^{++}$ | $+$ |
+| $\gamma^5$ | $0^{-+}$ | $-$ |
+| $\gamma^{k}$ | $1^{--}$ | $-$ |
+| $\gamma^5\gamma^{k}$ | $1^{++}$ | $+$ |
+| $\sigma^{jk}$ | $1^{+-}$ | $+$ |
+| $\sigma^{0k}$ | $1^{--}$ | $-$ |
+
+An antisymmetric $\sigma^{\mu\nu}$ has $6=3+3$ components, two spin-one
+multiplets; it contains no spin-two part.
+:::
+
 :::{prf:proposition} Current Chirality-Channel Realization
 :label: prop-qft-ew-chirality-realization
 
@@ -39182,13 +40249,105 @@ If `cloning_frames_only=True`, these four series are further restricted to the s
 with at least one cloning event.
 :::
 
+:::{prf:definition} Dirac lift of a colour state
+:label: def-qft-dirac-lift
+
+Let $d=3$ and fix the threshold $\delta_c$ of
+{prf:ref}`def-sm-direct-observable-law`. For $w\in\mathbb R^3\setminus\{0\}$
+put
+
+$$
+E(w)=\frac{1}{\sqrt{\|w\|}}\begin{pmatrix}w_1+iw_2\\ w_3\end{pmatrix}
+\in\mathbb C^2,
+$$
+
+and for a valid colour $c$ with $\|\operatorname{Re}c\|>\delta_c$ and
+$\|\operatorname{Im}c\|>\delta_c$ define
+
+$$
+\psi(c)=\begin{pmatrix}E(\operatorname{Im}c)\\E(\operatorname{Re}c)\end{pmatrix}
+\in\mathbb C^4 .
+$$
+
+Colours failing either inequality have no lift and are masked. The numerical
+Clifford matrices are the declared $\widehat\gamma^\mu$ of signature
+$(+,-,-,-)$ in the Dirac representation
+({prf:ref}`thm-sm-ew-operator-layers`),
+
+$$
+\widehat\gamma^0=\begin{pmatrix}I&0\\0&-I\end{pmatrix},\quad
+\widehat\gamma^{k}=\begin{pmatrix}0&\sigma_k\\-\sigma_k&0\end{pmatrix},\quad
+\gamma^5=i\widehat\gamma^0\widehat\gamma^1\widehat\gamma^2\widehat\gamma^3
+        =\begin{pmatrix}0&I\\I&0\end{pmatrix},\quad
+\sigma^{\mu\nu}=\tfrac i2[\widehat\gamma^\mu,\widehat\gamma^\nu],
+$$
+
+and $\bar\psi=\psi^\dagger\widehat\gamma^0$. The **Dirac-lift bilinears** of
+a pair are $D_{ij}^{\Gamma}=\bar\psi_i\Gamma\psi_j$; the recorded parts are
+$D^{S}=\operatorname{Re}D^{I}$, $D^{P}=\operatorname{Im}D^{\gamma^5}$,
+$D^{V,k}=\operatorname{Re}D^{\gamma^k}$,
+$D^{A,k}=\operatorname{Re}D^{\gamma^5\gamma^k}$,
+$D^{T,jk}=\operatorname{Re}D^{\sigma^{jk}}$ and
+$D^{T,0k}=\operatorname{Re}D^{\sigma^{0k}}$, with three-component families
+contracted as in {prf:ref}`prop-qft-component-contraction`. These are
+alternative operators; the primary channels are those of
+{prf:ref}`def-sm-direct-color-contractions`.
+:::
+
+:::{prf:proposition} Properties of the Dirac lift
+:label: prop-qft-dirac-lift-properties
+
+Write $u=\operatorname{Im}c$, $w=\operatorname{Re}c$, $a=E(u)$, $b=E(w)$.
+
+1. $E(w)^\dagger E(w)=\|w\|$ and $E(-w)=-E(w)$. For a unit colour
+   $\psi^\dagger\psi=\|u\|+\|w\|\in[1,\sqrt2]$; the lift does not preserve
+   norms.
+2. Under the inversion $c\mapsto-\overline c$ of
+   {prf:ref}`prop-sm-direct-parity`, $\psi(-\overline c)=\widehat\gamma^0\psi(c)$,
+   hence $D_{ij}^{\Gamma}\mapsto D_{ij}^{\widehat\gamma^0\Gamma\widehat\gamma^0}$.
+   The signs $P$ in {prf:ref}`rem-qft-channel-labels` are those of
+   $\widehat\gamma^0\Gamma\widehat\gamma^0=\pm\Gamma$.
+3. If $\widehat\gamma^0\Gamma$ is Hermitian then
+   $D_{ji}^{\Gamma}=\overline{D_{ij}^{\Gamma}}$: the real part is even and the
+   imaginary part odd under pair exchange. This is the case for
+   $\Gamma\in\{I,\gamma^k,\gamma^5\gamma^k,\sigma^{\mu\nu}\}$. For
+   $\Gamma=\gamma^5$ the matrix $\widehat\gamma^0\gamma^5$ is anti-Hermitian,
+   $D_{ji}=-\overline{D_{ij}}$, and the imaginary part is the even one. Every
+   recorded part listed in {prf:ref}`def-qft-dirac-lift` is exchange-even.
+4. $\widehat\gamma^0P_{L,R}=\tfrac12(\widehat\gamma^0\mp\widehat\gamma^0\gamma^5)$
+   is neither Hermitian nor anti-Hermitian:
+   $\operatorname{Re}(\bar\psi_iP_{L,R}\psi_j)
+    =\tfrac12D^{S}_{ij}\mp\tfrac12\operatorname{Re}D^{\gamma^5}_{ij}$, and the
+   second term is exchange-odd. On a mutual pairing the frame averages of the
+   left and the right scalar bilinear both equal $\tfrac12\mathcal A_t(D^{S})$.
+   The projected currents $\widehat\gamma^0\gamma^kP_{L,R}$ are Hermitian and
+   their real parts are exchange-even.
+5. The upper and lower component pairs of $\psi$ are the eigenspaces of
+   $\widehat\gamma^0$ with eigenvalues $+1$ and $-1$, the inversion-even and
+   inversion-odd components of item 2. They are not chirality eigenspaces:
+   $P_L(\xi,0)^{\mathsf T}=\tfrac12(\xi,-\xi)^{\mathsf T}$. The chiral
+   components of $\psi=(a,b)^{\mathsf T}$ are
+   $P_{L}\psi=\tfrac12(a-b,\,b-a)^{\mathsf T}$ and
+   $P_{R}\psi=\tfrac12(a+b,\,a+b)^{\mathsf T}$.
+6. $D^{P}_{ij}=-D^{T,03}_{ij}$ identically. The recorded pseudoscalar part is
+   one component of the family $D^{T,0k}$ and is not an independent channel.
+7. The bilinears are not invariant under the common phase
+   $c\mapsto e^{i\alpha}c$, hence not under $U(3)$ or $SU(3)$ frame changes:
+   $\alpha=\pi/2$ maps $D^{S}\mapsto-D^{S}$.
+8. There is no nonzero map $E:\mathbb R^3\to\mathbb C^2$ with
+   $E(Rw)=\pm U(R)E(w)$ for the spin-$\tfrac12$ representation $U$. The lift
+   above is covariant only under rotations about the third colour axis,
+   $E(R_z(\phi)w)=\operatorname{diag}(e^{i\phi},1)E(w)$.
+:::
+
 :::{prf:proposition} Current Dirac-Spinor Realization
 :label: prop-qft-ew-spinor-realization
 
 **Rigor Class:** F (Implementation-Exact)
 
-Assume $d=3$ so that the color states admit the implemented map
-$c_i(t)\mapsto \psi_i(t)\in\mathbb{C}^4$. For each retained frame $t$ and walker index $i$, let
+Assume $d=3$ so that the color states admit the lift
+$c_i(t)\mapsto \psi_i(t)\in\mathbb{C}^4$ of {prf:ref}`def-qft-dirac-lift`.
+For each retained frame $t$ and walker index $i$, let
 
 $$
 j=c_d(i,t)
@@ -39199,16 +40358,19 @@ computed from the clone companion data, and define the validity mask
 
 $$
 V_t(i):=
-\mathbf{1}_{\{\mathrm{color\_valid}_i(t)\}}
+\mathbf{1}_{\{\mathrm{spinor\_valid}_i(t)\}}
 \cdot
-\mathbf{1}_{\{\mathrm{color\_valid}_j(t)\}}
+\mathbf{1}_{\{\mathrm{spinor\_valid}_j(t)\}}
 \cdot
 \mathbf{1}_{\{\mathrm{alive}_i(t)\}}
 \cdot
 \mathbf{1}_{\{\mathrm{alive}_j(t)\}}
 \cdot
-\mathbf{1}_{\{j\neq i\}}.
+\mathbf{1}_{\{j\neq i\}},
 $$
+
+where $\mathrm{spinor\_valid}$ is colour validity together with the two
+inequalities of {prf:ref}`def-qft-dirac-lift`.
 
 Let the pair classes be
 
@@ -39360,6 +40522,21 @@ n_{LR}(t)=|LR_t|.
 $$
 :::
 
+:::{prf:remark} Component means and exchange-mixed parts of the recorded spinor series
+:label: rem-qft-ew-spinor-series
+
+Each current series of {prf:ref}`prop-qft-ew-spinor-realization` is the
+component mean $\tfrac13\sum_kB_{\gamma^k,P}$ of a three-component family. By
+{prf:ref}`prop-qft-component-contraction` its correlator depends on the
+recorded component basis; the basis-independent statistic of the same family
+is the contracted correlator of the three component series. By
+{prf:ref}`prop-qft-dirac-lift-properties`, on a mutual distance pairing
+$o_{\mathrm{scalar},L}$ and $o_{\mathrm{scalar},R}$ are the same series
+$\tfrac12\operatorname{Avg}_{V_t}[B_{I,I}]$, while the unsplit current series
+are exchange-even. Role-restricted averages use masks that differ at the two
+ends of a pair and are not constrained.
+:::
+
 :::{prf:theorem} Active Electroweak Mass-Fit Domain
 :label: thm-qft-ew-active-pipeline
 
@@ -39371,6 +40548,77 @@ electroweak masses are extracted only from the user-selected legacy electroweak 
 with the user-selected chirality channels and, when enabled, the user-selected Dirac-spinor
 channels. No additional clustering observable or latent-dimension proxy enters the mass fit unless
 it has first been materialized as a correlator key in that pipeline result.
+:::
+
+:::{prf:remark} Ranges, regularizer and phase scales of the proxy family
+:label: rem-qft-ew-ranges
+
+The three numbers $\epsilon_d$, $\epsilon_c$ and $\epsilon_{\text{clone}}$ are
+distinct. $\epsilon_d$ and $\epsilon_c$ are the ranges of the distance and
+cloning companion kernels, in the units of the algorithmic distance; they are
+the amplitude widths $\ell_d$, $\ell_c$ of
+{prf:ref}`def-sm-direct-companion-doublet`. $\epsilon_{\text{clone}}$ has the
+units of a fitness and enters the score denominator only. When a companion
+law has no range, as for the uniform matchings of the Einstein–Hilbert Gas
+({prf:ref}`rem-variants-measurability`), the run does not determine the
+amplitude width; the analysis declares either the modulus one or an explicit
+width, and the coupling estimates $g_1^{\text{est}}$, $g_2^{\text{est}}$ below
+are undefined.
+
+The score phase uses the dimensionless scale $h_S$ of
+{ref}`(SM.U1) <eq-fg-sm-u1>`. The dashboard sets $h_S=\hbar_{\text{eff}}$
+numerically; this identification is a declared nondimensionalization. For
+positive fitness $|F_i|=F_i$.
+
+On a mutual distance pairing the imaginary parts of $O_{u1}$ and $O_{u1,d}$
+vanish identically and the measured observables are
+$\langle\cos\phi^{(U1)}\rangle$ and $\langle A_d\cos\phi^{(U1)}\rangle$
+({prf:ref}`cor-sm-direct-exchange-parity`). On a mutual cloning pairing with
+pair-symmetric weights the frame average of the difference doublet vanishes
+and the frame average of the sum doublet is twice that of the component
+({prf:ref}`cor-sm-paired-doublet-cancellation`).
+:::
+
+:::{prf:definition} Reference ratios and the hadron-label hypothesis
+:label: def-qft-reference-ratios
+
+The **reference ratios** are the external numbers
+
+$$
+R_{\rho\pi}^{\mathrm{ref}}=5.5,\qquad R_{N\pi}^{\mathrm{ref}}=6.7,
+$$
+
+the two-digit truncations of the measured mass ratios
+$m_\rho/m_{\pi^\pm}=5.5546$ and $m_p/m_{\pi^\pm}=6.7226$. The **hadron-label
+hypothesis** is the statement that the decay rates of the channels labelled
+$\pi$, $\rho$, $N$ of a gas variant stand in these ratios. It is a hypothesis
+about a labelling; {prf:ref}`def-sm-direct-color-contractions` assigns no
+particle to a channel.
+
+The reference ratios enter this chapter in two places only: as the hypothesis
+of {prf:ref}`cor-qft-ratio-numeric-bounds` and of item 4 of
+{prf:ref}`cor-qft-parameter-sieve`, and as comparison values for measured
+ratios. They enter no operator definition, no estimator, no fit prior and no
+fit window. A ratio $R_{\chi\pi}$ is defined only when both channels have a
+decay rate ({prf:ref}`def-qft-channel-decay-rate`) obtained with one
+estimator, one frame normalization and one time unit.
+$R_{\sigma\pi}$ and $R_{G\pi}$ remain symbolic until measured.
+:::
+
+:::{prf:remark} Selection and evidence
+:label: rem-qft-reference-ratio-selection
+
+A parameter set retained because its measured ratios lie near the reference
+ratios has been selected on that outcome; its agreement with them is not
+evidence for the hadron-label hypothesis. Evidence requires ratios measured
+on runs and seeds that played no part in the selection, with the channel,
+estimator, normalization, fit window and priors fixed beforehand, and with
+the number of compared ratios stated. On a mutual pairing the primary $\pi$
+and $\rho$ frame series vanish identically
+({prf:ref}`cor-sm-direct-exchange-parity`) and the $N$ frame series has no
+decay rate under exchangeable companion roles
+({prf:ref}`prop-sm-direct-role-swap`); the ratios are then undefined for
+frame-average estimators.
 :::
 
 :::{prf:theorem} Ratio invariance under relabeling a fixed time unit
@@ -39438,7 +40686,10 @@ These are necessary bounds when the chosen channels possess the asymptotic rates
 :::{prf:corollary} Explicit Pruning Bounds for $R_{\rho\pi}=5.5$, $R_{N\pi}=6.7$
 :label: cor-qft-ratio-numeric-bounds
 
-With the fixed targets $R_{\rho\pi}=5.5$ and $R_{N\pi}=6.7$,
+Assume the hadron-label hypothesis of {prf:ref}`def-qft-reference-ratios`,
+$R_{\rho\pi}=R_{\rho\pi}^{\mathrm{ref}}=5.5$ and
+$R_{N\pi}=R_{N\pi}^{\mathrm{ref}}=6.7$, for channels that possess decay
+rates. Then
 
 $$
 m_\rho = 5.5\,m_\pi, \qquad m_N = 6.7\,m_\pi,
@@ -39461,7 +40712,7 @@ $$
 $$
 \kappa \geq \frac{1}{\rho\,m_\pi\,\min(1, R_{\sigma\pi}, R_{G\pi})}.
 $$
-In particular, if future calibration anchors give $R_{\sigma\pi} \geq 1$ and
+In particular, if measurements give $R_{\sigma\pi} \geq 1$ and
 $R_{G\pi} \geq 1$, then
 
 $$
@@ -39493,10 +40744,13 @@ $$
 3. **Gap lower bound (all channels)** ({prf:ref}`thm-qft-channel-gap-bound`):
 
 $$
-m_\chi \geq \hbar_{\text{eff}} \lambda_{\text{gap}} \quad \text{for } \chi \in \{\pi,\sigma,\rho,G,N\}.
+m_\chi \geq \hbar_{\text{eff}} \lambda_{\text{gap}} \quad \text{for } \chi \in \{\pi,\sigma,\rho,G,N\},
 $$
 
-4. **Ratio-sieve bounds** (from {prf:ref}`cor-qft-ratio-numeric-bounds`):
+for each listed channel that possesses a decay rate.
+
+4. **Ratio-sieve bounds under the hadron-label hypothesis**
+({prf:ref}`def-qft-reference-ratios`, {prf:ref}`cor-qft-ratio-numeric-bounds`):
 
 $$
 R_{\rho\pi} = 5.5, \qquad R_{N\pi} = 6.7,

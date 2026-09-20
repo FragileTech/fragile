@@ -292,3 +292,134 @@ fn elite_reinjection_refreshes_scheduled_geometry() {
     gas.recording().unwrap().validate().unwrap();
     gas.checkpoint().validate().unwrap();
 }
+
+#[test]
+fn a_carried_over_tessellation_is_recorded_as_stale() {
+    use algorithmic_gas::{RecordingConfig, RunArchive, physics::spectroscopy::scales};
+    let mut gas = build::<f64>(
+        eh_config::<f64>(
+            5,
+            20,
+            GeometrySchedule::PostClone {
+                every: 3,
+                on_clone: false,
+            },
+        ),
+        population(25, 1.),
+    );
+    gas.start_recording(RecordingConfig {
+        graph: true,
+        ..RecordingConfig::default()
+    })
+    .unwrap();
+    for _ in 0..6 {
+        block_on(gas.step()).unwrap();
+    }
+    let archive = gas.stop_recording().unwrap();
+    let graphs: Vec<_> = archive
+        .steps
+        .iter()
+        .map(|s| s.graph.as_ref().unwrap())
+        .collect();
+    assert_eq!(graphs.len(), 6);
+    // Steps 1..3 and 4..6 share one tessellation each, and the archive says so.
+    assert_eq!(
+        graphs.iter().map(|g| g.stale_steps).collect::<Vec<_>>(),
+        [0, 1, 2, 0, 1, 2]
+    );
+    for group in graphs.chunks_exact(3) {
+        assert!(group[0].same_geometry(group[1]) && group[0].same_geometry(group[2]));
+    }
+    assert!(!graphs[0].same_geometry(graphs[3]));
+    // A consumer of the scales reads the fresh frame and declines the others.
+    for graph in &graphs {
+        let table = scales::distances(
+            graph,
+            algorithmic_gas::physics::spectroscopy::config::EdgeLength::Geodesic,
+            f64::INFINITY,
+            1 << 22,
+            algorithmic_gas::tessellation::Parallelism::Serial,
+        );
+        assert_eq!(table.is_ok(), graph.stale_steps == 0);
+    }
+    // The staleness survives the wire, and every stage tessellating carries none.
+    let decoded = RunArchive::<f64>::from_bytes(&archive.to_bytes().unwrap()).unwrap();
+    assert_eq!(decoded, archive);
+    // An archive whose writer never stamped staleness reads its frozen graphs
+    // as each frame's own geometry, so the archive's own graphs refuse it: the
+    // stamp is additive on the wire and a missing one decodes as zero.
+    let mut unstamped = archive.clone();
+    for step in &mut unstamped.steps {
+        step.graph.as_mut().unwrap().stale_steps = 0;
+    }
+    assert!(
+        unstamped
+            .validate()
+            .unwrap_err()
+            .to_string()
+            .contains("without stamping it stale")
+    );
+    assert!(RunArchive::<f64>::from_json(&serde_json::to_string(&unstamped).unwrap()).is_err());
+    let mut gas = build::<f64>(
+        eh_config::<f64>(5, 20, GeometrySchedule::EveryStage),
+        population(25, 1.),
+    );
+    gas.start_recording(RecordingConfig {
+        graph: true,
+        ..RecordingConfig::default()
+    })
+    .unwrap();
+    for _ in 0..3 {
+        block_on(gas.step()).unwrap();
+    }
+    assert!(
+        gas.stop_recording()
+            .unwrap()
+            .steps
+            .iter()
+            .all(|s| s.graph.as_ref().unwrap().stale_steps == 0)
+    );
+    // A recording started in the middle of a period has no earlier step to
+    // date its first graph against, and that graph is the stalest of all: the
+    // period, not the recording, says how old it is.
+    let mut gas = build::<f64>(
+        eh_config::<f64>(
+            5,
+            20,
+            GeometrySchedule::PostClone {
+                every: 3,
+                on_clone: false,
+            },
+        ),
+        population(25, 1.),
+    );
+    for _ in 0..2 {
+        block_on(gas.step()).unwrap();
+    }
+    gas.start_recording(RecordingConfig {
+        graph: true,
+        ..RecordingConfig::default()
+    })
+    .unwrap();
+    for _ in 0..4 {
+        block_on(gas.step()).unwrap();
+    }
+    let late = gas.stop_recording().unwrap();
+    assert_eq!(
+        late.steps
+            .iter()
+            .map(|s| s.graph.as_ref().unwrap().stale_steps)
+            .collect::<Vec<_>>(),
+        [2, 0, 1, 2]
+    );
+    assert!(
+        scales::distances(
+            late.steps[0].graph.as_ref().unwrap(),
+            algorithmic_gas::physics::spectroscopy::config::EdgeLength::Geodesic,
+            f64::INFINITY,
+            1 << 22,
+            algorithmic_gas::tessellation::Parallelism::Serial,
+        )
+        .is_err()
+    );
+}

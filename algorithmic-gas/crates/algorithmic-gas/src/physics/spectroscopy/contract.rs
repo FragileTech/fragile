@@ -19,8 +19,20 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
-/// The single supported schema of measurements, reports and evidence.
-pub const SPECTROSCOPY_VERSION: u32 = 1;
+/// The single supported schema of measurements, reports and evidence. It is
+/// checked by equality and nothing is migrated: a stored measurement, resumed
+/// accumulator, report or cached evidence of another version is refused, never
+/// read. The version is therefore not only the shape of the payload but the
+/// definition of the numbers inside it, because a measurement combines with
+/// another by `MeasurementConfig::fingerprint`, which hashes this constant
+/// beside the configuration. Version 2 carries the corrected measurement: a
+/// momentum mode projects the connected observable, a score-derived
+/// orientation or dispersion is frozen with its element at the source frame, a
+/// score gradient is the finite-difference quotient `ΔS r / |r|²`, a frame of
+/// vanishing score dispersion has no average, and a generalized eigenvalue
+/// follows a fixed vector. Version 1 named the same channels under the
+/// reference behaviours those corrections replace.
+pub const SPECTROSCOPY_VERSION: u32 = 2;
 
 /// A kind of recorded information an analysis may depend on.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
@@ -556,12 +568,14 @@ pub struct FrameState {
     /// score although `cloning_companion` is `NO_COMPANION`. Empty without
     /// `score`. Every reader of `score` masks on it.
     pub score_valid: Vec<bool>,
-    /// `[n, d]` mean of `(S_j − S_i) û_ij` over the first distance and the
-    /// first cloning companion of each walker with both scores valid and
+    /// `[n, d]` mean of `(S_j − S_i) û_ij / |r_ij|` over the first distance and
+    /// the first cloning companion of each walker with both scores valid and
     /// `|r_ij| > 0`; zero where it has none. `û_ij = r_ij / |r_ij|` with
     /// `r_ij = x_j − x_i`, the minimum image on a periodic box: the
-    /// displacement the vector channels use. Their projections and the
-    /// `ScoreGradient` displacement read it.
+    /// displacement the vector channels use. It is a finite-difference
+    /// quotient, so it carries a score over a length and scales as `1/λ` under
+    /// `x → λx`. Their projections and the `ScoreGradient` displacement read
+    /// it.
     pub score_gradient: Option<Vec<f64>>,
     pub role: Option<Vec<WalkerRole>>,
     pub cloned: Vec<bool>,
@@ -630,13 +644,14 @@ pub fn channel_id(spec_id: &str, kind: ElementKind) -> String {
 
 /// One site, pair or triplet of a source-time topology, as sampled: `i` chose
 /// the others. An element carries no direction. The score-directed meson and
-/// score-ordered baryon modes orient inside `evaluate` from `state.score` of
-/// the walkers and mask the element on a tie; every mode that reads a score
-/// masks a walker without `state.score_valid`. At a sink time they therefore
-/// read the sink-time direction. `Su2 { directed }` reads no score: it takes
-/// the absolute value of every hop phase, computed from `state.fitness`. A
-/// triplet whose two companions coincide is an element; see
-/// `Signature::degenerate`.
+/// score-ordered baryon modes leave the contraction in the sampled order and
+/// report the factor the score contributes in the auxiliary column of
+/// `Auxiliary::ScoreOrientation`; the measurement freezes that factor with the
+/// element at its source frame and reapplies the frozen one at every sink, so
+/// a sink time never re-derives the direction from its own scores.
+/// `Su2 { directed }` reads no score: it takes the absolute value of every hop
+/// phase, computed from `state.fitness`. A triplet whose two companions
+/// coincide is an element; see `Signature::degenerate`.
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct Element {
@@ -697,6 +712,38 @@ pub enum SpatialParity {
     Odd,
 }
 
+/// One column `evaluate` writes beside the components of the operator, and
+/// what the measurement does with it. A signature that names one raises the
+/// width of `evaluate` by one; the retained series keeps `components` values
+/// per element either way.
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Auxiliary {
+    /// The momentum weight `e_I = cos|sin(2π n x_i / L)` of the element,
+    /// beside the unprojected observable `O_I`. The measurement keeps the
+    /// connected mode `(O_I − Ō_t) e_I` with `Ō_t = Σ_I w_I O_I / Σ_I w_I`
+    /// over the elements of the evaluated frame, so an additive shift of the
+    /// observable leaves the projected series fixed and the walker-density
+    /// Fourier mode never enters it.
+    MomentumMode,
+    /// The factor a directed mode reads from the score: `±1` for the pair or
+    /// column order, `0` when the element has no order because two scores are
+    /// equal. An element with the factor 0 is masked at a source time.
+    ScoreOrientation,
+    /// The score dispersion `|S_j − S_i|` of a weighted mode, `0` on a tie.
+    /// The element keeps its value, which is then exactly 0, and a frame
+    /// whose weighted sum of the factor vanishes has no average: its weight is
+    /// 0 and the series carries no value there.
+    ScoreDispersion,
+}
+impl Auxiliary {
+    /// The factor is frozen with the element at its source frame and reapplied
+    /// at every sink of the source-frozen propagator.
+    pub fn frozen(self) -> bool {
+        matches!(self, Self::ScoreOrientation | Self::ScoreDispersion)
+    }
+}
+
 /// Documentation of an operator: its algebra, never a particle name.
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(default, deny_unknown_fields)]
@@ -724,6 +771,15 @@ pub struct Signature {
     pub exchange: ExchangeParity,
     /// False for a diagnostic envelope, which never enters a correlator.
     pub correlatable: bool,
+    /// False when the source-frozen propagator of the operator is no
+    /// observable of its own: `baryon/score_ordered` freezes the column order
+    /// with the element, so the order enters the lag product squared and the
+    /// propagator is the one of `baryon/real`. Only the frame mean, where the
+    /// canonical order is what stops `Re b` cancelling under relabelling, is
+    /// kept for such an arm.
+    pub propagatable: bool,
+    /// The column `evaluate` writes beside the components, when it writes one.
+    pub auxiliary: Option<Auxiliary>,
     /// Frame normalisation the definition fixes, overriding
     /// `MeasurementConfig::normalization`: a fixed `1/N` in which walkers
     /// without a value contribute 0.
@@ -735,17 +791,25 @@ pub struct Signature {
     pub descriptor: Descriptor,
 }
 impl Signature {
-    /// Correlatable, configured normalisation, no degenerate triplets, empty descriptor.
+    /// Correlatable and propagatable, configured normalisation, no auxiliary
+    /// column, no degenerate triplets, empty descriptor.
     pub fn new(requires: Requirements, components: usize, exchange: ExchangeParity) -> Self {
         Self {
             requires,
             components,
             exchange,
             correlatable: true,
+            propagatable: true,
             normalization: None,
+            auxiliary: None,
             degenerate: false,
             descriptor: Descriptor::default(),
         }
+    }
+    /// Width of the `out` slice `evaluate` writes: the measured components,
+    /// and the auxiliary column beside them when the signature names one.
+    pub fn width(&self) -> usize {
+        self.components + usize::from(self.auxiliary.is_some())
     }
 }
 
@@ -771,10 +835,12 @@ pub trait LocalOperator: Send + Sync {
     /// from a kernel that has none, an identically vanishing combination of
     /// options); the channel is then unavailable. Any other error aborts.
     fn signature(&self, kind: ElementKind, context: &OperatorContext<'_>) -> Result<Signature>;
-    /// Write the `components` values of the operator on `element`, read from
-    /// `state`, into `out`. `false` masks the element (invalid colour, missing
-    /// field, a tie of a directed mode); `out` is then unspecified. The same
-    /// method serves the source time and every sink time of a propagator.
+    /// Write the `Signature::width` values of the operator on `element`, read
+    /// from `state`, into `out`: its `components`, then the auxiliary column
+    /// when the signature names one. `false` masks the element (invalid
+    /// colour, missing field); `out` is then unspecified. The same method
+    /// serves the source time and every sink time of a propagator, so a mask
+    /// never depends on a quantity the measurement freezes with the element.
     fn evaluate(
         &self,
         element: &Element,
@@ -782,7 +848,7 @@ pub trait LocalOperator: Send + Sync {
         context: &OperatorContext<'_>,
         out: &mut [f64],
     ) -> bool;
-    /// `evaluate` on every element: `values` is `[elements, components]`,
+    /// `evaluate` on every element: `values` is `[elements, width]`,
     /// `valid` is `[elements]`. The accumulator calls only this method, so an
     /// implementation may hoist per-frame work out of the element loop. An
     /// override agrees with `evaluate` element by element.

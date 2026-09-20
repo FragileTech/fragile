@@ -13,7 +13,7 @@ use super::{
 use crate::{
     GasConfig, GasError, Result,
     error::require,
-    memory::checked_mul,
+    memory::{checked_add, checked_mul},
     physics::numerics::{BlockMoments, SeriesView},
 };
 use serde::{Deserialize, Serialize};
@@ -64,6 +64,13 @@ impl SlabMoments {
                 .all(|v| v.iter().all(|x| x.is_finite())),
             "nonfinite slab moments",
         )
+    }
+    /// Conservative retained size, in checked arithmetic.
+    pub fn buffer_bytes(&self) -> Result<usize> {
+        let entries = [&self.pair_ab, &self.pair_n, &self.profile, &self.profile_n]
+            .iter()
+            .try_fold(0, |sum, v| checked_add(sum, v.len()))?;
+        checked_add(checked_mul(entries, 8)?, 96)
     }
 }
 
@@ -205,21 +212,55 @@ impl Measurement {
     }
     /// Conservative retained size, through `crate::memory` checked arithmetic.
     pub fn buffer_bytes(&self) -> Result<usize> {
-        Err(GasError::Capability(
-            "pending: spectroscopy::measurement".into(),
-        ))
+        let mut bytes = checked_mul(checked_add(self.steps.len(), self.segment.len())?, 12)?;
+        bytes = checked_add(bytes, self.fingerprint.len())?;
+        for note in &self.notes {
+            bytes = checked_add(bytes, checked_add(note.len(), 24)?)?;
+        }
+        if let Some(flow) = &self.flow {
+            bytes = checked_add(bytes, checked_mul(flow.steps.len(), 24)?)?;
+        }
+        for channel in &self.channels {
+            let text = [
+                &channel.id,
+                &channel.definition,
+                &channel.book_label,
+                &channel.note,
+            ]
+            .iter()
+            .try_fold(0, |sum, s| checked_add(sum, s.len()))?;
+            bytes = checked_add(bytes, checked_add(text, 512)?)?;
+            let cells = checked_add(channel.values.len(), channel.weight.len())?;
+            bytes = checked_add(bytes, checked_mul(cells, 8)?)?;
+            if let Some(moments) = &channel.propagator {
+                bytes = checked_add(bytes, moments.buffer_bytes()?)?;
+            }
+            if let Some(slabs) = &channel.euclidean {
+                bytes = checked_add(bytes, slabs.buffer_bytes()?)?;
+            }
+        }
+        Ok(bytes)
     }
     /// CBOR, validated on both sides; decode is capped at 256 MiB and rejects
-    /// trailing data. Codec failures are `GasError::Checkpoint`.
+    /// trailing data. A codec failure is `GasError::Checkpoint`, the cap and
+    /// the trailing bytes are `GasError::Configuration`, as for `RunArchive`.
     pub fn to_bytes(&self) -> Result<Vec<u8>> {
-        Err(GasError::Capability(
-            "pending: spectroscopy::measurement".into(),
-        ))
+        self.validate()?;
+        let mut bytes = Vec::new();
+        ciborium::ser::into_writer(self, &mut bytes)
+            .map_err(|e| GasError::Checkpoint(e.to_string()))?;
+        Ok(bytes)
     }
     pub fn from_bytes(bytes: &[u8]) -> Result<Self> {
-        let _ = bytes;
-        Err(GasError::Capability(
-            "pending: spectroscopy::measurement".into(),
-        ))
+        require(
+            bytes.len() <= 256 * 1024 * 1024,
+            "measurement decode exceeds 256 MiB",
+        )?;
+        let mut remaining = bytes;
+        let measurement: Self = ciborium::de::from_reader_with_recursion_limit(&mut remaining, 64)
+            .map_err(|e| GasError::Checkpoint(e.to_string()))?;
+        require(remaining.is_empty(), "trailing measurement data")?;
+        measurement.validate()?;
+        Ok(measurement)
     }
 }

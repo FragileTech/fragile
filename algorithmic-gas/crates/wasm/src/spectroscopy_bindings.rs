@@ -1,11 +1,12 @@
 //! Browser binding of the spectroscopy session. Run it in a Web Worker. JSON
 //! `String` in, JSON-compatible values out; evidence and checkpoints are CBOR
-//! bytes. Every binding forwards to the functions the CLI calls.
+//! bytes. Every binding forwards to the functions the CLI calls, and every
+//! number the page draws, error bands included, is produced here.
 use algorithmic_gas::{
     RunArchive,
     physics::{
         numerics::Resampling,
-        spectroscopy::{AnalysisConfig, SpectroscopyConfig, presentation},
+        spectroscopy::{AnalysisConfig, SpectroscopyConfig, SpectroscopyReport, presentation},
     },
 };
 use algorithmic_gas_benchmarks::spectroscopy::{
@@ -21,7 +22,7 @@ fn bootstrap_seed(analysis: &AnalysisConfig) -> Result<(), JsValue> {
     Ok(())
 }
 /// Callers guard the size of `json` first.
-fn request(json: &str) -> Result<SpectroscopyRequest, JsValue> {
+fn parse_request(json: &str) -> Result<SpectroscopyRequest, JsValue> {
     let request: SpectroscopyRequest = serde_json::from_str(json).map_err(super::error)?;
     super::browser_seed(request.seed)?;
     bootstrap_seed(&request.spectroscopy.analysis)?;
@@ -29,7 +30,7 @@ fn request(json: &str) -> Result<SpectroscopyRequest, JsValue> {
 }
 /// An empty string selects the default analysis. Callers guard the size of
 /// `json` first.
-fn analysis(json: &str) -> Result<AnalysisConfig, JsValue> {
+fn parse_analysis(json: &str) -> Result<AnalysisConfig, JsValue> {
     let analysis = if json.trim().is_empty() {
         AnalysisConfig::default()
     } else {
@@ -37,6 +38,34 @@ fn analysis(json: &str) -> Result<AnalysisConfig, JsValue> {
     };
     bootstrap_seed(&analysis)?;
     Ok(analysis)
+}
+/// The report as `partvi::ExperimentResult` plots for the SVG adapters. Each
+/// curve is accompanied by its `value + error` and `value − error` edges, so
+/// the page derives no band of its own.
+fn present(report: &SpectroscopyReport) -> Result<JsValue, JsValue> {
+    super::js(&presentation::present(report).map_err(super::error)?)
+}
+/// Report of imported evidence. Callers guard the size of both payloads first.
+fn evidence_report(evidence: &[u8], analysis_json: &str) -> Result<SpectroscopyReport, JsValue> {
+    let analysis = parse_analysis(analysis_json)?;
+    let evidence = SpectroscopyEvidence::from_bytes(evidence).map_err(super::error)?;
+    super::browser_seed(evidence.request.seed)?;
+    algorithmic_gas_benchmarks::spectroscopy::analyze_evidence(&evidence, &analysis)
+        .map_err(super::error)
+}
+/// Report of one imported CBOR `RunArchive`, measured with `config_json` (an
+/// empty string selects the default). Callers guard the size of both payloads
+/// first.
+fn archive_report(config_json: &str, archive: &[u8]) -> Result<SpectroscopyReport, JsValue> {
+    let config: SpectroscopyConfig = if config_json.trim().is_empty() {
+        SpectroscopyConfig::default()
+    } else {
+        serde_json::from_str(config_json).map_err(super::error)?
+    };
+    bootstrap_seed(&config.analysis)?;
+    let archive = RunArchive::<f64>::from_bytes(archive).map_err(super::error)?;
+    algorithmic_gas_benchmarks::spectroscopy::analyze_archive(&config, &[archive])
+        .map_err(super::error)
 }
 #[wasm_bindgen]
 pub struct SpectroscopyExperiment {
@@ -50,7 +79,7 @@ impl SpectroscopyExperiment {
             return Err(super::error("Spectroscopy request too large"));
         }
         Ok(Self {
-            session: SpectroscopySession::create(request(&request_json)?)
+            session: SpectroscopySession::create(parse_request(&request_json)?)
                 .await
                 .map_err(super::error)?,
         })
@@ -70,6 +99,11 @@ impl SpectroscopyExperiment {
     pub fn done(&self) -> bool {
         self.session.done()
     }
+    /// The resolved request the session runs, so a restored or imported
+    /// session shows its own configuration instead of the page's last form.
+    pub fn request(&self) -> Result<JsValue, JsValue> {
+        super::js(self.session.request())
+    }
     pub fn analyze(&self, analysis_json: String) -> Result<JsValue, JsValue> {
         if analysis_json.len() > 1024 * 1024 {
             return Err(super::error(
@@ -79,22 +113,23 @@ impl SpectroscopyExperiment {
         super::js(
             &self
                 .session
-                .analyze(&analysis(&analysis_json)?)
+                .analyze(&parse_analysis(&analysis_json)?)
                 .map_err(super::error)?,
         )
     }
-    /// The report as `partvi::ExperimentResult` plots for the SVG adapters.
+    /// The report of `analyze` as presentation plots.
     pub fn presentation(&self, analysis_json: String) -> Result<JsValue, JsValue> {
         if analysis_json.len() > 1024 * 1024 {
             return Err(super::error(
                 "Spectroscopy analysis configuration too large",
             ));
         }
-        let report = self
-            .session
-            .analyze(&analysis(&analysis_json)?)
-            .map_err(super::error)?;
-        super::js(&presentation::present(&report).map_err(super::error)?)
+        present(
+            &self
+                .session
+                .analyze(&parse_analysis(&analysis_json)?)
+                .map_err(super::error)?,
+        )
     }
     pub fn evidence(&self) -> Result<Vec<u8>, JsValue> {
         self.session.evidence().to_bytes().map_err(super::error)
@@ -129,7 +164,7 @@ pub fn spectroscopy_capabilities(request_json: String) -> Result<JsValue, JsValu
         return Err(super::error("Spectroscopy request too large"));
     }
     super::js(
-        &algorithmic_gas_benchmarks::spectroscopy::capabilities(&request(&request_json)?)
+        &algorithmic_gas_benchmarks::spectroscopy::capabilities(&parse_request(&request_json)?)
             .map_err(super::error)?,
     )
 }
@@ -142,13 +177,22 @@ pub fn spectroscopy_analyze(evidence: Vec<u8>, analysis_json: String) -> Result<
             "Spectroscopy evidence or analysis configuration too large",
         ));
     }
-    let analysis = analysis(&analysis_json)?;
-    let evidence = SpectroscopyEvidence::from_bytes(&evidence).map_err(super::error)?;
-    super::browser_seed(evidence.request.seed)?;
-    super::js(
-        &algorithmic_gas_benchmarks::spectroscopy::analyze_evidence(&evidence, &analysis)
-            .map_err(super::error)?,
-    )
+    super::js(&evidence_report(&evidence, &analysis_json)?)
+}
+
+/// The plots of `spectroscopy_analyze`, for a page holding imported evidence
+/// instead of a session.
+#[wasm_bindgen]
+pub fn spectroscopy_presentation(
+    evidence: Vec<u8>,
+    analysis_json: String,
+) -> Result<JsValue, JsValue> {
+    if evidence.len() > 256 * 1024 * 1024 || analysis_json.len() > 1024 * 1024 {
+        return Err(super::error(
+            "Spectroscopy evidence or analysis configuration too large",
+        ));
+    }
+    present(&evidence_report(&evidence, &analysis_json)?)
 }
 
 /// Measure and analyse one imported CBOR `RunArchive`.
@@ -157,15 +201,18 @@ pub fn spectroscopy_archive(config_json: String, archive: Vec<u8>) -> Result<JsV
     if config_json.len() > 1024 * 1024 || archive.len() > 256 * 1024 * 1024 {
         return Err(super::error("Spectroscopy archive request too large"));
     }
-    let config: SpectroscopyConfig = if config_json.trim().is_empty() {
-        SpectroscopyConfig::default()
-    } else {
-        serde_json::from_str(&config_json).map_err(super::error)?
-    };
-    bootstrap_seed(&config.analysis)?;
-    let archive = RunArchive::<f64>::from_bytes(&archive).map_err(super::error)?;
-    super::js(
-        &algorithmic_gas_benchmarks::spectroscopy::analyze_archive(&config, &[archive])
-            .map_err(super::error)?,
-    )
+    super::js(&archive_report(&config_json, &archive)?)
+}
+
+/// The plots of `spectroscopy_archive`, for a page holding an imported archive
+/// instead of a session.
+#[wasm_bindgen]
+pub fn spectroscopy_archive_presentation(
+    config_json: String,
+    archive: Vec<u8>,
+) -> Result<JsValue, JsValue> {
+    if config_json.len() > 1024 * 1024 || archive.len() > 256 * 1024 * 1024 {
+        return Err(super::error("Spectroscopy archive request too large"));
+    }
+    present(&archive_report(&config_json, &archive)?)
 }

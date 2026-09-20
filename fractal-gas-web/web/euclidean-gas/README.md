@@ -1,4 +1,4 @@
-# Euclidean Gas Lab
+# Algorithmic Gas Lab
 
 The **Elite walkers** setting retains the best walkers found after completed
 steps. Fresh lab runs start with two elites; choose zero to disable retention,

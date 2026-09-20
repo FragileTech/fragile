@@ -4,7 +4,7 @@
 //! undefined number is a gap in a curve or a metric without a value, never a
 //! zero.
 use super::{
-    config::TimeUnit,
+    config::{FrameNormalization, TimeUnit},
     contract::{ExchangeParity, SpatialParity},
     report::{
         ChannelReport, Comparison, CouplingReport, EstimatorKind, FitMethodKind, FitOutcome,
@@ -230,6 +230,17 @@ fn spatial(parity: Option<SpatialParity>) -> &'static str {
     }
 }
 
+/// Denominator of the frame averages a rate was fitted on. The two arms are
+/// different observables, so `09_qft_calibration` asks every reported rate to
+/// state the one it used; a measurement that did not record it says so.
+fn normalization(kind: Option<FrameNormalization>) -> &'static str {
+    match kind {
+        Some(FrameNormalization::ValidCount) => "the sum of valid element weights (04)",
+        Some(FrameNormalization::FixedN) => "the population size N (08)",
+        None => "not stated by the measurement",
+    }
+}
+
 /// A channel is titled by its id and described by its algebraic definition
 /// and parities; a particle name appears only in the comparison.
 fn channel(report: &ChannelReport) -> ExperimentResult {
@@ -247,6 +258,16 @@ fn channel(report: &ChannelReport) -> ExperimentResult {
         exchange(report.exchange),
         spatial(report.spatial_parity)
     ));
+    if matches!(
+        report.estimator,
+        Some(EstimatorKind::FrameMean | EstimatorKind::EuclideanTime)
+    ) {
+        result.note(format!(
+            "Frame normalisation: {}. The valid-count and fixed-N averages are different \
+             observables and only the fixed-N one has a transfer-matrix reading.",
+            normalization(report.normalization)
+        ));
+    }
     if let Some(mass) = &report.mass {
         rate(&mut result, "rate", mass);
     } else {

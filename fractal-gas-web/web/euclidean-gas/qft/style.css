@@ -253,6 +253,13 @@ caption {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+/* A report table puts a sentence column (a fit quantity, the reason a channel
+   reported no signal) beside narrow numeric ones. Sizing the columns to their
+   content keeps the sentence readable; the container scrolls instead. */
+.qft table {
+  width: max-content;
+  min-width: 100%;
+}
 
 .notes {
   border-left: 2px solid var(--accent);

@@ -39,7 +39,7 @@ pub use domain::TessellationDomain;
 pub use frame::{EdgeLengths, GeometryFrame};
 pub use graph::NeighborGraph;
 pub use mesh::{SiteMesh, Tessellator, TessellatorKind};
-pub use metric::{MetricEstimator, MetricField, MetricKind};
+pub use metric::{MetricEstimator, MetricField, MetricKind, RidgeScale};
 pub use par::Parallelism;
 pub use pipeline::{GeometryPipelineConfig, TessellationGeometry};
 pub use regge::ReggeLengths;

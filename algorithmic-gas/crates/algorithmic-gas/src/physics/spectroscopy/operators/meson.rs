@@ -9,8 +9,8 @@ use crate::{
         spectroscopy::{
             config::{ChannelSpec, MesonMode, MesonQuantum},
             contract::{
-                Descriptor, Element, ElementKind, ExchangeParity, FrameState, OperatorContext,
-                Record, Requirements, Signature, SpatialParity,
+                Auxiliary, Descriptor, Element, ElementKind, ExchangeParity, FrameState,
+                OperatorContext, Record, Requirements, Signature, SpatialParity,
             },
         },
     },
@@ -60,11 +60,15 @@ impl<'a> ColorPair<'a> {
     }
 }
 
-/// `S_j − S_i`; `None` where either walker has no valid score.
-fn score_difference(state: &FrameState, i: usize, j: usize) -> Option<f64> {
-    let score = state.score.as_ref()?;
-    let valid = |w: usize| state.score_valid.get(w).copied().unwrap_or(false);
-    (valid(i) && valid(j)).then_some(score.get(j)? - score.get(i)?)
+/// `S_j − S_i`; `NaN` where either walker has no valid score, which is missing
+/// data and not the tie that a difference of 0 states.
+fn score_difference(state: &FrameState, i: usize, j: usize) -> f64 {
+    let gap = || {
+        let score = state.score.as_ref()?;
+        let valid = |w: usize| state.score_valid.get(w).copied().unwrap_or(false);
+        (valid(i) && valid(j)).then_some(score.get(j)? - score.get(i)?)
+    };
+    gap().unwrap_or(f64::NAN)
 }
 
 /// `ChannelSpec::Meson` on a distance or cloning pair. Requires `Color`; the
@@ -109,8 +113,9 @@ pub(super) fn signature(
         MesonQuantum::Scalar => r"\operatorname{Re}",
         MesonQuantum::Pseudoscalar => r"\operatorname{Im}",
     };
-    let scored = "Scores are those of each walker against its own cloning companion, read at \
-        the evaluated time.";
+    let scored = "Scores are those of each walker against its own cloning companion, read once \
+        at the source time of the element and frozen with it: a sink of the propagator reapplies \
+        the source-time factor instead of the order of its own frame.";
     let (definition, book_label, note) = match mode {
         MesonMode::Standard => (
             format!(r"{part}\, c_i^\dagger c_j"),
@@ -123,7 +128,11 @@ pub(super) fn signature(
             format!(
                 "The pair is read from its lower to its higher score and masked on a tie. \
                  {scored} On a mutual cloning pair the orientation runs from the fitter to the \
-                 less fit walker.{}",
+                 less fit walker. Because the orientation is frozen with the element it enters \
+                 the lag product squared, so the source-frozen propagator of this arm is the one \
+                 of meson/{}/standard over the oriented elements and only the frame mean is a \
+                 channel of its own.{}",
+                quantum.name(),
                 match quantum {
                     MesonQuantum::Scalar => {
                         " The real part ignores the orientation: the series equals \
@@ -138,7 +147,10 @@ pub(super) fn signature(
             "",
             format!(
                 "The score difference multiplies the value, not the element weight: the frame \
-                 denominator stays the valid weight sum. {scored} The factor is exchange even, \
+                 denominator stays the valid weight sum, and a tied pair keeps the element with \
+                 the value 0. A frame whose weighted score dispersion Σ_I w_I |S_j − S_i| \
+                 vanishes has no average at all and carries the weight 0, so a series of exact \
+                 zeros is never presented as a measurement. {scored} The factor is exchange even, \
                  so it does not lift the cancellation of the imaginary part on a mutual pairing."
             ),
         ),
@@ -157,7 +169,14 @@ pub(super) fn signature(
             "Invariant under a separate rephasing of each walker.".into(),
         ),
     };
+    let auxiliary = match mode {
+        MesonMode::ScoreDirected => Some(Auxiliary::ScoreOrientation),
+        MesonMode::ScoreWeighted => Some(Auxiliary::ScoreDispersion),
+        _ => None,
+    };
+    let directed = *mode == MesonMode::ScoreDirected;
     Ok(Signature {
+        propagatable: !directed,
         descriptor: Descriptor {
             definition,
             book_label: book_label.into(),
@@ -167,14 +186,17 @@ pub(super) fn signature(
             }),
             note,
         },
+        auxiliary,
         ..Signature::new(requires, 1, exchange)
     })
 }
 
-/// Invalid colours mask the element. A directed arm orients the pair from
-/// `state.score` and masks a tie or a missing score; a weighted arm masks a
-/// missing score and keeps a tie with the value 0. The arms without an
-/// operator mask every element.
+/// Invalid colours mask the element. A score mode leaves the contraction in
+/// the sampled order and writes the factor the score contributes beside it:
+/// the orientation sign of the directed arm, the dispersion `|S_j − S_i|` of
+/// the weighted one, `0` on a tie and not a number where a walker has no valid
+/// score. The measurement freezes that factor with the element. The arms
+/// without an operator mask every element.
 pub(super) fn evaluate(
     spec: &ChannelSpec,
     element: &Element,
@@ -185,31 +207,44 @@ pub(super) fn evaluate(
     let ChannelSpec::Meson { quantum, mode } = spec else {
         return false;
     };
-    let (Some(pair), [out]) = (ColorPair::of(element, state), out) else {
+    let Some(pair) = ColorPair::of(element, state) else {
         return false;
     };
     let part = |z: C| match quantum {
         MesonQuantum::Scalar => z.re,
         MesonQuantum::Pseudoscalar => z.im,
     };
-    let value = match mode {
-        MesonMode::Standard => part(pair.overlap()),
-        MesonMode::ScoreDirected => match score_difference(state, pair.i, pair.j) {
-            Some(ds) if ds > 0. => part(pair.overlap()),
-            Some(ds) if ds < 0. => part(pair.overlap().conj()),
-            _ => return false,
-        },
-        MesonMode::ScoreWeighted => match score_difference(state, pair.i, pair.j) {
-            Some(ds) => ds.abs() * part(pair.overlap()),
-            None => return false,
-        },
+    let (value, factor) = match mode {
+        MesonMode::Standard => (part(pair.overlap()), None),
+        // The real part is invariant under the orientation, so the factor of
+        // the directed scalar carries no sign: it only states that the pair
+        // has an order at all.
+        MesonMode::ScoreDirected => {
+            let ds = score_difference(state, pair.i, pair.j);
+            let factor = match quantum {
+                _ if ds == 0. || ds.is_nan() => ds,
+                MesonQuantum::Scalar => 1.,
+                MesonQuantum::Pseudoscalar => ds.signum(),
+            };
+            (part(pair.overlap()), Some(factor))
+        }
+        MesonMode::ScoreWeighted => (
+            part(pair.overlap()),
+            Some(score_difference(state, pair.i, pair.j).abs()),
+        ),
         MesonMode::Gamma5Diagonal if state.d < 2 => return false,
-        MesonMode::Gamma5Diagonal => part(pair.gamma5()),
+        MesonMode::Gamma5Diagonal => (part(pair.gamma5()), None),
         MesonMode::Abs2 => match quantum {
-            MesonQuantum::Scalar => pair.overlap().abs2(),
+            MesonQuantum::Scalar => (pair.overlap().abs2(), None),
             MesonQuantum::Pseudoscalar => return false,
         },
     };
-    *out = value;
+    if out.len() != 1 + usize::from(factor.is_some()) {
+        return false;
+    }
+    out[0] = value;
+    if let (Some(slot), Some(factor)) = (out.get_mut(1), factor) {
+        *slot = factor;
+    }
     value.is_finite()
 }

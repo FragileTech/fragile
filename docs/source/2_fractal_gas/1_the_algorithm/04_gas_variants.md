@@ -115,6 +115,14 @@ The same discipline kills the other confusions. A mean-field limit is not a seve
 In this volume *Fragile Gas* and *Fragile Swarm* have only the framework meaning of {prf:ref}`def-gas-taxonomy`. The reinforcement-learning instantiation of the family, whose reward is an environment signal, is the Environment Gas. The name *Abstract Fractal Gas* denotes the minimal member of the family described in item 1 of {prf:ref}`def-gas-taxonomy`. The name *Adaptive Gas*, used in the literature for a gas with a fitness-adapted force and noise, denotes the Geometric Gas. The equation of {prf:ref}`def-fractal-set-sde` writes the dynamics of the Geometric Gas with a different normalization of the weights and of the adaptive force; the conventions of the two displayed equations are compared in {prf:ref}`def-variant-geometric`.
 :::
 
+:::{prf:remark} The variant registry of the engine
+:label: rem-variants-registry
+
+The engine enumerates the six named variants as the enum `algorithmic_gas::variants::Variant`, in the order of this chapter. Each arm reports `name` (a snake_case identifier, also accepted with hyphens by `Variant::from_name`), `title`, `book_label` — the label of the variant's definition in this chapter, for example `def-variant-euclidean` — `implemented`, a one-sentence `summary`, and, for an implemented variant, the walker count, dimension and time step of its reference instance; `variants::catalog` returns these rows and `Variant::config(dimensions, dt)` returns the corresponding `GasConfig`. The Einstein–Hilbert configuration does not depend on the dimension.
+
+Exactly three arms are implemented, namely the ones with a `GasConfig` constructor: the Euclidean, Viscous Euclidean and Einstein–Hilbert gases. The Geometric, Latent Fractal and Environment gases are registry entries without a constructor, and `Variant::config` returns a `GasError::Capability` naming the variant's title and its book label, so a request for one fails by pointing at the definition that would have to be implemented.
+:::
+
 :::{div} feynman-added
 **A pocket card for the five words.** If you remember nothing else from this section, remember which question each word answers.
 
@@ -170,7 +178,7 @@ The frozen OU stage has stationary velocity variance $\sigma_v^2/(2\gamma)=1/2$ 
 :::{prf:remark} Euclidean Gas: component and configuration correspondence
 :label: rem-variant-euclidean-rust
 
-The constructor is `GasConfig::euclidean` in `algorithmic-gas/crates/algorithmic-gas/src/variants/euclidean.rs`. Fields not listed keep the values of `GasConfig::default()`. The reference instance `RunConfig::euclidean()` takes $N=64$, $d=2$, $h=0.04$ and the quadratic objective $U(x)=\lVert x\rVert^2/2$, and starts the walkers uniformly in $[-1,1]^2$ at rest.
+The constructor is `GasConfig::euclidean` in `algorithmic-gas/crates/algorithmic-gas/src/variants/euclidean.rs`. Fields not listed keep the values of `GasConfig::default()`; the preset overrides the default single precision and runs in `Precision::F64`. The reference instance `RunConfig::euclidean()` takes $N=64$, $d=2$, $h=0.04$ and the quadratic objective $U(x)=\lVert x\rVert^2/2$, and starts the walkers uniformly in $[-1,1]^2$ at rest.
 
 | Component | `GasConfig` field | Value or enum arm |
 |---|---|---|
@@ -181,7 +189,7 @@ The constructor is `GasConfig::euclidean` in `algorithmic-gas/crates/algorithmic
 | $\mathsf Z$ | `fitness.reward_standardizer`, `fitness.diversity_standardizer` | `Standardizer::Global { sigma_min: 0.1 }` |
 | $\mathsf g$ | `fitness.reward_map`, `fitness.diversity_map`, `fitness.reward_exponent`, `fitness.diversity_exponent`, `fitness.direction` | `PositiveMap::Logistic { amplitude: 2, floor: 0.1 }`, `1`, `1`, `ObjectiveDirection::Minimize` |
 | $\mathsf A$ | `clone_decision` | `CloneDecision { epsilon: 1e-6, saturation: 1, revival_from_companion: true, every: 1 }` |
-| $\mathsf T$ | `clone_transform` | `CloneTransform { jitter: Some(Noise::default()), jitter_amplitude: 0.1, restitution: Some(0.5), collision_rotation: CollisionRotation::Haar }` |
+| $\mathsf T$ | `clone_transform` | `CloneTransform { position_field: Some("positions"), jitter: Some(Noise::default()), jitter_amplitude: 0.1, velocity_field: Some("velocities"), restitution: Some(0.5), collision_rotation: CollisionRotation::Haar }` |
 | $\mathsf K$ | `kinetic.integrator`, `kinetic.noise.geometry`, `kinetic.position_diffusion`, `kinetic.velocity_cap` | `KineticKind::Baoab { dt: h, friction: 1 }`, `NoiseGeometry::Isotropic` with scale `1`, `0.1`, `Some(2)` |
 | $F^{\mathrm{visc}}$, curl | `qft` | `QftExecutionConfig::default()`: `viscosity: None`, `graph_viscosity: None`, `curl: None` |
 | $\mathsf B$ | `boundary`, `kinetic.boundary_schedule` | `BoundaryPolicy::AbsorbingBox` on `[-2, 2]^d`, `KineticBoundarySchedule::EndOfStep` |
@@ -373,11 +381,11 @@ The reference instance `RunConfig::einstein_hilbert()` takes $N=500$, $d=3$ (so 
 :::{prf:remark} Einstein–Hilbert Gas: component and configuration correspondence
 :label: rem-variant-einstein-hilbert-rust
 
-The constructor is `GasConfig::einstein_hilbert` in `algorithmic-gas/crates/algorithmic-gas/src/variants/einstein_hilbert.rs`. It is built with `GeometryReward::default()` as the reward source and `ZeroPotential` as the gradient provider. Fields not listed keep the values of `GasConfig::default()`.
+The constructor is `GasConfig::einstein_hilbert` in `algorithmic-gas/crates/algorithmic-gas/src/variants/einstein_hilbert.rs`, and the reference temperature $T=0.33$ is the constant `einstein_hilbert::REFERENCE_TEMPERATURE`. It is built with `GeometryReward::default()` as the reward source and `ZeroPotential` as the gradient provider. The curvature name `ricci_scalar` is the shared constant `tessellation::presets::RICCI_SCALAR`, which the gas preset and the reward source both read. Fields not listed keep the values of `GasConfig::default()`; unlike `GasConfig::euclidean`, this preset does not override the default precision, so it runs in `Precision::F32`.
 
 | Component | `GasConfig` field | Value or enum arm |
 |---|---|---|
-| $\mathcal W$ | population fields `positions`, `velocities`, `geometry.volume_element`, `geometry.curvature.ricci_scalar`, `geometry.diffusion` | — |
+| $\mathcal W$ | population fields `positions`, `velocities`, `geometry.volume_element`, `geometry.curvature.ricci_scalar`, `geometry.diffusion`; `precision` | `Precision::F32`, the default |
 | $\mathsf C^{D}$ | `distance_donors` | `DonorModule { kernel: Kernel::Uniform, law: SamplingLaw::FisherYates, odd: OddPolicy::SelfCompanion, count: 1 }` |
 | $\mathsf C^{C}$ | `cloning_donors` | the same `DonorModule` value; the two roles use separate random streams |
 | $d_{\mathrm{alg}}$ | `DonorModule.distance`, `fitness.distance_floor`, `reducer` | `Distance::Euclidean { field: "positions", squared: false }`, `1e-30`, `CompanionReducer::Mean` |
@@ -732,6 +740,7 @@ Abbreviations: EG Euclidean Gas, VEG Viscous Euclidean Gas, EHG Einstein–Hilbe
 | $\mathsf R$ | $-U(x)-\lambda_{\mathrm{vel}}\lVert v\rVert ^2$ | as EG | $R_i\sqrt{\det g_i}$ | $R(x)$ | $\mathcal R_z(v)$ | environment reward |
 | $\mathsf G$ | $\varnothing$ | $\varnothing$ | Delaunay tessellation | fitness-Hessian metric | $G$ and fitness-Hessian factor | $\varnothing$ |
 | Engine constructor | `GasConfig::euclidean` | `GasConfig::viscous_euclidean` | `GasConfig::einstein_hilbert` | none | none | none (`KineticKind::Environment`) |
+| Precision of the preset | `Precision::F64` | `Precision::F64` | `Precision::F32` | no preset | no preset | no preset |
 | Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | not established for $\nu>0$ | not established | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
 :::
 

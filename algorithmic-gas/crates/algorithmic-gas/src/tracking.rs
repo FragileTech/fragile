@@ -1,5 +1,8 @@
 //! Durable observational archive. Recording never draws random numbers and commits atomically.
-use crate::{GasConfig, GasError, Population, Real, Result, StepReport, Validity, error::require};
+use crate::{
+    GasConfig, GasError, Population, Real, Result, StepReport, Validity, error::require,
+    tessellation::GeometrySchedule,
+};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -354,7 +357,45 @@ impl<T: Real> RunArchive<T> {
         )?;
         crate::memory::enforce(self.buffer_bytes()?, self.config.max_bytes)
     }
-    pub(crate) fn append(&mut self, step: RecordedStep<T>) -> Result<()> {
+    /// A geometry schedule that does not tessellate every step hands the same
+    /// graph to several consecutive steps. Count how many so the archive says
+    /// which frame the tessellation was measured on; the frames that inherited
+    /// it carry a nonzero count and a consumer can decline or reuse them.
+    /// Nothing is carried over when every stage tessellates.
+    ///
+    /// The step that precedes this one in the recording dates it exactly,
+    /// including the refreshes `on_clone` inserts off the period. Where there
+    /// is no such step — the first step of a recording started in the middle
+    /// of a period, or one that resumed after a gap — the period is the only
+    /// evidence, and `(step - 1) % every` is what the schedule guarantees:
+    /// never a carried-over graph reported as its frame's own.
+    fn stamp_staleness(&self, step: &mut RecordedStep<T>) {
+        let Some(GeometrySchedule::PostClone { every, .. }) = self
+            .gas_config
+            .geometry
+            .as_ref()
+            .map(|stage| stage.schedule)
+        else {
+            return;
+        };
+        let Some(graph) = step.graph.as_mut() else {
+            return;
+        };
+        let contiguous = self
+            .steps
+            .last()
+            .filter(|previous| previous.report.step + 1 == step.report.step)
+            .and_then(|previous| previous.graph.as_ref());
+        graph.stale_steps = match contiguous {
+            Some(previous) if previous.same_geometry(graph) => {
+                previous.stale_steps.saturating_add(1)
+            }
+            Some(_) => 0,
+            None => (step.report.step.saturating_sub(1) % every.max(1)).min(u32::MAX as u64) as u32,
+        };
+    }
+    pub(crate) fn append(&mut self, mut step: RecordedStep<T>) -> Result<()> {
+        self.stamp_staleness(&mut step);
         self.steps.push(step);
         if let Err(e) = self.check_capacity() {
             self.steps.pop();
@@ -380,12 +421,50 @@ impl<T: Real> RunArchive<T> {
         self.epoch = epoch;
         Ok(())
     }
+    /// A tessellation the recorder carried over is stamped with the number of
+    /// steps it has been carried for, and `0` claims a step measured its own
+    /// geometry. Under a schedule that carries one over, the recorded graphs
+    /// decide that claim themselves: contiguous steps holding the same
+    /// tessellation held it because the later one inherited it, so the later
+    /// stamp is the earlier one raised. An archive that claims otherwise is
+    /// one whose writer never stamped staleness, and `scales::distances` would
+    /// read its frozen graphs as each frame's own geometry — the reading the
+    /// stamp exists to refuse. The converse is not checked: a clone-triggered
+    /// refresh and a trimmed step both leave a legitimate stamp that this
+    /// arithmetic alone cannot reconstruct.
+    fn check_staleness(&self) -> Result<()> {
+        let Some(GeometrySchedule::PostClone { every, .. }) = self
+            .gas_config
+            .geometry
+            .as_ref()
+            .map(|stage| stage.schedule)
+        else {
+            return Ok(());
+        };
+        if every <= 1 {
+            return Ok(());
+        }
+        for pair in self.steps.windows(2) {
+            let [before, after] = pair else { continue };
+            let (Some(a), Some(b)) = (before.graph.as_ref(), after.graph.as_ref()) else {
+                continue;
+            };
+            require(
+                before.report.step.saturating_add(1) != after.report.step
+                    || !a.same_geometry(b)
+                    || b.stale_steps > a.stale_steps,
+                "archive carries one tessellation over consecutive steps without stamping it stale",
+            )?;
+        }
+        Ok(())
+    }
     pub fn validate(&self) -> Result<()> {
         require(
             self.schema_version == 2 && !self.anchors.is_empty(),
             "invalid archive schema/anchors",
         )?;
         self.check_capacity()?;
+        self.check_staleness()?;
         let mut previous = None;
         for a in &self.anchors {
             a.population.validate()?;

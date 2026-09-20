@@ -6,6 +6,7 @@ use crate::{
     GasError, Result,
     error::require,
     physics::qft::math::{ridentity, symmetric_eigen},
+    tessellation::linalg::bilinear,
 };
 
 #[derive(Clone, Debug, PartialEq)]
@@ -18,6 +19,19 @@ pub struct GeneralizedEigen {
     /// Directions of `B` kept: eigenvalues of `B_ij / sqrt(B_ii B_jj)` above
     /// `max(cut, 1e-12) · λ_max`.
     pub rank: usize,
+}
+impl GeneralizedEigen {
+    /// `vₙᵀ a vₙ` of every retained eigenvector against a symmetric `[n, n]`
+    /// matrix, `[rank]`. Since `vᵀ B v = 1`, this is the eigenvalue the
+    /// pencil `(a, B)` carries along that one direction: held across a family
+    /// of `a`, it follows one state instead of whatever sits at a place in
+    /// the ordering of each member.
+    pub fn project(&self, a: &[f64], n: usize) -> Vec<f64> {
+        self.vectors
+            .chunks_exact(n)
+            .map(|v| bilinear(a, v, v))
+            .collect()
+    }
 }
 
 /// Eigenvalues and column eigenvectors of a symmetric `[n, n]` matrix whose

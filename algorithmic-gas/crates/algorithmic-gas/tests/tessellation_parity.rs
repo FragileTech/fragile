@@ -1,12 +1,17 @@
 //! Agreement with the reference estimators of `fragile.physics.geometry`.
 //! Fixtures come from `tools/export_tessellation_fixtures.py`. Topology must
 //! match exactly; numbers agree up to the conditioning of the different
-//! eigen/SVD and linear solvers.
+//! eigen/SVD and linear solvers. The reference regularizes the displacement
+//! covariance with an absolute `1e-5 I`, so the parity run selects
+//! `RidgeScale::Absolute`: that convention, not the scale-covariant default,
+//! is what these fixtures were measured with. The last test pins the size of
+//! the departure the shipped default makes from them, and why it is made.
 use algorithmic_gas::{
     ObservationBatch, TensorBatch,
+    partv_geometry::MetricPolicy,
     tessellation::{
-        CurvatureKind, CurvatureSpec, GeometryPipelineConfig, Parallelism, TessellationGeometry,
-        WeightMode, WeightSpec,
+        CurvatureKind, CurvatureSpec, GeometryPipelineConfig, MetricKind, Parallelism, RidgeScale,
+        TessellationGeometry, WeightMode, WeightSpec,
         forces::{GraphField, boris_rotate, curl, viscous_force},
     },
 };
@@ -36,21 +41,57 @@ fn edges(v: &Value) -> Vec<[u32; 2]> {
     out.sort_unstable();
     out
 }
-#[track_caller]
-fn close(label: &str, actual: &[f64], expected: &[f64], tolerance: f64) {
-    assert_eq!(actual.len(), expected.len(), "{label}: length");
+/// Relative deviation of every entry, on the scale the tolerances are quoted
+/// in: the entry's own magnitude plus `1e-6` of the largest expected one, so a
+/// number that is zero in the reference is measured against the vector.
+fn deviations(actual: &[f64], expected: &[f64]) -> Vec<f64> {
     let scale = expected
         .iter()
         .fold(0f64, |m, v| m.max(v.abs()))
         .max(1e-300);
-    for (k, (a, e)) in actual.iter().zip(expected).enumerate() {
+    actual
+        .iter()
+        .zip(expected)
+        .map(|(a, e)| (a - e).abs() / (e.abs() + 1e-6 * scale))
+        .collect()
+}
+#[track_caller]
+fn close(label: &str, actual: &[f64], expected: &[f64], tolerance: f64) {
+    assert_eq!(actual.len(), expected.len(), "{label}: length");
+    for (k, deviation) in deviations(actual, expected).iter().enumerate() {
         assert!(
-            (a - e).abs() <= tolerance * (e.abs() + 1e-6 * scale),
-            "{label}[{k}]: {a} vs {e}"
+            *deviation <= tolerance,
+            "{label}[{k}]: {} vs {}",
+            actual[k],
+            expected[k]
         );
     }
 }
+/// The largest entry of `deviations`: how far a whole vector has moved.
+#[track_caller]
+fn departure(label: &str, actual: &[f64], expected: &[f64]) -> f64 {
+    assert_eq!(actual.len(), expected.len(), "{label}: length");
+    deviations(actual, expected)
+        .into_iter()
+        .fold(0f64, f64::max)
+}
+/// The measured departure, to the digits recorded in the test that calls this.
+#[track_caller]
+fn pins(label: &str, measured: f64, recorded: f64) {
+    assert!(
+        (measured - recorded).abs() <= 1e-3 * recorded,
+        "{label}: departure {measured:e}, recorded {recorded:e}"
+    );
+}
 fn evaluate(d: usize, positions: Vec<f64>, length_scale: f64) -> TessellationGeometry<f64> {
+    evaluate_with(d, positions, length_scale, RidgeScale::Absolute)
+}
+fn evaluate_with(
+    d: usize,
+    positions: Vec<f64>,
+    length_scale: f64,
+    scale: RidgeScale,
+) -> TessellationGeometry<f64> {
     let n = positions.len() / d;
     let modes = [
         WeightMode::Uniform,
@@ -63,6 +104,13 @@ fn evaluate(d: usize, positions: Vec<f64>, length_scale: f64) -> TessellationGeo
         WeightMode::RiemannianKernelVolume,
     ];
     let config = GeometryPipelineConfig {
+        metric: MetricKind::NeighborCovariance {
+            ridge: 1e-5,
+            min_eig: Some(1e-6),
+            max_eig: None,
+            scale,
+            policy: MetricPolicy::default(),
+        },
         weights: modes
             .into_iter()
             .map(|mode| WeightSpec {
@@ -218,6 +266,101 @@ fn geometry_matches_the_reference_estimators() {
             &angle,
             &flat(&forces["rotation_angle"]),
             1e-6,
+        );
+    }
+}
+
+/// The shipped default makes the ridge a multiple of the covariance trace, so
+/// it cannot reproduce fixtures measured with an absolute `1e-5 I` — and it
+/// must not: that is the correction the audit records as Q30. The test above
+/// pins agreement with the reference under the reference's own convention;
+/// this one pins how far the default stands from it, and that nothing the
+/// metric does not enter moves with it. A default silently restored to the
+/// absolute ridge fails here instead of passing parity.
+#[test]
+fn the_default_ridge_scale_departs_from_the_reference_metric() {
+    // Largest relative departure of the default from the fixture, measured.
+    for (name, metric_gap, det_gap) in [
+        ("cloud_2d", 6.681938e-2, 6.681975e-2),
+        ("cloud_3d", 4.190650e-3, 2.081267e-3),
+    ] {
+        let f = fixture(name);
+        let d = f["dimension"].as_u64().unwrap() as usize;
+        let length_scale = f["length_scale"].as_f64().unwrap();
+        let positions = flat(&f["positions"]);
+        let n = positions.len() / d;
+        let reference = evaluate(d, positions.clone(), length_scale);
+        let shipped = evaluate_with(
+            d,
+            positions.clone(),
+            length_scale,
+            RidgeScale::RelativeToTrace,
+        );
+        assert_eq!(RidgeScale::default(), RidgeScale::RelativeToTrace);
+        // A ridge is not a site: the tessellation and every length and weight
+        // built from the coordinates alone are bit identical to the parity run.
+        assert_eq!(
+            shipped.graph().coo(),
+            edges(&f["edges"]),
+            "{name}: Delaunay edges"
+        );
+        let bits = |v: &[f64]| v.iter().map(|x| x.to_bits()).collect::<Vec<_>>();
+        assert_eq!(
+            bits(&shipped.lengths.euclidean),
+            bits(&reference.lengths.euclidean),
+            "{name}: edge distances"
+        );
+        for mode in ["uniform", "inverse_distance", "inverse_volume", "kernel"] {
+            assert_eq!(
+                bits(&shipped.weights[mode]),
+                bits(&reference.weights[mode]),
+                "{name}: {mode} weights"
+            );
+        }
+        // The metric and what is built on it do move, by this much.
+        pins(
+            &format!("{name}: metric"),
+            departure("metric", &shipped.metric.metric, &flat(&f["metric"])),
+            metric_gap,
+        );
+        pins(
+            &format!("{name}: metric_det"),
+            departure(
+                "metric_det",
+                &shipped.metric.determinant,
+                &flat(&f["metric_det"]),
+            ),
+            det_gap,
+        );
+        // Under x -> lambda x the displacement covariance scales as lambda^2,
+        // so det(g) must scale as lambda^{-2d}. The reference ridge does not
+        // scale, and at lambda = 1e-3 it dominates: every walker's determinant
+        // is short by more than 1e3, the worst by 5.6e6 in 2D and 2.0e8 in 3D.
+        // The default holds the exponent to roundoff.
+        let lambda = 1e-3;
+        let shrunk: Vec<f64> = positions.iter().map(|v| lambda * v).collect();
+        let factor = lambda.powi(2 * d as i32);
+        let small_reference = evaluate(d, shrunk.clone(), length_scale);
+        let small_shipped = evaluate_with(d, shrunk, length_scale, RidgeScale::RelativeToTrace);
+        let mut shortfall = 0f64;
+        for i in 0..n {
+            let stale =
+                factor * small_reference.metric.determinant[i] / reference.metric.determinant[i];
+            assert!(
+                stale < 1e-3,
+                "{name}[{i}]: the absolute ridge kept det g to {stale} of its covariant value"
+            );
+            shortfall = shortfall.max(1. / stale);
+            let covariant =
+                factor * small_shipped.metric.determinant[i] / shipped.metric.determinant[i];
+            assert!(
+                (covariant - 1.).abs() <= 1e-12,
+                "{name}[{i}]: det g(lambda x) / lambda^-2d det g(x) = {covariant}"
+            );
+        }
+        assert!(
+            shortfall > 1e6,
+            "{name}: worst absolute-ridge shortfall {shortfall}"
         );
     }
 }

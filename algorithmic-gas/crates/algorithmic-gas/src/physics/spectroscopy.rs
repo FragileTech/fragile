@@ -204,6 +204,22 @@ fn channel_report(
     if !series.note.is_empty() {
         report.notes.push(series.note.clone());
     }
+    // `B/09:334-337`: every reported rate states the denominator of the frame
+    // averages behind it, the `Signature` override when the operator fixes one
+    // and `MeasurementConfig::normalization` otherwise.
+    report.normalization = measurements.first().map(|measurement| {
+        let context = OperatorContext {
+            gas: &measurement.gas,
+            measurement: &measurement.config,
+            capabilities: &measurement.capabilities,
+        };
+        series
+            .spec
+            .signature(series.kind, &context)
+            .ok()
+            .and_then(|signature| signature.normalization)
+            .unwrap_or(measurement.config.normalization)
+    });
     for member in measurements.iter().filter_map(|m| m.channel(&series.id)) {
         report.coverage.merge(&member.coverage);
         report.availability = report.availability.and(member.availability.clone());
@@ -237,6 +253,14 @@ fn channel_report(
             return Ok((report, None));
         }
     };
+    // What the resampling behind this estimate does not cover travels with the
+    // channel: the delete-one geometry removes origins and not observations,
+    // so beyond the effective block the error is a lower bound; an automatic
+    // block may stop below the batch size its autocorrelation time asks; and a
+    // table of fewer replicas than estimated lags leaves the lag covariance
+    // rank deficient. A fit that scans a shorter window restates the last of
+    // the three for its own point count, in its own notes.
+    report.notes.extend(data.notes());
     report.effective_mass = Some(fits::effective_mass::effective_mass(
         &data,
         analysis.effective_mass,
