@@ -452,6 +452,7 @@ export class ComparisonView {
     this.currentRecord = record;
     this.currentSignature = signature;
     this.source = record ? { kind: "recording", record } : null;
+    this.gameFilters(record?.config);
     this.revision++;
     if (this.active) this.compute(true);
     else this.sourceDirty = true;
@@ -465,6 +466,20 @@ export class ComparisonView {
         this.compute(true);
       } else if (!this.data && this.source) this.compute(true);
     }
+  }
+  gameFilters(config) {
+    const isGame = config?.objective === "xent_game";
+    if (this.gameSource === isGame) return;
+    this.gameSource = isGame;
+    Object.assign(
+      this.filters,
+      isGame
+        ? { metric: "reward", status: "all", pool: "archive" }
+        : { metric: "mean", status: "full", pool: "both" },
+    );
+    for (const key of ["metric", "status", "pool"])
+      this.$(key === "status" ? "status-filter" : key).value =
+        this.filters[key];
   }
   configSummary() {
     let config;
@@ -519,6 +534,7 @@ export class ComparisonView {
         events,
         live,
       };
+      this.gameFilters(store.manifest.settings.config);
       this.revision++;
       this.compute(true);
     } catch (e) {
@@ -719,6 +735,35 @@ export class ComparisonView {
       this.renderSessions();
       this.schedulePreview();
       return;
+    }
+    if (d.game_leaders?.length) {
+      out.append(
+        el("h3", "Best sampled contexts"),
+        table(
+          [
+            "Method",
+            "Trial",
+            "Game score",
+            "Target surprise",
+            "Baseline surprise",
+            "Context",
+          ],
+          d.game_leaders.map((r) => [
+            button(METHOD_STYLE[r.method].label, () =>
+              this.selectKeys([r.key]),
+            ),
+            String(r.trial + 1),
+            fmt(r.score),
+            fmt(r.target_nll),
+            fmt(r.baseline_nll),
+            r.text,
+          ]),
+        ),
+        el(
+          "p",
+          "All scores use nats per target token. Every scored nonempty prefix is eligible, including prefixes no longer in the population.",
+        ),
+      );
     }
     const trial = this.filters.trial;
     this.$("judge-summary").append(
@@ -1021,7 +1066,21 @@ export class ComparisonView {
         };
       });
     for (const [key, title, y] of [
-      ["best_mean", "Best observed full answer", "Mean token log likelihood"],
+      ...(d.game_leaders?.length
+        ? [
+            [
+              "best_reward",
+              "Best game score so far",
+              "Nats per target token · higher is better",
+            ],
+          ]
+        : [
+            [
+              "best_mean",
+              "Best observed full answer",
+              "Mean token log likelihood",
+            ],
+          ]),
       ["completed", "Completed answers", "EOS + capped endpoints"],
       ["eos", "Model-finished answers", "EOS endpoints"],
       ...(this.report?.selected_evaluation

@@ -222,6 +222,14 @@ retained tree, with its elite state represented there.
 | **Elite walkers** | `2`; integer `0`–`16` | Best-ever cumulative-reward walkers re-injected by Wave/FMC/Jump Wave. `0` disables. | Live for those three algorithms; the next iteration uses the new count. |
 :::
 
+Graph also offers **Freeze shared prefix after N nodes**, an integer from `0` to
+`100000` that requires a restart. At `0`, Graph behaves as before. At a positive
+value, a path shared by alive continuations is archived once at least N nodes
+lie between the active root and the first branching point. The branching point
+becomes the new active root. Archived nodes no longer count toward **Max walkers**
+or participate in cloning, but their states and parent links remain stored and
+appear green on the map.
+
 (sec-arcade-lab-fitness)=
 ## Understand fitness and visit controls
 

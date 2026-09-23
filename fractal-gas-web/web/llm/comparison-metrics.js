@@ -1,4 +1,5 @@
-import { objective } from "./config.js";
+import { externalScore } from "./games.js";
+import { objective, bestNode } from "./config.js";
 import { collectRuns, usageTotals } from "./benchmark-data.js";
 
 export const METHOD_STYLE = {
@@ -21,7 +22,9 @@ export const METHOD_STYLE = {
 };
 export const METRICS = {
   mean: "Mean token log likelihood",
-  reward: "Full-trace reward",
+  reward: "Full-trace reward / game score",
+  target_nll: "Target surprise (nats/target token)",
+  baseline_nll: "Baseline target surprise (nats/target token)",
   logp: "Total log likelihood",
   nll: "Total NLL",
   mean_nll: "Mean token NLL",
@@ -169,7 +172,17 @@ export function endpointWeights(run, pool, snapshot = run.snapshots.at(-1)) {
       if (id != null && id > 0 && run.nodes[id])
         weights.set(id, (weights.get(id) ?? 0) + 1);
     };
-  if (pool === "retained" && run.method === "fractal") {
+  if (pool === "archive" && run.config.objective === "xent_game") {
+    const seen = new Set();
+    for (const n of run.nodes.slice(
+      1,
+      snapshot?.node_count ?? run.nodes.length,
+    ))
+      if (n.tokens && n.game_score && !seen.has(n.text)) {
+        add(n.id);
+        seen.add(n.text);
+      }
+  } else if (pool === "retained" && run.method === "fractal") {
     for (const w of snapshot?.walkers ?? [])
       if (run.config.algorithm !== "graph" || w.leaf) add(w.node);
   } else if (run.method !== "fractal") {
@@ -393,12 +406,11 @@ export function traceComparison(runs, keys) {
           index,
           chunk: chunk.id,
           logp,
-          reward:
-            run.config.objective === "xed"
-              ? index === chunk.tokens
-                ? objective(chunk, run.config)
-                : null
-              : objective({ logp, tokens: index }, run.config),
+          reward: externalScore(run.config)
+            ? index === chunk.tokens
+              ? objective(chunk, run.config)
+              : null
+            : objective({ logp, tokens: index }, run.config),
         };
       }),
     );
@@ -442,8 +454,13 @@ export function traceComparison(runs, keys) {
   };
 }
 export function computeComparison(source, input = {}, gradeLookup = {}) {
-  const filters = { ...DEFAULT_FILTERS, ...input },
-    allRuns = sourceRuns(source);
+  const allRuns = sourceRuns(source);
+  const game = allRuns[0]?.config.objective === "xent_game";
+  const filters = {
+    ...DEFAULT_FILTERS,
+    ...(game ? { metric: "reward", status: "all", pool: "archive" } : {}),
+    ...input,
+  };
   const runs = allRuns.filter(
     (r) =>
       (filters.trial === "all" || r.trial === Number(filters.trial)) &&
@@ -504,6 +521,12 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
         logp: n.logp,
         mean: n.logp / n.tokens,
         reward: objective(n, run.config),
+        target_nll: n.game_score
+          ? -n.game_score.conditional_logp / n.game_score.tokens
+          : null,
+        baseline_nll: n.game_score
+          ? -n.game_score.baseline_logp / n.game_score.tokens
+          : null,
         nll: 0 - n.logp,
         mean_nll: (0 - n.logp) / n.tokens,
         grade: gradeLookup[`${run.id}/${n.id}`]?.overall ?? null,
@@ -632,6 +655,10 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
       const full = run.nodes
         .slice(1, s.node_count)
         .filter((n) => n.tokens > 0 && n.status > 0);
+      const eligible =
+        run.config.objective === "xent_game"
+          ? run.nodes.slice(1, s.node_count).filter((n) => n.tokens > 0)
+          : full;
       const graded = full
         .map((n) => gradeLookup[`${run.id}/${n.id}`]?.overall)
         .filter(finite);
@@ -649,7 +676,7 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
             ? "All accepted generation"
             : "Committed generation",
         best_mean: maxValue(full.map((n) => n.logp / n.tokens)),
-        best_reward: maxValue(full.map((n) => objective(n, run.config))),
+        best_reward: maxValue(eligible.map((n) => objective(n, run.config))),
         best_grade: maxValue(graded),
         graded: graded.length,
         completed: full.length,
@@ -725,6 +752,24 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
     }),
   );
   return {
+    game_leaders: runs
+      .filter((r) => r.config.objective === "xent_game")
+      .map((run) => {
+        const n = bestNode(run.nodes, run.config);
+        return n
+          ? {
+              key: `${run.id}/${n.id}`,
+              method: run.method,
+              trial: run.trial,
+              mode: run.config.game_mode,
+              text: n.text,
+              score: objective(n, run.config),
+              target_nll: -n.game_score.conditional_logp / n.game_score.tokens,
+              baseline_nll: -n.game_score.baseline_logp / n.game_score.tokens,
+            }
+          : null;
+      })
+      .filter(Boolean),
     distributions: plottedDistributions,
     filters,
     rows,

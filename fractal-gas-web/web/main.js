@@ -239,10 +239,10 @@ function marioMapY(ramY, imgH) {
 // the leaves; the wave has parent = self and every walker is a "leaf".
 // ---------------------------------------------------------------------------
 function drawSwarmOverlay(project, cssHeight, guideLine) {
-  const { xs, parents, leaf, alive, bestIdx } = lastSwarm;
-  const n = xs.length;
-  const pts = new Array(n);
-  for (let i = 0; i < n; i++) pts[i] = project(i);
+  const { xs, parents, leaf, alive, bestIdx, activeCount, frozenEdges } = lastSwarm;
+  const n = activeCount ?? xs.length;
+  const pts = new Array(xs.length);
+  for (let i = 0; i < pts.length; i++) pts[i] = project(i);
   if (parents) {
     mapCtx.beginPath();
     for (let i = 0; i < n; i++) {
@@ -254,6 +254,24 @@ function drawSwarmOverlay(project, cssHeight, guideLine) {
     mapCtx.strokeStyle = "rgba(255, 255, 255, 0.22)";
     mapCtx.lineWidth = 0.75;
     mapCtx.stroke();
+  }
+  if (frozenEdges?.length) {
+    mapCtx.beginPath();
+    for (const [a, b] of frozenEdges) {
+      if (!pts[a] || !pts[b]) continue;
+      mapCtx.moveTo(pts[a].x, pts[a].y);
+      mapCtx.lineTo(pts[b].x, pts[b].y);
+    }
+    mapCtx.strokeStyle = "#48df81";
+    mapCtx.lineWidth = 2;
+    mapCtx.stroke();
+    mapCtx.fillStyle = "#48df81";
+    for (let i = n; i < pts.length; i++)
+      if (pts[i]) {
+        mapCtx.beginPath();
+        mapCtx.arc(pts[i].x, pts[i].y, 2.5, 0, 2 * Math.PI);
+        mapCtx.fill();
+      }
   }
   for (let i = 0; i < n; i++) {
     if (i === bestIdx || !pts[i]) continue;
@@ -903,6 +921,7 @@ function readParams() {
     consensusPrefix: $("param-consensus").checked,
     maxHorizon: Number($("param-max-horizon").value),
     maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
+    freezePrefixAfter: Number($("param-freeze-prefix").value),
     eraseCoef: parseFloat($("param-erase-coef").value),
     aggBlock: parseInt($("param-agg-block").value, 10) || 5,
     visitReward,
@@ -1030,11 +1049,25 @@ function onStep(msg) {
   }
 
   if (s.walkerX) {
+    const activeCount = s.walkerX.length;
+    const frozenX = Array.from(s.frozenX ?? []);
+    const frozenIds = Array.from(s.frozenId ?? []);
+    const indexById = new Map(frozenIds.map((id, i) => [id, activeCount + i]));
+    if (s.activeRootId !== undefined) indexById.set(s.activeRootId, 0);
+    const frozenEdges = frozenIds.flatMap((id, i) => {
+      const parent = indexById.get(s.frozenParentId[i]);
+      return parent === undefined ? [] : [[parent, activeCount + i]];
+    });
+    const rootParent = indexById.get(s.activeRootParentId);
+    if (rootParent !== undefined && rootParent !== 0)
+      frozenEdges.push([rootParent, 0]);
     lastSwarm = {
-      xs: s.walkerX,
-      ys: s.walkerY,
-      ws: s.walkerWorld,
-      ss: s.walkerStage,
+      xs: [...s.walkerX, ...frozenX],
+      ys: [...s.walkerY, ...Array.from(s.frozenY ?? [])],
+      ws: [...s.walkerWorld, ...Array.from(s.frozenWorld ?? [])],
+      ss: [...s.walkerStage, ...Array.from(s.frozenStage ?? [])],
+      activeCount,
+      frozenEdges,
       // Graph structure (Wave: parent = self, every walker a leaf).
       parents: s.algorithm === 1 ? s.walkerParent : null,
       leaf: s.algorithm === 1 ? s.walkerLeaf : null,
@@ -1242,7 +1275,7 @@ for (const id of ["param-dt-min", "param-dt-max", "param-elite", "param-horizon"
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
-for (const id of ["param-n", "param-seed", "param-max-walkers"]) {
+for (const id of ["param-n", "param-seed", "param-max-walkers", "param-freeze-prefix"]) {
   $(id).addEventListener("change", () => {
     if (romBuffer) initRun();
   });
@@ -1290,6 +1323,7 @@ function applyAlgoUi() {
   $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Walkers (N)";
   $("param-elite-row").hidden = graph;
   $("param-max-walkers-row").hidden = !graph;
+  $("param-freeze-prefix-row").hidden = !graph;
   // Visit counting is available to every solver in Coords mode on a
   // game with a map; the Graph uses the term by default, the Wave not.
   const visits = obsMode === 3 && consoleId !== 1;

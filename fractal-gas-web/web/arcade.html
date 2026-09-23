@@ -166,6 +166,9 @@ Changing it restarts the run.">Observation</h2>
           <input type="number" id="param-max-walkers" value="4000" min="2" max="100000" step="1">
           <span class="hint" id="max-walkers-hint"></span>
         </label>
+        <label id="param-freeze-prefix-row" hidden data-help="Graph only: when the path from the current root to the first live branching point has at least this many unbranched nodes, archive it and make that branching point the new active root. 0 disables this. Archived paths remain visible in green. Restarts the run.">Freeze shared prefix after N nodes
+          <input type="number" id="param-freeze-prefix" value="0" min="0" max="100000" step="1">
+        </label>
         <label data-help="Random seed for action choices, frame skips and clone decisions. The same seed and settings replay the same run. Restarts the run.">Seed
           <input type="number" id="param-seed" value="7" min="0" step="1">
         </label>

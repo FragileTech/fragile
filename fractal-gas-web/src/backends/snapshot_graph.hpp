@@ -7,6 +7,7 @@ struct SnapshotGraphBackend : SnapshotBackend {
   using Info = WalkerInfo;
   using Action = int32_t;
   using Batch = WalkerState;
+  using StoredState = std::vector<char>;
   std::vector<float> initial_observation;
   int n_actions() const { return env.n_actions(); }
   int action_dim() const { return 1; }
@@ -25,5 +26,12 @@ struct SnapshotGraphBackend : SnapshotBackend {
   bool best_candidate(const Storage& s, size_t i) const { return env.best_candidate(s[i]); }
   bool valid_slot(const Storage& s, size_t i) const { return !s[i].empty(); }
   void commit(Storage& from, size_t i, Storage& to, size_t j) { std::swap(to[j], from[i]); }
+  StoredState save_state(const Storage& states, size_t i) const { return states[i]; }
+  void compact(Storage& states, const std::vector<int32_t>& keep) {
+    Storage next;
+    next.reserve(keep.size());
+    for (int32_t i : keep) next.push_back(std::move(states[static_cast<size_t>(i)]));
+    states = std::move(next);
+  }
 };
 }  // namespace fg

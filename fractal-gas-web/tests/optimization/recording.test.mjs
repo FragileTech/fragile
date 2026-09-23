@@ -60,6 +60,30 @@ test("portable replay preserves all typed frame values", () => {
   assert.equal(frameInfo(imported.frames[0]).alive, 2);
   assert.deepEqual(Array.from(row(imported.frames[0], 1).x), [3, 4]);
 });
+test("frozen Graph path survives export and rejects corrupt coordinates", () => {
+  const r = new Recording({
+    dimensions: 2,
+    algorithm: "graph",
+    freeze_prefix_after: 1,
+  });
+  const metadata = {
+    frozen: [{ id: 0, parentId: 0, x: [0, 0], value: 1 }],
+    activeRootId: 1,
+    activeRootParentId: 0,
+  };
+  r.append(frame(), metadata);
+  const saved = JSON.parse(r.export());
+  assert.equal(saved.version, 2);
+  assert.deepEqual(
+    importRecording(JSON.stringify(saved)).metadata[0],
+    metadata,
+  );
+  saved.frames[0].metadata.frozen[0].x[0] = "bad";
+  assert.throws(
+    () => importRecording(JSON.stringify(saved)),
+    /frozen Graph path/,
+  );
+});
 test("reject corrupt checksums, schemas, and incompatible engine versions", () => {
   const r = new Recording({ dimensions: 2 });
   r.append(frame());

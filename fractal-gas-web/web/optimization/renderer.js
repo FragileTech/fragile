@@ -241,7 +241,7 @@ export class SwarmRenderer {
       this.update(this.frame, settings, this.history || [], this.selected);
     else this.draw();
   }
-  update(frame, settings, history, selected) {
+  update(frame, settings, history, selected, metadata = null) {
     this.frame = frame;
     this.settings = settings;
     this.history = history;
@@ -337,6 +337,33 @@ export class SwarmRenderer {
         );
       }
       line(points, 0xd0a9e2, 0.22);
+    }
+    if (metadata?.frozen?.length) {
+      const indexById = new Map(metadata.frozen.map((node) => [node.id, node]));
+      const points = [];
+      const dots = [];
+      for (const node of metadata.frozen) {
+        const at = this.point(node);
+        dots.push(...at.toArray());
+        const parent = indexById.get(node.parentId);
+        if (parent)
+          points.push(...this.point(parent).toArray(), ...at.toArray());
+      }
+      const parent = indexById.get(metadata.activeRootParentId);
+      if (parent && data[0])
+        points.push(
+          ...this.point(parent).toArray(),
+          ...this.point(data[0]).toArray(),
+        );
+      line(points, 0x48df81, 0.95);
+      const geometry = new T.BufferGeometry();
+      geometry.setAttribute("position", new T.Float32BufferAttribute(dots, 3));
+      this.overlays.add(
+        new T.Points(
+          geometry,
+          new T.PointsMaterial({ color: 0x48df81, size: 0.14 }),
+        ),
+      );
     }
     if (settings.trails && history.length > 1) {
       const points = [],

@@ -1,3 +1,4 @@
+import { generateGame, gameSpec, externalScore } from "./games.js";
 import {
   DEFAULTS,
   configuration,
@@ -25,22 +26,42 @@ let worker,
   latest = true;
 let activeTab = "generation";
 let currentRecordingId = 0;
-let benchmarkBusy = false;
+let benchmarkBusy = false,
+  selectedGame = null,
+  creatingGame = false,
+  gameAbort;
 const getConfiguration = () =>
-  configuration(
-    Object.fromEntries(
+  configuration({
+    ...Object.fromEntries(
       Object.keys(DEFAULTS).map((key) => [
         key,
         fields.namedItem(key)?.value ?? DEFAULTS[key],
       ]),
     ),
-  );
+    game: selectedGame,
+  });
 function scoringControls() {
   const mode = fields.namedItem("objective").value;
   $("beam-settings").hidden = mode !== "beam";
-  $("xed-settings").hidden = mode !== "xed";
-  $("objective-hint").textContent =
-    mode === "xed"
+  const game = mode === "xent_game";
+  $("xed-settings").hidden = !externalScore({ objective: mode });
+  $("xed-direction-setting").hidden = game;
+  $("game-settings").hidden = !game;
+  $("prompt-setting").hidden = game;
+  $("benchmark-pair").hidden = !game;
+  $("game-preview").hidden = !selectedGame;
+  for (const key of ["title", "background", "target"])
+    $("game-" + key).textContent = selectedGame?.[key] ?? "";
+  const creationUsage =
+    selectedGame?.creation?.requests?.filter((r) => r.usage) ?? [];
+  $("game-cost").textContent = creationUsage.length
+    ? `Game creation: ${creationUsage.reduce((s, r) => s + (r.usage.prompt_tokens ?? 0), 0)} input / ${creationUsage.reduce((s, r) => s + (r.usage.completion_tokens ?? 0), 0)} output tokens. Separate from sampling budgets.`
+    : "";
+  $("game-export").disabled = !selectedGame;
+  $("game-benchmark").disabled = !selectedGame;
+  $("objective-hint").textContent = game
+    ? "The judge scores the fixed target after your context. Higher signed game score is better; units are nats per target token."
+    : mode === "xed"
       ? "Maximize favors answers made more likely by the question; minimize favors the reverse. Two extra scoring evaluations per new prefix. This measures likelihood contrast, not correctness."
       : mode === "beam"
         ? "Total log probability ÷ token count^α. Higher is better; α = 1 matches negative mean Xent."
@@ -48,6 +69,13 @@ function scoringControls() {
 }
 fields.namedItem("objective").addEventListener("change", scoringControls);
 scoringControls();
+function graphControls() {
+  const graph = fields.namedItem("algorithm").value === "graph";
+  $("freeze-prefix-setting").hidden = !graph;
+  $("freeze-prefix-hint").hidden = !graph;
+}
+fields.namedItem("algorithm").addEventListener("change", graphControls);
+graphControls();
 const comparison = new ComparisonView($("comparison-workspace"), {
   evaluationHost: $("evaluation-panel"),
   getKey: () => $("api-key").value.trim(),
@@ -72,6 +100,79 @@ const benchmarkUI = initBenchmark({
     controls();
   },
 });
+$("game-generate").onclick = async () => {
+  creatingGame = true;
+  gameAbort = new AbortController();
+  controls();
+  $("game-status").textContent = "Generating a fixed-target game…";
+  try {
+    const game = await generateGame(
+      $("api-key").value.trim(),
+      $("game-brief").value,
+      {
+        model: fields.namedItem("model").value,
+        temperature: Number(fields.namedItem("temperature").value),
+      },
+      { signal: gameAbort.signal },
+    );
+    selectedGame = game;
+    $("game-status").textContent =
+      "Game saved in this session. Run either mode or benchmark both.";
+  } catch (error) {
+    $("game-status").textContent = error.message;
+  } finally {
+    creatingGame = false;
+    gameAbort = null;
+    controls();
+  }
+};
+$("game-benchmark").onclick = () => {
+  switchTab("benchmark");
+  benchmarkUI.startPair();
+};
+$("game-export").onclick = () => {
+  try {
+    const value = {
+      config: getConfiguration(),
+      comparison: "tokens",
+      repetitions: 1,
+    };
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(value, null, 2)], { type: "application/json" }),
+    );
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `xent-${selectedGame.id}.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (error) {
+    $("game-status").textContent = error.message;
+  }
+};
+$("game-import").onclick = () => $("game-file").click();
+$("game-file").onchange = async () => {
+  try {
+    const file = $("game-file").files[0];
+    if (!file) return;
+    if (file.size > 1024 * 1024) throw Error("Game settings exceed 1 MiB");
+    const input = JSON.parse(await file.text());
+    const game = gameSpec(input.config?.game ?? input);
+    const config = input.config ? configuration(input.config) : null;
+    selectedGame = game;
+    if (config)
+      for (const [key, value] of Object.entries(config))
+        if (fields.namedItem(key)) fields.namedItem(key).value = value;
+    graphControls();
+    fields.namedItem("objective").value = "xent_game";
+    $("game-brief").value = game.creation?.brief ?? "";
+    $("game-status").textContent = "Imported fixed-target game.";
+    controls();
+  } catch (error) {
+    $("game-status").textContent = error.message;
+  } finally {
+    $("game-file").value = "";
+  }
+};
 const analysis = new AnalysisView($("analysis-panel"), {
   onSelect: (id) => {
     selected = id;
@@ -130,14 +231,21 @@ function status(text) {
 }
 function controls() {
   scoringControls();
-  benchmarkUI.setBlocked(busy);
-  $("settings").disabled = started || busy || offline || benchmarkBusy;
+  benchmarkUI.setBlocked(busy || creatingGame);
+  $("settings").disabled =
+    started || busy || offline || benchmarkBusy || creatingGame;
   $("run").disabled = $("step").disabled =
-    busy || failed || offline || benchmarkBusy || !!record?.run?.stop_reason;
+    busy ||
+    failed ||
+    offline ||
+    benchmarkBusy ||
+    creatingGame ||
+    !!record?.run?.stop_reason;
   $("pause").disabled = !busy;
-  $("stop").disabled = (!busy && !started) || !!record?.run?.stop_reason;
-  $("reset").disabled = busy || benchmarkBusy;
-  $("import").disabled = busy || benchmarkBusy;
+  $("stop").disabled =
+    !creatingGame && ((!busy && !started) || !!record?.run?.stop_reason);
+  $("reset").disabled = busy || benchmarkBusy || creatingGame;
+  $("import").disabled = busy || benchmarkBusy || creatingGame;
   $("export").disabled = !record;
 }
 function getWorker() {
@@ -197,7 +305,7 @@ function getWorker() {
 function begin(single) {
   try {
     if (!started) {
-      const config = configuration(Object.fromEntries(new FormData(form)));
+      const config = getConfiguration();
       const key = $("api-key").value.trim();
       if (!key) throw new Error("Enter your OpenRouter API key");
       getWorker().postMessage({
@@ -223,6 +331,10 @@ $("pause").onclick = () => {
   status("Pausing after the current iteration…");
 };
 $("stop").onclick = () => {
+  if (creatingGame) {
+    gameAbort?.abort(new Error("Stopped"));
+    return;
+  }
   worker?.postMessage({ type: "stop" });
   failed = true;
   status("Stopping pending requests…");
@@ -271,6 +383,7 @@ $("import-file").onchange = async () => {
     worker = null;
     analysis.update(null, 0, null, true);
     record = imported;
+    selectedGame = record.config.game;
     currentRecordingId++;
     latest = true;
     failed = false;
@@ -279,6 +392,7 @@ $("import-file").onchange = async () => {
     selected = null;
     for (const [key, value] of Object.entries(record.config))
       if (fields.namedItem(key)) fields.namedItem(key).value = value;
+    graphControls();
     switchTab("analysis");
     status("Imported recording. Inspect offline; reset to start a new run.");
     render();
@@ -317,14 +431,23 @@ function render() {
     selected = best.id;
     render();
   };
-  $("best-title").textContent = best
-    ? `Best ${state(best).toLowerCase()} trace`
-    : "Best trace";
+  $("best-title").textContent = best?.game_score
+    ? "Best sampled context"
+    : best
+      ? `Best ${state(best).toLowerCase()} trace`
+      : "Best trace";
   $("best-text").textContent =
     best?.text || "Your best continuation will appear here.";
   $("best-score").textContent = best
     ? `${objectiveLabel(record.config)}: ${number(selectedScore(best, record.config))} · ${best.tokens} tokens · total NLL ${number(-best.logp)} · mean NLL ${number(-best.logp / best.tokens)} · trace ${best.id}`
-    : "Finished answers are ranked by the selected objective. Before completion, compare the deepest prefixes.";
+    : fields.namedItem("objective").value === "xent_game"
+      ? "Every scored nonempty context can lead. Higher game score is better."
+      : "Finished answers are ranked by the selected objective. Before completion, compare the deepest prefixes.";
+  if (best?.game_score) {
+    const x = best.game_score;
+    $("best-score").textContent =
+      `Make it ${record.config.game_mode}: ${number(selectedScore(best, record.config))} · target surprise ${number(-x.conditional_logp / x.tokens)} · baseline ${number(-x.baseline_logp / x.tokens)} nats/target token · ${best.tokens} generated tokens · trace ${best.id}`;
+  }
   const usage = (record?.requests ?? []).reduce(
     (v, r) => ({
       prompt: v.prompt + (r.usage?.prompt_tokens ?? 0),
@@ -387,6 +510,11 @@ function render() {
   $("trace-score").textContent = node
     ? `${node.tokens} tokens · total NLL ${number(-node.logp)} · mean NLL ${number(-node.logp / Math.max(1, node.tokens))} · ${state(node)}`
     : "Select a sequence to inspect its ancestry and token probabilities.";
+  if (node?.game_score) {
+    const x = node.game_score;
+    $("trace-score").textContent =
+      `${objectiveLabel(record.config)}: ${number(selectedScore(node, record.config))} · target surprise ${number(-x.conditional_logp / x.tokens)} · baseline ${number(-x.baseline_logp / x.tokens)} · ${node.tokens} generated tokens · ${state(node)}`;
+  }
   $("trace-text").textContent = node?.text ?? "";
   const chain = [];
   let cursor = node;

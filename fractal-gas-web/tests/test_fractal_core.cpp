@@ -24,6 +24,7 @@ struct InjectedCloning : FractalCloningOperator {
 template <class A>
 struct PackedMock {
   using Storage = std::vector<float>;
+  using StoredState = std::array<float, 3>;
   using Info = WalkerInfo;
   using Action = A;
   using Batch = fractal::Population<Storage, Info, A>;
@@ -69,6 +70,16 @@ struct PackedMock {
   bool valid_slot(const Storage& s, size_t i) const { return std::isfinite(s[i * 3]); }
   void commit(Storage& from, size_t i, Storage& to, size_t j) {
     std::copy_n(from.data() + i * 3, 3, to.data() + j * 3);
+  }
+  StoredState save_state(const Storage& states, size_t i) const {
+    return {states[i * 3], states[i * 3 + 1], states[i * 3 + 2]};
+  }
+  void compact(Storage& states, const std::vector<int32_t>& keep) {
+    Storage next;
+    next.reserve(keep.size() * 3);
+    for (int32_t i : keep)
+      next.insert(next.end(), states.begin() + i * 3, states.begin() + i * 3 + 3);
+    states = std::move(next);
   }
 };
 template <class A>
@@ -241,6 +252,73 @@ TEST_CASE(shared_graph_matches_packed_and_snapshot_leaf_execution) {
     CHECK(flat.state_.n <= 32);
     CHECK(blobs.total_frames_ == flat.total_frames_);
   }
+}
+TEST_CASE(graph_freezes_only_the_shared_alive_prefix_and_keeps_ancestry) {
+  MockEnv env;
+  VisitGrid unused;
+  SnapshotGraphBackend backend(env, unused);
+  FractalTreeSampler sampler;
+  Mt19937Rng rng(7);
+  fractal::GraphConfig config;
+  config.start_walkers = config.max_walkers = 6;
+  config.min_leafs = 2;
+  config.freeze_prefix_after = 2;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> graph(backend, sampler, rng, config);
+  graph.reset();
+  auto& s = graph.state_;
+  s.parent = {0, 0, 1, 2, 3, 3};
+  s.parent_ids = {0, 0, 1, 2, 3, 3};
+  s.oobs = {1, 1, 1, 1, 0, 0};
+  graph.last_old_to_new_ = {0, 1, 2, 3, 4, 5};
+  graph.freeze_shared_prefix();
+  CHECK(s.n == 3);
+  CHECK(graph.active_root_id_ == 3);
+  CHECK(s.node_ids == std::vector<uint64_t>({3, 4, 5}));
+  CHECK(s.parent == std::vector<int32_t>({0, 0, 0}));
+  CHECK(graph.frozen_nodes_.size() == 3);
+  for (size_t i = 0; i < graph.frozen_nodes_.size(); ++i) {
+    CHECK(graph.frozen_nodes_[i].id == i);
+    CHECK(graph.frozen_nodes_[i].parent_id == (i ? i - 1 : 0));
+    CHECK(graph.frozen_nodes_[i].prefix);
+    CHECK(!graph.frozen_nodes_[i].state.empty());
+  }
+  CHECK(graph.last_old_to_new_ == std::vector<int32_t>({-1, -1, -1, 0, 1, 2}));
+  const auto path = graph.trajectory(1);
+  CHECK(path.size() == 5);
+  for (size_t i = 0; i < path.size(); ++i) CHECK(path[i].id == i);
+  config.max_walkers = 7;
+  graph.grow(4);
+  CHECK(s.n == 7);
+  s.parent = {0, 0, 0, 1, 3, 4, 4};
+  s.oobs = {1, 0, 1, 0, 0, 0, 0};
+  for (int i = 3; i < 7; ++i) {
+    s.states[i] = s.states[1];
+    s.node_ids[i] = graph.next_node_id_++;
+    s.parent_ids[i] = s.node_ids[s.parent[i]];
+  }
+  graph.freeze_shared_prefix();
+  CHECK(graph.active_root_id_ == 7);
+  CHECK(graph.trajectory(1).size() == 8);
+  CHECK(graph.trajectory(1).front().id == 0);
+  config.freeze_prefix_after = 3;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> too_short(backend, sampler, rng, config);
+  too_short.reset();
+  too_short.state_.parent = {0, 0, 1, 2, 3, 3};
+  too_short.state_.oobs = {1, 1, 1, 1, 0, 0};
+  too_short.freeze_shared_prefix();
+  CHECK(too_short.state_.n == 6);
+  CHECK(too_short.frozen_nodes_.empty());
+  config.start_walkers = config.max_walkers = 7;
+  config.freeze_prefix_after = 2;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> dead_side(backend, sampler, rng, config);
+  dead_side.reset();
+  dead_side.state_.parent = {0, 0, 1, 2, 3, 3, 0};
+  dead_side.state_.oobs = {1, 1, 1, 1, 0, 0, 1};
+  dead_side.freeze_shared_prefix();
+  CHECK(dead_side.active_root_id_ == 3);
+  CHECK(dead_side.state_.n == 3);
+  CHECK(dead_side.frozen_nodes_.size() == 4);
+  CHECK(!dead_side.frozen_nodes_.back().prefix);
 }
 TEST_CASE(snapshot_backend_scatter_preserves_unselected_rows) {
   MockEnv env;

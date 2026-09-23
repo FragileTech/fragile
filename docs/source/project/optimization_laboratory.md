@@ -60,6 +60,12 @@ from the same seed.
 (sec-optimization-algorithms)=
 ## Choose how the swarm explores
 
+For Graph, **Freeze shared prefix after N nodes** defaults to `0` (disabled).
+When enabled, a sufficiently long path shared by alive continuations is archived
+up to its first branching point. The branching point becomes the active root;
+the archived path is excluded from the active population cap, retained in the
+recording, and drawn green in the spatial view.
+
 :::{div} feynman-prose
 Choose **FMC**, **Wave**, **Wave Jump**, **Graph**, **Euclidean Gas**,
 **GAS (2017)**, **Active CMA-ES**, or **BIPOP-active CMA-ES** under **Algorithm**.

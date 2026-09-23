@@ -57,6 +57,12 @@ export function validateSource(source) {
   throw Error("Comparison report has no supported source snapshot");
 }
 export function createReport(source, view = {}) {
+  const config =
+    source?.kind === "benchmark"
+      ? source.manifest.settings.config
+      : source?.record?.config;
+  if (config?.objective === "xent_game")
+    view = { metric: "reward", status: "all", pool: "archive", ...view };
   return {
     format: "fgllmcompare",
     version: COMPARISON_VERSION,

@@ -1,4 +1,4 @@
-import { validateXed } from "./scoring.js";
+import { validateSequenceScore } from "./scoring.js";
 import { configuration, recordedConfiguration, objective } from "./config.js";
 import { initialRun } from "./run-control.js";
 import { importRecording, RECORDING_LIMIT } from "./recording.js";
@@ -52,6 +52,19 @@ export function validateManifest(value) {
     !Number.isFinite(value.created_at)
   )
     throw Error("Unsupported benchmark archive");
+  if (value.pair != null) {
+    const p = value.pair;
+    if (
+      typeof p !== "object" ||
+      [p.id, p.unsurprising, p.surprising].some(
+        (id) => typeof id !== "string" || !/^[\w-]{1,100}$/.test(id),
+      ) ||
+      p.unsurprising === p.surprising ||
+      value.settings?.config?.objective !== "xent_game" ||
+      p[value.settings.config.game_mode] !== value.id
+    )
+      throw Error("Invalid Xent benchmark pair");
+  }
   const settings = benchmarkConfiguration({
     ...value.settings,
     config: recordedConfiguration(value.settings?.config),
@@ -67,6 +80,7 @@ export function validateManifest(value) {
     id: value.id,
     created_at: value.created_at,
     settings,
+    ...(value.pair ? { pair: structuredClone(value.pair) } : {}),
     method_order: value.method_order,
   };
 }
@@ -160,10 +174,11 @@ export function collectRuns(header, events) {
         seed: (header.settings.config.seed + p.trial) % 2147483648,
         ...(p.method === "temperature_zero" ? { temperature: 0 } : {}),
       };
+      const actual = p.config ? recordedConfiguration(p.config) : null;
       if (
-        !p.config ||
+        !actual ||
         Object.keys(expected).some(
-          (k) => expected[k] !== recordedConfiguration(p.config)[k],
+          (k) => JSON.stringify(expected[k]) !== JSON.stringify(actual[k]),
         ) ||
         !metadata ||
         JSON.stringify(p.metadata) !== JSON.stringify(metadata)
@@ -282,7 +297,7 @@ function validateBaseline(run) {
   for (let i = 1; i < run.nodes.length; i++) {
     const n = run.nodes[i],
       parent = run.nodes[n.parent];
-    if (c.objective === "xed") validateXed(n, c);
+    validateSequenceScore(n, c, run.metadata?.scoring);
     if (
       n.id !== i ||
       !Number.isInteger(n.parent) ||
@@ -583,6 +598,13 @@ export function processBenchmark(header, events) {
         ...node,
         node_id: id,
         parent_id: n.parent === null ? null : `${run.id}:${n.parent}`,
+        objective_score: objective(n, run.config),
+        target_nll: n.game_score
+          ? -n.game_score.conditional_logp / n.game_score.tokens
+          : null,
+        baseline_nll: n.game_score
+          ? -n.game_score.baseline_logp / n.game_score.tokens
+          : null,
         total_nll: 0 - n.logp,
         mean_nll: n.tokens ? (0 - n.logp) / n.tokens : null,
       });
@@ -604,15 +626,17 @@ export function processBenchmark(header, events) {
     }
     const parents = new Set(run.nodes.slice(1).map((n) => n.parent));
     const endpoints =
-      run.method === "fractal"
-        ? run.nodes.slice(1).filter((n) => !parents.has(n.id))
-        : run.trajectories.map(
-            (t) =>
-              run.nodes.findLast((n) => n.trajectory_id === t.id) ?? {
-                ...run.nodes[0],
-                trajectory_id: t.id,
-              },
-          );
+      run.config.objective === "xent_game"
+        ? run.nodes.slice(1).filter((n) => n.tokens > 0)
+        : run.method === "fractal"
+          ? run.nodes.slice(1).filter((n) => !parents.has(n.id))
+          : run.trajectories.map(
+              (t) =>
+                run.nodes.findLast((n) => n.trajectory_id === t.id) ?? {
+                  ...run.nodes[0],
+                  trajectory_id: t.id,
+                },
+            );
     for (const n of endpoints)
       tables.trajectories.push({
         ...link,

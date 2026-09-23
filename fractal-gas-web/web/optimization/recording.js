@@ -46,7 +46,10 @@ export class Recording {
   export() {
     return JSON.stringify({
       format: "fgopt",
-      version: 1,
+      version:
+        this.config.algorithm === "graph" && this.config.freeze_prefix_after > 0
+          ? 2
+          : 1,
       engine: this.engine,
       config: this.config,
       frames: this.frames.map((frame, i) => ({
@@ -114,7 +117,7 @@ export function importRecording(text) {
   const value = JSON.parse(text);
   if (
     value.format !== "fgopt" ||
-    value.version !== 1 ||
+    ![1, 2].includes(value.version) ||
     !["fgopt-1", "fgopt-2", ENGINE_VERSION].includes(value.engine) ||
     !value.config ||
     typeof value.config !== "object" ||
@@ -134,6 +137,32 @@ export function importRecording(text) {
     if (checksum(new Uint8Array(frame.buffer)) !== entry.checksum)
       throw new Error("Recording checksum mismatch");
     previous = validateFrame(frame, value.config, previous);
+    if (value.version === 2) {
+      const meta = entry.metadata;
+      if (
+        !meta ||
+        !Array.isArray(meta.frozen) ||
+        !Number.isSafeInteger(meta.activeRootId) ||
+        !Number.isSafeInteger(meta.activeRootParentId)
+      )
+        throw new Error("Invalid frozen Graph metadata");
+      const ids = new Set();
+      for (const node of meta.frozen) {
+        if (
+          !Number.isSafeInteger(node.id) ||
+          node.id < 0 ||
+          !Number.isSafeInteger(node.parentId) ||
+          node.parentId < 0 ||
+          !Array.isArray(node.x) ||
+          node.x.length !== value.config.dimensions ||
+          !node.x.every(Number.isFinite) ||
+          !Number.isFinite(node.value) ||
+          ids.has(node.id)
+        )
+          throw new Error("Invalid frozen Graph path");
+        ids.add(node.id);
+      }
+    }
     recording.append(frame, entry.metadata ?? null);
   }
   return recording;

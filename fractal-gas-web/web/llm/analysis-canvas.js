@@ -225,9 +225,9 @@ export class AnalysisCanvas {
   }
   label(row, full = false) {
     const n = this.index.nodes[row.id];
-    if (row.key === "root") return "Prompt";
+    if (row.key === "root") return row.frozen ? "Prompt · frozen" : "Prompt";
     if (row.unused) return `Unused slot ${row.slot}`;
-    const prefix = `#${row.id}${row.slot !== null ? ` · slot ${row.slot}` : ""}`;
+    const prefix = `#${row.id}${row.slot !== null ? ` · slot ${row.slot}` : ""}${row.frozen ? " · frozen" : ""}`;
     return full
       ? `${prefix} · ${n.tokens} tokens · ${metricFormat(this.metric, row.value)} · ${this.index.chunk(n.id).slice(0, 90).replace(/\s+/g, " ")}`
       : prefix;
@@ -382,11 +382,14 @@ export class AnalysisCanvas {
         continue;
       const active =
         this.ancestry?.has(e.source) && this.ancestry?.has(e.target);
-      ctx.strokeStyle = active
-        ? "#d0a9e2"
-        : this.shared.has(e.a.id) && this.shared.has(e.b.id)
-          ? "#efc87b"
-          : "#4a3b58";
+      ctx.strokeStyle =
+        e.a.frozen || e.b.frozen
+          ? "#48df81"
+          : active
+            ? "#d0a9e2"
+            : this.shared.has(e.a.id) && this.shared.has(e.b.id)
+              ? "#efc87b"
+              : "#4a3b58";
       ctx.lineWidth = (active ? 2.6 : 1) / c.k;
       ctx.setLineDash([]);
       this.path(ctx, e.a, e.b);
@@ -397,8 +400,9 @@ export class AnalysisCanvas {
       const selected = p.key === this.selectedKey,
         r = (p.key === "root" ? 8 : selected ? 7 : 5) / c.k;
       ctx.globalAlpha = p.match || p.key === "root" ? 1 : 0.42;
-      ctx.fillStyle =
-        p.key === "root"
+      ctx.fillStyle = p.frozen
+        ? "#48df81"
+        : p.key === "root"
           ? "#f1eaf5"
           : color(this.metric, p.value, this.index.domains[this.metric]);
       ctx.beginPath();
@@ -507,9 +511,10 @@ export class AnalysisCanvas {
       x = 10 - b.x0 * scale,
       y = (h - (b.y1 - b.y0) * scale) / 2 - b.y0 * scale;
     this.miniTransform = { scale, x, y };
-    ctx.fillStyle = "#b5a6c0";
-    for (const r of this.rows)
+    for (const r of this.rows) {
+      ctx.fillStyle = r.frozen ? "#48df81" : "#b5a6c0";
       ctx.fillRect(r.x * scale + x, r.y * scale + y, 2, 2);
+    }
     const c = this.camera;
     ctx.strokeStyle = "#7ef5df";
     ctx.lineWidth = 1;
@@ -565,7 +570,7 @@ export class AnalysisCanvas {
     }
     ctx.fillStyle = "#b5a6c0";
     ctx.fillText(
-      "Solid: ancestry · dotted mint: distance companion · dashed gold: clone donor · gold ancestry: shared branch",
+      "Solid: ancestry · green: frozen prefix · dotted mint: distance companion · dashed gold: clone donor · gold ancestry: shared branch",
       24,
       this.canvas.height + 98,
     );

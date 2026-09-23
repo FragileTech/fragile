@@ -3,6 +3,9 @@
 #include <cmath>
 #include <limits>
 #include <numeric>
+#include <cstdint>
+#include <type_traits>
+#include <stdexcept>
 
 #include "fractal/metrics.hpp"
 #include "fractal/diagnostics.hpp"
@@ -25,6 +28,7 @@ struct GraphConfig {
   float visit_coef = 1.0f;   // exponent on the visit term (reference: 1)
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
+  int32_t freeze_prefix_after = 0;  // 0 disables shared-prefix archiving
   bool record_frames = false;
   uint64_t seed = 0;
 };
@@ -41,6 +45,8 @@ struct GraphPopulation {
   std::vector<float> cum_rewards;
   std::vector<uint8_t> oobs;  // dead flag (env done)
   std::vector<int32_t> parent;
+  std::vector<uint64_t> node_ids;
+  std::vector<uint64_t> parent_ids;
   std::vector<uint8_t> is_leaf;  // mask of the last phase 2
   std::vector<Action> actions;
   std::vector<int32_t> dt;
@@ -71,6 +77,15 @@ class Graph {
  public:
   using State =
       GraphPopulation<typename Backend::Storage, typename Backend::Info, typename Backend::Action>;
+  struct FrozenNode {
+    uint64_t id = 0, parent_id = 0;
+    typename Backend::StoredState state;
+    typename Backend::Info info;
+    typename Backend::Action action{};
+    int32_t dt = 0;
+    float reward = 0, cumulative_reward = 0;
+    bool prefix = false;
+  };
   Backend& backend_;
   Sampler& sampler_;
   Rng& rng_;
@@ -81,6 +96,39 @@ class Graph {
   bool count_visits_;
   int64_t total_steps_ = 0, total_clones_ = 0, total_frames_ = 0;
   int32_t iteration_ = 0;
+  uint64_t next_node_id_ = 1;
+  std::vector<FrozenNode> frozen_nodes_;
+  std::vector<int32_t> last_old_to_new_;
+  uint64_t active_root_id_ = 0;
+  std::vector<FrozenNode> trajectory(int32_t slot) const {
+    if (slot < 0 || slot >= state_.n || state_.node_ids[slot] == UINT64_MAX)
+      throw std::out_of_range("Invalid Graph trajectory slot");
+    std::vector<FrozenNode> reversed;
+    uint64_t id = state_.node_ids[slot];
+    for (size_t hops = 0; hops <= frozen_nodes_.size() + static_cast<size_t>(state_.n); ++hops) {
+      bool found = false;
+      for (int32_t i = 0; i < state_.n; ++i) if (state_.node_ids[i] == id) {
+        reversed.push_back({id, state_.parent_ids[i],
+                            backend_.save_state(state_.states, i), state_.info[i],
+                            state_.actions[static_cast<size_t>(i) * state_.action_dim],
+                            state_.dt[i], state_.rewards[i], state_.cum_rewards[i], false});
+        found = true;
+        break;
+      }
+      if (!found) for (const auto& node : frozen_nodes_) if (node.id == id) {
+        reversed.push_back(node);
+        found = true;
+        break;
+      }
+      if (!found) throw std::runtime_error("Broken Graph trajectory ancestry");
+      if (id == 0) {
+        std::reverse(reversed.begin(), reversed.end());
+        return reversed;
+      }
+      id = reversed.back().parent_id;
+    }
+    throw std::runtime_error("Cyclic Graph trajectory ancestry");
+  }
   Graph(Backend& b, Sampler& sampler, Rng& rng, GraphConfig& config)
       : backend_(b),
         sampler_(sampler),
@@ -99,6 +147,8 @@ class Graph {
       state_.cum_rewards.push_back(0.0f);
       state_.oobs.push_back(1);
       state_.parent.push_back(0);
+      state_.node_ids.push_back(UINT64_MAX);
+      state_.parent_ids.push_back(active_root_id_);
       state_.is_leaf.push_back(1);
       state_.actions.insert(state_.actions.end(), state_.action_dim, 0);
       state_.dt.push_back(0);
@@ -129,6 +179,10 @@ class Graph {
     diagnostics.decisions.clear();
     total_steps_ = total_clones_ = total_frames_ = 0;
     iteration_ = 0;
+    next_node_id_ = 1;
+    active_root_id_ = 0;
+    frozen_nodes_.clear();
+    last_old_to_new_.clear();
     visits_.reset();
     visits_.set_erase_coef(params_.erase_coef);
     visits_.set_block_size(params_.agg_block_size);
@@ -145,6 +199,8 @@ class Graph {
     state_.observations = batch_.observations;
     state_.actions = std::move(actions);
     for (int i = 0; i < n; ++i) {
+      state_.node_ids[i] = i ? next_node_id_++ : active_root_id_;
+      state_.parent_ids[i] = active_root_id_;
       if (i) {
         state_.rewards[i] = state_.cum_rewards[i] = batch_.step_rewards[i];
         state_.oobs[i] = batch_.dones[i] || batch_.truncated[i];
@@ -187,6 +243,8 @@ class Graph {
 
   StepInfo step() {
     const int32_t n = state_.n;
+    last_old_to_new_.resize(n);
+    std::iota(last_old_to_new_.begin(), last_old_to_new_.end(), 0);
     const auto d = static_cast<size_t>(state_.obs_dim);
     auto& alive = alive_;
     alive.resize(n);
@@ -311,7 +369,9 @@ class Graph {
     for (int32_t i = 0; i < n && !any; ++i) any = state_.will_clone[static_cast<size_t>(i)] != 0;
     if (!any) {
       ++iteration_;
-      return collect_info(0, leaves);
+      const uint64_t root_before = active_root_id_;
+      freeze_shared_prefix();
+      return collect_info(0, active_root_id_ == root_before ? leaves : count_leaves());
     }
 
     // ---- 5. clone_data --------------------------------------------------------
@@ -333,7 +393,6 @@ class Graph {
     prior_rewards_.clear();
     for (int i : cloning) {
       int donor = compas2[i];
-      state_.parent[i] = donor;
       if (!backend_.valid_slot(state_.states, donor)) {
         state_.will_clone[i] = 0;
         if (diagnostics.enabled) {
@@ -342,6 +401,8 @@ class Graph {
         }
         continue;
       }
+      state_.parent[i] = donor;
+      state_.parent_ids[i] = state_.node_ids[donor];
       stepping_.push_back(i);
       sources_.push_back(donor);
       prior_rewards_.push_back(state_.cum_rewards[donor]);
@@ -361,6 +422,7 @@ class Graph {
         std::copy_n(batch_.observations.data() + size_t(j) * d, d,
                     state_.observations.data() + size_t(i) * d);
         state_.rewards[i] = batch_.step_rewards[j];
+        state_.node_ids[i] = next_node_id_++;
         state_.cum_rewards[i] = prior_rewards_[j] + batch_.step_rewards[j];
         state_.oobs[i] = batch_.dones[j] || batch_.truncated[j];
         backend_.commit(batch_.states, j, state_.states, i);
@@ -388,7 +450,105 @@ class Graph {
     // ---- 8. bookkeeping ---------------------------------------------------------
     total_steps_ += k;
     ++iteration_;
-    return collect_info(k, leaves);
+    const uint64_t root_before = active_root_id_;
+    freeze_shared_prefix();
+    return collect_info(k, active_root_id_ == root_before ? leaves : count_leaves());
+  }
+
+  int32_t count_leaves() const {
+    std::vector<uint8_t> leaf(state_.n, 1);
+    for (int32_t i = 1; i < state_.n; ++i)
+      if (state_.parent[i] != i) leaf[static_cast<size_t>(state_.parent[i])] = 0;
+    return std::accumulate(leaf.begin(), leaf.end(), 0);
+  }
+
+  void freeze_shared_prefix() {
+    if (params_.freeze_prefix_after <= 0 || state_.n < 3) return;
+    const int32_t n = state_.n;
+    std::vector<uint8_t> retained(n, 0);
+    std::vector<int32_t> alive_children(n, 0);
+    for (int32_t i = 1; i < n; ++i)
+      if (!state_.oobs[i] && backend_.valid_slot(state_.states, i) &&
+          state_.parent[i] >= 0 && state_.parent[i] < n && state_.parent[i] != i)
+        ++alive_children[state_.parent[i]];
+    for (int32_t i = 0; i < n; ++i) {
+      if (state_.oobs[i] || alive_children[i] ||
+          !backend_.valid_slot(state_.states, i)) continue;
+      int32_t cursor = i;
+      for (int32_t hops = 0; hops < n && !retained[cursor]; ++hops) {
+        retained[cursor] = 1;
+        if (cursor == 0) break;
+        cursor = state_.parent[cursor];
+        if (cursor < 0 || cursor >= n) break;
+      }
+    }
+    if (!retained[0]) return;
+    std::vector<std::vector<int32_t>> children(n);
+    for (int32_t i = 1; i < n; ++i)
+      if (retained[i] && state_.parent[i] >= 0 && state_.parent[i] < n &&
+          state_.parent[i] != i)
+        children[static_cast<size_t>(state_.parent[i])].push_back(i);
+    std::vector<int32_t> path{0};
+    while (children[path.back()].size() == 1) path.push_back(children[path.back()][0]);
+    if (children[path.back()].size() < 2 ||
+        static_cast<int32_t>(path.size()) - 2 < params_.freeze_prefix_after) return;
+    const int32_t new_root = path.back();
+    std::vector<uint8_t> keep_mask(n, 0);
+    std::vector<int32_t> stack{new_root};
+    while (!stack.empty()) {
+      int32_t i = stack.back(); stack.pop_back();
+      if (keep_mask[i]) continue;
+      keep_mask[i] = 1;
+      stack.insert(stack.end(), children[i].begin(), children[i].end());
+    }
+    std::vector<uint8_t> prefix(n, 0);
+    for (int32_t i : path) if (i != new_root) prefix[i] = 1;
+    for (int32_t i = 0; i < n; ++i) {
+      if (keep_mask[i] || state_.node_ids[i] == UINT64_MAX ||
+          !backend_.valid_slot(state_.states, i)) continue;
+      frozen_nodes_.push_back({state_.node_ids[i], state_.parent_ids[i],
+                               backend_.save_state(state_.states, i), state_.info[i],
+                               state_.actions[static_cast<size_t>(i) * state_.action_dim],
+                               state_.dt[i], state_.rewards[i], state_.cum_rewards[i],
+                               prefix[i] != 0});
+    }
+    std::vector<int32_t> keep{new_root};
+    for (int32_t i = 0; i < n; ++i) if (i != new_root && keep_mask[i]) keep.push_back(i);
+    std::vector<int32_t> remap(n, -1);
+    for (size_t j = 0; j < keep.size(); ++j) remap[keep[j]] = static_cast<int32_t>(j);
+    auto gather = [&](auto& values, int width = 1) {
+      using T = typename std::decay_t<decltype(values)>::value_type;
+      std::vector<T> next;
+      next.reserve(keep.size() * static_cast<size_t>(width));
+      for (int32_t i : keep)
+        for (int c = 0; c < width; ++c)
+          next.push_back(std::move(values[static_cast<size_t>(i) * width + c]));
+      values = std::move(next);
+    };
+    active_root_id_ = state_.node_ids[new_root];
+    backend_.compact(state_.states, keep);
+    gather(state_.observations, state_.obs_dim); gather(state_.actions, state_.action_dim);
+    gather(state_.rewards); gather(state_.cum_rewards); gather(state_.oobs);
+    gather(state_.parent); gather(state_.node_ids); gather(state_.parent_ids);
+    gather(state_.is_leaf); gather(state_.dt); gather(state_.virtual_rewards);
+    gather(state_.other_rewards); gather(state_.distances); gather(state_.clone_probs);
+    gather(state_.distance_ix); gather(state_.clone_ix); gather(state_.wants_clone);
+    gather(state_.is_cloned); gather(state_.will_clone); gather(state_.info);
+    state_.n = static_cast<int32_t>(keep.size());
+    state_.parent[0] = 0;
+    for (int32_t i = 0; i < state_.n; ++i) {
+      if (i) state_.parent[i] = remap[state_.parent[i]];
+      state_.distance_ix[i] = state_.distance_ix[i] >= 0 && state_.distance_ix[i] < n
+                                  ? std::max(0, remap[state_.distance_ix[i]]) : 0;
+      state_.clone_ix[i] = state_.clone_ix[i] >= 0 && state_.clone_ix[i] < n
+                               ? std::max(0, remap[state_.clone_ix[i]]) : 0;
+    }
+    std::fill(state_.is_leaf.begin(), state_.is_leaf.end(), 1);
+    for (int32_t i = 1; i < state_.n; ++i) state_.is_leaf[state_.parent[i]] = 0;
+    state_.is_leaf[0] = 0;
+    for (int32_t& slot : last_old_to_new_) slot = slot >= 0 && slot < n ? remap[slot] : -1;
+    const int32_t missing = params_.min_leafs - count_leaves();
+    if (missing > 0) grow(std::min(missing, params_.max_walkers - state_.n));
   }
 
   StepInfo collect_info(int32_t k, int32_t leaves) {

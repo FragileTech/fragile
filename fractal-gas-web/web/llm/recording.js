@@ -1,5 +1,5 @@
 import { configuration, recordedConfiguration, objective } from "./config.js";
-import { validateXed } from "./scoring.js";
+import { validateSequenceScore } from "./scoring.js";
 import { parseCompletion } from "./openrouter.js";
 import { initialRun, stoppingReason } from "./run-control.js";
 export const RECORDING_LIMIT = 64 * 1024 * 1024;
@@ -133,7 +133,7 @@ export function importRecording(text) {
       !Array.isArray(n.embedding)
     )
       throw new Error("Invalid sequence record");
-    if (config.objective === "xed") validateXed(n, config);
+    validateSequenceScore(n, config, data.metadata?.scoring);
     if (i === 0) {
       if (
         n.parent !== null ||
@@ -151,7 +151,7 @@ export function importRecording(text) {
       throw new Error("Invalid trace ancestry");
     const parent = data.nodes[n.parent];
     if (
-      data.version === 3 &&
+      data.version >= 3 &&
       (!Number.isInteger(n.requested_tokens) ||
         n.requested_tokens < 1 ||
         n.requested_tokens >
@@ -248,6 +248,39 @@ export function importRecording(text) {
       s.iteration < 0
     )
       throw new Error("Invalid recorded iteration");
+    if (s.frozen !== undefined) {
+      if (
+        !Array.isArray(s.frozen) ||
+        !Number.isSafeInteger(s.activeRootId) ||
+        s.activeRootId < 0
+      )
+        throw new Error("Invalid frozen Graph path");
+      const ids = new Set();
+      for (const node of s.frozen) {
+        if (
+          !Number.isSafeInteger(node.id) ||
+          node.id < 0 ||
+          !Number.isSafeInteger(node.parentId) ||
+          node.parentId < 0 ||
+          node.parentId > node.id ||
+          !Number.isInteger(node.node) ||
+          node.node < 0 ||
+          node.node >= s.node_count ||
+          ids.has(node.id)
+        )
+          throw new Error("Invalid frozen Graph path");
+        ids.add(node.id);
+      }
+      for (const w of s.walkers)
+        if (
+          (w.nodeId !== undefined &&
+            w.nodeId !== null &&
+            (!Number.isSafeInteger(w.nodeId) || w.nodeId < 0)) ||
+          (w.parentId !== undefined &&
+            (!Number.isSafeInteger(w.parentId) || w.parentId < 0))
+        )
+          throw new Error("Invalid Graph node identity");
+    }
     if (data.version >= 2) {
       const prior =
         data.snapshots[snapshotIndex - 1]?.walkers ??
@@ -262,6 +295,10 @@ export function importRecording(text) {
         if (
           !Number.isInteger(d.companion_slot) ||
           !Number.isInteger(d.donor_slot) ||
+          (d.resultSlot !== undefined &&
+            (!Number.isInteger(d.resultSlot) ||
+              d.resultSlot < -1 ||
+              d.resultSlot >= s.walkers.length)) ||
           d.slot !== slot ||
           d.iteration !== s.iteration ||
           !source(d.evaluated) ||
@@ -270,7 +307,8 @@ export function importRecording(text) {
           d.evaluated !== prior[slot]?.node ||
           d.companion !== prior[d.companion_slot]?.node ||
           d.donor !== prior[d.donor_slot]?.node ||
-          d.result !== s.walkers[slot]?.node
+          (d.result !== s.walkers[d.resultSlot ?? slot]?.node &&
+            !(d.resultSlot === -1 && d.result === null))
         )
           throw new Error("Invalid decision sequence attribution");
         for (const key of [
@@ -307,8 +345,10 @@ export function importRecording(text) {
           if (typeof d[key] !== "boolean")
             throw new Error("Invalid decision outcome");
         if (
-          d.cloned !== s.walkers[slot].cloned ||
-          d.fitness !== s.walkers[slot].fitness ||
+          (d.resultSlot !== -1 &&
+            d.cloned !== s.walkers[d.resultSlot ?? slot]?.cloned) ||
+          (d.resultSlot !== -1 &&
+            d.fitness !== s.walkers[d.resultSlot ?? slot]?.fitness) ||
           d.donor_fitness !== s.decisions[d.donor_slot]?.fitness ||
           d.wanted !== (d.clone_score > d.draw || !d.alive) ||
           d.cloned !==
@@ -343,7 +383,7 @@ export function importRecording(text) {
       )
         throw new Error("Missing population node");
   }
-  if (data.version === 3) {
+  if (data.version >= 3) {
     if (lastCount !== data.nodes.length)
       throw new Error("Uncommitted generation nodes");
     let priorRun = null;
@@ -392,7 +432,7 @@ export function importRecording(text) {
     requests: data.requests,
     attempts: data.attempts,
     errors: data.errors,
-    ...(data.version === 3 ? { run: data.run } : {}),
+    ...(data.version >= 3 ? { run: data.run } : {}),
   };
 }
 function validateRun(run, config, nodes, generated) {

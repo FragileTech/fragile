@@ -88,6 +88,10 @@ try {
   for (const algorithm of ["wave", "graph"]) {
     if (algorithm === "graph") await page.locator("#reset").click();
     await page.locator('[name="algorithm"]').selectOption(algorithm);
+    assert.equal(
+      await page.locator("#freeze-prefix-setting").evaluate((el) => !el.hidden),
+      algorithm === "graph",
+    );
     await page.locator('[name="chunk_tokens"]').fill("2");
     await page.locator('[name="sequence_tokens"]').fill("8");
     await page.locator('[name="iterations"]').fill("4");

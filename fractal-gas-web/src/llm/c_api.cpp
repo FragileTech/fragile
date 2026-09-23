@@ -89,6 +89,7 @@ struct Engine {
       FractalTreeParams p; p.start_walkers = p.min_leafs = n;
       p.max_walkers = integer(j, "max_walkers", n, 4096); p.dt_min = p.dt_max = dt; p.seed = seed;
       p.distance_metric = metric; p.dist_coef = dc; p.reward_coef = rc;
+      p.freeze_prefix_after = integer(j, "freeze_prefix_after", 0, 4096);
       p.count_visits = p.visit_reward = false;
       auto graph = std::make_unique<FractalTree>(env, p);
       graph->enable_diagnostics(); swarm = std::move(graph);
@@ -117,6 +118,12 @@ struct Engine {
           << ",\"leaf\":" << (swarm->walker_is_leaf(i) ? "true" : "false")
           << ",\"parentSlot\":" << swarm->walker_parent(i)
           << ",\"score\":" << swarm->walker_cum_reward(i);
+      if (graph) {
+        out << ",\"nodeId\":";
+        if (graph->state().node_ids[i] == UINT64_MAX) out << "null";
+        else out << graph->state().node_ids[i];
+        out << ",\"parentId\":" << graph->state().parent_ids[i];
+      }
       int fit, clone; bool cloned; float fitness;
       if (wave) {
         fit = wave->fitness_companions()[i]; clone = wave->clone_companions()[i];
@@ -128,7 +135,19 @@ struct Engine {
       out << ",\"fitnessCompanion\":" << fit << ",\"cloneCompanion\":" << clone
           << ",\"cloned\":" << (cloned ? "true" : "false") << ",\"fitness\":" << fitness << '}';
     }
-    out << "],\"decisions\":[";
+    out << "],\"frozen\":[";
+    if (graph) {
+      bool first = true;
+      for (const auto& node : graph->frozen_nodes()) {
+        if (!node.prefix) continue;
+        if (!first) out << ',';
+        first = false;
+        out << "{\"id\":" << node.id << ",\"parentId\":" << node.parent_id
+            << ",\"node\":" << LlmEnvironment::decode(node.state).id << '}';
+      }
+    }
+    out << "],\"activeRootId\":" << (graph ? graph->active_root_id() : 0)
+        << ",\"decisions\":[";
     const auto& decisions = wave ? wave->diagnostics().decisions : graph->diagnostics().decisions;
     for (size_t i = 0; i < decisions.size() && i < evaluated.size(); ++i) {
       if (i) out << ',';
@@ -138,9 +157,15 @@ struct Engine {
           << ",\"evaluated\":"; ref(int(i));
       out << ",\"companion\":"; ref(d.distance_companion);
       out << ",\"donor\":"; ref(d.clone_donor);
-      out << ",\"result\":";
-      const auto& blob = swarm->walker_state(int(i));
-      if (blob.empty()) out << "null"; else out << LlmEnvironment::decode(blob).id;
+      const int result_slot = graph
+          ? (i < graph->last_slot_remap().size() ? graph->last_slot_remap()[i] : -1)
+          : int(i);
+      out << ",\"resultSlot\":" << result_slot << ",\"result\":";
+      if (result_slot < 0) out << "null";
+      else {
+        const auto& blob = swarm->walker_state(result_slot);
+        if (blob.empty()) out << "null"; else out << LlmEnvironment::decode(blob).id;
+      }
       out << ",\"companion_slot\":" << d.distance_companion << ",\"donor_slot\":" << d.clone_donor
           << ",\"distance\":" << d.distance << ",\"distance_norm\":" << d.distance_norm
           << ",\"reward_norm\":" << d.reward_norm << ",\"other\":" << d.other

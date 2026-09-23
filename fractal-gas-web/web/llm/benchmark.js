@@ -1,4 +1,5 @@
-import { TogetherScorer } from "./scoring.js";
+import { externalScore } from "./games.js";
+import { TogetherScorer, scoreSequence } from "./scoring.js";
 import { objective, embeddingText } from "./config.js";
 import { OpenRouter, mapConcurrent } from "./openrouter.js";
 import { Recording } from "./recording.js";
@@ -31,6 +32,7 @@ export class BenchmarkRunner {
     {
       fetchImpl,
       togetherKey,
+      sharedMetadata = null,
       nativeFactory = async (c, t) =>
         (await import("./native.js")).NativeLlm.create(c, t),
       onStatus = () => {},
@@ -43,6 +45,7 @@ export class BenchmarkRunner {
       onCommitted,
     });
     this.togetherKey = togetherKey;
+    this.sharedMetadata = sharedMetadata;
     this.scoringFetch = fetchImpl;
     this.store = store;
     this.nativeFactory = nativeFactory;
@@ -131,10 +134,17 @@ export class BenchmarkRunner {
       // Readiness checks are outside every run and never enter matched token budgets.
       await this.emit("session_start", { retry_incomplete: retryIncomplete });
       this.onStatus("Checking the shared model route…");
-      if (settings.config.objective === "xed") {
+      if (externalScore(settings.config)) {
         this.scorer = new TogetherScorer(this.togetherKey, {
           signal: this.abort.signal,
-          concurrency: settings.config.concurrency,
+          concurrency:
+            settings.config.objective === "xent_game"
+              ? 1
+              : settings.config.concurrency,
+          minIntervalMs:
+            settings.config.objective === "xent_game" && !this.scoringFetch
+              ? 1000
+              : 0,
           fetchImpl: this.scoringFetch,
           onRequestStart: (r) => this.emit("request_start", r),
           onRequest: async (r) => {
@@ -143,11 +153,14 @@ export class BenchmarkRunner {
           },
         });
       }
+      const prior = savedMetadata ?? this.sharedMetadata;
       const scoring = this.scorer
-        ? await this.scorer.prepare(settings.config)
+        ? await (settings.config.objective === "xent_game"
+            ? this.scorer.prepareGame(settings.config, prior?.scoring)
+            : this.scorer.prepare(settings.config))
         : null;
       const metadata = await this.api.prepare(settings.config, {
-        pinnedProvider: savedMetadata?.provider,
+        pinnedProvider: prior?.provider,
       });
       if (scoring) metadata.scoring = scoring;
       const zeroConfig = {
@@ -369,10 +382,8 @@ export class BenchmarkRunner {
             actual_tokens: result.token_data.length,
             birth_step: step + 1,
           };
-          if (config.objective === "xed")
-            n.xed = await this.scorer.score(config, n.text, {
-              source: parent.id,
-            });
+          if (externalScore(config))
+            await scoreSequence(this.scorer, n, config, { source: parent.id });
           n.reward = objective(n, config) - objective(parent, config);
           return n;
         },

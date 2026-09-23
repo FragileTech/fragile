@@ -38,6 +38,11 @@ test("token parsing preserves UTF-8 and rejects missing/sentinel/misaligned data
   const missing = completion("a");
   missing.choices[0].logprobs = null;
   assert.throws(() => parseCompletion(missing, 1));
+  const emptyStop = completion("", 0, "stop");
+  emptyStop.choices[0].message.content = null;
+  emptyStop.choices[0].logprobs = null;
+  delete emptyStop.usage;
+  assert.deepEqual(parseCompletion(emptyStop, 1).token_data, []);
   const mismatch = completion("a");
   mismatch.choices[0].message.content = "b";
   assert.throws(() => parseCompletion(mismatch, 1));

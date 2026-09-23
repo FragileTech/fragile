@@ -1,3 +1,5 @@
+import { METHOD_STYLE } from "./comparison-metrics.js";
+import { bestNode, selectedScore } from "./config.js";
 import {
   benchmarkConfiguration,
   parseBenchmark,
@@ -19,12 +21,18 @@ export function initBenchmark({
     running = false,
     blocked = false,
     selected = "",
-    pausing = false;
+    pausing = false,
+    pairRevision = 0;
   const status = (text) => {
     $("status").textContent = text;
   };
   function controls() {
     $("start").disabled = blocked || running;
+    let gameReady = false;
+    try {
+      gameReady = getConfig().objective === "xent_game";
+    } catch {}
+    $("pair").disabled = blocked || running || !gameReady;
     $("comparison").disabled = $("repetitions").disabled = running;
     $("pause").disabled = !running || pausing;
     $("continue").disabled = !running || !pausing;
@@ -33,9 +41,18 @@ export function initBenchmark({
     $("export").disabled = !selected;
     $("retry").disabled = !selected || running || blocked;
   }
+  function clearPair() {
+    pairRevision++;
+    $("pair-results").replaceChildren();
+  }
   async function describe() {
-    if (!selected || running) return;
+    if (!selected) {
+      clearPair();
+      return;
+    }
+    if (running) return;
     const store = await BrowserBenchmarkStore.open(selected);
+    await describePair(store.manifest);
     const runs = [
       ...collectRuns(store.manifest, await store.readEvents()).runs.values(),
     ];
@@ -47,6 +64,62 @@ export function initBenchmark({
       `Saved benchmark · ${complete}/${total} methods completed. ${complete === total ? "Ready to export." : "Retry unfinished to continue; partial attempts are retained."}${progress ? ` Fractal: ${formatRunProgress(progress)}.` : ""}`,
     );
   }
+  async function describePair(header) {
+    const host = $("pair-results");
+    clearPair();
+    const revision = pairRevision;
+    if (!header.pair) return;
+    const entries = await BrowserBenchmarkStore.list();
+    for (const mode of ["unsurprising", "surprising"]) {
+      const id = header.pair[mode],
+        section = document.createElement("section");
+      const title = document.createElement("h3");
+      title.textContent = `Make it ${mode}`;
+      section.append(title);
+      if (!entries.some((e) => e.id === id)) {
+        const p = document.createElement("p");
+        p.textContent =
+          "Paired archive not saved in this browser. Retry unfinished to create and run it.";
+        section.append(p);
+      } else {
+        const store = await BrowserBenchmarkStore.open(id);
+        const { runs } = collectRuns(store.manifest, await store.readEvents());
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "View this benchmark";
+        button.onclick = () => {
+          selected = id;
+          $("saved").value = id;
+          onSource(id, false);
+          describe().catch((e) => status(e.message));
+        };
+        section.append(button);
+        const items = document.createElement("ul");
+        for (const run of runs.values()) {
+          if (run.status !== "completed") continue;
+          const best = bestNode(run.nodes, run.config);
+          if (!best) continue;
+          const item = document.createElement("li"),
+            score = best.game_score;
+          item.textContent = `Trial ${run.trial + 1} · ${METHOD_STYLE[run.method].label}: ${selectedScore(best, run.config).toFixed(3)} · target surprise ${(-score.conditional_logp / score.tokens).toFixed(3)} · baseline ${(-score.baseline_logp / score.tokens).toFixed(3)} nats/target token`;
+          const text = document.createElement("pre");
+          text.className = "compare-full-text";
+          text.textContent = best.text;
+          item.append(text);
+          items.append(item);
+        }
+        if (!items.childElementCount) {
+          const p = document.createElement("p");
+          p.textContent = "No completed methods yet.";
+          section.append(p);
+        }
+        section.append(items);
+      }
+      if (running || selected !== header.id || revision !== pairRevision)
+        return;
+      host.append(section);
+    }
+  }
   async function refresh() {
     const entries = await BrowserBenchmarkStore.list();
     $("saved").replaceChildren(
@@ -56,7 +129,7 @@ export function initBenchmark({
         .map(
           (e) =>
             new Option(
-              `${new Date(e.manifest.created_at).toLocaleString()} · ${e.manifest.settings.config.algorithm} · ${e.manifest.settings.comparison} · ${e.id.slice(0, 8)}`,
+              `${new Date(e.manifest.created_at).toLocaleString()} · ${e.manifest.settings.config.objective === "xent_game" ? e.manifest.settings.config.game.title + " · " + e.manifest.settings.config.game_mode + " · " : ""}${e.manifest.settings.config.algorithm} · ${e.manifest.settings.comparison} · ${e.id.slice(0, 8)}`,
               e.id,
             ),
         ),
@@ -81,7 +154,14 @@ export function initBenchmark({
         running = pausing = false;
         onBusy(false);
         onChanged(selected, false);
-        refresh().catch((e) => status(e.message));
+        refresh()
+          .then(async () => {
+            if (selected)
+              await describePair(
+                (await BrowserBenchmarkStore.open(selected)).manifest,
+              );
+          })
+          .catch((e) => status(e.message));
       }
     };
     worker.onerror = (e) => {
@@ -96,7 +176,7 @@ export function initBenchmark({
     };
     return worker;
   }
-  function begin(retry) {
+  function begin(retry, pair = false) {
     try {
       if (running || blocked) return;
       const key = getKey();
@@ -105,9 +185,10 @@ export function initBenchmark({
         ? { type: "resume", id: selected, retryIncomplete: true }
         : {
             type: "start",
+            pair,
             settings: benchmarkConfiguration({
               config: getConfig(),
-              comparison: $("comparison").value,
+              comparison: pair ? "tokens" : $("comparison").value,
               repetitions: $("repetitions").value,
             }),
           };
@@ -117,6 +198,7 @@ export function initBenchmark({
         togetherKey: getTogetherKey(),
       });
       running = true;
+      clearPair();
       pausing = false;
       onBusy(true);
       controls();
@@ -126,6 +208,7 @@ export function initBenchmark({
     }
   }
   $("start").onclick = () => begin(false);
+  $("pair").onclick = () => begin(false, true);
   $("retry").onclick = () => begin(true);
   $("pause").onclick = () => {
     pausing = true;
@@ -196,6 +279,9 @@ export function initBenchmark({
   refresh().catch((e) => status(`Browser storage unavailable: ${e.message}`));
   controls();
   return {
+    startPair() {
+      begin(false, true);
+    },
     selectSource(id) {
       if (running)
         throw Error(
@@ -208,6 +294,7 @@ export function initBenchmark({
       describe().catch((e) => status(e.message));
     },
     clearSelection() {
+      clearPair();
       selected = "";
       $("saved").value = "";
       controls();

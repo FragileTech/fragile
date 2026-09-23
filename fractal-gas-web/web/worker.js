@@ -12,7 +12,8 @@ let currentGame = 0;
 let visitOverlay = false;
 
 function plannerDefaults(params) {
-  const p = { horizon: 32, consensusPrefix: true, maxHorizon: 0, ...params };
+  const p = { horizon: 32, consensusPrefix: true, maxHorizon: 0,
+              freezePrefixAfter: 0, ...params };
   if (p.algorithm >= 2) {
     if (!Number.isInteger(p.horizon) || p.horizon < 1 || p.horizon > 4096)
       throw new Error("Search horizon must be an integer between 1 and 4096");

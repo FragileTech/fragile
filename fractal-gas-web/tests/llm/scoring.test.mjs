@@ -113,6 +113,43 @@ function mockScorer(options = {}) {
     },
   };
 }
+test("transient scorer errors retain one logical request identity", async () => {
+  const starts = [],
+    attempts = [];
+  let calls = 0;
+  const scorer = new TogetherScorer("test-together-secret", {
+    fetchImpl: async (_url, init) => {
+      calls++;
+      if (calls === 1)
+        return {
+          ok: false,
+          status: 503,
+          json: async () => ({ error: { message: "Service unavailable" } }),
+        };
+      return {
+        ok: true,
+        status: 200,
+        json: async () => echoed(JSON.parse(init.body)),
+      };
+    },
+    onRequestStart: (event) => starts.push(event),
+    onRequest: (event) => attempts.push(event),
+  });
+  const tokens = await scorer.request(config(), scoringPrefix(""), "Hi", {
+    phase: "test",
+  });
+  assert.equal(tokens.length, 2);
+  assert.equal(starts.length, 1);
+  assert.deepEqual(
+    attempts.map((event) => event.http_status),
+    [503, 200],
+  );
+  assert.ok(
+    attempts.every(
+      (event) => event.logical_request_id === starts[0].logical_request_id,
+    ),
+  );
+});
 test("default, beam endpoints, signed XED and empty-sequence utility", () => {
   const n = {
     tokens: 4,

@@ -125,13 +125,20 @@ normal stopping conditions, **Run** and **Step** stay disabled until **Reset**.
 | Reward coefficient | 1 | Reward contribution to cloning fitness |
 | Distance coefficient | 1 | Diversity contribution to cloning fitness |
 | Graph population cap | 256 | Maximum Graph population |
-| Objective | Negative mean Xent | Full-sequence score used to guide cloning and rank answers |
+| Objective | Beam-style length normalization | Full-sequence score used to guide cloning and rank answers |
 | Beam α | 0.6 | Length exponent, adjustable from 0 to 2 when beam scoring is selected |
 | XED direction | Maximize | Whether larger or smaller mean XED guides selection |
 | XED scoring model | `Qwen/Qwen3.5-9B` | Together model used for both supplied-text evaluations |
 | Embedding input | Generated sequence only | Text represented by the observation vector |
 | Distance | Cosine | Observation comparison used for diversity |
 :::
+
+Graph's **Freeze shared Graph prefix after N nodes** setting defaults to `0`
+(disabled). A positive threshold archives the path from the active root up to
+the first branching point once N unbranched nodes lie between them. The archived
+path is excluded from the active population cap and drawn green in Analysis.
+Its sequence ancestry remains in exported recordings, so any surviving answer
+can still be traced back to the prompt.
 
 :::{div} feynman-prose
 The seed controls the lab's own sampling choices. Remote generation need not
@@ -297,10 +304,12 @@ its child's utility with that donor's value.
 :::
 
 :::{div} feynman-prose
-**Best** selects among nonempty finished or capped traces using the configured
-utility. Until one exists, the displayed best partial trace is selected from
-the greatest reached token depth and is labelled partial. Empty roots and
-empty completed answers are ineligible. Wave's historical elite reinjection
+For likelihood and answer-XED objectives, **Best** selects among nonempty
+finished or capped traces using the configured utility. Until one exists, the
+displayed best partial trace is selected from the greatest reached token depth
+and is labelled partial. In Xent game mode, **Best** instead considers every
+successfully scored nonempty prefix, regardless of depth or termination.
+Empty roots and empty completed answers are ineligible. Wave's historical elite reinjection
 is disabled for this lab. Terminal branches are also ineligible for native
 best-walker protection, so Graph can recycle their slots. **Best** still
 selects from the immutable recording archive, which keeps previously observed
@@ -370,6 +379,113 @@ available scoring evidence survive alongside the last committed population.
 The run reports an error rather than admitting an unscored prefix into the
 search. XED is optional; the default beam objective and optional negative mean
 Xent objective use the generation probabilities already returned.
+:::
+
+(sec-llm-laboratory-xent-games)=
+## Generate a game with a fixed target
+
+:::{div} feynman-prose
+Choose **Xent game · fixed target** in Generation, write a game brief, and
+select **Generate game**. The generation model produces a title, background,
+and target passage. Inspect the preview and creation token usage before
+sampling, then choose the game mode. The target stays fixed: the walkers
+write additional context that changes how predictable that passage is to the
+selected Together scoring model. The existing sampling settings and scorer
+remain the defaults. Game creation uses OpenRouter; target scoring requires
+the Together session key. **Export game settings** saves JSON accepted by the
+existing command-line benchmark runner. **Import game** lets you reuse a saved
+game in the browser.
+
+For example, imagine a target that describes snow falling on a beach. Context
+about a winter storm might make that passage easier to predict. Context about
+a hot summer afternoon might make it harder. The probabilities decide whether
+either attempt succeeds. **Make it unsurprising** rewards a decrease in target
+surprise; **Make it surprising** rewards an increase. Both games expose the
+same background and target to the player. The scoring template contains the
+background and candidate context, without the player's mode instruction.
+
+Every nonempty context within the configured sequence cap is legal, including
+copying the target or giving direct instructions. Consequently, the winning
+context is the best sampled intervention under this score. The score alone
+does not establish that the text is an original explanation or a useful answer
+to a separate question.
+:::
+
+:::{prf:definition} Fixed-target Xent game score
+:label: def-llm-laboratory-xent-game
+
+Fix a scoring model $J$, background $b$, target tokens
+$y_1,\ldots,y_m$ with $m>0$, and scoring template $c(b,x)$ containing
+additional context $x$. Define target surprise and its empty-context baseline by
+
+$$
+H(x)=-\frac{1}{m}\sum_{t=1}^{m}
+\log p_J(y_t\mid c(b,x),y_{<t}),
+\qquad H_0=H(\varnothing).
+$$
+
+The two utilities to maximize are
+
+$$
+U_{\mathrm{unsurprising}}(x)=H_0-H(x),
+\qquad
+U_{\mathrm{surprising}}(x)=H(x)-H_0.
+$$
+
+All three quantities have units of nats per target token. Each evaluation
+uses the same target bytes and token identities; background and context tokens
+do not enter the sum. The empty root has utility zero and is ineligible to win.
+An extension from $x$ to $x'$ receives incremental reward $U(x')-U(x)$.
+:::
+
+:::{div} feynman-prose
+Suppose the baseline surprise is 3 nats per target token and a candidate lowers
+it to 2. Its unsurprising score is $+1$ and its surprising score is $-1$.
+The two directions therefore ask opposite questions about the same
+measurement. Existing **Mean XED** evaluates the generated answer with and
+without its question. A Xent game instead evaluates one fixed target while
+the generated context changes.
+
+The lab evaluates each complete candidate prefix before Wave or Graph can use
+it in cloning. The baseline is shared, and repeated identical contexts reuse
+their scoring result. Every successfully scored nonempty prefix can win,
+including unfinished prefixes and branches that later disappear from the
+population. EOS is unnecessary for a game candidate to be eligible. Identical
+contexts count once in candidate distributions. A scoring failure retains
+the generation evidence but cannot admit that unscored candidate to the
+population.
+:::
+
+(sec-llm-laboratory-xent-game-benchmarks)=
+### Compare both directions
+
+:::{div} feynman-prose
+Select **Benchmark both modes** in Generation or Benchmark to run two linked
+benchmarks sequentially.
+They share the frozen game, judge, baseline, generation route, settings, and
+trial seeds. Each compares the selected Wave or Graph algorithm with
+independent sampling matched to its actual generated-token usage and a
+temperature-zero reference. Compare each method's best context, target
+surprise, empty-context baseline, signed utility, and best-score-so-far curve
+against generated tokens.
+The best score means the best sampled score; it does not certify a global
+optimum.
+
+The pair preserves two benchmark archives, accessible through the saved
+benchmark dropdown. Retrying the pair resumes both modes automatically while
+retaining completed methods and partial attempts. Pause and stop controls also
+preserve collected evidence. Game creation, preparation,
+generation, embeddings, and target scoring have distinct costs. Matching
+generated tokens matches that sampling allowance; total provider work can
+still differ because the methods submit different contexts for scoring.
+
+Saved evidence includes the game brief and creation provenance, fixed game,
+scoring template and judge, baseline probabilities, and candidate target
+probabilities. These measurements reproduce the game scores offline. Exported
+game configurations also work with the existing command-line benchmark
+runner using `objective: "xent_game"`. A run freezes its game and settings;
+regenerating creates another instance. If game generation fails, the previous
+valid instance remains available for inspection and an explicit retry.
 :::
 
 (sec-llm-laboratory-embeddings)=
@@ -1011,7 +1127,7 @@ fitness also incorporates the configured diversity contribution.
 | Total log likelihood / `logp` | The sum of token log probabilities along the complete generated prefix |
 | Mean token log likelihood | Total log likelihood divided by the number of generated tokens |
 | Total / mean NLL | The negative of the corresponding log likelihood; smaller values are better for the selected likelihood objective |
-| Selected objective | Negative mean Xent, beam-normalized likelihood, or raw mean XED under the saved configuration |
+| Selected objective | Negative mean Xent, beam-normalized likelihood, raw mean XED, or signed fixed-target game utility under the saved configuration |
 | Internal utility | The value maximized by the engine; the negative of raw XED only when XED minimization is selected |
 | Chunk objective increment | The child's utility minus its parent's utility, after the actual returned chunk |
 | Distance | The recorded observation distance to the sampled distance companion at the decision stage |
@@ -1024,7 +1140,9 @@ it equals that chunk's sum of log probabilities. In mean mode it is the change
 in the whole prefix's mean, which can be positive even though every individual
 token log probability is nonpositive. Beam scoring uses the same full-prefix
 comparison with its selected exponent. XED uses the two complete scorer
-evaluations and the chosen utility sign. No objective divides by the requested
+evaluations and the chosen utility sign. Xent games use the change in signed
+target-surprise utility defined in {prf:ref}`def-llm-laboratory-xent-game`.
+No objective divides by the requested
 chunk size or assigns reward to tokens that were never returned.
 
 Decision inspection identifies the evaluated prefix, its distance companion,

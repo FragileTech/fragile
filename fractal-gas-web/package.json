@@ -34,6 +34,7 @@
     "test:optimization-browser": "node tests/optimization/browser.mjs",
     "build:llm": "node tools/build-llm.mjs",
     "test:llm": "node --test tests/llm/*.test.mjs",
+    "test:llm-games-browser": "node tests/llm/games-browser.mjs",
     "test:llm-scoring-browser": "node tests/llm/scoring-browser.mjs",
     "test:llm-browser": "node tests/llm/browser.mjs",
     "test:llm-live": "node tests/llm/live.mjs",

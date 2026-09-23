@@ -7,8 +7,13 @@ export const CONTINUATION_PROBE_PROMPT =
   CONTINUATION_PROBE_TEXT;
 export function parseCompletion(response, maxTokens) {
   const choice = response?.choices?.[0],
-    content = choice?.message?.content;
-  const tokens = choice?.logprobs?.content;
+    emptyStop =
+      choice?.finish_reason === "stop" &&
+      choice?.message?.content == null &&
+      choice?.logprobs == null &&
+      !choice?.message?.refusal,
+    content = emptyStop ? "" : choice?.message?.content;
+  const tokens = emptyStop ? [] : choice?.logprobs?.content;
   if (
     response?.choices?.length !== 1 ||
     typeof content !== "string" ||

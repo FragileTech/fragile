@@ -102,6 +102,7 @@ class ExistingSwarm final : public Algorithm {
       a.start_walkers = s.walkers;
       a.min_leafs = s.walkers;
       a.max_walkers = s.max_walkers;
+      a.freeze_prefix_after = s.freeze_prefix_after;
       a.seed = s.seed;
       a.distance_metric = s.distance_metric;
       a.dist_coef = float(s.distance_coef);
@@ -127,6 +128,30 @@ class ExistingSwarm final : public Algorithm {
     update();
   }
   const Population& population() const override { return p; }
+  Json metadata() const override {
+    Json result; result.kind = Json::Object;
+    auto* graph = dynamic_cast<FractalTree*>(swarm.get());
+    if (!graph) return result;
+    Json frozen; frozen.kind = Json::Array;
+    for (const auto& node : graph->frozen_nodes()) {
+      if (!node.prefix) continue;
+      Json entry; entry.kind = Json::Object;
+      entry.object["id"] = number(static_cast<double>(node.id));
+      entry.object["parentId"] = number(static_cast<double>(node.parent_id));
+      Json x; x.kind = Json::Array;
+      std::vector<float> coordinates(static_cast<size_t>(p.d));
+      const double value = env.decode(node.state, coordinates.data());
+      for (float v : coordinates) x.array.push_back(number(v));
+      entry.object["x"] = std::move(x);
+      entry.object["value"] = number(value);
+      frozen.array.push_back(std::move(entry));
+    }
+    result.object["frozen"] = std::move(frozen);
+    result.object["activeRootId"] = number(static_cast<double>(graph->active_root_id()));
+    result.object["activeRootParentId"] =
+        number(static_cast<double>(graph->state().parent_ids[0]));
+    return result;
+  }
   uint64_t evaluations() const override { return env.b.evaluations; }
   uint64_t next_evaluations_upper_bound() const override {
     if (planner && planner->execution_pending()) return 1;

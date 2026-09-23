@@ -211,6 +211,7 @@ llm-test: llm-native llm-web
 	npm --prefix fractal-gas-web run test:llm
 	npm --prefix fractal-gas-web run test:llm-browser
 	npm --prefix fractal-gas-web run test:llm-scoring-browser
+	npm --prefix fractal-gas-web run test:llm-games-browser
 	npm --prefix fractal-gas-web run test:llm-benchmark-browser
 	npm --prefix fractal-gas-web run test:llm-comparison-browser
 	npm --prefix fractal-gas-web run test:llm-ranking-browser

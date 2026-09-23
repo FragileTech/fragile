@@ -5,6 +5,11 @@ export const METRICS = {
     label: "Selected objective",
     unit: "raw score · follows the recorded optimization direction",
   },
+  target_nll: { label: "Target surprise", unit: "nats per target token" },
+  baseline_nll: {
+    label: "Baseline target surprise",
+    unit: "nats per target token",
+  },
   utility: {
     label: "Internal utility",
     unit: "signed objective · higher is better",
@@ -194,6 +199,12 @@ export class AnalysisIndex {
     const parent = this.nodes[n.parent];
     const value = {
       objective: n.tokens ? selectedScore(n, this.record.config) : null,
+      target_nll: n.game_score
+        ? -n.game_score.conditional_logp / n.game_score.tokens
+        : null,
+      baseline_nll: n.game_score
+        ? -n.game_score.baseline_logp / n.game_score.tokens
+        : null,
       utility: n.tokens ? objective(n, this.record.config) : null,
       logp: n.logp,
       probability: n.logp,
@@ -256,6 +267,9 @@ export class AnalysisIndex {
       if (kept.has(i)) kept.add(this.nodes[i].parent);
     const rows = [];
     if (mode === "graph" && snapshot) {
+      const modern =
+        Array.isArray(snapshot.frozen) &&
+        snapshot.walkers[0]?.nodeId !== undefined;
       const key = (slot) =>
         slot === 0 && snapshot.walkers[0]?.node === 0 ? "root" : `g:${slot}`;
       rows.push({
@@ -263,14 +277,38 @@ export class AnalysisIndex {
         id: 0,
         parent: null,
         slot: snapshot.walkers[0]?.node === 0 ? 0 : null,
+        frozen: snapshot.frozen?.some((n) => n.id === 0) ?? false,
       });
+      const keyById = new Map([[0, "root"]]);
+      if (modern) {
+        for (const node of snapshot.frozen)
+          if (node.id !== 0) keyById.set(node.id, `f:${node.id}`);
+        for (const w of snapshot.walkers)
+          if (w.nodeId !== null && w.nodeId !== 0)
+            keyById.set(w.nodeId, `g:${w.slot}`);
+        for (const node of snapshot.frozen)
+          if (node.id !== 0)
+            rows.push({
+              key: `f:${node.id}`,
+              id: node.node,
+              slot: null,
+              parent: keyById.get(node.parentId) ?? "root",
+              frozen: true,
+            });
+      }
       for (const w of snapshot.walkers) {
-        if (key(w.slot) === "root" || (w.node === null && !unused)) continue;
+        if (
+          (modern ? w.slot === 0 && w.nodeId === 0 : key(w.slot) === "root") ||
+          (w.node === null && !unused)
+        )
+          continue;
         rows.push({
-          key: key(w.slot),
+          key: modern ? `g:${w.slot}` : key(w.slot),
           id: w.node,
           slot: w.slot,
-          parent: key(w.parentSlot),
+          parent: modern
+            ? (keyById.get(w.parentId) ?? "root")
+            : key(w.parentSlot),
           unused: w.node === null,
         });
       }
@@ -298,7 +336,7 @@ export class AnalysisIndex {
     const visible = new Set(["root"]);
     for (const row of rows) {
       const n = this.nodes[row.id];
-      row.current = population.has(row.id);
+      row.current = !row.frozen && population.has(row.id);
       row.discarded = row.id !== null && !kept.has(row.id);
       row.match =
         (!query ||

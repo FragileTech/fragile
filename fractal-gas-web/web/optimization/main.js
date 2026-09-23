@@ -85,6 +85,7 @@ const defaults = {
   horizon: 32,
   max_horizon: 0,
   max_walkers: 10000,
+  freeze_prefix_after: 0,
   dt_min: 1,
   dt_max: 1,
   elites: 0,
@@ -279,9 +280,23 @@ function algorithmFields(values = {}) {
         algorithm === "graph"
           ? ["max_walkers", "Maximum tree population", 2, 1000000]
           : ["elites", "Elite walkers", 0, 100000],
+        ...(algorithm === "graph"
+          ? [
+              [
+                "freeze_prefix_after",
+                "Freeze shared prefix after N nodes (0 = off)",
+                0,
+                1000000,
+              ],
+            ]
+          : []),
       ];
-  for (const [key, label, min, max] of fields)
-    content.append(numeric(key, label, values[key] ?? defaults[key], min, max));
+  for (const [key, label, min, max] of fields) {
+    const control = numeric(key, label, values[key] ?? defaults[key], min, max);
+    if (key === "freeze_prefix_after")
+      control.querySelector("input").step = "1";
+    content.append(control);
+  }
   if (algorithm === "wave_jump") {
     content.append(
       numeric(
@@ -684,6 +699,7 @@ function renderFrame() {
     settings,
     recording.frames.slice(0, index + 1),
     selected,
+    recording.metadata[index],
   );
   $("planner-note").hidden = !settings.planning;
   const cmaMeta = recording.metadata[index];
@@ -756,7 +772,9 @@ async function createSession(next, loaded = null) {
     if (!loaded)
       recording.append(
         result.frame,
-        isCma(config.algorithm) ? result.status : null,
+        ["graph", "cmaes_active", "cmaes_bipop"].includes(config.algorithm)
+          ? result.status
+          : null,
       );
     imported = !!loaded;
     index = 0;
@@ -798,7 +816,12 @@ async function step() {
     });
     if (token !== epoch) return;
     const atLatest = index === recording.frames.length - 1;
-    recording.append(result.frame, isCma() ? result.status : null);
+    recording.append(
+      result.frame,
+      ["graph", "cmaes_active", "cmaes_bipop"].includes(config.algorithm)
+        ? result.status
+        : null,
+    );
     simulationMs = result.simulationMs;
     if (atLatest) index = recording.frames.length - 1;
     scheduleFrame();

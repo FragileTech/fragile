@@ -32,7 +32,7 @@
         <form id="config">
           <fieldset id="settings">
             <legend>Generate a population</legend>
-            <label
+            <label id="prompt-setting"
               >Context / prompt<textarea name="prompt" rows="6"></textarea>
             </label>
             <label
@@ -74,15 +74,58 @@
               >
             </div>
             <label
-              >Likelihood objective<select name="objective">
+              >Search objective<select name="objective">
                 <option value="mean">Negative mean Xent</option>
                 <option value="beam">Beam-style length normalization</option>
                 <option value="xed">Mean XED</option>
+                <option value="xent_game">Xent game · fixed target</option>
                 <option value="total" hidden>
                   Total log probability (legacy)
                 </option>
               </select></label
             >
+            <div id="game-settings" hidden>
+              <label
+                >Game brief<textarea
+                  id="game-brief"
+                  rows="3"
+                  maxlength="8000"
+                  placeholder="For example: a detective finding a missing key"
+                ></textarea>
+              </label>
+              <div class="toolbar">
+                <button id="game-generate" type="button">Generate game</button>
+                <button id="game-import" type="button">Import game</button>
+                <button id="game-export" type="button" disabled>
+                  Export game settings
+                </button>
+              </div>
+              <input id="game-file" type="file" accept=".json" hidden />
+              <p id="game-status" class="hint" role="status">
+                Generate a game once, then reuse its target in both modes.
+              </p>
+              <div id="game-preview" hidden>
+                <strong id="game-title"></strong>
+                <p id="game-cost" class="hint"></p>
+                <p><b>Background</b></p>
+                <p id="game-background"></p>
+                <p><b>Fixed target</b></p>
+                <p id="game-target"></p>
+              </div>
+              <label
+                >Game mode<select name="game_mode">
+                  <option value="unsurprising">Make it unsurprising</option>
+                  <option value="surprising">Make it surprising</option>
+                </select></label
+              >
+              <p class="hint">
+                Any nonempty context within the token cap is legal. Copying and
+                direct instructions are allowed. Every scored prefix can win.
+              </p>
+              <button id="game-benchmark" type="button" disabled>
+                Benchmark both modes
+              </button>
+            </div>
             <label id="beam-settings" hidden
               >Length exponent α<input
                 name="beam_alpha"
@@ -92,7 +135,7 @@
                 step="0.1"
             /></label>
             <div id="xed-settings" hidden>
-              <label
+              <label id="xed-direction-setting"
                 >Optimize XED<select name="xed_direction">
                   <option value="maximize">Maximize</option>
                   <option value="minimize">Minimize</option>
@@ -108,7 +151,7 @@
             </div>
             <p id="objective-hint" class="hint"></p>
             <p class="hint">
-              Token probabilities always include the prompt and the full
+              Generation token probabilities include the prompt and the full
               generated prefix.
             </p>
             <label
@@ -188,7 +231,18 @@
                   type="number"
                   min="2"
                   max="4096" /></label
-              ><label
+              ><label id="freeze-prefix-setting"
+                >Freeze shared Graph prefix after N nodes<input
+                  name="freeze_prefix_after"
+                  type="number"
+                  min="0"
+                  max="4096"
+                  step="1"
+              /></label>
+              <p id="freeze-prefix-hint" class="hint">
+                0 disables freezing. Archived prefixes remain green in Analysis.
+              </p>
+              <label
                 >Algorithm seed<input
                   name="seed"
                   type="number"
@@ -376,6 +430,9 @@
               <button id="benchmark-start" type="button">
                 Start benchmark
               </button>
+              <button id="benchmark-pair" type="button" hidden>
+                Benchmark both modes
+              </button>
               <button id="benchmark-pause" type="button" disabled>Pause</button>
               <button id="benchmark-continue" type="button" disabled>
                 Continue
@@ -386,6 +443,7 @@
               Uses the current prompt and lab settings. Each trial makes
               additional generation and embedding requests.
             </p>
+            <div id="benchmark-pair-results" aria-live="polite"></div>
             <label
               >Comparison source<select id="benchmark-saved">
                 <option value="">Current Fractal run</option>

@@ -1,3 +1,4 @@
+import { GAME_FORMAT, gameQuestion } from "./games.js";
 // Supplied-text scoring: neither term is taken from generation log probabilities.
 export const SCORING_FORMAT = "qwen-nonthinking-empty-user-v1";
 export const TOKENIZER_REVISION = "c202236235762e1c871ad0ccb60c8ee5ba337b9a";
@@ -194,6 +195,66 @@ export function validateXed(node, config) {
   )
     throw Error("XED terms use different answer tokens");
 }
+export function validateGameScore(node, config, scoring = null) {
+  if (!node.tokens) {
+    if (node.game_score != null)
+      throw Error("Empty sequence must not contain game scores");
+    return;
+  }
+  const x = node.game_score,
+    game = config.game;
+  if (
+    !x ||
+    !game ||
+    x.game_format !== GAME_FORMAT ||
+    x.game_id !== game.id ||
+    x.background !== game.background ||
+    x.target !== game.target ||
+    x.context !== node.text
+  )
+    throw Error("Target score does not match game and context");
+  validateXed({ tokens: 1, text: game.target, xed: x }, config);
+  if (
+    scoring?.baseline_score &&
+    JSON.stringify(x.baseline) !==
+      JSON.stringify(scoring.baseline_score.baseline)
+  )
+    throw Error("Game baseline changed during the run");
+}
+
+export function validateSequenceScore(node, config, scoring) {
+  if (config.objective === "xed") validateXed(node, config);
+  if (config.objective === "xent_game") {
+    if (node.tokens && !scoring?.baseline_score)
+      throw Error("Missing fixed game baseline");
+    if (scoring?.baseline_score) {
+      if (
+        scoring.model !== config.scoring_model ||
+        scoring.format !== SCORING_FORMAT ||
+        scoring.game_format !== GAME_FORMAT
+      )
+        throw Error("Invalid game scorer metadata");
+      validateGameScore(
+        { tokens: 1, text: "", game_score: scoring.baseline_score },
+        config,
+      );
+      if (
+        JSON.stringify(scoring.baseline_score.baseline) !==
+        JSON.stringify(scoring.baseline_score.conditional)
+      )
+        throw Error("Invalid empty-context game baseline");
+    }
+    validateGameScore(node, config, scoring);
+  }
+}
+
+export async function scoreSequence(scorer, node, config, context = {}) {
+  if (config.objective === "xed")
+    node.xed = await scorer.score(config, node.text, context);
+  if (config.objective === "xent_game")
+    node.game_score = await scorer.scoreGame(config, node.text, context);
+}
+
 export class TogetherScorer {
   #key;
   constructor(
@@ -201,29 +262,32 @@ export class TogetherScorer {
     {
       signal,
       concurrency = 4,
+      minIntervalMs = 0,
       fetchImpl = globalThis.fetch.bind(globalThis),
       onRequest = () => {},
       onRequestStart = () => {},
     } = {},
   ) {
-    if (!key) throw Error("Enter a Together API key to use XED");
+    if (!key) throw Error("Enter a Together API key for supplied-text scoring");
     this.#key = key;
     this.signal = signal;
     this.fetch = fetchImpl;
     this.onRequest = onRequest;
     this.onRequestStart = onRequestStart;
     this.limit = concurrency;
+    this.minIntervalMs = minIntervalMs;
+    this.nextRequestAt = 0;
     this.running = 0;
     this.queue = [];
     this.cache = new Map();
+    this.gameBaselines = new Map();
     this.maxTokens = 0;
   }
   async request(config, prefix, answer, context) {
     if (this.running >= this.limit)
       await new Promise((resolve) => this.queue.push(resolve));
     else this.running++;
-    const start = Date.now(),
-      logical_request_id = crypto.randomUUID();
+    const logical_request_id = crypto.randomUUID();
     const detail = {
       ...context,
       logical_request_id,
@@ -249,27 +313,48 @@ export class TogetherScorer {
       };
       await this.onRequestStart({ ...detail, request, status: "started" });
       started = true;
-      response = await this.fetch("https://api.together.ai/v1/completions", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.#key}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(request),
-        signal: this.signal
-          ? AbortSignal.any([this.signal, AbortSignal.timeout(90000)])
-          : AbortSignal.timeout(90000),
-      });
-      body = await response.json();
-      await this.onRequest({
-        ...detail,
-        status: response.ok ? "ok" : "error",
-        http_status: response.status,
-        elapsed_ms: Date.now() - start,
-        response: body,
-        usage: body.usage,
-      });
-      if (!response.ok) {
+      for (let attempt = 0; attempt < 6; attempt++) {
+        const start = Date.now();
+        const ready = Math.max(start, this.nextRequestAt);
+        this.nextRequestAt = ready + this.minIntervalMs;
+        if (ready > start)
+          await new Promise((resolve) => setTimeout(resolve, ready - start));
+        this.signal?.throwIfAborted();
+        response = undefined;
+        response = await this.fetch("https://api.together.ai/v1/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${this.#key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(request),
+          signal: this.signal
+            ? AbortSignal.any([this.signal, AbortSignal.timeout(90000)])
+            : AbortSignal.timeout(90000),
+        });
+        body = await response.json();
+        await this.onRequest({
+          ...detail,
+          attempt,
+          status: response.ok ? "ok" : "error",
+          http_status: response.status,
+          elapsed_ms: Date.now() - start,
+          response: body,
+          usage: body.usage,
+        });
+        if (response.ok) break;
+        if (
+          attempt < 5 &&
+          [429, 500, 502, 503, 504].includes(response.status)
+        ) {
+          const retryAfter = Number(response.headers?.get?.("retry-after"));
+          const delay = Math.max(
+            Math.min(16000, 2000 * 2 ** attempt),
+            Number.isFinite(retryAfter) ? retryAfter * 1000 : 0,
+          );
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          continue;
+        }
         const error = new Error(
           `Together scoring failed (HTTP ${response.status}): ${String(body.error?.message ?? body.error ?? "request rejected").replaceAll(this.#key, "[redacted]")}`,
         );
@@ -291,7 +376,6 @@ export class TogetherScorer {
         await this.onRequest({
           ...detail,
           status: "network_error",
-          elapsed_ms: Date.now() - start,
         });
       throw error;
     } finally {
@@ -343,6 +427,107 @@ export class TogetherScorer {
       task.catch(() => this.cache.delete(key));
     }
     return structuredClone(await this.cache.get(key));
+  }
+  gameKey(config) {
+    return JSON.stringify([
+      config.scoring_model,
+      SCORING_FORMAT,
+      GAME_FORMAT,
+      config.game.id,
+      config.game.background,
+      config.game.target,
+    ]);
+  }
+  async gameBaseline(config) {
+    const key = this.gameKey(config);
+    if (!this.gameBaselines.has(key)) {
+      const task = this.request(
+        config,
+        scoringPrefix(gameQuestion(config.game, "")),
+        config.game.target,
+        { phase: "game_baseline", term: "baseline" },
+      );
+      this.gameBaselines.set(key, task);
+      task.catch(() => this.gameBaselines.delete(key));
+    }
+    return this.gameBaselines.get(key);
+  }
+  async scoreGame(config, context, detail = {}, allowEmpty = false) {
+    if (!context && !allowEmpty) return null;
+    const key = JSON.stringify([this.gameKey(config), context]);
+    if (!this.cache.has(key)) {
+      const task = (async () => {
+        const baseline = await this.gameBaseline(config);
+        const conditional = context
+          ? await this.request(
+              config,
+              scoringPrefix(gameQuestion(config.game, context)),
+              config.game.target,
+              { ...detail, term: "target" },
+            )
+          : baseline;
+        const score = {
+          model: config.scoring_model,
+          format: SCORING_FORMAT,
+          game_format: GAME_FORMAT,
+          game_id: config.game.id,
+          background: config.game.background,
+          target: config.game.target,
+          context,
+          tokenizer_revision:
+            config.scoring_model === "Qwen/Qwen3.5-9B"
+              ? TOKENIZER_REVISION
+              : null,
+          tokens: conditional.length,
+          baseline,
+          conditional,
+          baseline_logp: baseline.reduce((s, t) => s + t.logprob, 0),
+          conditional_logp: conditional.reduce((s, t) => s + t.logprob, 0),
+        };
+        validateGameScore(
+          { tokens: 1, text: context, game_score: score },
+          config,
+        );
+        return score;
+      })();
+      this.cache.set(key, task);
+      task.catch(() => this.cache.delete(key));
+    }
+    return structuredClone(await this.cache.get(key));
+  }
+  async prepareGame(config, saved = null) {
+    const metadata = await this.prepare(config);
+    if (saved) {
+      if (
+        !saved.baseline_score ||
+        saved.max_tokens !== this.maxTokens ||
+        saved.model !== config.scoring_model ||
+        saved.format !== SCORING_FORMAT ||
+        saved.game_format !== GAME_FORMAT
+      )
+        throw Error("Saved game scorer configuration does not match");
+      validateGameScore(
+        { tokens: 1, text: "", game_score: saved.baseline_score },
+        config,
+      );
+      if (
+        JSON.stringify(saved.baseline_score.baseline) !==
+        JSON.stringify(saved.baseline_score.conditional)
+      )
+        throw Error("Invalid empty-context game baseline");
+      this.gameBaselines.set(
+        this.gameKey(config),
+        Promise.resolve(saved.baseline_score.baseline),
+      );
+    }
+    const baseline_score = await this.scoreGame(config, "", {}, true);
+    return {
+      ...metadata,
+      game_format: GAME_FORMAT,
+      baseline:
+        "Same background and scoring scaffold with empty additional context",
+      baseline_score,
+    };
   }
   async prepare(config) {
     const probe = async () => {

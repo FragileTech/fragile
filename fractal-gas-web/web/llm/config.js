@@ -1,4 +1,7 @@
+import { gameSpec, gamePrompt, GAME_MODES } from "./games.js";
 export const DEFAULTS = Object.freeze({
+  game: null,
+  game_mode: "unsurprising",
   prompt: "Write a short explanation of why the sky is blue.",
   model: "qwen/qwen3.5-35b-a3b",
   embedding_model: "openai/text-embedding-3-small",
@@ -19,14 +22,16 @@ export const DEFAULTS = Object.freeze({
   distance_coef: 1,
   reward_coef: 1,
   max_walkers: 256,
+  freeze_prefix_after: 0,
 });
 export function configuration(input = {}) {
   const out = {};
   for (const key of Object.keys(DEFAULTS))
     out[key] = input[key] ?? DEFAULTS[key];
   for (const [key, choices] of Object.entries({
+    game_mode: GAME_MODES,
     algorithm: ["wave", "graph"],
-    objective: ["total", "mean", "beam", "xed"],
+    objective: ["total", "mean", "beam", "xed", "xent_game"],
     xed_direction: ["maximize", "minimize"],
     embedding_input: ["generated", "prompt"],
     distance_metric: ["l2", "cosine"],
@@ -40,6 +45,7 @@ export function configuration(input = {}) {
     ["iterations", 1, 10000],
     ["seed", 0, 2147483647],
     ["max_walkers", 2, 4096],
+    ["freeze_prefix_after", 0, 4096],
   ]) {
     const n = Number(out[key]);
     if (!Number.isInteger(n) || n < lo || n > hi)
@@ -55,6 +61,11 @@ export function configuration(input = {}) {
     out[key] = Number(out[key]);
     if (!Number.isFinite(out[key]) || out[key] < 0 || out[key] > max)
       throw new Error(`Invalid ${key}`);
+  }
+  if (out.game != null) out.game = gameSpec(out.game);
+  if (out.objective === "xent_game") {
+    if (!out.game) throw Error("Generate or import an Xent game first");
+    out.prompt = gamePrompt(out.game, out.game_mode, out.sequence_tokens);
   }
   for (const key of ["prompt", "model", "embedding_model", "scoring_model"])
     if (typeof out[key] !== "string" || !out[key].trim())
@@ -78,6 +89,12 @@ export function selectedScore(node, config) {
       return node.logp / node.tokens;
     case "beam":
       return node.logp / node.tokens ** (c.beam_alpha ?? 0.6);
+    case "xent_game": {
+      const x = node.game_score;
+      if (!x || !(x.tokens > 0)) throw Error("Missing target score");
+      const gain = (x.conditional_logp - x.baseline_logp) / x.tokens;
+      return c.game_mode === "surprising" ? -gain : gain;
+    }
     case "xed":
       if (!node.xed || !(node.xed.tokens > 0)) throw Error("Missing XED score");
       return (
@@ -94,6 +111,8 @@ export function objective(node, config) {
     : value;
 }
 export function objectiveLabel(config) {
+  if (config?.objective === "xent_game")
+    return `Make it ${config.game_mode} · nats per target token · ${config.scoring_model}`;
   if (config?.objective === "xed")
     return `Mean XED · ${config.xed_direction} · ${config.scoring_model}`;
   if (config?.objective === "beam")
@@ -115,9 +134,11 @@ export function bestNode(nodes, mode) {
     0,
   );
   return (
-    completed.length
-      ? completed
-      : candidates.filter((n) => n.tokens === maxDepth)
+    mode?.objective === "xent_game"
+      ? candidates
+      : completed.length
+        ? completed
+        : candidates.filter((n) => n.tokens === maxDepth)
   ).reduce(
     (best, n) =>
       !best || objective(n, mode) > objective(best, mode) ? n : best,

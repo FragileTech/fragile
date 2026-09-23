@@ -1,3 +1,5 @@
+import { externalScore } from "./games.js";
+import { scoreSequence } from "./scoring.js";
 import { embeddingText, objective } from "./config.js";
 import { mapConcurrent } from "./openrouter.js";
 import { RunControl } from "./run-control.js";
@@ -73,8 +75,8 @@ export class TokenEnvironment {
             requested_tokens: count,
             actual_tokens: result.token_data.length,
           };
-          if (config.objective === "xed")
-            node.xed = await this.scorer.score(config, text, {
+          if (externalScore(config))
+            await scoreSequence(this.scorer, node, config, {
               source: parent.id,
             });
           node.reward = objective(node, config) - objective(parent, config);

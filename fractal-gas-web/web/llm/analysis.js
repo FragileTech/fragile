@@ -364,6 +364,11 @@ export class AnalysisView {
       el("span", METRICS[metric].unit, "hint"),
       el("span", "● Not recorded", "analysis-missing"),
     );
+    if (mode === "graph" && model.nodes.some((node) => node.frozen)) {
+      const frozen = el("span", "● Frozen prefix");
+      frozen.style.color = "#48df81";
+      legend.append(frozen);
+    }
     this.inspect(metric);
     this.compare();
     $("analysis-collapse").textContent = this.collapsed.has(
@@ -420,6 +425,9 @@ export class AnalysisView {
     for (const key of [
       "objective",
       "utility",
+      ...(this.record?.config?.objective === "xent_game"
+        ? ["target_nll", "baseline_nll"]
+        : []),
       "logp",
       "probability",
       "mean",

@@ -24,7 +24,13 @@ self.onmessage = ({ data: message }) => {
           );
         const maxN = status.next_population;
         // Reserve bounded status JSON space before advancing the optimizer.
-        const metadataBytes = config.algorithm.startsWith("cmaes_") ? 2048 : 0;
+        const metadataBytes =
+          config.algorithm === "graph"
+            ? JSON.stringify(status).length * 2 +
+              maxN * (config.dimensions * 24 + 128)
+            : config.algorithm.startsWith("cmaes_")
+              ? 2048
+              : 0;
         if ((12 + maxN * before.stride) * 8 + metadataBytes > message.remaining)
           throw new Error(
             "Recording reached 64 MiB. Save this run and reset to continue.",

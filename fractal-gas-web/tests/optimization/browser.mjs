@@ -139,6 +139,10 @@ for (const [name, type] of [
     }
     await page.locator("#algorithm").selectOption("graph");
     assert.equal(
+      await page.locator('[name="freeze_prefix_after"]').inputValue(),
+      "0",
+    );
+    assert.equal(
       await page
         .locator('#perturbation option[value="local_covariance"]')
         .count(),
@@ -207,6 +211,10 @@ for (const [name, type] of [
     ]) {
       for (const objective of ["minimize", "maximize"]) {
         await page.locator("#algorithm").selectOption(algorithm);
+        if (algorithm === "graph") {
+          await page.locator("#algorithm-parameters details.advanced").evaluate((el) => { el.open = true; });
+          await page.locator('[name="freeze_prefix_after"]').fill("1");
+        }
         await page.locator("#objective").selectOption(objective);
         await page
           .locator("#perturbation")

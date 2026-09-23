@@ -150,6 +150,35 @@ test("Graph uses actual parent slots, preserves duplicate prefix slots and optio
     true,
   );
 });
+test("Graph displays archived root ancestry through a rebased active root", () => {
+  const record = treeRecord();
+  record.config.algorithm = "graph";
+  record.snapshots.at(-1).frozen = [
+    { id: 0, parentId: 0, node: 0 },
+    { id: 1, parentId: 0, node: 1 },
+    { id: 2, parentId: 1, node: 3 },
+  ];
+  record.snapshots.at(-1).walkers = [
+    { slot: 0, node: 4, nodeId: 3, parentId: 2, parentSlot: 0 },
+    { slot: 1, node: 5, nodeId: 4, parentId: 3, parentSlot: 0 },
+    { slot: 2, node: 6, nodeId: 5, parentId: 3, parentSlot: 0 },
+  ];
+  const model = new AnalysisIndex(record).model({ step: 3, mode: "graph" });
+  assert.deepEqual(
+    model.edges.map((e) => [e.source, e.target]),
+    [
+      ["root", "f:1"],
+      ["f:1", "f:2"],
+      ["f:2", "g:0"],
+      ["g:0", "g:1"],
+      ["g:0", "g:2"],
+    ],
+  );
+  assert.deepEqual(
+    model.nodes.filter((n) => n.frozen).map((n) => n.key),
+    ["root", "f:1", "f:2"],
+  );
+});
 test("metrics stay on evaluated prefixes, aggregate repeated decisions and preserve fixed domains", () => {
   const index = new AnalysisIndex(treeRecord());
   assert.deepEqual(index.value(1, "fitness", 2), {
@@ -296,6 +325,44 @@ for (const algorithm of ["wave", "graph"])
       native.close();
     }
   });
+test("enabled Graph archives a real shared prefix and imports its full trace", async () => {
+  const c = configuration({
+    algorithm: "graph",
+    walkers: 4,
+    max_walkers: 24,
+    chunk_tokens: 2,
+    sequence_tokens: 128,
+    iterations: 50,
+    freeze_prefix_after: 1,
+  });
+  const api = new OpenRouter("secret", { fetchImpl: fakeOpenRouter().fetch });
+  const record = new Recording(c);
+  record.metadata(await api.prepare(c));
+  const env = new TokenEnvironment(c, api, record);
+  const native = await NativeLlm.create(
+    { ...c, dimensions: api.dimensions },
+    (requests) => env.transition(requests),
+  );
+  try {
+    for (let i = 0; i < 35 && !record.data.run.stop_reason; i++) {
+      env.commit(await native.advance());
+      if (record.data.snapshots.at(-1).frozen.length) break;
+    }
+    const imported = importRecording(record.export());
+    const snapshot = imported.snapshots.at(-1);
+    assert.ok(snapshot.frozen.length >= 2);
+    assert.ok(snapshot.activeRootId > 0);
+    const model = new AnalysisIndex(imported).model({
+      step: imported.snapshots.length,
+      mode: "graph",
+    });
+    assert.ok(model.nodes.some((node) => node.frozen && node.key !== "root"));
+    for (const walker of snapshot.walkers.filter((row) => row.alive))
+      assert.equal(new AnalysisIndex(imported).chain(walker.node)[0].id, 0);
+  } finally {
+    native.close();
+  }
+});
 test("10,000-node model construction keeps all exact links and bounded depth filters", () => {
   const record = treeRecord();
   record.nodes = [record.nodes[0]];

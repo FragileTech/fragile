@@ -640,8 +640,14 @@ main.analyzing {
   max-height: calc(100vh - 48px);
   padding: 24px;
 }
-.ranking-human-dialog::backdrop { background: #120d18f5; }
-.ranking-human-dialog pre, #compare-ranking pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.ranking-human-dialog::backdrop {
+  background: #120d18f5;
+}
+.ranking-human-dialog pre,
+#compare-ranking pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
 #benchmark-panel,
 #evaluation-panel {
   min-width: 0;
@@ -857,5 +863,41 @@ main.analyzing {
   #comparison-workspace *,
   #evaluation-panel * {
     scroll-behavior: auto;
+  }
+}
+
+/* Each game mode keeps its own answers and numerical scale visible. */
+#benchmark-pair-results {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+#benchmark-pair-results:empty {
+  display: none;
+}
+#benchmark-pair-results section {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-raised);
+}
+#benchmark-pair-results h3 {
+  margin-top: 0;
+}
+#benchmark-pair-results ul {
+  padding-left: 20px;
+}
+#benchmark-pair-results pre {
+  max-height: 12rem;
+  overflow: auto;
+}
+#game-preview {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 700px) {
+  #benchmark-pair-results {
+    grid-template-columns: 1fr;
   }
 }

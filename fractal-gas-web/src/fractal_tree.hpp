@@ -104,6 +104,10 @@ class FractalTree final : public SwarmAlgorithm {
   const CloneDiagnostics& diagnostics() const { return core_.diagnostics; }
   const FractalTreeParams& params() const { return params_; }
   const TreeState& state() const { return state_; }
+  const auto& frozen_nodes() const { return core_.frozen_nodes_; }
+  const auto& last_slot_remap() const { return core_.last_old_to_new_; }
+  uint64_t active_root_id() const { return core_.active_root_id_; }
+  auto trajectory(int32_t slot) const { return core_.trajectory(slot); }
   const VisitGrid& visits() const { return visits_; }
   bool counting_visits() const override { return count_visits_; }
   const VisitGrid* visit_grid() const override { return &visits_; }

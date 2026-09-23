@@ -1,3 +1,4 @@
+import { externalScore } from "./games.js";
 import { TogetherScorer } from "./scoring.js";
 import { configuration } from "./config.js";
 import { OpenRouter } from "./openrouter.js";
@@ -97,15 +98,21 @@ onmessage = async ({ data }) => {
         onRequest: (r) => record.append("requests", r),
       });
       let scorer = null;
-      if (config.objective === "xed") {
+      if (externalScore(config)) {
         scorer = new TogetherScorer(data.togetherKey, {
           signal: abort.signal,
-          concurrency: config.concurrency,
+          concurrency:
+            config.objective === "xent_game" ? 1 : config.concurrency,
+          minIntervalMs: config.objective === "xent_game" ? 1000 : 0,
           onRequestStart: (r) => record.append("requests", r),
           onRequest: (r) => record.append("requests", r),
         });
       }
-      const scoring = scorer ? await scorer.prepare(config) : null;
+      const scoring = scorer
+        ? await (config.objective === "xent_game"
+            ? scorer.prepareGame(config)
+            : scorer.prepare(config))
+        : null;
       const metadata = await api.prepare(config);
       if (scoring) metadata.scoring = scoring;
       record.metadata(metadata);

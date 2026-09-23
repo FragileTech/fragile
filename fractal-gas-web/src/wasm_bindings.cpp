@@ -71,6 +71,7 @@ struct FgParams {
   bool consensusPrefix = true;
   int maxHorizon = 0;
   int maxWalkers = 0;  // Graph: population cap, 0 = console default
+  int freezePrefixAfter = 0;  // Graph: 0 disables shared-prefix archiving
   float eraseCoef = 0.05f;  // Graph: visit-count decay
   int aggBlock = 5;         // Graph: visit-count pooling window (px), live
   bool visitReward = true;  // visit-count term in the reward (ablation), live
@@ -130,6 +131,9 @@ int clamp_max_walkers(const FgParams& p) {
 
 fg::FractalTreeParams to_tree_params(const FgParams& p) {
   fg::FractalTreeParams params;
+  if (p.freezePrefixAfter < 0 || p.freezePrefixAfter > 100000)
+    throw std::invalid_argument("Invalid Graph prefix threshold");
+  params.freeze_prefix_after = p.freezePrefixAfter;
   params.start_walkers = std::max(p.n, 1);
   params.min_leafs = std::max(p.n, 1);
   params.max_walkers = clamp_max_walkers(p);
@@ -310,6 +314,23 @@ emscripten::val fg_step_impl() {
     out.set("walkerParent", copy_array(g_parent));
     out.set("walkerAlive", copy_array(g_alive));
     out.set("walkerLeaf", copy_array(g_leaf));
+    if (auto* graph = dynamic_cast<fg::FractalTree*>(g_algo.get())) {
+      std::vector<float> fx, fy;
+      std::vector<int32_t> fw, fs;
+      std::vector<double> fid, fparent;
+      for (const auto& node : graph->frozen_nodes()) {
+        if (!node.prefix) continue;
+        fx.push_back(node.info.x); fy.push_back(node.info.y);
+        fw.push_back(node.info.world); fs.push_back(node.info.stage);
+        fid.push_back(static_cast<double>(node.id));
+        fparent.push_back(static_cast<double>(node.parent_id));
+      }
+      out.set("frozenX", copy_array(fx)); out.set("frozenY", copy_array(fy));
+      out.set("frozenWorld", copy_array(fw)); out.set("frozenStage", copy_array(fs));
+      out.set("frozenId", copy_array(fid)); out.set("frozenParentId", copy_array(fparent));
+      out.set("activeRootId", static_cast<double>(graph->active_root_id()));
+      out.set("activeRootParentId", static_cast<double>(graph->state().parent_ids[0]));
+    }
     if (dynamic_cast<fg::RetroFarmEnv*>(g_env.get()) != nullptr) {
       // Per-walker camera (Sonic), kept for callers that pair it by walker.
       g_tcx.resize(un); g_tcy.resize(un);
@@ -518,6 +539,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("consensusPrefix", &FgParams::consensusPrefix)
       .field("maxHorizon", &FgParams::maxHorizon)
       .field("maxWalkers", &FgParams::maxWalkers)
+      .field("freezePrefixAfter", &FgParams::freezePrefixAfter)
       .field("eraseCoef", &FgParams::eraseCoef)
       .field("aggBlock", &FgParams::aggBlock)
       .field("visitReward", &FgParams::visitReward)

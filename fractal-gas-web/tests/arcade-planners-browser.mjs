@@ -21,6 +21,12 @@ try {
     await page.waitForFunction(() => !document.getElementById("btn-start").disabled);
     assert.equal(await page.locator("#planner-settings").isVisible(), algorithm >= 2);
     assert.equal(await page.locator("#param-max-walkers-row").isVisible(), algorithm === 1);
+    assert.equal(await page.locator("#param-freeze-prefix-row").isVisible(), algorithm === 1);
+    if (algorithm === 1) {
+      await page.locator("#param-freeze-prefix").fill("1");
+      await page.locator("#param-freeze-prefix").press("Tab");
+      await page.waitForFunction(() => !document.getElementById("btn-start").disabled);
+    }
     assert.equal(await page.locator("#screen-title").textContent(), algorithm >= 2 ? "Played game" : "Best walker");
     if (algorithm === 3) {
       assert.equal(await page.locator("#param-consensus").isChecked(), true);

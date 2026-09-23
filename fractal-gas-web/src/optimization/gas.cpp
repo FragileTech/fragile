@@ -55,6 +55,7 @@ Settings::Settings(const Json& input) : json(input) {
       throw std::invalid_argument("Unknown companion strategy");
   walkers = i("walkers", 256, 2, 100000);
   max_walkers = i("max_walkers", std::max(10000, walkers), walkers, 1000000);
+  freeze_prefix_after = i("freeze_prefix_after", 0, 0, 1000000);
   seed = i("seed", 7, 0, 2147483647);
   dt_min = i("dt_min", 1, 1, 100);
   dt_max = i("dt_max", 1, dt_min, 100);
