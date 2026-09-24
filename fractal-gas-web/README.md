@@ -104,12 +104,12 @@ The demo runs two swarm algorithms behind one interface
   walkers / Erase coef appear. Maps draw the graph: thin lines join each
   node to its parent, small squares are interior nodes, dots are leaves.
   The map panel's **visits** button (Graph + Coords) shows the visit-count
-  reward like the old demo did: the level in greyscale with the 5x5-block
+  reward like the old demo did: the level in greyscale with pooled `B x B`
   visit sums (exported by `VisitGrid::export_blocks`, `getVisitBlocks` in
   the bindings) overlaid as a "fire" colormap at alpha 0.7, auto-ranged
   to the largest displayed block, never-visited blocks transparent, the
   walkers on top; `web/autotest-visits.html` checks the export. The
-  pooling window is the **Visit pooling (px)** input (default 5, the
+  pooling window is the **Visit pooling (px)** input (default 25, the
   reference's block size): counts are stored per pixel in 32x32 tiles and
   only summed over `B x B` blocks when the reward and the heatmap read
   them, so the size changes live mid-run without losing history (1 =
@@ -121,8 +121,9 @@ The demo runs two swarm algorithms behind one interface
   counted, so the heatmap stays available and switching back on keeps the
   history (the reference's `count_visits=False` disabled both). The same
   switch, pooling size, erase coefficient and heatmap are available to the
-  **Wave** as well (`FractalGasParams::visit_reward`, default OFF so the
-  default Wave is the plain fractal gas): when on, the wave multiplies
+  **Wave** as well (`FractalGasParams::visit_reward` defaults OFF for direct
+  engine callers; the browser defaults Sonic to On for every solver): when on,
+  the wave multiplies
   `relativize(-block_sum)` over all walkers into its virtual reward, the
   per-walker visit keys travelling with the walkers through cloning and
   elite injection (`WalkerState::infos`). The **Visit coef** slider in the
@@ -267,9 +268,10 @@ cmake --build build-wasm -j            # outputs web/fractal_gas.{js,wasm}
 ## Consoles
 
 The web demo runs four game setups end-to-end in wasm, selectable in the
-top bar:
+top bar. Sonic is the browser's default environment, with Coords observations,
+visit reward On, and a 25-pixel visit-pooling window:
 
-- **NES / Super Mario Bros** (nes-py core, pthread-parallel) — the default.
+- **NES / Super Mario Bros** (nes-py core, pthread-parallel).
 - **Atari 2600** (ALE core, pthread-parallel; rewards/termination come from
   ALE's built-in per-game handlers). All ALE-supported games are bundled
   under `web/roms/atari/` (copied from `ale_py/roms`, gitignored) and picked

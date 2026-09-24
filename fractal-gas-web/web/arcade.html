@@ -30,10 +30,10 @@
       <section title="All four run with bundled ROMs and pthread-parallel
 emulation. Atari defaults to Ms. Pac-Man; pick another game from its list.
 Montezuma is the Atari core with room-aware logic and the pyramid map.">
-        <div class="toggle-group" id="console-select" data-help="Which game and emulator core the swarm plays. Mario: the NES ROM. Atari: any bundled ALE game, reward = game score. Sonic: the Genesis ROM. Montezuma: Montezuma's Revenge on the Atari core with a room/x/y observation, a new-room bonus and the pyramid map. The bundled ROMs are encrypted: one password unlocks all of them (or upload your own Sonic ROM). Switching restarts the run.">
-          <button type="button" data-console="0" class="active">Mario</button>
+        <div class="toggle-group" id="console-select" data-help="Which game and emulator core the swarm plays. Sonic is the default and starts with Coords observations, visit reward On, and 25 px visit pooling. Mario: the NES ROM. Atari: any bundled ALE game, reward = game score. Montezuma: Montezuma's Revenge on the Atari core with a room/x/y observation, a new-room bonus and the pyramid map. The bundled ROMs are encrypted: one password unlocks all of them (or upload your own Sonic ROM). Switching restarts the run.">
+          <button type="button" data-console="0">Mario</button>
           <button type="button" data-console="1">Atari</button>
-          <button type="button" data-console="2">Sonic</button>
+          <button type="button" data-console="2" class="active">Sonic</button>
           <button type="button" data-console="3">Montezuma</button>
         </div>
       </section>
@@ -190,14 +190,14 @@ Changing it restarts the run.">Observation</h2>
           <input type="range" id="param-erase-coef" value="0.05" min="0" max="1" step="0.01">
         </label>
         <div id="param-visit-reward-row" hidden>
-          <h2 data-help="Coords observation on Mario, Sonic or Montezuma: ablation switch for the visit-count term of the virtual reward, available to all solvers (Graph: on by default; Wave, FMC and Jump Wave: off by default). On: walkers standing in rarely visited cells get a higher virtual reward. Off: the term is 1, so cloning is driven by distance and cumulative reward alone. Visits keep being counted either way, so the heatmap stays available and switching back on keeps the history. Applies live.">Visit reward</h2>
+          <h2 data-help="Coords observation on Mario, Sonic or Montezuma: ablation switch for the visit-count term of the virtual reward, available to all solvers. Sonic defaults to On; elsewhere Graph defaults to On and Wave, FMC and Jump Wave default to Off. On: walkers standing in rarely visited cells get a higher virtual reward. Off: the term is 1, so cloning is driven by distance and cumulative reward alone. Visits keep being counted either way, so the heatmap stays available and switching back on keeps the history. Applies live.">Visit reward</h2>
           <div class="toggle-group" id="visit-reward-select">
-            <button type="button" data-on="1">On</button>
-            <button type="button" data-on="0" class="active">Off</button>
+            <button type="button" data-on="1" class="active">On</button>
+            <button type="button" data-on="0">Off</button>
           </div>
         </div>
         <label id="param-agg-row" hidden data-help="Coords observation on Mario, Sonic or Montezuma: side, in pixels, of the square window the visit counts are sum-pooled over before entering the reward (and the visits heatmap). 1 = per-pixel novelty; large values (160 on Montezuma) make a whole room one cell. Counts are always kept per pixel, so this applies live without losing history.">Visit pooling (px)
-          <input type="number" id="param-agg-block" value="5" min="1" max="1024" step="1">
+          <input type="number" id="param-agg-block" value="25" min="1" max="1024" step="1">
         </label>
         <p class="hint" id="graph-visits-hint" hidden>Visit counting needs the
         Coords observation on Mario, Sonic or Montezuma.</p>

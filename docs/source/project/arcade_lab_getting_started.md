@@ -10,8 +10,10 @@ story through many alternatives being tried, compared, and copied, so one lucky
 attempt becomes one part of a larger experiment.
 
 This page gets you from a checkout to a running browser demo, then makes one
-small Mario run reproducible. For the larger picture—why Wave, Graph, FMC, and
-Jump Wave show different things—see {doc}`arcade_laboratory`.
+small Mario run reproducible. The browser starts with Sonic selected in Coords
+mode; the walkthrough deliberately switches to Mario. For the larger picture—
+why Wave, Graph, FMC, and Jump Wave show different things—see
+{doc}`arcade_laboratory`.
 :::
 
 :::{figure} ../../_static/arcade_lab/arcade-overview.png
@@ -243,8 +245,9 @@ selector initializes a new run.
 We want the first experiment to be small enough to understand and specific
 enough to repeat. The important phrase is **same ROM, same settings, same
 seed**. The seed fixes the random choices made by the swarm; your processor may
-run at a different wall-clock speed from somebody else's machine. The UI starts
-with Mario, Wave, Coords, World 1, Stage 1, and seed 7. Set the values
+run at a different wall-clock speed from somebody else's machine. The browser
+starts with Sonic, Wave, Coords, and seed 7. This walkthrough deliberately
+selects Mario, Wave, and Coords, then sets World 1 and Stage 1. Set the values
 explicitly so the experiment is written down and easy to recall.
 
 1. Open `/web/` and wait for the status to say **Ready - press Start**. When the
@@ -259,9 +262,10 @@ explicitly so the experiment is written down and easy to recall.
    are remembered by the browser. Record the effective worker count displayed
    for your machine.
 4. In the Mario Coords controls, set **Visit reward** to **Off**, **Visit
-   pooling (px)** to `5`, **Erase coef** to `0.05`, and **Visit coef** to `1.0`.
-   Wave starts with this setting Off; naming it here matters because the visit
-   term changes the selection signal while the game remains the same.
+   pooling (px)** to `25`, **Erase coef** to `0.05`, and **Visit coef** to `1.0`.
+   This explicitly overrides Sonic's default Visit reward of On. Pooling starts
+   at `25` px for every console; naming it here keeps the experiment easy to
+   reproduce. Wave defaults Visit reward to Off outside Sonic.
 5. Press **Start**. Wave advances every walker, updates the screen of the
    leading walker, draws the swarm on **Level map — swarm**, and fills the
    cumulative-reward, virtual-reward, clone, alive, and frame-skip plots.
@@ -354,11 +358,11 @@ game state remains in place. For Wave and Graph, the existing swarm continues
 and uses the new live values on subsequent iterations.
 
 The Graph has a special vocabulary: the Swarm number is shown as **Leaves
-(start = min leaves)**, and **Max walkers** is its node cap. Graph also turns
-visit counting on by default in Coords mode for games with maps; Wave begins
-with visit counting set to **Off** by default. These changes affect behavior, so
-switching algorithms restarts the run and resets the interpretation of the
-population.
+(start = min leaves)**, and **Max walkers** is its node cap. In Coords mode,
+Sonic defaults to Visit reward **On** for every algorithm. On other consoles,
+Graph defaults to **On**, while Wave, FMC, and Jump Wave default to **Off**.
+These changes affect behavior, so switching algorithms restarts the run and
+resets the interpretation of the population.
 :::
 
 :::{div} feynman-prose

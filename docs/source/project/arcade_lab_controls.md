@@ -154,6 +154,9 @@ Montezuma default to it; generic Atari defaults to RAM because each Atari ROM
 has its own state layout. In generic Atari, selecting Coords deliberately
 aliases RAM.
 
+Arcade Lab opens with **Sonic** selected and **Coords** active. The per-console
+defaults in the table still apply when you switch to another console.
+
 Changing the observation mode restarts the run because it changes the vector
 used for distance and the state representation allocated to every walker. RGB
 and Gray can be useful experiments, but their large vectors make the same
@@ -323,14 +326,15 @@ inactive. That makes a useful ablation possible: set the term to **Off** while
 history continues accumulating, then turn it back on with the earlier visits
 preserved.
 
-**Visit reward** is On by default for Graph and Off by default for Wave, FMC,
-and Jump Wave. On means that walkers in less-visited coordinate cells receive a
-larger visit factor in virtual reward. Off makes the visit factor neutral; the
-counters remain intact. **Visit pooling (px)** defaults to `5`, with range
-`1`–`1024`. The backend stores counts at the underlying pixel/key resolution but
-sums a square `B×B` window, where `B` is the pooling value, before using the
-count in fitness or the heatmap. A larger window makes novelty coarser; the
-per-pixel history remains intact when this setting changes.
+For Sonic, **Visit reward** defaults to On for every solver. On means that
+walkers in less-visited coordinate cells receive a larger visit factor in
+virtual reward. For other consoles, Visit reward defaults to On for Graph and
+Off for Wave, FMC, and Jump Wave. Off makes the visit factor neutral; the
+counters remain intact. **Visit pooling (px)** defaults to `25` for every
+console, with range `1`–`1024`. The backend stores counts at the underlying
+pixel/key resolution but sums a square `B×B` window, where `B` is the pooling
+value, before using the count in fitness or the heatmap. A larger window makes
+novelty coarser; the per-pixel history remains intact when this setting changes.
 
 **Erase coef** defaults to `0.05`, with range `0`–`1` in steps of `0.01`. At
 each iteration stored counts decay by this coefficient. Zero preserves stored
@@ -345,8 +349,8 @@ send the current blocks while the view is on.
 :::{div} feynman-added
 | Setting | Browser default and range | What it changes |
 |---|---|---|
-| **Visit reward** | Graph **On**; Wave/FMC/Jump Wave **Off** | Whether visit novelty affects virtual reward. Counts continue in either state. |
-| **Visit pooling (px)** | `5`; integer `1`–`1024` | Side length of the square sum-pooling window for the visit term and heatmap. |
+| **Visit reward** | Sonic: **On** for every solver; other consoles: Graph **On**, Wave/FMC/Jump Wave **Off** | Whether visit novelty affects virtual reward. Counts continue in either state. |
+| **Visit pooling (px)** | `25`; integer `1`–`1024` | Side length of the square sum-pooling window for the visit term and heatmap. |
 | **Erase coef** | `0.05`; `0`–`1`, step `0.01` | Per-iteration decay of stored visit counts. |
 :::
 
@@ -476,8 +480,9 @@ The optional visit view changes the base map to grayscale and draws pooled visit
 blocks with a fire scale. Blocks with zero recorded visits are transparent;
 walkers remain on top. This count heatmap represents recorded visits; future
 prediction belongs to a separate model. It can be viewed for any solver that is
-counting visits in Coords mode,
-although Graph is the solver for which the visit term is enabled by default.
+counting visits in Coords mode. For Sonic, the visit term is enabled by default
+for every solver; on other consoles, Graph is the solver for which it is enabled
+by default.
 :::
 
 :::{div} feynman-added

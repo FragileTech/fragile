@@ -732,18 +732,18 @@ let running = false;
 // and Montezuma; generic Atari has no coords tuple (its mode 3 aliases the
 // 128-byte RAM), so it defaults to RAM.
 const OBS_DEFAULTS = { 0: 3, 1: 0, 2: 3, 3: 3 };
-let obsMode = OBS_DEFAULTS[0]; // 0=RAM, 1=RGB, 2=Gray, 3=Coords
+let obsMode = OBS_DEFAULTS[2]; // 0=RAM, 1=RGB, 2=Gray, 3=Coords
 // UI console ids: 0=NES Mario, 1=Atari (any ALE game), 2=Genesis Sonic,
 // 3=Montezuma's Revenge (C++ sees Atari console 1 with game 1).
-let consoleId = 0;
+let consoleId = 2;
 const genesisGame = 1; // Genesis game: Sonic
 // Algorithms: 0 = Wave, 1 = Graph, 2 = FMC, 3 = Jump Wave
 // Changing the solver restarts the run.
 let algorithm = 0;
 // Visit-count term of the virtual reward (Coords on a game with a map):
-// on by default for the Graph (the Montezuma demo's reward), off for the
-// Wave (plain fractal gas); switchable live for ablations.
-let visitReward = false;
+// on by default for Sonic and Graph; off for other solvers/environments.
+// It remains switchable live for ablations.
+let visitReward = true;
 // Graph population cap defaults per UI console (every node keeps a full
 // emulator state: Genesis blobs are MB-sized).
 const MAX_WALKERS_DEFAULT = { 0: 4000, 1: 20000, 2: 150, 3: 20000 };
@@ -973,7 +973,7 @@ function readParams() {
     maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
     freezePrefixAfter: Number($("param-freeze-prefix").value),
     eraseCoef: parseFloat($("param-erase-coef").value),
-    aggBlock: parseInt($("param-agg-block").value, 10) || 5,
+    aggBlock: parseInt($("param-agg-block").value, 10) || 25,
     visitReward,
     visitCoef: parseFloat($("param-visit-coef").value),
   };
@@ -1422,7 +1422,7 @@ function setVisitRewardUi(on) {
 function setAlgorithm(algo) {
   algorithm = algo;
   $("param-max-walkers").value = MAX_WALKERS_DEFAULT[consoleId] ?? 4000;
-  setVisitRewardUi(algo === 1);  // Graph: on (the demo's reward); Wave: off
+  setVisitRewardUi(consoleId === 2 || algo === 1);
   applyAlgoUi();
 }
 for (const btn of $("algo-select").querySelectorAll("button")) {
@@ -1573,6 +1573,7 @@ for (const btn of $("console-select").querySelectorAll("button")) {
     for (const b of $("console-select").querySelectorAll("button")) {
       b.classList.toggle("active", b === btn);
     }
+    setVisitRewardUi(consoleId === 2 || algorithm === 1);
     setObsMode(OBS_DEFAULTS[id]);
     loadConsoleAssets();
   });

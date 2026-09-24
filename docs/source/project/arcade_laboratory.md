@@ -85,7 +85,11 @@ The four buttons open four benchmark setups, each with its own state variables,
 reward signals, and map construction. The defaults are chosen to make the state
 useful to the swarm: Mario, Sonic, and Montezuma start in **Coords** mode, while
 generic Atari starts in **RAM** mode because its generic interface uses a shared
-memory representation across the game picker.
+memory representation across the game picker. The app opens on **Sonic** in
+Coords mode, with **Visit reward** On. Sonic keeps that default across the
+algorithms. On the other consoles, Visit reward defaults On for Graph and Off
+for Wave, FMC, and Jump Wave. **Visit pooling (px)** is shared across consoles
+and starts at **25**.
 :::
 
 :::{div} feynman-added
@@ -157,10 +161,10 @@ Use the short guide pages when you want to turn the picture into an experiment:
 - {doc}`arcade_lab_controls`: work through algorithms, planning, observations,
   fitness, visits, frame skips, seeds, and live reward settings.
 
-For a first session, choose Mario in Coords mode, leave Wave selected, press
-Start, and watch how the dots and plots change together. Then switch to Graph
-and ask what the retained branches reveal; after that, try a planner and notice
-the difference between searching and committing an action. That sequence makes
-the controls answer a concrete question instead of becoming a collection of
-knobs.
+The app opens on Sonic in Coords mode. To follow this Mario-based first-session
+example, explicitly choose Mario, leave Wave selected, press Start, and watch
+how the dots and plots change together. Then switch to Graph and ask what the
+retained branches reveal; after that, try a planner and notice the difference
+between searching and committing an action. That sequence makes the controls
+answer a concrete question instead of becoming a collection of knobs.
 :::
