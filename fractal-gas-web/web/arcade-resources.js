@@ -3,6 +3,9 @@ export const MiB = 1024 ** 2;
 export const GiB = 1024 ** 3;
 export const PAGE = 65536;
 export const MAIN_INITIAL = 512 * MiB;
+export const PLAYBACK_LIMIT = 256 * MiB;
+export const PLAYBACK_INITIAL = 64 * MiB;
+export const RECORDING_LIMIT = 32 * MiB;
 export const SHIM_INITIAL = 64 * MiB;
 export function resourcePlan(params, resources, hardwareConcurrency = 4) {
   const requested = resources?.workers ?? params.nThreads ?? "auto";
@@ -26,7 +29,7 @@ export function resourcePlan(params, resources, hardwareConcurrency = 4) {
   const farmWorkers = params.console === 2 ? workers : 0;
   const mainLimitBytes = Math.min(
     4 * GiB,
-    budgetBytes - farmWorkers * SHIM_INITIAL,
+    budgetBytes - PLAYBACK_LIMIT - farmWorkers * SHIM_INITIAL,
   );
   if (mainLimitBytes < MAIN_INITIAL)
     throw new Error(
@@ -35,8 +38,8 @@ export function resourcePlan(params, resources, hardwareConcurrency = 4) {
   const shimLimitBytes = farmWorkers
     ? Math.min(
         2 * GiB,
-        Math.floor((budgetBytes - mainLimitBytes) / farmWorkers / PAGE) * PAGE,
+        Math.floor((budgetBytes - PLAYBACK_LIMIT - mainLimitBytes) / farmWorkers / PAGE) * PAGE,
       )
     : 0;
-  return { workers, budgetBytes, mainLimitBytes, shimLimitBytes, farmWorkers };
+  return { workers, budgetBytes, mainLimitBytes, shimLimitBytes, farmWorkers, playbackLimitBytes: PLAYBACK_LIMIT };
 }

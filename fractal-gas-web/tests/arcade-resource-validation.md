@@ -1,5 +1,10 @@
 # Arcade resource validation
 
+These measurements describe commit `d54bd147`, before independent playback.
+The current implementation additionally reserves 256 MiB inside the selected
+budget for playback. See [independent playback validation](arcade-independent-validation.md)
+for the updated partition, concurrent workloads, and reproduction commands.
+
 ## Reproducing the checks
 
 Build `fractal_gas` and `retro_shim`, serve the project with `serve.py 8091`, and

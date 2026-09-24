@@ -604,16 +604,18 @@ The native engine receives cumulative utility explicitly, so cloning and answer 
 
 The Arcade Lab's **Walker trajectory** panel sits beside the live screen. Click
 **Best** to load the displayed leader's path, or enter a zero-based walker index
-and click **Load path**. Loading pauses the search. Use Play/Pause, the scrubber,
+and click **Load path**. Loading captures a fixed path while search continues. Use Play/Pause, the scrubber,
 previous/next state, back to start, speed, and full screen to inspect the path.
 An empty walker field selects the best walker by default.
 
 Playback shows stored transition endpoints, including the initial state; it is
 silent and runs at eight recorded states per second at 1×. These states may be
-separated by several game frames, so this is not a 60 fps video. Graph mode walks
-parent IDs through active and archived nodes and renders their existing snapshots
-without copying the entire path. Wave retains pruned action ancestry and replays
+separated by several game frames, so this is not a 60 fps video. Graph mode captures root state and actions from active and archived ancestry.
+A separate emulator replays the path independently of search updates. Wave retains pruned action ancestry and replays
 from its root snapshot. FMC/Jump Wave prepend the committed actions before the
 current search so the selected search walker's path starts at the game's initial
-state. Long Wave seeks reconstruct in cancellable batches. Starting the search
-or resetting clears the player; load the path again to inspect the updated run.
+state. Long Wave seeks reconstruct in cancellable batches. Resetting clears the player; starting search preserves it; load the path again to inspect the updated run.
+
+Playback reserves 256 MiB inside the selected combined WASM budget. Its emulator
+is created only when loading a path, starting at 64 MiB; search workers remain
+available for sampling. Recordings are bounded to 32 MiB.

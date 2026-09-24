@@ -6,6 +6,7 @@ import { resourcePlan, MAIN_INITIAL, PAGE } from "./arcade-resources.js";
 let fg = null;
 let mainMemory = null;
 let allocation = null;
+let playbackBytes = 0;
 let lastInit = null;
 let runtimeFailed = false;
 let running = false;
@@ -59,6 +60,7 @@ function disposeRuntime() {
   fg = null;
   mainMemory = null;
   allocation = null;
+  playbackBytes = 0;
   runtimeFailed = false;
 }
 
@@ -72,7 +74,7 @@ function memoryStatus() {
     emulatorBytes += Atomics.load(h, 15) * PAGE;
   }
   const mainBytes = mainMemory.buffer.byteLength;
-  return { ...allocation, mainBytes, emulatorBytes, allocatedBytes: mainBytes + emulatorBytes,
+  return { ...allocation, mainBytes, emulatorBytes, playbackBytes, allocatedBytes: mainBytes + emulatorBytes + playbackBytes,
     graphPopulationCap: fg?.maxWalkers?.() ?? 0 };
 }
 
@@ -376,24 +378,21 @@ async function handleMessage(event) {
         }
         break;
       }
-      case "trajectorySelect": {
-        running = false;
-        clearTimeout(stepTimer);
-        stepScheduled = false;
-        post("paused", {});
-        const result = fg?.selectTrajectory(msg.walker < 0 ? trajectoryBest : msg.walker) ?? { error: "Start a run first" };
-        post("trajectorySelected", { ...result, request: msg.request });
+      case "playbackMemory": {
+        if (Number.isInteger(msg.bytes) && msg.bytes >= 0 && msg.bytes <= (allocation?.playbackLimitBytes ?? 0))
+          playbackBytes = msg.bytes;
         break;
       }
-      case "trajectoryFrame": {
-        if (running) {
-          post("trajectoryFrame", { error: "Pause the search before playback", request: msg.request });
-          break;
+      case "trajectorySelect": {
+        try {
+          const result = fg?.selectTrajectory(msg.walker < 0 ? trajectoryBest : msg.walker) ?? { error: "Start a run first" };
+          const root = result.root?.buffer;
+          const actions = result.actions?.buffer;
+          post("trajectoryRecording", { ...result, root, actions, request: msg.request },
+            root && actions ? [root, actions] : []);
+        } catch (error) {
+          post("trajectoryRecording", { error: "Playback capture: " + failureMessage(error), request: msg.request });
         }
-        const result = fg?.trajectoryFrame(msg.index) ?? { error: "Start a run first" };
-        const frame = result.frame ? new Uint8ClampedArray(result.frame).buffer : null;
-        post("trajectoryFrame", { ...result, frame, index: msg.index, request: msg.request,
-          frameWidth: fg?.frameWidth(), frameHeight: fg?.frameHeight() }, frame ? [frame] : []);
         break;
       }
       case "start":

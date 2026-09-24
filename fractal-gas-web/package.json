@@ -49,10 +49,11 @@
     "test:euclidean-qft-browser": "node tests/euclidean-gas/lecture-qft-browser.mjs",
     "test:euclidean-qft-simulator": "node --test tests/euclidean-gas/qft-simulator.test.mjs",
     "test:euclidean-qft-simulator-browser": "node tests/euclidean-gas/qft-simulator-browser.mjs",
-    "test:arcade-resources": "node tests/arcade-resources.test.mjs && node tests/arcade-worker.test.mjs",
+    "test:arcade-resources": "node tests/arcade-resources.test.mjs && node tests/arcade-worker.test.mjs && node tests/playback-controller.test.mjs",
     "test:arcade-resources-browser": "node tests/arcade-resources-browser.mjs",
     "test:arcade-memory-browser": "node tests/arcade-memory-browser.mjs",
-    "test:arcade-growth-browser": "node tests/arcade-growth-browser.mjs"
+    "test:arcade-growth-browser": "node tests/arcade-growth-browser.mjs",
+    "test:arcade-independent-browser": "node tests/arcade-independent-browser.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",

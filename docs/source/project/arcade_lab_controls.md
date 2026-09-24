@@ -194,7 +194,9 @@ game at a time. **Workers** accepts **Auto** or an integer from `1` to `20`.
 Auto uses the smaller of the walker count, `20`, and the reported logical CPU
 count minus one, with at least one worker. When the browser supplies no CPU
 count, Auto assumes four CPUs. Explicit selections are also capped by the
-walker count. The resource readout shows the effective worker count.
+walker count. The resource readout shows the effective search worker count.
+Trajectory playback adds one separate worker when a path is loaded; it does not
+reduce the selected number of search workers.
 
 Sonic workers still run in synchronized waves: each takes one walker, advances
 it, and returns its result before the next wave starts. Adding workers can
@@ -202,13 +204,17 @@ reduce the number of waves, but each worker also needs its own emulator memory.
 
 **Engine memory limit** accepts `1`, `2`, `4`, or `8 GiB`, and defaults to
 `8 GiB`. It budgets the combined WebAssembly allocations of the main engine
-and Sonic emulator modules. Browser, JavaScript, and graphics memory are extra.
+and Sonic emulator modules, plus the independent playback emulator. Browser,
+JavaScript, and graphics memory are extra. The runtime first reserves `256 MiB`
+for playback, then partitions the remaining allowance among the search modules.
+That reservation applies even before a path is loaded.
 The main engine starts at `512 MiB` and grows as needed, up to its assigned
 allowance and the `4 GiB` ceiling of this 32-bit build. Each Sonic emulator
 starts at `64 MiB` and can grow within its share of the budget. Selecting
 `8 GiB` therefore does not allocate eight gigabytes immediately or give the
-main engine an eight-gigabyte heap. Read allocated memory and configured limits
-separately in the resource display.
+main engine an eight-gigabyte heap. The playback emulator is created only when
+needed, starts at `64 MiB`, and can grow to its reserved `256 MiB` limit. Read
+allocated memory and configured limits separately in the resource display.
 
 Workers and the memory limit are remembered by the browser. Changing either
 rebuilds the runtime; Reset also releases the old workers and heap before
@@ -518,9 +524,11 @@ population plots are three synchronized, distinct views.
 The **Walker trajectory** panel sits beside **Best walker** or **Played game**.
 Click **Best**, or leave **Walker** empty and click **Load path**, to select the
 best search walker. To inspect another walker, enter its zero-based index and
-click **Load path**. Loading pauses the search and opens the path at its initial
-state. For FMC and Jump Wave, this selects a search walker; its path includes the
-committed game's history followed by that candidate's continuation.
+click **Load path**. Loading captures a fixed recording between search updates
+and opens it at its initial state. The search keeps its current running or
+paused state. The player identifies the selected walker and the update at which
+it was captured. For FMC and Jump Wave, this selects a search walker; its path
+includes the committed game's history followed by that candidate's continuation.
 
 | Control | Action |
 |---|---|
@@ -536,24 +544,39 @@ Each transition can span several emulator frames according to its action hold,
 so the playback speed counts recorded states, not game frames or real game time.
 Intermediate emulator frames are not displayed.
 
-Graph follows parent IDs through retained and archived nodes, including the
-frozen prefix, and renders existing emulator snapshots without copying the
-whole path. Wave reconstructs the path by replaying retained action ancestry
-from its root snapshot. The planners prepend committed actions to the current
-search path so playback begins at the game's initial state. Long Wave seeks
-reconstruct in cancellable batches and can take time to reach the requested
-state.
+Playback has its own worker and emulator for NES, Atari, and Sonic. Each
+recording owns one initial snapshot plus actions and frame counts. Graph walks
+parent IDs through retained and archived nodes, including the frozen prefix,
+to collect this recording. Wave uses retained action ancestry. The planners
+prepend committed actions to the current search path so playback begins at the
+game's initial state. All modes replay from that owned snapshot, so later
+cloning, Graph compaction, or replanning cannot change the selected path. Long
+seeks reconstruct in cancellable batches and can take time to reach the
+requested state.
 
-Starting the search again or resetting clears the player. Load a path again
-after the search advances to inspect the updated trajectory.
+Search **Start / Pause** and player **Play / Pause** operate independently.
+Starting search preserves the recording, and pausing search does not pause the
+player. The selected recording stays fixed until you click **Best** or **Load
+path** again; it does not automatically switch to a newly leading walker.
+**Reset** and settings that rebuild the runtime clear the recording and release
+the playback emulator. Playback consumes CPU, so sampling may run more slowly
+while the player is active, but viewing a path does not deliberately pause it.
+
+A recording is limited to `32 MiB`, including its initial snapshot and packed
+transition metadata. If a path exceeds that limit, loading reports an error
+without truncating the path or stopping search. A playback failure also leaves
+search running; load another path to retry. The playback emulator's allocation
+and `256 MiB` limit appear in the resource readout.
 
 (sec-arcade-lab-lifecycle)=
 ## Reset, terminal states, and reproducibility
 
 :::{div} feynman-prose
-**Start** begins the worker loop or resumes it. **Pause** stops scheduling new
-steps and preserves the current Wave population, Graph tree, planner search, or
-partly executed trajectory. **Reset** releases the old runtime and its workers,
+**Start** begins the worker loop or resumes it and preserves any selected player
+recording. **Pause** stops scheduling new search steps and preserves the current
+Wave population, Graph tree, planner search, or partly executed planner path;
+independent playback can continue. **Reset** clears the player recording and
+releases the old runtime and all search and playback workers,
 then rebuilds the active environment with the same selected settings and seed, clears the swarm/tree or planner state, clears
 visit counts, maps, plots, and readouts, and leaves the run paused. It is the
 right response to an all-dead stop or a completed committed game.

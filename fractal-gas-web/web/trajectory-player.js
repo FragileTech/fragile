@@ -1,19 +1,20 @@
 // Requests carry a generation so resets, new selections and rapid scrubbing
 // cannot paint stale frames. Only one reconstruction request is in flight.
-export function trajectoryPlayer(send) {
+export function trajectoryPlayer(send, release = () => {}) {
   const $ = id => document.getElementById(`trajectory-${id}`);
   const canvas = $("screen"), ctx = canvas.getContext("2d");
   let generation = 0, length = 0, index = 0, desired = 0, busy = false;
-  let playing = false, timer = null, walker = 0;
+  let playing = false, timer = null, walker = 0, iteration = 0;
   const controls = ["seek", "home", "prev", "play", "next"];
   function stop() { playing = false; clearTimeout(timer); $("play").textContent = "Play"; }
   function clear(available = false) {
+    release();
     stop(); generation++; length = 0; busy = false; index = desired = 0;
     for (const id of controls) $(id).disabled = true;
     $("load").disabled = $("best").disabled = !available;
     $("seek").value = $("seek").max = 0;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    $("status").textContent = "Load a path to pause the search and replay from the start.";
+    $("status").textContent = "Load a fixed path to replay while the search continues.";
   }
   function request() {
     if (busy || !length) return;
@@ -61,7 +62,7 @@ export function trajectoryPlayer(send) {
       return;
     }
     if (msg.type === "trajectorySelected") {
-      length = msg.length; walker = msg.walker;
+      length = msg.length; walker = msg.walker; iteration = msg.iteration;
       $("walker").max = Math.max(0, msg.walkerCount - 1);
       $("seek").max = Math.max(0, length - 1);
       for (const id of controls) $(id).disabled = !length;
@@ -78,7 +79,7 @@ export function trajectoryPlayer(send) {
     canvas.width = msg.frameWidth; canvas.height = msg.frameHeight;
     ctx.putImageData(new ImageData(new Uint8ClampedArray(msg.frame), canvas.width, canvas.height), 0, 0);
     $("seek").value = index;
-    $("status").textContent = `Walker ${walker} · state ${index + 1} / ${length} · search paused`;
+    $("status").textContent = `Walker ${walker} · state ${index + 1} / ${length} · captured at update ${iteration}`;
     if (playing && index < length - 1)
       timer = setTimeout(() => seek(index + 1), 1000 / Number($("speed").value));
     else if (playing) stop();

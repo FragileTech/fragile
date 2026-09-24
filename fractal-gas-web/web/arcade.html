@@ -162,10 +162,10 @@ Changing it restarts the run.">Observation</h2>
         <label data-help="Parallel emulator slots. Auto uses the reported CPU count minus one, up to 20 and no more than the walker count. Changing this restarts the run.">Workers
           <select id="param-workers"><option value="auto">Auto</option></select>
         </label>
-        <label data-help="Combined WebAssembly memory allowance for the engine and Sonic emulators. Memory grows as needed from 512 MiB for the engine and 64 MiB per Sonic worker. The 32-bit main engine can use at most 4 GiB. Browser and graphics overhead are additional. Changing this restarts the run.">Engine memory limit
+        <label data-help="Combined WebAssembly memory allowance for search and playback. Reserves 256 MiB for one independent playback emulator, created only when a path is loaded. Memory grows as needed from 512 MiB for the engine and 64 MiB per Sonic worker. The 32-bit main engine can use at most 4 GiB. Browser and graphics overhead are additional. Changing this restarts the run.">Engine memory limit
           <select id="param-memory"><option value="1">1 GiB</option><option value="2">2 GiB</option><option value="4">4 GiB</option><option value="8" selected>8 GiB</option></select>
         </label>
-        <p class="hint" id="resource-hint" aria-live="polite">Memory grows as needed. Main engine maximum: 4 GiB.</p>
+        <p class="hint" id="resource-hint" aria-live="polite">Memory grows as needed. Main engine maximum: 4 GiB; playback allowance: 256 MiB.</p>
       </section>
 
       <section>
@@ -267,7 +267,7 @@ Changes apply to rewards earned from now on: reward already banked by the walker
           <label>Speed <select id="trajectory-speed" aria-label="Playback speed"><option value="2">0.25×</option><option value="4">0.5×</option><option value="8" selected>1×</option><option value="16">2×</option><option value="32">4×</option></select></label>
           <button id="trajectory-fullscreen" title="Full screen" aria-label="Full screen">⛶</button>
         </div>
-        <p id="trajectory-status" class="hint" aria-live="polite">Load a path to pause the search and replay from the start.</p>
+        <p id="trajectory-status" class="hint" aria-live="polite">Load a fixed path to replay while the search continues.</p>
         <p class="hint">Recorded states · 1× = 8 states/s · silent playback</p>
       </section>
       <div id="run-panel">

@@ -436,7 +436,7 @@ emscripten::val fg_render_walker_frame(int i) {
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
 }
 
-// Trajectory requests are serviced only while the worker is paused.
+// Capture at a search-update boundary; return owned arrays and release C++ storage.
 emscripten::val fg_select_trajectory(int walker) {
   auto out = emscripten::val::object();
   try {
@@ -445,6 +445,15 @@ emscripten::val fg_select_trajectory(int walker) {
     out.set("length", static_cast<double>(g_trajectory.size()));
     out.set("walker", g_trajectory.walker);
     out.set("walkerCount", g_algo->n_walkers());
+    out.set("iteration", g_algo->iteration_count());
+    auto root = emscripten::val::global("Uint8Array").new_(emscripten::val(
+        emscripten::typed_memory_view(g_trajectory.root.size(),
+          reinterpret_cast<const uint8_t*>(g_trajectory.root.data()))));
+    auto actions = emscripten::val::global("Int32Array").new_(emscripten::val(
+        emscripten::typed_memory_view(g_trajectory.actions.size() * 2,
+          reinterpret_cast<const int32_t*>(g_trajectory.actions.data()))));
+    out.set("root", root); out.set("actions", actions);
+    g_trajectory.clear();
   } catch (const std::exception& e) {
     g_trajectory.clear();
     out.set("error", std::string(e.what()));

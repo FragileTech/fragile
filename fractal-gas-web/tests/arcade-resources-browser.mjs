@@ -25,7 +25,7 @@ try {
       });
       await page.goto(new URL("./", base).href);
       const result = await page.evaluate(
-        async ({ obsMode, algorithm, timeoutMs }) => {
+        async ({ obsMode, algorithm, timeoutMs, withPlayback }) => {
           const worker = new Worker("worker.js", { type: "module" });
           const params = {
             n: 1000,
@@ -49,6 +49,7 @@ try {
             consensusPrefix: true,
           };
           const rom = await (await fetch("sonic.rom")).arrayBuffer();
+          const { playbackController } = await import("./playback-controller.js");
           return new Promise((resolve, reject) => {
             const begun = performance.now();
             let steps = 0,
@@ -57,19 +58,34 @@ try {
               peak = 0,
               mainPeak = 0,
               ready;
-            let activeStart = 0;
+            let activeStart = 0, playbackBytes = 0, playbackFrames = 0, playbackTimer;
+            let searchBytes = 0, playbackLength = 0;
+            const playback = playbackController({
+              sendSearch: msg => worker.postMessage(msg), config: () => ({ rom, params }),
+              memory: bytes => { playbackBytes = bytes; peak = Math.max(peak, searchBytes + bytes); },
+              receive: msg => {
+                if (msg.error) return fail(msg.error);
+                if (msg.type === "trajectorySelected") playbackLength = msg.length;
+                if (msg.type === "trajectoryFrame" && msg.ready) playbackFrames++;
+                const index = msg.type === "trajectorySelected" ? 0 : msg.ready ? (msg.index + 1) % playbackLength : msg.index;
+                playbackTimer = setTimeout(() => playback.send({ type: "trajectoryFrame", index, request: 1 }), 125);
+              },
+            });
             const timer = setTimeout(() => fail("Large run timed out"), timeoutMs);
             function fail(message) {
               clearTimeout(timer);
+              clearTimeout(playbackTimer); playback.dispose();
               worker.terminate();
               reject(new Error(message));
             }
             worker.onerror = (e) => fail(e.message);
             worker.onmessage = ({ data: m }) => {
+              if (m.type === "trajectoryRecording") playback.captured(m);
               if (m.resources) {
-                peak = Math.max(peak, m.resources.allocatedBytes);
+                searchBytes = m.resources.allocatedBytes;
+                peak = Math.max(peak, m.resources.allocatedBytes + playbackBytes);
                 mainPeak = Math.max(mainPeak, m.resources.mainBytes);
-                if (m.resources.allocatedBytes > m.resources.budgetBytes)
+                if (m.resources.allocatedBytes + playbackBytes > m.resources.budgetBytes)
                   return fail("Combined memory budget exceeded");
               }
               if (m.type === "error") return fail(m.message);
@@ -80,6 +96,7 @@ try {
               }
               if (m.type === "step") {
                 steps++;
+                if (withPlayback && steps === 1) playback.send({ type: "trajectorySelect", walker: -1, request: 1 });
                 if (steps % 10 === 0)
                   console.log(`Arcade acceptance: mode ${obsMode}, algorithm ${algorithm}, ${steps} updates, ${cycles} cycles, ${(peak / 1024 ** 3).toFixed(3)} GiB`);
                 if (priorPhase === "playing" && m.stats.phase !== "playing")
@@ -89,6 +106,8 @@ try {
                   (algorithm < 2 && steps >= 100) ||
                   (algorithm >= 2 && cycles >= 3)
                 ) {
+                  if (withPlayback && playbackFrames < 3) return;
+                  clearTimeout(playbackTimer); playback.dispose();
                   worker.postMessage({ type: "pause" });
                   const ms = performance.now() - activeStart;
                   worker.onmessage = ({ data: final }) => {
@@ -99,7 +118,7 @@ try {
                         obsMode,
                         algorithm,
                         steps,
-                        cycles,
+                        cycles, playbackFrames,
                         msPerUpdate: ms / steps,
                         peakBytes: peak,
                         mainPeakBytes: mainPeak,
@@ -117,15 +136,15 @@ try {
             worker.postMessage(
               {
                 type: "init",
-                rom,
+                rom: rom.slice(0),
                 params,
                 resources: { workers: 20, memoryGiB: 8 },
               },
-              [rom],
+              [],
             );
           });
         },
-        { obsMode, algorithm, timeoutMs: Number(process.env.ARCADE_TIMEOUT_MS || 900000) },
+        { obsMode, algorithm, timeoutMs: Number(process.env.ARCADE_TIMEOUT_MS || 900000), withPlayback: process.env.ARCADE_PLAYBACK === "1" },
       );
       assert.equal(result.ready.workers, 20);
       assert.ok(result.mainPeakBytes > 512 * 1024 ** 2);

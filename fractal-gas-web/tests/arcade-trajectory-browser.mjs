@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
-import { chromium } from "playwright";
-const browser = await chromium.launch({ headless: true, args: ["--no-sandbox"] });
+import { chromium, firefox } from "playwright";
+const engine = process.env.ARCADE_BROWSER === "firefox" ? firefox : chromium;
+const browser = await engine.launch({ headless: true, args: engine === chromium ? ["--no-sandbox"] : [] });
 try {
   const page = await browser.newPage({ viewport: { width: 1500, height: 1000 } });
   const errors = [];
   page.on("pageerror", e => errors.push(e.message));
-  await page.goto(process.env.ARCADE_TEST_URL || "http://127.0.0.1:8093/web/arcade.html");
+  await page.goto(process.env.ARCADE_TEST_URL || "http://127.0.0.1:8096/web/arcade.html");
   await page.waitForFunction(() => !document.getElementById("btn-start").disabled);
   await page.locator("#param-n").evaluate(el => { el.value = "4"; });
   for (const algorithm of (process.env.ARCADE_TEST_ALGORITHMS || "1,0,2,3").split(",").map(Number)) {
@@ -15,7 +16,7 @@ try {
     await page.waitForFunction(() => Number(document.getElementById("stat-iteration").textContent) >= 8);
     await page.locator("#trajectory-best").click();
     await page.waitForFunction(() => document.getElementById("trajectory-status").textContent.includes("state 1 /"));
-    assert.equal(await page.locator("#btn-pause").isDisabled(), true);
+    assert.equal(await page.locator("#btn-pause").isDisabled(), false);
     const iteration = await page.locator("#stat-iteration").textContent();
     const root = await page.locator("#trajectory-screen").evaluate(c => c.toDataURL());
     const max = await page.locator("#trajectory-seek").getAttribute("max");
@@ -29,14 +30,14 @@ try {
     });
     const end = await page.locator("#trajectory-screen").evaluate(c => c.toDataURL());
     assert.notEqual(end, root);
-    if (algorithm < 2) assert.equal(end, await page.locator("#screen").evaluate(c => c.toDataURL()));
+
     await page.locator("#trajectory-home").click();
     await page.waitForFunction(() => document.getElementById("trajectory-status").textContent.includes("state 1 /"));
     assert.equal(root, await page.locator("#trajectory-screen").evaluate(c => c.toDataURL()));
     await page.locator("#trajectory-play").click();
     await page.waitForFunction(() => Number(document.getElementById("trajectory-seek").value) > 0);
     if (await page.locator("#trajectory-play").textContent() === "Pause") await page.locator("#trajectory-play").click();
-    assert.equal(iteration, await page.locator("#stat-iteration").textContent());
+    await page.waitForFunction(old => Number(document.getElementById("stat-iteration").textContent) > Number(old), iteration);
     await page.locator("#trajectory-walker").fill("0");
     await page.locator("#trajectory-walker").press("Tab");
     await page.waitForFunction(() => document.getElementById("trajectory-status").textContent.includes("Walker 0 · state"));
@@ -46,8 +47,14 @@ try {
       assert.equal(live.y, replay.y, "player is beside the best walker");
       await page.screenshot({ path: "/tmp/arcade-trajectory.png", fullPage: true });
     }
+    await page.locator("#btn-pause").click();
+    await page.waitForFunction(() => !document.getElementById("btn-start").disabled);
+    await page.locator("#trajectory-best").click();
+    await page.waitForFunction(() => document.getElementById("trajectory-status").textContent.includes("state 1 /"));
+    await page.locator("#trajectory-play").click();
+    await page.waitForFunction(() => Number(document.getElementById("trajectory-seek").value) > 0);
     await page.locator("#btn-start").click();
-    assert.equal(await page.locator("#trajectory-play").isDisabled(), true);
+    assert.equal(await page.locator("#trajectory-play").isDisabled(), false);
     await page.waitForFunction(old => Number(document.getElementById("stat-iteration").textContent) > Number(old), iteration);
     await page.locator("#btn-pause").click();
     await page.locator("#btn-reset").click();

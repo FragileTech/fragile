@@ -25,3 +25,6 @@ web/lab/vendor/
 /web/llm/engine/
 
 web/llm/vendor/
+
+web/arcade_playback.js
+web/arcade_playback.wasm

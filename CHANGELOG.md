@@ -1,5 +1,7 @@
 # Changelog
 
+- Run Arcade trajectory playback in an independent emulator while sampling continues, with fixed recordings, isolated failures, and a bounded share of the combined memory budget.
+
 - Add an Arcade trajectory player with best/selected walker ancestry, scrubbing, playback controls, direct Graph snapshot rendering, and Wave/planner replay from the initial state.
 
 - Add Arcade worker selection (Auto or 1–20), persisted 1–8 GiB combined WebAssembly budgets, growing wasm32 heaps, direct donor stepping, bounded Graph history, and runtime cleanup on reset.

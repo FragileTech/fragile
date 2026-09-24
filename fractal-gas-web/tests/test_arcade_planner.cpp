@@ -274,7 +274,7 @@ TEST_CASE(arcade_trajectory_wave_replays_selected_lineage_and_preserves_populati
   CHECK(gas.state().lineage == lineage);
 }
 
-TEST_CASE(arcade_trajectory_graph_reads_stored_states_without_copying) {
+TEST_CASE(arcade_trajectory_graph_owns_actions_and_survives_reset) {
   TerminalEnv env;
   FractalTreeParams params;
   params.start_walkers = params.min_leafs = 4;
@@ -289,8 +289,18 @@ TEST_CASE(arcade_trajectory_graph_reads_stored_states_without_copying) {
     replay.select(graph, nullptr, slot);
     const auto expected = graph.trajectory(slot);
     CHECK(replay.size() == expected.size());
-    CHECK(replay.snapshots.back() == &graph.walker_state(slot));
-    for (size_t i = 0; i < expected.size(); ++i) CHECK(*replay.snapshots[i] == expected[i].state);
+    std::vector<uint8_t> frame;
+    for (size_t i = 0; i < expected.size(); ++i) {
+      while (!replay.seek(env, i, frame)) {}
+      CHECK(replay.cursor == expected[i].state);
+    }
+    if (slot == graph.n_walkers() - 1) {
+      graph.reset();
+      CHECK(replay.seek(env, 0, frame));
+      while (!replay.seek(env, replay.size() - 1, frame)) {}
+      CHECK(replay.cursor == expected.back().state);
+      break;
+    }
   }
 }
 
@@ -331,4 +341,12 @@ TEST_CASE(arcade_trajectory_long_seek_is_bounded_and_can_rewind) {
   bool rejected = false;
   try { replay.seek(env, 101, frame); } catch (const std::out_of_range&) { rejected = true; }
   CHECK(rejected);
+}
+
+TEST_CASE(arcade_recording_rejects_oversized_payload_before_allocation) {
+  bool rejected = false;
+  try { ArcadeTrajectory::check_size(ArcadeTrajectory::max_bytes, 1); }
+  catch (const std::runtime_error&) { rejected = true; }
+  CHECK(rejected);
+  ArcadeTrajectory::check_size(1024, 100);
 }

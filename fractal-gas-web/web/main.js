@@ -1,3 +1,4 @@
+import { playbackController } from "./playback-controller.js";
 import { trajectoryPlayer } from "./trajectory-player.js";
 // Main-thread UI: sidebar controls, canvas rendering of the best walker,
 // stat readouts and the five plots (mirroring the Panel dashboard panes).
@@ -715,7 +716,14 @@ window.addEventListener("resize", drawMap);
 new ResizeObserver(() => drawMap()).observe(mapResize);
 
 let worker = null;
-const trajectory = trajectoryPlayer(msg => worker?.postMessage(msg));
+let playbackConfig = null, playbackBytes = 0, searchResources = null;
+const playback = playbackController({
+  sendSearch: msg => worker?.postMessage(msg),
+  receive: msg => trajectory.receive(msg),
+  memory: bytes => { playbackBytes = bytes; worker?.postMessage({ type: "playbackMemory", bytes }); showResources(searchResources); },
+  config: () => playbackConfig,
+});
+const trajectory = trajectoryPlayer(msg => playback.send(msg), () => playback.dispose());
 let romBuffer = null;
 let auxBuffer = null; // Genesis savestate
 let initialized = false;
@@ -921,8 +929,9 @@ function readResources() {
 }
 function showResources(resources) {
   if (!resources) return;
+  searchResources = resources;
   const gib = bytes => (bytes / 1024 ** 3).toFixed(2);
-  $("resource-hint").textContent = `${resources.workers} workers · ${gib(resources.allocatedBytes)} / ${gib(resources.budgetBytes)} GiB allocated · main engine ${gib(resources.mainBytes)} / ${gib(resources.mainLimitBytes)} GiB`;
+  $("resource-hint").textContent = `${resources.workers} search workers · ${gib(resources.mainBytes + resources.emulatorBytes + playbackBytes)} / ${gib(resources.budgetBytes)} GiB allocated · main engine ${gib(resources.mainBytes)} / ${gib(resources.mainLimitBytes)} GiB · playback ${gib(playbackBytes)} / ${gib(resources.playbackLimitBytes)} GiB`;
 }
 let runRevision = 0;
 let needsReset = false;
@@ -1038,9 +1047,8 @@ function ensureWorker() {
       case "step":
         onStep(msg);
         break;
-      case "trajectorySelected":
-      case "trajectoryFrame":
-        trajectory.receive(msg);
+      case "trajectoryRecording":
+        playback.captured(msg);
         break;
       case "paused":
         running = false;
@@ -1223,6 +1231,7 @@ async function initRun(reset = false) {
   // Copy so the source buffers survive repeated inits (transfer detaches).
   const rom = romBuffer.slice(0);
   const aux = auxBuffer ? auxBuffer.slice(0) : new ArrayBuffer(0);
+  playbackConfig = { rom: romBuffer, params: readParams() };
   ensureWorker().postMessage(
     { type: "init", rom, aux, params: readParams(), resources: readResources(), reset,
       rewardWeights: readRewardWeights(consoleId) },
@@ -1309,7 +1318,6 @@ for (const id of ["param-world", "param-stage"]) {
 }
 
 $("btn-start").addEventListener("click", () => {
-  trajectory.clear(true);
   running = true;
   $("run-ended").hidden = true;
   updateButtons();

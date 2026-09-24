@@ -19,7 +19,7 @@ test("Auto uses reported CPUs, caps at twenty, and never creates idle walker slo
 test("partition enforces the combined budget with a four GiB main ceiling", () => {
   for (const memoryGiB of [1, 2, 4, 8])
     for (let workers = 1; workers <= 20; workers++) {
-      if (512 * MiB + workers * 64 * MiB > memoryGiB * GiB) {
+      if ((512 + 256) * MiB + workers * 64 * MiB > memoryGiB * GiB) {
         assert.throws(
           () => resourcePlan({ n: 1000, console: 2 }, { workers, memoryGiB }),
           /too small/,
@@ -30,7 +30,7 @@ test("partition enforces the combined budget with a four GiB main ceiling", () =
       assert.ok(p.mainLimitBytes >= 512 * MiB && p.mainLimitBytes <= 4 * GiB);
       assert.ok(p.shimLimitBytes >= 64 * MiB && p.shimLimitBytes <= 2 * GiB);
       assert.equal(p.shimLimitBytes % PAGE, 0);
-      assert.ok(p.mainLimitBytes + workers * p.shimLimitBytes <= p.budgetBytes);
+      assert.ok(p.mainLimitBytes + workers * p.shimLimitBytes + p.playbackLimitBytes <= p.budgetBytes);
     }
 });
 test("legacy callers and non-Sonic consoles get usable defaults", () => {

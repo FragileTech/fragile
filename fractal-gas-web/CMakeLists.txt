@@ -175,12 +175,23 @@ if(EMSCRIPTEN)
     LINK_FLAGS "-fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createRetroShim -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=67108864 -sMAXIMUM_MEMORY=2147483648 -sIMPORTED_MEMORY=1 -sINCOMING_MODULE_JS_API=wasmMemory,onAbort,locateFile -sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=HEAPU8,HEAP32,HEAPF32,UTF8ToString -sEXPORTED_FUNCTIONS=_malloc,_free -O3"
   )
 
+  # One execution slot, no pre-spawned pthreads and no swarm engine.
+  add_executable(arcade_playback src/arcade_playback.cpp src/nes_env.cpp
+    src/atari_env.cpp src/thread_pool.cpp src/mario_reward.cpp)
+  target_compile_options(arcade_playback PRIVATE ${WASM_FLAGS})
+  target_include_directories(arcade_playback PRIVATE src third_party/ale/src
+    ${CMAKE_BINARY_DIR}/ale-build/src/ale)
+  target_link_libraries(arcade_playback PRIVATE nes_core ale-lib)
+  set_target_properties(arcade_playback PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/web
+    LINK_FLAGS "-pthread -fexceptions --bind -sPTHREAD_POOL_SIZE=0 -sPTHREAD_POOL_SIZE_STRICT=2 -sMODULARIZE=1 -sEXPORT_ES6=1 -sENVIRONMENT=worker -sINITIAL_MEMORY=67108864 -sMAXIMUM_MEMORY=268435456 -sALLOW_MEMORY_GROWTH=1 -sIMPORTED_MEMORY=1 -sINCOMING_MODULE_JS_API=wasmMemory,onAbort,locateFile -sEXPORTED_RUNTIME_METHODS=HEAPU8 -O3")
+
   add_executable(fractal_gas
     src/wasm_bindings.cpp
     src/atari_env.cpp
     src/retro_farm_env.cpp
   )
-  add_dependencies(fractal_gas retro_shim)
+  add_dependencies(fractal_gas retro_shim arcade_playback)
   target_compile_options(fractal_gas PRIVATE ${WASM_FLAGS})
   target_include_directories(fractal_gas PRIVATE
     third_party/ale/src

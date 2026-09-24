@@ -118,8 +118,10 @@ cmake --build build-wasm -j
 :::{div} feynman-prose
 The main build produces `web/fractal_gas.js` and `web/fractal_gas.wasm`; the
 Genesis path also produces the `web/retro_shim.js` and `web/retro_shim.wasm`
-worker module. The shell finds `emcmake` and `embuilder` once the SDK
-environment is active; re-run the `source` command there to activate it.
+worker module. The `arcade_playback` target produces `web/arcade_playback.js`
+and `web/arcade_playback.wasm` for independent NES and Atari playback. The shell
+finds `emcmake` and `embuilder` once the SDK environment is active; re-run the
+`source` command there to activate it.
 :::
 
 (sec-arcade-lab-serve)=
@@ -300,7 +302,8 @@ experiment.
 new iterations while preserving the current swarm; for FMC and Jump Wave, it
 also preserves the current search or committed trajectory. **Reset** stops the
 loop, releases the old runtime and workers, and builds a fresh runtime. It then
-clears the browser's run readouts, plots, map state, and displayed frame. It keeps the selected console,
+clears the browser's run readouts, plots, map state, and displayed frame, along
+with any selected trajectory recording and its playback emulator. It keeps the selected console,
 level, algorithm, and settings, so it is the button to use after an
 all-walkers-dead stop or a completed game.
 
@@ -308,6 +311,14 @@ Wave and Graph show the leading search walker. FMC and Jump Wave show the one
 game whose actions have been committed, while their plots still describe the
 planning population. That is why the screen title changes from **Best walker**
 to **Played game** when you select a planner.
+
+To watch a complete path while the experiment continues, use **Best** or
+**Load path** in **Walker trajectory**. The player captures one fixed recording
+between search updates and replays it in a separate emulator. Its **Play /
+Pause** controls are independent of search **Start / Pause**. Starting search
+preserves the selected path; a newer best walker is loaded only when you request
+another recording. Reset or a restart-required setting clears the player.
+See {ref}`sec-arcade-lab-trajectory` for seeking, timing, and recording limits.
 :::
 
 (sec-arcade-lab-settings)=
@@ -357,9 +368,14 @@ For a larger Sonic experiment, increase **Walkers (N)** and choose up to
 workers add emulator instances. The resource readout reports the effective
 worker count and allocated WebAssembly memory alongside its limits.
 
-The default `8 GiB` limit covers the main engine and Sonic emulator modules
-together. The main engine starts at `512 MiB`, grows on demand, and cannot
-exceed `4 GiB` in this 32-bit build. Each Sonic emulator starts at `64 MiB`.
+The default `8 GiB` limit covers the main engine, Sonic emulator modules, and
+independent playback emulator together. It reserves `256 MiB` for playback
+before dividing the remainder among the search modules. The main engine starts
+at `512 MiB`, grows on demand, and cannot exceed `4 GiB` in this 32-bit build.
+Each Sonic search emulator starts at `64 MiB`. The playback emulator is created
+only when a path is loaded, starts at `64 MiB`, and grows up to `256 MiB`. It adds
+one worker beyond the selected search worker count. Watching a recording may
+reduce sampling throughput when the CPU is busy, while search continues.
 Browser, JavaScript, and graphics allocations are outside this budget. Small
 runs do not allocate the whole selected allowance. Reset releases a grown heap
 so a later small run can start small again. See

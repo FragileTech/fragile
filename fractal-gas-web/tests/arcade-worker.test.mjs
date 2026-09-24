@@ -30,7 +30,7 @@ function harness(steps) {
   vm.runInContext(source + "\nfg = __mock; loadModule = async () => { fg = __mock; };", context);
   const send = data => context.self.onmessage({ data });
   const tick = () => { const fn = scheduled.shift(); if (fn) fn(); };
-  return { messages, scheduled, configs, send, tick };
+  return { messages, scheduled, configs, send, tick, mock };
 }
 
 test("planner worker keeps running after search extinction and stops at committed game end", async () => {
@@ -93,21 +93,30 @@ test("planner errors surface from the scheduled loop and permit reset", async ()
 });
 
 
-test("trajectory selection pauses search, uses displayed best and echoes request IDs", async () => {
-  const h = harness([{ algorithm: 0, aliveCount: 4, bestWalkerIdx: 2 }]);
+test("trajectory capture preserves scheduling, resolves displayed best and echoes request IDs", async () => {
+  const h = harness([{ algorithm: 0, aliveCount: 4, bestWalkerIdx: 2 },
+    { algorithm: 0, aliveCount: 4, bestWalkerIdx: 1 }]);
   await h.send({ type: "start" }); h.tick();
   await h.send({ type: "trajectorySelect", walker: -1, request: 7 });
-  assert.equal(h.messages.at(-2).type, "paused");
-  assert.equal(h.messages.at(-1).type, "trajectorySelected");
+  assert.equal(h.messages.at(-1).type, "trajectoryRecording");
   assert.equal(h.messages.at(-1).walker, 2);
   assert.equal(h.messages.at(-1).request, 7);
+  assert.ok(!h.messages.some(m => m.type === "paused"));
+  h.tick();
+  assert.equal(h.messages.at(-1).type, "step");
+  await h.send({ type: "pause" });
+  await h.send({ type: "trajectorySelect", walker: 0, request: 8 });
   const count = h.messages.length;
   h.tick();
   assert.equal(h.messages.length, count);
-  await h.send({ type: "trajectoryFrame", index: 1, request: 8 });
-  assert.equal(h.messages.at(-1).ready, true);
-  assert.equal(h.messages.at(-1).request, 8);
-  await h.send({ type: "start" });
-  await h.send({ type: "trajectoryFrame", index: 0, request: 9 });
-  assert.match(h.messages.at(-1).error, /Pause the search/);
+});
+
+test("capture exceptions stay local and search keeps scheduling", async () => {
+  const h = harness([{ algorithm: 0, aliveCount: 4 }, { algorithm: 0, aliveCount: 4 }]);
+  await h.send({ type: "start" }); h.tick();
+  h.mock.selectTrajectory = () => { throw new Error("capture allocation refused"); };
+  await h.send({ type: "trajectorySelect", walker: 0, request: 1 });
+  assert.equal(h.messages.at(-1).type, "trajectoryRecording");
+  assert.match(h.messages.at(-1).error, /capture allocation refused/);
+  h.tick(); assert.equal(h.messages.at(-1).type, "step");
 });
