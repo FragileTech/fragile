@@ -164,6 +164,18 @@ test("fixed Unicode target, opposite signs, one shared baseline, and exact conte
   );
 });
 
+test("game selection requires a committed EOS answer", () => {
+  for (const game_mode of ["unsurprising", "surprising"]) {
+    const c = config({ game_mode });
+    const prefix = { tokens: 2, status: 0 };
+    const capped = { tokens: 6, status: 2 };
+    const uncommitted = { tokens: 2, status: 1, committed: false };
+    assert.equal(bestNode([prefix, capped, uncommitted], c), null);
+    const complete = { tokens: 4, status: 1 };
+    assert.equal(bestNode([prefix, capped, uncommitted, complete], c), complete);
+  }
+});
+
 for (const algorithm of ["wave", "graph"])
   for (const game_mode of ["unsurprising", "surprising"])
     test(`${algorithm}/${game_mode}: native scores, preserved prefixes, and offline round-trip`, async () => {
@@ -174,7 +186,13 @@ for (const algorithm of ["wave", "graph"])
       const api = {
         async generate(_c, prefix, count) {
           return parseCompletion(
-            completion("a".repeat(count), -0.3, prefix ? "stop" : "length"),
+            // Graph can retain the initial frontier for this deterministic fixture.
+            // Finish those responses directly; Wave also exercises a partial prefix.
+            completion(
+              "a".repeat(count),
+              -0.3,
+              prefix || algorithm === "graph" ? "stop" : "length",
+            ),
             count,
           );
         },
@@ -203,7 +221,7 @@ for (const algorithm of ["wave", "graph"])
                 Math.abs(w.score - objective(saved.nodes[w.node], c)) < 1e-5,
               );
         const winner = bestNode(saved.nodes, c);
-        assert.equal(winner.tokens, 4);
+        assert.equal(winner.tokens, algorithm === "graph" ? 2 : 4);
         assert.equal(winner.status, 1);
         const data = computeComparison({ kind: "recording", record: saved });
         assert.equal(data.filters.metric, "reward");

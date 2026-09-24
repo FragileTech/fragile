@@ -1,8 +1,14 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import createOptimization from "../../web/optimization/engine/optimization.mjs";
-import { NativeOptimization, frameInfo } from "../../web/optimization/native.js";
-import { Recording, importRecording } from "../../web/optimization/recording.js";
+import {
+  NativeOptimization,
+  frameInfo,
+} from "../../web/optimization/native.js";
+import {
+  Recording,
+  importRecording,
+} from "../../web/optimization/recording.js";
 
 test("optimization resizing preserves evaluations and variable-size recordings", async () => {
   const native = new NativeOptimization(await createOptimization());
@@ -67,4 +73,3 @@ test("optimization resizing preserves evaluations and variable-size recordings",
     native.dispose();
   }
 });
-
