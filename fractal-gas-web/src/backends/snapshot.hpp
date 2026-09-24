@@ -14,6 +14,12 @@ class SnapshotBackend {
   float visit_coef = 1;
   SnapshotBackend(BatchEnv& e, VisitGrid& v) : env(e), visits(v) {}
   void resize(WalkerState& s, int n) { s.states.resize(n); }
+  void reserve_copies(WalkerState& dst, const WalkerState& current, const WalkerState& elite) {
+    size_t bytes = 0;
+    for (const auto* bank : {&current, &elite})
+      for (const auto& row : bank->states) bytes = std::max(bytes, row.size());
+    for (auto& row : dst.states) row.reserve(bytes);
+  }
   void copy(const WalkerState& src, size_t i, WalkerState& dst, size_t j) {
     dst.states[j] = src.states[i];
   }

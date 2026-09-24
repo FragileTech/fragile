@@ -22,6 +22,8 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<R
       core_(backend_, action_policy_),
       state_(core_.current),
       exploration_tree_(core_.tree) {
+  if (!params_.max_walkers) params_.max_walkers = params_.N;
+  fractal::validate_population(params_.N, params_.max_walkers, params_.n_elite);
   count_visits_ = params_.count_visits && env_.has_visit_key();
   owns_rng_ = !rng;
   rng_ = rng ? std::move(rng) : std::make_unique<Mt19937Rng>(params_.seed);
@@ -33,6 +35,16 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<R
 
   kinetic_op_->dt_min = params_.dt_min;
   kinetic_op_->dt_max = params_.dt_max;
+}
+
+void FractalGas::set_population(int count, fractal::RemovalPolicy policy, bool defer) {
+  fractal::validate_population(count, params_.max_walkers, params_.n_elite);
+  if (!defer && count != state_.N) {
+    core_.resize_population(count, params_.n_elite, policy, *rng_);
+    clone_op_->diagnostics.decisions.clear();
+  }
+  params_.N = count;
+  params_.removal_policy = policy;
 }
 
 void FractalGas::reset() {

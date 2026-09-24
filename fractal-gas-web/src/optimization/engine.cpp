@@ -20,7 +20,7 @@ class ExistingSwarm final : public Algorithm {
   std::unique_ptr<SwarmAlgorithm> swarm;
   std::unique_ptr<ArcadePlanner> planner;
   Population p;
-  void update() {
+  void update(bool resized = false) {
     const int count = swarm->n_walkers();
     p.resize(count + (planner ? 1 : 0), env.b.d);
     p.has_velocity = false;
@@ -48,7 +48,7 @@ class ExistingSwarm final : public Algorithm {
         p.cloned[i] = st.will_clone[i];
       }
       if (planner) {
-        if (!planner->search_advanced()) {
+        if (resized || !planner->search_advanced()) {
           // Executing the plan leaves the search cloud unchanged.
           p.cloned[i] = 0;
           p.parent[i] = i;
@@ -72,6 +72,8 @@ class ExistingSwarm final : public Algorithm {
     if (s.algorithm == "wave" || s.planning()) {
       FractalGasParams a;
       a.N = s.walkers;
+      a.max_walkers = s.max_walkers;
+      a.removal_policy = fractal::removal_policy(s.json["removal_policy"].str("virtual_reward"));
       a.seed = s.seed;
       a.distance_metric = s.distance_metric;
       a.dist_coef = float(s.distance_coef);
@@ -127,11 +129,32 @@ class ExistingSwarm final : public Algorithm {
     }
     update();
   }
+  void set_population(int count, fractal::RemovalPolicy policy) override {
+    auto* wave = dynamic_cast<FractalGas*>(swarm.get());
+    if (!wave) throw std::invalid_argument("Graph does not support live population changes");
+    fractal::validate_population(count, s.max_walkers, s.elites, 2);
+    if (planner) planner->set_population(count, policy);
+    else wave->set_population(count, policy);
+    s.walkers = count;
+    update(true);
+  }
   const Population& population() const override { return p; }
   Json metadata() const override {
     Json result; result.kind = Json::Object;
     auto* graph = dynamic_cast<FractalTree*>(swarm.get());
-    if (!graph) return result;
+    if (!graph) {
+      const auto status = static_cast<FractalGas*>(swarm.get())->population_status();
+      Json pop; pop.kind = Json::Object;
+      pop.object["maximum"] = number(status.maximum);
+      pop.object["active"] = number(status.active);
+      pop.object["requested"] = number(status.requested);
+      pop.object["pending"].kind = Json::Boolean;
+      pop.object["pending"].number = status.pending();
+      pop.object["removal_policy"].kind = Json::String;
+      pop.object["removal_policy"].string = fractal::removal_policy_name(status.policy);
+      result.object["population"] = std::move(pop);
+      return result;
+    }
     Json frozen; frozen.kind = Json::Array;
     for (const auto& node : graph->frozen_nodes()) {
       if (!node.prefix) continue;
@@ -155,10 +178,11 @@ class ExistingSwarm final : public Algorithm {
   uint64_t evaluations() const override { return env.b.evaluations; }
   uint64_t next_evaluations_upper_bound() const override {
     if (planner && planner->execution_pending()) return 1;
-    return uint64_t(swarm->n_walkers()) +
+    return uint64_t(planner && planner->new_search_pending() ? s.walkers : swarm->n_walkers()) +
            (s.algorithm == "graph" ? std::min(s.walkers, s.max_walkers - swarm->n_walkers()) : 0);
   }
   uint64_t next_population_size() const override {
+    if (planner && planner->new_search_pending()) return uint64_t(s.walkers) + 1;
     return s.algorithm == "graph" ? std::min(s.max_walkers, swarm->n_walkers() + s.walkers) : p.n;
   }
   double objective_score(int i) const override {
@@ -254,9 +278,10 @@ std::string discovery_json() {
 }
 Session::Session(const Json& config) : benchmark(config), settings(benchmark.config) {
   // Enforce bounded allocations before native or WASM construction.
-  uint64_t count = settings.algorithm == "graph" ? settings.max_walkers : settings.walkers;
+  uint64_t count = settings.algorithm == "graph" || settings.algorithm == "wave" || settings.planning()
+                       ? settings.max_walkers : settings.walkers;
   const uint64_t state_bytes =
-      count * uint64_t(benchmark.d) * (settings.algorithm == "gas" ? 64 : 32) +
+      count * uint64_t(benchmark.d) * (settings.algorithm == "gas" || settings.algorithm == "wave" || settings.planning() ? 64 : 32) +
       (settings.algorithm == "gas" ? uint64_t(benchmark.d) * 4096 + count * 256 : 0);
   if (!settings.cma() && state_bytes > 128 * 1024 * 1024)
     throw std::invalid_argument(
@@ -309,6 +334,16 @@ std::string Session::status_json() const {
       settings.max_evaluations &&
       algorithm->next_evaluations_upper_bound() > settings.max_evaluations - benchmark.evaluations;
   return stringify(info);
+}
+void Session::set_population(int count, const std::string& policy) {
+  const auto removal = fractal::removal_policy(policy);
+  algorithm->set_population(count, removal);
+  settings.walkers = count;
+  settings.json.object["walkers"] = number(count);
+  settings.json.object["removal_policy"].kind = Json::String;
+  settings.json.object["removal_policy"].string = policy;
+  config_json = stringify(settings.json);
+  capture();
 }
 void Session::step() {
   if (algorithm->finished())

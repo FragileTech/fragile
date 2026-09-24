@@ -501,6 +501,30 @@ src/fractal/cloning.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.s
 .PHONY : src/fractal/cloning.cpp.s
 
+src/fractal/distance.o: src/fractal/distance.cpp.o
+.PHONY : src/fractal/distance.o
+
+# target to build an object file
+src/fractal/distance.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o
+.PHONY : src/fractal/distance.cpp.o
+
+src/fractal/distance.i: src/fractal/distance.cpp.i
+.PHONY : src/fractal/distance.i
+
+# target to preprocess a source file
+src/fractal/distance.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.i
+.PHONY : src/fractal/distance.cpp.i
+
+src/fractal/distance.s: src/fractal/distance.cpp.s
+.PHONY : src/fractal/distance.s
+
+# target to generate assembly for a file
+src/fractal/distance.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.s
+.PHONY : src/fractal/distance.cpp.s
+
 src/fractal/exploration_tree.o: src/fractal/exploration_tree.cpp.o
 .PHONY : src/fractal/exploration_tree.o
 
@@ -1366,6 +1390,9 @@ help:
 	@echo "... src/fractal/cloning.o"
 	@echo "... src/fractal/cloning.i"
 	@echo "... src/fractal/cloning.s"
+	@echo "... src/fractal/distance.o"
+	@echo "... src/fractal/distance.i"
+	@echo "... src/fractal/distance.s"
 	@echo "... src/fractal/exploration_tree.o"
 	@echo "... src/fractal/exploration_tree.i"
 	@echo "... src/fractal/exploration_tree.s"

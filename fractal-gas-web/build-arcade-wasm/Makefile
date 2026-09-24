@@ -250,6 +250,19 @@ retro_shim/fast:
 .PHONY : retro_shim/fast
 
 #=============================================================================
+# Target rules for targets named arcade_playback
+
+# Build rule for target.
+arcade_playback: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 arcade_playback
+.PHONY : arcade_playback
+
+# fast build rule for target.
+arcade_playback/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/build
+.PHONY : arcade_playback/fast
+
+#=============================================================================
 # Target rules for targets named fractal_gas
 
 # Build rule for target.
@@ -312,11 +325,36 @@ src/arcade_planner.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_swarm_core.dir/build.make CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.s
 .PHONY : src/arcade_planner.cpp.s
 
+src/arcade_playback.o: src/arcade_playback.cpp.o
+.PHONY : src/arcade_playback.o
+
+# target to build an object file
+src/arcade_playback.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/arcade_playback.cpp.o
+.PHONY : src/arcade_playback.cpp.o
+
+src/arcade_playback.i: src/arcade_playback.cpp.i
+.PHONY : src/arcade_playback.i
+
+# target to preprocess a source file
+src/arcade_playback.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/arcade_playback.cpp.i
+.PHONY : src/arcade_playback.cpp.i
+
+src/arcade_playback.s: src/arcade_playback.cpp.s
+.PHONY : src/arcade_playback.s
+
+# target to generate assembly for a file
+src/arcade_playback.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/arcade_playback.cpp.s
+.PHONY : src/arcade_playback.cpp.s
+
 src/atari_env.o: src/atari_env.cpp.o
 .PHONY : src/atari_env.o
 
 # target to build an object file
 src/atari_env.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/atari_env.cpp.o
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas.dir/build.make CMakeFiles/fractal_gas.dir/src/atari_env.cpp.o
 .PHONY : src/atari_env.cpp.o
 
@@ -325,6 +363,7 @@ src/atari_env.i: src/atari_env.cpp.i
 
 # target to preprocess a source file
 src/atari_env.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/atari_env.cpp.i
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas.dir/build.make CMakeFiles/fractal_gas.dir/src/atari_env.cpp.i
 .PHONY : src/atari_env.cpp.i
 
@@ -333,6 +372,7 @@ src/atari_env.s: src/atari_env.cpp.s
 
 # target to generate assembly for a file
 src/atari_env.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/atari_env.cpp.s
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas.dir/build.make CMakeFiles/fractal_gas.dir/src/atari_env.cpp.s
 .PHONY : src/atari_env.cpp.s
 
@@ -510,6 +550,7 @@ src/mario_reward.o: src/mario_reward.cpp.o
 # target to build an object file
 src/mario_reward.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/mario_reward.cpp.o
 .PHONY : src/mario_reward.cpp.o
 
 src/mario_reward.i: src/mario_reward.cpp.i
@@ -518,6 +559,7 @@ src/mario_reward.i: src/mario_reward.cpp.i
 # target to preprocess a source file
 src/mario_reward.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/mario_reward.cpp.i
 .PHONY : src/mario_reward.cpp.i
 
 src/mario_reward.s: src/mario_reward.cpp.s
@@ -526,6 +568,7 @@ src/mario_reward.s: src/mario_reward.cpp.s
 # target to generate assembly for a file
 src/mario_reward.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/mario_reward.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/mario_reward.cpp.s
 .PHONY : src/mario_reward.cpp.s
 
 src/nes_env.o: src/nes_env.cpp.o
@@ -534,6 +577,7 @@ src/nes_env.o: src/nes_env.cpp.o
 # target to build an object file
 src/nes_env.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/nes_env.cpp.o
 .PHONY : src/nes_env.cpp.o
 
 src/nes_env.i: src/nes_env.cpp.i
@@ -542,6 +586,7 @@ src/nes_env.i: src/nes_env.cpp.i
 # target to preprocess a source file
 src/nes_env.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/nes_env.cpp.i
 .PHONY : src/nes_env.cpp.i
 
 src/nes_env.s: src/nes_env.cpp.s
@@ -550,6 +595,7 @@ src/nes_env.s: src/nes_env.cpp.s
 # target to generate assembly for a file
 src/nes_env.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fractal_gas_core.dir/build.make CMakeFiles/fractal_gas_core.dir/src/nes_env.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/nes_env.cpp.s
 .PHONY : src/nes_env.cpp.s
 
 src/retro_core.o: src/retro_core.cpp.o
@@ -630,6 +676,7 @@ src/thread_pool.o: src/thread_pool.cpp.o
 # target to build an object file
 src/thread_pool.cpp.o:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/thread_pool.cpp.o
 .PHONY : src/thread_pool.cpp.o
 
 src/thread_pool.i: src/thread_pool.cpp.i
@@ -638,6 +685,7 @@ src/thread_pool.i: src/thread_pool.cpp.i
 # target to preprocess a source file
 src/thread_pool.cpp.i:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/thread_pool.cpp.i
 .PHONY : src/thread_pool.cpp.i
 
 src/thread_pool.s: src/thread_pool.cpp.s
@@ -646,6 +694,7 @@ src/thread_pool.s: src/thread_pool.cpp.s
 # target to generate assembly for a file
 src/thread_pool.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_fractal_core.dir/build.make CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/arcade_playback.dir/build.make CMakeFiles/arcade_playback.dir/src/thread_pool.cpp.s
 .PHONY : src/thread_pool.cpp.s
 
 src/walker_state.o: src/walker_state.cpp.o
@@ -976,6 +1025,7 @@ help:
 	@echo "... gpgx_core_wasm"
 	@echo "... ale"
 	@echo "... ale-lib"
+	@echo "... arcade_playback"
 	@echo "... fg_fractal_core"
 	@echo "... fg_swarm_core"
 	@echo "... fractal_gas"
@@ -985,6 +1035,9 @@ help:
 	@echo "... src/arcade_planner.o"
 	@echo "... src/arcade_planner.i"
 	@echo "... src/arcade_planner.s"
+	@echo "... src/arcade_playback.o"
+	@echo "... src/arcade_playback.i"
+	@echo "... src/arcade_playback.s"
 	@echo "... src/atari_env.o"
 	@echo "... src/atari_env.i"
 	@echo "... src/atari_env.s"

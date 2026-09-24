@@ -76,6 +76,8 @@ def _library(path: str | Path | None = None) -> ct.CDLL:
         "observe": (_I, [_P, _P, _Z]),
         "plan_begin": (_I, [_P, ct.c_char_p, _U]),
         "plan_advance": (_I, [_P]),
+        "population_status": (ct.c_char_p, [_P]),
+        "set_population": (_I, [_P, _I, ct.c_char_p, _I]),
         "plan_result": (ct.c_char_p, [_P]),
         "plan_action": (_P, [_P]),
         "wave_step": (_I, [_P]),
@@ -451,6 +453,41 @@ class ControlEngine:
     def begin_plan(self, *, seed: int = 7, **settings) -> None:
         self._planner_settings = settings.copy()
         self._check(self._lib.fgc_plan_begin(self._live(), json.dumps(settings).encode(), seed))
+
+    def population_status(self) -> dict:
+        """Return active, requested and maximum walker counts and removal policy."""
+        result = self._lib.fgc_population_status(self._live())
+        if not result:
+            raise ValueError(self._lib.fgc_error().decode())
+        return json.loads(result)
+
+    def set_population(
+        self,
+        walkers: int,
+        removal_policy: str = "virtual_reward",
+        *,
+        defer: bool = False,
+        standalone_wave: bool = False,
+    ) -> dict:
+        """Resize between iterations, or queue for the next planner search."""
+        if (
+            isinstance(walkers, bool)
+            or not isinstance(walkers, int)
+            or not 1 <= walkers <= 2147483647
+        ):
+            msg = "Walkers must be a positive integer within the engine limits"
+            raise ValueError(msg)
+        mode = -1 if standalone_wave else int(defer)
+        self._check(
+            self._lib.fgc_set_population(self._live(), walkers, removal_policy.encode(), mode)
+        )
+        result = self.population_status()
+        if not hasattr(self, "_planner_settings"):
+            self._planner_settings = {}
+        self._planner_settings.update(
+            walkers=walkers, max_walkers=result["maximum"], removal_policy=removal_policy
+        )
+        return result
 
     def advance_plan(self) -> bool:
         return bool(self._check(self._lib.fgc_plan_advance(self._live())))

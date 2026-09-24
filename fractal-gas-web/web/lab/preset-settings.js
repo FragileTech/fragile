@@ -28,5 +28,10 @@ export function presetControllerSettings(
       throw new RangeError(`Invalid preset controller default: ${key}`);
     next[key] = key === "elites" ? Math.min(value, next.walkers ?? 128) : value;
   }
+  if (next.max_walkers != null)
+    next.max_walkers =
+      settings.max_walkers === settings.walkers
+        ? next.walkers
+        : Math.max(next.max_walkers, next.walkers);
   return next;
 }

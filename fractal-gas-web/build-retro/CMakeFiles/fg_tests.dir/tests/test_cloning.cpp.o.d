@@ -215,7 +215,9 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o: \
  /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
  /usr/include/c++/15/bits/istream.tcc \
  /usr/include/c++/15/bits/sstream.tcc \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
  /usr/include/c++/15/unordered_map \

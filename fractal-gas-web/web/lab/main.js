@@ -112,7 +112,9 @@ const replay = new ReplayPanel({
     playbackDecision = undefined;
     if (lastLiveFrame) {
       currentState = lastLiveFrame.state;
-      renderer.update(currentState, lastLiveFrame.action, { discontinuity: true });
+      renderer.update(currentState, lastLiveFrame.action, {
+        discontinuity: true,
+      });
       updateFrame(lastLiveFrame);
       updateDiagnostics(lastDiagnostics);
       updateDecision(lastDiagnostics);
@@ -358,6 +360,12 @@ function applySettings(values = {}) {
     else if (node && ["INPUT", "SELECT"].includes(node.tagName))
       node.value = value;
   }
+  if (values.walkers != null)
+    $("max_walkers").value = values.max_walkers || values.walkers;
+  $("removal_policy").value = values.removal_policy || "virtual_reward";
+  $("population-controls").hidden = !["fmc", "wave-jump"].includes(
+    $("algorithm").value,
+  );
   controllerSettings.render(values);
 }
 let dismissStatusOnInteraction = false;
@@ -438,6 +446,8 @@ function draftSettings() {
     ...controllerSettings.values(),
     algorithm: $("algorithm").value || "wave-jump",
     walkers: +$("walkers").value,
+    max_walkers: +$("max_walkers").value,
+    removal_policy: $("removal_policy").value,
     horizon: +$("horizon").value,
     frames: +$("frames").value,
     seed: +$("seed").value,
@@ -549,6 +559,34 @@ function commitScene(
   };
   worker.onmessage = ({ data }) => {
     if (id !== revision) return;
+    if (data.type === "population-error") {
+      status(data.message, true);
+      applySettings(settings());
+      return;
+    }
+    if (data.type === "population") {
+      const p = data.population;
+      const changed = {
+        walkers: p.requested,
+        max_walkers: p.maximum,
+        removal_policy: p.removal_policy,
+      };
+      for (const target of [workspace.active, workspace.draft])
+        if (target) Object.assign(target.settings, changed);
+      workspace.changed();
+      $("walkers").value = p.requested;
+      $("removal_policy").value = p.removal_policy;
+      showPopulation(p);
+      replay.recording?.addPopulationChange({
+        population: p,
+        decision: data.decisions || 0,
+      });
+      lastDiagnostics = undefined;
+      playbackDecision = undefined;
+      updateDiagnostics();
+      if (!replay.active) renderer.diagnostics();
+      return;
+    }
     if (data.type === "error") {
       rewardChangePending = undefined;
       rewardSettings.setEnabled(ready);
@@ -691,6 +729,7 @@ function commitScene(
       return;
     }
     if (data.type === "diagnostics") {
+      if (data.population) showPopulation(data.population);
       status();
       playbackDecision = undefined;
       if (!replay.active) renderer.diagnostics(data.tree, data.cloud);
@@ -1169,9 +1208,35 @@ $("wave").onclick = () => {
   stop();
   worker.postMessage({ type: "wave" });
 };
+function showPopulation(p) {
+  $("population-status").textContent =
+    `${p.active} active / ${p.maximum} maximum${p.pending ? ` · ${p.requested} at next search` : ""}`;
+}
+function changePopulation() {
+  if (!$("walkers").checkValidity()) {
+    $("walkers").reportValidity();
+    return;
+  }
+  if (
+    !ready ||
+    workspace.readOnly ||
+    !["fmc", "wave-jump"].includes(settings().algorithm) ||
+    $("algorithm").value !== settings().algorithm
+  ) {
+    stageSettings();
+    return;
+  }
+  worker.postMessage({
+    type: "population",
+    walkers: Number($("walkers").value),
+    removal_policy: $("removal_policy").value,
+  });
+}
+$("walkers").onchange = changePopulation;
+$("removal_policy").onchange = changePopulation;
 for (const id of [
   "algorithm",
-  "walkers",
+  "max_walkers",
   "horizon",
   "frames",
   "seed",
@@ -1191,7 +1256,12 @@ for (const id of [
       $("elites").max = $("walkers").value;
       $("elites").value = Math.min(+$("elites").value, +$("walkers").value);
     }
-    if (id === "algorithm") controllerSettings.render();
+    if (id === "algorithm") {
+      controllerSettings.render();
+      $("population-controls").hidden = !["fmc", "wave-jump"].includes(
+        $("algorithm").value,
+      );
+    }
     stageSettings();
   };
 for (const name of [

@@ -75,7 +75,7 @@ The demo runs two swarm algorithms behind one interface
 (`src/swarm_algorithm.hpp`), selected by the sidebar's **Algorithm** toggle
 (also `fg_cli --algo wave|graph`):
 
-- **Wave** (default) — `fg::FractalGas`, the fractal gas: a fixed population
+- **Wave** (default) — `fg::FractalGas`, the fractal gas: an adjustable population
   of N walkers, every walker steps each iteration, low-fitness walkers clone
   onto high-fitness ones, elite buffer. Reference: `src/fragile/fractalai/`
   (`fractal_gas.py`, `videogames/cloning.py`, `videogames/kinetic.py`).
@@ -188,6 +188,54 @@ thread count). The distance kernel uses four independent accumulators so
 the compiler vectorizes it (`-msimd128` on wasm). Walkers travel as `dump_state()` blobs with the Mario reward
 carry (`x_last`, `time_last`) appended, so cloning a walker is a byte copy.
 
+## Live Wave populations
+
+Arcade, Optimization Lab, and Control Lab expose **Maximum walkers**, **Active
+walkers**, and **Remove worst by** for Wave, FMC, and Wave Jump. Set the maximum
+before starting. Active count and removal policy can change while running or
+paused. Graph and other controllers do not support this operation.
+
+Shrinking retains the elite bank, then the best remaining rows. Cumulative
+reward removes the lowest score for maximization and the highest raw reward
+for minimization (optimization already stores direction-adjusted scores).
+Virtual fitness always removes the minimum, using the last computed values;
+before fitness exists, cumulative reward is used. Ties retain slot order.
+Growing samples uniformly with replacement from existing alive walkers and
+elites, copies complete state and ancestry, and performs no evaluations or
+simulation steps. New clones are not donors in the same expansion.
+
+Counts must fit the initial maximum and cannot be smaller than the configured
+elite count or the application's minimum. An immediate grow with no alive
+donors is rejected. Maximum capacity is validated against existing memory
+limits, including temporary storage during replacement; it is not a request
+to simulate inactive walkers. Older configurations default the maximum to
+the initial count.
+
+Requests take effect between Wave/search iterations. Once FMC or Wave Jump
+has selected a trajectory, its execution continues and the latest requested
+count applies to the next search. Status distinguishes active and requested
+counts. A policy-only change does not resize or consume randomness.
+
+The arcade module exports `setPopulation(count, policy)` and
+`populationStatus()`. Native optimization exposes
+`fgo_set_population(handle, count, policy)` and `fgo_status` reports a
+`population` object. Control exposes `fgc_set_population(runtime, count,
+policy, defer)` and `fgc_population_status`; `defer=0` follows planner readiness,
+`1` queues for the next search, and `-1` updates standalone Wave immediately.
+Policies are `virtual_reward` (default) and `cumulative_reward`. Status contains
+`maximum`, `active`, `requested`, `removal_policy`, and `pending`.
+
+The Python `ControlEngine` provides `set_population(...)` and
+`population_status()`, with `standalone_wave=True` for standalone Wave.
+Control checkpoint version 3 saves active and queued counts, policy, and the
+maximum; version 2 remains readable. Recordings retain population-change
+metadata without adding simulation frames. Raw state pointers are invalidated
+by population mutations; browser adapters query active counts before copying.
+
+Validation: native CTest suites, `node --test tests/live-population.test.mjs`,
+and `node tests/live-population-browser.mjs` (serve the repository on localhost
+port 8097, or set `LIVE_POPULATION_TEST_URL` to its `/web/` URL).
+
 ## Build (native)
 
 ```bash
@@ -228,8 +276,8 @@ remaining queued trajectory and replans from the post-life-loss snapshot.
 search horizon** defaults to 0, meaning twice the normal horizon, capped at
 4096. An explicit maximum must be at least the normal horizon. Population,
 fitness, elite, visit, and frame-skip controls also apply to the new solvers.
-Changing live settings discards the pending plan and replans from the committed
-game. Visit history persists across replanning. Action ancestry uses pruned,
+Changing planner, reward, or action settings discards the pending plan and replans from the committed
+game. Population controls preserve an ongoing search and queue changes during trajectory execution. Visit history persists across replanning. Action ancestry uses pruned,
 bounded storage without recording pixel observations.
 
 **Pause** preserves search and trajectory progress. **Reset** and algorithm

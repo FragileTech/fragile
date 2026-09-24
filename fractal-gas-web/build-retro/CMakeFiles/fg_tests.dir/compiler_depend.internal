@@ -3,14 +3,20 @@
 
 CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_arcade_planner.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -19,6 +25,7 @@ CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp
@@ -339,6 +346,8 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_cloning.cpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp
  /home/guillem/fragile/fractal-gas-web/tests/fixtures/fixtures_generated.hpp
@@ -624,11 +633,14 @@ CMakeFiles/fg_tests.dir/tests/test_cloning.cpp.o
 
 CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_fractal_core.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
@@ -643,6 +655,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp
  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp
+ /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp
  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp
  /home/guillem/fragile/fractal-gas-web/tests/mock_env.hpp
@@ -656,6 +669,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/asm-generic/types.h
  /usr/include/c++/15/algorithm
  /usr/include/c++/15/array
+ /usr/include/c++/15/atomic
  /usr/include/c++/15/backward/auto_ptr.h
  /usr/include/c++/15/backward/binders.h
  /usr/include/c++/15/bit
@@ -672,6 +686,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/bits/basic_string.tcc
  /usr/include/c++/15/bits/char_traits.h
  /usr/include/c++/15/bits/charconv.h
+ /usr/include/c++/15/bits/chrono.h
  /usr/include/c++/15/bits/codecvt.h
  /usr/include/c++/15/bits/concept_check.h
  /usr/include/c++/15/bits/cpp_type_traits.h
@@ -707,6 +722,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/bits/ostream.h
  /usr/include/c++/15/bits/ostream.tcc
  /usr/include/c++/15/bits/ostream_insert.h
+ /usr/include/c++/15/bits/parse_numbers.h
  /usr/include/c++/15/bits/postypes.h
  /usr/include/c++/15/bits/predefined_ops.h
  /usr/include/c++/15/bits/ptr_traits.h
@@ -722,6 +738,8 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/bits/sstream.tcc
  /usr/include/c++/15/bits/std_abs.h
  /usr/include/c++/15/bits/std_function.h
+ /usr/include/c++/15/bits/std_mutex.h
+ /usr/include/c++/15/bits/std_thread.h
  /usr/include/c++/15/bits/stl_algo.h
  /usr/include/c++/15/bits/stl_algobase.h
  /usr/include/c++/15/bits/stl_bvector.h
@@ -745,7 +763,9 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/bits/streambuf_iterator.h
  /usr/include/c++/15/bits/string_view.tcc
  /usr/include/c++/15/bits/stringfwd.h
+ /usr/include/c++/15/bits/this_thread_sleep.h
  /usr/include/c++/15/bits/uniform_int_dist.h
+ /usr/include/c++/15/bits/unique_lock.h
  /usr/include/c++/15/bits/unique_ptr.h
  /usr/include/c++/15/bits/unordered_map.h
  /usr/include/c++/15/bits/uses_allocator.h
@@ -759,6 +779,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/cmath
  /usr/include/c++/15/compare
  /usr/include/c++/15/concepts
+ /usr/include/c++/15/condition_variable
  /usr/include/c++/15/cstddef
  /usr/include/c++/15/cstdint
  /usr/include/c++/15/cstdio
@@ -786,6 +807,7 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/locale
  /usr/include/c++/15/map
  /usr/include/c++/15/memory
+ /usr/include/c++/15/mutex
  /usr/include/c++/15/new
  /usr/include/c++/15/numeric
  /usr/include/c++/15/ostream
@@ -795,12 +817,14 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
  /usr/include/c++/15/pstl/glue_numeric_defs.h
  /usr/include/c++/15/pstl/pstl_config.h
  /usr/include/c++/15/random
+ /usr/include/c++/15/ratio
  /usr/include/c++/15/sstream
  /usr/include/c++/15/stdexcept
  /usr/include/c++/15/streambuf
  /usr/include/c++/15/string
  /usr/include/c++/15/string_view
  /usr/include/c++/15/system_error
+ /usr/include/c++/15/thread
  /usr/include/c++/15/tr1/bessel_function.tcc
  /usr/include/c++/15/tr1/beta_function.tcc
  /usr/include/c++/15/tr1/ell_integral.tcc
@@ -956,12 +980,15 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_core.cpp.o
 
 CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_fractal_gas.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -1288,9 +1315,12 @@ CMakeFiles/fg_tests.dir/tests/test_fractal_gas.cpp.o
 
 CMakeFiles/fg_tests.dir/tests/test_fractal_tree.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_fractal_tree.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -2016,12 +2046,15 @@ CMakeFiles/fg_tests.dir/tests/test_montezuma_logic.cpp.o
 
 CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_nes_env.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -2356,6 +2389,7 @@ CMakeFiles/fg_tests.dir/tests/test_nes_env.cpp.o
 
 CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o
  /home/guillem/fragile/fractal-gas-web/tests/test_tensor_ops.cpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp

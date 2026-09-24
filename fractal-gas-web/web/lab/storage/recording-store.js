@@ -56,6 +56,7 @@ export class StoredMotionRecording extends MotionRecording {
       length,
       segments: this.segments.filter((s) => s.frame < length),
       events: this.events.filter((e) => e.frame < length),
+      populationChanges: this.populationChanges.filter((e) => e.frame < length),
       rewardChanges: this.rewardChanges.filter((e) => e.frame < length),
       updated: Date.now(),
       storedBytes: this.storedBytes,
@@ -197,6 +198,7 @@ export class StoredMotionRecording extends MotionRecording {
     record.segments = meta.segments;
     record.events = meta.events || [];
     record.restoreRewardChanges(meta.rewardChanges);
+    record.restorePopulationChanges(meta.populationChanges);
     record.savedFull = Math.floor(meta.length / CHUNK_FRAMES);
     record.storedBytes = meta.storedBytes || 0;
     record.chunks = Array(Math.ceil(meta.length / CHUNK_FRAMES)).fill(null);

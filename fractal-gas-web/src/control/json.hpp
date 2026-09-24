@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <cstdlib>
 #include <map>
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -42,6 +44,59 @@ struct Json {
     return array;
   }
 };
+
+inline std::string json_stringify(const Json& j) {
+  std::ostringstream o;
+  o.imbue(std::locale::classic());
+  o << std::setprecision(17);
+  switch (j.kind) {
+    case Json::Null:
+      return "null";
+    case Json::Boolean:
+      return j.number ? "true" : "false";
+    case Json::Number:
+      if (!std::isfinite(j.number)) return "null";
+      o << j.number;
+      break;
+    case Json::String:
+      o << '"';
+      for (unsigned char c : j.string) {
+        if (c == '"' || c == '\\')
+          o << '\\' << c;
+        else if (c < 32)
+          o << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c)
+            << std::dec;
+        else
+          o << c;
+      }
+      o << '"';
+      break;
+    case Json::Array:
+      o << '[';
+      for (size_t i = 0; i < j.array.size(); ++i) {
+        if (i) o << ',';
+        o << json_stringify(j.array[i]);
+      }
+      o << ']';
+      break;
+    case Json::Object:
+      o << '{';
+      {
+        bool first = true;
+        for (auto& kv : j.object) {
+          if (!first) o << ',';
+          first = false;
+          Json key;
+          key.kind = Json::String;
+          key.string = kv.first;
+          o << json_stringify(key) << ':' << json_stringify(kv.second);
+        }
+      }
+      o << '}';
+      break;
+  }
+  return o.str();
+}
 
 class JsonReader {
  public:

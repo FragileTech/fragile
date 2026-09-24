@@ -21,6 +21,8 @@ const char* fgo_config(uint32_t handle);
 // The status string is borrowed until the next fgo_status call (any handle).
 const char* fgo_status(uint32_t handle);
 int fgo_step(uint32_t handle);
+// Population status is reported under status.population. No simulation/evaluation.
+int fgo_set_population(uint32_t handle, int walkers, const char* removal_policy);
 const double* fgo_snapshot(uint32_t handle);
 int fgo_snapshot_size(uint32_t handle);
 // Deterministic display sampling; noise returns its expectation without RNG

@@ -42,6 +42,9 @@ void fgc_release(void* p);
 int fgc_observe(void* p, float* out, size_t count);
 int fgc_plan_begin(void* p, const char* settings, uint32_t seed);
 int fgc_plan_advance(void* p);
+const char* fgc_population_status(void* p);
+// defer: 0 follows planner readiness, 1 queues until begin, -1 resizes standalone Wave.
+int fgc_set_population(void* p, int walkers, const char* removal_policy, int defer);
 float* fgc_plan_action(void* p);
 const char* fgc_plan_result(void* p);
 int fgc_plan_best_leaf(void* p);

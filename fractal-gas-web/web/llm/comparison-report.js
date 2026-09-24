@@ -62,7 +62,7 @@ export function createReport(source, view = {}) {
       ? source.manifest.settings.config
       : source?.record?.config;
   if (config?.objective === "xent_game")
-    view = { metric: "reward", status: "all", pool: "archive", ...view };
+    view = { metric: "reward", pool: "archive", ...view, status: "eos" };
   return {
     format: "fgllmcompare",
     version: COMPARISON_VERSION,
@@ -97,6 +97,13 @@ export function parseReport(text) {
   rejectCredentials(r);
   const source = validateSource(r.source),
     view = validateView(r.view);
+  if (
+    (source.kind === "benchmark"
+      ? source.manifest.settings.config
+      : source.record.config
+    ).objective === "xent_game"
+  )
+    view.status = "eos";
   const runs = sourceRuns(source),
     occurrences = new Map(
       runs.flatMap((run) =>

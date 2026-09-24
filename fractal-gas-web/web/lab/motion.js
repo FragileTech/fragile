@@ -59,17 +59,62 @@ export class MotionRecording {
     this.chunks = [];
     this.segments = [];
     this.rewardChanges = [];
+    this.populationChanges = [];
   }
   rewardConfiguration(frame = this.length - 1) {
     const change = this.rewardChanges.findLast((entry) => entry.frame <= frame);
-    return (
-      change || { scene: this.scene, settings: this.settings, root: this.root }
+    const base = change || {
+      scene: this.scene,
+      settings: this.settings,
+      root: this.root,
+    };
+    const population = this.populationChanges.findLast(
+      (entry) => entry.frame <= frame,
     );
+    return this.withPopulation(base, population);
+  }
+  withPopulation(base, change) {
+    if (!base || !change) return base;
+    const p = change.population;
+    return {
+      ...base,
+      settings: {
+        ...base.settings,
+        walkers: p.requested,
+        max_walkers: p.maximum,
+        removal_policy: p.removal_policy,
+      },
+    };
+  }
+  addPopulationChange(change) {
+    this.populationChanges.push(
+      structuredClone({ ...change, frame: Math.max(0, this.length - 1) }),
+    );
+  }
+  restorePopulationChanges(changes = []) {
+    if (!Array.isArray(changes)) throw new Error("Invalid population history");
+    for (const c of changes) {
+      const p = c.population;
+      if (
+        !Number.isInteger(c.frame) ||
+        c.frame < 0 ||
+        c.frame >= this.length ||
+        !p ||
+        ![p.active, p.requested, p.maximum].every(
+          (n) => Number.isInteger(n) && n > 0 && n <= 8192,
+        ) ||
+        p.active > p.maximum ||
+        p.requested > p.maximum ||
+        !["virtual_reward", "cumulative_reward"].includes(p.removal_policy)
+      )
+        throw new Error("Invalid population history");
+    }
+    this.populationChanges = structuredClone(changes);
   }
   rewardConfigurationForRoot(root, decision = Infinity) {
     const sameScene = (candidate) =>
       root.subarray(8, 16).every((v, i) => v === candidate.root[8 + i]);
-    return (
+    const base =
       this.rewardChanges.findLast(
         (change) =>
           sameScene(change) &&
@@ -77,7 +122,10 @@ export class MotionRecording {
       ) ||
       (sameScene(this)
         ? { scene: this.scene, settings: this.settings, root: this.root }
-        : undefined)
+        : undefined);
+    return this.withPopulation(
+      base,
+      this.populationChanges.findLast((entry) => entry.decision < decision),
     );
   }
   addRewardChange(change) {

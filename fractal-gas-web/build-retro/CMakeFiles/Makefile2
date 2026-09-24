@@ -472,12 +472,12 @@ CMakeFiles/fg_atari_tests.dir/all: ale-build/src/ale/CMakeFiles/ale.dir/all
 CMakeFiles/fg_atari_tests.dir/all: ale-build/src/ale/CMakeFiles/ale-lib.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=72,73 "Built target fg_atari_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=72 "Built target fg_atari_tests"
 .PHONY : CMakeFiles/fg_atari_tests.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fg_atari_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 85
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 84
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fg_atari_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : CMakeFiles/fg_atari_tests.dir/rule
@@ -489,7 +489,7 @@ fg_atari_tests: CMakeFiles/fg_atari_tests.dir/rule
 # codegen rule for target.
 CMakeFiles/fg_atari_tests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_atari_tests.dir/build.make CMakeFiles/fg_atari_tests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=72,73 "Finished codegen for target fg_atari_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=72 "Finished codegen for target fg_atari_tests"
 .PHONY : CMakeFiles/fg_atari_tests.dir/codegen
 
 # clean rule for target.
@@ -540,12 +540,12 @@ CMakeFiles/fg_retro_env.dir/all: CMakeFiles/fractal_gas_core.dir/all
 CMakeFiles/fg_retro_env.dir/all: CMakeFiles/fg_retro_core_so.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=85 "Built target fg_retro_env"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=85,86 "Built target fg_retro_env"
 .PHONY : CMakeFiles/fg_retro_env.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fg_retro_env.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 13
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 14
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fg_retro_env.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : CMakeFiles/fg_retro_env.dir/rule
@@ -557,7 +557,7 @@ fg_retro_env: CMakeFiles/fg_retro_env.dir/rule
 # codegen rule for target.
 CMakeFiles/fg_retro_env.dir/codegen: CMakeFiles/fg_retro_core_so.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_env.dir/build.make CMakeFiles/fg_retro_env.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=85 "Finished codegen for target fg_retro_env"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=85,86 "Finished codegen for target fg_retro_env"
 .PHONY : CMakeFiles/fg_retro_env.dir/codegen
 
 # clean rule for target.
@@ -576,7 +576,7 @@ CMakeFiles/fg_retro_tests.dir/all: CMakeFiles/fractal_gas_core.dir/all
 CMakeFiles/fg_retro_tests.dir/all: CMakeFiles/fg_retro_env.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=86,87 "Built target fg_retro_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=87 "Built target fg_retro_tests"
 .PHONY : CMakeFiles/fg_retro_tests.dir/all
 
 # Build rule for subdir invocation for target.
@@ -593,7 +593,7 @@ fg_retro_tests: CMakeFiles/fg_retro_tests.dir/rule
 # codegen rule for target.
 CMakeFiles/fg_retro_tests.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_retro_tests.dir/build.make CMakeFiles/fg_retro_tests.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=86,87 "Finished codegen for target fg_retro_tests"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=87 "Finished codegen for target fg_retro_tests"
 .PHONY : CMakeFiles/fg_retro_tests.dir/codegen
 
 # clean rule for target.
@@ -611,12 +611,12 @@ CMakeFiles/fg_cli.dir/all: CMakeFiles/nes_core.dir/all
 CMakeFiles/fg_cli.dir/all: CMakeFiles/fractal_gas_core.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_cli.dir/build.make CMakeFiles/fg_cli.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_cli.dir/build.make CMakeFiles/fg_cli.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Built target fg_cli"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=73 "Built target fg_cli"
 .PHONY : CMakeFiles/fg_cli.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/fg_cli.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 12
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 13
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/fg_cli.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : CMakeFiles/fg_cli.dir/rule
@@ -628,7 +628,7 @@ fg_cli: CMakeFiles/fg_cli.dir/rule
 # codegen rule for target.
 CMakeFiles/fg_cli.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/fg_cli.dir/build.make CMakeFiles/fg_cli.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Finished codegen for target fg_cli"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=73 "Finished codegen for target fg_cli"
 .PHONY : CMakeFiles/fg_cli.dir/codegen
 
 # clean rule for target.
@@ -678,12 +678,12 @@ CMakeFiles/fg_tests.dir/clean:
 control/CMakeFiles/fg_control_core.dir/all: CMakeFiles/fg_fractal_core.dir/all
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_core.dir/build.make control/CMakeFiles/fg_control_core.dir/depend
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_core.dir/build.make control/CMakeFiles/fg_control_core.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=77,78,79 "Built target fg_control_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=76,77,78,79 "Built target fg_control_core"
 .PHONY : control/CMakeFiles/fg_control_core.dir/all
 
 # Build rule for subdir invocation for target.
 control/CMakeFiles/fg_control_core.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 7
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 control/CMakeFiles/fg_control_core.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : control/CMakeFiles/fg_control_core.dir/rule
@@ -695,7 +695,7 @@ fg_control_core: control/CMakeFiles/fg_control_core.dir/rule
 # codegen rule for target.
 control/CMakeFiles/fg_control_core.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_core.dir/build.make control/CMakeFiles/fg_control_core.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=77,78,79 "Finished codegen for target fg_control_core"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=76,77,78,79 "Finished codegen for target fg_control_core"
 .PHONY : control/CMakeFiles/fg_control_core.dir/codegen
 
 # clean rule for target.
@@ -716,7 +716,7 @@ control/CMakeFiles/fg_control.dir/all: control/CMakeFiles/fg_control_core.dir/al
 
 # Build rule for subdir invocation for target.
 control/CMakeFiles/fg_control.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 control/CMakeFiles/fg_control.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : control/CMakeFiles/fg_control.dir/rule
@@ -749,7 +749,7 @@ control/CMakeFiles/fg_control_tests.dir/all: control/CMakeFiles/fg_control_core.
 
 # Build rule for subdir invocation for target.
 control/CMakeFiles/fg_control_tests.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 9
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 control/CMakeFiles/fg_control_tests.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : control/CMakeFiles/fg_control_tests.dir/rule
@@ -777,7 +777,7 @@ control/CMakeFiles/fg_control_allocations.dir/all: CMakeFiles/fg_fractal_core.di
 control/CMakeFiles/fg_control_allocations.dir/all: control/CMakeFiles/fg_control_core.dir/all
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_allocations.dir/build.make control/CMakeFiles/fg_control_allocations.dir/depend
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_allocations.dir/build.make control/CMakeFiles/fg_control_allocations.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=75 "Built target fg_control_allocations"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Built target fg_control_allocations"
 .PHONY : control/CMakeFiles/fg_control_allocations.dir/all
 
 # Build rule for subdir invocation for target.
@@ -794,7 +794,7 @@ fg_control_allocations: control/CMakeFiles/fg_control_allocations.dir/rule
 # codegen rule for target.
 control/CMakeFiles/fg_control_allocations.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_allocations.dir/build.make control/CMakeFiles/fg_control_allocations.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=75 "Finished codegen for target fg_control_allocations"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Finished codegen for target fg_control_allocations"
 .PHONY : control/CMakeFiles/fg_control_allocations.dir/codegen
 
 # clean rule for target.
@@ -810,12 +810,12 @@ control/CMakeFiles/fg_control_benchmark.dir/all: CMakeFiles/fg_fractal_core.dir/
 control/CMakeFiles/fg_control_benchmark.dir/all: control/CMakeFiles/fg_control_core.dir/all
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_benchmark.dir/build.make control/CMakeFiles/fg_control_benchmark.dir/depend
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_benchmark.dir/build.make control/CMakeFiles/fg_control_benchmark.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=76 "Built target fg_control_benchmark"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=75 "Built target fg_control_benchmark"
 .PHONY : control/CMakeFiles/fg_control_benchmark.dir/all
 
 # Build rule for subdir invocation for target.
 control/CMakeFiles/fg_control_benchmark.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 control/CMakeFiles/fg_control_benchmark.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : control/CMakeFiles/fg_control_benchmark.dir/rule
@@ -827,7 +827,7 @@ fg_control_benchmark: control/CMakeFiles/fg_control_benchmark.dir/rule
 # codegen rule for target.
 control/CMakeFiles/fg_control_benchmark.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_benchmark.dir/build.make control/CMakeFiles/fg_control_benchmark.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=76 "Finished codegen for target fg_control_benchmark"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=75 "Finished codegen for target fg_control_benchmark"
 .PHONY : control/CMakeFiles/fg_control_benchmark.dir/codegen
 
 # clean rule for target.
@@ -842,12 +842,12 @@ control/CMakeFiles/fg_control_benchmark.dir/clean:
 ale-build/src/ale/CMakeFiles/ale.dir/all:
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale.dir/build.make ale-build/src/ale/CMakeFiles/ale.dir/depend
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale.dir/build.make ale-build/src/ale/CMakeFiles/ale.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70 "Built target ale"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69 "Built target ale"
 .PHONY : ale-build/src/ale/CMakeFiles/ale.dir/all
 
 # Build rule for subdir invocation for target.
 ale-build/src/ale/CMakeFiles/ale.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 70
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 69
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ale-build/src/ale/CMakeFiles/ale.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles 0
 .PHONY : ale-build/src/ale/CMakeFiles/ale.dir/rule
@@ -859,7 +859,7 @@ ale: ale-build/src/ale/CMakeFiles/ale.dir/rule
 # codegen rule for target.
 ale-build/src/ale/CMakeFiles/ale.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale.dir/build.make ale-build/src/ale/CMakeFiles/ale.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70 "Finished codegen for target ale"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69 "Finished codegen for target ale"
 .PHONY : ale-build/src/ale/CMakeFiles/ale.dir/codegen
 
 # clean rule for target.
@@ -874,7 +874,7 @@ ale-build/src/ale/CMakeFiles/ale.dir/clean:
 ale-build/src/ale/CMakeFiles/ale-lib.dir/all: ale-build/src/ale/CMakeFiles/ale.dir/all
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale-lib.dir/build.make ale-build/src/ale/CMakeFiles/ale-lib.dir/depend
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale-lib.dir/build.make ale-build/src/ale/CMakeFiles/ale-lib.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Built target ale-lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=70 "Built target ale-lib"
 .PHONY : ale-build/src/ale/CMakeFiles/ale-lib.dir/all
 
 # Build rule for subdir invocation for target.
@@ -891,7 +891,7 @@ ale-lib: ale-build/src/ale/CMakeFiles/ale-lib.dir/rule
 # codegen rule for target.
 ale-build/src/ale/CMakeFiles/ale-lib.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f ale-build/src/ale/CMakeFiles/ale-lib.dir/build.make ale-build/src/ale/CMakeFiles/ale-lib.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num= "Finished codegen for target ale-lib"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=70 "Finished codegen for target ale-lib"
 .PHONY : ale-build/src/ale/CMakeFiles/ale-lib.dir/codegen
 
 # clean rule for target.

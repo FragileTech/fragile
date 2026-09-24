@@ -6,6 +6,7 @@
 #include "optimization/benchmark.hpp"
 #include "optimization/perturbation.hpp"
 #include "swarm_algorithm.hpp"
+#include "fractal/population_control.hpp"
 
 namespace fg::optimization {
 struct Settings {
@@ -47,6 +48,9 @@ class Algorithm {
   virtual Json metadata() const { return JsonReader(std::string("{}")).read(); }
   virtual Json resolved_config() const { return JsonReader(std::string("{}")).read(); }
   virtual uint64_t next_population_size() const { return population().n; }
+  virtual void set_population(int, fractal::RemovalPolicy) {
+    throw std::invalid_argument("Live population changes require Wave, FMC, or Wave Jump");
+  }
   virtual void step() = 0;
   virtual const Population& population() const = 0;
   virtual uint64_t evaluations() const = 0;
@@ -73,5 +77,6 @@ class Session {
   std::string status_json() const;
   void step();
   void capture();
+  void set_population(int count, const std::string& policy);
 };
 }  // namespace fg::optimization

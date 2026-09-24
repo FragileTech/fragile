@@ -307,8 +307,10 @@ its child's utility with that donor's value.
 For likelihood and answer-XED objectives, **Best** selects among nonempty
 finished or capped traces using the configured utility. Until one exists, the
 displayed best partial trace is selected from the greatest reached token depth
-and is labelled partial. In Xent game mode, **Best** instead considers every
-successfully scored nonempty prefix, regardless of depth or termination.
+and is labelled partial. In Xent game mode, **Best** selects only nonempty
+answers for which the model returned EOS (`status = 1`). If no such answer
+exists, the game winner and its score are unavailable; a capped or unfinished
+prefix is never reported as the winner.
 Empty roots and empty completed answers are ineligible. Wave's historical elite reinjection
 is disabled for this lab. Terminal branches are also ineligible for native
 best-walker protection, so Graph can recycle their slots. **Best** still
@@ -404,11 +406,12 @@ surprise; **Make it surprising** rewards an increase. Both games expose the
 same background and target to the player. The scoring template contains the
 background and candidate context, without the player's mode instruction.
 
-Every nonempty context within the configured sequence cap is legal, including
-copying the target or giving direct instructions. Consequently, the winning
-context is the best sampled intervention under this score. The score alone
-does not establish that the text is an original explanation or a useful answer
-to a separate question.
+Every nonempty context within the configured sequence cap can be scored,
+including text that copies the target or gives direct instructions. To win,
+the model must also finish that context with EOS. Consequently, the winning
+context is the best sampled finished intervention under this score. The score
+alone does not establish that the text is an original explanation or a useful
+answer to a separate question.
 :::
 
 :::{prf:definition} Fixed-target Xent game score
@@ -446,14 +449,17 @@ measurement. Existing **Mean XED** evaluates the generated answer with and
 without its question. A Xent game instead evaluates one fixed target while
 the generated context changes.
 
-The lab evaluates each complete candidate prefix before Wave or Graph can use
-it in cloning. The baseline is shared, and repeated identical contexts reuse
-their scoring result. Every successfully scored nonempty prefix can win,
-including unfinished prefixes and branches that later disappear from the
-population. EOS is unnecessary for a game candidate to be eligible. Identical
-contexts count once in candidate distributions. A scoring failure retains
-the generation evidence but cannot admit that unscored candidate to the
-population.
+The lab evaluates each candidate prefix before Wave or Graph can use it in
+cloning. The baseline is shared, and repeated identical contexts reuse their
+scoring result. Those intermediate scores guide the walkers, including on
+branches that later disappear from the population. For the reported winner,
+however, the prefix must be nonempty, successfully scored, and stopped by the
+model with EOS (`status = 1`). A sequence cap or token budget can cut off a
+promising prefix; its score remains in the archive for diagnosis but cannot
+win. If the run produces no eligible EOS answer, the winner and game score are
+unavailable rather than zero. Identical contexts count once in candidate
+distributions. A scoring failure retains the generation evidence but cannot
+admit that unscored candidate to the population.
 :::
 
 (sec-llm-laboratory-xent-game-benchmarks)=
@@ -465,11 +471,14 @@ benchmarks sequentially.
 They share the frozen game, judge, baseline, generation route, settings, and
 trial seeds. Each compares the selected Wave or Graph algorithm with
 independent sampling matched to its actual generated-token usage and a
-temperature-zero reference. Compare each method's best context, target
-surprise, empty-context baseline, signed utility, and best-score-so-far curve
-against generated tokens.
-The best score means the best sampled score; it does not certify a global
-optimum.
+temperature-zero reference. Compare each method's best *finished* context,
+target surprise, empty-context baseline, signed utility, and best-score-so-far
+curve against generated tokens. Each curve improves only when its method
+records an eligible EOS answer. The methods can score unfinished prefixes while
+searching, but those scores are excluded from the reported winner and score
+comparison. If a method produces no nonempty scored EOS answer, its game score
+is unavailable rather than zero. The best score means the best sampled
+finished score; it does not certify a global optimum.
 
 The pair preserves two benchmark archives, accessible through the saved
 benchmark dropdown. Retrying the pair resumes both modes automatically while
@@ -688,13 +697,18 @@ Wave population or Graph frontier slots, including clone multiplicity; Graph
 interior nodes and unused slots are excluded. For independent sampling it uses
 the latest endpoint of each trajectory. Both views appear together by default.
 
-Full-answer comparisons initially include nonempty EOS and sequence-capped
-traces, with their counts shown separately. Use EOS-only or partial filters
-when appropriate. If the current run has only partial traces, the tab shows a
-labelled partial preview. Failed and interrupted attempts are excluded from
-the main comparison; the attempt inspector exposes their preserved evidence.
-An absent baseline or missing measurement stays unavailable rather than
-appearing as zero.
+For objectives other than Xent games, full-answer comparisons initially include
+nonempty EOS and sequence-capped traces, with their counts shown separately.
+Use EOS-only or partial filters when appropriate. If such a run has only partial
+traces, the tab shows a labelled partial preview. For Xent games, the
+comparison termination filter is locked to EOS. Its winners, scores, traces,
+and distributions use only nonempty scored model-stopped answers. If none
+exist, the Xent comparison has no answer or score to report. Partial and
+capped nodes remain in the raw node archive and Analysis for diagnosis, and
+their generated work remains in the token accounting. Failed and interrupted
+attempts are excluded from the main comparison; the attempt inspector exposes
+their preserved evidence. An absent baseline or missing measurement stays
+unavailable rather than appearing as zero.
 :::
 
 (sec-llm-laboratory-benchmark-figures)=

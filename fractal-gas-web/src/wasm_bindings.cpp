@@ -91,6 +91,7 @@ struct FgParams {
 fg::FractalGasParams to_gas_params(const FgParams& p) {
   fg::FractalGasParams params;
   params.N = p.n;
+  params.max_walkers = p.maxWalkers > 0 ? p.maxWalkers : p.n;
   params.dist_coef = p.distCoef;
   params.reward_coef = p.rewardCoef;
   params.use_cumulative_reward = p.useCumulativeReward;
@@ -120,7 +121,7 @@ int population_capacity(const FgParams& p) {
   std::vector<char> state;
   std::vector<float> obs;
   g_env->reset(state, obs);
-  const uint64_t per = 2ULL * (state.size() + uint64_t(obs.size()) * 4) + 1024;
+  const uint64_t per = (p.algorithm == 1 ? 2ULL : 4ULL) * (state.size() + uint64_t(obs.size()) * 4) + 1024;
   const uint64_t reserve = (160ULL + 128ULL) * 1024 * 1024 +
       uint64_t(p.farmWorkers) * (128 + 0x200000 + 0x100000 + 0x80000 + 0x1000) +
       uint64_t(std::max(p.nElite, 0)) * 2 * (state.size() + uint64_t(obs.size()) * 4);
@@ -223,14 +224,19 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
       throw std::invalid_argument("Unknown arcade algorithm");
     if (p.n < 1 || p.dtMin < 1 || p.dtMax < p.dtMin)
       throw std::invalid_argument("Walkers and action durations must be positive; dt max must be at least dt min");
-    population_capacity(p);
+    const int capacity = population_capacity(p);
+    if (p.algorithm != 1) {
+      const int maximum = p.maxWalkers > 0 ? p.maxWalkers : p.n;
+      if (maximum < p.n || maximum > 1024 || maximum > capacity || p.nElite > p.n)
+        throw std::invalid_argument("Maximum walkers must cover active walkers and fit the engine memory limit (up to 1024)");
+    }
     g_algorithm = p.algorithm;
     if (g_algorithm == 1) {
       const fg::FractalTreeParams tp = to_tree_params(p);
       g_max_walkers = tp.max_walkers;
       g_algo = std::make_unique<fg::FractalTree>(*g_env, tp);
     } else {
-      g_max_walkers = p.n;
+      g_max_walkers = p.maxWalkers > 0 ? p.maxWalkers : p.n;
       g_algo = std::make_unique<fg::FractalGas>(*g_env, to_gas_params(p));
     }
     if (g_algorithm >= 2) {
@@ -258,6 +264,34 @@ std::string fg_last_error() { return g_last_error; }
 int fg_algorithm() { return g_algorithm; }
 int fg_max_walkers() { return g_max_walkers; }
 
+emscripten::val fg_population_status() {
+  auto* gas = dynamic_cast<fg::FractalGas*>(g_algo.get());
+  if (!gas) return emscripten::val::null();
+  const auto s = gas->population_status();
+  auto out = emscripten::val::object();
+  out.set("maximum", s.maximum);
+  out.set("active", s.active);
+  out.set("requested", s.requested);
+  out.set("removal_policy", std::string(fg::fractal::removal_policy_name(s.policy)));
+  out.set("pending", s.pending());
+  return out;
+}
+bool fg_set_population(int count, const std::string& policy) {
+  try {
+    auto* gas = dynamic_cast<fg::FractalGas*>(g_algo.get());
+    if (!gas) throw std::invalid_argument("Live population changes require Wave, FMC, or Wave Jump");
+    fg::fractal::validate_population(count, g_max_walkers, gas->params().n_elite, 2);
+    const auto removal = fg::fractal::removal_policy(policy);
+    if (g_planner) g_planner->set_population(count, removal);
+    else gas->set_population(count, removal);
+    g_trajectory.clear();
+    return true;
+  } catch (const std::exception& e) {
+    g_last_error = e.what();
+    return false;
+  }
+}
+
 template <typename T>
 emscripten::val copy_array(const std::vector<T>& v) {
   // A fresh, non-shared typed array (slice of a view into wasm memory).
@@ -270,6 +304,7 @@ emscripten::val fg_step_impl() {
   if (!g_algo) return emscripten::val::null();
   const fg::StepInfo info = g_planner ? g_planner->advance() : g_algo->step();
   emscripten::val out = emscripten::val::object();
+  out.set("population", fg_population_status());
   out.set("iteration", info.iteration);
   out.set("numCloned", info.num_cloned);
   out.set("numRevived", info.num_revived);
@@ -501,7 +536,7 @@ int fg_frame_width() { return g_env ? g_env->frame_width() : 0; }
 int fg_frame_height() { return g_env ? g_env->frame_height() : 0; }
 int fg_n_actions() { return g_env ? g_env->n_actions() : 0; }
 
-/// Live-tunable parameters. Changing N/seed/console/obsMode/level/algorithm
+/// Live-tunable parameters. Population updates use setPopulation. Changing seed/console/obsMode/level/algorithm
 /// requires fg_init again.
 void fg_set_params_impl(const FgParams& p) {
   if (!g_algo) return;
@@ -611,6 +646,8 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("lastError", &fg_last_error);
   emscripten::function("algorithm", &fg_algorithm);
   emscripten::function("maxWalkers", &fg_max_walkers);
+  emscripten::function("populationStatus", &fg_population_status);
+  emscripten::function("setPopulation", &fg_set_population);
   emscripten::function("step", &fg_step);
   emscripten::function("getBestFrame", &fg_get_best_frame);
   emscripten::function("renderWalkerFrame", &fg_render_walker_frame);

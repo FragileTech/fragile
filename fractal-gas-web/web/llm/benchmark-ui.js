@@ -98,14 +98,17 @@ export function initBenchmark({
         for (const run of runs.values()) {
           if (run.status !== "completed") continue;
           const best = bestNode(run.nodes, run.config);
-          if (!best) continue;
-          const item = document.createElement("li"),
-            score = best.game_score;
-          item.textContent = `Trial ${run.trial + 1} · ${METHOD_STYLE[run.method].label}: ${selectedScore(best, run.config).toFixed(3)} · target surprise ${(-score.conditional_logp / score.tokens).toFixed(3)} · baseline ${(-score.baseline_logp / score.tokens).toFixed(3)} nats/target token`;
-          const text = document.createElement("pre");
-          text.className = "compare-full-text";
-          text.textContent = best.text;
-          item.append(text);
+          const item = document.createElement("li");
+          if (best) {
+            const score = best.game_score;
+            item.textContent = `Trial ${run.trial + 1} · ${METHOD_STYLE[run.method].label}: ${selectedScore(best, run.config).toFixed(3)} · target surprise ${(-score.conditional_logp / score.tokens).toFixed(3)} · baseline ${(-score.baseline_logp / score.tokens).toFixed(3)} nats/target token`;
+            const text = document.createElement("pre");
+            text.className = "compare-full-text";
+            text.textContent = best.text;
+            item.append(text);
+          } else {
+            item.textContent = `Trial ${run.trial + 1} · ${METHOD_STYLE[run.method].label}: no model-finished answer`;
+          }
           items.append(item);
         }
         if (!items.childElementCount) {

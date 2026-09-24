@@ -131,11 +131,11 @@ try {
   );
   assert.equal(
     await page.locator("#best-title").textContent(),
-    "Best sampled context",
+    "Best model-finished context",
   );
   assert.match(
     await page.locator("#best-score").textContent(),
-    /unsurprising: 3.000/,
+    /Waiting for a model-finished answer/,
   );
   const downloadPromise = page.waitForEvent("download");
   await page.locator("#export").click();
@@ -165,7 +165,7 @@ try {
   );
   assert.match(
     await page.locator("#best-score").textContent(),
-    /surprising: -3.000/,
+    /Waiting for a model-finished answer/,
   );
   await page.locator("#reset").click();
   const baselinesBefore = baselineCalls;
@@ -195,11 +195,11 @@ try {
   assert.equal(await page.locator("#compare-metric").inputValue(), "reward");
   assert.equal(
     await page.locator("#compare-status-filter").inputValue(),
-    "all",
+    "eos",
   );
   assert.equal(await page.locator("#compare-pool").inputValue(), "archive");
   await page
-    .getByRole("heading", { name: "Best sampled contexts", exact: true })
+    .getByRole("heading", { name: "Best model-finished contexts", exact: true })
     .waitFor();
   await page.getByText("Best game score so far", { exact: true }).waitFor();
   assert.match(

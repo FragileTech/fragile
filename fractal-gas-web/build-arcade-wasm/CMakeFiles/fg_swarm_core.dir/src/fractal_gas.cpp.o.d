@@ -741,6 +741,20 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
   /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/emscripten.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_asm.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_js.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_types.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/version.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wget.h \
   /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
@@ -748,5 +762,6 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
   /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/population_control.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp

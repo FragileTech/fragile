@@ -268,6 +268,19 @@ self.onmessage = async ({ data }) => {
       const handlePlanner = ({ data: result, currentTarget }) => {
         if (updating || (currentTarget && currentTarget !== planner)) return;
         try {
+          if (result.type === "population-error") {
+            postMessage(result);
+            return;
+          }
+          if (result.type === "population") {
+            Object.assign(settings, {
+              walkers: result.population.requested,
+              max_walkers: result.population.maximum,
+              removal_policy: result.population.removal_policy,
+            });
+            postMessage({ ...result, decisions, tick });
+            return;
+          }
           if (result.type === "error") {
             busy = false;
             sendError(result.message);
@@ -518,7 +531,47 @@ self.onmessage = async ({ data }) => {
       );
       return;
     }
+    if (data.type === "population") {
+      try {
+        if (!["fmc", "wave-jump"].includes(settings.algorithm))
+          throw new Error("Live resizing requires Wave, FMC, or Wave Jump");
+        if (waveStarted && !busy && !trajectoryCursor) {
+          const population = engine.setPopulation(
+            data.walkers,
+            data.removal_policy,
+            -1,
+          );
+          Object.assign(settings, {
+            walkers: population.requested,
+            max_walkers: population.maximum,
+            removal_policy: population.removal_policy,
+          });
+          // Keep the controller worker's settings aligned for the next regular search.
+          planner.postMessage({
+            ...data,
+            root: engine.snapshot(),
+            seed,
+            defer: true,
+            silent: true,
+          });
+          postMessage({ type: "population", population, decisions, tick });
+        } else
+          planner.postMessage({
+            ...data,
+            root: engine.snapshot(),
+            seed,
+            defer: !!trajectoryCursor || !!pending,
+          });
+      } catch (error) {
+        postMessage({
+          type: "population-error",
+          message: String(error.message || error),
+        });
+      }
+      return;
+    }
     if (data.type === "run") {
+      if (data.value) waveStarted = false;
       if (driving) {
         driveClock.reset();
         if (!data.value) action = engine.neutralAction();
@@ -530,6 +583,7 @@ self.onmessage = async ({ data }) => {
       publish();
     }
     if (data.type === "step") {
+      waveStarted = false;
       running = false;
       single = true;
       request();
@@ -568,6 +622,7 @@ self.onmessage = async ({ data }) => {
         elapsed: engine.metrics()[15],
         decision: ++decisions,
         wave: true,
+        population: engine.populationStatus(),
       });
       action = engine.action();
       capture.capture(action, decisions, "Wave selection");

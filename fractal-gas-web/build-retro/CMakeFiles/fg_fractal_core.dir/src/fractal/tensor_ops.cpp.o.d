@@ -214,6 +214,7 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o: \
  /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
  /usr/include/c++/15/bits/istream.tcc \
  /usr/include/c++/15/bits/sstream.tcc \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
  /usr/include/c++/15/atomic /usr/include/c++/15/bits/atomic_base.h \
  /usr/include/c++/15/bits/atomic_lockfree_defines.h \

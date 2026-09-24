@@ -185,9 +185,14 @@
             <option value="realtime">Real time · fixed simulation clock</option>
           </select></label
         >
+        <div id="population-controls">
+          <label class="field">Maximum walkers<input id="max_walkers" type="number" min="1" max="8192" value="128" step="1"></label>
+          <label class="field">Remove worst by<select id="removal_policy"><option value="virtual_reward">Virtual fitness</option><option value="cumulative_reward">Cumulative reward</option></select></label>
+          <output id="population-status" aria-live="polite"></output>
+        </div>
         <div class="fields-two">
           <label class="field" data-help="Number of parallel candidate worlds evaluated per planning round. More walkers improve coverage but increase memory and computation."
-            >Walkers<input
+            >Active walkers<input
               id="walkers"
               type="number"
               min="1"

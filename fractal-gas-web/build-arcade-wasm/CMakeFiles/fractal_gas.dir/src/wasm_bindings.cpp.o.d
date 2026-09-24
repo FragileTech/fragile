@@ -721,6 +721,19 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/sstream \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/chrono \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/forward_list \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/emscripten.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_js.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_types.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/version.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wget.h \
   /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
@@ -794,8 +807,10 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: \
   /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
   /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/population_control.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp \
   /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp \

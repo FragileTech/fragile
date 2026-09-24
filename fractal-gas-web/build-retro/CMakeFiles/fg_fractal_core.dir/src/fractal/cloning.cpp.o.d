@@ -214,4 +214,6 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o: \
  /usr/include/c++/15/bits/ostream.h /usr/include/c++/15/bits/ostream.tcc \
  /usr/include/c++/15/bits/istream.tcc \
  /usr/include/c++/15/bits/sstream.tcc \
- /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp

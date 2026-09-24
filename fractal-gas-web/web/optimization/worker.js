@@ -13,6 +13,27 @@ self.onmessage = ({ data: message }) => {
       else if (message.type === "create") {
         config = engine.create(message.config);
         result = { config, frame: engine.snapshot(), status: engine.status() };
+      } else if (message.type === "setPopulation") {
+        const before = frameInfo(engine.snapshot());
+        const count = Math.max(
+          before.n,
+          message.walkers +
+            (["fmc", "wave_jump"].includes(config.algorithm) ? 1 : 0),
+        );
+        if (
+          (12 + count * before.stride) * 8 + 2048 >
+          (message.remaining ?? Infinity)
+        )
+          throw new Error("Population update exceeds the recording limit");
+        const status = engine.setPopulation(
+          message.walkers,
+          message.removal_policy,
+        );
+        Object.assign(config, {
+          walkers: message.walkers,
+          removal_policy: message.removal_policy,
+        });
+        result = { config, frame: engine.snapshot(), status };
       } else if (message.type === "step") {
         const before = frameInfo(engine.snapshot());
         const status = engine.status();
@@ -28,7 +49,8 @@ self.onmessage = ({ data: message }) => {
           config.algorithm === "graph"
             ? JSON.stringify(status).length * 2 +
               maxN * (config.dimensions * 24 + 128)
-            : config.algorithm.startsWith("cmaes_")
+            : ["wave", "fmc", "wave_jump"].includes(config.algorithm) ||
+                config.algorithm.startsWith("cmaes_")
               ? 2048
               : 0;
         if ((12 + maxN * before.stride) * 8 + metadataBytes > message.remaining)

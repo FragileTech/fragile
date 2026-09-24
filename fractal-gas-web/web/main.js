@@ -970,7 +970,8 @@ function readParams() {
     horizon: Number($("param-horizon").value),
     consensusPrefix: $("param-consensus").checked,
     maxHorizon: Number($("param-max-horizon").value),
-    maxWalkers: parseInt($("param-max-walkers").value, 10) || 0,
+    maxWalkers: parseInt($(algorithm === 1 ? "param-max-walkers" : "wave-max-walkers").value, 10) || 0,
+    removal_policy: $("removal-policy").value,
     freezePrefixAfter: Number($("param-freeze-prefix").value),
     eraseCoef: parseFloat($("param-erase-coef").value),
     aggBlock: parseInt($("param-agg-block").value, 10) || 25,
@@ -1005,7 +1006,14 @@ function ensureWorker() {
     const msg = event.data;
     showResources(msg.resources);
     switch (msg.type) {
+      case "population":
+        lastSwarm = null;
+        drawMap();
+        trajectory.clear(true);
+        showPopulation(msg.population);
+        break;
       case "ready":
+        showPopulation(msg.population);
         trajectory.clear(true);
         needsReset = false;
         initialized = true;
@@ -1155,6 +1163,7 @@ function onStep(msg) {
   }
 
   // Live population: the Graph grows, so never trust the input box.
+  showPopulation(s.population);
   const n = s.walkerCount || parseInt($("param-n").value, 10) || 48;
   if (s.searchAdvanced !== false) {
     plots.reward.append([s.maxReward, s.meanReward]);
@@ -1351,7 +1360,19 @@ for (const id of ["param-dt-min", "param-dt-max", "param-elite", "param-horizon"
     if (initialized) worker.postMessage({ type: "setParams", params: readParams() });
   });
 }
-for (const id of ["param-n", "param-seed", "param-max-walkers", "param-freeze-prefix"]) {
+function showPopulation(s) {
+  if (!s) return;
+  $("population-status").textContent = `${s.active} active / ${s.maximum} maximum${s.pending ? ` · ${s.requested} at next search` : ""}`;
+  $("param-n").max = s.maximum;
+}
+function updatePopulation() {
+  if (algorithm === 1) { if (romBuffer) initRun(); return; }
+  if (!$("param-n").checkValidity()) { $("param-n").reportValidity(); return; }
+  if (initialized) worker.postMessage({ type: "setPopulation", walkers: Number($("param-n").value), removal_policy: $("removal-policy").value });
+}
+$("param-n").addEventListener("change", updatePopulation);
+$("removal-policy").addEventListener("change", updatePopulation);
+for (const id of ["wave-max-walkers", "param-seed", "param-max-walkers", "param-freeze-prefix"]) {
   $(id).addEventListener("change", () => {
     if (romBuffer) initRun();
   });
@@ -1396,9 +1417,13 @@ function applyAlgoUi() {
   for (const b of $("algo-select").querySelectorAll("button")) {
     b.classList.toggle("active", parseInt(b.dataset.algo, 10) === algorithm);
   }
-  $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Walkers (N)";
+  $("param-n").max = graph ? 1024 : Number($("wave-max-walkers").value);
+  $("param-n-label").textContent = graph ? "Leaves (start = min leaves)" : "Active walkers";
   $("param-elite-row").hidden = graph;
   $("param-max-walkers-row").hidden = !graph;
+  $("wave-max-walkers-row").hidden = graph;
+  $("removal-policy-row").hidden = graph;
+  $("population-status").hidden = graph;
   $("param-freeze-prefix-row").hidden = !graph;
   // Visit counting is available to every solver in Coords mode on a
   // game with a map; the Graph uses the term by default, the Wave not.

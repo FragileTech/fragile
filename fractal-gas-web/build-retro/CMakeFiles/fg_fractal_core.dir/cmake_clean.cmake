@@ -1,6 +1,8 @@
 file(REMOVE_RECURSE
   "CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o"
   "CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o.d"
+  "CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o"
+  "CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o.d"
   "CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o"
   "CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o.d"
   "CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o"

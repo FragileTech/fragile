@@ -431,17 +431,21 @@ function render() {
     selected = best.id;
     render();
   };
-  $("best-title").textContent = best?.game_score
-    ? "Best sampled context"
-    : best
-      ? `Best ${state(best).toLowerCase()} trace`
-      : "Best trace";
+  $("best-title").textContent =
+    record?.config.objective === "xent_game"
+      ? "Best model-finished context"
+      : best
+        ? `Best ${state(best).toLowerCase()} trace`
+        : "Best trace";
   $("best-text").textContent =
-    best?.text || "Your best continuation will appear here.";
+    best?.text ||
+    (record?.config.objective === "xent_game"
+      ? "No model-finished context yet."
+      : "Your best continuation will appear here.");
   $("best-score").textContent = best
     ? `${objectiveLabel(record.config)}: ${number(selectedScore(best, record.config))} · ${best.tokens} tokens · total NLL ${number(-best.logp)} · mean NLL ${number(-best.logp / best.tokens)} · trace ${best.id}`
     : fields.namedItem("objective").value === "xent_game"
-      ? "Every scored nonempty context can lead. Higher game score is better."
+      ? "Waiting for a model-finished answer. Intermediate scores guide search."
       : "Finished answers are ranked by the selected objective. Before completion, compare the deepest prefixes.";
   if (best?.game_score) {
     const x = best.game_score;

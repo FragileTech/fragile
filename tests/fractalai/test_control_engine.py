@@ -392,3 +392,44 @@ def test_old_checkpoint_version_is_rejected_without_mutation(scene, library):
         with pytest.raises(ValueError, match="Unsupported checkpoint version"):
             engine.restore_checkpoint(bytes(old))
         assert engine.checkpoint() == saved
+
+
+def test_live_population_preserves_progress_and_restores_pending_count(scene, library):
+    with ControlEngine(scene, library=library) as engine:
+        engine.begin_plan(walkers=8, max_walkers=24, elites=2, horizon=3, frames=1, seed=9)
+        engine.advance_plan()
+        state = engine.serialize_states()
+        status = engine.set_population(4, "cumulative_reward")
+        assert status["active"] == 4
+        assert engine.serialize_states() == state
+        engine.set_population(20)
+        saved = engine.checkpoint()
+        engine.restore_checkpoint(saved)
+        assert engine.population_status()["active"] == 20
+        saved = engine.checkpoint()
+        with pytest.raises(ValueError):
+            engine.set_population(1)
+        assert engine.checkpoint() == saved
+        engine.plan_result()
+        engine.set_population(16)
+        pending = engine.population_status()
+        assert pending["pending"] and pending["requested"] == 16
+        saved = engine.checkpoint()
+        engine.restore_checkpoint(saved)
+        assert engine.population_status() == pending
+
+
+def test_version_two_checkpoint_remains_readable(scene, library):
+    with ControlEngine(scene, library=library) as engine:
+        engine.begin_plan(walkers=8, horizon=4, seed=8)
+        engine.advance_plan()
+        old = bytearray(engine.checkpoint())
+        # Version 3 extends the settings object; the following payload is unchanged.
+        old[4:8] = (2).to_bytes(4, "little")
+        checksum = 14695981039346656037
+        for value in old[:-8]:
+            checksum = ((checksum ^ value) * 1099511628211) & ((1 << 64) - 1)
+        old[-8:] = checksum.to_bytes(8, "little")
+        engine.restore_checkpoint(bytes(old))
+        assert engine.population_status()["active"] == 8
+        engine.advance_plan()

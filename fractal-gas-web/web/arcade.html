@@ -170,9 +170,16 @@ Changing it restarts the run.">Observation</h2>
 
       <section>
         <h2>Swarm</h2>
-        <label data-help="Wave: number of game copies run in parallel; each walker is one candidate trajectory, and the swarm explores by cloning good walkers over bad ones. Graph: the number of walkers the tree starts with and the minimum number of leaves it keeps (new leaves are added whenever fewer remain). More walkers explore more broadly per iteration, but each iteration is slower. Restarts the run."><span id="param-n-label">Walkers (N)</span>
+        <label data-help="Wave: number of game copies run in parallel; each walker is one candidate trajectory, and the swarm explores by cloning good walkers over bad ones. Graph: the number of walkers the tree starts with and the minimum number of leaves it keeps (new leaves are added whenever fewer remain). More walkers explore more broadly per iteration, but each iteration is slower. Wave, FMC, and Wave Jump support live changes within the configured maximum; Graph restarts."><span id="param-n-label">Walkers (N)</span>
           <input type="number" id="param-n" value="48" min="2" max="1024" step="1">
         </label>
+        <label id="wave-max-walkers-row">Maximum walkers
+          <input type="number" id="wave-max-walkers" value="48" min="2" max="1024" step="1">
+        </label>
+        <label id="removal-policy-row">Remove worst by
+          <select id="removal-policy"><option value="virtual_reward">Virtual fitness</option><option value="cumulative_reward">Cumulative reward</option></select>
+        </label>
+        <output id="population-status" aria-live="polite"></output>
         <label id="param-max-walkers-row" hidden data-help="Graph only: the largest number of nodes the tree may hold (every node keeps a full emulator state, so the browser's memory caps it; the effective cap is shown below). Restarts the run.">Max walkers
           <input type="number" id="param-max-walkers" value="4000" min="2" max="100000" step="1">
           <span class="hint" id="max-walkers-hint"></span>

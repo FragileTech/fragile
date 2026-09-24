@@ -34,6 +34,7 @@ export function exportRecording(scene, settings, entries, motion) {
           dt: motion.dt,
           segments: motion.segments,
           events: motion.events,
+          populationChanges: motion.populationChanges,
           rewardChanges: motion.rewardChanges.map((change) => ({
             ...change,
             root: encode(change.root),
@@ -120,6 +121,7 @@ export function importRecording(text) {
     motion.parent = m.parent;
     motion.scene = data.scene;
     motion.settings = data.settings;
+    motion.restorePopulationChanges(data.motion.populationChanges || []);
     motion.restoreRewardChanges(
       (m.rewardChanges || []).map((change) => ({
         ...change,

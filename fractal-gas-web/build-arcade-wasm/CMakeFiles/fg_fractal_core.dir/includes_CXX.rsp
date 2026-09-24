@@ -1,1 +1,1 @@
--I"/home/guillem/fragile/fractal-gas-web/src"
+-I"/home/guillem/fragile/fractal-gas-web/src" -isystem /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat

@@ -37,6 +37,7 @@ export class RunSession {
         stored.events = structuredClone(recording.events);
         stored.segments = structuredClone(recording.segments);
         stored.restoreRewardChanges(recording.rewardChanges);
+        stored.restorePopulationChanges(recording.populationChanges);
         recording = stored;
         this.attach(stored);
       }

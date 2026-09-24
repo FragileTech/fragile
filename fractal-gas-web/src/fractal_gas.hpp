@@ -22,6 +22,8 @@ namespace fg {
 
 struct FractalGasParams {
   int32_t N = 32;
+  int32_t max_walkers = 0;
+  fractal::RemovalPolicy removal_policy = fractal::RemovalPolicy::VirtualReward;
   DistanceMetric distance_metric = DistanceMetric::L2;
   float dist_coef = 1.0f;
   float reward_coef = 1.0f;
@@ -56,6 +58,10 @@ class FractalGas final : public SwarmAlgorithm {
              std::unique_ptr<FractalCloningOperator> clone_op = nullptr,
              std::unique_ptr<RandomActionOperator> kinetic_op = nullptr);
 
+  fractal::PopulationStatus population_status() const {
+    return {params_.max_walkers, state_.N, params_.N, params_.removal_policy};
+  }
+  void set_population(int count, fractal::RemovalPolicy policy, bool defer = false);
   void enable_diagnostics(bool enabled = true) { clone_op_->diagnostics.enabled = enabled; }
   const CloneDiagnostics& diagnostics() const { return clone_op_->diagnostics; }
   const FractalGasParams& params() const { return params_; }
@@ -103,6 +109,8 @@ class FractalGas final : public SwarmAlgorithm {
   bool visit_reward_on() const { return params_.visit_reward; }
 
   void set_n_elite(int32_t k) override {
+    if (k < 0 || k > std::min(params_.N, state_.N))
+      throw std::invalid_argument("Elite count exceeds active/requested walkers");
     params_.n_elite = k;
     if (k <= 0) {
       core_.has_elite = false;

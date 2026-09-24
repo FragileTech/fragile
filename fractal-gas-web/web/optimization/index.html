@@ -137,6 +137,13 @@
             Settings take effect on reset. View controls preserve the run.
           </p>
         </form>
+        <section id="live-population" hidden aria-label="Live population">
+          <h2>Live population</h2>
+          <label>Active walkers<input id="active-walkers" type="number" min="2" step="1"></label>
+          <label>Remove worst by<select id="live-removal-policy"><option value="virtual_reward">Virtual fitness</option><option value="cumulative_reward">Cumulative reward</option></select></label>
+          <button id="apply-population" type="button">Update walkers</button>
+          <output id="population-status" aria-live="polite"></output>
+        </section>
       </aside>
       <section class="workspace" aria-label="Swarm workspace">
         <div class="toolbar">

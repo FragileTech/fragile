@@ -311,6 +311,9 @@ FG_CONTROL_PROFILE:BOOL=OFF
 //Enable pthreads in the laboratory WebAssembly build
 FG_CONTROL_THREADS:BOOL=OFF
 
+//Build the standalone LLM laboratory
+FG_LLM_ONLY:BOOL=OFF
+
 //Build the standalone optimization laboratory
 FG_OPTIMIZATION_ONLY:BOOL=OFF
 

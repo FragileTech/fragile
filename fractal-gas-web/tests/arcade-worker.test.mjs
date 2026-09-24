@@ -14,6 +14,8 @@ function harness(steps) {
     frameHeight: () => 0,
     algorithm: () => 3,
     maxWalkers: () => 4,
+    populationStatus: () => ({ maximum: 4, active: 4, requested: 4, pending: false, removal_policy: "virtual_reward" }),
+    setPopulation: () => true,
     countingVisits: () => false,
     init: (_rom, _aux, params) => { configs.push(params); return true; },
     reset: () => {},

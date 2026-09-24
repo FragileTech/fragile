@@ -3,6 +3,7 @@
 
 CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/arcade_planner.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
@@ -10,6 +11,8 @@ CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp
@@ -330,12 +333,15 @@ CMakeFiles/fg_swarm_core.dir/src/arcade_planner.cpp.o
 
 CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/fractal_gas.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -651,9 +657,12 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o
 
 CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/fractal_tree.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
@@ -979,7 +988,9 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_tree.cpp.o
 
 CMakeFiles/fg_swarm_core.dir/src/walker_state.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/walker_state.cpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp

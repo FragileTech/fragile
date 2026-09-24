@@ -350,3 +350,34 @@ TEST_CASE(arcade_recording_rejects_oversized_payload_before_allocation) {
   CHECK(rejected);
   ArcadeTrajectory::check_size(1024, 100);
 }
+
+
+TEST_CASE(arcade_live_population_preserves_search_and_defers_during_execution) {
+  for (int algorithm : {2, 3}) {
+    TerminalEnv env;
+    auto params = planner_params(8);
+    params.max_walkers = 16;
+    FractalGas gas(env, params);
+    ArcadePlanner planner(env, gas, {algorithm, 3, false});
+    planner.reset();
+    planner.advance();
+    const auto root = planner.state();
+    const auto iterations = gas.iteration_count();
+    const auto history = gas.exploration_tree().size();
+    planner.set_population(4, fractal::RemovalPolicy::CumulativeReward);
+    CHECK(gas.n_walkers() == 4 && planner.depth() == 1);
+    CHECK(planner.state() == root && gas.iteration_count() == iterations);
+    CHECK(gas.exploration_tree().size() == history);
+    planner.advance();
+    planner.advance();
+    CHECK(planner.execution_pending());
+    planner.set_population(12, fractal::RemovalPolicy::VirtualReward);
+    planner.set_population(10, fractal::RemovalPolicy::CumulativeReward);
+    CHECK(gas.n_walkers() == 4 && gas.population_status().requested == 10);
+    CHECK(planner.execution_pending());
+    while (planner.execution_pending()) planner.advance();
+    planner.advance();
+    CHECK(gas.n_walkers() == 10 && !gas.population_status().pending());
+    CHECK(planner.depth() == 1);
+  }
+}

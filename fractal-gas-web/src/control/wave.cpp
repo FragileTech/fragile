@@ -24,6 +24,11 @@ PackedWave::PackedWave(Physics& p, WaveConfig c, uint64_t seed)
   if (!c.walkers || c.walkers > 8192 || !c.horizon || c.horizon > 4096 || c.elites > c.walkers ||
       c.frames < 1 || c.frames > 4096 || p.scene->controlled.empty())
     throw std::invalid_argument("Invalid Wave configuration");
+  if (!config.max_walkers) config.max_walkers = config.walkers;
+  if (!config.requested_walkers) config.requested_walkers = config.walkers;
+  if (config.max_walkers > 8192) throw std::invalid_argument("Maximum walkers exceeds 8192");
+  fractal::validate_population(config.walkers, config.max_walkers, config.elites);
+  fractal::validate_population(config.requested_walkers, config.max_walkers, config.elites);
   core_.reset(c.walkers, p.observation_dim(), p.scene->channels.size(), true);
   cloning_.pool = &p.pool;
 }
@@ -31,6 +36,7 @@ void PackedWave::reset(const StateBatch& source, size_t row) {
   if (source.fingerprint != current.fingerprint || row >= source.count)
     throw std::invalid_argument("Planner root mismatch");
   std::memcpy(root_.row(0), source.row(row), root_.layout.words * 4);
+  config.walkers = config.requested_walkers;
   core_.reset(config.walkers, physics.observation_dim(), physics.scene->channels.size(), true);
   for (size_t i = 0; i < current.count; ++i) {
     std::memcpy(current.row(i), root_.row(0), current.layout.words * 4);
@@ -46,6 +52,23 @@ void PackedWave::reset(const StateBatch& source, size_t row) {
     root_.serialize(snapshot.data(), snapshot.size());
   }
   core_.begin_history(config.recording, pose.size(), pose.data(), std::move(snapshot));
+}
+void PackedWave::set_population(int count, fractal::RemovalPolicy policy, bool defer) {
+  fractal::validate_population(count, config.max_walkers, config.elites);
+  if (!defer && count != int(config.walkers)) {
+    core_.resize_population(count, config.elites, policy, *rng_);
+    config.walkers = count;
+    cloning_.diagnostics.decisions.clear();
+    stats.alive = core_.metrics.alive;
+    stats.cloned = stats.frames = stats.collisions = stats.pruned = 0;
+    stats.mean_reward = core_.metrics.mean_reward;
+    stats.max_reward = core_.metrics.max_reward;
+    stats.mean_fitness = core_.metrics.mean_fitness;
+    stats.dead_ratio = 1 - float(stats.alive) / count;
+    stats.clone_ratio = 0;
+  }
+  config.requested_walkers = count;
+  config.removal_policy = policy;
 }
 void PackedWave::step() {
   action_policy_.inertial = config.inertial;

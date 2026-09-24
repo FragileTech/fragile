@@ -208,6 +208,28 @@ function algorithmFields(values = {}) {
   panel.replaceChildren();
   const algorithm = $("algorithm").value,
     gas = algorithm === "euclidean";
+  if (["wave", "fmc", "wave_jump"].includes(algorithm)) {
+    panel.append(
+      numeric(
+        "max_walkers",
+        "Maximum walkers",
+        values.max_walkers ?? Number(form.elements.namedItem("walkers").value),
+        2,
+        100000,
+      ),
+    );
+    panel.append(
+      selectInput(
+        "removal_policy",
+        "Remove worst by",
+        values.removal_policy ?? "virtual_reward",
+        [
+          ["virtual_reward", "Virtual fitness"],
+          ["cumulative_reward", "Cumulative reward"],
+        ],
+      ),
+    );
+  }
   const descriptor = catalog.algorithms.find((a) => a.id === algorithm);
   if (Array.isArray(descriptor?.parameters)) {
     parameterFields(panel, descriptor.parameters, values);
@@ -539,6 +561,7 @@ function controls() {
     busy ||
     imported ||
     index !== recording.frames.length - 1;
+  $("apply-population").disabled = creating || imported || !recording;
   $("reset").disabled = !ready || creating;
   $("save").disabled = !ready || !recordingEnabled;
   $("export-csv").disabled = !ready || !recordingEnabled;
@@ -688,6 +711,81 @@ function inspect(frame) {
     molecule.update(w.x);
   }
 }
+function showPopulation(population) {
+  $("live-population").hidden = !population || imported;
+  if (!population) return;
+  $("active-walkers").min = Math.max(2, config.elites || 0);
+  $("active-walkers").max = population.maximum;
+  $("population-status").textContent =
+    `${population.active} active / ${population.maximum} maximum${population.pending ? ` · ${population.requested} at next search` : ""}`;
+}
+let pendingPopulation = null;
+$("apply-population").onclick = () => {
+  if (creating || imported || !recording) return;
+  const input = $("active-walkers");
+  if (!input.checkValidity()) {
+    input.reportValidity();
+    return;
+  }
+  pendingPopulation = {
+    walkers: Number(input.value),
+    removal_policy: $("live-removal-policy").value,
+  };
+  if (!busy) applyPopulation();
+};
+async function applyPopulation() {
+  const request = pendingPopulation;
+  pendingPopulation = null;
+  busy = true;
+  const token = epoch;
+  try {
+    const lastFrame = recording.frames.at(-1);
+    const oldMetadata = recording.metadata.at(-1);
+    const metadataBytes = (value) =>
+      value ? new TextEncoder().encode(JSON.stringify(value)).byteLength : 0;
+    const result = await client.request("setPopulation", {
+      ...request,
+      remaining:
+        RECORDING_LIMIT -
+        recording.bytes +
+        lastFrame.byteLength +
+        metadataBytes(oldMetadata) -
+        metadataBytes(oldMetadata?.population_changes),
+    });
+    if (token !== epoch) return;
+    config = result.config;
+    const last = recording.frames.length - 1;
+    const events = [
+      ...(recording.metadata[last]?.population_changes || []),
+      result.status.population,
+    ];
+    recording.replaceLast(result.frame, {
+      ...result.status,
+      population_changed: true,
+      population_changes: events,
+    });
+    index = last;
+    selected = -1;
+    $("walker-index").value = "";
+    budgetStopped = !!result.status.budget_exhausted;
+    showPopulation(result.status.population);
+    renderFrame();
+    status(
+      result.status.population.pending
+        ? "Walker count queued for the next search."
+        : "Walker population updated.",
+    );
+  } catch (error) {
+    status(error.message, true);
+  } finally {
+    busy = false;
+    controls();
+    if (token === epoch) {
+      if (pendingPopulation) applyPopulation();
+      else if (running) step();
+    }
+  }
+}
 function renderFrame() {
   if (!recording) return;
   index = Math.min(index, recording.frames.length - 1);
@@ -697,7 +795,15 @@ function renderFrame() {
   renderer.update(
     frame,
     settings,
-    recording.frames.slice(0, index + 1),
+    recording.frames.slice(
+      Math.max(
+        0,
+        recording.metadata
+          .slice(0, index + 1)
+          .findLastIndex((m) => m?.population_changed),
+      ),
+      index + 1,
+    ),
     selected,
     recording.metadata[index],
   );
@@ -757,6 +863,7 @@ function scheduleFrame() {
 }
 async function createSession(next, loaded = null) {
   if (creating) return;
+  pendingPopulation = null;
   creating = true;
   pause();
   const token = ++epoch;
@@ -767,16 +874,26 @@ async function createSession(next, loaded = null) {
     const result = await client.request("create", { config: next });
     if (token !== epoch) return;
     config = result.config;
+    $("active-walkers").value = config.walkers;
+    $("live-removal-policy").value = config.removal_policy || "virtual_reward";
     recordingEnabled = !!loaded || $("record-history").checked;
     recording = loaded || new Recording(config, undefined, recordingEnabled);
     if (!loaded)
       recording.append(
         result.frame,
-        ["graph", "cmaes_active", "cmaes_bipop"].includes(config.algorithm)
+        [
+          "graph",
+          "wave",
+          "fmc",
+          "wave_jump",
+          "cmaes_active",
+          "cmaes_bipop",
+        ].includes(config.algorithm)
           ? result.status
           : null,
       );
     imported = !!loaded;
+    showPopulation(result.status.population);
     index = 0;
     selected = -1;
     $("walker-index").value = "";
@@ -818,10 +935,18 @@ async function step() {
     const atLatest = index === recording.frames.length - 1;
     recording.append(
       result.frame,
-      ["graph", "cmaes_active", "cmaes_bipop"].includes(config.algorithm)
+      [
+        "graph",
+        "wave",
+        "fmc",
+        "wave_jump",
+        "cmaes_active",
+        "cmaes_bipop",
+      ].includes(config.algorithm)
         ? result.status
         : null,
     );
+    showPopulation(result.status.population);
     simulationMs = result.simulationMs;
     if (atLatest) index = recording.frames.length - 1;
     scheduleFrame();
@@ -845,7 +970,8 @@ async function step() {
   } finally {
     busy = false;
     controls();
-    if (running && token === epoch)
+    if (pendingPopulation && token === epoch) applyPopulation();
+    else if (running && token === epoch)
       setTimeout(() => {
         if (running && token === epoch) step();
       }, 0);

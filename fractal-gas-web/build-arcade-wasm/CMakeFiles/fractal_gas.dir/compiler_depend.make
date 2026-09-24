@@ -2136,6 +2136,7 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/version \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/wchar.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/wctype.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/math.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/stdarg.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/stdlib.h \
@@ -2145,16 +2146,26 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/ctype.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/bind.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_asm.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_js.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_types.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/emscripten.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/val.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/version.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wget.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wire.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/errno.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/features.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/limits.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/locale.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/math.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/pthread.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/sched.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdarg.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdbool.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stddef.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdint.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdio.h \
@@ -2182,14 +2193,31 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/__stddef_wchar_t.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/limits.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdarg.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdbool.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stddef.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdint.h \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
   /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp \
   /home/guillem/fragile/fractal-gas-web/src/atari_env.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp \
   /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
-  /home/guillem/fragile/fractal-gas-web/src/control/checkpoint_io.hpp \
   /home/guillem/fragile/fractal-gas-web/src/env.hpp \
   /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp \
   /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp \
   /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
@@ -2201,6 +2229,7 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
   /home/guillem/fragile/fractal-gas-web/src/retro_game_logic.hpp \
   /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
   /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
   /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp \
   /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
   /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp
@@ -2220,9 +2249,29 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
 
 /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp:
 
-/home/guillem/fragile/fractal-gas-web/src/control/checkpoint_io.hpp:
+/home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp:
 
 /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp:
+
+/home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp:
+
+/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wire.h:
 
@@ -2294,6 +2343,8 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h:
 
+/home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp:
+
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/html5_webgl.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/console.h:
@@ -2316,6 +2367,8 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Settings.hxx:
 
+/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h:
+
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Random.hxx:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/OSystem.hxx:
@@ -2325,6 +2378,8 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o: /home/guillem/fragile/fracta
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Event.hxx:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/emucore/Cart.hxx:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp:
 
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/SoundNull.hxx:
 
@@ -2502,6 +2557,8 @@ ale-build/src/ale/version.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/try_key_extraction.h:
 
+/home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp:
+
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/swap.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/rel_ops.h:
@@ -2531,6 +2588,8 @@ ale-build/src/ale/version.hpp:
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/forward_like.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/exchange.h:
+
+/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/exception_guard.h:
 
@@ -2876,6 +2935,8 @@ ale-build/src/ale/version.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/partial_sort.h:
 
+/home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp:
+
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/condition_variable:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/comp_ref_type.h:
@@ -3009,6 +3070,8 @@ ale-build/src/ale/version.hpp:
 /home/guillem/fragile/fractal-gas-web/third_party/ale/src/ale/common/Log.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__atomic/atomic_waitable_traits.h:
+
+/home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__exception/exception.h:
 
@@ -3168,6 +3231,8 @@ ale-build/src/ale/version.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/ranges_iterator_concept.h:
 
+/home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp:
+
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/remove_if.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__numeric/transform_exclusive_scan.h:
@@ -3189,6 +3254,8 @@ ale-build/src/ale/version.hpp:
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__utility/scope_guard.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__algorithm/set_intersection.h:
+
+/home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__math/abs.h:
 
@@ -3371,6 +3438,8 @@ ale-build/src/ale/version.hpp:
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__system_error/system_error.h:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__memory/shared_count.h:
+
+/home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp:
 
 /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__iterator/concepts.h:
 

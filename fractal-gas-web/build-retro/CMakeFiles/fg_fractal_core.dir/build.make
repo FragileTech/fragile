@@ -72,10 +72,24 @@ include CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/codegen:
 .PHONY : CMakeFiles/fg_fractal_core.dir/codegen
 
+CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
+CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal/distance.cpp
+CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal/distance.cpp
+
+CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/guillem/fragile/fractal-gas-web/src/fractal/distance.cpp > CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.i
+
+CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/guillem/fragile/fractal-gas-web/src/fractal/distance.cpp -o CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.s
+
 CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.cpp
 CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.cpp
 
 CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.i: cmake_force
@@ -89,7 +103,7 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.s: cmake_force
 CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.cpp
 CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.cpp
 
 CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.i: cmake_force
@@ -103,7 +117,7 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.s: cmake_force
 CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o: /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp
 CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/thread_pool.cpp
 
 CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.i: cmake_force
@@ -117,7 +131,7 @@ CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.s: cmake_force
 CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.cpp
 CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.cpp
 
 CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.i: cmake_force
@@ -131,7 +145,7 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.s: cmake_force
 CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o: CMakeFiles/fg_fractal_core.dir/flags.make
 CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o: /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.cpp
 CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o: CMakeFiles/fg_fractal_core.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o -MF CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o.d -o CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o -c /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.cpp
 
 CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.i: cmake_force
@@ -144,6 +158,7 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.s: cmake_force
 
 # Object files for target fg_fractal_core
 fg_fractal_core_OBJECTS = \
+"CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o" \
 "CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o" \
 "CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o" \
 "CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o" \
@@ -153,6 +168,7 @@ fg_fractal_core_OBJECTS = \
 # External object files for target fg_fractal_core
 fg_fractal_core_EXTERNAL_OBJECTS =
 
+libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/fractal/distance.cpp.o
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/fractal/tensor_ops.cpp.o
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/fractal/cloning.cpp.o
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/thread_pool.cpp.o
@@ -160,7 +176,7 @@ libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tre
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/src/fractal/visit_grid.cpp.o
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/build.make
 libfg_fractal_core.a: CMakeFiles/fg_fractal_core.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX static library libfg_fractal_core.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/guillem/fragile/fractal-gas-web/build-retro/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libfg_fractal_core.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/fg_fractal_core.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/fg_fractal_core.dir/link.txt --verbose=$(VERBOSE)
 

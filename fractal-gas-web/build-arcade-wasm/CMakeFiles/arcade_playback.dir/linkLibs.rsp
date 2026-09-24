@@ -1,0 +1,1 @@
+ libnes_core.a "ale-build/src/ale/libale.a" "/home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libz.a" 

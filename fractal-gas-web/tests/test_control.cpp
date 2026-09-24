@@ -799,3 +799,31 @@ TEST_CASE(control_retained_delivery_lock_clones_and_releases) {
   CHECK(word(b.row(0), l.joints) == 2);
   CHECK_CLOSE(result.reward, 10, 1e-6);
 }
+
+
+TEST_CASE(control_live_population_preserves_packed_state_and_replay) {
+  auto scene = Scene::compile(free_scene);
+  Physics physics(scene, 2);
+  StateBatch root(1, *scene);
+  root.reset(*scene, 42);
+  WaveConfig config;
+  config.walkers = 8; config.max_walkers = 24; config.elites = 2;
+  PackedWave wave(physics, config, 13);
+  wave.reset(root);
+  wave.step();
+  const auto iteration = wave.stats.iterations;
+  const auto tree_size = wave.tree.size();
+  for (int count : {4, 24, 6, 16}) {
+    wave.set_population(count, fg::fractal::RemovalPolicy::VirtualReward);
+    CHECK(wave.current.count == uint32_t(count));
+    CHECK(wave.stats.iterations == iteration && wave.tree.size() == tree_size);
+    for (int i = 0; i < count; ++i) {
+      auto replay = wave.replay(wave.node_ids[i]);
+      CHECK(std::memcmp(replay.row(0), wave.current.row(i), scene->layout.words*4) == 0);
+    }
+  }
+  CHECK(throws([&] { wave.set_population(1, fg::fractal::RemovalPolicy::VirtualReward); }));
+  CHECK(wave.current.count == 16);
+  wave.step();
+  CHECK(wave.stats.iterations == iteration + 1 && wave.stats.alive <= 16);
+}

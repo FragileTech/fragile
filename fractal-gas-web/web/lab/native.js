@@ -79,7 +79,21 @@ export class NativeEngine {
   reset(seed = 7) {
     this.check(this.m._fgc_reset(this.h, seed >>> 0, 0));
   }
+  populationStatus() {
+    const p = this.m._fgc_population_status(this.h);
+    if (!p) throw new Error(this.m.UTF8ToString(this.m._fgc_error()));
+    return JSON.parse(this.m.UTF8ToString(p));
+  }
+  setPopulation(walkers, policy = "virtual_reward", defer = 0) {
+    if (!Number.isInteger(walkers) || walkers < 1 || walkers > 2147483647)
+      throw new RangeError("Walker count must be a positive integer");
+    this.string(policy, (p) =>
+      this.check(this.m._fgc_set_population(this.h, walkers, p, defer)),
+    );
+    return this.populationStatus();
+  }
   states(wave = false, walkers = 1) {
+    if (wave) walkers = this.populationStatus().active;
     const p = wave
       ? this.m._fgc_wave_states(this.h)
       : this.m._fgc_states(this.h);

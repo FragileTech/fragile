@@ -546,3 +546,34 @@ TEST_CASE(optimization_transition_observation_and_replay) {
   // The registry keeps no reference to stack storage.
   probe = nullptr;
 }
+
+
+TEST_CASE(optimization_live_population_reward_direction_and_budget) {
+  for (auto direction : {"minimize", "maximize"}) {
+    Session s(config(std::string(R"({"algorithm":"wave","benchmark":"quadratic","dimensions":2,"walkers":12,"max_walkers":24,"objective":")") + direction + R"(","periodic":true,"seed":91,"max_evaluations":1000})"));
+    auto objectives = s.algorithm->population().objective;
+    std::sort(objectives.begin(), objectives.end());
+    if (std::string(direction) == "maximize") std::reverse(objectives.begin(), objectives.end());
+    const auto evaluations = s.benchmark.evaluations;
+    s.set_population(3, "cumulative_reward");
+    CHECK(s.iteration == 0 && s.benchmark.evaluations == evaluations);
+    for (int i = 0; i < 3; ++i) CHECK_CLOSE(s.algorithm->population().objective[i], objectives[i], 1e-6);
+    CHECK(s.algorithm->next_evaluations_upper_bound() == 3);
+    s.set_population(24, "virtual_reward");
+    CHECK(s.algorithm->population().n == 24 && s.benchmark.evaluations == evaluations);
+    CHECK(s.algorithm->next_population_size() == 24);
+    bool rejected = false;
+    try { s.set_population(25, "virtual_reward"); } catch (const std::invalid_argument&) { rejected = true; }
+    CHECK(rejected && s.algorithm->population().n == 24);
+    s.step();
+    CHECK(s.iteration == 1 && s.benchmark.evaluations == evaluations + 24);
+  }
+}
+TEST_CASE(optimization_live_population_excludes_graph_and_euclidean) {
+  for (auto algorithm : {"graph", "euclidean"}) {
+    Session s(config(std::string(R"({"algorithm":")") + algorithm + R"(","walkers":4,"max_walkers":8})"));
+    bool rejected = false;
+    try { s.set_population(6, "virtual_reward"); } catch (const std::invalid_argument&) { rejected = true; }
+    CHECK(rejected);
+  }
+}

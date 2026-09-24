@@ -2139,6 +2139,7 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/version
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/wchar.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/wctype.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/math.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/stdarg.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/stdlib.h
@@ -2148,16 +2149,26 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/ctype.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/bind.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_asm.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_js.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_types.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/emscripten.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/val.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/version.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wget.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wire.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/errno.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/features.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/limits.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/locale.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/math.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/pthread.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/sched.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdarg.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdbool.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stddef.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdint.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdio.h
@@ -2185,14 +2196,31 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/__stddef_wchar_t.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/limits.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdarg.h
+ /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdbool.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stddef.h
  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdint.h
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp
  /home/guillem/fragile/fractal-gas-web/src/arcade_planner.hpp
+ /home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp
  /home/guillem/fragile/fractal-gas-web/src/atari_env.hpp
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp
- /home/guillem/fragile/fractal-gas-web/src/control/checkpoint_io.hpp
  /home/guillem/fragile/fractal-gas-web/src/env.hpp
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/metrics.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/planner.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp
+ /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal_gas.hpp
  /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp
@@ -2204,6 +2232,7 @@ CMakeFiles/fractal_gas.dir/src/wasm_bindings.cpp.o
  /home/guillem/fragile/fractal-gas-web/src/retro_game_logic.hpp
  /home/guillem/fragile/fractal-gas-web/src/rng.hpp
  /home/guillem/fragile/fractal-gas-web/src/swarm_algorithm.hpp
+ /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp
  /home/guillem/fragile/fractal-gas-web/src/thread_pool.hpp
  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp

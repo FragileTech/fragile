@@ -469,14 +469,17 @@ export class ComparisonView {
   }
   gameFilters(config) {
     const isGame = config?.objective === "xent_game";
-    if (this.gameSource === isGame) return;
-    this.gameSource = isGame;
-    Object.assign(
-      this.filters,
-      isGame
-        ? { metric: "reward", status: "all", pool: "archive" }
-        : { metric: "mean", status: "full", pool: "both" },
-    );
+    if (this.gameSource !== isGame) {
+      this.gameSource = isGame;
+      Object.assign(
+        this.filters,
+        isGame
+          ? { metric: "reward", status: "eos", pool: "archive" }
+          : { metric: "mean", status: "full", pool: "both" },
+      );
+    }
+    if (isGame) this.filters.status = "eos";
+    this.$("status-filter").disabled = isGame;
     for (const key of ["metric", "status", "pool"])
       this.$(key === "status" ? "status-filter" : key).value =
         this.filters[key];
@@ -674,6 +677,13 @@ export class ComparisonView {
     this.filters = { ...report.view };
     if (["grade", ...CRITERIA].includes(this.filters.metric))
       this.filters.metric = "mean";
+    this.gameSource =
+      (report.source.kind === "benchmark"
+        ? report.source.manifest.settings.config
+        : report.source.record.config
+      ).objective === "xent_game";
+    if (this.gameSource) this.filters.status = "eos";
+    this.$("status-filter").disabled = this.gameSource;
     this.benchmarkId = null;
     this.importedReport = true;
     this.onCurrentSource();
@@ -738,7 +748,7 @@ export class ComparisonView {
     }
     if (d.game_leaders?.length) {
       out.append(
-        el("h3", "Best sampled contexts"),
+        el("h3", "Best model-finished contexts"),
         table(
           [
             "Method",
@@ -749,9 +759,11 @@ export class ComparisonView {
             "Context",
           ],
           d.game_leaders.map((r) => [
-            button(METHOD_STYLE[r.method].label, () =>
-              this.selectKeys([r.key]),
-            ),
+            r.key
+              ? button(METHOD_STYLE[r.method].label, () =>
+                  this.selectKeys([r.key]),
+                )
+              : METHOD_STYLE[r.method].label,
             String(r.trial + 1),
             fmt(r.score),
             fmt(r.target_nll),
@@ -761,7 +773,7 @@ export class ComparisonView {
         ),
         el(
           "p",
-          "All scores use nats per target token. Every scored nonempty prefix is eligible, including prefixes no longer in the population.",
+          "Scores use nats per target token. Only nonempty model-finished answers are eligible; unavailable means no such answer was recorded.",
         ),
       );
     }

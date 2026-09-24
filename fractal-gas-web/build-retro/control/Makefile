@@ -505,6 +505,30 @@ __/tests/test_control_collisions.cpp.s:
 	cd /home/guillem/fragile/fractal-gas-web/build-retro && $(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_tests.dir/build.make control/CMakeFiles/fg_control_tests.dir/__/tests/test_control_collisions.cpp.s
 .PHONY : __/tests/test_control_collisions.cpp.s
 
+__/tests/test_control_formation.o: __/tests/test_control_formation.cpp.o
+.PHONY : __/tests/test_control_formation.o
+
+# target to build an object file
+__/tests/test_control_formation.cpp.o:
+	cd /home/guillem/fragile/fractal-gas-web/build-retro && $(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_tests.dir/build.make control/CMakeFiles/fg_control_tests.dir/__/tests/test_control_formation.cpp.o
+.PHONY : __/tests/test_control_formation.cpp.o
+
+__/tests/test_control_formation.i: __/tests/test_control_formation.cpp.i
+.PHONY : __/tests/test_control_formation.i
+
+# target to preprocess a source file
+__/tests/test_control_formation.cpp.i:
+	cd /home/guillem/fragile/fractal-gas-web/build-retro && $(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_tests.dir/build.make control/CMakeFiles/fg_control_tests.dir/__/tests/test_control_formation.cpp.i
+.PHONY : __/tests/test_control_formation.cpp.i
+
+__/tests/test_control_formation.s: __/tests/test_control_formation.cpp.s
+.PHONY : __/tests/test_control_formation.s
+
+# target to generate assembly for a file
+__/tests/test_control_formation.cpp.s:
+	cd /home/guillem/fragile/fractal-gas-web/build-retro && $(MAKE) $(MAKESILENT) -f control/CMakeFiles/fg_control_tests.dir/build.make control/CMakeFiles/fg_control_tests.dir/__/tests/test_control_formation.cpp.s
+.PHONY : __/tests/test_control_formation.cpp.s
+
 __/tests/test_control_scheduling.o: __/tests/test_control_scheduling.cpp.o
 .PHONY : __/tests/test_control_scheduling.o
 
@@ -628,6 +652,9 @@ help:
 	@echo "... __/tests/test_control_collisions.o"
 	@echo "... __/tests/test_control_collisions.i"
 	@echo "... __/tests/test_control_collisions.s"
+	@echo "... __/tests/test_control_formation.o"
+	@echo "... __/tests/test_control_formation.i"
+	@echo "... __/tests/test_control_formation.s"
 	@echo "... __/tests/test_control_scheduling.o"
 	@echo "... __/tests/test_control_scheduling.i"
 	@echo "... __/tests/test_control_scheduling.s"

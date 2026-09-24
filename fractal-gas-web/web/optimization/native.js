@@ -38,6 +38,20 @@ export class NativeOptimization {
     if (!pointer) throw this.error();
     return JSON.parse(this.m.UTF8ToString(pointer));
   }
+  setPopulation(walkers, policy) {
+    if (!Number.isInteger(walkers) || walkers < 1 || walkers > 2147483647)
+      throw new RangeError("Walker count must be a positive integer");
+    const size = this.m.lengthBytesUTF8(policy) + 1,
+      p = this.m._malloc(size);
+    if (!p) throw new Error("Population request allocation failed");
+    try {
+      this.m.stringToUTF8(policy, p, size);
+      this.check(this.m._fgo_set_population(this.handle, walkers, p));
+    } finally {
+      this.m._free(p);
+    }
+    return this.status();
+  }
   snapshot() {
     const size = this.check(this.m._fgo_snapshot_size(this.handle));
     const pointer = this.m._fgo_snapshot(this.handle);

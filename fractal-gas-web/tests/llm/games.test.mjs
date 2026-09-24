@@ -172,8 +172,11 @@ for (const algorithm of ["wave", "graph"])
       const record = new Recording(c);
       record.metadata({ dimensions: 2, scoring: await scorer.prepareGame(c) });
       const api = {
-        async generate(_c, _prefix, count) {
-          return parseCompletion(completion("a".repeat(count), -0.3), count);
+        async generate(_c, prefix, count) {
+          return parseCompletion(
+            completion("a".repeat(count), -0.3, prefix ? "stop" : "length"),
+            count,
+          );
         },
         async embed(_m, texts) {
           return texts.map((t) => [1, t.length]);
@@ -200,18 +203,15 @@ for (const algorithm of ["wave", "graph"])
                 Math.abs(w.score - objective(saved.nodes[w.node], c)) < 1e-5,
               );
         const winner = bestNode(saved.nodes, c);
-        if (game_mode === "unsurprising") {
-          assert.equal(winner.tokens, 2);
-          assert.equal(winner.status, 0);
-        }
+        assert.equal(winner.tokens, 4);
+        assert.equal(winner.status, 1);
         const data = computeComparison({ kind: "recording", record: saved });
         assert.equal(data.filters.metric, "reward");
         assert.equal(data.game_leaders[0].score, objective(winner, c));
-        assert.ok(
-          data.histories.every(
-            (h, i, a) => !i || h.best_reward >= a[i - 1].best_reward,
-          ),
-        );
+        const measured = data.histories
+          .map((h) => h.best_reward)
+          .filter((value) => value !== null);
+        assert.ok(measured.every((value, i) => !i || value >= measured[i - 1]));
         assert.equal(
           new Set(data.rows.map((r) => r.text)).size,
           data.rows.length,
@@ -315,7 +315,7 @@ test("paired benchmarks share baseline and route, match generation budgets, resu
     };
     const report = parseReport(exportReport(createReport(source)));
     assert.equal(report.view.metric, "reward");
-    assert.equal(report.view.status, "all");
+    assert.equal(report.view.status, "eos");
     assert.equal(
       report.source.manifest.settings.config.game.target,
       game.target,

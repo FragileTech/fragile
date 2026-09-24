@@ -43,6 +43,30 @@ export class Recording {
       this.metadata.push(copy);
     }
   }
+  replaceLast(frame, metadata) {
+    const i = this.frames.length - 1;
+    if (
+      i < 0 ||
+      frameInfo(frame).iteration !== frameInfo(this.frames[i]).iteration
+    )
+      throw new Error("Population update must preserve the current iteration");
+    const copy = structuredClone(metadata);
+    const metadataBytes = (value) =>
+      value == null
+        ? 0
+        : new TextEncoder().encode(JSON.stringify(value)).byteLength;
+    const bytes =
+      this.bytes -
+      this.frames[i].byteLength -
+      metadataBytes(this.metadata[i]) +
+      frame.byteLength +
+      metadataBytes(copy);
+    if (bytes > RECORDING_LIMIT)
+      throw new Error("Population update exceeds the recording limit");
+    this.frames[i] = frame;
+    this.metadata[i] = copy;
+    this.bytes = bytes;
+  }
   export() {
     return JSON.stringify({
       format: "fgopt",

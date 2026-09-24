@@ -4,6 +4,7 @@
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fractal_gas_core.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/gpgx_core_wasm.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/retro_shim.dir
+/home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/arcade_playback.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/fractal_gas.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/test.dir
 /home/guillem/fragile/fractal-gas-web/build-arcade-wasm/CMakeFiles/edit_cache.dir

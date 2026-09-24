@@ -101,6 +101,9 @@ fg::control::WaveConfig config(const char* text, const Scene& s) {
     return uint32_t(n);
   };
   c.walkers = integer("walkers", 128, 1, 8192);
+  c.max_walkers = integer("max_walkers", c.walkers, c.walkers, 8192);
+  c.requested_walkers = integer("requested_walkers", c.walkers, 1, c.max_walkers);
+  c.removal_policy = fg::fractal::removal_policy(j["removal_policy"].str("virtual_reward"));
   c.horizon = integer("horizon", 16, 1, 4096);
   c.frames = integer("frames", 6, 1, 4096);
   c.elites = integer("elites", 0, 0, c.walkers);
@@ -126,8 +129,8 @@ fg::control::WaveConfig config(const char* text, const Scene& s) {
                               (s.cargo_capacity > 0 ? s.controlled.size() * 4 : 0);
   const size_t metadata = observations * 4 + s.channels.size() * 8 + 27 + sizeof(StepResult);
   // Two immutable/output populations and two elite banks, plus cloning scratch.
-  size_t estimated = size_t(2 * c.walkers + 2 * c.elites) * (s.layout.stride * 4 + metadata) +
-                     size_t(c.walkers) * 80 + s.layout.stride * 4;
+  size_t estimated = size_t(4 * c.max_walkers + 2 * c.elites) * (s.layout.stride * 4 + metadata) +
+                     size_t(c.max_walkers) * 80 + s.layout.stride * 4;
   if (estimated > 512 * 1024 * 1024)
     throw std::invalid_argument("Planner exceeds the 512 MiB working-memory budget");
   return c;
@@ -383,13 +386,64 @@ FGC_EXPORT int fgc_plan_begin(void* p, const char* settings, uint32_t seed) {
   return guard(-1, [&] {
     auto& r = runtime(p);
     std::string text = settings ? settings : "{}";
-    if (!r.planner || text != r.planner_settings) {
+    const auto input = JsonReader(text).read();
+    const auto previous = JsonReader(r.planner_settings.empty() ? std::string("{}") : r.planner_settings).read();
+    auto structural = [](Json value) {
+      auto& maximum = value.object["max_walkers"];
+      if (maximum.kind == Json::Null) {
+        maximum.kind = Json::Number;
+        maximum.number = value["walkers"].num(128);
+      }
+      for (const char* key : {"walkers", "requested_walkers", "removal_policy"}) value.object.erase(key);
+      return json_stringify(value);
+    };
+    if (!r.planner || structural(input) != structural(previous)) {
       r.planner = std::make_unique<FmcPlanner>(r.physics, config(text.c_str(), *r.scene), seed);
-      r.planner_settings = text;
-    } else
+    } else {
+      // Reusing a restored search must retain queued requests, even if the
+      // caller still holds the original settings or uses a different key order.
+      const auto validated = config(text.c_str(), *r.scene);
+      const bool count_changed = input["walkers"].num(128) != previous["walkers"].num(128);
+      const bool policy_changed = input["removal_policy"].str("virtual_reward") !=
+                                  previous["removal_policy"].str("virtual_reward");
+      if (count_changed || policy_changed)
+        r.planner->wave.set_population(count_changed ? validated.walkers : r.planner->wave.config.requested_walkers,
+            policy_changed ? validated.removal_policy : r.planner->wave.config.removal_policy, true);
       r.planner->wave.reseed(seed);
+    }
+    r.planner_settings = text;
     r.planner->begin(r.state);
     r.planning_ms = 0;
+    return 0;
+  });
+}
+FGC_EXPORT const char* fgc_population_status(void* p) {
+  static thread_local std::string text;
+  return guard<const char*>(nullptr, [&] {
+    auto& r = runtime(p);
+    if (!r.planner) throw std::logic_error("No Wave population");
+    const auto s = r.planner->wave.population_status();
+    std::ostringstream out;
+    out << "{\"maximum\":" << s.maximum << ",\"active\":" << s.active
+        << ",\"requested\":" << s.requested << ",\"pending\":" << (s.pending() ? "true" : "false")
+        << ",\"removal_policy\":\"" << fg::fractal::removal_policy_name(s.policy) << "\"}";
+    text = out.str();
+    return text.c_str();
+  });
+}
+FGC_EXPORT int fgc_set_population(void* p, int count, const char* policy, int defer) {
+  return guard(-1, [&] {
+    auto& r = runtime(p);
+    if (!r.planner || !policy) throw std::logic_error("No Wave population or removal policy");
+    // Leased world snapshots refer to r.state; resizing only replaces planner storage.
+    if (defer < 0) {
+      r.planner->wave.set_population(count, fg::fractal::removal_policy(policy));
+      r.planner->search.result = {};
+      r.planner->search.result.action_dim = r.scene->channels.size();
+      r.planner->ready = false;
+      r.planner->selected.clear();
+    } else r.planner->set_population(count, fg::fractal::removal_policy(policy), defer != 0);
+    r.update_metrics();
     return 0;
   });
 }
@@ -509,14 +563,26 @@ FGC_EXPORT size_t fgc_checkpoint_size(void* p) {
     auto& r = runtime(p);
     CheckpointWriter out;
     out.scalar(uint32_t(0x50434746));
-    out.scalar(uint32_t(2));
+    out.scalar(uint32_t(3));
 #ifdef __EMSCRIPTEN__
     out.string("wasm-control-3");
 #else
     out.string("native-control-3");
 #endif
     out.scalar(r.scene->fingerprint);
-    out.string(r.planner_settings);
+    auto saved_settings = JsonReader(r.planner_settings.empty() ? std::string("{}") : r.planner_settings).read();
+    if (r.planner) {
+      auto s = r.planner->wave.population_status();
+      saved_settings.object["walkers"].kind = Json::Number;
+      saved_settings.object["walkers"].number = s.active;
+      saved_settings.object["max_walkers"].kind = Json::Number;
+      saved_settings.object["max_walkers"].number = s.maximum;
+      saved_settings.object["requested_walkers"].kind = Json::Number;
+      saved_settings.object["requested_walkers"].number = s.requested;
+      saved_settings.object["removal_policy"].kind = Json::String;
+      saved_settings.object["removal_policy"].string = fg::fractal::removal_policy_name(s.policy);
+    }
+    out.string(json_stringify(saved_settings));
     std::vector<uint8_t> state(r.state.serialized_size());
     r.state.serialize(state.data(), state.size());
     out.vector(state);
@@ -551,7 +617,8 @@ FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data, size_t size)
     if (checkpoint_hash(data, size - 8) != hash)
       throw std::invalid_argument("Checkpoint checksum mismatch");
     CheckpointReader in(data, size - 8);
-    if (in.scalar<uint32_t>() != 0x50434746 || in.scalar<uint32_t>() != 2)
+    const auto magic = in.scalar<uint32_t>(), version = in.scalar<uint32_t>();
+    if (magic != 0x50434746 || (version != 2 && version != 3))
       throw std::invalid_argument("Unsupported checkpoint version");
 #ifdef __EMSCRIPTEN__
     const std::string backend = "wasm-control-3";

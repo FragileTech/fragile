@@ -9,6 +9,8 @@
 
 namespace fg::control {
 struct WaveConfig {
+  uint32_t max_walkers = 0, requested_walkers = 0;
+  fractal::RemovalPolicy removal_policy = fractal::RemovalPolicy::VirtualReward;
   uint32_t walkers = 128, horizon = 16, frames = 6, elites = 0;
   DistanceMetric distance_metric = DistanceMetric::L2;
   float distance_coef = 1, reward_coef = 1, noise = .2f;
@@ -39,6 +41,10 @@ class PackedWave {
   void reset(const StateBatch& source, size_t row = 0);
   void reseed(uint64_t seed) { rng_ = std::make_unique<Mt19937Rng>(seed); }
   void step();
+  void set_population(int count, fractal::RemovalPolicy policy, bool defer = false);
+  fractal::PopulationStatus population_status() const {
+    return {int(config.max_walkers), int(config.walkers), int(config.requested_walkers), config.removal_policy};
+  }
   std::vector<float> select_action() const;
   const PackedPopulation& population() const {
     backend_.observe(core_.current);
@@ -70,6 +76,9 @@ class FmcPlanner {
   bool ready = false;
   FmcPlanner(Physics& physics, WaveConfig config, uint64_t seed) : wave(physics, config, seed) {
     configure();
+  }
+  void set_population(int count, fractal::RemovalPolicy policy, bool defer = false) {
+    wave.set_population(count, policy, defer || ready);
   }
   void configure() {
     fractal::PlannerSettings s;

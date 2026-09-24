@@ -6,6 +6,7 @@
 #include "fractal/cloning.hpp"
 #include "fractal/exploration_tree.hpp"
 #include "fractal/population.hpp"
+#include "fractal/population_control.hpp"
 
 namespace fg::fractal {
 struct WaveMetrics {
@@ -84,6 +85,72 @@ class Wave {
   void copy_row(const State& from, size_t i, State& to, size_t j) {
     backend_.copy(from, i, to, j);
     copy_metadata(from, i, to, j);
+  }
+  // Commit a dense population only after all storage and scratch allocations
+  // succeed. A resize neither advances the environment nor adds history nodes.
+  void resize_population(int n, int elites, RemovalPolicy policy, Rng& rng) {
+    if (n < std::max(1, elites)) throw std::invalid_argument("Population smaller than elite count");
+    const int old = current.N;
+    if (n == old) return;
+    if (!old) throw std::logic_error("Initialize the population before resizing");
+    const int protected_count = has_elite ? std::min(elites, elite.N) : 0;
+    std::vector<int32_t> donors, ranked(old);
+    std::iota(ranked.begin(), ranked.end(), 0);
+    if (n > old) {
+      for (int i = 0; i < old; ++i) if (current.alive(i)) donors.push_back(i);
+      for (int i = 0; i < protected_count; ++i)
+        if (elite.alive(i)) donors.push_back(old + i);
+      if (donors.empty()) throw std::invalid_argument("Cannot grow a population without alive donors");
+    } else {
+      const auto& scores = policy == RemovalPolicy::VirtualReward && current.has_virtual_rewards
+                             ? current.virtual_rewards : current.rewards;
+      std::stable_sort(ranked.begin(), ranked.end(), [&](int a, int b) {
+        const float x = std::isfinite(scores[a]) ? scores[a] : -INFINITY;
+        const float y = std::isfinite(scores[b]) ? scores[b] : -INFINITY;
+        return x > y;
+      });
+    }
+    State replacement, output;
+    prepare(replacement, n, current.obs_dim, current.action_dim, current.has_infos);
+    prepare(output, n, current.obs_dim, current.action_dim, current.has_infos);
+    backend_.reserve_copies(replacement, current, elite);
+    replacement.has_virtual_rewards = current.has_virtual_rewards;
+    std::vector<int32_t> identity(n), companions(n), fitness_companions(n);
+    std::iota(identity.begin(), identity.end(), 0);
+    companions = fitness_companions = identity;
+    std::vector<uint8_t> mask(n, 0), alive(n);
+    std::vector<float> fitness(n);
+    // Copies after this point do not allocate, including opaque state blobs.
+    for (int i = 0; i < n; ++i) {
+      if (n < old && i < protected_count) copy_row(elite, i, replacement, i);
+      else {
+        int src = n < old ? ranked[i - protected_count] : i;
+        if (i >= old) src = donors[size_t(rng.randint(0, donors.size()))];
+        copy_row(src < old ? current : elite, src < old ? src : src - old, replacement, i);
+      }
+      alive[i] = replacement.alive(i);
+      fitness[i] = replacement.virtual_rewards[i];
+    }
+    std::swap(current, replacement);
+    std::swap(next, output);
+    sources.swap(identity);
+    companions_.swap(companions);
+    fitness_companions_.swap(fitness_companions);
+    mask_.swap(mask);
+    alive_.swap(alive);
+    fitness_.swap(fitness);
+    ranked_.clear();
+    pins_.clear();
+    const auto iteration = metrics.iteration;
+    metrics = {};
+    metrics.iteration = iteration;
+    metrics.alive = current.alive_count();
+    metrics.mean_reward = std::accumulate(current.rewards.begin(), current.rewards.end(), 0.0) / n;
+    metrics.max_reward = *std::max_element(current.rewards.begin(), current.rewards.end());
+    metrics.min_reward = *std::min_element(current.rewards.begin(), current.rewards.end());
+    metrics.mean_fitness = std::accumulate(fitness_.begin(), fitness_.end(), 0.0) / n;
+    metrics.max_fitness = *std::max_element(fitness_.begin(), fitness_.end());
+    metrics.min_fitness = *std::min_element(fitness_.begin(), fitness_.end());
   }
   const WaveMetrics& step(int elites, FractalCloningOperator& cloning, Rng& rng) {
     const int n = current.N, ad = current.action_dim;

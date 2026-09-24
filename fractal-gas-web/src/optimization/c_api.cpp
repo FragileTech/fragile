@@ -68,6 +68,13 @@ EXPORT const char* fgo_status(uint32_t h) {
   static std::string status;
   return guard<const char*>(nullptr, [&] { status = get(h).status_json(); return status.c_str(); });
 }
+EXPORT int fgo_set_population(uint32_t h, int count, const char* policy) {
+  return guard<int>(-1, [&] {
+    if (!policy) throw std::invalid_argument("Missing removal policy");
+    get(h).set_population(count, policy);
+    return 0;
+  });
+}
 EXPORT int fgo_step(uint32_t h) {
   return guard<int>(-1, [&] {
     get(h).step();

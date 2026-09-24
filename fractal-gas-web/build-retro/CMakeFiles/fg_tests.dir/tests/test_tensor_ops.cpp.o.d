@@ -223,6 +223,7 @@ CMakeFiles/fg_tests.dir/tests/test_tensor_ops.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
  /usr/include/c++/15/unordered_map \

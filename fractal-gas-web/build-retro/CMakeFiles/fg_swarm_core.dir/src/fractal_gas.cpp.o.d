@@ -139,15 +139,13 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/backends/snapshot.hpp \
  /home/guillem/fragile/fractal-gas-web/src/kinetic.hpp \
  /home/guillem/fragile/fractal-gas-web/src/env.hpp \
- /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
- /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
- /usr/include/c++/15/locale /usr/include/c++/15/bits/localefwd.h \
+ /usr/include/c++/15/stdexcept /usr/include/c++/15/string \
+ /usr/include/c++/15/bits/char_traits.h \
+ /usr/include/c++/15/bits/localefwd.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/c++locale.h \
  /usr/include/c++/15/clocale /usr/include/locale.h \
  /usr/include/x86_64-linux-gnu/bits/locale.h /usr/include/c++/15/cctype \
- /usr/include/ctype.h /usr/include/c++/15/bits/locale_classes.h \
- /usr/include/c++/15/string /usr/include/c++/15/bits/char_traits.h \
- /usr/include/c++/15/bits/ostream_insert.h \
+ /usr/include/ctype.h /usr/include/c++/15/bits/ostream_insert.h \
  /usr/include/c++/15/bits/cxxabi_forced.h \
  /usr/include/c++/15/bits/basic_string.h /usr/include/c++/15/string_view \
  /usr/include/c++/15/bits/string_view.tcc \
@@ -180,14 +178,16 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
  /usr/include/x86_64-linux-gnu/bits/types/error_t.h \
  /usr/include/c++/15/bits/charconv.h \
  /usr/include/c++/15/bits/basic_string.tcc \
+ /home/guillem/fragile/fractal-gas-web/src/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /usr/include/c++/15/locale /usr/include/c++/15/bits/locale_classes.h \
  /usr/include/c++/15/bits/locale_classes.tcc \
  /usr/include/c++/15/bits/locale_facets.h /usr/include/c++/15/cwctype \
  /usr/include/wctype.h /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_base.h \
  /usr/include/c++/15/bits/ios_base.h /usr/include/c++/15/system_error \
  /usr/include/x86_64-linux-gnu/c++/15/bits/error_constants.h \
- /usr/include/c++/15/stdexcept /usr/include/c++/15/streambuf \
- /usr/include/c++/15/bits/streambuf.tcc \
+ /usr/include/c++/15/streambuf /usr/include/c++/15/bits/streambuf.tcc \
  /usr/include/c++/15/bits/streambuf_iterator.h \
  /usr/include/x86_64-linux-gnu/c++/15/bits/ctype_inline.h \
  /usr/include/c++/15/bits/locale_facets.tcc \
@@ -237,6 +237,7 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
  /usr/include/c++/15/unordered_map \
@@ -252,8 +253,10 @@ CMakeFiles/fg_swarm_core.dir/src/fractal_gas.cpp.o: \
  /usr/include/c++/15/bits/algorithmfwd.h \
  /usr/include/c++/15/bits/stl_heap.h \
  /usr/include/c++/15/pstl/glue_algorithm_defs.h \
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/exploration_tree.hpp \

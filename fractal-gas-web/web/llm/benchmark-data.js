@@ -627,7 +627,7 @@ export function processBenchmark(header, events) {
     const parents = new Set(run.nodes.slice(1).map((n) => n.parent));
     const endpoints =
       run.config.objective === "xent_game"
-        ? run.nodes.slice(1).filter((n) => n.tokens > 0)
+        ? run.nodes.slice(1).filter((n) => n.tokens > 0 && n.status === 1)
         : run.method === "fractal"
           ? run.nodes.slice(1).filter((n) => !parents.has(n.id))
           : run.trajectories.map(

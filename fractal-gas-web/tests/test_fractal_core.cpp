@@ -450,3 +450,96 @@ TEST_CASE(graph_reset_preserves_capacity_for_growth_near_the_population_cap) {
   CHECK(graph.state_.n == 12);
   CHECK(graph.state_.observations.capacity() == capacity);
 }
+
+
+TEST_CASE(wave_population_resize_preserves_elites_ranking_lineage_and_rng) {
+  MockEnv env;
+  VisitGrid visits;
+  SnapshotBackend backend(env, visits);
+  RandomActionOperator sampler;
+  DiscreteActions actions{env, sampler};
+  using Wave = fractal::Wave<WalkerState, SnapshotBackend, DiscreteActions>;
+  Wave wave(backend, actions);
+  Mt19937Rng rng(314);
+  auto initialize = [&] {
+    wave.reset(5, 3, 1, false);
+    wave.current.has_virtual_rewards = true;
+    for (int i = 0; i < 5; ++i) {
+      wave.current.states[i] = {char(i)};
+      wave.current.rewards[i] = float(i);
+      wave.current.virtual_rewards[i] = float(5-i);
+      wave.current.lineage[i] = 20+i;
+      wave.current.observations[i*3] = 30+i;
+      wave.current.actions[i] = i;
+      wave.current.root_actions[i] = i+100;
+      wave.current.dt[i] = i+1;
+    }
+    wave.metrics.iteration = 7;
+  };
+  initialize();
+  auto before = rng.checkpoint();
+  wave.resize_population(5, 0, fractal::RemovalPolicy::VirtualReward, rng);
+  CHECK(before == rng.checkpoint());
+  wave.resize_population(2, 0, fractal::RemovalPolicy::VirtualReward, rng);
+  CHECK((wave.current.rewards == std::vector<float>{0, 1}));
+  CHECK((wave.current.lineage == std::vector<uint32_t>{20, 21}));
+  CHECK(before == rng.checkpoint());
+  CHECK(wave.metrics.iteration == 7);
+  initialize();
+  wave.resize_population(2, 0, fractal::RemovalPolicy::CumulativeReward, rng);
+  CHECK((wave.current.rewards == std::vector<float>{4, 3}));
+  CHECK((wave.current.root_actions == std::vector<int32_t>{104, 103}));
+  initialize();
+  wave.current.has_virtual_rewards = false;
+  wave.resize_population(2, 0, fractal::RemovalPolicy::VirtualReward, rng);
+  CHECK((wave.current.rewards == std::vector<float>{4, 3}));
+  initialize();
+  wave.prepare(wave.elite, 1, 3, 1, false);
+  wave.copy_row(wave.current, 4, wave.elite, 0);
+  wave.elite.rewards[0] = 99;
+  wave.has_elite = true;
+  wave.resize_population(2, 1, fractal::RemovalPolicy::VirtualReward, rng);
+  CHECK((wave.current.rewards == std::vector<float>{99, 0}));
+  CHECK(wave.current.states[0] == std::vector<char>{4});
+  before = rng.checkpoint();
+  bool rejected = false;
+  try { wave.resize_population(0, 1, fractal::RemovalPolicy::VirtualReward, rng); }
+  catch (const std::invalid_argument&) { rejected = true; }
+  CHECK(rejected && wave.current.N == 2 && before == rng.checkpoint());
+}
+
+TEST_CASE(wave_population_growth_uses_only_original_alive_donors) {
+  MockEnv env;
+  VisitGrid visits;
+  SnapshotBackend backend(env, visits);
+  RandomActionOperator sampler;
+  DiscreteActions actions{env, sampler};
+  fractal::Wave<WalkerState, SnapshotBackend, DiscreteActions> wave(backend, actions);
+  Mt19937Rng rng(123), expected(123);
+  wave.reset(3, 1, 1, false);
+  for (int i = 0; i < 3; ++i) {
+    wave.current.states[i] = {char(i)};
+    wave.current.rewards[i] = i;
+    wave.current.observations[i] = i;
+    wave.current.lineage[i] = i+100;
+    wave.current.root_actions[i] = i+10;
+  }
+  wave.current.dones[0] = 1;
+  wave.resize_population(20, 0, fractal::RemovalPolicy::VirtualReward, rng);
+  for (int i = 3; i < 20; ++i) {
+    const int donor = 1 + expected.randint(0, 2);
+    CHECK(wave.current.states[i][0] == donor);
+    CHECK(wave.current.rewards[i] == donor);
+    CHECK(wave.current.lineage[i] == uint32_t(donor+100));
+    CHECK(wave.current.root_actions[i] == donor+10);
+    CHECK(wave.current.alive(i));
+  }
+  CHECK(rng.checkpoint() == expected.checkpoint());
+  CHECK(wave.next.N == 20 && wave.clone_mask().size() == 20);
+  std::fill(wave.current.dones.begin(), wave.current.dones.end(), 1);
+  auto before = rng.checkpoint();
+  bool rejected = false;
+  try { wave.resize_population(21, 0, fractal::RemovalPolicy::VirtualReward, rng); }
+  catch (const std::invalid_argument&) { rejected = true; }
+  CHECK(rejected && wave.current.N == 20 && rng.checkpoint() == before);
+}

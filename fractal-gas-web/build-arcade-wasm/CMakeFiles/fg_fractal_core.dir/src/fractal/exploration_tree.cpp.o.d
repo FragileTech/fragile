@@ -643,4 +643,18 @@ CMakeFiles/fg_fractal_core.dir/src/fractal/exploration_tree.cpp.o: \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__locale_dir/wbuffer_convert.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/__locale_dir/wstring_convert.h \
   /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/c++/v1/cstdarg \
-  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp
+  /home/guillem/fragile/fractal-gas-web/src/fractal/checkpoint.hpp \
+  /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/compat/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/malloc.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/heap.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/emscripten.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_asm.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_js.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_macros.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/lib/clang/24/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/stdbool.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/em_types.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/promise.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/version.h \
+  /home/guillem/fragile/.cache/emsdk/6.0.8/upstream/emscripten/cache/sysroot/include/emscripten/wget.h

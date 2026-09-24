@@ -135,7 +135,7 @@ export function bestNode(nodes, mode) {
   );
   return (
     mode?.objective === "xent_game"
-      ? candidates
+      ? candidates.filter((n) => n.status === 1)
       : completed.length
         ? completed
         : candidates.filter((n) => n.tokens === maxDepth)

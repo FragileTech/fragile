@@ -54,7 +54,10 @@ Settings::Settings(const Json& input) : json(input) {
         name != "greedy_pairing")
       throw std::invalid_argument("Unknown companion strategy");
   walkers = i("walkers", 256, 2, 100000);
-  max_walkers = i("max_walkers", std::max(10000, walkers), walkers, 1000000);
+  const bool live_population = algorithm == "wave" || planning();
+  max_walkers = i("max_walkers", live_population ? walkers : std::max(10000, walkers), walkers,
+                  live_population ? 100000 : 1000000);
+  if (live_population) fractal::removal_policy(s("removal_policy", "virtual_reward"));
   freeze_prefix_after = i("freeze_prefix_after", 0, 0, 1000000);
   seed = i("seed", 7, 0, 2147483647);
   dt_min = i("dt_min", 1, 1, 100);

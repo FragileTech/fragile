@@ -36,6 +36,12 @@ class ArcadePlanner {
   void reset();
   void configure(ArcadePlannerSettings settings);
   void invalidate();
+  void set_population(int count, fractal::RemovalPolicy policy) {
+    gas_.set_population(count, policy, execution_pending() || new_search_);
+    last_.n_walkers = gas_.n_walkers();
+    last_.n_leaves = gas_.n_walkers();
+    last_.alive_count = gas_.state().alive_count();
+  }
   // One search iteration or one committed edge, never a whole planning loop.
   StepInfo advance();
   const std::vector<char>& initial_state() const { return initial_state_; }

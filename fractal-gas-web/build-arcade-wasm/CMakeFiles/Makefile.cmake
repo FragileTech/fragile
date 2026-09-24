@@ -96,6 +96,7 @@ set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/fractal_gas_core.dir/DependInfo.cmake"
   "CMakeFiles/gpgx_core_wasm.dir/DependInfo.cmake"
   "CMakeFiles/retro_shim.dir/DependInfo.cmake"
+  "CMakeFiles/arcade_playback.dir/DependInfo.cmake"
   "CMakeFiles/fractal_gas.dir/DependInfo.cmake"
   "ale-build/src/ale/CMakeFiles/ale.dir/DependInfo.cmake"
   "ale-build/src/ale/CMakeFiles/ale-lib.dir/DependInfo.cmake"

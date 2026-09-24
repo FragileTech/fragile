@@ -13,6 +13,7 @@ struct ControlBackend {
     if (s.states.count != uint32_t(n) || !s.states.storage)
       s.states = StateBatch(n, *physics.scene);
   }
+  void reserve_copies(PackedPopulation&, const PackedPopulation&, const PackedPopulation&) {}
   void copy(const PackedPopulation& from, size_t i, PackedPopulation& to, size_t j) {
     std::memcpy(to.states.row(j), from.states.row(i), from.states.layout.words * 4);
   }

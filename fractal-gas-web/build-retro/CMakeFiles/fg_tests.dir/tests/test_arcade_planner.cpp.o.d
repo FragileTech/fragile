@@ -260,12 +260,15 @@ CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/src/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/rng.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/distance.hpp \
  /home/guillem/fragile/fractal-gas-web/src/visit_grid.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp \
  /home/guillem/fragile/fractal-gas-web/src/walker_state.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/population.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/arcade_memory.hpp \
  /home/guillem/fragile/fractal-gas-web/src/cloning.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/cloning.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/diagnostics.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/tensor_ops.hpp \
  /home/guillem/fragile/fractal-gas-web/src/exploration_tree.hpp \
  /home/guillem/fragile/fractal-gas-web/src/fractal/wave.hpp \
@@ -279,4 +282,9 @@ CMakeFiles/fg_tests.dir/tests/test_arcade_planner.cpp.o: \
  /home/guillem/fragile/fractal-gas-web/tests/visit_mock_env.hpp \
  /home/guillem/fragile/fractal-gas-web/tests/test_framework.hpp \
  /usr/include/c++/15/functional /usr/include/c++/15/bits/std_function.h \
- /usr/include/c++/15/array /usr/include/c++/15/compare
+ /usr/include/c++/15/array /usr/include/c++/15/compare \
+ /home/guillem/fragile/fractal-gas-web/src/arcade_trajectory.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal_tree.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/backends/snapshot_graph.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/graph.hpp \
+ /home/guillem/fragile/fractal-gas-web/src/fractal/visit_grid.hpp

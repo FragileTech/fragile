@@ -178,7 +178,7 @@ export function endpointWeights(run, pool, snapshot = run.snapshots.at(-1)) {
       1,
       snapshot?.node_count ?? run.nodes.length,
     ))
-      if (n.tokens && n.game_score && !seen.has(n.text)) {
+      if (n.tokens && n.status === 1 && n.game_score && !seen.has(n.text)) {
         add(n.id);
         seen.add(n.text);
       }
@@ -198,6 +198,9 @@ export function endpointWeights(run, pool, snapshot = run.snapshots.at(-1)) {
     const parents = new Set(nodes.slice(1).map((n) => n.parent));
     for (const n of nodes.slice(1)) if (!parents.has(n.id)) add(n.id);
   }
+  if (run.config.objective === "xent_game")
+    for (const id of weights.keys())
+      if (run.nodes[id].status !== 1) weights.delete(id);
   return weights;
 }
 export function distance(a, b, metric = "cosine") {
@@ -458,9 +461,10 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
   const game = allRuns[0]?.config.objective === "xent_game";
   const filters = {
     ...DEFAULT_FILTERS,
-    ...(game ? { metric: "reward", status: "all", pool: "archive" } : {}),
+    ...(game ? { metric: "reward", status: "eos", pool: "archive" } : {}),
     ...input,
   };
+  if (game) filters.status = "eos";
   const runs = allRuns.filter(
     (r) =>
       (filters.trial === "all" || r.trial === Number(filters.trial)) &&
@@ -657,9 +661,9 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
         .filter((n) => n.tokens > 0 && n.status > 0);
       const eligible =
         run.config.objective === "xent_game"
-          ? run.nodes.slice(1, s.node_count).filter((n) => n.tokens > 0)
+          ? full.filter((n) => n.status === 1)
           : full;
-      const graded = full
+      const graded = eligible
         .map((n) => gradeLookup[`${run.id}/${n.id}`]?.overall)
         .filter(finite);
       const weights = endpointWeights(run, "retained", s),
@@ -675,7 +679,7 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
           s.run || s.generated_work != null
             ? "All accepted generation"
             : "Committed generation",
-        best_mean: maxValue(full.map((n) => n.logp / n.tokens)),
+        best_mean: maxValue(eligible.map((n) => n.logp / n.tokens)),
         best_reward: maxValue(eligible.map((n) => objective(n, run.config))),
         best_grade: maxValue(graded),
         graded: graded.length,
@@ -767,9 +771,17 @@ export function computeComparison(source, input = {}, gradeLookup = {}) {
               target_nll: -n.game_score.conditional_logp / n.game_score.tokens,
               baseline_nll: -n.game_score.baseline_logp / n.game_score.tokens,
             }
-          : null;
-      })
-      .filter(Boolean),
+          : {
+              key: null,
+              method: run.method,
+              trial: run.trial,
+              mode: run.config.game_mode,
+              text: "No model-finished answer",
+              score: null,
+              target_nll: null,
+              baseline_nll: null,
+            };
+      }),
     distributions: plottedDistributions,
     filters,
     rows,

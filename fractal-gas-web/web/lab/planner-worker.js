@@ -38,6 +38,34 @@ self.onmessage = async ({ data }) => {
       postMessage({ type: "ready", threads });
       return;
     }
+    if (data.type === "population") {
+      try {
+        if (!["fmc", "wave-jump"].includes(strategy.id))
+          throw new Error("Live resizing requires Wave, FMC, or Wave Jump");
+        if (!currentRoot) {
+          strategy.controller.begin(data.root, data.seed);
+          currentRoot = data.root;
+          resumeSaved = true;
+        }
+        const population = engine.setPopulation(
+          data.walkers,
+          data.removal_policy,
+          data.defer ? 1 : 0,
+        );
+        Object.assign(settings, {
+          walkers: population.requested,
+          max_walkers: population.maximum,
+          removal_policy: population.removal_policy,
+        });
+        if (!data.silent) postMessage({ type: "population", population });
+      } catch (error) {
+        postMessage({
+          type: "population-error",
+          message: String(error.message || error),
+        });
+      }
+      return;
+    }
     if (data.type === "checkpoint") {
       sequence++;
       if (!strategy.controller.checkpoint)
@@ -67,6 +95,15 @@ self.onmessage = async ({ data }) => {
       strategy.controller.restore(data.checkpoint);
       currentRoot = data.checkpoint.root;
       resumeSaved = true;
+      if (["fmc", "wave-jump"].includes(strategy.id)) {
+        const population = engine.populationStatus();
+        Object.assign(settings, {
+          walkers: population.requested,
+          max_walkers: population.maximum,
+          removal_policy: population.removal_policy,
+        });
+        postMessage({ type: "population", population });
+      }
       postMessage({ type: "checkpoint-restored" });
       return;
     }
@@ -127,6 +164,9 @@ self.onmessage = async ({ data }) => {
     postMessage(
       {
         type: "plan",
+        population: ["fmc", "wave-jump"].includes(strategy.id)
+          ? engine.populationStatus()
+          : undefined,
         revision: data.revision,
         target: data.target,
         root: data.root,

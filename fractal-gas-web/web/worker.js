@@ -370,7 +370,9 @@ async function handleMessage(event) {
           if (msg.rewardWeights) fg.setRewardWeights(msg.rewardWeights);
           // Graph mode: the effective population cap after the wasm memory
           // clamp (may be below the requested max walkers).
-          post("ready", { algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers(),
+          if (fg.algorithm() !== 1 && params.removal_policy &&
+              !fg.setPopulation(params.n, params.removal_policy)) throw new Error(fg.lastError());
+          post("ready", { population: fg.populationStatus(), algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers(),
                           countingVisits: fg.countingVisits(), resources: memoryStatus() });
           if (msg.reset) post("resetDone", { resources: memoryStatus() });
         } else {
@@ -436,6 +438,15 @@ async function handleMessage(event) {
         if (visits) post("visits", { visits }, [visits.keys.buffer, visits.sums.buffer]);
         break;
       }
+      case "setPopulation": {
+        if (!Number.isInteger(msg.walkers) || msg.walkers < 2 || msg.walkers > 1024)
+          throw new Error("Active walkers must be an integer between 2 and 1024");
+        if (!fg) throw new Error("Initialize a run first");
+        if (!fg.setPopulation(msg.walkers, msg.removal_policy)) throw new Error(fg.lastError());
+        if (lastInit) Object.assign(lastInit.params, { n: msg.walkers, removal_policy: msg.removal_policy });
+        post("population", { population: fg.populationStatus() });
+        break;
+      }
       case "setParams":
         // embind requires every FgParams field; the farm fields are only
         // meaningful at init, so zeros suffice here.
@@ -456,7 +467,7 @@ async function handleMessage(event) {
     running = false;
     const message = failureMessage(err);
     if (msg.type === "init") disposeRuntime();
-    post("error", { message, requiresReset: msg.type !== "setParams", recoverable: msg.type === "setParams" || !!lastInit });
+    post("error", { message, requiresReset: !["setParams", "setPopulation"].includes(msg.type), recoverable: ["setParams", "setPopulation"].includes(msg.type) || !!lastInit });
   }
 }
 
