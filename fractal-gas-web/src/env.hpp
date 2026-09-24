@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <stdexcept>
 
 namespace fg {
 
@@ -64,6 +65,41 @@ class BatchEnv {
                           std::vector<float>& rewards,
                           std::vector<uint8_t>& dones,
                           std::vector<uint8_t>& truncated) = 0;
+
+  static void validate_selection(const std::vector<std::vector<char>>& states,
+                                 const std::vector<int32_t>& sources, size_t count) {
+    if (sources.empty()) {
+      if (count > states.size()) throw std::invalid_argument("Invalid donor batch size");
+    } else {
+      if (sources.size() != count) throw std::invalid_argument("Invalid donor index count");
+      for (auto i : sources)
+        if (i < 0 || size_t(i) >= states.size()) throw std::invalid_argument("Invalid donor index");
+    }
+  }
+
+  /// Selected donors are read without changing or copying the source population.
+  /// Output and cached metadata indices always refer to batch positions.
+  virtual void step_batch_selected(const std::vector<std::vector<char>>& states,
+                          const std::vector<int32_t>& sources,
+                          const std::vector<int32_t>& actions,
+                          const std::vector<int32_t>& dt,
+                          std::vector<std::vector<char>>& new_states,
+                          std::vector<float>& observations,
+                          std::vector<float>& rewards,
+                          std::vector<uint8_t>& dones,
+                          std::vector<uint8_t>& truncated) {
+    validate_selection(states, sources, actions.size());
+    if (sources.empty() && actions.size() == states.size()) {
+      step_batch(states, actions, dt, new_states, observations, rewards, dones, truncated);
+      return;
+    }
+    // Compatibility for third-party environments; Arcade overrides this path.
+    std::vector<std::vector<char>> selected;
+    selected.reserve(actions.size());
+    for (size_t i = 0; i < actions.size(); ++i)
+      selected.push_back(states[sources.empty() ? i : size_t(sources[i])]);
+    step_batch(selected, actions, dt, new_states, observations, rewards, dones, truncated);
+  }
 
   /// Optional score used ONLY to pick the walker shown in the demo (frame
   /// recording) — it does not enter the algorithm. When has_display_score()

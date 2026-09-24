@@ -609,3 +609,27 @@ body {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 }
+
+/* In-memory ancestry player, paired with the existing live showcase. */
+#trajectory-panel {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 12px 14px; width: 384px;
+  max-width: 100%; box-sizing: border-box;
+}
+#trajectory-panel h2 { margin: 0 0 8px; font-size: 12px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .08em; }
+#trajectory-screen { display: block; width: 100%; aspect-ratio: 4 / 3;
+  object-fit: contain; background: #000; image-rendering: pixelated; }
+#trajectory-seek { width: 100%; margin: 12px 0; }
+.trajectory-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.trajectory-controls label { display: flex; align-items: center; gap: 5px; }
+#trajectory-walker { width: 65px; }
+#trajectory-panel:fullscreen { width: 100%; height: 100%; overflow: auto; }
+#trajectory-panel:fullscreen canvas { height: calc(100vh - 190px); width: 100%; }
+#screen-panel, #trajectory-panel { flex: 1 1 calc(50% - 8px); width: calc(50% - 8px); min-width: 0; box-sizing: border-box; }
+#screen-wrap { display: block; }
+#screen { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; }
+#run-panel { flex-basis: 100%; }
+@media (max-width: 700px) {
+  #screen-panel, #trajectory-panel { flex-basis: 100%; width: 100%; }
+}

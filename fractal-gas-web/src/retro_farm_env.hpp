@@ -53,6 +53,15 @@ class RetroFarmEnv final : public BatchEnv {
                   std::vector<uint8_t>& dones,
                   std::vector<uint8_t>& truncated) override;
 
+  void step_batch_selected(const std::vector<std::vector<char>>& states,
+                  const std::vector<int32_t>& sources,
+                  const std::vector<int32_t>& actions,
+                  const std::vector<int32_t>& dt,
+                  std::vector<std::vector<char>>& new_states,
+                  std::vector<float>& observations, std::vector<float>& rewards,
+                  std::vector<uint8_t>& dones,
+                  std::vector<uint8_t>& truncated) override;
+
   bool has_display_score() const override { return true; }
   float display_score(int32_t walker_index) const override;
 

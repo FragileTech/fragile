@@ -25,7 +25,7 @@ RetroFarmEnv::RetroFarmEnv(uintptr_t regions_ptr, int n_workers,
                            size_t blob_len, int32_t obs_mode, RetroGame game)
     : game_(game),
       obs_mode_(obs_mode),
-      n_workers_(n_workers < 1 ? 1 : (n_workers > 8 ? 8 : n_workers)),
+      n_workers_(n_workers < 1 ? 1 : (n_workers > 20 ? 20 : n_workers)),
       regions_(reinterpret_cast<uint8_t*>(regions_ptr)),
       blob_len_(blob_len) {
   if (!regions_ || blob_len_ == 0 || blob_len_ > kBlobCap) {
@@ -63,7 +63,15 @@ void RetroFarmEnv::post_command(int slot, int32_t cmd) {
 
 void RetroFarmEnv::wait_idle(int slot, const char* what) {
   int32_t* h = header(slot);
-  while (atomic_load_i32(h + kCtrl) > 0) emscripten_thread_sleep(0.2);
+  const double deadline = emscripten_get_now() + (std::strcmp(what, "boot") == 0 ? 120000 : 30000);
+  while (atomic_load_i32(h + kCtrl) > 0) {
+    if (emscripten_get_now() > deadline) {
+      atomic_store_i32(h + kCtrl, -1);
+      throw std::runtime_error(std::string("Sonic emulator worker ") + std::to_string(slot + 1) +
+                               " timed out during " + what + "; reset the run.");
+    }
+    emscripten_thread_sleep(0.2);
+  }
   if (atomic_load_i32(h + kCtrl) < 0) {
     atomic_store_i32(h + kCtrl, 0);
     throw std::runtime_error(std::string("RetroFarmEnv: worker failed in ") +
@@ -99,7 +107,20 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
                               std::vector<float>& rewards,
                               std::vector<uint8_t>& dones,
                               std::vector<uint8_t>& truncated) {
-  const auto n = static_cast<int32_t>(states.size());
+  step_batch_selected(states, {}, actions, dt, new_states, observations, rewards, dones, truncated);
+}
+
+void RetroFarmEnv::step_batch_selected(const std::vector<std::vector<char>>& states,
+                             const std::vector<int32_t>& sources,
+                             const std::vector<int32_t>& actions,
+                             const std::vector<int32_t>& dt,
+                              std::vector<std::vector<char>>& new_states,
+                              std::vector<float>& observations,
+                              std::vector<float>& rewards,
+                              std::vector<uint8_t>& dones,
+                              std::vector<uint8_t>& truncated) {
+  validate_selection(states, sources, actions.size());
+  const auto n = static_cast<int32_t>(actions.size());
   const size_t d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
   pos_cache_.resize(static_cast<size_t>(n) * 6);
@@ -117,7 +138,7 @@ void RetroFarmEnv::step_batch(const std::vector<std::vector<char>>& states,
       const int slot = i - wave_start;
       const auto ui = static_cast<size_t>(i);
       int32_t* h = header(slot);
-      std::memcpy(blob_area(slot), states[ui].data(), blob_len_);
+      std::memcpy(blob_area(slot), states[sources.empty() ? ui : static_cast<size_t>(sources[ui])].data(), blob_len_);
       atomic_store_i32(h + kAction, actions[ui]);
       atomic_store_i32(h + kDt, dt[ui]);
       post_command(slot, kCmdStep);

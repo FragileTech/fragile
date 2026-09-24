@@ -1,4 +1,5 @@
 #include "fractal/exploration_tree.hpp"
+#include "arcade_memory.hpp"
 
 #include <algorithm>
 #include <limits>
@@ -30,6 +31,7 @@ void ExplorationTree::reserve(size_t count) {
   size_t capacity = std::min(max_bytes / per_node,
                              std::max(needed, std::max(size_t(64), nodes_.capacity() * 2)));
   if (needed > nodes_.capacity()) {
+    arcade_memory::require(uint64_t(capacity) * per_node);
     nodes_.reserve(capacity);
     actions_.reserve(capacity * action_dim_);
     poses_.reserve(capacity * pose_dim_);

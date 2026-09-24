@@ -1,5 +1,9 @@
 # Changelog
 
+- Add an Arcade trajectory player with best/selected walker ancestry, scrubbing, playback controls, direct Graph snapshot rendering, and Wave/planner replay from the initial state.
+
+- Add Arcade worker selection (Auto or 1–20), persisted 1–8 GiB combined WebAssembly budgets, growing wasm32 heaps, direct donor stepping, bounded Graph history, and runtime cleanup on reset.
+
 - Add an optional shared-prefix threshold to Graph in the LLM, Arcade, and Optimization labs. Frozen ancestry is archived outside the active population, shown in green, and retained for trajectory reconstruction.
 
 - Add generated fixed-target Xent games to LLM Lab, with opposite surprise objectives, target likelihood scoring during Fractal sampling, best-prefix retention, paired token-budget benchmarks, portable game settings and offline scoring evidence.

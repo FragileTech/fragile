@@ -60,18 +60,33 @@ void ThreadPool::dispatch(int32_t n,
     job_chunk_ = chunk;
     if (chunk) next_index_.store(0, std::memory_order_relaxed);
     completed_slots_ = 0;
+    job_error_ = nullptr;
     ++generation_;
   }
   cv_start_.notify_all();
 
   // The caller participates in either scheduling policy as slot 0.
-  run_job(0, n, fn, chunk);
+  run_job_safely(0, n, fn, chunk);
 
   std::unique_lock<std::mutex> lock(mutex_);
   ++completed_slots_;
   // Empty partitions must also finish before job_fn_ can expire or be reused.
   cv_done_.wait(lock, [this] { return completed_slots_ == n_slots_; });
   job_fn_ = nullptr;
+  if (job_error_) std::rethrow_exception(job_error_);
+}
+
+void ThreadPool::run_job_safely(int slot, int32_t n,
+                                 const std::function<void(int32_t, int)>& fn, int32_t chunk) {
+  try {
+    run_job(slot, n, fn, chunk);
+  } catch (...) {
+    // Always complete the barrier before propagating allocation/emulator
+    // failures. Otherwise the coordinator waits forever or fn expires while
+    // another slot still uses it.
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (!job_error_) job_error_ = std::current_exception();
+  }
 }
 
 void ThreadPool::run_job(int slot, int32_t n,
@@ -114,7 +129,7 @@ void ThreadPool::worker_loop(int slot) {
       chunk = job_chunk_;
     }
 
-    run_job(slot, n, *fn, chunk);
+    run_job_safely(slot, n, *fn, chunk);
 
     {
       std::lock_guard<std::mutex> lock(mutex_);

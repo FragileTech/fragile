@@ -9,6 +9,7 @@
     "test:llm-comparison-browser": "node tests/llm/comparison-browser.mjs",
     "test:llm-ranking-browser": "node tests/llm/ranking-browser.mjs",
     "test:llm-benchmark-browser": "node tests/llm/benchmark-browser.mjs",
+    "test:arcade-trajectory-browser": "node tests/arcade-trajectory-browser.mjs",
     "test:arcade-browser": "node tests/arcade-planners-browser.mjs",
     "capture:arcade-docs": "node tools/capture-arcade-docs.mjs",
     "test:visual-cohesion-browser": "node tests/visual-cohesion-browser.mjs",
@@ -47,7 +48,11 @@
     "test:euclidean-qft": "node tests/euclidean-gas/lecture-qft.test.mjs",
     "test:euclidean-qft-browser": "node tests/euclidean-gas/lecture-qft-browser.mjs",
     "test:euclidean-qft-simulator": "node --test tests/euclidean-gas/qft-simulator.test.mjs",
-    "test:euclidean-qft-simulator-browser": "node tests/euclidean-gas/qft-simulator-browser.mjs"
+    "test:euclidean-qft-simulator-browser": "node tests/euclidean-gas/qft-simulator-browser.mjs",
+    "test:arcade-resources": "node tests/arcade-resources.test.mjs && node tests/arcade-worker.test.mjs",
+    "test:arcade-resources-browser": "node tests/arcade-resources-browser.mjs",
+    "test:arcade-memory-browser": "node tests/arcade-memory-browser.mjs",
+    "test:arcade-growth-browser": "node tests/arcade-growth-browser.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",

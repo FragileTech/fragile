@@ -158,6 +158,17 @@ Changing it restarts the run.">Observation</h2>
       </section>
 
       <section>
+        <h2>Resources</h2>
+        <label data-help="Parallel emulator slots. Auto uses the reported CPU count minus one, up to 20 and no more than the walker count. Changing this restarts the run.">Workers
+          <select id="param-workers"><option value="auto">Auto</option></select>
+        </label>
+        <label data-help="Combined WebAssembly memory allowance for the engine and Sonic emulators. Memory grows as needed from 512 MiB for the engine and 64 MiB per Sonic worker. The 32-bit main engine can use at most 4 GiB. Browser and graphics overhead are additional. Changing this restarts the run.">Engine memory limit
+          <select id="param-memory"><option value="1">1 GiB</option><option value="2">2 GiB</option><option value="4">4 GiB</option><option value="8" selected>8 GiB</option></select>
+        </label>
+        <p class="hint" id="resource-hint" aria-live="polite">Memory grows as needed. Main engine maximum: 4 GiB.</p>
+      </section>
+
+      <section>
         <h2>Swarm</h2>
         <label data-help="Wave: number of game copies run in parallel; each walker is one candidate trajectory, and the swarm explores by cloning good walkers over bad ones. Graph: the number of walkers the tree starts with and the minimum number of leaves it keeps (new leaves are added whenever fewer remain). More walkers explore more broadly per iteration, but each iteration is slower. Restarts the run."><span id="param-n-label">Walkers (N)</span>
           <input type="number" id="param-n" value="48" min="2" max="1024" step="1">
@@ -239,6 +250,26 @@ Changes apply to rewards earned from now on: reward already banked by the walker
           </div>
         </div>
       </div>
+      <section id="trajectory-panel" aria-label="Walker trajectory player">
+        <h2>Walker trajectory</h2>
+        <canvas id="trajectory-screen" width="256" height="240" aria-label="Selected walker trajectory"></canvas>
+        <div class="trajectory-controls">
+          <label>Walker <input id="trajectory-walker" type="number" min="0" step="1" placeholder="Best" aria-label="Walker index (empty selects best)"></label>
+          <button id="trajectory-load" disabled>Load path</button>
+          <button id="trajectory-best" disabled>Best</button>
+        </div>
+        <input id="trajectory-seek" type="range" min="0" max="0" value="0" disabled aria-label="Trajectory position">
+        <div class="trajectory-controls">
+          <button id="trajectory-home" disabled title="Back to start" aria-label="Back to start">⏮</button>
+          <button id="trajectory-prev" disabled title="Previous state" aria-label="Previous state">◀</button>
+          <button id="trajectory-play" disabled>Play</button>
+          <button id="trajectory-next" disabled title="Next state" aria-label="Next state">▶</button>
+          <label>Speed <select id="trajectory-speed" aria-label="Playback speed"><option value="2">0.25×</option><option value="4">0.5×</option><option value="8" selected>1×</option><option value="16">2×</option><option value="32">4×</option></select></label>
+          <button id="trajectory-fullscreen" title="Full screen" aria-label="Full screen">⛶</button>
+        </div>
+        <p id="trajectory-status" class="hint" aria-live="polite">Load a path to pause the search and replay from the start.</p>
+        <p class="hint">Recorded states · 1× = 8 states/s · silent playback</p>
+      </section>
       <div id="run-panel">
         <div class="buttons">
           <button id="btn-start" disabled title="Start the swarm">Start</button>

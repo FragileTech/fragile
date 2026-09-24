@@ -38,6 +38,9 @@ class ArcadePlanner {
   void invalidate();
   // One search iteration or one committed edge, never a whole planning loop.
   StepInfo advance();
+  const std::vector<char>& initial_state() const { return initial_state_; }
+  const std::vector<ArcadeAction>& played_actions() const { return played_actions_; }
+  size_t search_prefix_size() const { return search_prefix_size_; }
   const std::vector<char>& state() const { return state_; }
   const std::vector<uint8_t>& frame() const { return frame_; }
   const WalkerInfo& info() const { return info_; }
@@ -61,7 +64,9 @@ class ArcadePlanner {
   FractalGas& gas_;
   ArcadePlannerSettings settings_;
   fractal::Planner<int32_t> search_;
-  std::vector<char> state_;
+  std::vector<char> state_, initial_state_;
+  std::vector<ArcadeAction> played_actions_;
+  size_t search_prefix_size_ = 0;
   std::vector<float> obs_;
   std::vector<uint8_t> frame_;
   WalkerInfo info_;

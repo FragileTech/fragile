@@ -249,3 +249,86 @@ TEST_CASE(arcade_settings_validation) {
   }
   CHECK(ArcadePlannerSettings().maximum() == 64);
 }
+
+#include "arcade_trajectory.hpp"
+
+TEST_CASE(arcade_trajectory_wave_replays_selected_lineage_and_preserves_population) {
+  TerminalEnv env;
+  auto params = planner_params(8);
+  params.n_elite = 2;
+  FractalGas gas(env, params);
+  gas.reset();
+  for (int i = 0; i < 5; ++i) gas.step();
+  const auto before = gas.state().states;
+  const auto lineage = gas.state().lineage;
+  for (int slot = 0; slot < gas.n_walkers(); ++slot) {
+    ArcadeTrajectory replay;
+    replay.select(gas, nullptr, slot);
+    std::vector<uint8_t> frame;
+    CHECK(replay.seek(env, replay.size() - 1, frame));
+    CHECK(replay.cursor == gas.walker_state(slot));
+    CHECK(replay.seek(env, 0, frame));
+    CHECK(replay.cursor == replay.root);
+  }
+  CHECK(gas.state().states == before);
+  CHECK(gas.state().lineage == lineage);
+}
+
+TEST_CASE(arcade_trajectory_graph_reads_stored_states_without_copying) {
+  TerminalEnv env;
+  FractalTreeParams params;
+  params.start_walkers = params.min_leafs = 4;
+  params.max_walkers = 50;
+  params.freeze_prefix_after = 1;
+  FractalTree graph(env, params);
+  graph.reset();
+  for (int i = 0; i < 40; ++i) graph.step();
+  for (int slot = 0; slot < graph.n_walkers(); ++slot) {
+    if (graph.walker_state(slot).empty()) continue;
+    ArcadeTrajectory replay;
+    replay.select(graph, nullptr, slot);
+    const auto expected = graph.trajectory(slot);
+    CHECK(replay.size() == expected.size());
+    CHECK(replay.snapshots.back() == &graph.walker_state(slot));
+    for (size_t i = 0; i < expected.size(); ++i) CHECK(*replay.snapshots[i] == expected[i].state);
+  }
+}
+
+TEST_CASE(arcade_trajectory_planner_includes_committed_prefix_across_searches) {
+  TerminalEnv env;
+  auto params = planner_params();
+  FractalGas gas(env, params);
+  ArcadePlanner planner(env, gas, {2, 1});
+  planner.reset();
+  for (int i = 0; i < 8 && !planner.done(); ++i) {
+    planner.advance();
+    for (int slot = 0; slot < gas.n_walkers(); ++slot) {
+      ArcadeTrajectory replay;
+      replay.select(gas, &planner, slot);
+      CHECK(replay.root == planner.initial_state());
+      std::vector<uint8_t> frame;
+      CHECK(replay.seek(env, replay.size() - 1, frame));
+      CHECK(replay.cursor == gas.walker_state(slot));
+    }
+  }
+  CHECK(planner.search_prefix_size() > 0);
+  planner.reset();
+  CHECK(planner.played_actions().empty());
+}
+
+TEST_CASE(arcade_trajectory_long_seek_is_bounded_and_can_rewind) {
+  TerminalEnv env;
+  ArcadeTrajectory replay;
+  std::vector<float> obs;
+  env.reset(replay.root, obs);
+  replay.cursor = replay.root;
+  replay.actions.assign(100, {0, 1});
+  std::vector<uint8_t> frame;
+  CHECK(!replay.seek(env, 100, frame));
+  CHECK(replay.position == 32);
+  CHECK(replay.seek(env, 2, frame));
+  CHECK(replay.position == 2);
+  bool rejected = false;
+  try { replay.seek(env, 101, frame); } catch (const std::out_of_range&) { rejected = true; }
+  CHECK(rejected);
+}

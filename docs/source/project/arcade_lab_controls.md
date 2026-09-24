@@ -185,6 +185,38 @@ local room positions into the 24-room pyramid. Those details matter when
 interpreting a distance coefficient: the units are representation-dependent.
 :::
 
+(sec-arcade-lab-resources)=
+## Choose workers and memory
+
+:::{div} feynman-prose
+A walker is a saved game; a worker is an emulator that can advance one saved
+game at a time. **Workers** accepts **Auto** or an integer from `1` to `20`.
+Auto uses the smaller of the walker count, `20`, and the reported logical CPU
+count minus one, with at least one worker. When the browser supplies no CPU
+count, Auto assumes four CPUs. Explicit selections are also capped by the
+walker count. The resource readout shows the effective worker count.
+
+Sonic workers still run in synchronized waves: each takes one walker, advances
+it, and returns its result before the next wave starts. Adding workers can
+reduce the number of waves, but each worker also needs its own emulator memory.
+
+**Engine memory limit** accepts `1`, `2`, `4`, or `8 GiB`, and defaults to
+`8 GiB`. It budgets the combined WebAssembly allocations of the main engine
+and Sonic emulator modules. Browser, JavaScript, and graphics memory are extra.
+The main engine starts at `512 MiB` and grows as needed, up to its assigned
+allowance and the `4 GiB` ceiling of this 32-bit build. Each Sonic emulator
+starts at `64 MiB` and can grow within its share of the budget. Selecting
+`8 GiB` therefore does not allocate eight gigabytes immediately or give the
+main engine an eight-gigabyte heap. Read allocated memory and configured limits
+separately in the resource display.
+
+Workers and the memory limit are remembered by the browser. Changing either
+rebuilds the runtime; Reset also releases the old workers and heap before
+starting fresh with the selected settings. This lets a small run return to a
+small allocation after a large experiment. The selected limit is an upper
+bound; the browser still needs enough available memory to satisfy growth.
+:::
+
 (sec-arcade-lab-swarm-settings)=
 ## Set the swarm and Graph population
 
@@ -199,8 +231,9 @@ Graph has another number because its history is retained. **Max walkers** is a
 cap on graph nodes, including currently stepping leaves. The UI chooses a
 console-specific default: Mario `4000`, generic Atari `20000`, Sonic `150`, and
 dedicated Montezuma `20000`. The input range is `2`–`100000`, but the effective
-cap may be lower when browser WebAssembly memory reaches its capacity for
-another full emulator state. The ready message reports that effective cap.
+cap may be lower after accounting for emulator snapshots, current and next
+populations, observations, retained history, and runtime storage within the
+selected memory allowance. The ready message reports that effective cap.
 Sonic's smaller default is intentional: Genesis state blobs are comparatively
 expensive.
 
@@ -479,14 +512,49 @@ while the plot lines hold still. The screen, the planner counters, and the
 population plots are three synchronized, distinct views.
 :::
 
+(sec-arcade-lab-trajectory)=
+### Play a walker's trajectory from the start
+
+The **Walker trajectory** panel sits beside **Best walker** or **Played game**.
+Click **Best**, or leave **Walker** empty and click **Load path**, to select the
+best search walker. To inspect another walker, enter its zero-based index and
+click **Load path**. Loading pauses the search and opens the path at its initial
+state. For FMC and Jump Wave, this selects a search walker; its path includes the
+committed game's history followed by that candidate's continuation.
+
+| Control | Action |
+|---|---|
+| **Play / Pause** | Start or pause trajectory playback. |
+| **Trajectory position** scrubber | Drag to a recorded state along the selected path. |
+| **Back to start** | Return to the game's initial state. |
+| **Previous state / Next state** | Step backward or forward by one recorded transition. |
+| **Speed** | Choose `0.25×`, `0.5×`, `1×`, `2×`, or `4×`; `1×` plays eight recorded states per second. |
+| **Full screen** | Expand the trajectory panel when supported by the browser. |
+
+Playback is silent and shows transition endpoints, including the initial state.
+Each transition can span several emulator frames according to its action hold,
+so the playback speed counts recorded states, not game frames or real game time.
+Intermediate emulator frames are not displayed.
+
+Graph follows parent IDs through retained and archived nodes, including the
+frozen prefix, and renders existing emulator snapshots without copying the
+whole path. Wave reconstructs the path by replaying retained action ancestry
+from its root snapshot. The planners prepend committed actions to the current
+search path so playback begins at the game's initial state. Long Wave seeks
+reconstruct in cancellable batches and can take time to reach the requested
+state.
+
+Starting the search again or resetting clears the player. Load a path again
+after the search advances to inspect the updated trajectory.
+
 (sec-arcade-lab-lifecycle)=
 ## Reset, terminal states, and reproducibility
 
 :::{div} feynman-prose
 **Start** begins the worker loop or resumes it. **Pause** stops scheduling new
 steps and preserves the current Wave population, Graph tree, planner search, or
-partly executed trajectory. **Reset** rebuilds the active environment with the
-same selected settings and seed, clears the swarm/tree or planner state, clears
+partly executed trajectory. **Reset** releases the old runtime and its workers,
+then rebuilds the active environment with the same selected settings and seed, clears the swarm/tree or planner state, clears
 visit counts, maps, plots, and readouts, and leaves the run paused. It is the
 right response to an all-dead stop or a completed committed game.
 
@@ -512,9 +580,10 @@ For a reproducible run, write down the ROM identity and build, console and
 game, Mario World/Stage or Sonic Zone/Act, algorithm, observation mode, walker
 count, Graph cap, seed, elite count, fitness coefficients, visit settings,
 reward-term vector, and `dt` range. For planners also record horizon,
-consensus, and maximum horizon. The browser derives its parallel worker count
-from the machine's hardware concurrency (capped at eight), so include the
-browser/device when comparing throughput or exact traces.
+consensus, and maximum horizon. Record the selected Workers setting, effective
+worker count, and Engine memory limit as well. Auto depends on the machine's
+hardware concurrency, so include the browser/device when comparing throughput
+or exact traces.
 
 With the same ROM bytes, WebAssembly build, starting selectors, active settings,
 and seed, the implementation's random action, frame-skip, and cloning choices
@@ -528,7 +597,7 @@ transitions and leaves history unchanged.
 :::{div} feynman-added
 | Setting class | Controls |
 |---|---|
-| **Restart required** | Console/game, Mario World/Stage, Sonic Zone/Act, algorithm, RAM/RGB/Gray/Coords, Walkers (N), Graph Max walkers, and Seed. |
+| **Restart required** | Console/game, Mario World/Stage, Sonic Zone/Act, algorithm, RAM/RGB/Gray/Coords, Walkers (N), Graph Max walkers, Workers, Engine memory limit, and Seed. |
 | **Live** | Distance/Reward/Visit coefficients, dt min/max, Elite walkers where applicable, Visit reward, pooling, erase, and all visible game reward terms. |
 | **Live but replans** | Search horizon, Jump Wave consensus, maximum search horizon, and planner reward/fitness changes. The committed game is retained; pending search state is discarded. |
 | **Display only** | Map zoom/fit, map resize, plots/sidebar layout, and the map visits toggle. The visits toggle is remembered locally by the browser. |
@@ -551,8 +620,11 @@ button supplies the room-aware map and room reward.
 
 If Graph stops at a lower node count than **Max walkers**, read the effective
 cap shown beneath that control. Each node stores a complete emulator state, and
-the browser may cap the request for memory. Lowering the cap or choosing a
-smaller observation is the relevant fix. The map and visit controls appear with
+the runtime may cap the request for memory. Reduce the starting population or
+observation size, or increase the memory limit if the main engine still has
+room below its 4 GiB ceiling. An 8 GiB combined budget cannot raise that ceiling.
+If retained history reaches its memory limit, the run stops; Reset releases
+that history and starts a new run. The map and visit controls appear with
 Mario, Sonic, or dedicated Montezuma plus Coords observation; generic Atari
 uses its RAM state and standard screen and plot views.
 

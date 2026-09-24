@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <vector>
+#include "arcade_memory.hpp"
 
 namespace fg::fractal {
 template <class T>
@@ -56,7 +57,12 @@ struct Population {
     N = n;
     obs_dim = obs;
     action_dim = act;
-    observations.resize(size_t(n) * obs);
+    const size_t count = size_t(n) * obs;
+    if (count > observations.capacity()) {
+      arcade_memory::require(uint64_t(count) * sizeof(float) + uint64_t(n) * 512);
+      observations.reserve(count);  // no geometric overshoot for pixel observations
+    }
+    observations.resize(count);
     rewards.resize(n);
     step_rewards.resize(n);
     virtual_rewards.resize(n);

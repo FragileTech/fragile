@@ -599,3 +599,21 @@ New runs default to **Beam-style length normalization** (`objective: "beam"`), w
 Together scoring passed live checks with one ignored output token per request; zero-token requests are rejected by the tested route. The adapter verifies echoed probabilities against the pinned Qwen tokenizer, including split Unicode tokens, and stops on incompatible responses. XED alone lazily loads the locally bundled tokenizer (~12.8 MB data); its source revision and license are in `llm/tokenizer/`. `make llm-web` bundles `@huggingface/tokenizers` 0.2.0 alongside it. Cached answers reuse both scores without merging EOS identities.
 
 The native engine receives cumulative utility explicitly, so cloning and answer ranking use the same score. Analysis defaults to **Selected objective**, with raw XED and its direction shown separately from maximizing utility. Version 3 recordings and benchmark exports retain both XED token-probability sequences, scorer identity, direction, and separate scoring usage; legacy total/mean imports keep their original interpretation. Scoring input/output tokens do not consume the generated-sequence budget.
+
+### Walker trajectory playback
+
+The Arcade Lab's **Walker trajectory** panel sits beside the live screen. Click
+**Best** to load the displayed leader's path, or enter a zero-based walker index
+and click **Load path**. Loading pauses the search. Use Play/Pause, the scrubber,
+previous/next state, back to start, speed, and full screen to inspect the path.
+An empty walker field selects the best walker by default.
+
+Playback shows stored transition endpoints, including the initial state; it is
+silent and runs at eight recorded states per second at 1×. These states may be
+separated by several game frames, so this is not a 60 fps video. Graph mode walks
+parent IDs through active and archived nodes and renders their existing snapshots
+without copying the entire path. Wave retains pruned action ancestry and replays
+from its root snapshot. FMC/Jump Wave prepend the committed actions before the
+current search so the selected search walker's path starts at the game's initial
+state. Long Wave seeks reconstruct in cancellable batches. Starting the search
+or resetting clears the player; load the path again to inspect the updated run.

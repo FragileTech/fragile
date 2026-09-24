@@ -334,3 +334,29 @@ TEST_CASE(nes_full_gas_smoke) {
   CHECK(last_max > -1e30f);
   CHECK(!gas.best_frame().empty());
 }
+
+TEST_CASE(nes_selected_donors_match_materialized_batch) {
+  if (skip_if_no_rom("nes_selected_donors_match_materialized_batch")) return;
+  NesMarioEnv indexed(rom_path(), 3, ObsMode::kCoords);
+  NesMarioEnv reference(rom_path(), 3, ObsMode::kCoords);
+  std::vector<char> initial, initial_ref;
+  std::vector<float> obs, obs_ref;
+  indexed.reset(initial, obs); reference.reset(initial_ref, obs_ref);
+  std::vector<std::vector<char>> input(5, initial), input_ref(5, initial_ref), warm(5), warm_ref(5);
+  std::vector<float> out_obs(5 * indexed.obs_dim()), ref_obs(out_obs.size()), rewards(5), ref_rewards(5);
+  std::vector<uint8_t> dones(5), ref_dones(5), truncated(5), ref_truncated(5);
+  std::vector<int32_t> actions{0, 1, 2, 3, 4}, dt{1, 2, 1, 2, 1};
+  indexed.step_batch(input, actions, dt, warm, out_obs, rewards, dones, truncated);
+  reference.step_batch(input_ref, actions, dt, warm_ref, ref_obs, ref_rewards, ref_dones, ref_truncated);
+  const auto original = warm;
+  std::vector<int32_t> sources{4, 0, 4, 2, 1};
+  std::vector<std::vector<char>> materialized, output(5), expected(5);
+  for (auto i : sources) materialized.push_back(warm_ref[i]);
+  indexed.step_batch_selected(warm, sources, actions, dt, output, out_obs, rewards, dones, truncated);
+  reference.step_batch(materialized, actions, dt, expected, ref_obs, ref_rewards, ref_dones, ref_truncated);
+  CHECK(output == expected);
+  CHECK(out_obs == ref_obs);
+  CHECK(rewards == ref_rewards);
+  CHECK(dones == ref_dones);
+  CHECK(warm == original);
+}

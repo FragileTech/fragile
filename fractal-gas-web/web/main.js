@@ -1,3 +1,4 @@
+import { trajectoryPlayer } from "./trajectory-player.js";
 // Main-thread UI: sidebar controls, canvas rendering of the best walker,
 // stat readouts and the five plots (mirroring the Panel dashboard panes).
 
@@ -714,6 +715,7 @@ window.addEventListener("resize", drawMap);
 new ResizeObserver(() => drawMap()).observe(mapResize);
 
 let worker = null;
+const trajectory = trajectoryPlayer(msg => worker?.postMessage(msg));
 let romBuffer = null;
 let auxBuffer = null; // Genesis savestate
 let initialized = false;
@@ -898,6 +900,45 @@ function levelParams() {
   };
 }
 
+for (let i = 1; i <= 20; i++) {
+  const option = document.createElement("option");
+  option.value = String(i); option.textContent = String(i);
+  $("param-workers").appendChild(option);
+}
+for (const [id, key] of [["param-workers", "fgArcadeWorkers"], ["param-memory", "fgArcadeMemory"]]) {
+  try {
+    const saved = localStorage.getItem(key);
+    if ([...$(id).options].some(o => o.value === saved)) $(id).value = saved;
+  } catch {}
+  $(id).addEventListener("change", () => {
+    try { localStorage.setItem(key, $(id).value); } catch {}
+    if (romBuffer) initRun();
+  });
+}
+function readResources() {
+  return { workers: $("param-workers").value === "auto" ? "auto" : Number($("param-workers").value),
+    memoryGiB: Number($("param-memory").value) };
+}
+function showResources(resources) {
+  if (!resources) return;
+  const gib = bytes => (bytes / 1024 ** 3).toFixed(2);
+  $("resource-hint").textContent = `${resources.workers} workers · ${gib(resources.allocatedBytes)} / ${gib(resources.budgetBytes)} GiB allocated · main engine ${gib(resources.mainBytes)} / ${gib(resources.mainLimitBytes)} GiB`;
+}
+let runRevision = 0;
+let needsReset = false;
+let disposal = Promise.resolve();
+async function disposeWorker(previous) {
+  await new Promise(resolve => {
+    const timer = setTimeout(resolve, 35000);
+    previous.onmessage = ({ data }) => {
+      if (data.type === "disposed") { clearTimeout(timer); resolve(); }
+    };
+    previous.onerror = () => { clearTimeout(timer); resolve(); };
+    previous.postMessage({ type: "dispose" });
+  });
+  previous.terminate();
+}
+
 function readParams() {
   return {
     n: parseInt($("param-n").value, 10) || 48,
@@ -910,7 +951,7 @@ function readParams() {
     dtMax: parseInt($("param-dt-max").value, 10) || 30,
     nElite: parseInt($("param-elite").value, 10) || 0,
     seed: parseInt($("param-seed").value, 10) || 0,
-    nThreads: Math.min(Math.max((navigator.hardwareConcurrency || 4) - 1, 1), 8),
+    nThreads: Math.min(Math.max((navigator.hardwareConcurrency || 4) - 1, 1), 20),
     obsMode,
     ...levelParams(),
     // Montezuma is the Atari console with the dedicated game id.
@@ -930,9 +971,9 @@ function readParams() {
 }
 
 function updateButtons() {
-  $("btn-start").disabled = !initialized || running;
+  $("btn-start").disabled = !initialized || running || needsReset;
   $("btn-pause").disabled = !initialized || !running;
-  $("btn-reset").disabled = !initialized;
+  $("btn-reset").disabled = !romBuffer;
 }
 
 function resetReadouts() {
@@ -953,8 +994,11 @@ function ensureWorker() {
   worker = new Worker("worker.js", { type: "module" });
   worker.onmessage = (event) => {
     const msg = event.data;
+    showResources(msg.resources);
     switch (msg.type) {
       case "ready":
+        trajectory.clear(true);
+        needsReset = false;
         initialized = true;
         running = false;
         resetReadouts();
@@ -978,6 +1022,7 @@ function ensureWorker() {
         updateButtons();
         break;
       case "resetDone":
+        trajectory.clear(true);
         running = false;
         resetReadouts();
         clearPlots();
@@ -992,6 +1037,15 @@ function ensureWorker() {
         break;
       case "step":
         onStep(msg);
+        break;
+      case "trajectorySelected":
+      case "trajectoryFrame":
+        trajectory.receive(msg);
+        break;
+      case "paused":
+        running = false;
+        updateButtons();
+        setStatus("Paused");
         break;
       case "visits":
         lastVisits = msg.visits;
@@ -1019,12 +1073,17 @@ function ensureWorker() {
       case "error":
         running = false;
         initialized = !!msg.recoverable;
+        needsReset = !!msg.requiresReset;
         setStatus("Error: " + msg.message, "error");
         updateButtons();
         break;
     }
   };
   worker.onerror = (err) => {
+    running = false;
+    initialized = true;
+    needsReset = true;
+    updateButtons();
     setStatus("Worker error: " + err.message, "error");
   };
   return worker;
@@ -1139,7 +1198,7 @@ function onStep(msg) {
   }
 }
 
-function initRun() {
+async function initRun(reset = false) {
   if (!romBuffer) return;
   if (!crossOriginIsolated) {
     setStatus(
@@ -1149,15 +1208,23 @@ function initRun() {
     );
     return;
   }
+  trajectory.clear();
+  const revision = ++runRevision;
   setStatus("Loading emulator + swarm...");
   initialized = false;
   running = false;
   updateButtons();
+  const previous = worker;
+  worker = null;
+  if (previous) disposal = disposal.then(() => disposeWorker(previous));
+  await disposal;
+  if (revision !== runRevision) return;
+  needsReset = false;
   // Copy so the source buffers survive repeated inits (transfer detaches).
   const rom = romBuffer.slice(0);
   const aux = auxBuffer ? auxBuffer.slice(0) : new ArrayBuffer(0);
   ensureWorker().postMessage(
-    { type: "init", rom, aux, params: readParams(),
+    { type: "init", rom, aux, params: readParams(), resources: readResources(), reset,
       rewardWeights: readRewardWeights(consoleId) },
     [rom, aux],
   );
@@ -1242,6 +1309,7 @@ for (const id of ["param-world", "param-stage"]) {
 }
 
 $("btn-start").addEventListener("click", () => {
+  trajectory.clear(true);
   running = true;
   $("run-ended").hidden = true;
   updateButtons();
@@ -1257,7 +1325,7 @@ $("btn-pause").addEventListener("click", () => {
 });
 
 $("btn-reset").addEventListener("click", () => {
-  worker.postMessage({ type: "reset" });
+  initRun(true);
 });
 
 // Live-tunable parameters -> setParams; structural ones -> re-init.

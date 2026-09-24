@@ -297,14 +297,27 @@ void NesMarioEnv::step_batch(const std::vector<std::vector<char>>& states,
                              std::vector<float>& rewards,
                              std::vector<uint8_t>& dones,
                              std::vector<uint8_t>& truncated) {
-  const auto n = static_cast<int32_t>(states.size());
+  step_batch_selected(states, {}, actions, dt, new_states, observations, rewards, dones, truncated);
+}
+
+void NesMarioEnv::step_batch_selected(const std::vector<std::vector<char>>& states,
+                             const std::vector<int32_t>& sources,
+                             const std::vector<int32_t>& actions,
+                             const std::vector<int32_t>& dt,
+                             std::vector<std::vector<char>>& new_states,
+                             std::vector<float>& observations,
+                             std::vector<float>& rewards,
+                             std::vector<uint8_t>& dones,
+                             std::vector<uint8_t>& truncated) {
+  validate_selection(states, sources, actions.size());
+  const auto n = static_cast<int32_t>(actions.size());
   const auto d = static_cast<size_t>(obs_dim());
   display_cache_.resize(static_cast<size_t>(n));
   info_cache_.resize(static_cast<size_t>(n));
   float* obs_base = observations.data();
   pool_.parallel_for(n, [&](int32_t i, int slot) {
     const auto ui = static_cast<size_t>(i);
-    step_one(slot, states[ui], actions[ui], dt[ui], new_states[ui],
+    step_one(slot, states[sources.empty() ? ui : static_cast<size_t>(sources[ui])], actions[ui], dt[ui], new_states[ui],
              obs_base + ui * d, rewards[ui], dones[ui], display_cache_[ui]);
     truncated[ui] = 0;  // the NES env never truncates
     const DisplayInfo& di = display_cache_[ui];

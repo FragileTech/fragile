@@ -252,7 +252,10 @@ explicitly so the experiment is written down and easy to recall.
    **Stage** to `1`.
 3. In **Swarm**, set **Walkers (N)** to `48`, **Seed** to `7`, and **Elite
    walkers** to `2`. In **Kinetics**, set **dt min** to `6` and **dt max** to
-   `30`. Leave **Distance coef** and **Reward coef** at `1.0`.
+   `30`. Leave **Distance coef** and **Reward coef** at `1.0`. Set **Workers**
+   to **Auto** and **Engine memory limit** to `8 GiB`; these resource settings
+   are remembered by the browser. Record the effective worker count displayed
+   for your machine.
 4. In the Mario Coords controls, set **Visit reward** to **Off**, **Visit
    pooling (px)** to `5`, **Erase coef** to `0.05`, and **Visit coef** to `1.0`.
    Wave starts with this setting Off; naming it here matters because the visit
@@ -296,8 +299,8 @@ experiment.
 **Start** begins the worker loop, or resumes it after a pause. **Pause** stops
 new iterations while preserving the current swarm; for FMC and Jump Wave, it
 also preserves the current search or committed trajectory. **Reset** stops the
-loop and calls the emulator's reset operation, then clears the browser's run
-readouts, plots, map state, and displayed frame. It keeps the selected console,
+loop, releases the old runtime and workers, and builds a fresh runtime. It then
+clears the browser's run readouts, plots, map state, and displayed frame. It keeps the selected console,
 level, algorithm, and settings, so it is the button to use after an
 all-walkers-dead stop or a completed game.
 
@@ -314,7 +317,8 @@ to **Played game** when you select a planner.
 Here is the distinction that saves the most confusion. A restart-required
 setting changes the shape or identity of the state being copied: changing the
 number of walkers, for example, requires the UI to construct a new population.
-The UI reinitializes the run when such a control changes.
+The UI rebuilds the runtime when such a control changes, releasing the previous
+heap and workers.
 
 The live controls modify the next planning steps and preserve the past. In
 particular, a reward-term change applies to reward earned from then onward;
@@ -329,7 +333,7 @@ reward already banked by a walker keeps its earlier weighting.
 | Algorithm: Wave, Graph, FMC, or Jump Wave | dt min and dt max |
 | Observation: RAM, RGB, Gray, or Coords | Elite walkers for Wave, FMC, and Jump Wave |
 | Walkers (N), or Graph's Max walkers | Planner horizon; Jump Wave's Stop at first bifurcation and Maximum search horizon |
-| Seed | Mario, Sonic, and Montezuma reward-term sliders |
+| Seed; Workers; Engine memory limit | Mario, Sonic, and Montezuma reward-term sliders |
 :::
 
 :::{div} feynman-prose
@@ -344,4 +348,20 @@ visit counting on by default in Coords mode for games with maps; Wave begins
 with visit counting set to **Off** by default. These changes affect behavior, so
 switching algorithms restarts the run and resets the interpretation of the
 population.
+:::
+
+:::{div} feynman-prose
+For a larger Sonic experiment, increase **Walkers (N)** and choose up to
+`20` workers. Auto leaves one reported logical CPU free and caps workers at
+`20` and the population size. More walkers need more saved game states; more
+workers add emulator instances. The resource readout reports the effective
+worker count and allocated WebAssembly memory alongside its limits.
+
+The default `8 GiB` limit covers the main engine and Sonic emulator modules
+together. The main engine starts at `512 MiB`, grows on demand, and cannot
+exceed `4 GiB` in this 32-bit build. Each Sonic emulator starts at `64 MiB`.
+Browser, JavaScript, and graphics allocations are outside this budget. Small
+runs do not allocate the whole selected allowance. Reset releases a grown heap
+so a later small run can start small again. See
+{ref}`sec-arcade-lab-resources` for the resource controls and their limits.
 :::

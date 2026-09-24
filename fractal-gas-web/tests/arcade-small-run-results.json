@@ -1,0 +1,18 @@
+[
+  {
+    "walkers": 2,
+    "workers": 2,
+    "baselineMedianMs": 96.34425000101328,
+    "candidateMedianMs": 58.504249998927115,
+    "exactTracesMatch": true,
+    "traceSha256": "504f2cc841dabd99943ff3ae1f0ca48050f640d6b8c8ca1695ef7e0422a31766"
+  },
+  {
+    "walkers": 48,
+    "workers": 8,
+    "baselineMedianMs": 822.478750000894,
+    "candidateMedianMs": 768.1085000008345,
+    "exactTracesMatch": true,
+    "traceSha256": "063985511724697a1020d4e306c483dc5d134449f7fc184cf2357b07cf2240be"
+  }
+]

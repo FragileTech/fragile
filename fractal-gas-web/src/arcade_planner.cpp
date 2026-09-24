@@ -1,4 +1,5 @@
 #include "arcade_planner.hpp"
+#include "arcade_memory.hpp"
 
 #include <algorithm>
 #include <map>
@@ -38,6 +39,9 @@ ArcadePlanner::ArcadePlanner(BatchEnv& env, FractalGas& gas, ArcadePlannerSettin
 void ArcadePlanner::reset() {
   gas_.reset();
   state_ = gas_.walker_state(0);
+  initial_state_ = state_;
+  played_actions_.clear();
+  search_prefix_size_ = 0;
   obs_.assign(gas_.state().observations.begin(),
               gas_.state().observations.begin() + gas_.state().obs_dim);
   info_ = {};
@@ -72,6 +76,7 @@ StepInfo ArcadePlanner::advance() {
   }
   if (new_search_) {
     gas_.start_from(state_, obs_, has_info_ ? &info_ : nullptr);
+    search_prefix_size_ = played_actions_.size();
     search_.begin(options(settings_));
     depth_ = 0;
     plan_ = {};
@@ -85,6 +90,13 @@ StepInfo ArcadePlanner::advance() {
   return last_;
 }
 void ArcadePlanner::execute(const ArcadeAction& action) {
+  if (played_actions_.size() >= 128 * 1024 * 1024 / sizeof(ArcadeAction))
+    throw std::runtime_error("Played trajectory memory limit reached. Reset to start a new run.");
+  if (played_actions_.size() == played_actions_.capacity()) {
+    const size_t capacity = std::max(size_t(64), played_actions_.size() * 2);
+    arcade_memory::require(capacity * sizeof(ArcadeAction));
+    played_actions_.reserve(capacity);
+  }
   std::vector<std::vector<char>> output(1);
   std::vector<float> observations(static_cast<size_t>(env_.obs_dim())), rewards(1);
   std::vector<uint8_t> dones(1), truncated(1);
@@ -98,6 +110,7 @@ void ArcadePlanner::execute(const ArcadeAction& action) {
   if (has_info_) info_ = env_.walker_info(0);
   const int frames = env_.frames_stepped(0);
   played_frames_ += frames >= 0 ? frames : action.frames;
+  played_actions_.push_back({action.action, frames >= 0 ? frames : action.frames});
   const bool recoverable =
       dones[0] && !truncated[0] && env_.has_recoverable_dones() && env_.done_is_recoverable(0);
   done_ = truncated[0] || (dones[0] && !recoverable);

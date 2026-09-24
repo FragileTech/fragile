@@ -56,11 +56,11 @@ class SnapshotBackend {
       }
       return;
     }
-    staged_.resize(rows.count);
-    for (size_t i = 0; i < rows.count; ++i) staged_[i] = src.states[rows.sources.index(i)];
+    selected_.clear();
+    if (rows.sources.data) selected_.assign(rows.sources.data, rows.sources.data + rows.count);
     // Wave output is already a dense batch. Graph uses the same indexed
     // transition through its compact staging batch before scattering leaves.
-    env.step_batch(staged_, actions, dt, dst.states, dst.observations, dst.step_rewards, dst.dones,
+    env.step_batch_selected(src.states, selected_, actions, dt, dst.states, dst.observations, dst.step_rewards, dst.dones,
                    dst.truncated);
     dst.has_infos = env.has_walker_info();
     if (dst.has_infos) dst.infos.resize(rows.count);
@@ -86,7 +86,7 @@ class SnapshotBackend {
   uint32_t flags(const WalkerState& s, size_t i) { return s.alive(i) ? 0u : 1u; }
 
  private:
-  std::vector<std::vector<char>> staged_;
+  std::vector<int32_t> selected_;
   std::vector<VisitKey> keys_;
   std::vector<float> sums_;
   WalkerState batch_;

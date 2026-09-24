@@ -70,12 +70,13 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FgRetro.cmake OPTIONAL)
 if(EMSCRIPTEN)
   # -------------------------------------------------------------------------
   # WebAssembly demo. pthreads need SharedArrayBuffer, which needs COOP/COEP
-  # headers (see serve.py). Memory growth is off in the main module (fragile
-  # with pthreads), so preallocate generously.
+  # headers (see serve.py). Runtime budgets supply imported memories; the
+  # main engine starts small and grows within the wasm32 ceiling.
   # -------------------------------------------------------------------------
   # -fexceptions: without it any C++ throw aborts the whole wasm runtime.
   # -msimd128: wasm SIMD (supported by every current browser) — mainly for
   # the vectorized L2 distance kernel in tensor_ops.cpp.
+  target_include_directories(fg_fractal_core SYSTEM BEFORE PUBLIC ${EMSCRIPTEN_SYSROOT}/include/compat)
   set(WASM_FLAGS "-pthread" "-fexceptions" "-msimd128")
   target_compile_options(nes_core PRIVATE ${WASM_FLAGS})
   target_compile_options(fractal_gas_core PRIVATE ${WASM_FLAGS})
@@ -171,7 +172,7 @@ if(EMSCRIPTEN)
     ${ZLIB_LIBRARY})
   set_target_properties(retro_shim PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/web
-    LINK_FLAGS "-fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createRetroShim -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=67108864 -sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=HEAPU8,HEAP32,HEAPF32,UTF8ToString -sEXPORTED_FUNCTIONS=_malloc,_free -O3"
+    LINK_FLAGS "-fexceptions -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createRetroShim -sENVIRONMENT=worker -sALLOW_MEMORY_GROWTH=1 -sINITIAL_MEMORY=67108864 -sMAXIMUM_MEMORY=2147483648 -sIMPORTED_MEMORY=1 -sINCOMING_MODULE_JS_API=wasmMemory,onAbort,locateFile -sFORCE_FILESYSTEM=1 -sEXPORTED_RUNTIME_METHODS=HEAPU8,HEAP32,HEAPF32,UTF8ToString -sEXPORTED_FUNCTIONS=_malloc,_free -O3"
   )
 
   add_executable(fractal_gas
@@ -196,7 +197,7 @@ if(EMSCRIPTEN)
   )
   set_target_properties(fractal_gas PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/web
-    LINK_FLAGS "-pthread -fexceptions -sPTHREAD_POOL_SIZE=9 -sINITIAL_MEMORY=536870912 -sALLOW_MEMORY_GROWTH=0 -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createFractalGasModule -sENVIRONMENT=worker -sEXPORTED_RUNTIME_METHODS=HEAPU8 -sEXPORTED_FUNCTIONS=_malloc,_free --bind -O3"
+    LINK_FLAGS "-pthread -fexceptions -sPTHREAD_POOL_SIZE=Module.arcadeThreadPoolSize -sPTHREAD_POOL_SIZE_STRICT=2 -sINITIAL_MEMORY=536870912 -sALLOW_MEMORY_GROWTH=1 -sMAXIMUM_MEMORY=4294967296 -sIMPORTED_MEMORY=1 -sINCOMING_MODULE_JS_API=wasmMemory,onAbort,locateFile -sMEMORY_GROWTH_GEOMETRIC_CAP=33554432 -sMODULARIZE=1 -sEXPORT_ES6=1 -sEXPORT_NAME=createFractalGasModule -sENVIRONMENT=worker -sEXPORTED_RUNTIME_METHODS=HEAPU8,PThread -sEXPORTED_FUNCTIONS=_malloc,_free --bind -O3"
   )
 else()
   # -------------------------------------------------------------------------

@@ -1,0 +1,338 @@
+[
+  {
+    "obsMode": 1,
+    "algorithm": 0,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 4691.112599999905,
+    "peakBytes": 5230166016,
+    "mainPeakBytes": 3887988736,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2860908544,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4203085824,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 474244.5800000131
+  },
+  {
+    "obsMode": 1,
+    "algorithm": 1,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 1874.9974000000955,
+    "peakBytes": 5242748928,
+    "mainPeakBytes": 3900571648,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 3900571648,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 5242748928,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 202022.75
+  },
+  {
+    "obsMode": 1,
+    "algorithm": 2,
+    "steps": 16,
+    "cycles": 3,
+    "msPerUpdate": 4081.313749998808,
+    "peakBytes": 5264113664,
+    "mainPeakBytes": 3921936384,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2860908544,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4203085824,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 79825.43000000715
+  },
+  {
+    "obsMode": 1,
+    "algorithm": 3,
+    "steps": 28,
+    "cycles": 3,
+    "msPerUpdate": 4383.842678571386,
+    "peakBytes": 5264375808,
+    "mainPeakBytes": 3922198528,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2860908544,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4203085824,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 133178.45000001788
+  },
+  {
+    "obsMode": 2,
+    "algorithm": 0,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 4902.121649999916,
+    "peakBytes": 4080992256,
+    "mainPeakBytes": 2738814976,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1712324608,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3054501888,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 498146.9699999988
+  },
+  {
+    "obsMode": 2,
+    "algorithm": 1,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 1228.7834000000357,
+    "peakBytes": 4080730112,
+    "mainPeakBytes": 2738552832,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2738552832,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4080730112,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 142053.21000000834
+  },
+  {
+    "obsMode": 2,
+    "algorithm": 2,
+    "steps": 16,
+    "cycles": 3,
+    "msPerUpdate": 5485.688437499106,
+    "peakBytes": 4115267584,
+    "mainPeakBytes": 2773090304,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1712324608,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3054501888,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 102420.20500001311
+  },
+  {
+    "obsMode": 2,
+    "algorithm": 3,
+    "steps": 28,
+    "cycles": 3,
+    "msPerUpdate": 5469.366785714669,
+    "peakBytes": 4115529728,
+    "mainPeakBytes": 2773352448,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1712324608,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3054501888,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 171236.12999999523
+  },
+  {
+    "obsMode": 0,
+    "algorithm": 0,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 6527.24775000006,
+    "peakBytes": 4030660608,
+    "mainPeakBytes": 2688483328,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1662058496,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3004235776,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 667943.6550000012
+  },
+  {
+    "obsMode": 0,
+    "algorithm": 1,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 1046.1525,
+    "peakBytes": 4039835648,
+    "mainPeakBytes": 2697658368,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2697658368,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4039835648,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 120909.33000001311
+  },
+  {
+    "obsMode": 0,
+    "algorithm": 2,
+    "steps": 16,
+    "cycles": 3,
+    "msPerUpdate": 4203.886874999851,
+    "peakBytes": 4064935936,
+    "mainPeakBytes": 2722758656,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1662058496,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3004235776,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 82878.33500000834
+  },
+  {
+    "obsMode": 0,
+    "algorithm": 3,
+    "steps": 28,
+    "cycles": 3,
+    "msPerUpdate": 4699.507857142815,
+    "peakBytes": 4065198080,
+    "mainPeakBytes": 2723020800,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1662058496,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3004235776,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 142749.05499997735
+  },
+  {
+    "obsMode": 3,
+    "algorithm": 0,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 4419.218850000203,
+    "peakBytes": 3521970176,
+    "mainPeakBytes": 2179792896,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1118306304,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 2460483584,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 457579.68000000715
+  },
+  {
+    "obsMode": 3,
+    "algorithm": 1,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 636.1803000000119,
+    "peakBytes": 3521970176,
+    "mainPeakBytes": 2179792896,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2179792896,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 3521970176,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 87700.78499999642
+  },
+  {
+    "obsMode": 3,
+    "algorithm": 2,
+    "steps": 16,
+    "cycles": 3,
+    "msPerUpdate": 3119.4665625002235,
+    "peakBytes": 3524001792,
+    "mainPeakBytes": 2181824512,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1118306304,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 2460483584,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 61641.39500001073
+  },
+  {
+    "obsMode": 3,
+    "algorithm": 3,
+    "steps": 28,
+    "cycles": 3,
+    "msPerUpdate": 12778.807321428189,
+    "peakBytes": 3524001792,
+    "mainPeakBytes": 2181824512,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 1118306304,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 2460483584,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 394126.4050000012
+  }
+]

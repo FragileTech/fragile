@@ -29,6 +29,7 @@ struct GraphConfig {
   float erase_coef = 0.05f;
   int32_t agg_block_size = 5;
   int32_t freeze_prefix_after = 0;  // 0 disables shared-prefix archiving
+  uint64_t max_frozen_bytes = UINT64_MAX;
   bool record_frames = false;
   uint64_t seed = 0;
 };
@@ -98,6 +99,7 @@ class Graph {
   int32_t iteration_ = 0;
   uint64_t next_node_id_ = 1;
   std::vector<FrozenNode> frozen_nodes_;
+  uint64_t frozen_bytes_ = 0;
   std::vector<int32_t> last_old_to_new_;
   uint64_t active_root_id_ = 0;
   std::vector<FrozenNode> trajectory(int32_t slot) const {
@@ -141,6 +143,28 @@ class Graph {
     // parent 0 (the root), oobs True, zero rewards, zero observation, no
     // state, leaf.
     const auto d = static_cast<size_t>(state_.obs_dim);
+    const size_t needed = size_t(state_.n + count) * d;
+    if (needed > state_.observations.capacity()) {
+      // Reserve the final observation capacity once the population reaches
+      // half its safe cap. Doing this while ample headroom remains avoids
+      // a near-4-GiB contiguous reallocation later. Small runs stay small.
+      const size_t rows = size_t(state_.n + count);
+      const size_t cap_rows = std::max(rows, size_t(params_.max_walkers));
+      const size_t reserve_rows = rows >= cap_rows / 2 ? cap_rows
+          : std::min(cap_rows, std::max(rows, (state_.observations.capacity() / d) * 2));
+      const size_t reserve_values = reserve_rows * d;
+      const uint64_t extra = uint64_t(reserve_values) * sizeof(float) + uint64_t(count) * 512;
+      try {
+        arcade_memory::require(extra);
+      } catch (const std::runtime_error&) {
+        // The last transition has been committed. Release its observation
+        // scratch only under memory pressure, before reallocating current
+        // observations. This keeps the peak to two observation arrays.
+        decltype(batch_.observations){}.swap(batch_.observations);
+        arcade_memory::require(extra);
+      }
+      state_.observations.reserve(reserve_values);
+    }
     for (int32_t c = 0; c < count; ++c) {
       state_.observations.insert(state_.observations.end(), d, 0.0f);
       state_.rewards.push_back(0.0f);
@@ -182,6 +206,7 @@ class Graph {
     next_node_id_ = 1;
     active_root_id_ = 0;
     frozen_nodes_.clear();
+    frozen_bytes_ = 0;
     last_old_to_new_.clear();
     visits_.reset();
     visits_.set_erase_coef(params_.erase_coef);
@@ -194,9 +219,16 @@ class Graph {
     grow(n);
     backend_.broadcast(root, state_.states, n);
     auto dt = sampler_.sample_dt(n, params_.dt_min, params_.dt_max, rng_);
+    // Both buffers must retain the planned capacity through the swap below;
+    // otherwise reset hands current a smaller buffer and the first growth
+    // would need another large contiguous allocation near the heap ceiling.
+    if (batch_.observations.capacity() < state_.observations.capacity()) {
+      arcade_memory::require(uint64_t(state_.observations.capacity()) * sizeof(float));
+      batch_.observations.reserve(state_.observations.capacity());
+    }
     prepare_batch(n);
     backend_.transition(state_, Selection{size_t(n), {}, {}}, actions, dt, batch_);
-    state_.observations = batch_.observations;
+    state_.observations.swap(batch_.observations);
     state_.actions = std::move(actions);
     for (int i = 0; i < n; ++i) {
       state_.node_ids[i] = i ? next_node_id_++ : active_root_id_;
@@ -503,6 +535,17 @@ class Graph {
     }
     std::vector<uint8_t> prefix(n, 0);
     for (int32_t i : path) if (i != new_root) prefix[i] = 1;
+    uint64_t archive_bytes = 0;
+    for (int32_t i = 0; i < n; ++i) {
+      if (keep_mask[i] || state_.node_ids[i] == UINT64_MAX ||
+          !backend_.valid_slot(state_.states, i)) continue;
+      archive_bytes += sizeof(FrozenNode);
+      if constexpr (std::is_same_v<typename Backend::StoredState, std::vector<char>>)
+        archive_bytes += state_.states[i].size();
+    }
+    if (archive_bytes > params_.max_frozen_bytes - std::min(frozen_bytes_, params_.max_frozen_bytes))
+      throw std::runtime_error("Graph history memory limit reached. Reset or reduce prefix archiving.");
+    arcade_memory::require(archive_bytes);
     for (int32_t i = 0; i < n; ++i) {
       if (keep_mask[i] || state_.node_ids[i] == UINT64_MAX ||
           !backend_.valid_slot(state_.states, i)) continue;
@@ -512,18 +555,28 @@ class Graph {
                                state_.dt[i], state_.rewards[i], state_.cum_rewards[i],
                                prefix[i] != 0});
     }
+    frozen_bytes_ += archive_bytes;
     std::vector<int32_t> keep{new_root};
     for (int32_t i = 0; i < n; ++i) if (i != new_root && keep_mask[i]) keep.push_back(i);
     std::vector<int32_t> remap(n, -1);
     for (size_t j = 0; j < keep.size(); ++j) remap[keep[j]] = static_cast<int32_t>(j);
     auto gather = [&](auto& values, int width = 1) {
       using T = typename std::decay_t<decltype(values)>::value_type;
-      std::vector<T> next;
-      next.reserve(keep.size() * static_cast<size_t>(width));
-      for (int32_t i : keep)
-        for (int c = 0; c < width; ++c)
-          next.push_back(std::move(values[static_cast<size_t>(i) * width + c]));
-      values = std::move(next);
+      // Keep is the new root followed by ascending surviving indices.
+      // Save just its row; all remaining rows move left without overwriting
+      // a source that has not been read yet.
+      std::vector<T> root_row;
+      root_row.reserve(width);
+      for (int c = 0; c < width; ++c)
+        root_row.push_back(std::move(values[size_t(new_root) * width + c]));
+      for (size_t j = 1; j < keep.size(); ++j) {
+        const size_t source = size_t(keep[j]);
+        if (source != j)
+          for (int c = 0; c < width; ++c)
+            values[j * width + c] = std::move(values[source * width + c]);
+      }
+      for (int c = 0; c < width; ++c) values[c] = std::move(root_row[c]);
+      values.resize(keep.size() * size_t(width));
     };
     active_root_id_ = state_.node_ids[new_root];
     backend_.compact(state_.states, keep);

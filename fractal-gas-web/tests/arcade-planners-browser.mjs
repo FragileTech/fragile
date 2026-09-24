@@ -104,8 +104,9 @@ try {
           await wait(() => messages.some(m => m.type === "ready"));
           worker.postMessage({ type: "start" });
           await wait(() => last()?.playedFrames >= 8 || last()?.gameDone);
+          const pauseOffset = messages.length;
           worker.postMessage({ type: "pause" });
-          await new Promise(resolve => setTimeout(resolve, 150));
+          await wait(() => messages.slice(pauseOffset).some(m => m.type === "paused"));
           const pausedCount = steps().length;
           const pausedFrames = last().playedFrames;
           await new Promise(resolve => setTimeout(resolve, 150));

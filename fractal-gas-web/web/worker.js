@@ -1,9 +1,16 @@
+import { resourcePlan, MAIN_INITIAL, PAGE } from "./arcade-resources.js";
+
 // Web Worker owning the wasm module and the run loop. fg.step() blocks while
 // the pthread pool works, so it must live here — never on the main thread.
 
 let fg = null;
+let mainMemory = null;
+let allocation = null;
+let lastInit = null;
+let runtimeFailed = false;
 let running = false;
 let stepScheduled = false;
+let stepTimer = null;
 let currentConsole = 0;
 let currentGame = 0;
 // Map "visits" heatmap: ship the Graph's visit-count blocks with each step
@@ -32,11 +39,41 @@ function visitBlocks() {
   return fg.getVisitBlocks();
 }
 
-async function loadModule() {
+async function loadModule(plan) {
   if (fg) return fg;
+  mainMemory = new WebAssembly.Memory({ initial: MAIN_INITIAL / PAGE,
+    maximum: plan.mainLimitBytes / PAGE, shared: true });
   const { default: createFractalGasModule } = await import("./fractal_gas.js");
-  fg = await createFractalGasModule();
+  fg = await createFractalGasModule({ wasmMemory: mainMemory,
+    arcadeThreadPoolSize: plan.farmWorkers ? 0 : plan.workers - 1,
+    onAbort: () => { runtimeFailed = true; } });
   return fg;
+}
+
+function disposeRuntime() {
+  clearTimeout(stepTimer);
+  running = false;
+  stepScheduled = false;
+  farmShutdown();
+  fg?.PThread?.terminateAllThreads();
+  fg = null;
+  mainMemory = null;
+  allocation = null;
+  runtimeFailed = false;
+}
+
+function memoryStatus() {
+  if (!allocation || !mainMemory) return null;
+  let emulatorBytes = 0;
+  for (let i = 0; i < farmWorkers.length; i++) {
+    // Fixed communication regions remain inside their original buffer even
+    // after the surrounding memory grows. Read only each region's header.
+    const h = new Int32Array(mainMemory.buffer, farmRegionsPtr + i * FARM_REGION_SIZE, 32);
+    emulatorBytes += Atomics.load(h, 15) * PAGE;
+  }
+  const mainBytes = mainMemory.buffer.byteLength;
+  return { ...allocation, mainBytes, emulatorBytes, allocatedBytes: mainBytes + emulatorBytes,
+    graphPopulationCap: fg?.maxWalkers?.() ?? 0 };
 }
 
 // --- Genesis core-worker farm -----------------------------------------------
@@ -56,31 +93,54 @@ const FARM_REGION_SIZE =
   FARM_HEADER + FARM_BLOB_CAP + FARM_OBS_CAP + FARM_RGBA_CAP + FARM_TILE_CAP;
 
 let farmWorkers = [];
+let farmCleanup = [];
 let farmRegionsPtr = 0;
 
 function farmShutdown() {
+  for (const cleanup of farmCleanup) cleanup();
+  farmCleanup = [];
   for (const w of farmWorkers) w.terminate();
   farmWorkers = [];
-  if (farmRegionsPtr && fg) fg._free(farmRegionsPtr);
+  // The entire main runtime is discarded; do not enter an aborted allocator.
   farmRegionsPtr = 0;
 }
 
 async function farmSpawn(rom, n, game, mode, zone, act) {
   farmShutdown();
-  farmRegionsPtr = fg._malloc(n * FARM_REGION_SIZE);
-  fg.HEAPU8.fill(0, farmRegionsPtr, farmRegionsPtr + n * FARM_REGION_SIZE);
+  farmRegionsPtr = fg._malloc(n * FARM_REGION_SIZE) >>> 0;
+  if (!farmRegionsPtr) throw new Error("Main engine memory limit: cannot allocate Sonic worker regions");
+  new Uint8Array(mainMemory.buffer, farmRegionsPtr, n * FARM_REGION_SIZE).fill(0);
   const romBytes = new Uint8Array(rom);
   const readiness = [];
   for (let i = 0; i < n; i++) {
     const w = new Worker(new URL("core-worker.js", self.location.href),
                          { type: "module" });
+    const header = new Int32Array(mainMemory.buffer, farmRegionsPtr + i * FARM_REGION_SIZE, 32);
     readiness.push(new Promise((resolve, reject) => {
-      w.onmessage = (e) => (e.data.ready ? resolve(e.data) : reject(
-        new Error(e.data.error || "core worker failed")));
-      w.onerror = (e) => reject(new Error("core worker: " + e.message));
+      let ready = false;
+      const timeout = setTimeout(() => reject(new Error("Sonic worker initialization timed out")), 30000);
+      farmCleanup.push(() => { clearTimeout(timeout); reject(new Error("Sonic worker shut down")); });
+      const fail = message => {
+        clearTimeout(timeout);
+        Atomics.store(header, 0, -1);
+        Atomics.notify(header, 0);
+        if (!ready) reject(new Error(message));
+        else {
+          running = false;
+          runtimeFailed = true;
+          post("error", { message: failureMessage(message), requiresReset: true, recoverable: true, resources: memoryStatus() });
+        }
+      };
+      w.onmessage = (e) => {
+        clearTimeout(timeout);
+        if (e.data.ready) { ready = true; resolve(e.data); }
+        else fail(e.data.error || "Sonic worker failed");
+      };
+      w.onerror = (e) => fail("Sonic emulator worker: " + e.message);
     }));
     w.postMessage({
-      sab: fg.HEAPU8.buffer,
+      sab: mainMemory.buffer,
+      memoryLimitBytes: allocation.shimLimitBytes,
       regionOffset: farmRegionsPtr + i * FARM_REGION_SIZE,
       game,
       mode,
@@ -186,12 +246,22 @@ function captureRooms(stats) {
   return frames;
 }
 
+function failureMessage(err) {
+  const message = String(err);
+  if (/Sonic emulator/i.test(message) && /bad_alloc|memory limit|out of memory|OOM|Cannot enlarge memory|could not allocate memory/i.test(message))
+    return `Sonic emulator memory allocation failed (per-worker limit ${((allocation?.shimLimitBytes ?? 0) / 1024 ** 2).toFixed(0)} MiB). Select fewer workers or a larger engine memory limit and reset. ${message}`;
+  if (/bad_alloc|out of memory|OOM|Cannot enlarge memory|could not allocate memory/i.test(message))
+    return `Main engine memory allocation failed (limit ${((allocation?.mainLimitBytes ?? MAIN_INITIAL) / 1024 ** 3).toFixed(2)} GiB). Reduce walkers or history, or increase the engine memory limit and reset. ${message}`;
+  return message;
+}
+
 function stepOnce() {
   try { advanceOnce(); }
   catch (err) {
     stepScheduled = false;
     running = false;
-    post("error", { message: String(err), recoverable: true });
+    runtimeFailed = true;
+    post("error", { message: failureMessage(err), recoverable: true, requiresReset: true, resources: memoryStatus() });
   }
 }
 
@@ -201,6 +271,7 @@ function advanceOnce() {
 
   const stats = fg.step();
   if (stats?.error) throw new Error(stats.error);
+  trajectoryBest = stats.bestWalkerIdx ?? 0;
   const frameView = fg.getBestFrame();
   let frame = null;
   if (frameView) {
@@ -223,6 +294,7 @@ function advanceOnce() {
     "step",
     {
       stats,
+      resources: memoryStatus(),
       frame,
       walkerTiles,
       roomFrames,
@@ -248,28 +320,34 @@ function advanceOnce() {
 
   if (running && !stepScheduled) {
     stepScheduled = true;
-    setTimeout(stepOnce, 0); // yield so incoming messages are processed
+    stepTimer = setTimeout(stepOnce, 0); // yield so incoming messages are processed
   }
 }
 
-self.onmessage = async (event) => {
+let trajectoryBest = 0;
+
+async function handleMessage(event) {
   const msg = event.data;
   try {
     switch (msg.type) {
       case "init": {
-        running = false;
-        await loadModule();
+        disposeRuntime();
+        trajectoryBest = 0;
+        lastInit = msg;
+        allocation = resourcePlan({ n: 32, ...msg.params }, msg.resources, self.navigator?.hardwareConcurrency || 4);
+        await loadModule(allocation);
         // embind requires every FgParams field; default the algorithm
         // fields so callers that predate them (autotest pages) still work.
-        const params = plannerDefaults({ algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
+        const params = plannerDefaults({ n: 32, useCumulativeReward: true, algorithm: 0, maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
                          visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
-                         ...msg.params });
+                         ...msg.params, nThreads: allocation.workers,
+                         memoryLimitBytes: allocation.mainLimitBytes });
         currentConsole = params.console;
         currentGame = params.game;
         roomCaptures = new Map();
         if (params.console === 2) {
           // Pre-spawn the Genesis core-worker farm (see above).
-          const n = Math.min(Math.max(params.nThreads, 1), 8);
+          const n = allocation.workers;
           // For Sonic, params.world/stage carry the internal zone id and
           // 0-based act (mapped by main.js).
           const farm = await farmSpawn(msg.rom, n, params.game, params.obsMode,
@@ -291,34 +369,66 @@ self.onmessage = async (event) => {
           // Graph mode: the effective population cap after the wasm memory
           // clamp (may be below the requested max walkers).
           post("ready", { algorithm: fg.algorithm(), maxWalkers: fg.maxWalkers(),
-                          countingVisits: fg.countingVisits() });
+                          countingVisits: fg.countingVisits(), resources: memoryStatus() });
+          if (msg.reset) post("resetDone", { resources: memoryStatus() });
         } else {
-          post("error", { message: fg.lastError() });
+          throw new Error(fg.lastError());
         }
         break;
       }
+      case "trajectorySelect": {
+        running = false;
+        clearTimeout(stepTimer);
+        stepScheduled = false;
+        post("paused", {});
+        const result = fg?.selectTrajectory(msg.walker < 0 ? trajectoryBest : msg.walker) ?? { error: "Start a run first" };
+        post("trajectorySelected", { ...result, request: msg.request });
+        break;
+      }
+      case "trajectoryFrame": {
+        if (running) {
+          post("trajectoryFrame", { error: "Pause the search before playback", request: msg.request });
+          break;
+        }
+        const result = fg?.trajectoryFrame(msg.index) ?? { error: "Start a run first" };
+        const frame = result.frame ? new Uint8ClampedArray(result.frame).buffer : null;
+        post("trajectoryFrame", { ...result, frame, index: msg.index, request: msg.request,
+          frameWidth: fg?.frameWidth(), frameHeight: fg?.frameHeight() }, frame ? [frame] : []);
+        break;
+      }
       case "start":
-        if (fg) {
+        if (fg && !runtimeFailed) {
           running = true;
           if (!stepScheduled) {
             stepScheduled = true;
-            setTimeout(stepOnce, 0);
+            stepTimer = setTimeout(stepOnce, 0);
           }
         }
         break;
       case "pause":
         running = false;
+        clearTimeout(stepTimer);
+        stepScheduled = false;
+        post("paused", {});
         break;
       case "reset":
         running = false;
-        if (fg) {
+        if (lastInit) {
+          await handleMessage({ data: lastInit });
+          if (fg && !runtimeFailed) post("resetDone", { resources: memoryStatus() });
+        } else if (fg) {
           fg.reset();
-          roomCaptures = new Map();
           post("resetDone", {});
         }
         break;
+      case "dispose":
+        disposeRuntime();
+        lastInit = null;
+        post("disposed", {});
+        break;
       case "setRewardWeights":
         if (fg) fg.setRewardWeights(msg.weights);
+        if (lastInit) lastInit.rewardWeights = msg.weights;
         break;
       case "setVisitOverlay": {
         visitOverlay = !!msg.on;
@@ -331,11 +441,12 @@ self.onmessage = async (event) => {
         // embind requires every FgParams field; the farm fields are only
         // meaningful at init, so zeros suffice here.
         if (fg) {
-          const ok = fg.setParams(plannerDefaults({ farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
+          const ok = fg.setParams(plannerDefaults({ memoryLimitBytes: allocation?.mainLimitBytes ?? MAIN_INITIAL, farmPtr: 0, farmWorkers: 0, farmBlobLen: 0,
                          algorithm: fg.algorithm(), maxWalkers: 0, eraseCoef: 0.05, aggBlock: 5,
                          visitReward: (msg.params.algorithm ?? 0) === 1, visitCoef: 1.0,
                          ...msg.params }));
           if (ok === false) throw new Error(fg.lastError());
+          if (lastInit) lastInit.params = { ...lastInit.params, ...msg.params };
           if (msg.params.distance_metric !== undefined) fg.setDistanceMetric(msg.params.distance_metric);
         }
         break;
@@ -344,6 +455,15 @@ self.onmessage = async (event) => {
     }
   } catch (err) {
     running = false;
-    post("error", { message: String(err), recoverable: msg.type === "setParams" });
+    const message = failureMessage(err);
+    if (msg.type === "init") disposeRuntime();
+    post("error", { message, requiresReset: msg.type !== "setParams", recoverable: msg.type === "setParams" || !!lastInit });
   }
+}
+
+// Serialize asynchronous initialization/disposal with later UI commands.
+let commands = Promise.resolve();
+self.onmessage = event => {
+  commands = commands.then(() => handleMessage(event));
+  return commands;
 };

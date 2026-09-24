@@ -12,6 +12,7 @@
 #include <utility>
 #include <cstdint>
 #include <functional>
+#include <exception>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -49,6 +50,8 @@ class ThreadPool {
   void worker_loop(int slot);
   void dispatch(int32_t n, const std::function<void(int32_t, int)>& fn,
                 int32_t chunk);
+  void run_job_safely(int slot, int32_t n,
+                      const std::function<void(int32_t, int)>& fn, int32_t chunk);
   void run_job(int slot, int32_t n,
                const std::function<void(int32_t, int)>& fn, int32_t chunk);
   std::pair<int32_t, int32_t> block_range(int32_t n, int slot) const;
@@ -63,6 +66,7 @@ class ThreadPool {
   int32_t job_n_ = 0, job_chunk_ = 0;
   std::atomic<int64_t> next_index_{0};
   int completed_slots_ = 0;
+  std::exception_ptr job_error_;
   uint64_t generation_ = 0;
   bool shutdown_ = false;
 };

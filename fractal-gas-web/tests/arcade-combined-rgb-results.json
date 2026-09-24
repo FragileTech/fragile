@@ -1,0 +1,23 @@
+[
+  {
+    "obsMode": 1,
+    "algorithm": 0,
+    "steps": 100,
+    "cycles": 0,
+    "msPerUpdate": 6394.251550000012,
+    "peakBytes": 5230362624,
+    "mainPeakBytes": 3888185344,
+    "ready": {
+      "workers": 20,
+      "budgetBytes": 8589934592,
+      "mainLimitBytes": 4294967296,
+      "shimLimitBytes": 214695936,
+      "farmWorkers": 20,
+      "mainBytes": 2860908544,
+      "emulatorBytes": 1342177280,
+      "allocatedBytes": 4203085824,
+      "graphPopulationCap": 1000
+    },
+    "elapsedMs": 651825.1949999928
+  }
+]

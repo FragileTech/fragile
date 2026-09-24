@@ -81,6 +81,15 @@ class AtariEnv final : public BatchEnv {
                   std::vector<uint8_t>& dones,
                   std::vector<uint8_t>& truncated) override;
 
+  void step_batch_selected(const std::vector<std::vector<char>>& states,
+                  const std::vector<int32_t>& sources,
+                  const std::vector<int32_t>& actions,
+                  const std::vector<int32_t>& dt,
+                  std::vector<std::vector<char>>& new_states,
+                  std::vector<float>& observations, std::vector<float>& rewards,
+                  std::vector<uint8_t>& dones,
+                  std::vector<uint8_t>& truncated) override;
+
   /// Showcase ranking: the cumulative episode return (sum of step rewards
   /// since reset), carried inside each walker blob and cached per walker
   /// during step_batch.

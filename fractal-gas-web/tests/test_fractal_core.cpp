@@ -7,6 +7,7 @@
 #include "fractal_tree.hpp"
 #include "mock_env.hpp"
 #include "test_framework.hpp"
+#include "thread_pool.hpp"
 using namespace fg;
 namespace {
 struct InjectedCloning : FractalCloningOperator {
@@ -270,7 +271,13 @@ TEST_CASE(graph_freezes_only_the_shared_alive_prefix_and_keeps_ancestry) {
   s.parent_ids = {0, 0, 1, 2, 3, 3};
   s.oobs = {1, 1, 1, 1, 0, 0};
   graph.last_old_to_new_ = {0, 1, 2, 3, 4, 5};
+  for (size_t i = 0; i < s.observations.size(); ++i) s.observations[i] = float(i);
+  const auto original_observations = s.observations;
+  const auto original_capacity = s.observations.capacity();
   graph.freeze_shared_prefix();
+  CHECK(s.observations.capacity() == original_capacity);
+  for (size_t i = 0; i < s.observations.size(); ++i)
+    CHECK(s.observations[i] == original_observations[3 * size_t(s.obs_dim) + i]);
   CHECK(s.n == 3);
   CHECK(graph.active_root_id_ == 3);
   CHECK(s.node_ids == std::vector<uint64_t>({3, 4, 5}));
@@ -367,4 +374,79 @@ TEST_CASE(shared_planner_finish_is_atomic_and_does_not_advance_again) {
   CHECK(planner.depth == 1);
   CHECK(planner.result.actions == selected);
   CHECK(wave.metrics.iteration == 1);
+}
+
+TEST_CASE(graph_archive_budget_fails_before_modifying_history) {
+  MockEnv env;
+  VisitGrid visits;
+  SnapshotGraphBackend backend(env, visits);
+  FractalTreeSampler sampler;
+  Mt19937Rng rng(7);
+  fractal::GraphConfig config;
+  config.start_walkers = config.max_walkers = 6;
+  config.freeze_prefix_after = 1;
+  config.max_frozen_bytes = 1;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> graph(backend, sampler, rng, config);
+  graph.reset();
+  graph.state_.parent = {0, 0, 1, 2, 3, 3};
+  graph.state_.oobs = {1, 1, 1, 1, 0, 0};
+  const auto states = graph.state_.states;
+  bool rejected = false;
+  try { graph.freeze_shared_prefix(); } catch (const std::runtime_error&) { rejected = true; }
+  CHECK(rejected);
+  CHECK(graph.frozen_nodes_.empty());
+  CHECK(graph.state_.states == states);
+  CHECK(graph.state_.n == 6);
+}
+
+TEST_CASE(snapshot_legacy_fallback_supports_partial_identity_and_duplicate_donors) {
+  MockEnv env;
+  std::vector<char> root;
+  std::vector<float> root_obs;
+  env.reset(root, root_obs);
+  std::vector<std::vector<char>> states(5, root), output(2);
+  const auto original = states;
+  std::vector<float> observations(6), rewards(2);
+  std::vector<uint8_t> dones(2), truncated(2);
+  for (const auto& donors : {std::vector<int32_t>{}, std::vector<int32_t>{4, 4}}) {
+    env.step_batch_selected(states, donors, {0, 1}, {1, 2}, output,
+                            observations, rewards, dones, truncated);
+    CHECK(observations[0] == 1);
+    CHECK(observations[3] == 4);
+    CHECK(states == original);
+  }
+}
+
+TEST_CASE(thread_pool_propagates_allocation_failure_after_finishing_the_barrier) {
+  ThreadPool pool(3);
+  for (int failing_slot : {0, 2}) {
+    bool caught = false;
+    try {
+      pool.parallel_for(12, [&](int, int slot) {
+        if (slot == failing_slot) throw std::bad_alloc();
+      });
+    } catch (const std::bad_alloc&) { caught = true; }
+    CHECK(caught);
+    std::array<int, 12> visits{};
+    pool.parallel_for(12, [&](int i, int) { visits[i] += 1; });
+    for (auto count : visits) CHECK(count == 1);
+  }
+}
+
+TEST_CASE(graph_reset_preserves_capacity_for_growth_near_the_population_cap) {
+  MockEnv env;
+  VisitGrid visits;
+  SnapshotGraphBackend backend(env, visits);
+  FractalTreeSampler sampler;
+  Mt19937Rng rng(7);
+  fractal::GraphConfig config;
+  config.start_walkers = config.min_leafs = 10;
+  config.max_walkers = 12;
+  fractal::Graph<SnapshotGraphBackend, FractalTreeSampler> graph(backend, sampler, rng, config);
+  graph.reset();
+  const auto capacity = graph.state_.observations.capacity();
+  CHECK(capacity >= size_t(12 * env.obs_dim()));
+  graph.grow(2);
+  CHECK(graph.state_.n == 12);
+  CHECK(graph.state_.observations.capacity() == capacity);
 }

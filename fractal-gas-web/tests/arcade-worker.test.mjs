@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 import test from "node:test";
+import { resourcePlan, MAIN_INITIAL, PAGE } from "../web/arcade-resources.js";
 
-const source = await readFile(new URL("../web/worker.js", import.meta.url), "utf8");
+const source = (await readFile(new URL("../web/worker.js", import.meta.url), "utf8")).replace(/^import .*arcade-resources.js.*\n/, "");
 function harness(steps) {
   const messages = [], scheduled = [], configs = [];
   const mock = {
@@ -16,13 +17,17 @@ function harness(steps) {
     countingVisits: () => false,
     init: (_rom, _aux, params) => { configs.push(params); return true; },
     reset: () => {},
+    selectTrajectory: walker => ({ length: 3, walker, walkerCount: 4 }),
+    trajectoryFrame: index => ({ ready: true, frame: null, index }),
+    setDistanceMetric: () => {},
     setParams: params => { configs.push(params); return true; },
   };
   const context = vm.createContext({
     self: { postMessage: msg => messages.push(msg) },
-    setTimeout: fn => scheduled.push(fn), __mock: mock,
+    clearTimeout: () => {},
+    setTimeout: fn => scheduled.push(fn), __mock: mock, resourcePlan, MAIN_INITIAL, PAGE,
   });
-  vm.runInContext(source + "\nfg = __mock;", context);
+  vm.runInContext(source + "\nfg = __mock; loadModule = async () => { fg = __mock; };", context);
   const send = data => context.self.onmessage({ data });
   const tick = () => { const fn = scheduled.shift(); if (fn) fn(); };
   return { messages, scheduled, configs, send, tick };
@@ -53,10 +58,10 @@ test("pause and reset cancel scheduled execution without consuming another step"
   const h = harness([{ algorithm: 2, aliveCount: 4, playedFrames: 0 }]);
   await h.send({ type: "start" });
   await h.send({ type: "pause" }); h.tick();
-  assert.equal(h.messages.length, 0);
+  assert.deepEqual(h.messages.map(m => m.type), ["paused"]);
   await h.send({ type: "start" });
   await h.send({ type: "reset" }); h.tick();
-  assert.deepEqual(h.messages.map(m => m.type), ["resetDone"]);
+  assert.deepEqual(h.messages.map(m => m.type), ["paused", "resetDone"]);
   await h.send({ type: "start" }); h.tick();
   assert.equal(h.messages.at(-1).type, "step");
 });
@@ -85,4 +90,24 @@ test("planner errors surface from the scheduled loop and permit reset", async ()
   assert.equal(h.scheduled.length, 0);
   await h.send({ type: "reset" });
   assert.equal(h.messages.at(-1).type, "resetDone");
+});
+
+
+test("trajectory selection pauses search, uses displayed best and echoes request IDs", async () => {
+  const h = harness([{ algorithm: 0, aliveCount: 4, bestWalkerIdx: 2 }]);
+  await h.send({ type: "start" }); h.tick();
+  await h.send({ type: "trajectorySelect", walker: -1, request: 7 });
+  assert.equal(h.messages.at(-2).type, "paused");
+  assert.equal(h.messages.at(-1).type, "trajectorySelected");
+  assert.equal(h.messages.at(-1).walker, 2);
+  assert.equal(h.messages.at(-1).request, 7);
+  const count = h.messages.length;
+  h.tick();
+  assert.equal(h.messages.length, count);
+  await h.send({ type: "trajectoryFrame", index: 1, request: 8 });
+  assert.equal(h.messages.at(-1).ready, true);
+  assert.equal(h.messages.at(-1).request, 8);
+  await h.send({ type: "start" });
+  await h.send({ type: "trajectoryFrame", index: 0, request: 9 });
+  assert.match(h.messages.at(-1).error, /Pause the search/);
 });

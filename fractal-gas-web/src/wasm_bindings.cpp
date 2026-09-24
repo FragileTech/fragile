@@ -23,7 +23,9 @@
 #include <string>
 
 #include "atari_env.hpp"
+#include "arcade_memory.hpp"
 #include "arcade_planner.hpp"
+#include "arcade_trajectory.hpp"
 #include "fractal_gas.hpp"
 #include "fractal_tree.hpp"
 #include "nes_env.hpp"
@@ -41,6 +43,7 @@ int g_algorithm = 0;
 int g_max_walkers = 0;  // effective Graph cap after the memory clamp
 std::string g_last_error;
 std::vector<uint8_t> g_frame;
+fg::ArcadeTrajectory g_trajectory;
 
 // Scratch buffers for the per-walker arrays (copied to plain JS typed
 // arrays before they are returned, so JS never aliases wasm memory).
@@ -60,6 +63,7 @@ struct FgParams {
   int nElite = 2;
   double seed = 0;
   int nThreads = 4;
+  double memoryLimitBytes = 512.0 * 1024 * 1024;
   int obsMode = 0;   // 0=RAM, 1=RGB, 2=Gray, 3=Coords
   int world = 1;     // NES start level: world 1-8
   int stage = 1;     // NES start level: stage 1-4
@@ -94,6 +98,8 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   params.dt_max = p.dtMax;
   params.n_elite = p.nElite;
   params.record_frames = true;
+  params.recording = fg::RecordingMode::Pruned;
+  params.record_observations = false;
   if (p.algorithm >= 2) {
     params.record_frames = false;
     params.recording = fg::RecordingMode::Pruned;
@@ -108,25 +114,29 @@ fg::FractalGasParams to_gas_params(const FgParams& p) {
   return params;
 }
 
-/// Graph population cap: the requested / console-default max walkers,
-/// clamped to what the fixed 512 MB wasm heap can hold (each walker keeps a
-/// full emulator state blob plus its observation row).
-int clamp_max_walkers(const FgParams& p) {
-  const int defaults[3] = {4000, 20000, 150};  // NES, Atari, Genesis
-  const int console = p.console < 0 || p.console > 2 ? 0 : p.console;
-  int requested = p.maxWalkers > 0 ? p.maxWalkers : defaults[console];
+// Two populations (current and output), plus bounded history, runtime,
+// emulator communication regions and allocator/transient headroom.
+int population_capacity(const FgParams& p) {
   std::vector<char> state;
   std::vector<float> obs;
-  g_env->reset(state, obs);  // cached by every env, so this is free later
-  const double per_walker =
-      static_cast<double>(state.size()) + static_cast<double>(obs.size()) * 4.0 + 256.0;
-  const double heap = 512.0 * 1024 * 1024;
-  double reserve = 160.0 * 1024 * 1024;  // module, emulator instances, frames
-  if (console == 2) reserve += static_cast<double>(p.farmWorkers) * 3.7 * 1024 * 1024;
-  const double budget = heap - reserve;
-  const int cap = static_cast<int>(std::max(1.0, budget / per_walker));
-  requested = std::min(requested, cap);
-  return std::max(requested, std::max(p.n, 1));
+  g_env->reset(state, obs);
+  const uint64_t per = 2ULL * (state.size() + uint64_t(obs.size()) * 4) + 1024;
+  const uint64_t reserve = (160ULL + 128ULL) * 1024 * 1024 +
+      uint64_t(p.farmWorkers) * (128 + 0x200000 + 0x100000 + 0x80000 + 0x1000) +
+      uint64_t(std::max(p.nElite, 0)) * 2 * (state.size() + uint64_t(obs.size()) * 4);
+  const uint64_t heap = uint64_t(p.memoryLimitBytes);
+  const int cap = heap > reserve ? int(std::min<uint64_t>((heap - reserve) / per, 100000)) : 0;
+  if (p.n > cap)
+    throw std::runtime_error("Requested population exceeds the main engine memory limit (estimated safe maximum " +
+        std::to_string(cap) + "). Reduce walkers or select a larger engine memory limit.");
+  return cap;
+}
+
+int clamp_max_walkers(const FgParams& p) {
+  const int defaults[3] = {4000, 20000, 150};
+  const int console = p.console < 0 || p.console > 2 ? 0 : p.console;
+  const int requested = std::max(p.n, p.maxWalkers > 0 ? p.maxWalkers : defaults[console]);
+  return std::min(requested, population_capacity(p));
 }
 
 fg::FractalTreeParams to_tree_params(const FgParams& p) {
@@ -134,6 +144,7 @@ fg::FractalTreeParams to_tree_params(const FgParams& p) {
   if (p.freezePrefixAfter < 0 || p.freezePrefixAfter > 100000)
     throw std::invalid_argument("Invalid Graph prefix threshold");
   params.freeze_prefix_after = p.freezePrefixAfter;
+  params.max_frozen_bytes = 128ULL * 1024 * 1024;
   params.start_walkers = std::max(p.n, 1);
   params.min_leafs = std::max(p.n, 1);
   params.max_walkers = clamp_max_walkers(p);
@@ -163,13 +174,18 @@ void write_bytes(const char* path, emscripten::val data) {
 /// aux: Uint8Array of the gpgx.so side module (Genesis only; else empty).
 bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
   try {
+    g_trajectory.clear();
     g_planner.reset();
     g_algo.reset();
     g_env.reset();
     g_nes = nullptr;
     g_atari = nullptr;
 
-    const int threads = p.nThreads < 1 ? 1 : (p.nThreads > 8 ? 8 : p.nThreads);
+    if (!std::isfinite(p.memoryLimitBytes) || p.memoryLimitBytes < 512.0 * 1024 * 1024 ||
+        p.memoryLimitBytes > 4294967296.0)
+      throw std::invalid_argument("Invalid main engine memory limit");
+    fg::arcade_memory::limit = uint64_t(p.memoryLimitBytes);
+    const int threads = std::clamp(p.nThreads, 1, 20);
     const int mode_int = p.obsMode < 0 || p.obsMode > 3 ? 0 : p.obsMode;
 
     switch (p.console) {
@@ -207,6 +223,7 @@ bool fg_init(emscripten::val rom, emscripten::val aux, const FgParams& p) {
       throw std::invalid_argument("Unknown arcade algorithm");
     if (p.n < 1 || p.dtMin < 1 || p.dtMax < p.dtMin)
       throw std::invalid_argument("Walkers and action durations must be positive; dt max must be at least dt min");
+    population_capacity(p);
     g_algorithm = p.algorithm;
     if (g_algorithm == 1) {
       const fg::FractalTreeParams tp = to_tree_params(p);
@@ -249,6 +266,7 @@ emscripten::val copy_array(const std::vector<T>& v) {
 }
 
 emscripten::val fg_step_impl() {
+  g_trajectory.clear();
   if (!g_algo) return emscripten::val::null();
   const fg::StepInfo info = g_planner ? g_planner->advance() : g_algo->step();
   emscripten::val out = emscripten::val::object();
@@ -418,6 +436,36 @@ emscripten::val fg_render_walker_frame(int i) {
       emscripten::typed_memory_view(g_frame.size(), g_frame.data()));
 }
 
+// Trajectory requests are serviced only while the worker is paused.
+emscripten::val fg_select_trajectory(int walker) {
+  auto out = emscripten::val::object();
+  try {
+    if (!g_algo) throw std::runtime_error("Start a run first");
+    g_trajectory.select(*g_algo, g_planner.get(), walker);
+    out.set("length", static_cast<double>(g_trajectory.size()));
+    out.set("walker", g_trajectory.walker);
+    out.set("walkerCount", g_algo->n_walkers());
+  } catch (const std::exception& e) {
+    g_trajectory.clear();
+    out.set("error", std::string(e.what()));
+  }
+  return out;
+}
+emscripten::val fg_trajectory_frame(int index) {
+  auto out = emscripten::val::object();
+  try {
+    if (!g_env || index < 0) throw std::runtime_error("Invalid trajectory request");
+    const bool ready = g_trajectory.seek(*g_env, size_t(index), g_frame);
+    out.set("ready", ready);
+    if (ready) {
+      if (g_frame.size() != size_t(g_env->frame_width()) * g_env->frame_height() * 4)
+        throw std::runtime_error("This state has no display frame");
+      out.set("frame", copy_array(g_frame));
+    }
+  } catch (const std::exception& e) { out.set("error", std::string(e.what())); }
+  return out;
+}
+
 /// Visit counting active (Coords on a game with a map), either algorithm.
 bool fg_counting_visits() {
   return g_algo != nullptr && g_algo->counting_visits();
@@ -474,6 +522,7 @@ bool fg_set_params(const FgParams& p) {
 }
 
 void fg_reset() {
+  g_trajectory.clear();
   if (g_planner) g_planner->reset();
   else if (g_algo) g_algo->reset();
 }
@@ -529,6 +578,7 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
       .field("nElite", &FgParams::nElite)
       .field("seed", &FgParams::seed)
       .field("nThreads", &FgParams::nThreads)
+      .field("memoryLimitBytes", &FgParams::memoryLimitBytes)
       .field("obsMode", &FgParams::obsMode)
       .field("world", &FgParams::world)
       .field("stage", &FgParams::stage)
@@ -555,6 +605,8 @@ EMSCRIPTEN_BINDINGS(fractal_gas) {
   emscripten::function("step", &fg_step);
   emscripten::function("getBestFrame", &fg_get_best_frame);
   emscripten::function("renderWalkerFrame", &fg_render_walker_frame);
+  emscripten::function("selectTrajectory", &fg_select_trajectory);
+  emscripten::function("trajectoryFrame", &fg_trajectory_frame);
   emscripten::function("getWalkerTiles", &fg_get_walker_tiles);
   emscripten::function("countingVisits", &fg_counting_visits);
   emscripten::function("getVisitBlocks", &fg_get_visit_blocks);

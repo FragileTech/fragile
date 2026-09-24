@@ -7,13 +7,13 @@
 // the browser main thread) and runs forever until terminate().
 
 self.onmessage = async (e) => {
-  const { sab, regionOffset, game, mode, zone, act, rom } = e.data;
+  const { sab, regionOffset, memoryLimitBytes = 2147483648, game, mode, zone, act, rom } = e.data;
   const i32 = new Int32Array(sab);
   const f32 = new Float32Array(sab);
   const u8 = new Uint8Array(sab);
 
   // Header word indices (see RetroFarmEnv).
-  const W = regionOffset >> 2;
+  const W = regionOffset / 4;
   const CTRL = W, STATUS = W + 1, ACTION = W + 2, DT = W + 3, DONE = W + 4,
         BLOBLEN = W + 5, REWARD = W + 6, DISPLAY = W + 7;
   // Data areas (byte offsets).
@@ -36,37 +36,48 @@ self.onmessage = async (e) => {
   const fail = (msg) => {
     console.error("core-worker:", msg);
     Atomics.store(i32, STATUS, -1);
-    self.postMessage({ error: String(msg) });
+    Atomics.store(i32, CTRL, -1);
+    Atomics.notify(i32, CTRL);
+    self.postMessage({ error: "Sonic emulator: " + String(msg) });
   };
 
   let shim;
+  let memory;
   try {
     const { default: createRetroShim } = await import("./retro_shim.js");
-    shim = await createRetroShim();
+    memory = new WebAssembly.Memory({ initial: 1024, maximum: memoryLimitBytes / 65536 });
+    shim = await createRetroShim({ wasmMemory: memory, onAbort: why => fail("Sonic emulator memory/runtime failure: " + why) });
+    const allocate = bytes => {
+      const pointer = shim._malloc(bytes) >>> 0;
+      if (!pointer) throw new Error("Sonic emulator memory limit reached");
+      return pointer;
+    };
 
     // ROM into the shim's own heap, then init.
-    const romPtr = shim._malloc(rom.length);
+    const romPtr = allocate(rom.length);
     shim.HEAPU8.set(rom, romPtr);
     const blobLen = shim._shim_init(romPtr, rom.length, game, mode,
                                     zone | 0, act | 0);
     shim._free(romPtr);
-    if (blobLen <= 0) {
+    if (blobLen <= 0 || blobLen > BLOB_CAP) {
       return fail("shim_init: " + shim.UTF8ToString(shim._shim_error()));
     }
     const obsDim = shim._shim_obs_dim();
+    if (obsDim * 4 > OBS_CAP) throw new Error("Sonic observation exceeds worker region capacity");
 
     // Shim-side scratch buffers.
-    const sBlob = shim._malloc(blobLen);
-    const sObs = shim._malloc(obsDim * 4);
-    const sReward = shim._malloc(4);
-    const sDone = shim._malloc(4);
-    const sDisplay = shim._malloc(4);
-    const sRgba = shim._malloc(RGBA_LEN);
-    const sPos = shim._malloc(POS_WORDS * 4);
-    const sFrames = shim._malloc(4);
-    const sTile = shim._malloc(TILE_LEN);
+    const sBlob = allocate(blobLen);
+    const sObs = allocate(obsDim * 4);
+    const sReward = allocate(4);
+    const sDone = allocate(4);
+    const sDisplay = allocate(4);
+    const sRgba = allocate(RGBA_LEN);
+    const sPos = allocate(POS_WORDS * 4);
+    const sFrames = allocate(4);
+    const sTile = allocate(TILE_LEN);
 
     Atomics.store(i32, BLOBLEN, blobLen);
+    Atomics.store(i32, W + 15, memory.buffer.byteLength / 65536);
     Atomics.store(i32, STATUS, 1);  // ready
     self.postMessage({ ready: true, blobLen });
 
@@ -81,7 +92,8 @@ self.onmessage = async (e) => {
     for (;;) {
       Atomics.wait(i32, CTRL, 0);
       const cmd = Atomics.load(i32, CTRL);
-      if (cmd <= 0) continue;  // spurious wake / already-handled error state
+      if (cmd < 0) return;
+      if (cmd === 0) continue;  // spurious wake
       let rc = 0;
       try {
         if (cmd === 1) {  // STEP
@@ -101,12 +113,12 @@ self.onmessage = async (e) => {
           if (rc === 0) {
             copyBlobOut();
             copyObsOut();
-            f32[REWARD] = shim.HEAPF32[sReward >> 2];
-            Atomics.store(i32, DONE, shim.HEAP32[sDone >> 2]);
-            Atomics.store(i32, FRAMES, shim.HEAP32[sFrames >> 2]);
-            f32[DISPLAY] = shim.HEAPF32[sDisplay >> 2];
+            f32[REWARD] = shim.HEAPF32[sReward >>> 2];
+            Atomics.store(i32, DONE, shim.HEAP32[sDone >>> 2]);
+            Atomics.store(i32, FRAMES, shim.HEAP32[sFrames >>> 2]);
+            f32[DISPLAY] = shim.HEAPF32[sDisplay >>> 2];
             for (let k = 0; k < POS_WORDS; k++) {
-              Atomics.store(i32, W + 8 + k, shim.HEAP32[(sPos >> 2) + k]);
+              Atomics.store(i32, W + 8 + k, shim.HEAP32[(sPos >>> 2) + k]);
             }
             u8.set(shim.HEAPU8.subarray(sTile, sTile + TILE_LEN), TILE);
           }
@@ -124,13 +136,14 @@ self.onmessage = async (e) => {
           }
         }
         if (rc !== 0) {
-          console.error("core-worker job", cmd, "failed:",
-                        shim.UTF8ToString(shim._shim_error()));
+          fail("job " + cmd + " failed: " + shim.UTF8ToString(shim._shim_error()));
+          return;
         }
       } catch (err) {
-        console.error("core-worker job", cmd, "threw:", err);
-        rc = -1;
+        fail("job " + cmd + " failed: " + String(err));
+        return;
       }
+      Atomics.store(i32, W + 15, memory.buffer.byteLength / 65536);
       Atomics.store(i32, CTRL, rc === 0 ? 0 : -1);
       Atomics.notify(i32, CTRL);
     }
