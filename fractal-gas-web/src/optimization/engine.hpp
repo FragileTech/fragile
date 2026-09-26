@@ -7,6 +7,7 @@
 #include "optimization/perturbation.hpp"
 #include "swarm_algorithm.hpp"
 #include "fractal/population_control.hpp"
+#include "fractal/populations.hpp"
 
 namespace fg::optimization {
 struct Settings {
@@ -60,6 +61,10 @@ class Algorithm {
   virtual void configure(const Settings&) {
     throw std::invalid_argument("This optimizer does not support live settings");
   }
+  virtual std::unique_ptr<fractal::PopulationMember> exchange_member(const std::string&, const std::string&, int) {
+    throw std::invalid_argument("Population exchange currently requires Wave");
+  }
+  virtual void refresh_exchange() {}
   virtual void step() = 0;
   virtual const Population& population() const = 0;
   virtual uint64_t evaluations() const = 0;
@@ -95,6 +100,12 @@ class Session {
   std::string export_basins() const;
   void import_basins(const std::string&);
   uint64_t next_evaluations() const;
+  std::unique_ptr<fractal::PopulationMember> exchange_member(const std::string& id, int count = -1);
+  void refresh_exchange() { algorithm->refresh_exchange(); capture(); }
+  Json take_basin_events();
+  void synchronize_basins(const std::string& data);
+  static uint64_t initial_evaluation_bound(const Json& config);
+
  private:
   std::unique_ptr<Settings> pending;
   std::unique_ptr<RunController> controller;

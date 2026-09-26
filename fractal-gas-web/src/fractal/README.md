@@ -8,6 +8,7 @@ Arcade, Control, Optimization, and LLM Lab link `fg_fractal_core`. Algorithm tem
 | `planner.hpp` | Incremental FMC and Jump Wave, root selection, ancestry consensus, horizon extension, fallbacks | `ArcadePlanner` for Arcade and optimization; Lab `FmcPlanner` |
 | `graph.hpp` | Graph's distinct leaf masks, frozen parents, cloning exclusions, sparse transitions, visits, growth | Arcade and optimization `FractalTree` |
 | `euclidean.hpp` | Phase-space companions, fitness, cloning/revival, BAOAB, periodic geometry, evaluation accounting | Optimization's `EuclideanAdapter` |
+| `populations.hpp`, `wave_exchange.hpp` | Parallel black-box Wave members, modular staged elite exchange and global elites; see [Fractal Populations](POPULATIONS.md) | All native Wave adapters; Optimization browser |
 | `population.hpp` | Contiguous metadata and typed actions, C++17 array views, row-copy primitives | Wave and backends |
 | `distance.*` | Observation distance dispatch, validation, serial/threaded batch kernels | Wave and Graph in all adapters |
 | `checkpoint.hpp`, `exploration_tree.*` | Backend-independent serialization primitives and recorded action ancestry | Wave and planners |
@@ -63,7 +64,7 @@ FMC has two named root selection policies: surviving discrete first-action votin
 
 ## Checkpoints and replay
 
-Control Lab checkpoints use version **2**, with a native/WASM backend tag, scene fingerprint, configuration, physical state, shared Wave metadata and elites, RNG, action policy settings, recorded/pruned lineage, and incremental planner progress. Restore validates a temporary engine before replacing the live state. Version 1 checkpoints are rejected; there is no migration or legacy execution path. State snapshots keep their existing physical-state ABI.
+Control Lab checkpoints use version **4**, with a native/WASM backend tag, scene fingerprint, configuration, physical state, shared Wave metadata and elites, RNG, action policy settings, recorded/pruned lineage, and incremental planner progress. Restore validates a temporary engine before replacing the live state. Older checkpoint versions are rejected; there is no migration or legacy execution path. State snapshots keep their existing physical-state ABI.
 
 Optimization exports identify the current engine as `fgopt-10`, with bounded objective-percentile scales, live tuning, experimental adaptive exploration, round control and basin archives. The shared lifecycle was introduced in `fgopt-4`. Recorded visualization data can still be viewed, while an older engine identifier is not a promise of identical re-simulation. Historical seeded trajectories can change with the unified lifecycle, stable elite ties, complete elite metadata, and truncation bookkeeping. The new version supports deterministic continuation within the same backend/build. Native versus WASM physics comparisons retain their existing numerical tolerance.
 

@@ -18,17 +18,22 @@ void ExplorationTree::reset(RecordingMode recording, size_t action_dim, size_t p
   free_.clear();
   index_.clear();
   root_snapshot.clear();
+  imported_roots_.clear();
 }
 void ExplorationTree::reserve(size_t count) {
   if (mode == RecordingMode::Off) return;
   size_t needed = nodes_.size() + (count > free_.size() ? count - free_.size() : 0);
   size_t per_node = sizeof(ExplorationNode) + 4 * (action_dim_ + pose_dim_) + 48;
-  if (needed > max_bytes / per_node || count > std::numeric_limits<uint32_t>::max() - next_id_)
+  size_t root_bytes = root_snapshot.size();
+  for (const auto& root : imported_roots_) root_bytes += root.second.size();
+  if (root_bytes > max_bytes) throw std::runtime_error("Replay roots exceed recording budget");
+  const size_t node_capacity = (max_bytes - root_bytes) / per_node;
+  if (needed > node_capacity || count > std::numeric_limits<uint32_t>::max() - next_id_)
     throw std::runtime_error(
         "Exploration recording memory limit reached; export or reset the "
         "recording");
   // Geometric growth is checked against the memory budget as well.
-  size_t capacity = std::min(max_bytes / per_node,
+  size_t capacity = std::min(node_capacity,
                              std::max(needed, std::max(size_t(64), nodes_.capacity() * 2)));
   if (needed > nodes_.capacity()) {
     arcade_memory::require(uint64_t(capacity) * per_node);
@@ -77,21 +82,22 @@ size_t ExplorationTree::prune(const std::vector<uint32_t>& protected_ids) {
   auto& leaves = prune_leaves_;
   leaves.clear();
   for (const auto& n : nodes_)
-    if (n.id && n.parent && !n.children && !pinned(n.id)) leaves.push_back(n.id);
+    if (n.id && (n.parent || imported_roots_.count(n.id)) && !n.children && !pinned(n.id)) leaves.push_back(n.id);
   size_t count = 0;
   for (uint32_t id : leaves)
     while (id) {
       auto it = index_.find(id);
       if (it == index_.end()) break;
       auto& n = nodes_[it->second];
-      if (!n.parent || n.children || pinned(id) || pinned(n.parent)) break;
+      if ((!n.parent && !imported_roots_.count(id)) || n.children || pinned(id) ||
+          (n.parent && pinned(n.parent))) break;
       uint32_t parent = n.parent;
       free_.push_back(it->second);
       n.id = 0;
       index_.erase(it);
       ++count;
-      auto& pn = nodes_[index_.at(parent)];
-      --pn.children;
+      if (parent) --nodes_[index_.at(parent)].children;
+      else imported_roots_.erase(id);
       id = parent;
     }
   removed += count;
@@ -111,6 +117,46 @@ std::vector<uint32_t> ExplorationTree::branch(uint32_t leaf) const {
   }
   std::reverse(result.begin(), result.end());
   return result;
+}
+const std::vector<uint8_t>& ExplorationTree::replay_root(uint32_t leaf) const {
+  while (node(leaf).parent) leaf = node(leaf).parent;
+  auto it = imported_roots_.find(leaf);
+  return it == imported_roots_.end() ? root_snapshot : it->second;
+}
+ExplorationTree ExplorationTree::export_branch(uint32_t leaf) const {
+  ExplorationTree result;
+  result.reset(mode, action_dim_, pose_dim_);
+  if (mode == RecordingMode::Off) return result;
+  result.root_snapshot = replay_root(leaf);
+  uint32_t parent = 0;
+  for (auto id : branch(leaf)) {
+    const auto& n = node(id);
+    parent = result.append(parent, n.frames, action(id), poses_.data() + index_.at(id)*pose_dim_,
+                           n.reward, n.step_reward, n.virtual_reward, n.flags);
+  }
+  return result;
+}
+uint32_t ExplorationTree::import_branch(const ExplorationTree& source) {
+  if (mode == RecordingMode::Off) return 0;
+  if (source.mode == RecordingMode::Off || source.action_dim_ != action_dim_ || source.pose_dim_ != pose_dim_)
+    throw std::invalid_argument("Incompatible exchange recording");
+  size_t bytes = root_snapshot.size() + source.root_snapshot.size();
+  for (const auto& root : imported_roots_) bytes += root.second.size();
+  const size_t per_node = sizeof(ExplorationNode) + 4 * (action_dim_ + pose_dim_) + 48;
+  if (bytes > max_bytes || nodes_.size() + source.size() > (max_bytes - bytes) / per_node)
+    throw std::runtime_error("Imported replay branch exceeds recording budget");
+  uint32_t parent = 0, previous = 0;
+  for (const auto& n : source.nodes_) {
+    if (!n.id) continue;
+    if (n.parent != previous) throw std::invalid_argument("Exchange requires one ancestry branch");
+    parent = append(parent, n.frames, source.action(n.id),
+                    source.poses_.data() + source.index_.at(n.id)*pose_dim_,
+                    n.reward, n.step_reward, n.virtual_reward, n.flags);
+    if (!n.parent) imported_roots_[parent] = source.root_snapshot;
+    previous = n.id;
+  }
+  if (!parent) throw std::invalid_argument("Empty exchange ancestry");
+  return parent;
 }
 void ExplorationTree::export_data(std::vector<uint32_t>& meta, std::vector<float>& values) const {
   meta.clear();
@@ -140,6 +186,11 @@ void ExplorationTree::save_checkpoint(fractal::CheckpointWriter& out) const {
   out.vector(actions_);
   out.vector(poses_);
   out.vector(free_);
+  std::vector<uint32_t> roots;
+  for (const auto& root : imported_roots_) roots.push_back(root.first);
+  std::sort(roots.begin(), roots.end());
+  out.scalar(uint64_t(roots.size()));
+  for (auto id : roots) { out.scalar(id); out.vector(imported_roots_.at(id)); }
 }
 void ExplorationTree::load_checkpoint(fractal::CheckpointReader& in) {
   const auto recording = in.scalar<uint32_t>();
@@ -156,6 +207,12 @@ void ExplorationTree::load_checkpoint(fractal::CheckpointReader& in) {
   actions_ = in.vector<float>();
   poses_ = in.vector<float>();
   free_ = in.vector<uint32_t>();
+  const auto roots = in.scalar<uint64_t>();
+  if (roots > nodes_.size()) throw std::invalid_argument("Invalid imported roots");
+  for (uint64_t i=0;i<roots;++i) {
+    auto id=in.scalar<uint32_t>(); auto bytes=in.vector<uint8_t>();
+    if (!imported_roots_.emplace(id,std::move(bytes)).second) throw std::invalid_argument("Duplicate imported root");
+  }
   if (actions_.size() != nodes_.size() * ad || poses_.size() != nodes_.size() * pd)
     throw std::invalid_argument("Invalid checkpoint tree storage");
   std::vector<uint32_t> children(nodes_.size()), slots(nodes_.size());
@@ -180,6 +237,8 @@ void ExplorationTree::load_checkpoint(fractal::CheckpointReader& in) {
       ++children[p->second];
     }
   }
+  for (const auto& root : imported_roots_)
+    if (!index_.count(root.first) || node(root.first).parent) throw std::invalid_argument("Invalid replay root");
   for (size_t i = 0; i < nodes_.size(); ++i)
     if (nodes_[i].id && children[i] != nodes_[i].children)
       throw std::invalid_argument("Invalid checkpoint child count");

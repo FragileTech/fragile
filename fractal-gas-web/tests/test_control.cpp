@@ -827,3 +827,24 @@ TEST_CASE(control_live_population_preserves_packed_state_and_replay) {
   wave.step();
   CHECK(wave.stats.iterations == iteration + 1 && wave.stats.alive <= 16);
 }
+
+TEST_CASE(control_population_import_replay_and_checkpoint) {
+  auto scene=Scene::compile(free_scene);Physics pa(scene,1),pb(scene,1);
+  WaveConfig cfg;cfg.walkers=16;cfg.elites=5;cfg.frames=1;cfg.recording=fg::RecordingMode::Full;
+  StateBatch ra(1,*scene),rb(1,*scene);ra.reset(*scene,10);rb.reset(*scene,20);
+  position(rb.row(0),rb.layout,0,{40,45});
+  PackedWave a(pa,cfg,5),b(pb,cfg,7);a.reset(ra);b.reset(rb);
+  auto ma=a.population_member("a"),mb=b.population_member("b");
+  fg::fractal::PopulationController controller(8);controller.advance({ma.get(),mb.get()});
+  for(const auto& imp:controller.last_exchange[0].imports){
+    auto replay=a.replay(a.node_ids[imp.destination]);
+    CHECK(std::memcmp(replay.row(0),a.current.row(imp.destination),scene->layout.words*4)==0);
+  }
+  CheckpointWriter out;a.save_checkpoint(out);PackedWave restored(pa,cfg,99);restored.reset(ra);
+  CheckpointReader in(out.data.data(),out.data.size());restored.load_checkpoint(in);in.finish();
+  for(const auto& imp:controller.last_exchange[0].imports){
+    auto replay=restored.replay(restored.node_ids[imp.destination]);
+    CHECK(std::memcmp(replay.row(0),restored.current.row(imp.destination),scene->layout.words*4)==0);
+  }
+  a.step();restored.step();CHECK(a.rewards==restored.rewards);
+}

@@ -185,3 +185,49 @@ export function row(frame, index) {
     leaf: !!frame[offset + 2 * d + 7],
   };
 }
+
+// One allocation boundary for the additive population JSON APIs.
+export function populationJson(module, name, handle, request) {
+  const text = JSON.stringify(request),
+    size = module.lengthBytesUTF8(text) + 1;
+  const p = module._malloc(size);
+  if (!p) throw new Error("Population request allocation failed");
+  try {
+    module.stringToUTF8(text, p, size);
+    const result = module[name](handle, p);
+    if (!result) throw new Error(module.UTF8ToString(module._fgo_error()));
+    return JSON.parse(module.UTF8ToString(result));
+  } finally {
+    module._free(p);
+  }
+}
+export class NativePopulationCoordinator {
+  constructor(module) {
+    this.m = module;
+    this.handle = 0;
+  }
+  create(config) {
+    const text = JSON.stringify(config),
+      size = this.m.lengthBytesUTF8(text) + 1;
+    const p = this.m._malloc(size);
+    if (!p) throw new Error("Population configuration allocation failed");
+    let h;
+    try {
+      this.m.stringToUTF8(text, p, size);
+      h = this.m._fgp_create(p, 1);
+    } finally {
+      this.m._free(p);
+    }
+    if (!h) throw new Error(this.m.UTF8ToString(this.m._fgo_error()));
+    this.dispose();
+    this.handle = h;
+    return this.request({ op: "config" });
+  }
+  request(request) {
+    return populationJson(this.m, "_fgp_request", this.handle, request);
+  }
+  dispose() {
+    if (this.handle) this.m._fgp_destroy(this.handle);
+    this.handle = 0;
+  }
+}

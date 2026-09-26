@@ -57,14 +57,15 @@ class ArcadeTrajectory {
     }
     auto& gas = dynamic_cast<FractalGas&>(algo);
     const auto& tree = gas.exploration_tree();
-    arcade_memory::require(tree.root_snapshot.size() * 4ULL + tree.size() * 16ULL +
+    const auto& replay_root = tree.replay_root(gas.state().lineage[walker]);
+    arcade_memory::require(replay_root.size() * 4ULL + tree.size() * 16ULL +
         (planner ? planner->played_actions().size() * sizeof(ArcadeAction) : 0));
     const auto branch = tree.branch(gas.state().lineage[walker]);
     const size_t prefix = planner ? planner->search_prefix_size() : 0;
-    check_size(planner ? planner->initial_state().size() : tree.root_snapshot.size(),
+    check_size(planner ? planner->initial_state().size() : replay_root.size(),
                prefix + branch.size());
     actions.reserve(prefix + branch.size());
-    root.assign(tree.root_snapshot.begin(), tree.root_snapshot.end());
+    root.assign(replay_root.begin(), replay_root.end());
     if (planner) {
       root = planner->initial_state();
       const auto& played = planner->played_actions();

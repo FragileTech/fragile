@@ -21,6 +21,10 @@ class BasinArchive {
   std::string export_json() const;
   void import_json(const std::string&);
   Json summary() const;
+  // Trusted evidence exchanged within one active population, already evaluated.
+  void synchronize_json(const std::string&);
+  void merge_event(const Json&, uint64_t global_round);
+
   void validate_imports(Benchmark&,Rng&,uint64_t budget);
   uint64_t validation_cost(bool stochastic) const;
  private:

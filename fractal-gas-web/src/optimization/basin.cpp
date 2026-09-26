@@ -167,6 +167,22 @@ void BasinArchive::import_json(const std::string& text) {
   }
   records=std::move(imported);next_id=records.size()+1;
 }
+void BasinArchive::synchronize_json(const std::string& text) {
+  auto prepared=*this;prepared.import_json(text);
+  const auto root=JsonReader(text).read();
+  uint64_t maximum=0;
+  for(size_t i=0;i<prepared.records.size();++i) {
+    const auto& j=root["entries"].array[i];auto& e=prepared.records[i];
+    e.id=uint64_t(bounded(j["id"],0,1,1e12,"basin id"));
+    e.last_round=uint64_t(bounded(j["last_round"],0,0,1e12,"basin round"));
+    e.validated=j["validated"].flag(false);maximum=std::max(maximum,e.id);
+  }
+  prepared.next_id=maximum+1;*this=std::move(prepared);
+}
+void BasinArchive::merge_event(const Json& event,uint64_t round) {
+  auto evidence=*this;evidence.synchronize_json(stringify(event));
+  complete_round(evidence.records,round,event["stalled"].flag(false));
+}
 uint64_t BasinArchive::validation_cost(bool stochastic) const {
   return std::count_if(records.begin(),records.end(),[](const auto& e){return !e.validated;})*(stochastic?3:1);
 }

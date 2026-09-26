@@ -182,3 +182,24 @@ TEST_CASE(llm_skipped_utility_and_nonfinite_utility_are_rejected_atomically) {
     CHECK(threw); CHECK(next.empty());
   }
 }
+
+TEST_CASE(llm_population_requires_owned_references_and_keeps_reinjection_disabled) {
+  auto transport=[](const std::vector<llm::Request>& requests){
+    std::vector<llm::Result> results;
+    for(const auto& q:requests){auto s=q.source;s.id+=1;s.tokens+=1;s.logp-=.1;s.utility-=.1;results.push_back({s,{float(s.tokens)},false});}
+    return results;
+  };
+  llm::LlmEnvironment ea(1,transport),eb(1,transport);
+  FractalGasParams p;p.N=16;p.n_elite=0;p.dt_min=p.dt_max=1;p.count_visits=false;
+  FractalGas a(ea,p),b(eb,p);a.reset();b.reset();
+  bool rejected=false;try{a.population_member("a","tokens-v1",5);}catch(const std::exception&){rejected=true;}CHECK(rejected);
+  // This fixture's immutable archive is a shared namespace; the codec validates
+  // and retains the record. Separate archives can remap IDs in the same hook.
+  auto save=[](const WalkerState& s){auto snapshot=llm::LlmEnvironment::decode(s.states[0]);CHECK(snapshot.id==snapshot.tokens);return std::vector<uint8_t>(s.states[0].begin(),s.states[0].end());};
+  auto load=[](WalkerState& s,const std::vector<uint8_t>& bytes){s.states[0].assign(bytes.begin(),bytes.end());auto snapshot=llm::LlmEnvironment::decode(s.states[0]);CHECK(snapshot.id==snapshot.tokens);};
+  auto ma=a.population_member("a","tokens-v1",5,save,load),mb=b.population_member("b","tokens-v1",5,save,load);
+  fractal::PopulationController controller;controller.advance({ma.get(),mb.get()});
+  CHECK(controller.pool.size()==10);CHECK(a.params().n_elite==0);CHECK(b.params().n_elite==0);
+  CHECK(controller.last_exchange[0].imports.size()==5);controller.advance({ma.get(),mb.get()});
+  for(const auto& state:a.state().states)CHECK(llm::LlmEnvironment::decode(state).tokens==2);
+}

@@ -70,6 +70,20 @@ void PackedWave::set_population(int count, fractal::RemovalPolicy policy, bool d
   config.requested_walkers = count;
   config.removal_policy = policy;
 }
+std::unique_ptr<PackedWave::ExchangeMember> PackedWave::population_member(const std::string& id,int count) {
+  auto save=[](const PackedPopulation& s) {
+    std::vector<uint8_t> out(s.states.serialized_size());s.states.serialize(out.data(),out.size());return out;
+  };
+  auto load=[](PackedPopulation& s,const std::vector<uint8_t>& bytes) {s.states.deserialize(bytes.data(),bytes.size());};
+  auto member=std::make_unique<ExchangeMember>(core_,id,"control-wave:"+std::to_string(current.fingerprint),save,load);
+  member->step=[this]{step();};member->elite_count=[this]{return int(config.elites);};
+  member->exchange_count=[this,count]{return size_t(count<0?int(config.elites):count);};
+  member->removal=[this]{return config.removal_policy;};
+  member->after_commit=[this]{stats.alive=core_.metrics.alive;stats.mean_reward=core_.metrics.mean_reward;
+    stats.max_reward=core_.metrics.max_reward;stats.mean_fitness=core_.metrics.mean_fitness;
+    stats.dead_ratio=1-float(stats.alive)/config.walkers;stats.cloned=0;stats.clone_ratio=0;};
+  return member;
+}
 void PackedWave::step() {
   action_policy_.inertial = config.inertial;
   action_policy_.noise = config.noise;
@@ -118,7 +132,8 @@ std::vector<float> PackedWave::select_action() const {
 }
 StateBatch PackedWave::replay(uint32_t id) {
   StateBatch result(1, *physics.scene);
-  std::memcpy(result.row(0), root_.row(0), root_.layout.words * 4);
+  const auto& snapshot = tree.replay_root(id);
+  result.deserialize(snapshot.data(), snapshot.size());
   auto path = tree.branch(id);
   StepResult step;
   for (uint32_t node : path)

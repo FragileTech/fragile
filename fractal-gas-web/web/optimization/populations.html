@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Fractal Populations · Optimization Lab</title>
+    <link rel="stylesheet" href="../theme.css" />
+    <link rel="stylesheet" href="populations.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="app-brand" href="../">fragile.tech</a>
+      <h1>Fractal Populations</h1>
+      <nav class="app-nav">
+        <a href="./">Single swarm</a><a href="../lab/">Control Lab</a
+        ><a href="../llm/">LLM Lab</a>
+      </nav>
+    </header>
+    <main>
+      <section class="setup" aria-label="Population configuration">
+        <h2>Independent swarms. Shared discoveries.</h2>
+        <p class="hint">
+          Each Wave explores with its own parameters. At each exchange, its
+          worst eligible walkers copy elites from other swarms.
+        </p>
+        <form id="population-form">
+          <fieldset>
+            <legend>Population</legend>
+            <div class="fields">
+              <label
+                >Parallel swarms<input
+                  id="swarm-count"
+                  type="number"
+                  value="4"
+                  min="1"
+                  step="1"
+                  required
+              /></label>
+              <label
+                >Execution slots<input
+                  id="concurrency"
+                  type="number"
+                  value="4"
+                  min="1"
+                  step="1"
+                  required
+              /></label>
+              <label
+                >Exchange every … steps<input
+                  id="exchange-every"
+                  type="number"
+                  value="1"
+                  min="1"
+                  step="1"
+                  required
+              /></label>
+              <label
+                >Global elites<input
+                  id="global-elites"
+                  type="number"
+                  value="20"
+                  min="0"
+                  step="1"
+                  required
+              /></label>
+              <label
+                >Experiment seed<input
+                  id="seed"
+                  type="number"
+                  value="7"
+                  min="0"
+                  step="1"
+                  required
+              /></label>
+              <label
+                >Shared evaluation budget<input
+                  id="budget"
+                  type="number"
+                  value="100000"
+                  min="0"
+                  step="1"
+                  required
+              /></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Shared task and defaults</legend>
+            <div class="fields">
+              <label
+                >Objective<select id="benchmark">
+                  <option value="rastrigin">Rastrigin</option>
+                  <option value="quadratic">Quadratic</option>
+                  <option value="ackley">Ackley</option>
+                  <option value="rosenbrock">Rosenbrock</option>
+                </select></label
+              >
+              <label
+                >Direction<select id="objective">
+                  <option value="minimize">Minimize</option>
+                  <option value="maximize">Maximize</option>
+                </select></label
+              >
+              <label
+                >Dimensions<input
+                  id="dimensions"
+                  type="number"
+                  min="2"
+                  max="1000"
+                  value="2"
+                  required
+              /></label>
+              <label
+                >Walkers per swarm<input
+                  id="walkers"
+                  type="number"
+                  min="2"
+                  value="256"
+                  required
+              /></label>
+              <label
+                >Elites per swarm<input
+                  id="elites"
+                  type="number"
+                  min="0"
+                  value="5"
+                  required
+              /></label>
+              <label
+                >Movement scale<input
+                  id="scale"
+                  type="number"
+                  min="0"
+                  step="any"
+                  value="0.1"
+                  required
+              /></label>
+            </div>
+            <label class="check"
+              ><input id="restarts" type="checkbox" checked /> Guide restarts
+              with shared basins</label
+            >
+            <p class="hint">
+              Automatic restarts require a positive shared budget. A budget of 0
+              allows unlimited steps with automatic restarts off.
+            </p>
+          </fieldset>
+          <fieldset>
+            <legend>Per-swarm parameters</legend>
+            <p class="hint">
+              Blank fields inherit the shared defaults. Seeds derive
+              independently from the experiment seed unless specified.
+              Membership changes take effect on reset.
+            </p>
+            <div id="members"></div>
+          </fieldset>
+        </form>
+      </section>
+      <section class="experiment" aria-label="Population experiment">
+        <div class="toolbar">
+          <button id="reset" type="submit" form="population-form">
+            Create / reset
+          </button>
+          <button id="run" disabled>Run</button
+          ><button id="step" disabled>Step</button
+          ><button id="save" disabled>Save recording</button
+          ><label class="file-button"
+            >Load recording<input
+              id="load"
+              type="file"
+              accept=".json,application/json"
+          /></label>
+        </div>
+        <p id="message" role="status" aria-live="polite">
+          Configure your swarms, then create a population.
+        </p>
+        <div class="plot">
+          <canvas
+            id="population-view"
+            aria-label="Swarm positions projected onto the first two coordinates"
+          ></canvas
+          ><span class="axis-caption"
+            >Coordinates 1 and 2 · circles: exports · squares: imports</span
+          >
+        </div>
+        <label class="timeline"
+          >Recorded round<input
+            id="timeline"
+            type="range"
+            min="0"
+            max="0"
+            value="0"
+            disabled
+          /><output id="round-label">0</output></label
+        >
+        <div id="totals" class="totals"></div>
+        <div class="table-scroll">
+          <table>
+            <caption>
+              Swarm activity
+            </caption>
+            <thead>
+              <tr>
+                <th>Swarm</th>
+                <th>Walkers</th>
+                <th>Best</th>
+                <th>Evaluations</th>
+                <th>Exports</th>
+                <th>Imports</th>
+              </tr>
+            </thead>
+            <tbody id="statistics"></tbody>
+          </table>
+        </div>
+        <details>
+          <summary>Global elites</summary>
+          <ol id="elite-list"></ol>
+        </details>
+        <details>
+          <summary>Shared basins</summary>
+          <ul id="basin-list"></ul>
+        </details>
+        <details>
+          <summary>Latest exchange provenance</summary>
+          <ul id="provenance"></ul>
+        </details>
+        <fieldset id="live-settings" disabled>
+          <legend>Adjust a swarm at the next round</legend>
+          <div class="fields">
+            <label>Swarm<select id="live-member"></select></label
+            ><label
+              >Movement scale<input
+                id="live-scale"
+                type="number"
+                value="0.1"
+                min="0"
+                step="any"
+            /></label>
+          </div>
+          <button id="apply" type="button">Apply scale</button
+          ><button id="restart" type="button">Restart this swarm</button>
+          <p class="hint">
+            Pause before applying changes. Other parameters and membership can
+            be edited in the configuration and applied on reset.
+          </p>
+        </fieldset>
+      </section>
+    </main>
+    <script type="module" src="populations-main.js"></script>
+  </body>
+</html>

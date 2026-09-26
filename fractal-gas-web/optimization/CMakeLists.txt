@@ -36,6 +36,7 @@ add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/geometry.cpp
   ${OPT_ROOT}/src/optimization/adaptive.cpp
   ${OPT_ROOT}/src/optimization/cloning_guided.cpp
+  ${OPT_ROOT}/src/optimization/populations.cpp
   ${OPT_ROOT}/src/optimization/basin.cpp
   ${OPT_ROOT}/src/optimization/controller.cpp
   ${OPT_ROOT}/src/optimization/environment.cpp
@@ -73,6 +74,7 @@ else()
     ${OPT_ROOT}/tests/optimization/test_adaptive.cpp
     ${OPT_ROOT}/tests/optimization/test_cloning_guided.cpp
     ${OPT_ROOT}/tests/optimization/test_boundary.cpp
+    ${OPT_ROOT}/tests/optimization/test_populations.cpp
     ${OPT_ROOT}/tests/optimization/test_controller.cpp
     ${OPT_ROOT}/tests/optimization/test_coco.cpp
     ${OPT_ROOT}/tests/optimization/test_cma.cpp

@@ -186,6 +186,15 @@ class ExistingSwarm final : public Algorithm {
     s = std::move(saved);
     if (resized && !planner) update(true);
   }
+  std::unique_ptr<fractal::PopulationMember> exchange_member(const std::string& id,const std::string& key,int count) override {
+    if(s.algorithm!="wave") throw std::invalid_argument("Population exchange currently requires Wave");
+    auto* wave=static_cast<FractalGas*>(swarm.get());
+    auto member=wave->population_member(id,key,count);
+    member->imports_enabled=s.json["population_imports"].num(1)>0;
+    member->score=[this](int i){return s.score(p.objective.at(i));};
+    return member;
+  }
+  void refresh_exchange() override { update(true); }
   const Population& population() const override { return p; }
   void set_geometry_diagnostics(bool enabled) override {env.set_geometry(enabled);}
   Json movement_geometry() const override {return env.geometry();}
@@ -371,6 +380,24 @@ static uint64_t initialization_cost(const Benchmark& b,const Settings& s) {
   if(evaluated_perturbation(s.perturbation) && (s.algorithm=="wave" || s.algorithm=="graph") && s.dt_max>1)
     cost=uint64_t(s.walkers)*(1+adaptive_evaluation_bound(b,s.json));
   return cost;
+}
+uint64_t Session::initial_evaluation_bound(const Json& config) {
+  Benchmark b(config);Settings s(b.config);validate_resources(b,s);return initialization_cost(b,s);
+}
+std::unique_ptr<fractal::PopulationMember> Session::exchange_member(const std::string& id,int count) {
+  if(!controller) throw std::invalid_argument("Population exchange requires Wave");
+  controller->collect_basin_events=true;
+  const auto archive=JsonReader(controller->archive.export_json()).read();
+  return algorithm->exchange_member(id,"optimization-wave-v1:"+stringify(archive["compatibility"]),count);
+}
+Json Session::take_basin_events() {
+  Json result;result.kind=Json::Array;
+  if(controller) result.array.swap(controller->basin_events);
+  return result;
+}
+void Session::synchronize_basins(const std::string& data) {
+  if(!controller) throw std::invalid_argument("Population exchange requires Wave");
+  controller->archive.synchronize_json(data);
 }
 Session::~Session()=default;
 Session::Session(const Json& config) : benchmark(config), settings(benchmark.config) {

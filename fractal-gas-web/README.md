@@ -669,3 +669,7 @@ state. Long Wave seeks reconstruct in cancellable batches. Resetting clears the 
 Playback reserves 256 MiB inside the selected combined WASM budget. Its emulator
 is created only when loading a path, starting at 64 MiB; search workers remain
 available for sampling. Recordings are bounded to 32 MiB.
+
+## Fractal Populations
+
+Open [Fractal Populations](web/optimization/populations.html) from Optimization Lab to run a configurable number of Wave swarms with distinct parameters, exchanging elites at synchronized boundaries. See the [native API and configuration guide](src/fractal/POPULATIONS.md) for C++ adapters, strategies, archives, budgets, and the worker protocol.

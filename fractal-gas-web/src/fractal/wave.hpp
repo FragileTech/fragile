@@ -108,11 +108,7 @@ class Wave {
     } else {
       const auto& scores = policy == RemovalPolicy::VirtualReward && current.has_virtual_rewards
                              ? current.virtual_rewards : current.rewards;
-      std::stable_sort(ranked.begin(), ranked.end(), [&](int a, int b) {
-        const float x = std::isfinite(scores[a]) ? scores[a] : -INFINITY;
-        const float y = std::isfinite(scores[b]) ? scores[b] : -INFINITY;
-        return x > y;
-      });
+      ranked = retention_order(old, [&](int i) { return scores[i]; });
     }
     State replacement, output;
     prepare(replacement, n, current.obs_dim, current.action_dim, current.has_infos);
@@ -377,6 +373,19 @@ class Wave {
     }
   }
 
+ public:
+  // Exchange is a zero-evaluation boundary operation. Called on staged storage.
+  void refresh_after_import(int elites) {
+    update_elites(elites);
+    metrics.alive = current.alive_count();
+    metrics.mean_reward = float(std::accumulate(current.rewards.begin(), current.rewards.end(), 0.0) / current.N);
+    metrics.max_reward = *std::max_element(current.rewards.begin(), current.rewards.end());
+    metrics.min_reward = *std::min_element(current.rewards.begin(), current.rewards.end());
+    metrics.mean_fitness = float(std::accumulate(current.virtual_rewards.begin(), current.virtual_rewards.end(), 0.0) / current.N);
+    metrics.max_fitness = *std::max_element(current.virtual_rewards.begin(), current.virtual_rewards.end());
+    metrics.min_fitness = *std::min_element(current.virtual_rewards.begin(), current.virtual_rewards.end());
+  }
+  template<class, class, class> friend class WavePopulationMember;
  private:
   Backend& backend_;
   ActionPolicy& policy_;

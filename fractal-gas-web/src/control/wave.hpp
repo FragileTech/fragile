@@ -6,6 +6,7 @@
 #include "exploration_tree.hpp"
 #include "fractal/planner.hpp"
 #include "fractal/wave.hpp"
+#include "fractal/wave_exchange.hpp"
 
 namespace fg::control {
 struct WaveConfig {
@@ -40,6 +41,8 @@ class PackedWave {
   PackedWave(Physics& physics, WaveConfig config, uint64_t seed);
   void reset(const StateBatch& source, size_t row = 0);
   void reseed(uint64_t seed) { rng_ = std::make_unique<Mt19937Rng>(seed); }
+  using ExchangeMember = fractal::WavePopulationMember<PackedPopulation, ControlBackend, ContinuousActions>;
+  std::unique_ptr<ExchangeMember> population_member(const std::string& id, int exchange_count = -1);
   void step();
   void set_population(int count, fractal::RemovalPolicy policy, bool defer = false);
   fractal::PopulationStatus population_status() const {

@@ -5,6 +5,7 @@
 #include "fractal/planner.hpp"
 #include "fractal/wave.hpp"
 #include "fractal_tree.hpp"
+#include "fractal_gas.hpp"
 #include "mock_env.hpp"
 #include "test_framework.hpp"
 #include "thread_pool.hpp"
@@ -593,4 +594,53 @@ TEST_CASE(wave_population_growth_uses_only_original_alive_donors) {
   try { wave.resize_population(21, 0, fractal::RemovalPolicy::VirtualReward, rng); }
   catch (const std::invalid_argument&) { rejected = true; }
   CHECK(rejected && wave.current.N == 20 && rng.checkpoint() == before);
+}
+
+TEST_CASE(population_exchange_transfers_complete_rows_and_owns_snapshots) {
+  MockEnv ea,eb;FractalGasParams p;p.N=16;p.n_elite=5;p.dt_min=p.dt_max=1;p.recording=RecordingMode::Full;
+  p.seed=7;FractalGas a(ea,p);p.seed=8;FractalGas b(eb,p);a.reset();b.reset();a.step();b.step();
+  auto ma=a.population_member("a","mock-v1"),mb=b.population_member("b","mock-v1");
+  fractal::PopulationController controller(5);auto fa=controller.capture(*ma),fb=controller.capture(*mb);
+  controller.plan({fa,fb});const auto before=a.state().states;const auto foreign=b.state();
+  ma->stage(controller.last_exchange[0].imports);mb->stage(controller.last_exchange[1].imports);
+  CHECK(a.state().states==before);ma->commit();mb->commit();
+  for(const auto& imp:controller.last_exchange[0].imports){
+    int j=imp.destination,src=imp.walker.row;
+    CHECK(a.state().states[j]==foreign.states[src]);
+    CHECK(a.state().rewards[j]==foreign.rewards[src]);
+    CHECK(a.state().step_rewards[j]==foreign.step_rewards[src]);
+    CHECK(a.state().actions[j]==foreign.actions[src]);
+    CHECK(a.state().root_actions[j]==foreign.root_actions[src]);
+    CHECK(a.state().actual_dt[j]==foreign.actual_dt[src]);
+    auto path=a.exploration_tree().branch(a.state().lineage[j]);CHECK(path.size()==2);
+    CHECK(!a.exploration_tree().replay_root(a.state().lineage[j]).empty());
+  }
+  auto packet=ma->export_walker(0);auto bytes=packet.bytes;a.step();CHECK(packet.bytes==bytes);
+  auto invalid=controller.last_exchange[0].imports;invalid[0].walker.compatibility="other task";
+  auto state=a.state().states;bool rejected=false;try{ma->stage(invalid);}catch(const std::exception&){rejected=true;}
+  CHECK(rejected);ma->discard();CHECK(state==a.state().states);
+}
+TEST_CASE(population_import_ranking_matches_shrink_ties_and_protection) {
+  fractal::MemberDescription d;d.id="a";d.exchange_count=2;
+  d.rows={{10,10,true,true},{10,10,true,true},{4,1,true,false},{3,1,true,false},{2,NAN,false,false},{1,0,true,false}};
+  auto selected=fractal::elite_exports(d);CHECK(selected==std::vector<int>({0,1}));
+  auto worst=fractal::worst_imports(d,selected);CHECK(worst==std::vector<int>({4,5}));
+  d.rows[4].removal_score=1;d.rows[5].removal_score=1;
+  worst=fractal::worst_imports(d,selected);CHECK(worst==std::vector<int>({5,4}));
+}
+
+TEST_CASE(population_strategies_are_swappable_and_failed_staging_is_atomic) {
+  MockEnv ea,eb;FractalGasParams p;p.N=16;p.n_elite=5;p.dt_min=p.dt_max=1;
+  FractalGas a(ea,p),b(eb,p);a.reset();b.reset();a.step();b.step();
+  auto ma=a.population_member("a","task"),mb=b.population_member("b","task");
+  fractal::PopulationController c(1);
+  c.strategies.donors=[](const std::vector<fractal::WalkerPacket>& pool,const std::string& id,size_t count,std::mt19937_64&){
+    std::vector<size_t> chosen;for(size_t i=0;i<pool.size() && chosen.size()<count;++i)if(pool[i].source!=id)chosen.push_back(i);return chosen;
+  };
+  c.plan({c.capture(*ma),c.capture(*mb)});
+  for(size_t i=0;i<5;++i)CHECK(c.last_exchange[0].imports[i].walker.row==int(i));
+  const auto before=a.state().states;ma->stage(c.last_exchange[0].imports);
+  auto invalid=c.last_exchange[1].imports;invalid.back().walker.bytes.pop_back();
+  bool rejected=false;try{mb->stage(invalid);}catch(const std::exception&){rejected=true;}
+  CHECK(rejected);ma->discard();mb->discard();CHECK(a.state().states==before);
 }

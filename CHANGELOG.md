@@ -1,5 +1,7 @@
 # Changelog
 
+- Add Fractal Populations: configurable parallel Wave swarms with per-member settings, modular elite exchange, shared global elites and optimization basins, a shared evaluation budget, and an Optimization population workspace with recording/playback. Native snapshot, Control, and reference-backed LLM adapters use staged full-state imports; imported replay roots use Control checkpoint version 4.
+
 - Build the native Optimization Lab reference alongside WebAssembly in the Pages deployment job so adaptive and boundary parity checks can run before publishing.
 
 - Add opt-in Optimization Lab covariance overlays for CMA-ES/BIPOP and same-swarm Fractal estimators, learned field/drift arrows, source-captured movement arrows, 2D/3D and higher-dimensional projections, and geometry-aware recording replay.

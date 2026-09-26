@@ -29,6 +29,9 @@ class ExplorationTree {
   const float* action(uint32_t id) const;
   void save_checkpoint(fractal::CheckpointWriter& out) const;
   void load_checkpoint(fractal::CheckpointReader& in);
+  ExplorationTree export_branch(uint32_t leaf) const;
+  uint32_t import_branch(const ExplorationTree& branch);
+  const std::vector<uint8_t>& replay_root(uint32_t leaf) const;
   size_t size() const { return index_.size(); }
   size_t action_dim() const { return action_dim_; }
   size_t pose_dim() const { return pose_dim_; }
@@ -39,6 +42,7 @@ class ExplorationTree {
  private:
   size_t action_dim_ = 0, pose_dim_ = 0;
   uint32_t next_id_ = 1;
+  std::unordered_map<uint32_t, std::vector<uint8_t>> imported_roots_;
   std::vector<ExplorationNode> nodes_;
   std::vector<float> actions_, poses_;
   std::vector<uint32_t> free_;

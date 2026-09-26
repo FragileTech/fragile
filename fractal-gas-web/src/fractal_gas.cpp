@@ -41,6 +41,21 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<R
   kinetic_op_->dt_max = params_.dt_max;
 }
 
+std::unique_ptr<FractalGas::ExchangeMember> FractalGas::population_member(
+    const std::string& id,const std::string& key,int count,ExchangeMember::Save save,ExchangeMember::Load load) {
+  if (env_.exchange_requires_codec() && (!save || !load))
+    throw std::invalid_argument("This environment requires an owning exchange codec");
+  if (!save) save=[](const WalkerState& s) {return std::vector<uint8_t>(s.states[0].begin(),s.states[0].end());};
+  if (!load) load=[](WalkerState& s,const std::vector<uint8_t>& bytes) {s.states[0].assign(bytes.begin(),bytes.end());};
+  auto member=std::make_unique<ExchangeMember>(core_,id,key,std::move(save),std::move(load));
+  member->step=[this]{step();};
+  member->elite_count=[this]{return params_.n_elite;};
+  member->exchange_count=[this,count]{return size_t(count<0?params_.n_elite:count);};
+  member->removal=[this]{return params_.removal_policy;};
+  member->eligible=[this](int i){return env_.best_candidate(state_.states[i]);};
+  return member;
+}
+
 void FractalGas::set_population(int count, fractal::RemovalPolicy policy, bool defer) {
   fractal::validate_population(count, params_.max_walkers, params_.n_elite);
   if (!defer && count != state_.N) {

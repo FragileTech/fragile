@@ -13,6 +13,7 @@
 #include "env.hpp"
 #include "exploration_tree.hpp"
 #include "fractal/wave.hpp"
+#include "fractal/wave_exchange.hpp"
 #include "kinetic.hpp"
 #include "rng.hpp"
 #include "swarm_algorithm.hpp"
@@ -58,6 +59,12 @@ class FractalGas final : public SwarmAlgorithm {
              std::unique_ptr<FractalCloningOperator> clone_op = nullptr,
              std::unique_ptr<RandomActionOperator> kinetic_op = nullptr);
 
+  // The caller supplies a task/ABI identity. Reference-backed environments must
+  // supply codecs that materialize or retain their archive records.
+  using ExchangeMember = fractal::WavePopulationMember<WalkerState, SnapshotBackend, DiscreteActions>;
+  std::unique_ptr<ExchangeMember> population_member(
+      const std::string& id, const std::string& compatibility, int exchange_count = -1,
+      ExchangeMember::Save save = {}, ExchangeMember::Load load = {});
   fractal::PopulationStatus population_status() const {
     return {params_.max_walkers, state_.N, params_.N, params_.removal_policy};
   }

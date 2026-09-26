@@ -28,6 +28,7 @@ class LlmEnvironment final : public BatchEnv {
   static std::vector<char> encode(const Snapshot& state) {
     std::vector<char> out(sizeof(state)); std::memcpy(out.data(), &state, sizeof(state)); return out;
   }
+  bool exchange_requires_codec() const override { return true; }
   bool best_candidate(const std::vector<char>& data) const override {
     // Completed answers live in the recording archive, not in protected slots.
     return data.size() == sizeof(Snapshot) && decode(data).tokens > 0 && decode(data).status == 0;

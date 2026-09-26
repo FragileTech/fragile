@@ -51,7 +51,7 @@ RoundChoice RunController::next(const Settings& s) const {
       if(s.json["population_auto"].flag(true)) population=std::min(s.max_walkers,std::max(baseline_population,exploration_population*2));
       if(s.json["scale_auto"].flag(true)) scale=baseline_scale;
     } else {
-      const int lower=std::max({2,s.elites,(baseline_population+3)/4});
+      const int lower=std::max({2,std::max(s.elites,int(s.json["population_imports"].num()))+int(s.json["population_imports"].num()),(baseline_population+3)/4});
       const int upper=std::max(lower,exploration_population/2);
       if(s.json["population_auto"].flag(true)) population=std::clamp(int(std::exp(std::log(double(lower))+choice.random.uniform01()*std::log(double(upper)/lower))),lower,upper);
       if(s.json["scale_auto"].flag(true)) scale=baseline_scale*std::exp(std::log(.01)*(1-choice.random.uniform01()));
@@ -111,6 +111,14 @@ void RunController::finish(const Settings& s,const Json& geometry,const Json& re
     if(!distances.empty()) {std::sort(distances.begin(),distances.end());e.radius=std::clamp(distances[distances.size()/2],1e-4,.1);}
   }
   uint64_t visits=0;for(const auto& e:archive.entries()) visits+=e.visits;
+  if(collect_basin_events) {
+    BasinArchive evidence(benchmark,s.periodic);
+    evidence.complete_round(candidates,round,reason=="stalled");
+    auto event=JsonReader(evidence.export_json()).read();
+    event.object["member_round"]=number(round);
+    event.object["stalled"].kind=Json::Boolean;event.object["stalled"].number=reason=="stalled";
+    basin_events.push_back(std::move(event));
+  }
   archive.complete_round(candidates,round,reason=="stalled");
   uint64_t after=0;for(const auto& e:archive.entries()) after+=e.visits;
   if(after>visits && std::any_of(archive.entries().begin(),archive.entries().end(),[&](const auto& e){return e.last_round==round && e.visits>1;})) repeated_evaluations+=cost;

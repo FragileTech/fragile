@@ -11,6 +11,12 @@ extern "C" {
 // Best metrics follow config.objective; U remains the raw function value.
 // FMC/Wave Jump append the committed position after config.walkers search rows.
 // On a new search, search-row parent indices refer to that committed row.
+// Population API v1. Request/result JSON is borrowed until the next same API call.
+// remote=0 owns native Sessions; remote=1 coordinates independent worker Sessions.
+uint32_t fgp_create(const char* config, int remote);
+int fgp_destroy(uint32_t handle);
+const char* fgp_request(uint32_t handle, const char* request);
+const char* fgo_exchange(uint32_t handle, const char* request);
 const char* fgo_catalog(void);
 // Actual numerical storage precision, independent of the double snapshot format.
 // Static JSON; remains valid for the lifetime of the library.

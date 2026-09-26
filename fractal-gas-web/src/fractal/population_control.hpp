@@ -2,6 +2,9 @@
 #include <algorithm>
 #include <stdexcept>
 #include <string>
+#include <vector>
+#include <numeric>
+#include <cmath>
 
 namespace fg::fractal {
 enum class RemovalPolicy { VirtualReward, CumulativeReward };
@@ -12,6 +15,14 @@ inline RemovalPolicy removal_policy(const std::string& value) {
 }
 inline const char* removal_policy_name(RemovalPolicy value) {
   return value == RemovalPolicy::VirtualReward ? "virtual_reward" : "cumulative_reward";
+}
+template <class Score>
+std::vector<int32_t> retention_order(int n, Score score) {
+  std::vector<int32_t> rows(n);
+  std::iota(rows.begin(), rows.end(), 0);
+  auto finite = [&](int i) { double v = score(i); return std::isfinite(v) ? v : -INFINITY; };
+  std::stable_sort(rows.begin(), rows.end(), [&](int a, int b) { return finite(a) > finite(b); });
+  return rows;
 }
 struct PopulationStatus {
   int maximum = 0, active = 0, requested = 0;

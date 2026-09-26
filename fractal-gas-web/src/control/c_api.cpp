@@ -563,11 +563,11 @@ FGC_EXPORT size_t fgc_checkpoint_size(void* p) {
     auto& r = runtime(p);
     CheckpointWriter out;
     out.scalar(uint32_t(0x50434746));
-    out.scalar(uint32_t(3));
+    out.scalar(uint32_t(4));
 #ifdef __EMSCRIPTEN__
-    out.string("wasm-control-3");
+    out.string("wasm-control-4");
 #else
-    out.string("native-control-3");
+    out.string("native-control-4");
 #endif
     out.scalar(r.scene->fingerprint);
     auto saved_settings = JsonReader(r.planner_settings.empty() ? std::string("{}") : r.planner_settings).read();
@@ -618,12 +618,12 @@ FGC_EXPORT int fgc_checkpoint_restore(void* p, const uint8_t* data, size_t size)
       throw std::invalid_argument("Checkpoint checksum mismatch");
     CheckpointReader in(data, size - 8);
     const auto magic = in.scalar<uint32_t>(), version = in.scalar<uint32_t>();
-    if (magic != 0x50434746 || (version != 2 && version != 3))
+    if (magic != 0x50434746 || version != 4)
       throw std::invalid_argument("Unsupported checkpoint version");
 #ifdef __EMSCRIPTEN__
-    const std::string backend = "wasm-control-3";
+    const std::string backend = "wasm-control-4";
 #else
-    const std::string backend="native-control-3";
+    const std::string backend="native-control-4";
 #endif
     if (in.string() != backend || in.scalar<uint64_t>() != r.scene->fingerprint)
       throw std::invalid_argument("Checkpoint backend or scene mismatch");

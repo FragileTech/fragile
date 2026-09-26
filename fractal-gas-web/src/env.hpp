@@ -38,6 +38,7 @@ struct WalkerInfo {
 class BatchEnv {
  public:
   virtual ~BatchEnv() = default;
+  virtual bool exchange_requires_codec() const { return false; }
   virtual bool uses_cloning_evidence() const { return false; }
   virtual void observe_cloning(const std::vector<std::vector<char>>&,
                                const fractal::SelectionEvidence&) {}

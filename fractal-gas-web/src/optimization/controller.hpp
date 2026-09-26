@@ -22,6 +22,8 @@ class RunController {
   uint64_t round_id() const { return round; }
   uint64_t round_steps=0;
   BasinArchive archive;
+  std::vector<Json> basin_events;
+  bool collect_basin_events=false;
   OptimizationRng placement;
  private:
   Benchmark& benchmark;
