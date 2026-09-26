@@ -168,8 +168,8 @@ jobs:
       - uses: mymindstorm/setup-emsdk@v14
         with:
           version: 6.0.8
-      - name: Build Optimization Lab without emulator submodules
-        run: make optimization-web
+      - name: Build native reference and Optimization Lab without emulator submodules
+        run: make optimization-native optimization-web
       - name: Verify WASM and recording contracts
         run: npm --prefix fractal-gas-web run test:optimization
       - uses: actions/upload-artifact@v4

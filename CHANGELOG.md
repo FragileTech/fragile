@@ -1,5 +1,7 @@
 # Changelog
 
+- Build the native Optimization Lab reference alongside WebAssembly in the Pages deployment job so adaptive and boundary parity checks can run before publishing.
+
 - Add opt-in Optimization Lab covariance overlays for CMA-ES/BIPOP and same-swarm Fractal estimators, learned field/drift arrows, source-captured movement arrows, 2D/3D and higher-dimensional projections, and geometry-aware recording replay.
 
 - Add live fractal boundary handling choices: no repair, periodic wrapping, and libcmaes boundary repair. Apply the shared mapping across all six adapters, defer planner changes safely, and retain legacy periodic settings and recordings.
