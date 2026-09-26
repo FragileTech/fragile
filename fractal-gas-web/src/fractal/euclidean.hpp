@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <numeric>
 #include <string>
@@ -11,6 +12,7 @@ namespace fg::fractal {
 struct EuclideanConfig {
   int walkers = 256, clone_every = 1, substeps = 1;
   std::string companion = "cloning", clone_companion = "cloning";
+  std::function<void(float*)> repair;
   bool periodic = false, potential_force = true, cloning = true, kinetic = true, minimize = true;
   double lambda_alg = 0, epsilon = .1, clone_epsilon = .1, epsilon_dist = 1e-8, rho = 0,
          sigma_min = 1e-8, amplitude = 2, eta = .1, reward_coef = 1, distance_coef = 1,
@@ -23,6 +25,7 @@ struct EuclideanPopulation {
   bool has_velocity = false;
   std::vector<float> x, v, fitness;
   std::vector<double> objective;
+  std::vector<uint64_t> lineage;
   std::vector<uint8_t> alive, cloned, leaf;
   std::vector<int32_t> companions, clone_companions, parent;
   void resize(int count, int dimensions);
@@ -38,6 +41,7 @@ inline void EuclideanPopulation::resize(int count, int dimensions) {
   v.assign(x.size(), 0);
   fitness.assign(n, 0);
   objective.assign(n, INFINITY);
+  lineage.resize(n);std::iota(lineage.begin(),lineage.end(),uint64_t(1));
   alive.assign(n, 0);
   cloned.assign(n, 0);
   leaf.assign(n, 1);
@@ -63,6 +67,7 @@ struct EuclideanScratch {
   std::vector<int32_t> alive, remaining, choices, order, group;
   std::vector<double> weights, rewards, distances;
   std::vector<float> old_x, old_v, grad, delta;
+  std::vector<uint64_t> old_lineage;
   std::vector<uint8_t> mask;
 };
 template <class Domain>
@@ -219,6 +224,8 @@ inline void clone_population(EuclideanPopulation& p, const EuclideanConfig& s,
   auto& old_v = scratch.old_v;
   old_x = p.x;
   old_v = p.v;
+  scratch.old_lineage=p.lineage;
+  for(int i=0;i<p.n;++i) if(mask[i]) p.lineage[i]=scratch.old_lineage[companions[i]];
   for (int i = 0; i < p.n; ++i)
     if (mask[i])
       for (int k = 0; k < p.d; ++k)
@@ -252,7 +259,7 @@ inline void clone_population(EuclideanPopulation& p, const EuclideanConfig& s,
 }
 template <class Domain>
 void baoab(EuclideanPopulation& p, const EuclideanConfig& s, const Domain& b, Rng& rng,
-           const Perturbation* noise, EuclideanScratch* workspace = nullptr) {
+           const Perturbation* noise, EuclideanScratch* workspace = nullptr, std::vector<PerturbationTransition>* observations = nullptr) {
   EuclideanScratch local;
   auto& scratch = workspace ? *workspace : local;
   auto& grad = scratch.grad;
@@ -260,6 +267,7 @@ void baoab(EuclideanPopulation& p, const EuclideanConfig& s, const Domain& b, Rn
   double c1 = std::exp(-s.gamma * s.delta_t),
          c2 = std::sqrt(-std::expm1(-2 * s.gamma * s.delta_t) / s.beta);
   auto kick = [&] {
+    if (s.repair) for (int i=0;i<p.n;++i) s.repair(p.x.data()+size_t(i)*p.d);
     if (s.potential_force && !b.stochastic)
       for (int i = 0; i < p.n; ++i)
         b.gradient(p.x.data() + size_t(i) * p.d, grad.data() + size_t(i) * p.d);
@@ -273,6 +281,11 @@ void baoab(EuclideanPopulation& p, const EuclideanConfig& s, const Domain& b, Rn
       delta.resize(p.d);
       for (int i = 0; i < p.n; ++i) {
         noise->sample(p.x.data() + size_t(i) * p.d, delta.data(), p.d, rng);
+        if(observations) {
+          auto& t=(*observations)[i];
+          for(int k=0;k<p.d;++k) t.direction[k]+=delta[k];
+          ++t.draws;
+        }
         for (int k = 0; k < p.d; ++k) {
           auto& v = p.v[size_t(i) * p.d + k];
           v = float(c1 * v + c2 * delta[k]);
@@ -290,14 +303,15 @@ class Euclidean {
   Domain& b;
   EuclideanConfig s;
   Rng& rng;
-  Perturbation& noise;
+  Perturbation* noise;
   EuclideanPopulation p, proposed;
   EuclideanScratch scratch;
   uint64_t ticks = 0;
   void evaluate() {
     for (int i = 0; i < p.n; ++i) {
       float* x = p.x.data() + size_t(i) * p.d;
-      if (s.periodic) b.wrap(x);
+      if (s.repair) s.repair(x);
+      else if (s.periodic) b.wrap(x);
       p.objective[i] = b.evaluate(x, &rng);
       p.alive[i] = b.valid(x) && std::isfinite(p.objective[i]);
       for (int k = 0; k < p.d; ++k)
@@ -307,11 +321,16 @@ class Euclidean {
 
  public:
   Euclidean(Domain& domain, const EuclideanConfig& config, Rng& random, Perturbation& proposal)
-      : b(domain), s(config), rng(random), noise(proposal) {
+      : b(domain), s(config), rng(random), noise(&proposal) {
     p.resize(s.walkers, b.d);
     p.has_velocity = true;
     for (int i = 0; i < p.n; ++i) b.initial(p.x.data() + size_t(i) * p.d, rng);
     evaluate();
+  }
+  void configure(EuclideanConfig config, EuclideanPopulation population, Perturbation& proposal) {
+    s = std::move(config);
+    p = std::move(population);
+    noise = &proposal;
   }
   const EuclideanPopulation& population() const { return p; }
   uint64_t evaluations() const { return b.evaluations(); }
@@ -322,31 +341,85 @@ class Euclidean {
   }
   double objective_score(int i) const { return s.score(p.objective.at(i)); }
   void step() {
+    step_with_movement([&](EuclideanPopulation&) {
+      std::vector<float> origin;
+      std::vector<PerturbationTransition> observations;
+      if(noise && noise->observer) {
+        origin=p.x;observations.resize(p.n);
+        for(int i=0;i<p.n;++i) {
+          auto& t=observations[i];t.origin.assign(p.x.begin()+size_t(i)*p.d,p.x.begin()+size_t(i+1)*p.d);
+          t.direction.assign(p.d,0);t.parent=p.lineage[i];t.action=ticks;
+          t.improvement=-s.score(p.objective[i]);
+        }
+      }
+      if(s.kinetic) baoab(p,s,b,rng,noise,&scratch,observations.empty()?nullptr:&observations);
+      evaluate();
+      if(noise && noise->observer) for(int i=0;i<p.n;++i) if(p.alive[i]) {
+        const float* from=origin.data()+size_t(i)*p.d;
+        noise->observer->movement(from,p.x.data()+size_t(i)*p.d,p.d,p.lineage[i],"kinetic");
+        if(p.cloned[i] && s.sigma_x>0) continue; // jittered origin has no measured baseline
+        auto& t=observations[i];t.improvement+=s.score(p.objective[i]);
+        // The covariance lives in proposal-noise space; measured position
+        // improvement supplies ranking evidence, never a substitute direction.
+        t.displacement=t.direction;
+        noise->observer->transition(t);
+      }
+    });
+  }
+  // Share selection/cloning with optimization-specific movement kernels.
+  template<class Movement>
+  void step_with_movement(Movement&& movement) {
     select_companions_into(p, s, b, s.companion, s.epsilon, rng, p.companions, scratch);
     fitness_into(p, s, b, p.companions, p.fitness, scratch);
     std::fill(p.cloned.begin(), p.cloned.end(), 0);
     std::iota(p.parent.begin(), p.parent.end(), 0);
+    SelectionEvidence evidence;
+    const bool collect=noise && (noise->uses_cloning_evidence() || noise->observer);
+    FrozenPopulation frozen;
+    if(collect) {
+      frozen={p.d,p.x,p.lineage,p.alive,p.objective};
+      evidence.fitness.assign(p.fitness.begin(),p.fitness.end());
+      evidence.mass.assign(p.n,1.);
+      evidence.score.assign(p.n,0.);evidence.donors.resize(p.n);
+      std::iota(evidence.donors.begin(),evidence.donors.end(),0);
+    }
     if (s.cloning) {
       select_companions_into(p, s, b, s.clone_companion, s.clone_epsilon, rng, p.clone_companions,
                              scratch);
       const auto& live = scratch.alive;
       auto& mask = scratch.mask;
       mask.resize(p.n);
+      if(collect) evidence.replacement.resize(p.n);
       for (int i = 0; i < p.n; ++i) {
         if (!p.alive[i] && !p.alive[p.clone_companions[i]])
           p.clone_companions[i] = live[size_t(rng.randint(0, live.size()))];
         double score =
             (p.fitness[p.clone_companions[i]] - p.fitness[i]) / (p.fitness[i] + s.epsilon_clone);
         mask[i] = rng.uniform01() < std::clamp(score / s.p_max, 0.0, 1.0) || !p.alive[i];
+        if(collect) {
+          evidence.score[i]=ticks % uint64_t(s.clone_every)==0 ? score/s.p_max : 0.;
+          evidence.replacement[i]=!p.alive[i]?1:std::clamp(score/s.p_max,0.,1.);
+        }
+      }
+      if(collect) {
+        evidence.donors=p.clone_companions;
+        if(ticks % uint64_t(s.clone_every)==0) evidence.mass=expected_clone_mass(evidence.donors,evidence.replacement);
+        else std::fill(evidence.replacement.begin(),evidence.replacement.end(),0.);
       }
       // As in Python, draws occur even on skipped cloning iterations.
       proposed = p;
       clone_population(proposed, s, p.clone_companions, mask, rng, &scratch);
       if (ticks % uint64_t(s.clone_every) == 0) std::swap(p, proposed);
     }
-    if (s.kinetic) baoab(p, s, b, rng, &noise, &scratch);
+    if(collect && noise->uses_cloning_evidence()) {noise->observe_cloning(frozen,evidence);noise->update();}
+    if(noise && noise->observer) {
+      noise->observer->cloning(frozen,evidence);
+      for(int i=0;i<p.n;++i) if(p.cloned[i])
+        noise->observer->movement(frozen.positions.data()+size_t(i)*p.d,p.x.data()+size_t(i)*p.d,p.d,frozen.families[i],"cloning");
+    }
+    movement(p);
     ++ticks;
-    evaluate();
+    for(int i=0;i<p.n;++i) p.lineage[i]=descendant_lineage(p.lineage[i],(ticks<<32)|uint32_t(i));
   }
 };
 }  // namespace fg::fractal

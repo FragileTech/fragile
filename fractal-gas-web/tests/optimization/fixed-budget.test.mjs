@@ -34,7 +34,7 @@ test("IOHanalyzer CSV uses actual evaluation checkpoints and keeps direction/set
     /"evaluations","best","function","algorithm","dimension","run"/,
   );
   assert.match(lines[3], /^"33","25","bbob_24","wave_jump","5"/);
-  assert.match(lines[3], /"maximize","100","fgopt-4","gaussian","0.1"$/);
+  assert.match(lines[3], /"maximize","100","fgopt-11","gaussian","0.1"$/);
   assert.ok(!lines.some((line) => line.startsWith('"100",')));
 });
 
@@ -62,4 +62,34 @@ test("GAS CSV identifies feature switches without claiming a fixed adaptive devi
   const csv = exportFixedBudgetCSV(recording);
   assert.match(csv, /"gas_tabu","gas_local_search","gas_local_evaluations"/);
   assert.match(csv, /"gas_adaptive","","false","true","200"/);
+});
+
+test("CSV follows effective settings after live changes", () => {
+  const config = {
+    algorithm: "wave",
+    benchmark: "quadratic",
+    dimensions: 2,
+    perturbation: "gaussian",
+    perturbation_std: 1,
+    max_evaluations: 100,
+  };
+  const recording = new Recording(config);
+  const before = new Float64Array(12);
+  before[5] = 8;
+  before[9] = 3;
+  recording.append(before);
+  const after = before.slice();
+  after[5] = 16;
+  after[9] = 2;
+  recording.append(after, {
+    effective_settings: {
+      ...config,
+      perturbation: "uniform",
+      perturbation_std: 0.2,
+      max_evaluations: 200,
+    },
+  });
+  const lines = exportFixedBudgetCSV(recording).trim().split("\n");
+  assert.match(lines[1], /"100","fgopt-11","gaussian","1"$/);
+  assert.match(lines[2], /"200","fgopt-11","uniform","0.2"$/);
 });

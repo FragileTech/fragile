@@ -1,4 +1,6 @@
 #include "optimization/perturbation.hpp"
+#include "optimization/adaptive.hpp"
+#include "optimization/cloning_guided.hpp"
 
 #include <map>
 #include <deque>
@@ -41,6 +43,13 @@ class LocalCovariance final : public Perturbation {
         sigma(bounded(config["perturbation_std"], 1, 0, 1e6, "perturbation standard deviation")),
         rate(bounded(config["covariance_learning_rate"], .1, 0, 1, "covariance learning rate")),
         width(b.high - b.low), periodic(config["periodic"].flag(false)) {}
+  void configure(const Json& config) {
+    sigma = config["perturbation_std"].num(1);
+    rate = config["covariance_learning_rate"].num(.1);
+    const bool wrapping = config["periodic"].flag(false);
+    if (wrapping != periodic) reset();
+    periodic = wrapping;
+  }
   void sample(const float* position, float* delta, int d, Rng& rng) const override {
     if (sigma == 0) { std::fill(delta, delta + d, 0); return; }
     const auto* a = nearest(std::vector<float>(position, position + d));
@@ -63,9 +72,27 @@ class LocalCovariance final : public Perturbation {
     if (archive.size() > 512) archive.pop_front();
     dirty = true;
   }
+  Json visual_geometry() const {
+    Json list;list.kind=Json::Array;
+    const size_t per_model=size_t(dimensions)*dimensions+5*size_t(dimensions);
+    const size_t limit=std::max<size_t>(262144,per_model)/per_model;
+    for(const auto& a:anchors) {
+      if(list.array.size()>=limit) break;
+      Json j;j.kind=Json::Object;
+      j.object["available_models"]=number(anchors.size());
+      j.object["anchor"]=array(std::vector<double>(a.x.begin(),a.x.end()));
+      j.object["scale"]=number(sigma);j.object["columns"]=number(dimensions);
+      j.object["representation"].kind=Json::String;j.object["representation"].string="dense";
+      std::vector<double> values;
+      Matrix actual=.95*a.covariance+.05*Matrix::Identity(dimensions,dimensions);
+      for(int i=0;i<dimensions;++i) for(int k=0;k<dimensions;++k) values.push_back(actual(i,k));
+      j.object["shape"]=array(values);list.array.push_back(std::move(j));
+    }
+    return list;
+  }
   void reset() override { archive.clear(); anchors.clear(); dirty = false; }
   void update() override {
-    if (!dirty || archive.empty()) return;
+    if (!dirty || archive.empty() || sigma == 0) return;
     dirty = false;
     std::vector<size_t> selected{archive.size() - 1};
     std::vector<double> distances(archive.size(), INFINITY);
@@ -126,12 +153,12 @@ class GasAdaptive final : public Perturbation {
   double width;
 
  public:
-  explicit GasAdaptive(const Benchmark& b) : width(b.high - b.low) {}
+  GasAdaptive(const Benchmark& b,const Json& c) : width((b.high-b.low)*bounded(c["gas_scale_multiplier"],1,0,1e6,"GAS movement multiplier")) {}
   void sample(const float*, float*, int, Rng&) const override {
     throw std::invalid_argument(
         "GAS adaptive perturbation requires objective context");
   }
-  void sample_with_context(const float*, float* delta, int d, Rng& rng,
+  void sample_with_context(const float* position, float* delta, int d, Rng& rng,
                            const PerturbationContext* context) const override {
     if (!context || !std::isfinite(context->normalized_objective) ||
         context->normalized_objective < 0 || context->normalized_objective > 1)
@@ -139,6 +166,7 @@ class GasAdaptive final : public Perturbation {
           "GAS adaptive perturbation requires normalized objective in [0,1]");
     const double sigma =
         width * std::pow(10., -5 + 4 * context->normalized_objective);
+    if(observer) observer->reference(position,d,sigma);
     for (int k = 0; k < d; ++k) delta[k] = float(sigma * normal(rng));
   }
 };
@@ -171,6 +199,28 @@ std::map<std::string, Entry>& entries() {
               R"([{"id":"perturbation_std","label":"Standard deviation","type":"number","default":1,"min":0,"max":1000000}])"))
           .read();
   static std::map<std::string, Entry> list{
+      {"cloning_guided",
+       {"Clone-guided adaptive covariance (experimental)",
+        [](const Benchmark& b,const Json& c) {return std::make_unique<CloningGuided>(b,c);},
+        JsonReader(std::string(R"cg([{"id":"adaptive_min_scale","label":"Minimum movement scale","type":"number","default":0.0001,"min":0,"max":1000000},
+          {"id":"adaptive_max_scale","label":"Maximum movement scale","type":"number","default":1,"min":0,"max":1000000},
+          {"id":"cloning_geometry","label":"Clone-score covariance","type":"boolean","default":true},
+          {"id":"cloning_drift","label":"Clone-score drift","type":"boolean","default":true},
+          {"id":"cloning_drift_strength","label":"Maximum drift / noise scale","type":"number","default":0.25,"min":0,"max":1},
+          {"id":"adaptive_euclidean_mode","label":"Euclidean movement","type":"enum","default":"velocity","options":[["velocity","Cloning-guided velocity kicks"],["position","Direct position proposals"]]}])cg")).read(),
+        JsonReader(std::string(R"(["wave","graph","fmc","wave_jump","euclidean","gas"])")).read()}},
+      {"adaptive_fractal",
+       {"Adaptive fractal exploration (experimental)",
+        [](const Benchmark& b, const Json& c) { return std::make_unique<AdaptiveExploration>(b,c); },
+        JsonReader(std::string(R"adaptive([{"id":"adaptive_min_scale","label":"Minimum movement scale","type":"number","default":0.0001,"min":0,"max":1000000},
+        {"id":"adaptive_max_scale","label":"Maximum movement scale","type":"number","default":1,"min":0,"max":1000000},
+        {"id":"adaptive_active","label":"Active negative updates","type":"boolean","default":true},
+        {"id":"adaptive_paths","label":"Evolution paths (shape only)","type":"boolean","default":true},
+        {"id":"adaptive_difference","label":"Walker-difference proposals","type":"boolean","default":true},
+        {"id":"adaptive_pairs","label":"Paired trials (10%)","type":"boolean","default":true},
+        {"id":"adaptive_mixture","label":"Adapt proposal mixture","type":"boolean","default":true},
+        {"id":"adaptive_euclidean_mode","label":"Euclidean movement","type":"enum","default":"velocity","options":[["velocity","Adaptive velocity kicks"],["position","Direct position proposals"]]}])adaptive")).read(),
+        JsonReader(std::string(R"(["wave","graph","fmc","wave_jump","euclidean","gas"])")).read()}},
       {"local_covariance",
        {"Adaptive local Gaussian",
         [](const Benchmark& b, const Json& c) { return std::make_unique<LocalCovariance>(b, c); },
@@ -178,8 +228,8 @@ std::map<std::string, Entry>& entries() {
         JsonReader(std::string(R"(["wave","fmc","wave_jump","gas"])")).read()}},
       {"gas_adaptive",
        {"GAS adaptive Gaussian",
-        [](const Benchmark& b, const Json&) {
-          return std::make_unique<GasAdaptive>(b);
+        [](const Benchmark& b, const Json& c) {
+          return std::make_unique<GasAdaptive>(b,c);
         },
         JsonReader(std::string("[]")).read(),
         JsonReader(std::string("[\"gas\"]")).read()}},
@@ -222,7 +272,55 @@ std::unique_ptr<Perturbation> make_perturbation(const Benchmark& b,
       throw std::invalid_argument(
           "Perturbation is not supported by this algorithm");
   }
-  return entry->second.factory(b, config);
+  auto result=entry->second.factory(b, config);
+  if(config["geometry_diagnostics"].flag(false)) enable_geometry(*result,b,config,true);
+  return result;
+}
+std::unique_ptr<Perturbation> retune_perturbation(const Perturbation& old, const Benchmark& b,
+                                               const Json& previous, const Json& next) {
+  auto replacement = make_perturbation(b, next);
+  if(old.observer) enable_geometry(*replacement,b,next,true);  // Validate before copying active learning.
+  if (previous["boundary"].str() != next["boundary"].str()) return replacement;
+  if (previous["perturbation"].str() == next["perturbation"].str()) {
+    if(const auto* guided=dynamic_cast<const CloningGuided*>(&old)) {
+      auto copy=std::make_unique<CloningGuided>(*guided);copy->configure(next);inherit_geometry(old,*copy,b,next);return copy;
+    }
+    if (const auto* adaptive = dynamic_cast<const AdaptiveExploration*>(&old)) {
+      auto copy=std::make_unique<AdaptiveExploration>(*adaptive);
+      if(previous["adaptive_euclidean_mode"].str("velocity")!=next["adaptive_euclidean_mode"].str("velocity")) copy->reset();
+      copy->configure(next);
+      inherit_geometry(old,*copy,b,next);
+      return copy;
+    }
+    if (const auto* local = dynamic_cast<const LocalCovariance*>(&old)) {
+      auto copy = std::make_unique<LocalCovariance>(*local);
+      copy->configure(next);
+      inherit_geometry(old,*copy,b,next);
+      return copy;
+    }
+    inherit_geometry(old,*replacement,b,next);
+  }
+  return replacement;
+}
+Json proposal_visual_geometry(const Perturbation& proposal) {
+  if(const auto* p=dynamic_cast<const CloningGuided*>(&proposal)) return p->visual_geometry();
+  if(const auto* p=dynamic_cast<const AdaptiveExploration*>(&proposal)) return p->visual_geometry();
+  if(const auto* p=dynamic_cast<const LocalCovariance*>(&proposal)) return p->visual_geometry();
+  return Json{};
+}
+Json perturbation_geometry(const Perturbation& proposal) {
+  if(const auto* guided=dynamic_cast<const CloningGuided*>(&proposal)) return guided->geometry();
+  if(const auto* adaptive=dynamic_cast<const AdaptiveExploration*>(&proposal)) return adaptive->geometry();
+  return Json{};
+}
+void restore_perturbation_geometry(Perturbation& proposal,const Json& geometry) {
+  if(auto* guided=dynamic_cast<CloningGuided*>(&proposal)) guided->restore_geometry(geometry);
+  if(auto* adaptive=dynamic_cast<AdaptiveExploration*>(&proposal)) adaptive->restore_geometry(geometry);
+}
+Json perturbation_diagnostics(const Perturbation& proposal) {
+  if(const auto* guided=dynamic_cast<const CloningGuided*>(&proposal)) return guided->diagnostics();
+  if(const auto* adaptive=dynamic_cast<const AdaptiveExploration*>(&proposal)) return adaptive->diagnostics();
+  return Json{};
 }
 Json perturbation_catalog() {
   Json result;

@@ -45,7 +45,7 @@ the engine. The evaluation budget defaults to **0**, meaning unlimited.
    (`asinh`) scale compresses large value ranges vertically.
 3. Select a walker to inspect its complete coordinates and available diagnostics.
 4. Change the dimension or algorithm in the configuration panel, then press
-   **Apply and reset** once. This starts a new session with the edited settings.
+   **Start / reset run** once. This starts a new session with the edited settings.
 5. Use **Reset** to restart the active configuration and seed. Save a recording
    first if you want to keep the current history.
 
@@ -56,6 +56,61 @@ integration time step. For reproducibility, retain the engine version as well as
 the configuration and seed. Python and C++ do not promise identical random streams
 from the same seed.
 :::
+
+(sec-optimization-live-tuning)=
+## Tune a running swarm
+
+**Run setup** contains the algorithm, benchmark and its parameters, dimensions,
+bounds, objective direction, seed, and **Record history**. These settings define
+one run. Changing them requires **Start / reset run**, which initializes a new
+session. Save the current recording first if you need to keep it.
+
+**Live tuning** contains the selected swarm's optimizer and perturbation controls,
+including perturbation type, **Boundary handling**, evaluation budget, population,
+and population limits. Edit the controls, then press **Apply live** to submit them
+together. Wave, Graph, FMC, Wave Jump, Euclidean Gas, and GAS support live tuning.
+Active CMA-ES and BIPOP-active CMA-ES support live evaluation-budget changes only.
+
+You can apply changes while running or paused. The panel distinguishes unapplied
+edits, queued changes, successful updates, and validation errors. Invalid changes
+are rejected together; correct the reported fields and apply again. A completed
+request does not overwrite edits you made while waiting for its response.
+Applying settings preserves the run's running or paused state, iteration,
+evaluation count, best-so-far value, and random-generator state.
+
+Wave, Graph, Euclidean Gas, and GAS apply changes between complete steps. FMC and
+Wave Jump queue movement, population, and planning changes until the next search,
+after finishing their committed actions. Their current search and execution keep
+the same movement model. Evaluation-budget changes take effect before the next
+step for every algorithm. A queued planner change may therefore remain pending
+while the run is paused.
+
+Increasing the active population copies valid donors. Decreasing it removes
+walkers using the selected ranking policy and preserves elites where supported.
+Positions, velocities, and associated walker state move together. Population and
+maximum-population settings can be changed in the same submission; the combined
+settings must satisfy the algorithm's limits and available recording capacity.
+For Graph, **Target leaves** controls the desired search population. Its stored
+node count is shown separately. Changing its growth cap retains the existing
+tree; a cap below the current stored node count is rejected.
+
+Tuning the current perturbation type preserves its adaptive learning. Switching
+types initializes the newly selected perturbation model. Changing **Boundary
+handling** resets learned perturbation models. Entering or leaving periodic
+wrapping also clears incompatible basin geometry and avoidance confidence because
+the distance rule changes.
+GAS retains its memory when tabu is disabled, so re-enabling tabu can reuse it.
+
+If the evaluation budget stops a run, raise it or set it to zero, apply the
+change, and press **Run** to continue. Increasing the budget does not automatically
+resume a paused run. A budget below the evaluations already consumed prevents
+further steps and leaves the counter unchanged. After movement or population
+changes, the engine checks the updated cost of the next complete step.
+
+Live changes preserve existing recorded frames, including frames with different
+population sizes. Recordings retain the initial settings and the requested and
+applied changes at their actual boundaries. Imported recordings are read-only;
+start a fresh run with their settings before tuning them.
 
 (sec-optimization-algorithms)=
 ## Choose how the swarm explores
@@ -133,15 +188,29 @@ standard deviation matches that variance but does not reproduce the Gaussian
 Ornstein–Uhlenbeck transition law. The perturbation setting does not replace the
 separate **Clone position jitter** control.
 
-For Wave, Graph, the planners, and Euclidean Gas, bounded-domain mode marks
-out-of-bounds walkers as dead. GAS uses the retry rule described below. Periodic boundaries
-instead wrap coordinates across the box when enabled. Wrapping changes the
-boundary rule; it does not make an arbitrary benchmark smooth across that seam.
-Wave, Graph, and Euclidean Gas stop when every walker becomes invalid. FMC and
-Wave Jump can use the shared planner's all-dead search fallback while their
-committed position remains valid; an invalid committed position ends the run.
-Reduce the perturbation standard deviation or kinetic step size, review the
-bounds, and apply a reset to recover.
+**Boundary handling** offers three choices for all six fractal algorithms:
+
+- **None — revive by cloning** leaves proposals unchanged. Out-of-bounds walkers become invalid and
+  rely on the algorithm's cloning and saved elites for revival. GAS retains its
+  existing bounded retry rule, described below.
+- **Periodic wrapping** wraps coordinates across opposite sides of the box. This joins
+  the edges for distance calculations; it does not make an arbitrary benchmark
+  smooth across the seam.
+- **CMA-ES boundary mapping** repairs finite proposals outside the box with libcmaes's
+  boundary mapping. A proposal already inside the box stays unchanged. Opposite
+  edges are not joined, and nonfinite proposals remain invalid.
+
+The third choice shares CMA-ES's boundary repair mapping, not its full sampling
+or genotype distribution. In Euclidean Gas it repairs positions before force
+checks and final evaluation while retaining velocities. This is an optimization
+variant; it does not establish that the kinetic sampler's equilibrium law is
+preserved.
+
+Select a mode and press **Apply live**, while running or paused. FMC and Wave Jump
+finish committed actions before applying it at the next search boundary. A mode
+change resets learned perturbation models. Older configurations and recordings
+that contain only the periodic checkbox remain supported: enabled means periodic
+wrapping, and disabled means no mapping.
 :::
 
 (sec-optimization-cmaes)=
@@ -181,7 +250,7 @@ perturbation's standard deviation. The initial mean follows the benchmark's
 seeded initialization.
 
 CMA uses ordinary bounded domains and the upstream boundary transformation.
-Periodic wrapping is unavailable. Candidates and objective queries use double
+Its **Boundary handling** selector is disabled; this mapping always applies. Candidates and objective queries use double
 precision, while existing swarm algorithms retain their float-coordinate path.
 Near an optimum, that distinction can affect the smallest attainable objective
 gap; include precision when reporting a comparison. Rendering may convert
@@ -218,6 +287,160 @@ whole CMA population.
 :::
 
 (sec-optimization-local-covariance)=
+### Experimental adaptive fractal exploration
+
+:::{div} feynman-prose
+Select **Adaptive fractal exploration (experimental)** (`adaptive_fractal`) under
+**Perturbation** for Wave, Graph, FMC, Wave Jump, GAS, or Euclidean Gas. This
+strategy learns movement geometry from proposal outcomes and combines several
+proposal families. The minimum and maximum scales (`adaptive_min_scale` and
+`adaptive_max_scale`) default to **0.0001** and **1**. They are absolute
+per-coordinate statistical proposal scales per draw, not limits on an individual sampled
+displacement. Use **Apply live** to tune them without starting a new run. Changes
+apply between complete steps; FMC and Wave Jump retain their frozen movement
+model until the next search boundary.
+
+The scale follows objective rank in the frozen population: the best walker gets
+the minimum and the worst gets the maximum, with logarithmic interpolation
+between them. Equal objective values share their midrank; an entirely tied
+population uses the geometric midpoint of positive bounds. A zero minimum uses
+linear interpolation instead, and equal bounds give a fixed scale. This controls
+how widely a walker samples without letting accumulated evolution paths inflate
+its step size. Learned covariance has normalized trace; evolution paths affect
+shape only. Broad proposals stay within the maximum statistical scale, and
+walker-difference directions are normalized by their root-mean-square size before
+applying the bounded scale.
+
+The five switches let you investigate which parts of the strategy help on your
+problem. **Active negative updates** uses unsuccessful directions when updating
+shape; **Evolution paths** retains directional information across updates.
+**Walker-difference proposals** enables moves
+built from differences between other walkers. **Paired trials (10%)** tries
+opposite branches for a sampled subset of proposals. **Adapt proposal mixture**
+updates the relative use of the proposal families. All five default to enabled.
+Paired trials and repeated observations can require extra objective queries;
+compare runs by evaluations rather than iterations.
+
+For Euclidean Gas, **Euclidean movement** defaults to **Adaptive velocity kicks**,
+which supplies adaptive noise in velocity-kick units before thermal integration.
+**Direct position proposals**
+moves positions directly and leaves the kinetic controls inactive. Switching
+into direct-position mode sets velocities to zero. These modes change different
+parts of the update, so the same statistical proposal scale does not imply the same position
+change. Ordinary live parameter edits retain compatible learned state; changing
+boundary handling resets the perturbation models.
+
+This is an experimental strategy. Its components do not make it an exact CMA-ES
+implementation, establish an equilibrium law, or demonstrate superiority over
+the other optimizers. The [earlier measured pilot](../../../fractal-gas-web/tests/optimization/reports/adaptive.md)
+tested the previous path-based scale implementation, before these bounded scales.
+It compares eight variants on five two-dimensional problems, with three seeds and a
+2000-evaluation allowance: 120 runs completed without reported errors. It shows
+no consistent improvement from the new strategy. BIPOP-active CMA-ES has the best
+median on the smooth, rotated, and boundary cases; the existing local covariance
+strategy has the best median on Rastrigin. The stochastic control measures noise
+extremes rather than solution quality. This small pilot is not a broad benchmark
+and provides no performance claim for the bounded-scale revision.
+:::
+
+(sec-optimization-cloning-guided)=
+### Experimental clone-guided adaptive covariance
+
+:::{div} feynman-prose
+Select **Clone-guided adaptive covariance** (`cloning_guided`) under
+**Perturbation** for Wave, Graph, FMC, Wave Jump, Euclidean Gas, or GAS. Each
+cloning comparison already supplies two things: a signed score and a direction
+from the recipient to its companion. This strategy uses those actual comparisons
+to shape movement. A positive score favors moving toward the companion; a
+negative score contributes movement away. The score includes the algorithm's
+exploration terms, so this is a selection signal rather than an objective
+gradient. Graph supplies comparison origins from current leaves, excluding stored
+ancestors, while retaining the actual sampled donor identities. Geometry and drift
+have separate switches, both enabled by default.
+
+The raw clone score is kept unclipped. Its movement response is `tanh(score)`,
+with fixed sensitivity one: this preserves the sign and distinguishes scores
+above one while bounding their influence. Companion directions use coordinates
+normalized by the domain width, with wrapped differences for periodic domains.
+Each direction is shortened if its normalized root-mean-square length exceeds
+**0.1**. Nearby comparisons contribute through Gaussian weights with radius
+**0.1**. For the local drift, the strategy sums weighted, signed directions and
+divides by the total weighted absolute response. It then divides by the radius
+and applies **Drift strength**. The resulting dimensionless drift has Euclidean
+norm at most drift strength times the square root of the dimension.
+
+Covariance comes from the centered local second moment of these bounded signed
+comparison vectors. It is normalized to have trace equal to the dimension and
+mixed with **10% identity** before conditioning and factorization. Up to **16**
+persistent local anchors retain geometry; covariance is dense through **64**
+dimensions and uses a diagonal-plus-rank-eight representation above that. Without
+directional variance, an anchor retains its previous geometry. Without usable
+current comparison evidence, its drift is zero. A new anchor starts with identity
+geometry. There is no lineage-count gate, expected-offspring-mass fit, or
+log-fitness regression. Movement begins at the actual post-cloning position;
+the comparison field guides the next perturbation rather than replaying the
+cloning relocation.
+
+Use **Apply live** to change the minimum and maximum statistical scales,
+geometry and drift switches, or drift strength. Scale selection still uses
+objective-rank interpolation between the chosen bounds, separately from
+covariance shape and drift direction. The bounds limit the noise coefficient,
+not each sampled displacement. Drift strength defaults to **0.25** and accepts
+values from **0** to **1**. Ordinary updates apply between complete steps. FMC
+and Wave Jump freeze the movement model through search and committed execution;
+their updates take effect at the next search boundary.
+
+Euclidean Gas defaults to velocity kicks, retaining friction, forces, and kinetic
+integration. Direct position proposals are also available; entering that mode
+resets velocities and makes kinetic controls inactive. Boundary-mode changes
+reset learned perturbation models. Negative-score repulsion is an experimental
+movement choice: declining to clone into a worse companion does not establish
+that moving away improves the objective. This strategy does not establish a
+Gibbs sampling law, and existing convergence results do not automatically apply
+to the new movement operator.
+:::
+
+### Manage exploration rounds and basin references
+
+:::{div} feynman-prose
+The **Multi-run controller** is available for the six swarm algorithms. Set a
+positive **Evaluation budget**, enable **Automatic restarts**, and press
+**Apply live**. The controller can start a new round when the current algorithm
+finishes, loses its valid walkers, reaches its round allowance, or stalls on a
+deterministic objective. Stochastic objectives use the round allowance rather
+than stagnation inferred from raw noisy values. Global evaluation accounting and best-so-far continue
+across rounds; a new round initializes a new population and is different from an
+ordinary live tuning update that retains the current walkers.
+
+**Auto population** and **Auto movement scale** allow the controller to choose
+those settings for subsequent exploration and focused rounds. With adaptive
+fractal exploration, exploration rounds use the full user scale range; focused
+rounds narrow the effective upper range while remaining within those outer
+bounds. Editing either minimum or maximum scale pins scale scheduling; re-enable
+**Auto movement scale** to resume it. A manual population edit likewise pins
+population scheduling until **Auto population** is enabled again. Population
+choices respect the configured maximum. **Restart round now** requests a restart at a safe boundary. A planner
+finishes its committed actions first. While paused, the request queues until
+the next step; press **Step** or **Run** to advance toward the boundary. The remaining budget must cover the complete next initialization.
+
+The basin table reports archived candidate regions through their objective,
+visits, confidence, and round. Treat confidence as an archive diagnostic, not a
+proof that a region contains a local optimum. **Export basins** saves a `.basins`
+file; **Import basins** replaces the archive with a compatible file. Compatibility
+requires matching benchmark settings, dimensions, bounds, objective direction,
+and boundary mode, including realized benchmark parameters where applicable.
+Imported objective values are reference data: the engine evaluates the imported
+positions at restart before using them as validated candidates. Those queries
+consume the global budget. Basin files are separate from `.fgopt` frame
+recordings and do not restore a running optimizer or its random-generator state.
+Basin entries can also carry adaptive geometry. The import decoder validates
+that payload and its movement mode before a compatible restart uses it to
+warm-start geometry. Imported legacy scale multipliers are ignored: the current
+scale bounds govern the new round. This reuses selected learned geometry rather
+than restoring the previous optimizer state. Changing periodic boundaries clears archived
+geometry and confidence because their distance interpretation has changed.
+:::
+
 ### Adaptive local Gaussian perturbations
 
 :::{div} feynman-prose
@@ -374,9 +597,10 @@ snapshot, then recompute $\phi$.
 
 For coordinate width $L^{(n)}$, the adaptive Gaussian displacement has standard
 deviation $L^{(n)}10^{-5+4\phi_i}$ in coordinate units. This implementation
-interprets the paper's jump parameter as a standard deviation. In bounded mode,
-redraw from the original position, halving the scale after rejection; after 64
-unsuccessful attempts, retain that position. Periodic mode wraps proposals.
+interprets the paper's jump parameter as a standard deviation. With **Boundary
+handling** set to **None — revive by cloning**, redraw from the original position, halving the scale
+after rejection; after 64 unsuccessful attempts, retain that position. Periodic
+mode wraps proposals; CMA-ES mapping repairs finite out-of-bounds proposals.
 
 The local-search centroid is
 
@@ -582,17 +806,77 @@ swarm point represents an entire molecule: the atoms in the inspector are
 components of that candidate, rather than additional optimization walkers.
 :::
 
+(sec-optimization-geometry-diagnostics)=
+### Inspect covariances and jump vectors
+
+:::{div} feynman-prose
+Open **Covariances and jump vectors** and enable **Collect geometry diagnostics**.
+Collection starts off. It adds computation and recording size, but does not change
+the optimizer's trajectory, random stream, or objective-evaluation count.
+**Show geometry overlays** hides the drawing without stopping collection. A frame
+recorded before collection began has no geometry to replay.
+
+The method checkboxes let you compare **Local Gaussian**, **Adaptive Fractal**,
+and **Clone-guided** estimates on evidence from the same Fractal swarm. The status
+distinguishes the active method from a same-swarm estimate. Inactive estimators
+use their defaults; they do not run independent optimizations or tell you where
+another optimizer would have moved. **Adaptive Fractal** displays its local
+Gaussian component, not the covariance of its entire proposal mixture. An
+isotropic reference appears for the configured Gaussian, uniform, or GAS adaptive
+perturbation when applicable.
+
+For CMA-ES and BIPOP CMA-ES, the contour uses the mean and covariance
+$\sigma^2 C$ that sampled the displayed generation, including across restarts.
+The drawing applies CMA's boundary transformation to the contour points. Near a
+boundary, the result can cease to be an ellipse: it is a transformed sampling
+contour, not an ellipsoid fitted to the bounded candidate cloud.
+:::
+
+:::{div} feynman-prose
+Start with **Actual proposal scale (1σ)** to inspect the model's movement scale.
+These are one-standard-deviation contours, not confidence regions with a fixed
+probability in every dimension. **Normalized shape** divides out the
+full-dimensional mean variance before projection, making directional preferences
+easier to compare. Read the units in the status: position proposals and velocity
+kicks describe different quantities. Neither contour is necessarily the
+covariance of a complete optimizer step.
+
+The spatial view draws native 2D ellipses or 3D wireframe ellipsoids. Higher
+dimensions use the existing coordinate selectors for both walkers and geometry.
+In landscape view, geometry lies on the coordinate plane; objective height is
+not a covariance axis. **Local models** shows all captured anchors or the model
+nearest the selected walker. Adjust **Opacity** to see overlapping estimates.
+
+Enable **Learned field (white)** for the dimensionless clone-guided direction,
+or **Scaled drift (method color)** for its scaled contribution. **Executed
+movements (teal)** shows captured origin-to-destination movements; **Include
+cloning relocations (orange)** adds donor-copy relocations. These arrows describe
+events, whereas the field describes a learned direction. Periodic movement arrows
+split at domain seams. **Arrow magnification** changes their displayed lengths;
+the status reports the factor.
+Committed planner execution moves appear green, while search, proposal, and
+kinetic moves remain teal and cloning remains orange; replayed execution is
+visualized without being reused as learning evidence.
+
+Model and event capture have dimension-dependent resource limits, with at most
+512 movement events per frame; the renderer shows at most 96 movement arrows.
+Read the displayed/total counts
+before interpreting a sparse picture. Local Gaussian comparison is unavailable
+above 256 dimensions. Warm-up, missing evidence, and resource limits appear in
+the status rather than being replaced by invented estimates.
+:::
+
 (sec-optimization-recordings)=
 ## Save, inspect, and replay a run
 
 :::{div} feynman-prose
 **Record history** is off by default and takes effect on reset. With recording
 off, only the current frame is retained; replay, trails, convergence history, and
-exports are unavailable. Enable **Record history** before **Apply and reset**
+exports are unavailable. Enable **Record history** before **Start / reset run**
 to retain the run history. Imported recordings remain available for replay and export.
 
-Use **Save recording** to export a versioned `.fgopt` file. It contains the active
-configuration, realized benchmark parameters, engine version, metrics, and
+Use **Save recording** to export a versioned `.fgopt` file. It contains the initial and effective
+configuration, live configuration changes, realized benchmark parameters, engine version, metrics, and
 recorded snapshot arrays. These snapshots preserve the full coordinate vectors,
 so a replay can use a different projection without rerunning the optimization.
 
@@ -604,7 +888,7 @@ not restore an earlier random-generator or algorithm state.
 
 **Load recording** validates the file format and array shapes before replacing
 the displayed session. Loaded recordings provide exact visual replay of their
-frames. The current engine identifies itself as `fgopt-3`; earlier `fgopt-1` and
+frames. The current engine identifies itself as `fgopt-10`; earlier `fgopt-1` and
 `fgopt-2` files retain exact replay of their saved frames. Exporting an imported
 recording preserves its original engine identifier and stored metrics, including
 the earlier engine's evaluation-count and best-value semantics.
@@ -635,8 +919,9 @@ IOHanalyzer's **Fixed-Budget Results** analyzes solution quality against functio
 evaluations; it is an analysis view of the continuous problems already in the
 catalog. See the [IOHanalyzer GUI guide](https://iohprofiler.github.io/IOHanalyzer/GUI/).
 
-Set **Evaluation budget (0 = unlimited)** (`max_evaluations`) before **Apply and
-reset**. A positive budget must cover initialization. The counter includes every
+Set **Evaluation budget (0 = unlimited)** (`max_evaluations`) before **Start /
+reset run**, or change it during a run with **Apply live**. A positive initial
+budget must cover initialization. The counter includes every
 optimization objective query, including initialization,
 finite-difference force probes, and evaluations of proposals that are later
 discarded or invalid. Invalid values cannot improve **Best**. Drawing surfaces,

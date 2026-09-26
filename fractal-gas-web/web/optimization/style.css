@@ -466,3 +466,25 @@ details.advanced > div {
 .chart-axis select {
   width: 8rem;
 }
+
+#run-setup,
+#live-tuning {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+}
+#live-tuning > *,
+#run-setup > * {
+  min-width: 0;
+}
+#run-setup {
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+  padding-top: 12px;
+}
+#live-status,
+#population-status {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}

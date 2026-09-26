@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <type_traits>
 #include <stdexcept>
+#include <functional>
+#include "fractal/selection_evidence.hpp"
 
 #include "fractal/metrics.hpp"
 #include "fractal/diagnostics.hpp"
@@ -78,6 +80,8 @@ class Graph {
  public:
   using State =
       GraphPopulation<typename Backend::Storage, typename Backend::Info, typename Backend::Action>;
+  std::function<bool()> selection_enabled;
+  std::function<void(const State&, const SelectionEvidence&)> selection_observer;
   struct FrozenNode {
     uint64_t id = 0, parent_id = 0;
     typename Backend::StoredState state;
@@ -438,6 +442,14 @@ class Graph {
       stepping_.push_back(i);
       sources_.push_back(donor);
       prior_rewards_.push_back(state_.cum_rewards[donor]);
+    }
+    if(selection_observer && (!selection_enabled || selection_enabled())) {
+      SelectionEvidence e;e.expected=false;e.fitness.assign(state_.virtual_rewards.begin(),state_.virtual_rewards.end());
+      e.mass.assign(n,0);e.donors=compas2;e.sources=sources_;e.destinations=stepping_;
+      e.score.assign(state_.clone_probs.begin(),state_.clone_probs.end());
+      e.active.assign(state_.is_leaf.begin(),state_.is_leaf.end());
+      for(int source:sources_) e.mass[source]+=1;
+      selection_observer(state_,e);
     }
     const int k = int(stepping_.size());
     total_clones_ += k;

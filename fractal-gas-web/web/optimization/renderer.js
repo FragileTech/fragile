@@ -1,6 +1,13 @@
 import * as T from "./vendor/three.module.js";
 import { OrbitControls } from "./vendor/addons/controls/OrbitControls.js";
 import { frameInfo, row } from "./native.js";
+import {
+  validateGeometry,
+  covarianceSegments,
+  periodicSegments,
+  geometryColors,
+  geometryNames,
+} from "./geometry.js";
 const color = (t) =>
   new T.Color().setRGB(0.24 + 0.69 * t, 0.12 + 0.68 * t, 0.48 + 0.12 * (1 - t));
 function dispose(object) {
@@ -45,6 +52,7 @@ export class SwarmRenderer {
     this.capacity = 0;
     this.config = null;
     this.frame = null;
+    this.metadata = null;
     this.settings = {};
     this.selected = -1;
     this.surfaceScale = 1;
@@ -92,6 +100,8 @@ export class SwarmRenderer {
   }
   setConfig(config) {
     this.config = config;
+    this.metadata = null;
+    this.frame = null;
     this.surfaceBase = 0;
     this.surfaceScale = 1;
     dispose(this.surface);
@@ -236,13 +246,21 @@ export class SwarmRenderer {
       ),
     );
     this.surface.visible = settings.view === "landscape" || settings.showSlice;
-    this.bounds.scale.z = settings.view === "landscape" ? 0.005 : 1;
+    this.bounds.scale.z =
+      settings.view === "landscape" || this.config.dimensions < 3 ? 0.005 : 1;
     if (this.frame)
-      this.update(this.frame, settings, this.history || [], this.selected);
+      this.update(
+        this.frame,
+        settings,
+        this.history || [],
+        this.selected,
+        this.metadata,
+      );
     else this.draw();
   }
   update(frame, settings, history, selected, metadata = null) {
     this.frame = frame;
+    this.metadata = metadata;
     this.settings = settings;
     this.history = history;
     this.selected = selected;
@@ -320,6 +338,7 @@ export class SwarmRenderer {
         ),
       );
     };
+    this.drawGeometry(metadata?.geometry, settings, data, selected, line);
     if (settings.edges !== "none") {
       const points = [];
       for (let i = 0; i < info.n; i++) {
@@ -393,6 +412,190 @@ export class SwarmRenderer {
     }
     this.surface.visible = settings.view === "landscape" || settings.showSlice;
     this.draw();
+  }
+  drawGeometry(geometry, settings, walkers, selected, line) {
+    this.geometrySummary = "Geometry was not collected for this frame.";
+    if (!settings.geometryVisible) {
+      this.geometrySummary = "Geometry overlays hidden.";
+      return;
+    }
+    if (!geometry) return;
+    try {
+      validateGeometry(geometry, this.config.dimensions);
+    } catch (error) {
+      this.geometrySummary = error.message;
+      return;
+    }
+    const axes = settings.axes.slice(
+      0,
+      settings.view === "landscape" || this.config.dimensions === 2 ? 2 : 3,
+    );
+    if (axes.some((a) => a >= this.config.dimensions)) axes.splice(2);
+    const project = (x) => axes.map((a) => x[a]);
+    const world = (x) =>
+      new T.Vector3(
+        this.coord(x[0]),
+        this.coord(x[1]),
+        axes.length === 3 ? this.coord(x[2]) : 0.03,
+      );
+    const summary = [];
+    const arrows = (segments, color) => {
+      const points = [];
+      for (const [a, b] of segments) {
+        const start = world(a),
+          end = world(b),
+          delta = end.clone().sub(start),
+          length = delta.length();
+        if (!Number.isFinite(length) || length < 1e-10) continue;
+        const direction = delta.clone().normalize(),
+          side = new T.Vector3().crossVectors(
+            direction,
+            new T.Vector3(0, 0, 1),
+          );
+        if (side.lengthSq() < 1e-10)
+          side.crossVectors(direction, new T.Vector3(0, 1, 0));
+        side.normalize();
+        const size = Math.min(0.25, length * 0.25),
+          base = end.clone().addScaledVector(direction, -size);
+        points.push(
+          ...start.toArray(),
+          ...end.toArray(),
+          ...end.toArray(),
+          ...base
+            .clone()
+            .addScaledVector(side, size * 0.45)
+            .toArray(),
+          ...end.toArray(),
+          ...base
+            .clone()
+            .addScaledVector(side, -size * 0.45)
+            .toArray(),
+        );
+      }
+      line(points, color, settings.geometryOpacity);
+    };
+    for (const method of geometry.methods) {
+      if (!settings.geometryMethods.includes(method.id)) continue;
+      let models = method.models;
+      if (
+        settings.geometryScope === "selected" &&
+        selected >= 0 &&
+        walkers[selected] &&
+        models.length
+      ) {
+        const x = walkers[selected].x;
+        const distance = (m) =>
+          m.anchor.reduce((sum, v, k) => {
+            let delta = v - x[k];
+            if (geometry.periodic) {
+              const width = this.config.high - this.config.low;
+              delta -= Math.round(delta / width) * width;
+            }
+            return sum + delta * delta;
+          }, 0);
+        models = [
+          models.reduce((best, m) => (distance(m) < distance(best) ? m : best)),
+        ];
+      }
+      const color = geometryColors[method.id],
+        points = [];
+      let invalid = 0;
+      for (const model of models) {
+        try {
+          const segments = covarianceSegments(
+            model,
+            axes,
+            settings.geometryScale === "normalized",
+            this.config.low,
+            this.config.high,
+          );
+          for (const [a, b] of segments)
+            points.push(...world(a).toArray(), ...world(b).toArray());
+          for (const [key, enabled] of [
+            ["field", settings.geometryField],
+            ["drift", settings.geometryDrift],
+          ]) {
+            if (!enabled || !model[key]) continue;
+            const scale = key === "field" ? 1 : model.scale;
+            const origin = project(model.anchor),
+              end = axes.map(
+                (axis, i) =>
+                  origin[i] +
+                  model[key][axis] * scale * settings.geometryVectorScale,
+              );
+            arrows([[origin, end]], key === "field" ? 0xffffff : color);
+          }
+        } catch {
+          invalid++;
+        }
+      }
+      line(points, color, settings.geometryOpacity);
+      summary.push(
+        `${geometryNames[method.id]} (${method.active ? "active" : "same-swarm estimate"}): ${invalid ? `${invalid} invalid models` : method.status === "ready" ? `${models.length}/${method.model_count ?? method.models.length} models` : method.status}`,
+      );
+    }
+    if (settings.geometryJumps) {
+      const events = geometry.events.filter(
+        (e) => settings.geometryClones || e.kind !== "cloning",
+      );
+      // Recorded events carry true origins. Population row differences are never used.
+      const selectedEvents =
+        selected >= 0 && walkers[selected]
+          ? events.filter((e) =>
+              e.destination.every((x, k) => x === walkers[selected].x[k]),
+            )
+          : [];
+      const groups = ["execution", "proposal", "kinetic", "cloning"].map(
+        (kind) =>
+          events.filter((e) => e.kind === kind && !selectedEvents.includes(e)),
+      );
+      const chosen = selectedEvents.slice(0, 96);
+      for (
+        let k = 0;
+        chosen.length < 96 && groups.some((group) => k < group.length);
+        k++
+      )
+        for (const group of groups)
+          if (group[k] && chosen.length < 96) chosen.push(group[k]);
+      for (const kind of ["execution", "proposal", "kinetic", "cloning"]) {
+        const segments = [];
+        for (const event of chosen.filter((e) => e.kind === kind)) {
+          const from = project(event.origin),
+            to = project(event.destination);
+          // Split the true periodic displacement before visual magnification.
+          for (const [a, b] of periodicSegments(
+            from,
+            to,
+            this.config.low,
+            this.config.high,
+            geometry.periodic,
+          ))
+            segments.push([
+              a,
+              b.map((x, k) => a[k] + (x - a[k]) * settings.geometryVectorScale),
+            ]);
+        }
+        arrows(
+          segments,
+          kind === "cloning"
+            ? 0xffa95e
+            : kind === "execution"
+              ? 0x48df81
+              : 0x7ef5df,
+        );
+      }
+      summary.push(
+        `${chosen.length}/${geometry.event_count ?? events.length} movement arrows; committed planner moves are green`,
+      );
+    }
+    summary.push(
+      `${geometry.units}; ${settings.geometryScale === "normalized" ? "normalized full-dimensional mean variance" : "1σ proposal scale"}. Field arrows: white, dimensionless; drift: method color. Arrows ×${settings.geometryVectorScale}.`,
+    );
+    if (settings.view === "landscape")
+      summary.push(
+        "Geometry lies on the coordinate plane; height is not a covariance axis.",
+      );
+    this.geometrySummary = summary.join(" · ");
   }
   draw() {
     const start = performance.now();

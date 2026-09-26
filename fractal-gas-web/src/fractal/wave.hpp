@@ -2,6 +2,8 @@
 #include <cmath>
 #include <limits>
 #include <numeric>
+#include <functional>
+#include "fractal/selection_evidence.hpp"
 
 #include "fractal/cloning.hpp"
 #include "fractal/exploration_tree.hpp"
@@ -23,6 +25,8 @@ template <class State, class Backend, class ActionPolicy>
 class Wave {
  public:
   State current, next, elite, elite_next;
+  std::function<void(const State&, const SelectionEvidence&)> selection_observer;
+  std::function<bool()> selection_enabled;
   ExplorationTree tree;
   WaveMetrics metrics;
   bool has_elite = false;
@@ -184,6 +188,18 @@ class Wave {
       sources[i] = mask_[i] ? companions_[i] : i;
       metrics.cloned += mask_[i];
     }
+    if (selection_observer && (!selection_enabled || selection_enabled())) {
+      SelectionEvidence e; e.fitness.assign(fitness_.begin(),fitness_.end());
+      e.donors=companions_;e.sources=sources;e.replacement.resize(n);e.score.resize(n);
+      for(int i=0;i<n;++i) {
+        double score=(fitness_[companions_[i]]-fitness_[i])/std::max(fitness_[i],cloning.eps);
+        e.score[i]=score;
+        e.replacement[i]=!alive_[i]?1:std::clamp(score,0.,1.);
+        if(has_elite && i<std::min(elites,elite.N)) e.replacement[i]=0;
+      }
+      e.mass=expected_clone_mass(e.donors,e.replacement);
+      selection_observer(current,e);
+    }
     policy_.sample(current, sources, iteration == 1, next.actions, next.dt, rng);
     backend_.transition(current, Selection{size_t(n), {sources.data(), size_t(n)}, {}},
                         next.actions, next.dt, next);
@@ -233,8 +249,28 @@ class Wave {
     std::swap(current, next);
     backend_.after_transition(current);
     update_elites(elites);
-    if (has_elite)
-      for (float r : elite.rewards) metrics.max_reward = std::max(metrics.max_reward, r);
+    if (has_elite) {
+      // Publish a clone-ready population. The moved elite copies can all die,
+      // but the saved valid bank must remain available between complete steps.
+      // Record/observe actual transitions above before restoring entire rows;
+      // restoration is neither a new evaluation nor a new trajectory node.
+      for (int i = 0; i < std::min(elites, elite.N); ++i) copy_row(elite, i, current, i);
+      metrics.alive = 0;
+      rewards = fitness_sum = 0;
+      metrics.min_reward = metrics.min_fitness = std::numeric_limits<float>::infinity();
+      metrics.max_reward = metrics.max_fitness = -std::numeric_limits<float>::infinity();
+      for (int i = 0; i < n; ++i) {
+        metrics.alive += current.alive(i);
+        rewards += current.rewards[i];
+        fitness_sum += current.virtual_rewards[i];
+        metrics.min_reward = std::min(metrics.min_reward, current.rewards[i]);
+        metrics.max_reward = std::max(metrics.max_reward, current.rewards[i]);
+        metrics.min_fitness = std::min(metrics.min_fitness, current.virtual_rewards[i]);
+        metrics.max_fitness = std::max(metrics.max_fitness, current.virtual_rewards[i]);
+      }
+      metrics.mean_reward = float(rewards / n);
+      metrics.mean_fitness = float(fitness_sum / n);
+    }
     if (tree.mode == RecordingMode::Pruned) {
       pins_.assign(current.lineage.begin(), current.lineage.end());
       if (has_elite) pins_.insert(pins_.end(), elite.lineage.begin(), elite.lineage.end());

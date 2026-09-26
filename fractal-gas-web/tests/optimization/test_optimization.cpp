@@ -385,7 +385,7 @@ TEST_CASE(optimization_perturbation_extension_and_force_direction) {
       },
       config("[]"));
   const auto catalog = JsonReader(discovery_json()).read();
-  CHECK(catalog["perturbations"].array.size() == 5);
+  CHECK(catalog["perturbations"].array.size() == 7);
   auto cfg = config(
       R"({"algorithm":"fmc","benchmark":"quadratic","dimensions":2,"perturbation":"fixed"})");
   Benchmark b(cfg);
@@ -569,11 +569,13 @@ TEST_CASE(optimization_live_population_reward_direction_and_budget) {
     CHECK(s.iteration == 1 && s.benchmark.evaluations == evaluations + 24);
   }
 }
-TEST_CASE(optimization_live_population_excludes_graph_and_euclidean) {
+TEST_CASE(optimization_live_population_graph_targets_and_euclidean_resize) {
   for (auto algorithm : {"graph", "euclidean"}) {
     Session s(config(std::string(R"({"algorithm":")") + algorithm + R"(","walkers":4,"max_walkers":8})"));
-    bool rejected = false;
-    try { s.set_population(6, "virtual_reward"); } catch (const std::invalid_argument&) { rejected = true; }
-    CHECK(rejected);
+    const auto evaluations = s.benchmark.evaluations;
+    s.set_population(6, "virtual_reward");
+    CHECK(s.settings.walkers == 6);
+    CHECK(s.benchmark.evaluations == evaluations);
+    CHECK(s.algorithm->population().n == (std::string(algorithm) == "graph" ? 4 : 6));
   }
 }

@@ -38,7 +38,7 @@ test(
         "wave_jump",
       ],
     );
-    assert.equal(native.catalog().perturbations.length, 4);
+    assert.equal(native.catalog().perturbations.length, 6);
     for (const objective of ["minimize", "maximize"])
       for (const perturbation of ["gaussian", "uniform", "local_covariance"])
         for (const algorithm of [

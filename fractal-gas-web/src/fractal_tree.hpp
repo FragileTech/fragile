@@ -140,6 +140,12 @@ class FractalTree final : public SwarmAlgorithm {
   int64_t total_frames() const override { return total_frames_; }
   int32_t iteration_count() const override { return iteration_; }
 
+  void configure_population(int leaves, int maximum, int freeze) {
+    if (maximum < n_walkers()) throw std::invalid_argument("Maximum tree population cannot be below stored node count");
+    params_.min_leafs = leaves;
+    params_.max_walkers = maximum;
+    params_.freeze_prefix_after = freeze;
+  }
   void set_distance_metric(DistanceMetric v) override { params_.distance_metric = v; }
   void set_dist_coef(float v) override { params_.dist_coef = v; }
   void set_reward_coef(float v) override { params_.reward_coef = v; }

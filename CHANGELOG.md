@@ -1,5 +1,21 @@
 # Changelog
 
+- Add opt-in Optimization Lab covariance overlays for CMA-ES/BIPOP and same-swarm Fractal estimators, learned field/drift arrows, source-captured movement arrows, 2D/3D and higher-dimensional projections, and geometry-aware recording replay.
+
+- Add live fractal boundary handling choices: no repair, periodic wrapping, and libcmaes boundary repair. Apply the shared mapping across all six adapters, defer planner changes safely, and retain legacy periodic settings and recordings.
+
+- Restore complete valid elite rows after every Wave movement step so the next clone always has donors, including when all proposals leave bounds. Keep evaluations and recorded movement unchanged; publish corrected population metrics and preserve older Optimization recording imports.
+
+- Add a 20D population benchmark with million-evaluation caps, known-minimum target stopping, resumable results, and explicit native precision checks; reject FP64 fractal runs while their internal state remains FP32.
+
+- Add experimental cloning-guided perturbations across all six fractal optimizers: local selected-population geometry, bounded fitness drift, live controls, Euclidean kick/direct modes, and planner-safe model freezing. Preserve existing perturbations and older recording imports.
+
+- Replace adaptive fractal path-based scalar growth with bounded objective-percentile scales. Add live minimum/maximum controls, capped broad moves, normalized donor-difference moves, and focused rounds that respect user bounds; retain covariance geometry across scale edits and ignore legacy archived scale multipliers.
+
+- Add experimental adaptive fractal exploration across the six swarm optimizers, Euclidean kick/direct modes, live multi-run controls, basin archives, and a reproducible benchmark pilot. Preserve legacy seeded tests; record refinement provenance and document experimental limitations.
+
+- Add live Optimization Lab tuning for perturbations, swarm parameters, populations, and evaluation budgets, preserving run state and recording changes at application boundaries.
+
 - Run Arcade trajectory playback in an independent emulator while sampling continues, with fixed recordings, isolated failures, and a bounded share of the combined memory budget.
 
 - Add an Arcade trajectory player with best/selected walker ancestry, scrubbing, playback controls, direct Graph snapshot rendering, and Wave/planner replay from the initial state.
@@ -329,3 +345,5 @@ Unreleased
 ------------------
 
 * First release on PyPI.
+
+- Replace cloning-guided perturbations with bounded signed clone-score fields and adaptive covariance of comparison vectors across all six fractal optimizers. Remove lineage gating and log-fitness regression; retain compatible geometry on degenerate evidence and keep live scale bounds separate.

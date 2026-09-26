@@ -26,7 +26,9 @@ export function exportFixedBudgetCSV(recording) {
   ];
   const rows = [columns];
   let previous = -1;
-  for (const frame of recording.frames) {
+  for (const [index, frame] of recording.frames.entries()) {
+    const c =
+      recording.metadata?.[index]?.effective_settings ?? recording.config;
     const info = frameInfo(frame);
     if (!Number.isFinite(info.best) || info.evaluations === previous) continue;
     previous = info.evaluations;

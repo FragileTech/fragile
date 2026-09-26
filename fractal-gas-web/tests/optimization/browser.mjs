@@ -82,7 +82,7 @@ for (const [name, type] of [
     for (const algorithm of ["cmaes_active", "cmaes_bipop"]) {
       await page.locator("#algorithm").selectOption(algorithm);
       assert.equal(await page.locator('[name="walkers"]').isDisabled(), true);
-      assert.equal(await page.locator('[name="periodic"]').isDisabled(), true);
+      assert.equal(await page.locator('[name="boundary"]').isDisabled(), true);
       assert.equal(await page.locator("#perturbation").isDisabled(), true);
       await page.locator('[name="cma_population"]').fill("8");
       if (algorithm === "cmaes_bipop")
@@ -212,7 +212,11 @@ for (const [name, type] of [
       for (const objective of ["minimize", "maximize"]) {
         await page.locator("#algorithm").selectOption(algorithm);
         if (algorithm === "graph") {
-          await page.locator("#algorithm-parameters details.advanced").evaluate((el) => { el.open = true; });
+          await page
+            .locator("#algorithm-parameters details.advanced")
+            .evaluate((el) => {
+              el.open = true;
+            });
           await page.locator('[name="freeze_prefix_after"]').fill("1");
         }
         await page.locator("#objective").selectOption(objective);
@@ -223,7 +227,7 @@ for (const [name, type] of [
         if (["fmc", "wave_jump"].includes(algorithm))
           await page.locator('[name="horizon"]').fill("2");
         await page.locator('[name="walkers"]').fill("24");
-        await page.locator('[name="periodic"]').check();
+        await page.locator('[name="boundary"]').selectOption("periodic");
         await apply();
         const initialBest = Number(
           (await page.locator("#best").textContent()).replaceAll(",", ""),

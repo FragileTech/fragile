@@ -3,12 +3,13 @@
 import ctypes
 import json
 import math
+import os
 from pathlib import Path
 import sys
 
 
 root = Path(__file__).resolve().parents[2]
-lib = ctypes.CDLL(str(root / "build-optimization-native/optimization/libfg_optimization.so"))
+lib = ctypes.CDLL(os.environ.get("FG_OPTIMIZATION_LIBRARY", str(root / "build-optimization-native/optimization/libfg_optimization.so")))
 lib.fgo_create.argtypes = [ctypes.c_char_p]
 lib.fgo_create.restype = ctypes.c_uint32
 lib.fgo_snapshot.argtypes = [ctypes.c_uint32]

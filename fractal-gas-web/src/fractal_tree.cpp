@@ -67,6 +67,10 @@ FractalTree::FractalTree(BatchEnv& env, FractalTreeParams params, std::unique_pt
       total_clones_(core_.total_clones_),
       total_frames_(core_.total_frames_),
       iteration_(core_.iteration_) {
+  core_.selection_enabled = [this] {return env_.uses_cloning_evidence();};
+  core_.selection_observer = [this](const auto& state,const fractal::SelectionEvidence& e) {
+    env_.observe_cloning(state.states,e);
+  };
   params_.start_walkers = std::max(1, params_.start_walkers);
   params_.min_leafs = std::max(1, params_.min_leafs);
   params_.max_walkers = std::max(params_.start_walkers, params_.max_walkers);

@@ -13,27 +13,59 @@ self.onmessage = ({ data: message }) => {
       else if (message.type === "create") {
         config = engine.create(message.config);
         result = { config, frame: engine.snapshot(), status: engine.status() };
-      } else if (message.type === "setPopulation") {
+      } else if (message.type === "geometry") {
+        result = {
+          status: engine.setGeometryDiagnostics(message.enabled),
+          frame: engine.snapshot(),
+        };
+      } else if (["updateSettings", "setPopulation"].includes(message.type)) {
+        const patch =
+          message.type === "setPopulation"
+            ? {
+                walkers: message.walkers,
+                removal_policy: message.removal_policy,
+              }
+            : message.patch;
+        const next = engine.previewSettings(patch);
         const before = frameInfo(engine.snapshot());
         const count = Math.max(
           before.n,
-          message.walkers +
+          next.walkers +
             (["fmc", "wave_jump"].includes(config.algorithm) ? 1 : 0),
         );
+        const bytes =
+          new TextEncoder().encode(JSON.stringify(engine.status())).byteLength +
+          6 * new TextEncoder().encode(JSON.stringify(next)).byteLength +
+          4096;
         if (
-          (12 + count * before.stride) * 8 + 2048 >
+          (12 + count * before.stride) * 8 + bytes >
           (message.remaining ?? Infinity)
         )
-          throw new Error("Population update exceeds the recording limit");
-        const status = engine.setPopulation(
-          message.walkers,
-          message.removal_policy,
-        );
-        Object.assign(config, {
-          walkers: message.walkers,
-          removal_policy: message.removal_policy,
-        });
-        result = { config, frame: engine.snapshot(), status };
+          throw new Error("Settings update exceeds the recording limit");
+        const revision = engine.status().settings_revision;
+        const status = engine.updateSettings(patch);
+        config = engine.config();
+        result = {
+          config,
+          frame: engine.snapshot(),
+          status,
+          changed: status.settings_revision !== revision,
+        };
+      } else if (message.type === "exportBasins") {
+        result = { text: engine.exportBasins() };
+      } else if (message.type === "importBasins") {
+        const required =
+          message.text.length * 6 +
+          JSON.stringify(engine.status()).length * 6 +
+          engine.snapshot().byteLength +
+          8192;
+        if (required > (message.remaining ?? Infinity))
+          throw new Error("Archive update exceeds the recording limit");
+        result = {
+          status: engine.importBasins(message.text),
+          frame: engine.snapshot(),
+          config: engine.config(),
+        };
       } else if (message.type === "step") {
         const before = frameInfo(engine.snapshot());
         const status = engine.status();
@@ -53,14 +85,31 @@ self.onmessage = ({ data: message }) => {
                 config.algorithm.startsWith("cmaes_")
               ? 2048
               : 0;
-        if ((12 + maxN * before.stride) * 8 + metadataBytes > message.remaining)
+        const settingsBytes =
+          (config.controller_enabled
+            ? 64 * (config.dimensions * 24 + 4096)
+            : 0) +
+          6 * new TextEncoder().encode(JSON.stringify(status)).byteLength +
+          4096;
+        if (
+          (12 + maxN * before.stride) * 8 +
+            metadataBytes +
+            settingsBytes +
+            (status.geometry_capacity_bytes || 0) >
+          message.remaining
+        )
           throw new Error(
             "Recording reached 64 MiB. Save this run and reset to continue.",
           );
+        const frame = engine.step(),
+          nextStatus = engine.status();
         result = {
-          frame: engine.step(),
-          status: engine.status(),
+          frame,
+          status: nextStatus,
+          config: engine.config(),
           simulationMs: performance.now() - start,
+          roundChanged:
+            nextStatus.controller?.round !== status.controller?.round,
         };
       } else if (message.type === "surface") {
         const { resolution, axes, slice } = message;

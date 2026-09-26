@@ -32,6 +32,7 @@
     "test:euclidean-gas": "node tests/euclidean-gas/wasm.test.mjs && node tests/euclidean-gas/geometry3d.test.mjs",
     "test:euclidean-gas-browser": "node tests/euclidean-gas/sandbox-browser.mjs",
     "test:optimization": "node --test tests/optimization/*.test.mjs",
+    "test:optimization-geometry-browser": "node tests/optimization/geometry-browser.mjs",
     "test:optimization-browser": "node tests/optimization/browser.mjs",
     "build:llm": "node tools/build-llm.mjs",
     "test:llm": "node --test tests/llm/*.test.mjs",
@@ -53,7 +54,9 @@
     "test:arcade-resources-browser": "node tests/arcade-resources-browser.mjs",
     "test:arcade-memory-browser": "node tests/arcade-memory-browser.mjs",
     "test:arcade-growth-browser": "node tests/arcade-growth-browser.mjs",
-    "test:arcade-independent-browser": "node tests/arcade-independent-browser.mjs"
+    "test:arcade-independent-browser": "node tests/arcade-independent-browser.mjs",
+    "test:optimization-live-browser": "node tests/optimization/live-settings-browser.mjs",
+    "test:optimization-boundaries-browser": "node tests/optimization/boundary-browser.mjs"
   },
   "dependencies": {
     "@huggingface/tokenizers": "0.2.0",

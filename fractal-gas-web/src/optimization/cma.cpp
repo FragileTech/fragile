@@ -50,6 +50,8 @@ class Cma final : public Algorithm {
   std::vector<double> positions;
   Json resolved = JsonReader(std::string("{}")).read();
   bool bipop, done = false, small_run = false;
+  bool geometry_enabled=false;
+  Json visual;
   int large_runs = 1, runs_limit, restarts = 0, displayed_restart = 0;
   uint64_t generation = 0, run_evaluations = 0, small_cap = 0;
   uint64_t budgets[2] = {0, 0};
@@ -137,6 +139,7 @@ class Cma final : public Algorithm {
     resolved.object["cma_sampler_seed"] = number(sampler_seed);
     put_string(resolved, "libcmaes_revision", revision);
     put_string(resolved, "precision", "float64");
+    geometry_enabled=s.json["geometry_diagnostics"].flag(false);
     step();
   }
   void step() override {
@@ -151,6 +154,25 @@ class Cma final : public Algorithm {
       pop.cloned[i] = 0;
     }
     evaluated_row = 0;
+    if(geometry_enabled) {
+      const auto& solutions=strategy->get_solutions();
+      const auto mean=solutions.xmean();const auto covariance=solutions.full_cov();
+      Json model;model.kind=Json::Object;
+      model.object["anchor"]=array(std::vector<double>(mean.data(),mean.data()+mean.size()));
+      model.object["scale"]=number(solutions.sigma());model.object["columns"]=number(benchmark.d);
+      put_string(model,"representation","dense");put_string(model,"transform","cma");
+      std::vector<double> values;values.reserve(size_t(benchmark.d)*benchmark.d);
+      for(int i=0;i<benchmark.d;++i) for(int k=0;k<benchmark.d;++k) values.push_back(covariance(i,k));
+      model.object["shape"]=array(values);
+      Json method;method.kind=Json::Object;put_string(method,"id",settings.algorithm);
+      put_string(method,"status","ready");method.object["active"].kind=Json::Boolean;method.object["active"].number=1;
+      method.object["models"].kind=Json::Array;method.object["models"].array.push_back(std::move(model));
+      visual.kind=Json::Object;visual.object["version"]=number(1);visual.object["dimensions"]=number(benchmark.d);
+      visual.object["generation"]=number(generation+1);visual.object["restart"]=number(restarts);
+      put_string(visual,"units","CMA transformed sampling contour");
+      visual.object["methods"].kind=Json::Array;visual.object["methods"].array={std::move(method)};
+      visual.object["events"].kind=Json::Array;
+    }
     dMat candidates;
     { SamplerScope scope(sampler); candidates = strategy->ask(); }
     auto phenotype = strategy->get_parameters().get_gp().pheno(candidates);
@@ -166,6 +188,8 @@ class Cma final : public Algorithm {
     displayed_sigma = strategy->get_solutions().sigma();
     prepare_next();
   }
+  void set_geometry_diagnostics(bool enabled) override {geometry_enabled=enabled;visual=Json{};}
+  void configure(const Settings& next) override { settings.max_evaluations = next.max_evaluations; }
   const Population& population() const override { return pop; }
   const double* precise_positions() const override { return positions.data(); }
   uint64_t evaluations() const override { return benchmark.evaluations; }
@@ -176,6 +200,7 @@ class Cma final : public Algorithm {
   Json resolved_config() const override { return resolved; }
   Json metadata() const override {
     Json j = JsonReader(std::string("{}")).read();
+    j.object["geometry"]=visual;
     j.object["generation"] = number(generation);
     j.object["population"] = number(pop.n);
     j.object["restarts"] = number(displayed_restart);

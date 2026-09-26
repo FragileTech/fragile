@@ -29,7 +29,9 @@ struct Settings {
   bool cma() const { return algorithm == "cmaes_active" || algorithm == "cmaes_bipop"; }
   bool planning() const { return algorithm == "fmc" || algorithm == "wave_jump"; }
 };
+int population_capacity(const Benchmark&,const Settings&);
 using Population = fractal::EuclideanPopulation;
+Population resized_population(const Population&, const Settings&, Rng&);
 // Pure operators share the Python reference's semantics and accept injected
 // RNG.
 std::vector<int32_t> select_companions(const Population&, const Settings&, const Benchmark&,
@@ -45,11 +47,18 @@ class Algorithm {
   virtual ~Algorithm() = default;
   virtual const double* precise_positions() const { return nullptr; }
   virtual bool finished() const { return false; }
+  virtual Json refinement_results() const { return Json{}; }
+  virtual Json movement_geometry() const { return Json{}; }
+  virtual void set_geometry_diagnostics(bool) {}
+
+  virtual void restore_movement_geometry(const Json&) {}
   virtual Json metadata() const { return JsonReader(std::string("{}")).read(); }
   virtual Json resolved_config() const { return JsonReader(std::string("{}")).read(); }
   virtual uint64_t next_population_size() const { return population().n; }
-  virtual void set_population(int, fractal::RemovalPolicy) {
-    throw std::invalid_argument("Live population changes require Wave, FMC, or Wave Jump");
+  virtual bool settings_boundary() const { return true; }
+  virtual void validate_settings(const Settings&) const {}
+  virtual void configure(const Settings&) {
+    throw std::invalid_argument("This optimizer does not support live settings");
   }
   virtual void step() = 0;
   virtual const Population& population() const = 0;
@@ -64,9 +73,11 @@ using Factory = std::function<std::unique_ptr<Algorithm>(Benchmark&, const Setti
 void register_algorithm(const std::string& id, const std::string& name, bool velocity,
                         Factory factory, const Json& parameters = Json{});
 std::string discovery_json();
+class RunController;
 class Session {
  public:
   explicit Session(const Json& config);
+  ~Session();
   Benchmark benchmark;
   Settings settings;
   std::unique_ptr<Algorithm> algorithm;
@@ -77,6 +88,21 @@ class Session {
   std::string status_json() const;
   void step();
   void capture();
+  void set_geometry_diagnostics(bool);
   void set_population(int count, const std::string& policy);
+  void update_settings(const Json& patch);
+  Json preview_settings(const Json& patch) const;
+  std::string export_basins() const;
+  void import_basins(const std::string&);
+  uint64_t next_evaluations() const;
+ private:
+  std::unique_ptr<Settings> pending;
+  std::unique_ptr<RunController> controller;
+  bool restart_ready() const;
+  void restart();
+  uint64_t settings_revision = 0;
+  Json settings_event;
+  Settings validated_settings(const Json& patch) const;
+  void apply_pending();
 };
 }  // namespace fg::optimization

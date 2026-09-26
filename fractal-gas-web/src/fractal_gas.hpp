@@ -62,6 +62,19 @@ class FractalGas final : public SwarmAlgorithm {
     return {params_.max_walkers, state_.N, params_.N, params_.removal_policy};
   }
   void set_population(int count, fractal::RemovalPolicy policy, bool defer = false);
+  void configure_population(int count, int maximum, int elites, fractal::RemovalPolicy policy,
+                            bool defer = false) {
+    fractal::validate_population(count, maximum, elites, 2);
+    if (!defer && count != state_.N) {
+      core_.resize_population(count, elites, policy, *rng_);
+      clone_op_->diagnostics.decisions.clear();
+    }
+    params_.N = count;
+    params_.max_walkers = maximum;
+    params_.n_elite = elites;
+    params_.removal_policy = policy;
+    if (!elites) core_.has_elite = false;
+  }
   void enable_diagnostics(bool enabled = true) { clone_op_->diagnostics.enabled = enabled; }
   const CloneDiagnostics& diagnostics() const { return clone_op_->diagnostics; }
   const FractalGasParams& params() const { return params_; }

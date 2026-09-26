@@ -1,4 +1,4 @@
-export const ENGINE_VERSION = "fgopt-4";
+export const ENGINE_VERSION = "fgopt-11";
 export class NativeOptimization {
   constructor(module) {
     this.m = module;
@@ -33,10 +33,61 @@ export class NativeOptimization {
     this.dimension = resolved.dimensions;
     return resolved;
   }
+  setGeometryDiagnostics(enabled) {
+    this.check(this.m._fgo_geometry_diagnostics(this.handle, enabled ? 1 : 0));
+    return this.status();
+  }
   status() {
     const pointer = this.m._fgo_status(this.handle);
     if (!pointer) throw this.error();
     return JSON.parse(this.m.UTF8ToString(pointer));
+  }
+  config() {
+    const pointer = this.m._fgo_config(this.handle);
+    if (!pointer) throw this.error();
+    return JSON.parse(this.m.UTF8ToString(pointer));
+  }
+  settingsRequest(patch, preview = false) {
+    const text = JSON.stringify(patch),
+      size = this.m.lengthBytesUTF8(text) + 1;
+    const p = this.m._malloc(size);
+    if (!p) throw new Error("Settings request allocation failed");
+    try {
+      this.m.stringToUTF8(text, p, size);
+      if (preview) {
+        const result = this.m._fgo_preview_settings(this.handle, p);
+        if (!result) throw this.error();
+        return JSON.parse(this.m.UTF8ToString(result));
+      }
+      this.check(this.m._fgo_update_settings(this.handle, p));
+      return this.status();
+    } finally {
+      this.m._free(p);
+    }
+  }
+  previewSettings(patch) {
+    return this.settingsRequest(patch, true);
+  }
+  updateSettings(patch) {
+    return this.settingsRequest(patch);
+  }
+  exportBasins() {
+    const pointer = this.m._fgo_export_basins(this.handle);
+    if (!pointer) throw this.error();
+    return this.m.UTF8ToString(pointer);
+  }
+  importBasins(text) {
+    const size = this.m.lengthBytesUTF8(text) + 1;
+    if (size > 8 * 1024 * 1024) throw new Error("Basin archive exceeds 8 MiB");
+    const pointer = this.m._malloc(size);
+    if (!pointer) throw new Error("Basin archive allocation failed");
+    try {
+      this.m.stringToUTF8(text, pointer, size);
+      this.check(this.m._fgo_import_basins(this.handle, pointer));
+    } finally {
+      this.m._free(pointer);
+    }
+    return this.status();
   }
   setPopulation(walkers, policy) {
     if (!Number.isInteger(walkers) || walkers < 1 || walkers > 2147483647)

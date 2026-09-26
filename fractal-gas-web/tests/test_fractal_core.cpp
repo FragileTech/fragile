@@ -227,6 +227,57 @@ TEST_CASE(shared_wave_retains_prior_elites_before_current_rows_on_reward_ties) {
   CHECK(wave.elite.states == states);
   for (auto id : first) CHECK(wave.tree.node(id).reward == 0);
 }
+TEST_CASE(shared_wave_restores_complete_elites_after_every_proposal_dies) {
+  struct FatalMoves : PackedMock<float> {
+    bool fail = false;
+    int transitions = 0;
+    int frames = 0;
+    void transition(const Batch& from, fractal::Selection rows, const std::vector<float>& actions,
+                    const std::vector<int32_t>& dt, Batch& to) {
+      ++transitions;
+      frames = std::accumulate(dt.begin(), dt.end(), 0);
+      // After a lethal step, cloning must obtain valid states from the bank.
+      for (size_t i = 0; i < rows.count; ++i) CHECK(from.alive(rows.sources.index(i)));
+      PackedMock<float>::transition(from, rows, actions, dt, to);
+      if (fail) {
+        to.dones.assign(to.N, 1);
+        to.recoverable.assign(to.N, 0);
+      }
+    }
+  } backend;
+  MockActions<float> actions;
+  fractal::Wave<PackedMock<float>::Batch, FatalMoves, MockActions<float>> wave(backend, actions);
+  wave.reset(8, 3, 1, false);
+  float pose[3] = {};
+  wave.begin_history(RecordingMode::Pruned, 3, pose, {});
+  FractalCloningOperator cloning;
+  Mt19937Rng rng(7);
+  wave.step(5, cloning, rng);
+  const auto saved = wave.elite;
+  backend.fail = true;
+  for (int step = 0; step < 3; ++step) {
+    wave.step(5, cloning, rng);
+    CHECK(wave.metrics.alive == 5);
+    CHECK(wave.metrics.frames == backend.frames);
+    CHECK(wave.metrics.revived == 0);
+    for (int i = 0; i < 5; ++i) {
+      CHECK(wave.current.alive(i));
+      CHECK(wave.current.rewards[i] == saved.rewards[i]);
+      CHECK(wave.current.step_rewards[i] == saved.step_rewards[i]);
+      CHECK(wave.current.virtual_rewards[i] == saved.virtual_rewards[i]);
+      CHECK(wave.current.lineage[i] == saved.lineage[i]);
+      CHECK(wave.current.actions[i] == saved.actions[i]);
+      CHECK(wave.current.root_actions[i] == saved.root_actions[i]);
+      for (int k = 0; k < 3; ++k) {
+        CHECK(wave.current.states[3 * i + k] == saved.states[3 * i + k]);
+        CHECK(wave.current.observations[3 * i + k] == saved.observations[3 * i + k]);
+      }
+      CHECK(wave.tree.node(saved.lineage[i]).reward == saved.rewards[i]);
+    }
+    for (int i = 5; i < 8; ++i) CHECK(!wave.current.alive(i));
+  }
+  CHECK(backend.transitions == 4);
+}
 TEST_CASE(shared_graph_matches_packed_and_snapshot_leaf_execution) {
   MockEnv env;
   VisitGrid unused;

@@ -35,6 +35,17 @@ T guard(T fail, F fn) {
 }
 }  // namespace
 extern "C" {
+EXPORT const char* fgo_precision() {
+  static const std::string precision =
+      "{\"swarm_coordinates_bits\":" +
+      std::to_string(8 * sizeof(decltype(Population::x)::value_type)) +
+      ",\"swarm_fitness_bits\":" +
+      std::to_string(8 * sizeof(decltype(Population::fitness)::value_type)) +
+      ",\"objective_bits\":" +
+      std::to_string(8 * sizeof(decltype(Population::objective)::value_type)) +
+      ",\"cma_coordinates_bits\":" + std::to_string(8 * sizeof(double)) + "}";
+  return precision.c_str();
+}
 EXPORT const char* fgo_catalog() {
   static std::string catalog;
   catalog = discovery_json();
@@ -68,12 +79,37 @@ EXPORT const char* fgo_status(uint32_t h) {
   static std::string status;
   return guard<const char*>(nullptr, [&] { status = get(h).status_json(); return status.c_str(); });
 }
+EXPORT int fgo_geometry_diagnostics(uint32_t h, int enabled) {
+  return guard<int>(-1,[&] {get(h).set_geometry_diagnostics(enabled!=0);return 0;});
+}
+EXPORT int fgo_update_settings(uint32_t h, const char* patch) {
+  return guard<int>(-1, [&] {
+    if (!patch) throw std::invalid_argument("Missing settings patch");
+    get(h).update_settings(JsonReader(std::string(patch)).read());
+    return 0;
+  });
+}
+EXPORT const char* fgo_preview_settings(uint32_t h, const char* patch) {
+  static std::string result;
+  return guard<const char*>(nullptr, [&] {
+    if (!patch) throw std::invalid_argument("Missing settings patch");
+    result = stringify(get(h).preview_settings(JsonReader(std::string(patch)).read()));
+    return result.c_str();
+  });
+}
 EXPORT int fgo_set_population(uint32_t h, int count, const char* policy) {
   return guard<int>(-1, [&] {
     if (!policy) throw std::invalid_argument("Missing removal policy");
     get(h).set_population(count, policy);
     return 0;
   });
+}
+EXPORT const char* fgo_export_basins(uint32_t h) {
+  static std::string result;
+  return guard<const char*>(nullptr,[&]{result=get(h).export_basins();return result.c_str();});
+}
+EXPORT int fgo_import_basins(uint32_t h,const char* data) {
+  return guard<int>(-1,[&]{if(!data) throw std::invalid_argument("Missing basin archive");get(h).import_basins(data);return 0;});
 }
 EXPORT int fgo_step(uint32_t h) {
   return guard<int>(-1, [&] {

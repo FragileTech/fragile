@@ -33,6 +33,10 @@ FractalGas::FractalGas(BatchEnv& env, FractalGasParams params, std::unique_ptr<R
   clone_op_->use_cumulative_reward = params_.use_cumulative_reward;
   clone_op_->pool = env.worker_pool();
 
+  core_.selection_enabled = [this] { return env_.uses_cloning_evidence(); };
+  core_.selection_observer = [this](const WalkerState& state,const fractal::SelectionEvidence& e) {
+    if(env_.uses_cloning_evidence()) env_.observe_cloning(state.states,e);
+  };
   kinetic_op_->dt_min = params_.dt_min;
   kinetic_op_->dt_max = params_.dt_max;
 }

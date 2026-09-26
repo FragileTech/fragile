@@ -12,6 +12,9 @@ extern "C" {
 // FMC/Wave Jump append the committed position after config.walkers search rows.
 // On a new search, search-row parent indices refer to that committed row.
 const char* fgo_catalog(void);
+// Actual numerical storage precision, independent of the double snapshot format.
+// Static JSON; remains valid for the lifetime of the library.
+const char* fgo_precision(void);
 const char* fgo_error(void);
 uint32_t fgo_create(const char* config);
 int fgo_destroy(uint32_t handle);
@@ -21,7 +24,16 @@ const char* fgo_config(uint32_t handle);
 // The status string is borrowed until the next fgo_status call (any handle).
 const char* fgo_status(uint32_t handle);
 int fgo_step(uint32_t handle);
-// Population status is reported under status.population. No simulation/evaluation.
+// Opt-in observational diagnostics; does not advance or reconfigure the optimizer.
+int fgo_geometry_diagnostics(uint32_t handle, int enabled);
+const char* fgo_export_basins(uint32_t handle);
+int fgo_import_basins(uint32_t handle, const char* data);
+// Updates are validated as a batch. Immutable fields are rejected; planner movement
+// changes wait for the next search, while the budget takes effect immediately.
+// Status contains effective_settings, pending_settings, settings_revision and boundary events.
+// Preview validates and returns the merged requested config without changing the session.
+int fgo_update_settings(uint32_t handle, const char* patch);
+const char* fgo_preview_settings(uint32_t handle, const char* patch);
 int fgo_set_population(uint32_t handle, int walkers, const char* removal_policy);
 const double* fgo_snapshot(uint32_t handle);
 int fgo_snapshot_size(uint32_t handle);

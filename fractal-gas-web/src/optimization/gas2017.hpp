@@ -11,7 +11,7 @@ std::vector<double> flows(Population&, const Settings&, const Population*,
                           Rng&);
 void propose(const float*, float*, int, const Benchmark&, bool,
              const Perturbation&, double phi, Rng&,
-             PerturbationTransition* accepted = nullptr);
+             PerturbationTransition* accepted = nullptr, const std::string& boundary = "");
 struct Candidate {
   std::vector<float> x;
   double value;

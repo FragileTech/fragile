@@ -1,5 +1,6 @@
 import { encode, decode, checksum } from "../lab/binary.js";
 import { ENGINE_VERSION, frameInfo } from "./native.js";
+import { validateGeometry } from "./geometry.js";
 export const RECORDING_LIMIT = 64 * 1024 * 1024;
 export class Recording {
   constructor(config, engine = ENGINE_VERSION, retainHistory = true) {
@@ -15,6 +16,7 @@ export class Recording {
       throw new Error("Configuration exceeds the 64 MiB recording limit");
   }
   append(frame, metadata = null) {
+    validateGeometry(metadata?.geometry, frameInfo(frame).d);
     const copy = metadata === null ? null : structuredClone(metadata);
     if (copy !== null && (typeof copy !== "object" || Array.isArray(copy)))
       throw new Error("Invalid frame metadata");
@@ -44,6 +46,7 @@ export class Recording {
     }
   }
   replaceLast(frame, metadata) {
+    validateGeometry(metadata?.geometry, frameInfo(frame).d);
     const i = this.frames.length - 1;
     if (
       i < 0 ||
@@ -68,16 +71,40 @@ export class Recording {
     this.bytes = bytes;
   }
   export() {
+    const archiveDeltas = this.metadata.some(
+      (m) => m?.controller?.basins?.length > 0,
+    );
+    let previousArchive = null,
+      previousArchiveIndex = -1;
+    const metadata = this.metadata.map((m, index) => {
+      if (!archiveDeltas || !m?.controller?.basins) return m;
+      const serialized = JSON.stringify(m.controller.basins);
+      if (serialized === previousArchive) {
+        const controller = {
+          ...m.controller,
+          archive_ref: previousArchiveIndex,
+        };
+        delete controller.basins;
+        return { ...m, controller };
+      }
+      previousArchive = serialized;
+      previousArchiveIndex = index;
+      return m;
+    });
     return JSON.stringify({
       format: "fgopt",
-      version:
-        this.config.algorithm === "graph" && this.config.freeze_prefix_after > 0
-          ? 2
-          : 1,
+      version: archiveDeltas
+        ? 4
+        : this.metadata.some((m) => m?.settings_update)
+          ? 3
+          : this.config.algorithm === "graph" &&
+              this.config.freeze_prefix_after > 0
+            ? 2
+            : 1,
       engine: this.engine,
       config: this.config,
       frames: this.frames.map((frame, i) => ({
-        ...(this.metadata[i] === null ? {} : { metadata: this.metadata[i] }),
+        ...(metadata[i] === null ? {} : { metadata: metadata[i] }),
         data: encode(frame),
         checksum: checksum(
           new Uint8Array(frame.buffer, frame.byteOffset, frame.byteLength),
@@ -141,8 +168,20 @@ export function importRecording(text) {
   const value = JSON.parse(text);
   if (
     value.format !== "fgopt" ||
-    ![1, 2].includes(value.version) ||
-    !["fgopt-1", "fgopt-2", ENGINE_VERSION].includes(value.engine) ||
+    ![1, 2, 3, 4].includes(value.version) ||
+    ![
+      "fgopt-1",
+      "fgopt-2",
+      "fgopt-3",
+      "fgopt-4",
+      "fgopt-5",
+      "fgopt-6",
+      "fgopt-7",
+      "fgopt-8",
+      "fgopt-9",
+      "fgopt-10",
+      ENGINE_VERSION,
+    ].includes(value.engine) ||
     !value.config ||
     typeof value.config !== "object" ||
     !Array.isArray(value.frames) ||
@@ -152,6 +191,21 @@ export function importRecording(text) {
   const recording = new Recording(value.config, value.engine);
   let previous = -1;
   for (const entry of value.frames) {
+    const controller = entry.metadata?.controller;
+    if (value.version === 4 && controller && "archive_ref" in controller) {
+      const reference = controller.archive_ref;
+      if (
+        !Number.isSafeInteger(reference) ||
+        reference < 0 ||
+        reference >= recording.frames.length ||
+        !Array.isArray(recording.metadata[reference]?.controller?.basins)
+      )
+        throw new Error("Invalid archive reference");
+      controller.basins = structuredClone(
+        recording.metadata[reference].controller.basins,
+      );
+      delete controller.archive_ref;
+    }
     if (
       typeof entry.data !== "string" ||
       entry.data.length > ((RECORDING_LIMIT - recording.bytes) * 4) / 3 + 4
@@ -160,8 +214,26 @@ export function importRecording(text) {
     const frame = decode(entry.data, Float64Array);
     if (checksum(new Uint8Array(frame.buffer)) !== entry.checksum)
       throw new Error("Recording checksum mismatch");
-    previous = validateFrame(frame, value.config, previous);
-    if (value.version === 2) {
+    const update =
+      value.version >= 3 && entry.metadata?.settings_update === true;
+    if (
+      update &&
+      (frameInfo(frame).iteration !== previous ||
+        !entry.metadata?.settings_event ||
+        frameInfo(frame).evaluations !==
+          frameInfo(recording.frames.at(-1)).evaluations ||
+        frameInfo(frame).best !== frameInfo(recording.frames.at(-1)).best)
+    )
+      throw new Error("Invalid settings update boundary");
+    previous = validateFrame(
+      frame,
+      value.config,
+      update ? previous - 1 : previous,
+    );
+    if (
+      value.version === 2 ||
+      (value.version >= 3 && value.config.algorithm === "graph")
+    ) {
       const meta = entry.metadata;
       if (
         !meta ||

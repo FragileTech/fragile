@@ -59,16 +59,25 @@ test("optimization resizing preserves evaluations and variable-size recordings",
       });
       native.step();
       native.setPopulation(4, "virtual_reward");
-      assert.equal(native.status().population.active, 4);
+      assert.equal(native.status().population.active, 8);
+      assert.equal(native.status().pending_settings.walkers, 4);
       native.step();
       native.setPopulation(16, "cumulative_reward");
       assert.equal(native.status().population.pending, true);
-      for (let i = 0; i < 8 && native.status().population.pending; i++)
+      for (
+        let i = 0;
+        i < 16 &&
+        (native.status().pending_settings ||
+          native.status().population.pending);
+        i++
+      )
         native.step();
       assert.equal(native.status().population.active, 16);
     }
     native.create({ algorithm: "graph", walkers: 8, max_walkers: 20 });
-    assert.throws(() => native.setPopulation(12, "virtual_reward"));
+    native.setPopulation(12, "virtual_reward");
+    assert.equal(native.config().walkers, 12);
+    assert.equal(frameInfo(native.snapshot()).n, 8);
   } finally {
     native.dispose();
   }

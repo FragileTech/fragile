@@ -33,6 +33,11 @@ add_library(fg_optimization_core STATIC
   ${OPT_ROOT}/src/optimization/benchmark.cpp
   ${OPT_ROOT}/src/optimization/coco_benchmark.cpp
   ${OPT_ROOT}/src/optimization/perturbation.cpp
+  ${OPT_ROOT}/src/optimization/geometry.cpp
+  ${OPT_ROOT}/src/optimization/adaptive.cpp
+  ${OPT_ROOT}/src/optimization/cloning_guided.cpp
+  ${OPT_ROOT}/src/optimization/basin.cpp
+  ${OPT_ROOT}/src/optimization/controller.cpp
   ${OPT_ROOT}/src/optimization/environment.cpp
   ${OPT_ROOT}/src/optimization/gas.cpp
   ${OPT_ROOT}/src/optimization/gas2017.cpp
@@ -63,6 +68,12 @@ else()
   add_library(fg_optimization SHARED ${OPT_ROOT}/src/optimization/c_api.cpp)
   add_executable(fg_optimization_tests ${OPT_ROOT}/tests/test_main.cpp
     ${OPT_ROOT}/tests/optimization/test_optimization.cpp
+    ${OPT_ROOT}/tests/optimization/test_geometry.cpp
+    ${OPT_ROOT}/tests/optimization/test_live_settings.cpp
+    ${OPT_ROOT}/tests/optimization/test_adaptive.cpp
+    ${OPT_ROOT}/tests/optimization/test_cloning_guided.cpp
+    ${OPT_ROOT}/tests/optimization/test_boundary.cpp
+    ${OPT_ROOT}/tests/optimization/test_controller.cpp
     ${OPT_ROOT}/tests/optimization/test_coco.cpp
     ${OPT_ROOT}/tests/optimization/test_cma.cpp
     ${OPT_ROOT}/tests/optimization/test_gas2017.cpp)

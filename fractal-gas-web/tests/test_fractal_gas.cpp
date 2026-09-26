@@ -48,7 +48,29 @@ class ReplayActionOperator final : public RandomActionOperator {
 }  // namespace
 
 TEST_CASE(full_run_replays_python_reference) {
-  MockEnv env;
+  // Historical fixtures describe evaluated rows before elite restoration.
+  // Capture those moves independently, then check the published population
+  // against the same fixtures with the valid best-so-far bank inserted.
+  struct CaptureEnv : BatchEnv {
+    MockEnv base;
+    std::vector<float> moved;
+    int32_t n_actions() const override { return base.n_actions(); }
+    int32_t obs_dim() const override { return base.obs_dim(); }
+    void reset(std::vector<char>& state, std::vector<float>& obs) override { base.reset(state, obs); }
+    void step_batch(const std::vector<std::vector<char>>& states,
+        const std::vector<int32_t>& actions, const std::vector<int32_t>& dt,
+        std::vector<std::vector<char>>& next, std::vector<float>& obs,
+        std::vector<float>& rewards, std::vector<uint8_t>& dones,
+        std::vector<uint8_t>& truncated) override {
+      base.step_batch(states, actions, dt, next, obs, rewards, dones, truncated);
+      moved = obs;
+    }
+    void render_frame(const std::vector<char>&, std::vector<uint8_t>& rgba) override { rgba.clear(); }
+    int32_t frame_width() const override { return 0; }
+    int32_t frame_height() const override { return 0; }
+  } env;
+  struct ExpectedElite { float reward, fitness; std::vector<float> position; };
+  std::vector<ExpectedElite> bank;
 
   auto clone_op = std::make_unique<ReplayCloningOperator>();
   auto kinetic_op = std::make_unique<ReplayActionOperator>();
@@ -79,6 +101,16 @@ TEST_CASE(full_run_replays_python_reference) {
     const auto ui = static_cast<size_t>(it);
     const StepInfo info = gas.step();
 
+    for (int i = 0; i < fixtures::kRunN; ++i) {
+      if (env.moved[3 * i] <= 20) bank.push_back({fixtures::kRunExpectedRewards[ui][i],
+          fixtures::kRunExpectedVr[ui][i],
+          {env.moved[3 * i], env.moved[3 * i + 1], env.moved[3 * i + 2]}});
+    }
+    std::stable_sort(bank.begin(), bank.end(), [](const auto& a, const auto& b) {
+      return a.reward > b.reward;
+    });
+    bank.resize(fixtures::kRunNElite);
+
     int32_t expected_cloned = 0;
     for (const int32_t w : fixtures::kRunExpectedWillClone[ui]) expected_cloned += w;
     CHECK(info.num_cloned == expected_cloned);
@@ -87,15 +119,22 @@ TEST_CASE(full_run_replays_python_reference) {
     const WalkerState& state = gas.state();
     for (int32_t i = 0; i < state.N; ++i) {
       const auto wi = static_cast<size_t>(i);
-      CHECK_CLOSE(state.rewards[wi], fixtures::kRunExpectedRewards[ui][wi], 1e-5);
-      CHECK_CLOSE(state.virtual_rewards[wi], fixtures::kRunExpectedVr[ui][wi], 1e-5);
+      const bool retained = i < fixtures::kRunNElite;
+      CHECK_CLOSE(state.rewards[wi], retained ? bank[wi].reward : fixtures::kRunExpectedRewards[ui][wi], 1e-5);
+      CHECK_CLOSE(state.virtual_rewards[wi], retained ? bank[wi].fitness : fixtures::kRunExpectedVr[ui][wi], 1e-5);
+      if (retained) {
+        CHECK(state.alive(i));
+        for (int k = 0; k < 3; ++k) CHECK_CLOSE(state.observations[3 * wi + k], bank[wi].position[k], 1e-5);
+      }
     }
   }
 
   const WalkerState& final_state = gas.state();
   CHECK(final_state.observations.size() == fixtures::kRunFinalObservations.size());
   for (size_t i = 0; i < final_state.observations.size(); ++i) {
-    CHECK_CLOSE(final_state.observations[i], fixtures::kRunFinalObservations[i], 1e-5);
+    CHECK_CLOSE(env.moved[i], fixtures::kRunFinalObservations[i], 1e-5);
+    if (i >= size_t(fixtures::kRunNElite * 3))
+      CHECK_CLOSE(final_state.observations[i], fixtures::kRunFinalObservations[i], 1e-5);
   }
 }
 
@@ -254,7 +293,7 @@ TEST_CASE(soft_deaths_stay_dead_while_others_live) {
 
 TEST_CASE(elites_cannot_clone_after_initialization) {
   // Wave's game reward is always maximized. Objective minimization belongs to
-  // the separate optimization engine, which does not use this elite buffer.
+  // the optimization adapter, which converts objectives to maximized rewards.
   MockEnv env;
   FractalGasParams params;
   params.N = 16;

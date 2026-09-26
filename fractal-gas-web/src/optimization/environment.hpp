@@ -9,7 +9,24 @@ namespace fg::optimization {
 class BenchmarkEnvironment final : public BatchEnv {
  public:
   void collect_perturbations(bool enabled) { collecting = enabled; }
-  void update_perturbation() { perturbation->update(); }
+  void update_perturbation() { perturbation->observed_update(); }
+  void begin_geometry_step() { begin_geometry(*perturbation); }
+  void set_geometry(bool enabled) { enable_geometry(*perturbation,b,s.json,enabled); }
+  Json visual_geometry() const { return geometry_diagnostics(*perturbation); }
+  bool uses_cloning_evidence() const override { return perturbation->uses_cloning_evidence() || bool(perturbation->observer); }
+  void observe_cloning(const std::vector<std::vector<char>>&, const fractal::SelectionEvidence&) override;
+  std::unique_ptr<Perturbation> prepare_settings(const Settings& next) const {
+    return retune_perturbation(*perturbation, b, s.json, next.json);
+  }
+  void configure(Settings next, std::unique_ptr<Perturbation> proposal) {
+    s = std::move(next);
+    perturbation = std::move(proposal);
+  }
+  Json geometry() const { return perturbation_geometry(*perturbation); }
+  void restore_geometry(const Json& geometry) {restore_perturbation_geometry(*perturbation,geometry);}
+  Json diagnostics() const { return perturbation_diagnostics(*perturbation); }
+  uint64_t lineage(const std::vector<char>&) const;
+  void freeze(const std::vector<std::vector<char>>&);
   Benchmark& b;
   Settings s;
   BenchmarkEnvironment(Benchmark&, const Settings&);
@@ -32,7 +49,7 @@ class BenchmarkEnvironment final : public BatchEnv {
  private:
   bool collecting = true;
   std::unique_ptr<Perturbation> perturbation;
-  size_t bytes() const { return 1 + sizeof(double) + sizeof(float) * b.d; }
-  void encode(std::vector<char>&, const float*, double) const;
+  size_t bytes() const { return 1 + sizeof(double) + sizeof(float) * b.d + sizeof(uint64_t); }
+  void encode(std::vector<char>&, const float*, double, uint64_t family = 1) const;
 };
 }  // namespace fg::optimization

@@ -1,4 +1,5 @@
 #include "optimization/gas2017.hpp"
+#include "optimization/adaptive.hpp"
 
 #include <LBFGSB.h>
 
@@ -27,9 +28,12 @@ std::vector<double> normalize(const Population& p, const Settings& s) {
                            0., 1.);
   return phi;
 }
+double clone_score(double flow,double donor_flow) {
+  return flow>0 ? 1-donor_flow/flow : 0;
+}
 double clone_probability(double flow, double donor_flow) {
   return flow > 0 && donor_flow < flow
-             ? std::clamp(1 - donor_flow / flow, 0., 1.)
+             ? std::clamp(clone_score(flow,donor_flow), 0., 1.)
              : 0;
 }
 double distance2(const float* a, const float* b, int d) {
@@ -89,6 +93,7 @@ void clone(Population& p, const std::vector<double>& flow, Rng& rng) {
   const auto rank = ranks(p, live);
   const auto old_x = p.x;
   const auto old_value = p.objective;
+  const auto old_lineage = p.lineage;
   const auto old_fitness = p.fitness;
   for (int i = 0; i < p.n; ++i) {
     int donor = companion(i, live, rank, rng);
@@ -100,6 +105,7 @@ void clone(Population& p, const std::vector<double>& flow, Rng& rng) {
       std::copy_n(old_x.data() + size_t(donor) * p.d, p.d,
                   p.x.data() + size_t(i) * p.d);
       p.objective[i] = old_value[donor];
+      p.lineage[i] = old_lineage[donor];
       p.fitness[i] = old_fitness[donor];
       p.alive[i] = true;
     }
@@ -107,7 +113,7 @@ void clone(Population& p, const std::vector<double>& flow, Rng& rng) {
 }
 void propose(const float* original, float* out, int d, const Benchmark& b,
              bool periodic, const Perturbation& noise, double phi, Rng& rng,
-             PerturbationTransition* accepted) {
+             PerturbationTransition* accepted, const std::string& boundary) {
   if (accepted) {
     *accepted = {};
     accepted->origin.assign(original, original + d);
@@ -118,14 +124,16 @@ void propose(const float* original, float* out, int d, const Benchmark& b,
   for (int retry = 0; retry < 64; ++retry, scale *= .5) {
     noise.sample_with_context(original, delta.data(), d, rng, &context);
     for (int k = 0; k < d; ++k) out[k] = float(original[k] + scale * delta[k]);
-    if (periodic) b.wrap(out);
+    b.boundary(out, boundary.empty() ? (periodic ? "periodic" : "none") : boundary);
     if (b.valid(out)) {
       if (accepted) {
         accepted->draws = 1;
         accepted->scale = scale;
         accepted->displacement.resize(d);
+        accepted->direction.assign(delta.begin(),delta.end());
+        for(auto& v:accepted->direction) v*=scale;
         for (int k = 0; k < d; ++k)
-          accepted->displacement[k] = scale * delta[k];
+          accepted->displacement[k] = boundary=="cma" ? out[k]-original[k] : scale * delta[k];
       }
       return;
     }
@@ -203,6 +211,8 @@ class Gas2017 final : public Algorithm {
   OptimizationRng rng;
   std::unique_ptr<Perturbation> noise;
   Population p, memory;
+  uint64_t trial_sequence = 0;
+  std::vector<std::pair<gas2017::Candidate,uint64_t>> refinements;
   gas2017::Candidate best_walker() const {
     int best = -1;
     for (int i = 0; i < p.n; ++i)
@@ -245,7 +255,10 @@ class Gas2017 final : public Algorithm {
       p.alive[i] = b.valid(x) && std::isfinite(p.objective[i]);
     }
     auto best = choose_best();
-    if (s.gas_local_search) best = gas2017::local_search(b, s, std::move(best));
+    if (s.gas_local_search) {
+      const auto start=b.evaluations;best = gas2017::local_search(b, s, std::move(best));
+      refinements.push_back({best,b.evaluations-start});
+    }
     if (s.gas_tabu) {
       memory.resize(p.n, p.d);
       for (int i = 0; i < p.n; ++i) {
@@ -256,6 +269,31 @@ class Gas2017 final : public Algorithm {
       }
     }
   }
+  void configure(const Settings& next) override {
+    auto proposal = retune_perturbation(*noise, b, s.json, next.json);
+    auto random = rng;
+    auto population = resized_population(p, next, random);
+    Population archive;
+    if (memory.n) archive = resized_population(memory, next, random);
+    else if (next.gas_tabu) {
+      archive = population;
+      int best = 0;
+      for (int i = 0; i < archive.n; ++i)
+        if (archive.alive[i] && (!archive.alive[best] || next.better(archive.objective[i], archive.objective[best]))) best = i;
+      if (!archive.alive[best]) throw std::invalid_argument("Tabu memory requires an alive walker");
+      for (int i = 0; i < archive.n; ++i) {
+        std::copy_n(population.x.data() + size_t(best) * archive.d, archive.d, archive.x.data() + size_t(i) * archive.d);
+        archive.objective[i] = population.objective[best];
+        archive.alive[i] = true;
+      }
+    }
+    Settings saved = next;
+    p = std::move(population);
+    memory = std::move(archive);
+    noise = std::move(proposal);
+    rng = random;
+    s = std::move(saved);
+  }
   const Population& population() const override { return p; }
   uint64_t evaluations() const override { return b.evaluations; }
   double objective_score(int i) const override {
@@ -263,20 +301,57 @@ class Gas2017 final : public Algorithm {
   }
   uint64_t next_evaluations_upper_bound() const override {
     // The centroid seed is an additional query; each solver has its own cap.
-    return uint64_t(p.n) +
+    return uint64_t(p.n)*(noise->tracks_trials()?adaptive_evaluation_bound(b,s.json):1) +
            (s.gas_local_search ? 1 + 2 * uint64_t(s.gas_local_evaluations) : 0);
   }
+  Json refinement_results() const override {
+    Json result;result.kind=Json::Array;
+    for(const auto& record:refinements) {
+      Json item;item.kind=Json::Object;item.object["objective"]=number(record.first.value);
+      item.object["position"].kind=Json::Array;for(auto x:record.first.x) item.object["position"].array.push_back(number(x));
+      item.object["cost"]=number(record.second);result.array.push_back(std::move(item));
+    }
+    return result;
+  }
+  void set_geometry_diagnostics(bool enabled) override {enable_geometry(*noise,b,s.json,enabled);}
+  Json movement_geometry() const override {return perturbation_geometry(*noise);}
+  void restore_movement_geometry(const Json& geometry) override {restore_perturbation_geometry(*noise,geometry);}
+  Json metadata() const override {
+    Json result;result.kind=Json::Object;
+    result.object["exploration"]=perturbation_diagnostics(*noise);result.object["geometry"]=geometry_diagnostics(*noise);return result;
+  }
   void step() override {
+    begin_geometry(*noise);
+    if(noise->tracks_trials() || noise->observer) noise->observed_freeze({p.d,p.x,p.lineage,p.alive,p.objective});
     auto flow = gas2017::flows(p, s, s.gas_tabu ? &memory : nullptr, rng);
+    fractal::FrozenPopulation frozen;
+    if(noise->uses_cloning_evidence() || noise->observer) frozen={p.d,p.x,p.lineage,p.alive,p.objective};
     gas2017::clone(p, flow, rng);
+    if(noise->uses_cloning_evidence() || noise->observer) {
+      fractal::SelectionEvidence evidence;
+      evidence.donors=p.clone_companions;evidence.sources=p.parent;evidence.score.resize(p.n);
+      // GAS compares lower flow against higher flow, before clipping its gate.
+      for(int i=0;i<p.n;++i)
+        evidence.score[i]=gas2017::clone_score(flow[i],flow[evidence.donors[i]]);
+      if(noise->uses_cloning_evidence()) {noise->observe_cloning(frozen,evidence);noise->update();}
+      if(noise->observer) {
+        noise->observer->cloning(frozen,evidence);
+        for(int i=0;i<p.n;++i) if(p.cloned[i]) noise->observer->movement(frozen.positions.data()+size_t(i)*p.d,p.x.data()+size_t(i)*p.d,p.d,frozen.families[i],"cloning");
+      }
+    }
     const auto phi = gas2017::normalize(p, s);
     auto best = choose_best();
+    refinements.clear();
     if (s.gas_local_search) {
+      auto refinement_start=b.evaluations;
       gas2017::Candidate center{gas2017::centroid(p, phi), s.worst()};
       center.value = b.evaluate_optimization(center.x.data());
       center = gas2017::local_search(b, s, std::move(center));
+      refinements.push_back({center,b.evaluations-refinement_start});
       if (s.gas_tabu) insert(center);
+      refinement_start=b.evaluations;
       best = gas2017::local_search(b, s, std::move(best));
+      refinements.push_back({best,b.evaluations-refinement_start});
       if (s.gas_tabu) insert(best);
     } else if (s.gas_tabu)
       insert(best);
@@ -284,18 +359,29 @@ class Gas2017 final : public Algorithm {
     for (int i = 0; i < p.n; ++i) {
       float* x = p.x.data() + size_t(i) * p.d;
       const double previous = p.objective[i];
+      if(noise->tracks_trials()) {
+        const uint64_t action=++trial_sequence;
+        auto result=evaluate_adaptive_position(*noise,b,s.json,x,previous,rng,{uint64_t(s.json["round_id"].num()),0,p.lineage[i],action,0});
+        std::copy(result.position.begin(),result.position.end(),x);
+        p.objective[i]=result.objective;p.alive[i]=result.valid;
+        p.lineage[i]=fractal::descendant_lineage(p.lineage[i],action);
+        continue;
+      }
       PerturbationTransition accepted;
       gas2017::propose(x, candidate.data(), p.d, b, s.periodic, *noise, phi[i],
-                       rng, &accepted);
+                       rng, &accepted, s.json["boundary"].str());
+      if(noise->observer) noise->observer->movement(x,candidate.data(),p.d,p.lineage[i],"proposal");
       std::copy(candidate.begin(), candidate.end(), x);
       p.objective[i] = b.evaluate_optimization(x, &rng);
       p.alive[i] = b.valid(x) && std::isfinite(p.objective[i]);
       if (p.alive[i] && std::isfinite(previous) && accepted.draws > 0) {
         accepted.improvement = s.score(p.objective[i]) - s.score(previous);
-        noise->observe(accepted);
+        accepted.parent=p.lineage[i];accepted.action=uint64_t(b.evaluations);
+        accepted.source_scale=s.perturbation=="gas_adaptive"?(b.high-b.low)*s.json["gas_scale_multiplier"].num(1)*std::pow(10.,-5+4*phi[i]):s.json["perturbation_std"].num(1);
+        noise->observed_transition(accepted);
       }
     }
-    noise->update();
+    noise->observed_update();
   }
 };
 std::unique_ptr<Algorithm> make_gas2017(Benchmark& b, const Settings& s) {

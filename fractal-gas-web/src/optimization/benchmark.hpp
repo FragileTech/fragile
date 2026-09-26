@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,7 @@ double normal(Rng& rng);
 const std::string& catalog_json();
 
 class CocoBenchmark;
+class BoundaryMapper;
 class Benchmark {
  public:
   explicit Benchmark(const Json& config);
@@ -64,6 +66,9 @@ class Benchmark {
   void gradient(const float* x, float* out, bool optimization = false) const;
   mutable uint64_t evaluations = 0;
   mutable double best_observed = INFINITY;
+  mutable std::vector<double> best_position;
+  std::function<void(const double*,double)> observed;
+  std::function<void(float*)> initialization;
   // Upper bound: nonsmooth classic functions only use queries at a cusp.
   uint64_t gradient_evaluations() const {
     return coco || id == "eggholder" || id == "holder_table" ? 2 * uint64_t(d)
@@ -72,12 +77,15 @@ class Benchmark {
   void initial(float* x, Rng& rng) const;
   bool valid(const float* x) const;
   void wrap(float* x) const;
+  // Idempotent proposal repair; valid points and nonfinite failures are retained.
+  void boundary(float* x, const std::string& mode) const;
 
  private:
   double alpha = .1, lambda = .13, radius = 1, tilt = 0, stddev = 1;
   int components = 3;
   std::vector<double> centers, stds, weights;
   std::unique_ptr<CocoBenchmark> coco_problem;
+  mutable std::unique_ptr<BoundaryMapper> boundary_mapper;
   double value(const std::vector<double>& x) const;
   void observe(const double* x, double y) const;
 };

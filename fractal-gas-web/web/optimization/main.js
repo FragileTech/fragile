@@ -1,6 +1,7 @@
 import { EngineClient } from "./client.js";
 import { frameInfo, row } from "./native.js";
 import { Recording, importRecording, RECORDING_LIMIT } from "./recording.js";
+import { geometryNames, geometryColors } from "./geometry.js";
 import { exportFixedBudgetCSV } from "./fixed-budget.js";
 import { SwarmRenderer, MoleculeRenderer } from "./renderer.js";
 const $ = (id) => document.getElementById(id),
@@ -135,7 +136,15 @@ function perturbationFields(values = {}) {
   const descriptor = catalog.perturbations.find(
     (p) => p.id === $("perturbation").value,
   );
-  parameterFields(panel, descriptor?.parameters || [], values);
+  parameterFields(
+    panel,
+    (descriptor?.parameters || []).filter(
+      (p) =>
+        p.id !== "adaptive_euclidean_mode" ||
+        $("algorithm").value === "euclidean",
+    ),
+    values,
+  );
   perturbationNote();
 }
 function perturbationOptions(values = {}) {
@@ -173,14 +182,36 @@ function gasLocalSearchNote() {
     : "Each local search counts toward the evaluation budget.";
 }
 function perturbationNote() {
+  const direct =
+    ["adaptive_fractal", "cloning_guided"].includes($("perturbation").value) &&
+    form.elements.namedItem("adaptive_euclidean_mode")?.value === "position";
+  for (const key of ["gamma", "beta", "delta_t", "substeps", "kinetic"]) {
+    const input = form.elements.namedItem(key);
+    if (input) input.disabled = direct;
+  }
+  const force = form.elements.namedItem("potential_force");
+  if (force)
+    force.disabled =
+      direct ||
+      Boolean(
+        catalog.benchmarks.find((b) => b.id === $("benchmark").value)
+          ?.stochastic,
+      );
+  const mode = form.elements.namedItem("adaptive_euclidean_mode");
+  if (mode) mode.onchange = perturbationNote;
+
   $("perturbation-note").textContent =
-    $("perturbation").value === "local_covariance"
-      ? "Learns local proposal directions from search outcomes. Standard deviation sets average coordinate variance; planner geometry stays fixed through search and execution."
-      : $("perturbation").value === "gas_adaptive"
-        ? "Objective-dependent Gaussian jumps: standard deviation ranges from 0.00001 to 0.1 of the domain width."
-        : $("algorithm").value === "euclidean"
-          ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
-          : "Standard deviation is measured in coordinate units for each proposal step.";
+    $("perturbation").value === "cloning_guided"
+      ? `Uses cloning-selected population geometry and bounded fitness-directed movement. Scale limits bound the noise coefficient, not displacement. ${direct ? "Kinetic controls are inactive." : $("algorithm").value === "euclidean" ? "Scales apply to velocity kicks before kinetic integration." : "Scales use coordinate units per proposal draw."} Experimental optimization strategy; no Gibbs sampling guarantee.`
+      : $("perturbation").value === "adaptive_fractal"
+        ? `Better walkers use smaller scales within the chosen limits; covariance learns direction only. Limits describe statistical scale, not maximum travel distance. ${$("algorithm").value === "euclidean" && !direct ? "Scales apply to velocity kicks before thermal integration." : "Scales use coordinate units per proposal draw."} ${direct ? "Kinetic controls are inactive." : "Paired alternatives count toward the evaluation budget."}`
+        : $("perturbation").value === "local_covariance"
+          ? "Learns local proposal directions from search outcomes. Standard deviation sets average coordinate variance; planner geometry stays fixed through search and execution."
+          : $("perturbation").value === "gas_adaptive"
+            ? "Objective-dependent Gaussian jumps: standard deviation ranges from 0.00001 to 0.1 of the domain width."
+            : $("algorithm").value === "euclidean"
+              ? "Scales the random velocity kick. Standard deviation 1 keeps the configured temperature."
+              : "Standard deviation is measured in coordinate units for each proposal step.";
 }
 function objectiveNote() {
   $("objective-note").textContent =
@@ -193,9 +224,15 @@ function isCma(algorithm = config?.algorithm) {
 }
 function cmaControls() {
   const cma = isCma($("algorithm").value);
-  for (const name of ["walkers", "periodic", "perturbation"])
+  $("controller-panel").hidden = cma;
+  for (const input of $("controller-panel").querySelectorAll("input[name]"))
+    input.disabled = cma;
+  for (const name of ["walkers", "boundary", "perturbation"])
     form.elements.namedItem(name).disabled = cma;
-  if (cma) form.elements.namedItem("periodic").checked = false;
+  if (cma) {
+    form.elements.namedItem("boundary").value = "cma";
+    form.elements.namedItem("controller_enabled").checked = false;
+  }
   $("perturbation-parameters").hidden = cma;
   $("perturbation-note").hidden = cma;
   $("edges").disabled = cma;
@@ -203,17 +240,25 @@ function cmaControls() {
 }
 function algorithmFields(values = {}) {
   cmaControls();
+  $("walkers-label").textContent =
+    $("algorithm").value === "graph" ? "Target leaves" : "Walkers";
   perturbationNote();
   const panel = $("algorithm-parameters");
   panel.replaceChildren();
   const algorithm = $("algorithm").value,
     gas = algorithm === "euclidean";
-  if (["wave", "fmc", "wave_jump"].includes(algorithm)) {
+  if (!isCma(algorithm) && algorithm !== "graph") {
     panel.append(
       numeric(
         "max_walkers",
         "Maximum walkers",
-        values.max_walkers ?? Number(form.elements.namedItem("walkers").value),
+        values.max_walkers ??
+          (["gas", "euclidean"].includes(algorithm)
+            ? Math.max(
+                defaults.max_walkers,
+                Number(form.elements.namedItem("walkers").value),
+              )
+            : Number(form.elements.namedItem("walkers").value)),
         2,
         100000,
       ),
@@ -233,6 +278,13 @@ function algorithmFields(values = {}) {
   const descriptor = catalog.algorithms.find((a) => a.id === algorithm);
   if (Array.isArray(descriptor?.parameters)) {
     parameterFields(panel, descriptor.parameters, values);
+    if (isCma(algorithm)) {
+      const note = document.createElement("p");
+      note.className = "hint";
+      note.textContent =
+        "CMA-ES initialization settings require Start / reset run. Only its evaluation budget applies live.";
+      panel.prepend(note);
+    }
     if (algorithm === "gas") {
       const note = document.createElement("p");
       note.id = "gas-local-note";
@@ -430,11 +482,20 @@ function readConfig() {
           ? Number(input.value)
           : input.value;
   }
+  data.periodic = data.boundary === "periodic";
   if (data.benchmark === "lennard_jones") data.dimensions = 3 * data.n_atoms;
   // Loaded mixture parameters survive a fresh rerun; edited mixtures regenerate.
   return data;
 }
 function populateForm(values) {
+  values = {
+    ...values,
+    boundary:
+      values.boundary ??
+      (isCma(values.algorithm) ? "cma" : values.periodic ? "periodic" : "none"),
+  };
+  for (const input of $("live-tuning").querySelectorAll("input, select"))
+    input.disabled = false;
   $("benchmark").value = values.benchmark;
   $("algorithm").value = values.algorithm;
   $("objective").value = values.objective ?? "minimize";
@@ -451,8 +512,37 @@ function populateForm(values) {
   gasLocalSearchNote();
   cmaControls();
 }
+for (const [id, name] of Object.entries(geometryNames)) {
+  const label = document.createElement("label");
+  label.className = "check";
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.checked = true;
+  input.value = id;
+  input.addEventListener("change", renderFrame);
+  const swatch = document.createElement("span");
+  swatch.textContent = "● ";
+  swatch.style.color = `#${geometryColors[id].toString(16).padStart(6, "0")}`;
+  label.append(input, swatch, name);
+  $("geometry-methods").append(label);
+}
 function viewSettings() {
   return {
+    geometryVisible: $("geometry-visible").checked,
+    geometryMethods: [
+      ...$("geometry-methods").querySelectorAll("input:checked"),
+    ].map((e) => e.value),
+    geometryScale: $("geometry-scale").value,
+    geometryScope: $("geometry-scope").value,
+    geometryOpacity: Number($("geometry-opacity").value),
+    geometryVectorScale: Math.max(
+      0.01,
+      Math.min(100, Number($("geometry-vector-scale").value) || 1),
+    ),
+    geometryField: $("geometry-field").checked,
+    geometryDrift: $("geometry-drift").checked,
+    geometryJumps: $("geometry-jumps").checked,
+    geometryClones: $("geometry-clones").checked,
     view: $("view").value,
     axes: [$("axis-x"), $("axis-y"), $("axis-z")].map((e) => Number(e.value)),
     color: $("color").value,
@@ -545,6 +635,7 @@ function refreshSurface() {
 }
 function controls() {
   const ready = !!recording;
+  $("geometry-collect").disabled = imported || busy || creating;
   $("run").disabled =
     !ready ||
     creating ||
@@ -561,7 +652,13 @@ function controls() {
     busy ||
     imported ||
     index !== recording.frames.length - 1;
-  $("apply-population").disabled = creating || imported || !recording;
+  $("apply-live").disabled =
+    creating ||
+    imported ||
+    !recording ||
+    $("algorithm").value !== config.algorithm;
+  for (const id of ["restart-round", "export-basins", "import-basins"])
+    $(id).disabled = !ready || creating || imported || isCma();
   $("reset").disabled = !ready || creating;
   $("save").disabled = !ready || !recordingEnabled;
   $("export-csv").disabled = !ready || !recordingEnabled;
@@ -711,77 +808,232 @@ function inspect(frame) {
     molecule.update(w.x);
   }
 }
-function showPopulation(population) {
-  $("live-population").hidden = !population || imported;
-  if (!population) return;
-  $("active-walkers").min = Math.max(2, config.elites || 0);
-  $("active-walkers").max = population.maximum;
-  $("population-status").textContent =
-    `${population.active} active / ${population.maximum} maximum${population.pending ? ` · ${population.requested} at next search` : ""}`;
+let activeStatus = null,
+  pendingSettings = null,
+  applyingSettings = false,
+  liveError = "";
+function liveValues() {
+  const data = readConfig(),
+    values = {};
+  if (data.algorithm !== config?.algorithm) return values;
+  for (const input of $("live-tuning").querySelectorAll("[name]")) {
+    if (input.disabled || (isCma() && input.name !== "max_evaluations"))
+      continue;
+    values[input.name] = data[input.name];
+  }
+  return values;
 }
-let pendingPopulation = null;
-$("apply-population").onclick = () => {
-  if (creating || imported || !recording) return;
-  const input = $("active-walkers");
-  if (!input.checkValidity()) {
-    input.reportValidity();
+function livePatch(values = liveValues()) {
+  const baseline = activeStatus?.pending_settings || config || {};
+  const patch = Object.fromEntries(
+    Object.entries(values).filter(([key, value]) => value !== baseline[key]),
+  );
+  if ("walkers" in patch && "population_auto" in values)
+    patch.population_auto = values.population_auto;
+  if (
+    ("perturbation_std" in patch ||
+      "adaptive_min_scale" in patch ||
+      "adaptive_max_scale" in patch) &&
+    "scale_auto" in values
+  )
+    patch.scale_auto = values.scale_auto;
+  return patch;
+}
+function showLive(state) {
+  activeStatus = state;
+  const controller = state.controller;
+  $("controller-status").textContent = controller
+    ? `Round ${controller.round} · ${controller.regime} · ${controller.round_evaluations} round / ${controller.global_evaluations} total evaluations · ${controller.restart_pending ? "restart queued" : controller.restart_reason || "active"}`
+    : "";
+  $("basin-rows").replaceChildren();
+  for (const basin of controller?.basins || []) {
+    const row = document.createElement("tr");
+    for (const value of [
+      basin.objective?.toPrecision(6) ?? "invalid",
+      basin.visits,
+      basin.validated ? basin.confidence.toFixed(2) : "reference",
+      basin.discovery_round,
+    ]) {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    }
+    $("basin-rows").append(row);
+  }
+  const exploration = state.exploration;
+  $("exploration-status").textContent = exploration
+    ? exploration.strategy === "cloning_guided"
+      ? `${exploration.model_count} local models · scale ${exploration.scale_min.toPrecision(3)}–${exploration.scale_max.toPrecision(3)} · signed clone scores · ${exploration.selection_comparisons.toFixed(1)} comparisons/model · condition ≤ ${exploration.condition_number.toPrecision(3)} · drift/noise ${exploration.drift_noise_ratio.toPrecision(3)} · ${exploration.fallback_count} fallbacks (${exploration.fallback_reason})`
+      : `${exploration.model_count} local models · scale ${exploration.scale_min.toPrecision(3)}–${exploration.scale_max.toPrecision(3)} · ${exploration.effective_parents.toFixed(1)} effective parents · proposals ${exploration.proposal_probabilities.map((p) => (100 * p).toFixed(0) + "%").join(" / ")} · ${exploration.paired_outcomes} paired outcomes`
+    : "";
+  for (const id of ["restart-round", "export-basins", "import-basins"])
+    $(id).disabled = imported || !controller || creating;
+
+  const n = frameInfo(recording.frames.at(-1)).n;
+  $("population-status").textContent =
+    config.algorithm === "graph"
+      ? `${n} stored nodes · ${config.walkers} target leaves · ${config.max_walkers} maximum`
+      : isCma()
+        ? `${n} candidates · CMA-ES: only the evaluation budget can be applied live.`
+        : `${state.population?.active ?? n} active / ${config.max_walkers} maximum`;
+  const dirty = Object.keys(livePatch()).length > 0;
+  $("live-status").textContent =
+    (imported
+      ? "Recording is read-only. Edited settings apply only to a new run."
+      : liveError) ||
+    (state.pending_settings
+      ? `Changes queued for the next search.${dirty ? " Additional unapplied edits." : ""}`
+      : dirty
+        ? "Unapplied changes."
+        : "Live settings are up to date.");
+}
+$("live-tuning").addEventListener("input", (event) => {
+  if (event.target.name === "walkers")
+    form.elements.namedItem("population_auto").checked = false;
+  if (
+    ["perturbation_std", "adaptive_min_scale", "adaptive_max_scale"].includes(
+      event.target.name,
+    )
+  )
+    form.elements.namedItem("scale_auto").checked = false;
+  liveError = "";
+  if (activeStatus) showLive(activeStatus);
+});
+$("live-tuning").addEventListener("change", () => {
+  liveError = "";
+  if (activeStatus) showLive(activeStatus);
+});
+$("apply-live").onclick = () => {
+  if (
+    creating ||
+    imported ||
+    !recording ||
+    $("algorithm").value !== config.algorithm
+  )
+    return;
+  for (const input of $("live-tuning").querySelectorAll("input, select"))
+    if (!input.reportValidity()) return;
+  const patch = livePatch();
+  if (!Object.keys(patch).length && !applyingSettings && !pendingSettings) {
+    showLive(activeStatus);
     return;
   }
-  pendingPopulation = {
-    walkers: Number(input.value),
-    removal_policy: $("live-removal-policy").value,
-  };
-  if (!busy) applyPopulation();
+  liveError = "";
+  // Capture the whole intended form, then diff against the acknowledged engine
+  // state when dispatched. This also handles reverting an in-flight edit.
+  pendingSettings = { values: liveValues() };
+  $("live-status").textContent = "Waiting for the current step…";
+  if (!busy) applySettings();
 };
-async function applyPopulation() {
-  const request = pendingPopulation;
-  pendingPopulation = null;
-  busy = true;
+$("restart-round").onclick = () => {
+  if (imported || creating || !recording) return;
+  pendingSettings = {
+    values: {
+      ...liveValues(),
+      restart_token: (activeStatus?.effective_settings?.restart_token ?? 0) + 1,
+    },
+  };
+  $("live-status").textContent =
+    "Round restart requested; committed actions finish first.";
+  if (!busy) applySettings();
+};
+$("export-basins").onclick = async () => {
+  try {
+    const result = await client.request("exportBasins");
+    const url = URL.createObjectURL(
+      new Blob([result.text], { type: "application/json" }),
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${config.benchmark}.basins`;
+    link.click();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    status(error.message, true);
+  }
+};
+$("import-basins").onchange = async (event) => {
+  const file = event.target.files[0];
+  if (!file || imported || creating) return;
+  if (file.size > 8 * 1024 * 1024) {
+    status("Basin archive exceeds 8 MiB", true);
+    return;
+  }
+  pause();
   const token = epoch;
   try {
-    const lastFrame = recording.frames.at(-1);
-    const oldMetadata = recording.metadata.at(-1);
-    const metadataBytes = (value) =>
-      value ? new TextEncoder().encode(JSON.stringify(value)).byteLength : 0;
-    const result = await client.request("setPopulation", {
-      ...request,
-      remaining:
-        RECORDING_LIMIT -
-        recording.bytes +
-        lastFrame.byteLength +
-        metadataBytes(oldMetadata) -
-        metadataBytes(oldMetadata?.population_changes),
+    const text = await file.text();
+    if (token !== epoch) return;
+    const result = await client.request("importBasins", {
+      text,
+      remaining: recordingEnabled
+        ? RECORDING_LIMIT - recording.bytes
+        : Infinity,
     });
     if (token !== epoch) return;
-    config = result.config;
-    const last = recording.frames.length - 1;
-    const events = [
-      ...(recording.metadata[last]?.population_changes || []),
-      result.status.population,
-    ];
-    recording.replaceLast(result.frame, {
+    recording.append(result.frame, {
       ...result.status,
-      population_changed: true,
-      population_changes: events,
+      settings_update: true,
+      archive_update: true,
     });
-    index = last;
-    selected = -1;
-    $("walker-index").value = "";
-    budgetStopped = !!result.status.budget_exhausted;
-    showPopulation(result.status.population);
-    renderFrame();
+    showLive(result.status);
     status(
-      result.status.population.pending
-        ? "Walker count queued for the next search."
-        : "Walker population updated.",
+      "Imported basin values remain references until validation during a restart.",
     );
   } catch (error) {
     status(error.message, true);
+  }
+  event.target.value = "";
+};
+async function applySettings() {
+  const request = pendingSettings;
+  pendingSettings = null;
+  busy = true;
+  applyingSettings = true;
+  const token = epoch;
+  try {
+    const before = frameInfo(recording.frames.at(-1));
+    const result = await client.request("updateSettings", {
+      patch: livePatch(request.values),
+      remaining: recordingEnabled
+        ? RECORDING_LIMIT - recording.bytes
+        : Infinity,
+    });
+    if (token !== epoch) return;
+    config = result.config;
+    if (!result.changed) {
+      showLive(result.status);
+      return;
+    }
+    recording.append(result.frame, {
+      ...result.status,
+      settings_update: true,
+      population_changed: before.n !== frameInfo(result.frame).n,
+    });
+    index = recording.frames.length - 1;
+    selected = -1;
+    $("walker-index").value = "";
+    budgetStopped =
+      !!result.status.budget_exhausted || !!result.status.finished;
+    showLive(result.status);
+    renderFrame();
+    status(
+      result.status.pending_settings
+        ? "Changes queued for the next search."
+        : "Live settings applied.",
+    );
+  } catch (error) {
+    if (token === epoch) {
+      liveError = error.message;
+      $("live-status").textContent = liveError;
+      status(error.message, true);
+    }
   } finally {
     busy = false;
+    applyingSettings = false;
     controls();
     if (token === epoch) {
-      if (pendingPopulation) applyPopulation();
+      if (pendingSettings) applySettings();
       else if (running) step();
     }
   }
@@ -808,6 +1060,13 @@ function renderFrame() {
     recording.metadata[index],
   );
   $("planner-note").hidden = !settings.planning;
+  $("geometry-status").textContent = renderer.geometrySummary;
+  $("geometry-collect").disabled = imported || busy || creating;
+  const available = new Set(
+    recording.metadata[index]?.geometry?.methods?.map((m) => m.id) || [],
+  );
+  for (const input of $("geometry-methods").querySelectorAll("input"))
+    input.parentElement.hidden = !available.has(input.value);
   const cmaMeta = recording.metadata[index];
   $("cma-note").hidden = !isCma();
   $("cma-note").textContent = cmaMeta
@@ -863,7 +1122,8 @@ function scheduleFrame() {
 }
 async function createSession(next, loaded = null) {
   if (creating) return;
-  pendingPopulation = null;
+  pendingSettings = null;
+  liveError = "";
   creating = true;
   pause();
   const token = ++epoch;
@@ -871,29 +1131,18 @@ async function createSession(next, loaded = null) {
   $("apply").disabled = true;
   status("Initializing swarm…");
   try {
-    const result = await client.request("create", { config: next });
+    const result = await client.request("create", {
+      config: {
+        ...next,
+        geometry_diagnostics: !loaded && $("geometry-collect").checked,
+      },
+    });
     if (token !== epoch) return;
     config = result.config;
-    $("active-walkers").value = config.walkers;
-    $("live-removal-policy").value = config.removal_policy || "virtual_reward";
     recordingEnabled = !!loaded || $("record-history").checked;
     recording = loaded || new Recording(config, undefined, recordingEnabled);
-    if (!loaded)
-      recording.append(
-        result.frame,
-        [
-          "graph",
-          "wave",
-          "fmc",
-          "wave_jump",
-          "cmaes_active",
-          "cmaes_bipop",
-        ].includes(config.algorithm)
-          ? result.status
-          : null,
-      );
+    if (!loaded) recording.append(result.frame, result.status);
     imported = !!loaded;
-    showPopulation(result.status.population);
     index = 0;
     selected = -1;
     $("walker-index").value = "";
@@ -901,6 +1150,7 @@ async function createSession(next, loaded = null) {
     budgetStopped = !!result.status?.finished;
     renderer.setConfig(config);
     populateForm(config);
+    showLive(result.status);
     objectiveNote();
     configureAxes();
     renderFrame();
@@ -933,20 +1183,20 @@ async function step() {
     });
     if (token !== epoch) return;
     const atLatest = index === recording.frames.length - 1;
-    recording.append(
-      result.frame,
-      [
-        "graph",
-        "wave",
-        "fmc",
-        "wave_jump",
-        "cmaes_active",
-        "cmaes_bipop",
-      ].includes(config.algorithm)
-        ? result.status
-        : null,
-    );
-    showPopulation(result.status.population);
+    const previous = frameInfo(recording.frames.at(-1));
+    for (const key of ["walkers", "perturbation_std"]) {
+      const input = form.elements.namedItem(key);
+      if (input && Number(input.value) === config[key])
+        input.value = result.config[key];
+    }
+    config = result.config;
+    recording.append(result.frame, {
+      ...result.status,
+      round_changed: result.roundChanged,
+      population_changed:
+        result.roundChanged || previous.n !== frameInfo(result.frame).n,
+    });
+    showLive(result.status);
     simulationMs = result.simulationMs;
     if (atLatest) index = recording.frames.length - 1;
     scheduleFrame();
@@ -954,7 +1204,7 @@ async function step() {
       pause();
       budgetStopped = true;
       status(`Optimizer finished: ${result.status.stop_reason || "converged"}`);
-    } else if (!frameInfo(result.frame).alive) {
+    } else if (!frameInfo(result.frame).alive && !config.controller_enabled) {
       pause();
       status(
         "All walkers left the domain or became invalid. Save the run, then reset or change settings.",
@@ -970,7 +1220,7 @@ async function step() {
   } finally {
     busy = false;
     controls();
-    if (pendingPopulation && token === epoch) applyPopulation();
+    if (pendingSettings && token === epoch) applySettings();
     else if (running && token === epoch)
       setTimeout(() => {
         if (running && token === epoch) step();
@@ -991,8 +1241,16 @@ $("chart-axis").addEventListener("change", convergence);
 $("algorithm").addEventListener("change", () => {
   perturbationOptions();
   algorithmFields();
+  controls();
+  if (config && $("algorithm").value !== config.algorithm)
+    $("live-status").textContent =
+      "Use Start / reset run to change algorithms.";
+  else if (activeStatus) showLive(activeStatus);
 });
-$("perturbation").addEventListener("change", () => perturbationFields());
+$("perturbation").addEventListener("change", () => {
+  perturbationFields(readConfig());
+  if (activeStatus) showLive(activeStatus);
+});
 $("objective").addEventListener("change", objectiveNote);
 $("run").onclick = () => {
   stopReplay();
@@ -1030,8 +1288,42 @@ for (const id of [
   "edges",
   "trails",
   "show-slice",
+  "geometry-visible",
+  "geometry-scale",
+  "geometry-scope",
+  "geometry-opacity",
+  "geometry-vector-scale",
+  "geometry-field",
+  "geometry-drift",
+  "geometry-jumps",
+  "geometry-clones",
 ])
   $(id).addEventListener("input", renderFrame);
+$("geometry-collect").addEventListener("change", async () => {
+  if (!recording || imported || busy || creating) return;
+  const enabled = $("geometry-collect").checked;
+  pause();
+  busy = true;
+  $("geometry-collect").disabled = true;
+  try {
+    const result = await client.request("geometry", { enabled });
+    // Keep historical frames intact; a newly enabled collector has no past geometry.
+    config.geometry_diagnostics = enabled;
+    renderFrame();
+    status(
+      enabled
+        ? "Geometry collection enabled; new evidence appears on the next step."
+        : "Geometry collection stopped; recorded frames retain their overlays.",
+    );
+  } catch (error) {
+    $("geometry-collect").checked = !enabled;
+    status(error.message, true);
+  } finally {
+    busy = false;
+    $("geometry-collect").disabled = false;
+    controls();
+  }
+});
 $("height").addEventListener("input", () => {
   if (renderer.surfaceValues)
     renderer.setSurface(

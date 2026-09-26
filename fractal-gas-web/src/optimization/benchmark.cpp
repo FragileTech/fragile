@@ -1,6 +1,7 @@
 #include "optimization/benchmark.hpp"
 
 #include <algorithm>
+#include <libcmaes/pwq_bound_strategy.h>
 #include <iomanip>
 #include <limits>
 #include <numeric>
@@ -216,6 +217,33 @@ Benchmark::Benchmark(const Json& input) : config(input) {
     config.object["n_gaussians"] = number(components);
   }
 }
+class BoundaryMapper {
+  Eigen::VectorXd lower, upper, input, output;
+  libcmaes::pwqBoundStrategy mapping;
+ public:
+  BoundaryMapper(int d, double low, double high)
+      : lower(Eigen::VectorXd::Constant(d, low)), upper(Eigen::VectorXd::Constant(d, high)),
+        input(d), output(d), mapping(lower.data(), upper.data(), d) {}
+  void apply(float* x, int d, double low, double high) {
+    // Fold very distant finite proposals before libcmaes's integer-based shift.
+    const double al = std::min((high-low)/2, (1+std::abs(low))/20);
+    const double au = std::min((high-low)/2, (1+std::abs(high))/20);
+    const double period = 2 * (high-low+al+au);
+    for (int j=0;j<d;++j) input[j]=low+std::remainder(double(x[j])-low,period);
+    mapping.to_f_representation(input, output);
+    float lo=float(low), hi=float(high);
+    if (double(lo)<low) lo=std::nextafter(lo, INFINITY);
+    if (double(hi)>high) hi=std::nextafter(hi, -INFINITY);
+    for (int j=0;j<d;++j) x[j]=std::clamp(float(output[j]),lo,hi);
+  }
+};
+void Benchmark::boundary(float* x, const std::string& mode) const {
+  if (mode=="periodic") { wrap(x);return; }
+  if (mode!="cma" || valid(x)) return;
+  for (int j=0;j<d;++j) if (!std::isfinite(x[j])) return;
+  if (!boundary_mapper) boundary_mapper=std::make_unique<BoundaryMapper>(d,low,high);
+  boundary_mapper->apply(x,d,low,high);
+}
 Benchmark::~Benchmark() = default;
 double Benchmark::value(const std::vector<double>& x) const {
   if (coco_problem) return coco_problem->evaluate(x.data());
@@ -294,7 +322,10 @@ void Benchmark::observe(const double* x, double y) const {
   for (int k = 0; k < d; ++k)
     if (!std::isfinite(x[k]) || x[k] < low || x[k] > high) return;
   const bool maximize = config["objective"].str("minimize") == "maximize";
-  if (maximize ? y > best_observed : y < best_observed) best_observed = y;
+  if (maximize ? y > best_observed : y < best_observed) {
+    best_observed = y;best_position.assign(x,x+d);
+  }
+  if(observed) observed(x,y);
 }
 double Benchmark::evaluate_optimization(const double* x, Rng* rng) const {
   std::vector<double> point(x, x + d);
@@ -424,6 +455,7 @@ void Benchmark::gradient(const float* p, float* out, bool optimization) const {
   for (int k = 0; k < d; ++k) out[k] = static_cast<float>(g[k]);
 }
 void Benchmark::initial(float* x, Rng& rng) const {
+  if(initialization) { initialization(x);return; }
   for (int k = 0; k < d; ++k)
     x[k] = float(low + (high - low) * rng.uniform01());
 }

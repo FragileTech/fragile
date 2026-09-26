@@ -17,7 +17,9 @@
           width="48"
           height="48"
         />
-        <span>fragile.tech<span class="app-brand-sub">Optimization Lab</span></span>
+        <span
+          >fragile.tech<span class="app-brand-sub">Optimization Lab</span></span
+        >
       </a>
       <h1 class="app-page-title">Optimization Lab</h1>
       <nav class="app-nav" aria-label="Laboratory navigation">
@@ -26,31 +28,27 @@
         <a href="../llm/">LLM Lab</a>
         <span class="is-active" aria-current="page">Optimization Lab</span>
         <a href="../euclidean-gas/">Algorithmic Gas</a>
-        <a href="../docs/lab/source/project/optimization_laboratory.html">Guide ↗</a>
+        <a href="../docs/lab/source/project/optimization_laboratory.html"
+          >Guide ↗</a
+        >
       </nav>
       <span id="engine-status" class="app-connection">Loading engine…</span>
-      <a href="vendor/COCO-NOTICE.txt" class="hint app-license-link">COCO licenses</a>
+      <a href="vendor/COCO-NOTICE.txt" class="hint app-license-link"
+        >COCO licenses</a
+      >
     </header>
     <main>
       <aside class="configuration" aria-label="Simulation configuration">
         <form id="configuration">
-          <h2>Explore a function</h2>
-          <label
-            >Benchmark<select id="benchmark" name="benchmark"></select
-          ></label>
-          <p id="benchmark-note" class="hint"></p>
-          <div class="pair">
+          <section id="live-tuning">
+            <h2>Live tuning</h2>
+            <p class="hint">
+              Apply changes without resetting walkers or progress. Planner
+              updates wait for the next search.
+            </p>
             <label
-              >Dimensions<input
-                name="dimensions"
-                id="dimensions"
-                type="number"
-                min="1"
-                max="4096"
-                value="3"
-                required /></label
-            ><label
-              >Walkers<input
+              ><span id="walkers-label">Walkers</span
+              ><input
                 name="walkers"
                 type="number"
                 min="2"
@@ -58,92 +56,165 @@
                 value="256"
                 required
             /></label>
-          </div>
-          <div class="pair">
             <label
-              >Lower bound<input
-                name="low"
-                id="low"
+              >Perturbation<select
+                name="perturbation"
+                id="perturbation"
+              ></select
+            ></label>
+            <div id="perturbation-parameters"></div>
+            <p id="perturbation-note" class="hint"></p>
+            <label
+              >Evaluation budget (0 = unlimited)<input
+                name="max_evaluations"
                 type="number"
-                step="any"
-                value="-5.12"
-                required /></label
-            ><label
-              >Upper bound<input
-                name="high"
-                id="high"
-                type="number"
-                step="any"
-                value="5.12"
+                min="0"
+                max="1000000000000"
+                step="1"
+                value="0"
                 required
             /></label>
-          </div>
-          <div id="benchmark-parameters"></div>
-          <label
-            >Algorithm<select name="algorithm" id="algorithm"></select
-          ></label>
-          <label
-            >Objective<select name="objective" id="objective">
-              <option value="minimize" selected>Minimize</option>
-              <option value="maximize">Maximize</option>
-            </select></label
-          >
-          <p id="objective-note" class="hint">
-            Minimize the function by maximizing its negative value.
-          </p>
-          <label
-            >Perturbation<select name="perturbation" id="perturbation"></select
-          ></label>
-          <div id="perturbation-parameters"></div>
-          <p id="perturbation-note" class="hint"></p>
-          <label
-            >Random seed<input
-              name="seed"
-              type="number"
-              value="7"
-              min="0"
-              max="2147483647"
-              required
-          /></label>
-          <label
-            >Evaluation budget (0 = unlimited)<input
-              name="max_evaluations"
-              type="number"
-              min="0"
-              max="1000000000000"
-              step="1"
-              value="0"
-              required
-          /></label>
-          <p class="hint">
-            Pauses before a complete step would exceed the budget. Surface
-            sampling is excluded.
-          </p>
-          <label class="check"
-            ><input name="periodic" type="checkbox" />Periodic boundaries</label
-          >
-          <label class="check">
-            <input id="record-history" type="checkbox" />Record history
-          </label>
-          <p class="hint">
-            Off by default. Enable before reset for replay, trails, convergence
-            history, and exports (64 MiB limit).
-          </p>
-          <div id="algorithm-parameters"></div>
-          <button id="apply" class="primary" type="submit">
-            Apply and reset
-          </button>
-          <p class="hint">
-            Settings take effect on reset. View controls preserve the run.
-          </p>
+            <p class="hint">
+              Pauses before a complete step would exceed the budget. Surface
+              sampling is excluded.
+            </p>
+            <label
+              >Boundary handling
+              <select name="boundary" id="boundary">
+                <option value="none">None — revive by cloning</option>
+                <option value="periodic">Periodic wrapping</option>
+                <option value="cma">CMA-ES boundary mapping</option>
+              </select>
+            </label>
+            <p class="hint">
+              Apply live to change boundary handling. CMA-ES mapping repairs
+              outside proposals without joining opposite edges.
+            </p>
+            <div id="algorithm-parameters"></div>
+            <fieldset id="controller-panel">
+              <legend>Multi-run controller</legend>
+              <label class="check"
+                ><input name="controller_enabled" type="checkbox" />Automatic
+                restarts</label
+              >
+              <label class="check"
+                ><input name="population_auto" type="checkbox" checked />Auto
+                population</label
+              >
+              <label class="check"
+                ><input name="scale_auto" type="checkbox" checked />Auto
+                movement scale</label
+              >
+              <p class="hint">
+                Requires a positive evaluation budget. Manual population or
+                scale edits pin that parameter for later rounds.
+              </p>
+              <button id="restart-round" type="button">
+                Restart round now
+              </button>
+              <output id="controller-status" aria-live="polite"></output>
+              <div class="toolbar">
+                <button id="export-basins" type="button">Export basins</button
+                ><label
+                  >Import basins<input
+                    id="import-basins"
+                    type="file"
+                    accept=".json,.basins"
+                /></label>
+              </div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Objective</th>
+                    <th>Visits</th>
+                    <th>Confidence</th>
+                    <th>Round</th>
+                  </tr>
+                </thead>
+                <tbody id="basin-rows"></tbody>
+              </table>
+            </fieldset>
+            <output id="exploration-status" aria-live="polite"></output>
+            <output id="population-status" aria-live="polite"></output>
+            <button id="apply-live" class="primary" type="button">
+              Apply live
+            </button>
+            <output id="live-status" aria-live="polite"
+              >No unapplied changes.</output
+            >
+          </section>
+          <section id="run-setup">
+            <h2>Run setup</h2>
+            <p class="hint">
+              These settings take effect only when starting a new run.
+            </p>
+            <label
+              >Benchmark<select id="benchmark" name="benchmark"></select
+            ></label>
+            <p id="benchmark-note" class="hint"></p>
+            <div class="pair">
+              <label
+                >Dimensions<input
+                  name="dimensions"
+                  id="dimensions"
+                  type="number"
+                  min="1"
+                  max="4096"
+                  value="3"
+                  required
+              /></label>
+            </div>
+            <div class="pair">
+              <label
+                >Lower bound<input
+                  name="low"
+                  id="low"
+                  type="number"
+                  step="any"
+                  value="-5.12"
+                  required /></label
+              ><label
+                >Upper bound<input
+                  name="high"
+                  id="high"
+                  type="number"
+                  step="any"
+                  value="5.12"
+                  required
+              /></label>
+            </div>
+            <div id="benchmark-parameters"></div>
+            <label
+              >Algorithm<select name="algorithm" id="algorithm"></select
+            ></label>
+            <label
+              >Objective<select name="objective" id="objective">
+                <option value="minimize" selected>Minimize</option>
+                <option value="maximize">Maximize</option>
+              </select></label
+            >
+            <p id="objective-note" class="hint">
+              Minimize the function by maximizing its negative value.
+            </p>
+            <label
+              >Random seed<input
+                name="seed"
+                type="number"
+                value="7"
+                min="0"
+                max="2147483647"
+                required
+            /></label>
+            <label class="check">
+              <input id="record-history" type="checkbox" />Record history
+            </label>
+            <p class="hint">
+              Off by default. Enable before reset for replay, trails,
+              convergence history, and exports (64 MiB limit).
+            </p>
+          </section>
+          <button id="apply" type="submit">Start / reset run</button>
         </form>
-        <section id="live-population" hidden aria-label="Live population">
-          <h2>Live population</h2>
-          <label>Active walkers<input id="active-walkers" type="number" min="2" step="1"></label>
-          <label>Remove worst by<select id="live-removal-policy"><option value="virtual_reward">Virtual fitness</option><option value="cumulative_reward">Cumulative reward</option></select></label>
-          <button id="apply-population" type="button">Update walkers</button>
-          <output id="population-status" aria-live="polite"></output>
-        </section>
       </aside>
       <section class="workspace" aria-label="Swarm workspace">
         <div class="toolbar">
@@ -236,6 +307,74 @@
           </div>
           <div id="slice-controls"></div>
           <p id="slice-note" class="hint"></p>
+        </details>
+        <details id="geometry-controls">
+          <summary>Covariances and jump vectors</summary>
+          <div class="grid">
+            <label class="check"
+              ><input id="geometry-collect" type="checkbox" />Collect geometry
+              diagnostics</label
+            >
+            <label class="check"
+              ><input id="geometry-visible" type="checkbox" checked />Show
+              geometry overlays</label
+            >
+            <label
+              >Covariance scale<select id="geometry-scale">
+                <option value="actual">Actual proposal scale (1σ)</option>
+                <option value="normalized">Normalized shape</option>
+              </select></label
+            >
+            <label
+              >Local models<select id="geometry-scope">
+                <option value="all">All captured models</option>
+                <option value="selected">Nearest to selected walker</option>
+              </select></label
+            >
+            <label
+              >Opacity<input
+                id="geometry-opacity"
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value="0.55"
+            /></label>
+            <label
+              >Arrow magnification<input
+                id="geometry-vector-scale"
+                type="number"
+                min="0.01"
+                max="100"
+                step="0.1"
+                value="1"
+            /></label>
+            <label class="check"
+              ><input id="geometry-field" type="checkbox" />Learned field
+              (white)</label
+            >
+            <label class="check"
+              ><input id="geometry-drift" type="checkbox" />Scaled drift (method
+              color)</label
+            >
+            <label class="check"
+              ><input id="geometry-jumps" type="checkbox" />Executed movements
+              (teal)</label
+            >
+            <label class="check"
+              ><input id="geometry-clones" type="checkbox" checked />Include
+              cloning relocations (orange)</label
+            >
+          </div>
+          <div id="geometry-methods" class="grid"></div>
+          <p class="hint">
+            Inactive estimators learn from this swarm’s existing evidence. They
+            do not run independent optimizations. Collection adds work and
+            recording size. Adaptive Fractal shows its local Gaussian component.
+          </p>
+          <p id="geometry-status" class="hint" role="status">
+            Geometry collection is off.
+          </p>
         </details>
         <div class="metrics" aria-live="off">
           <span>Iteration <strong id="iteration">0</strong></span

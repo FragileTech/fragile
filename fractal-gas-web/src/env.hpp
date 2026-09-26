@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <vector>
 #include <stdexcept>
+#include "fractal/selection_evidence.hpp"
 
 namespace fg {
 
@@ -37,6 +38,9 @@ struct WalkerInfo {
 class BatchEnv {
  public:
   virtual ~BatchEnv() = default;
+  virtual bool uses_cloning_evidence() const { return false; }
+  virtual void observe_cloning(const std::vector<std::vector<char>>&,
+                               const fractal::SelectionEvidence&) {}
 
   // An environment can exclude unscored roots from best-result selection.
   virtual bool best_candidate(const std::vector<char>&) const { return true; }

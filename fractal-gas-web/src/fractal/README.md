@@ -53,7 +53,7 @@ transport contract can support future native planners without a second algorithm
 
 Fitness companions and clone companions are separate draws. Wave fitness retains asymmetric distance/reward rescaling, cumulative versus step-reward selection, coefficients, and optional visit bonuses. All-dead recovery revives only deaths explicitly marked recoverable, excluding truncation. Recorded edges contain actual executed durations; planners filter zero-duration edges.
 
-Elite selection sorts descending cumulative reward. Equal rewards prefer prior elites in their existing order, then current population index. Each elite carries its state, observations, both rewards, actions/root actions, durations, terminal metadata, fitness, and lineage. The second elite bank makes replacement safe even when donor indices form cycles. Non-cumulative fitness therefore sees the elite's own last step reward.
+Each completed Wave step clones, moves, updates the valid elite bank, then restores full elite rows into the active population. Saved elites remain available even when every new proposal dies. Restoration adds neither evaluations nor history nodes; recorded transitions and frame counts still describe the actual movement. Population metrics describe the restored population. Elite selection sorts descending cumulative reward. Equal rewards prefer prior elites in their existing order, then current population index. Each elite carries its state, observations, both rewards, actions/root actions, durations, terminal metadata, fitness, and lineage. The second elite bank makes replacement safe even when donor indices form cycles. Non-cumulative fitness therefore sees the elite's own last step reward.
 
 ## Planning and host responsibilities
 
@@ -65,10 +65,36 @@ FMC has two named root selection policies: surviving discrete first-action votin
 
 Control Lab checkpoints use version **2**, with a native/WASM backend tag, scene fingerprint, configuration, physical state, shared Wave metadata and elites, RNG, action policy settings, recorded/pruned lineage, and incremental planner progress. Restore validates a temporary engine before replacing the live state. Version 1 checkpoints are rejected; there is no migration or legacy execution path. State snapshots keep their existing physical-state ABI.
 
-Optimization exports identify the new engine as `fgopt-4`. Recorded visualization data can still be viewed, while an older engine identifier is not a promise of identical re-simulation. Historical seeded trajectories can change with the unified lifecycle, stable elite ties, complete elite metadata, and truncation bookkeeping. The new version supports deterministic continuation within the same backend/build. Native versus WASM physics comparisons retain their existing numerical tolerance.
+Optimization exports identify the current engine as `fgopt-10`, with bounded objective-percentile scales, live tuning, experimental adaptive exploration, round control and basin archives. The shared lifecycle was introduced in `fgopt-4`. Recorded visualization data can still be viewed, while an older engine identifier is not a promise of identical re-simulation. Historical seeded trajectories can change with the unified lifecycle, stable elite ties, complete elite metadata, and truncation bookkeeping. The new version supports deterministic continuation within the same backend/build. Native versus WASM physics comparisons retain their existing numerical tolerance.
 
 ## Validation
 
 The existing mathematical fixture suites remain unchanged. New shared-core fixtures compare packed and opaque environments with injected independent draws, verify donor cycles/root inheritance, elite ties and metadata, sparse Graph execution/growth, recoverable deaths/truncation/actual duration, and early planner finish. Native allocation instrumentation covers the entire Lab Wave lifecycle with recording off at 16/256 walkers and 1/4 threads, in addition to the physics-only allocation check. Python and JavaScript integration tests exercise native planning and checkpoint continuation.
 
 The reproducible performance harnesses are `tests/fractal_benchmark.cpp` and `tests/fractal-wasm-benchmark.mjs`. The native harness links against either source version; the WASM harness accepts either version's absolute `web` directory. Each workload uses eight warmup operations and nine repeats of forty operations. Recording growth is reported separately from reusable engine scratch; fixed working-memory estimates exclude recorder growth and backend kernel scratch. Measured results and remaining environment limitations are recorded in [the performance report](../../tests/fractal-performance.md).
+
+## Cloning evidence for optimization movement
+
+`SelectionEvidence` is an optional observation of the existing selection law. Wave
+reports gate probabilities conditioned on its sampled donors, including elite
+protection and dead-slot revival. Graph reports realized source mass for its
+moving rows after donor protection and validity checks. Neither hook consumes RNG
+draws or modifies selection. Opaque backends forward the evidence through
+`BatchEnv`; Euclidean Gas and GAS supply the same proposal-level observation.
+
+The `cloning_guided` strategy derives proposal shape
+from centered bounded signed clone-score vectors, with 10% identity regularization.
+Drift follows the locally averaged score times companion direction; no lineage gate
+or log-fitness regression is used. Comparisons use normalized coordinates, wrapped
+periodic differences, a 0.1 RMS reach cap, and tanh(score). Compatible geometry
+persists when a step has no directional variance; drift clears without evidence.
+GAS supplies `1 - donor_flow / flow`, Wave and Graph their fitness ratio, and
+Euclidean Gas its fitness ratio divided by `p_max`, all before gate clipping. Models are
+frozen for a movement phase; planners queue evidence until the next search.
+No historical node mass or replay observation is treated as new evidence.
+
+Geometry archives carry a strategy tag. Archived covariance is reusable, while
+selection drift must be fitted from the new experiment. This strategy is an
+optimization variant and makes no claim of exact Gibbs invariance.
+
+Optimization adapters expose `boundary=none|periodic|cma`. The CMA option repairs finite outside proposals through the existing libcmaes piecewise-quadratic mapping, leaving valid proposals unchanged; it does not reproduce the CMA optimizer's latent-coordinate distribution. The optional Euclidean repair hook also runs before force checks and retains velocities. Boundary changes use the serialized live-update path; legacy `periodic` patches remain supported.
