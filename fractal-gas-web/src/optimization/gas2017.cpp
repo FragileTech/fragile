@@ -1,5 +1,6 @@
 #include "optimization/gas2017.hpp"
 #include "optimization/adaptive.hpp"
+#include "fractal/checkpoint.hpp"
 
 #include <LBFGSB.h>
 
@@ -211,6 +212,7 @@ class Gas2017 final : public Algorithm {
   OptimizationRng rng;
   std::unique_ptr<Perturbation> noise;
   Population p, memory;
+  std::string exchange_id;
   uint64_t trial_sequence = 0;
   std::vector<std::pair<gas2017::Candidate,uint64_t>> refinements;
   gas2017::Candidate best_walker() const {
@@ -240,6 +242,87 @@ class Gas2017 final : public Algorithm {
   void insert(const gas2017::Candidate& candidate) {
     gas2017::insert_memory(memory, s, candidate, rng);
   }
+
+  class ExchangeMember final : public fractal::PopulationMember {
+    Gas2017& gas;
+    std::string id, key;
+    int count;
+    std::unique_ptr<Population> staged;
+   public:
+    ExchangeMember(Gas2017& owner, std::string name, std::string compatibility, int n)
+        : gas(owner), id(std::move(name)), key(std::move(compatibility)),
+          count(n < 0 ? owner.s.elites : n) {
+      if (count < 0 || count > gas.p.n) throw std::invalid_argument("Invalid GAS exchange count");
+    }
+    void advance() override { gas.step(); }
+    fractal::MemberDescription describe() const override {
+      fractal::MemberDescription result;
+      result.id=id; result.compatibility=key; result.exchange_count=count;
+      const auto& p=gas.p;
+      for(int i=0;i<p.n;++i) {
+        const bool valid=p.alive[i] && std::isfinite(p.objective[i]);
+        const double removal=gas.s.json["removal_policy"].str()=="virtual_reward"
+            ? p.fitness[i] : gas.s.score(p.objective[i]);
+        result.rows.push_back({gas.s.score(p.objective[i]), valid ? removal : -INFINITY,
+                               valid, false});
+      }
+      // GAS has no protected historical elite slots. Its current best rows are
+      // exported and excluded from replacement by the shared import strategy.
+      return result;
+    }
+    fractal::WalkerPacket export_walker(int row) const override {
+      const auto& p=gas.p;
+      if(row<0 || row>=p.n || !p.alive[row] || !std::isfinite(p.objective[row]))
+        throw std::invalid_argument("Invalid GAS export row");
+      fractal::CheckpointWriter w;
+      w.scalar(uint32_t(1)); w.scalar(p.d);
+      w.vector(std::vector<float>(p.x.begin()+size_t(row)*p.d,p.x.begin()+size_t(row+1)*p.d));
+      w.vector(std::vector<float>(p.v.begin()+size_t(row)*p.d,p.v.begin()+size_t(row+1)*p.d));
+      w.scalar(p.objective[row]); w.scalar(p.fitness[row]); w.scalar(p.lineage[row]);
+      w.scalar(p.alive[row]); w.scalar(p.leaf[row]); w.scalar(p.cloned[row]);
+      const auto hash=fractal::checkpoint_hash(w.data.data(),w.data.size());
+      return {id,id+":"+std::to_string(hash),key,row,gas.s.score(p.objective[row]),std::move(w.data)};
+    }
+    void stage(const std::vector<fractal::WalkerImport>& imports) override {
+      staged.reset();
+      auto next=std::make_unique<Population>(gas.p);
+      std::set<int> destinations;
+      for(const auto& imp:imports) {
+        const int row=imp.destination;
+        const auto& packet=imp.walker;
+        if(row<0 || row>=next->n || !destinations.insert(row).second ||
+           packet.compatibility!=key || packet.source.empty() || packet.source==id)
+          throw std::invalid_argument("Incompatible GAS import");
+        fractal::CheckpointReader r(packet.bytes.data(),packet.bytes.size());
+        if(r.scalar<uint32_t>()!=1 || r.scalar<int>()!=next->d)
+          throw std::invalid_argument("Invalid GAS walker format");
+        auto x=r.vector<float>(size_t(next->d)*sizeof(float));
+        auto v=r.vector<float>(size_t(next->d)*sizeof(float));
+        const auto value=r.scalar<double>(); const auto fitness=r.scalar<float>();
+        const auto lineage=r.scalar<uint64_t>();
+        const auto alive=r.scalar<uint8_t>(), leaf=r.scalar<uint8_t>(), cloned=r.scalar<uint8_t>();
+        r.finish();
+        if(x.size()!=size_t(next->d) || v.size()!=size_t(next->d) || alive!=1 ||
+           leaf>1 || cloned>1 || !std::isfinite(value) || !std::isfinite(fitness) ||
+           packet.score!=gas.s.score(value) || !gas.b.valid(x.data()) ||
+           !std::all_of(x.begin(),x.end(),[](float a){return std::isfinite(a);}) ||
+           !std::all_of(v.begin(),v.end(),[](float a){return std::isfinite(a);}))
+          throw std::invalid_argument("Invalid GAS walker state");
+        std::copy(x.begin(),x.end(),next->x.begin()+size_t(row)*next->d);
+        std::copy(v.begin(),v.end(),next->v.begin()+size_t(row)*next->d);
+        next->objective[row]=value; next->fitness[row]=fitness;
+        // Family IDs were namespaced at the originating swarm. Preserve them
+        // through repeated hops so covariance sees clones as related evidence.
+        next->lineage[row]=lineage;
+        next->alive[row]=alive; next->leaf[row]=leaf; next->cloned[row]=cloned;
+        // Companion and parent indices refer to the sender's row namespace.
+        next->companions[row]=next->clone_companions[row]=next->parent[row]=row;
+      }
+      staged=std::move(next);
+    }
+    void commit() noexcept override { if(staged) { gas.p=std::move(*staged); staged.reset(); } }
+    void discard() noexcept override { staged.reset(); }
+  };
 
  public:
   Gas2017(Benchmark& bench, const Settings& settings)
@@ -295,6 +378,20 @@ class Gas2017 final : public Algorithm {
     s = std::move(saved);
   }
   const Population& population() const override { return p; }
+  std::unique_ptr<fractal::PopulationMember> exchange_member(
+      const std::string& id,const std::string& key,int count) override {
+    if(id.empty() || (!exchange_id.empty() && exchange_id!=id))
+      throw std::invalid_argument("GAS exchange identity must remain stable");
+    auto member=std::make_unique<ExchangeMember>(*this,id,key,count);
+    if(exchange_id.empty()) {
+      exchange_id=id;
+      const auto source=fractal::checkpoint_hash(
+          reinterpret_cast<const uint8_t*>(id.data()),id.size());
+      const auto origin=fractal::descendant_lineage(source,uint64_t(s.seed));
+      for(auto& family:p.lineage) family=fractal::descendant_lineage(origin,family);
+    }
+    return member;
+  }
   uint64_t evaluations() const override { return b.evaluations; }
   double objective_score(int i) const override {
     return s.score(p.objective.at(i));

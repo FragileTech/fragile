@@ -95,3 +95,61 @@ TEST_CASE(populations_shared_basin_events_are_idempotent){
   request.object["op"].string="refresh";coordinator.request(request);
   CHECK(before==stringify(coordinator.status()["basins"]));
 }
+
+TEST_CASE(populations_gas_parallel_exchange_and_budget){
+  auto c=config(10,1);
+  c.object["defaults"].object["algorithm"]=parse("\"gas\"");
+  c.object["defaults"].object["perturbation"]=parse("\"local_covariance\"");
+  c.object["defaults"].object["gas_local_search"]=parse("false");
+  c.object["max_evaluations"]=number(1280);
+  for(auto& m:c.object["members"].array)m.object["settings"].object["walkers"]=number(32);
+  PopulationExperiment serial(c);
+  c.object["concurrency"]=number(10);PopulationExperiment parallel(c);
+  for(int step=0;step<3;++step){
+    serial.step();parallel.step();
+    CHECK(stringify(serial.status())==stringify(parallel.status()));
+    for(int i=0;i<10;++i){
+      CHECK(serial.sessions[i]->snapshot==parallel.sessions[i]->snapshot);
+      CHECK(serial.controller.frames[i].exports.size()==5);
+      const auto& e=serial.controller.last_exchange[i];CHECK(e.imports.size()==5);
+      for(const auto& imp:e.imports){
+        CHECK(imp.walker.source!=e.id);
+        CHECK(!serial.controller.frames[i].export_flags[imp.destination]);
+        auto& p=serial.sessions[i]->algorithm->population();
+        CHECK(p.parent[imp.destination]==imp.destination);
+        CHECK_CLOSE(serial.sessions[i]->algorithm->objective_score(imp.destination),imp.walker.score,1e-12);
+      }
+    }
+  }
+  CHECK(serial.status()["evaluations"].num()==1280);
+  CHECK(serial.status()["budget_exhausted"].flag());
+  CHECK(throws([&]{serial.step();}));
+  c.object["members"].array[0].object["settings"].object["algorithm"]=parse("\"wave\"");
+  CHECK(throws([&]{PopulationExperiment mixed(c);}));
+}
+TEST_CASE(populations_gas_staging_is_atomic_and_owning){
+  auto c=config(2);
+  c.object["defaults"].object["algorithm"]=parse("\"gas\"");
+  c.object["defaults"].object["gas_local_search"]=parse("false");
+  PopulationExperiment experiment(c);
+  auto a=experiment.sessions[0]->exchange_member("swarm-0",5);
+  auto b=experiment.sessions[1]->exchange_member("swarm-1",5);
+  auto packet=a->export_walker(0);
+  const auto saved=experiment.sessions[1]->algorithm->population().x;
+  auto broken=packet;broken.bytes.pop_back();
+  CHECK(throws([&]{b->stage({{0,packet},{1,broken}});}));
+  b->commit();CHECK(experiment.sessions[1]->algorithm->population().x==saved);
+  b->stage({{0,packet}});b->discard();b->commit();
+  CHECK(experiment.sessions[1]->algorithm->population().x==saved);
+  b->stage({{0,packet}});packet.bytes.clear();b->commit();
+  const auto& source=experiment.sessions[0]->algorithm->population();
+  const auto& target=experiment.sessions[1]->algorithm->population();
+  CHECK(std::equal(source.x.begin(),source.x.begin()+source.d,target.x.begin()));
+  CHECK(target.objective[0]==source.objective[0]);
+  CHECK(target.fitness[0]==source.fitness[0]);
+  CHECK(target.lineage[0]==source.lineage[0]);
+  CHECK(target.parent[0]==0 && target.companions[0]==0);
+  auto returned=b->export_walker(0);a->stage({{1,returned}});a->commit();
+  CHECK(experiment.sessions[0]->algorithm->population().lineage[1]==target.lineage[0]);
+  CHECK(throws([&]{experiment.sessions[0]->exchange_member("renamed",5);}));
+}

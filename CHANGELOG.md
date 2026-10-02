@@ -2,6 +2,36 @@
 
 - Document the remaining Volume 2 Yang–Mills and quantum-gravity proof steps, with source-linked theorem dependencies, continuum-control requirements, and the three-space-plus-algorithmic-time reconstruction programme.
 
+- Prove separate one-step bounds for the component-Haar collision and for substituting Python's ordered donor-star collision into the declared Volume 2 update. Derive the last-writer collision matrix, population-independent velocity bounds, and a priority-decorated mean-field map with explicit one-step variance and bias constants for that collision substitution.
+
+- Audit the Volume 2 one-step estimates: evaluate every reward-dependent cloning and marked-revival term by finite accepted plans, specify the edge bound for paired label clusters, and state the canonical collision kernel used by the proofs.
+
+- Compose the signed Keystone cloning pressure with exact collision moments, both kinetic force kicks and the velocity-cap cross term in one full-update quadratic estimate. Trace regional raw reward bands through shared fitness normalization, accepted donor flux and the same full-update inequality.
+
+- Bound common-donor insertion, acceptance mismatch and barycenter corrections using the existing Keystone geometry; derive phase-centered kinetic covariance and explicit capped-kernel Fisher estimates with unbounded-domain moment budgets.
+
+- Derive the signed nonlinear entropy and fitness-refresh balances around stationary phases, retain regional and within-cell defects, and quantify their finite-population entropy-drift transfer including survival conditioning.
+
+- Prove the exact kinetic resonance obstruction to survival-conditioned TV attraction, retaining active cloning and all noises, and distinguish it from valid weak mean-field evolution.
+
+- Prove uniform survival-conditioned alive-fraction bounds, explicit normalized-alive mean-field errors, general canonical box QSD existence, and quantitative stationary population-map invariance without modifying the algorithm.
+
+- Derive an explicit extinction horizon and noncommuting population/time limits for the unchanged unconditioned terminal-box gas, keeping conservative and survival-conditioned limits separate.
+
+- Audit the full mean-field feedback closure, derive uniform sigmoid sensitivity and explicit finite-population exit windows, and prove the unsigned-selection and multiple-phase obstructions to unsupported long-time claims.
+
+- Derive reward-selection entropy self-confinement with zero-trap certificates, population-independent joint positional entropy bounds, geometric tail probabilities and the exact nonlinear reference-production balance.
+
+- Extend the closed active-cloning limit to unbounded raw quadratic-growth reward using weighted total variation, exact Gaussian moment budgets and a dependency-preserving uniform-time error estimate.
+
+- Close an explicit active-cloning mean-field regime with actual collision feedback, a positive selection interval, population-independent TV relaxation, vanishing uniform-time particle errors, stationary chaos and commuting long-time/population limits.
+
+- Prove stationary and joint long-time mean-field bounds, an evaluated active-cloning regeneration regime, moment-localized phase convergence, and explicit stationary phase-weight formulas.
+
+- Add structural landscape convergence proofs parameterized by basin, passage, reward and tail profiles, including selection-based unbounded confinement, explicit active-cloning mean-field trajectory bounds, structural TV and crossing certificates, reward-geometry confinement with optional trap intervals, phase-local full-law residual criteria, finite-resolution convergence decisions, population-independent Keystone pressure, exact signed full-update drift, explicit quadratic consistency and vanishing uniform-time particle-error budgets, and symbolic/rational validation.
+
+- Enable homogeneous GAS populations through the Optimization API, with staged walker transfers, private tabu/covariance state, and equal-budget population-versus-single-swarm benchmark runners.
+
 - Add Fractal Populations: configurable parallel Wave swarms with per-member settings, modular elite exchange, shared global elites and optimization basins, a shared evaluation budget, and an Optimization population workspace with recording/playback. Native snapshot, Control, and reference-backed LLM adapters use staged full-state imports; imported replay roots use Control checkpoint version 4.
 
 - Build the native Optimization Lab reference alongside WebAssembly in the Pages deployment job so adaptive and boundary parity checks can run before publishing.

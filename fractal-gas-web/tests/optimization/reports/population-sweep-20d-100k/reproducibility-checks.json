@@ -1,0 +1,50 @@
+[
+  {
+    "problem": "quadratic",
+    "variant": "Bounded adaptive",
+    "population": 128,
+    "seed": 0,
+    "fields": [
+      "best",
+      "evaluations",
+      "iterations",
+      "final_status",
+      "minimum_population",
+      "maximum_population",
+      "error"
+    ],
+    "exact_match": true
+  },
+  {
+    "problem": "quadratic",
+    "variant": "Bounded adaptive",
+    "population": 5000,
+    "seed": 0,
+    "fields": [
+      "best",
+      "evaluations",
+      "iterations",
+      "final_status",
+      "minimum_population",
+      "maximum_population",
+      "error"
+    ],
+    "exact_match": true
+  },
+  {
+    "problem": "quadratic",
+    "variant": "Bounded + basin restarts",
+    "population": 5000,
+    "seed": 0,
+    "fields": [
+      "best",
+      "evaluations",
+      "iterations",
+      "final_status",
+      "minimum_population",
+      "maximum_population",
+      "error"
+    ],
+    "exact_match": true
+  }
+]

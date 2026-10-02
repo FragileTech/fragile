@@ -1,0 +1,2799 @@
+Fragile / Volume 2
+
+
+
+
+From the Euclidean Gas
+to Quantum Yang–Mills
+and a Mass Gap
+
+A research prospectus with proof sketches and theorem dependencies
+
+
+
+Abstract. This prospectus organizes the constructive program in Volume 2 around one
+stochastic transition and its recorded history law. A marked interacting gas supplies a
+nonlinear population evolution. Confinement, Poincaré and logarithmic Sobolev inequalities,
+hypocoercivity, propagation of chaos, and normalized regularity estimates control its long-
+time and population limits. A lossless Fractal Set representation transports the same law to
+gauge and matter observables. Native likelihood, source-response, fluctuation, and continuum-
+consistency results then supply the field construction. The final tasks identify a nontrivial
+physical Euclidean Yang–Mills hierarchy, reconstruct its transfer Hamiltonian, and carry a
+uniform self-adjoint gap through the cutoff and volume limits.
+The document gives the mechanism of each stage and identifies the theorem statements in the
+source. It follows the existing population, mechanical, metric, gauge, and matter constructions,
+including the derived sampling normalizations and temporal correlations. The field-theoretic
+reconstruction statements retain their explicit hypotheses on the same selected equilibrium
+law.
+
+
+
+
+Source version: repository snapshot, 1 October 2026.
+Purpose: mathematical discussion of the complete construction program.
+Source corpus: docs/source/2_fractal_gas/.
+Fractal Gas: a Yang–Mills proof program                                              Research prospectus
+
+
+
+Contents
+
+Objects, target, and logical structure                                                                   1
+
+The proof strategy at a glance                                                                           2
+
+Equilibrium thermodynamics and the field state                                                           3
+
+1 Fix the Euclidean gas                                                                                  6
+
+2 Resolve cloning and collision geometry                                                                 6
+
+3 Control confinement, moments, and tails                                                                7
+
+4 Select the stationary or conditioned ensemble                                                          9
+
+5 Derive the population law and exact field equations                                                   10
+
+6 Control particles, observation time, and stationarity                                                 12
+
+7 Build Poincaré and logarithmic Sobolev control                                                        13
+
+8 Turn functional inequalities into relaxation and fluctuations                                         14
+
+9 Obtain smooth empirical and mean-field fields                                                         15
+
+10 Reconstruct the causal 3+1 Fractal Set                                                               17
+
+11 Construct gauge and matter observables                                                               19
+
+12 Derive the native field action and response                                                          20
+
+13 Construct the recorded quantum matter algebra                                                        23
+
+14 Retain fluctuations and a common correlation hierarchy                                               24
+
+15 Control the continuum operator with derived tools                                                    26
+
+16 Pass actions, sources, and correlations through the limits                                           28
+
+17 Reconstruct fields from the equilibrium history                                                      30
+
+18 Preserve the physical Yang-Mills mass gap                                                            32
+
+19 How the proved walker dynamics supply the field theory                                               33
+   19.1 Probability law, invariant descriptors, and frame observables . . . . . . . . . . . . . . .     33
+   19.2 The history correlations retain the algorithmic clock . . . . . . . . . . . . . . . . . . . .   33
+   19.3 Geometric integrals and fluctuations have derived normalizations . . . . . . . . . . . . .      34
+   19.4 Native likelihood and conditional geometry . . . . . . . . . . . . . . . . . . . . . . . . .    34
+   19.5 Equilibrium representation and the gap . . . . . . . . . . . . . . . . . . . . . . . . . . .    34
+
+20 The estimates that control the continuum                                                             35
+
+A Source theorem register                                                                               36
+
+B Chapter contribution map                                                                              43
+
+
+
+
+                                                    i
+Fractal Gas: a Yang–Mills proof program                                            Research prospectus
+
+
+
+Objects, target, and logical structure
+
+The construction begins with three spatial coordinates and algorithmic time:
+
+                     xi (n), vi (n) ∈ R3 ,   tn = n∆t,    en,i 7→ (tn , xi (n)).
+
+Here ∆t is the configured recording spacing with its fixed unit calibration. CST edges
+inherit increasing algorithmic time. Equilibrium supplies the selected history law in which
+the additional field-theoretic properties are developed. The target is a nontrivial quantum
+Yang–Mills theory on this 3 + 1 reconstruction, with a unique vacuum and a positive physical
+energy gap. The construction proceeds through
+
+                      gas −→ population control −→ recorded field law
+                            −→ continuum hierarchy −→ (H, Ω, H).
+
+
+Law ledger. Write PN,h for the complete conservative transition and QN,h for its specified
+killed counterpart. Their selected laws are respectively πN and νN . The nonlinear population
+update is Fh . A history descriptor D induces the field law D∗ P . Every transfer of an estimate
+uses an explicit identification of these laws, their conditionings, or their observables.
+
+
+Scale ledger. Here N counts walkers, M counts observations in a continuum estimator,
+h is the algorithm step, n is the update index, ε is a reconstruction bandwidth, a is a field
+cutoff, and L is a physical volume scale. The continuum chapter uses N for its sample count;
+this prospectus writes M to distinguish it from population size. This roadmap takes d = 3
+and D = d + 1 = 4. The fourth coordinate is the calibrated recorded time. A phase-space
+fluctuation test also retains v ∈ R3 .
+
+
+Reading convention. “Source results” name statements and proofs already present in
+Volume 2, with their hypotheses retained. “Proof mechanism” sketches the argument of those
+results and their composition. “Stage output” identifies the object or estimate passed to the
+next stage. The final assembly criterion organizes these dependencies.
+
+
+The main interface. Population-uniform coercivity and relaxation are transported through
+the recorded observable law. The physical transfer Hamiltonian must then be identified and
+controlled uniformly in the cutoff and volume family. That identification connects the gas
+estimates to the Yang–Mills mass gap.
+
+
+
+
+                                                 1
+    The proof strategy at a glance
+
+    One configured gas, one selected history law, three spatial coordinates and recorded algorithmic time. Stage numbers link to the detailed arguments.
+
+
+                                            THE COMPLETE EUCLIDEAN GAS AND ITS EQUILIBRIUM
+                     1 Full transition kernel −→ 2 Component collisions −→ 3 Confinement and tails −→ 4 Selected population law
+                           Complete-update balance: πN PN,h      =    πN or νN QN,h     =    αN νN ; retain the corresponding history conditioning.
+
+                                                                                                   THE SAME LAW IN FIELD COORDINATES
+                         POPULATION EVOLUTION
+                                                                                                    10 Complete record −→ causal 3 + 1 Fractal Set
+           5 Mean field and exact balances −→ 6 Propagation of chaos
+                                                                                                              Lossless descriptors, invariant observ-
+         Nonlinear update Fh ; finite-time and stationary population comparison.
+                                                                                                            ables, transported dynamics and memory.
+                      UNIFORM ANALYTIC CONTROL
+                                                                                                   GAUGE AND MATTER CONSTRUCTION
+               7 Joint LSI 8 Poincaré, concentration, hypocoercivity
+                                                                                                11 Connections, holonomies and matter 13 CAR algebra
+                        9 Normalized C n coefficient calculus
+                                                                                               12 Native likelihood action, sources and temporal correlations
+                      Actual-law criteria; population-uniform con-
+                                                                                              dν = e−Salg dλ; retain geometry fibers and source-response identities.
+                      stants; moments, relaxation and regularity.
+2                   CONTINUUM ESTIMATES AND combine estimates and recorded
+                                                                        ONElaw COMMON EQUILIBRIUM HIERARCHY
+                       ACTION IDENTIFICATION                              14 Fluctuation fields, gauge words and sourced limits
+             15 Geometry, density correction, kernel bias and variance            Tightness and moment control; retain re-
+              16 Action quadrature and temporal / ensemble limits              flected products and a common subsequence.
+                     Apply the stated geometry and sampling crite-                                            Carry the same observable normaliza-
+                     ria; complete the native-to-YM correspondence.                                          tions through the continuum estimates.
+                                      17 PHYSICAL RECONSTRUCTION FROM THESE CORRELATIONS
+                           Establish physical reflection positivity, symmetry and regularity; identify the nontrivial Yang–Mills hierarchy.
+                           Reconstruct (H, Ω, H) and the local fields; verify physical covariance, locality and spectrum with the calibrated clock.
+
+          18 PHYSICAL GAP AND LIMIT IDENTIFICATION                                                18    APPLY THE GAP-SURVIVAL THEOREM
+            Compare population coercivity with the gauge transfer form.                                     spec(H) ⊂ {0} ∪ [λ∗ , ∞)
+                      Obtain cutoff / volume-uniform λ∗ > 0;                                 With the reconstruction and uniform-limit hypotheses: nontriv-
+                  Solid boxes: source constructions and tools, with their stated hypotheses. ial
+                     identify strong semigroup and vacuum  limits.                               quantum
+                                                                                              Dashed       Yang–Mills,
+                                                                                                       boxes:           uniqueidentifications
+                                                                                                                final physical vacuum and positive    mass gap.
+                                                                                                                                              to establish.
+      Joint scale ledger throughout: population N , observations M , algorithm step h, bandwidth ε, field cutoff a, volume L; track constants and the selected law to-
+                                                                                  gether.
+Fractal Gas: a Yang–Mills proof program                                               Research prospectus
+
+
+
+Equilibrium thermodynamics and the field state
+
+The equilibrium construction fixes both the population statistics and the temporal law from
+which the field theory is derived. Its successive objects are the thermal reference, the selected
+law of the complete population update, the stationary mean field and its fluctuations, and the
+induced gauge and matter history. The following chain connects these objects to the physical
+reconstruction in Stages 17–18.
+
+
+Thermal balance and the complete population law
+
+For the conservative kinetic Langevin model, the gradient force, velocity friction and matching
+Gaussian noise give
+
+                                                                 U (x) + |v|2 /2
+                                                              "                   #
+                     σ2
+                  θ = v,         mU (dx dv) = ZU−1 exp         −                 dx dv.
+                     2γ                                                θ
+
+Confinement makes the partition function finite. Hamiltonian transport preserves the kinetic
+energy plus potential, while friction and noise balance at temperature θ. This is the explicit
+kinetic Gibbs reference [R1]. The kinetic LSI theorem incorporates its Gaussian velocity factor
+and gives C0 = max{Cx , θ} [R2].
+The complete configured update determines the population equilibrium through
+
+                      πN PN,h = πN ,          νN QN,h = αN νN ,         0 < αN ≤ 1.
+
+The first identity selects the conservative invariant law; the second selects the killed process’s
+quasi-stationary law. A Gibbs profile for either law is identified by inserting that profile into
+its complete equation, with cloning, collision, cap and boundary stages retained. The source
+supplies a quantitative version: for a proposed probability g, a killed block Q, b = gQ1 > 0,
+and a normalized block map contracting total variation by r < 1,
+
+                                                         ∥gQ − bg∥TV
+                                   ∥g − νN ∥TV ≤                     .
+                                                           b(1 − r)
+
+Thus exact balance identifies the Gibbs law, and the evaluated balance residual controls an
+approximate Gibbs identification [R3]. These equations connect the thermal reference to the
+selected population ensemble of Stage 4.
+
+
+Population thermodynamics supplies uniform coercivity
+
+                                           −1 −VN
+For an identified joint Gibbs law dπN = ZN    e    dz, uniform curvature ∇2 VN ⪰ ρ∗ I gives
+C∗ = 1/ρ∗ . A concrete strongly convex specialization in the book is
+                                                           ϵint X
+                              VN (z) =        V0 (zi ) +          W (zi , zj ),
+                                          X
+
+                                          i
+                                                            N i<j
+                                  ρ∗ = ρ0 − ϵint LW > 0,
+
+where ∇2 V0 ⪰ ρ0 I and the pair Hessian has norm at most LW . The normalized interaction
+preserves this curvature independently of N [R4]. Product, bounded joint tilt and contractive-
+flow criteria provide the other population-uniform routes [R5].
+
+
+
+                                                     3
+Fractal Gas: a Yang–Mills proof program                                                     Research prospectus
+
+
+
+For the continuous coordinates of that same law, these estimates imply
+                                                            Z
+                                    EntπN (f 2 ) ≤ 2C∗           |∇f |2 dπN ,
+                                                           Z
+                                     VarπN (F ) ≤ C∗            |∇F |2 dπN ,
+                                                       C∗ Lip(φ)2
+                                 VarπN (LN φ) ≤                   .
+                                                           N
+The full gradient retains every position and velocity coordinate; discrete alive/dead marks
+carry the additional status entropy of Stage 7. The empirical variance estimate controls an
+interacting population directly [R6].
+The evolution uses this coercivity through the modified kinetic entropy. The common-target
+theorem gives a proved route when the cloning kernel preserves the kinetic equilibrium and its
+Fisher amplification satisfies the stated bound [R7]. The full-law theorem instead combines
+the actual stationary law, complete cloning and killing source, and a negative modified-entropy
+derivative; its conclusion is
+                                                                                δN
+                    DKL (µt ∥νN ) ≤ ΦGN (h0 )e−rN t ,               rN =                .
+                                                                           CN /2 + g+,N
+                                   −1
+Uniform bounds on CN , g+,N and δN    retain a positive population-independent relaxation rate
+[R8]. The selected discrete update uses the full-step entropy estimates described in Stage 8.
+
+
+The stationary mean field and its controlled fluctuations
+
+The nonlinear map Fh is computed from the same complete update. Under the stationary-chaos
+hypotheses of Stage 6, the selected population law has a deterministic macroscopic limit,
+
+              µ∗ = Fh (µ∗ ),      LN φ −→ µ∗ φ          in probability and every finite Lp
+
+for bounded continuous φ [R9]. The marginal LSI passes to the limiting law on its stated
+test-function domain [R10]. Smooth normalized mean-field integrals then supply the metric,
+force and reconstruction coefficients in Stage 9.
+Retaining the centered fluctuations gives
+                         √
+               ΞN (φ) = N LN φ − EπN LN φ ,                      E|ΞN (φ)|2 ≤ C∗ Lip(φ)2 .
+                                          
+
+
+Their drift and covariance are calculated from the actual kernel, including the shared collision
+rotation and cloning writes. The mean field controls the background coefficients; the fluctuation
+hierarchy retains the random field. Moment bounds, normalized derivative estimates and the
+two continuum estimator bounds of Stage 15 control the passage to the continuum on the
+selected observation law.
+
+
+The equilibrium history induces the field state and action
+
+Start the conservative record at πN , or use the specified QSD window or Doob history. The
+complete transition determines every temporal correlation. For an invariant law and centered
+channel observables fea , the recorded-time correlator is
+
+                            Cab (ℓ) = ⟨fea , PN,h
+                                              ℓ
+                                                  feb ⟩L2 (πN ) ,      tℓ = ℓ∆t.
+
+
+                                                       4
+Fractal Gas: a Yang–Mills proof program                                                           Research prospectus
+
+
+
+This is the equilibrium correlator identity used in Stage 17 [R11]. The spatial coordinates
+remain in R3 , and the temporal separation is measured by the recorded algorithmic clock.
+Push the complete history law P hist and its specified reference Rhist through the Fractal Set
+descriptor Y = D(ω). With λ = D∗ Rhist , the action theorem gives
+                                                 "                    #
+                          −Salg (y)                  dP hist
+                      e               = ERhist               Y =y ,             dν = e−Salg dλ,
+                                                     dRhist
+                                                                          Z
+                                        ϖ(O) = EP hist O(Y ) =                O dν.
+
+The induced state ϖ, action, source derivatives and temporal correlations all come from this
+record likelihood [R12]. Geometry-fiber disintegration retains the normalization needed to
+recover the same joint law [R13]. Stage 12 computes its predictive evolution and source
+response, and Stage 16 carries the sourced action and correlations through the controlled
+limits.
+Thermodynamic response is also explicit. For bounded observables A, B and the specified
+equilibrium tilt dπs = Z(s)−1 eβsB dπ, the susceptibility formula is [R14]
+                                         d
+                                            πs (A)     = β Covπ (A, B)
+                                         ds        s=0
+A perturbation of the actual transition has the stationary Poisson-response formula already
+given in Stage 12 [R15]. Each response therefore specifies both the perturbed law and the
+evolution used to compute it.
+
+
+Physical reconstruction and survival of the gap
+
+Stages 17–18 use the limiting equilibrium hierarchy just constructed. The temporal reflection
+is Θ : (t, x) 7→ (−t, x) in its recorded clock. Identify its positive reflection pairing and transfer
+representation on the retained gauge and matter observables; the reconstruction then supplies
+the physical Hilbert space, vacuum and self-adjoint Hamiltonian. For a centered self-adjoint
+channel in the positive-transfer representation with a unique vacuum and complete orthonormal
+energy basis, the source gives [R16]
+                                        Caa (ℓ) =             |⟨j|fba |0⟩|2 e−Ej ℓ∆t
+                                                       X
+
+                                                      Ej >0
+
+Verify the accompanying spacetime covariance and field-axiom hypotheses on this same limiting
+hierarchy.
+To turn population coercivity into the physical mass gap, identify the physical Hamiltonian
+form and its norm so that the transported estimates give
+                              Ea (ψ, ψ) = ∥Ha1/2 ψ∥2 ≥ λ∗ ∥ψ∥2 ,                  λ∗ > 0,
+                                            ψ ∈ Dom(Ha1/2 ) ∩ Ω⊥
+                                                               a,
+
+uniformly along the chosen cutoff and volume family. This is the specified form comparison
+between the thermodynamic control and the physical transfer Hamiltonian. The source’s
+gap-survival theorem [R17] then passes the estimate through the strong semigroup and vacuum
+limits of Stage 18, giving
+                               spec(H) ⊂ {0} ∪ [λ∗ , ∞),                      ker H = CΩ
+The selected population law defines the field state, its evolution and its quantitative continuum
+controls. The final representation and form identifications place those controls on the physical
+Yang–Mills theory.
+
+                                                               5
+Fractal Gas: a Yang–Mills proof program                                          Research prospectus
+
+
+
+1 Fix the Euclidean gas
+
+Begin with the complete marked swarm S = ((xi , vi , ai ))N  i=1 with positions, velocities, and
+alive/dead status. Dead slots retain their coordinates. Freeze the input frame for measurement,
+fitness, donor choice, and acceptance; this fixes the update order and prevents updated donor
+coordinates from leaking into the same cloning stage.
+The canonical update samples one measurement companion, computes regularized population
+statistics and positive logistic fitness, samples a cloning donor, and accepts according to the
+frozen score. Accepted edges define connected collision components. Copy recipient positions
+with Gaussian jitter, rotate each component about its center-of-mass velocity, apply BAOAB
+and final position noise, cap velocities, and classify the terminal boundary once.
+Declare the absorbing or conservative configuration, the objective and force, the noise laws,
+the internal marks, and all parameter floors. If historical donors or mutable providers are
+used, include their memory in the complete state. This stage fixes the stochastic object used
+throughout the program.
+
+
+                                                              N
+                                                           1 X
+          E = R × B V × {0, 1},
+                 d                           N
+                                          S∈E ,       LN =      δz ,    zi = (xi , vi , ai ).
+                                                           N i=1 i
+
+
+Proof mechanism
+
+Construct the companion and donor kernels by normalizing strictly positive weights against
+the alive population. The regularized standard deviations keep the score maps defined on
+constant populations. Condition on the frozen marks and accepted-edge graph, then compose
+the collision, Gaussian, deterministic kinetic, cap, and classification kernels. Integrating these
+conditional kernels gives PN,h . Its path law is the initial law times the ordered product of
+the complete transition kernels. Record coverage is fixed at this point, so later likelihood
+calculations integrate the randomness that actually produced the path.
+
+
+Analytic inputs
+
+Marked Markov state; positive fitness and normalization floors; bounded comparison features;
+Gaussian innovations; Feller regularity. The Euclidean Gas Update is the defining algorithm
+in convergence_program/02_euclidean_gas.md, label alg-euclidean-gas.
+
+
+Stage output. A complete finite-particle transition and a record contract that specifies
+every random choice and intermediate stage. Subsequent mean-field and field constructions
+use this kernel.
+
+
+2 Resolve cloning and collision geometry
+
+An accepted donor edge changes the recipient position and joins its endpoints into a collision
+component. Overlapping groups form a single connected component. The shared orthogonal
+rotation acts on the component relative velocities, so each walker has one velocity destination.
+
+
+
+                                                  6
+Fractal Gas: a Yang–Mills proof program                                                       Research prospectus
+
+
+
+The tagged-walker population description must retain its random collision neighborhood. Strict
+fitness increase along accepted live edges supplies component control in the canonical current-
+frame construction. Rooted component convergence connects these finite neighborhoods to
+the limiting collision law.
+Compute momentum, restitution energy, and the cross-walker covariance created by the shared
+rotation. Retain these terms in fluctuation and mean-field calculations: the noises of members
+of one component are correlated.
+
+
+
+               vei = v C + αRC (vi − v C ),        RC ∼ Haar(O(d)),                 vei =
+                                                                              X             X
+                                                                                                  vi .
+                                                                              i∈C           i∈C
+
+
+
+Proof mechanism
+
+For a component C, the centered velocities satisfy i∈C (vi − v C ) = 0. Orthogonality preserves
+                                                           P
+
+their squared norm and Haar symmetry gives zero mean for the rotated component. Taking
+traces in the rotationally invariant covariance identity gives
+
+                                                 α2 
+                          Cov(vei , vej | C) =        (vi − v C ) · (vj − v C ) Id .
+                                                                               
+                                                 d
+For the population limit, truncate the rooted accepted-edge component, compare its finite
+exploration law with the limiting rooted law, and remove the truncation using the proved
+component moments. The two-root calculation controls the empirical variance. These steps
+identify the collision term without replacing component rotations by independent row noise.
+
+
+Analytic inputs
+
+Accepted-edge graph; rooted-component truncation; moment bounds at every component
+order; shared Haar rotation; self-exclusion correction; two-root independence in the population
+limit.
+
+
+Source results
+
+• Component momentum, energy, and shared covariance [R18]. Component momen-
+  tum, energy, and shared covariance.
+• One-step collision consistency [R19]. One-step collision consistency for the rooted
+  population law.
+
+
+Stage output. The actual collision law and its conservation, moment, and covariance data.
+These feed the fixed-step population map and its fluctuation equations.
+
+
+3 Control confinement, moments, and tails
+
+Combine cloning displacement with kinetic transport to derive a Foster-Lyapunov estimate
+for the complete update. Choose positive weights for the component drift inequalities and
+evaluate the resulting rate and source. Iterate the drift to obtain finite-time and stationary
+moment budgets.
+
+
+                                                      7
+Fractal Gas: a Yang–Mills proof program                                        Research prospectus
+
+
+
+The structural landscape chapter also derives selection-driven confinement from accepted
+inward and outward donor fluxes. Its complete moment inequality retains the selection excess
+and the kinetic force-growth coefficients. It provides an explicit criterion for contracting
+moments without a prescribed restoring trap.
+Use these moment bounds to localize unbounded reward estimates, control population coverage
+failures, obtain tightness, and justify uniform integrability. The entropy-to-tail and population-
+fraction bounds give a second quantitative route to controlling the mass of poorly covered or
+distant regions.
+
+
+
+                           PN Wp ≤ rp Wp + Bp + ap Ep ,         rp < 1,
+                                                      Bp + a  e
+                                                             p p
+                          EWp (Sn ) ≤ rpn EWp (S0 ) +            (1 − rpn ).
+                                                        1 − rp
+
+
+Proof mechanism
+
+Evaluate the copying increment |xj |p − |xi |p under accepted donor flux. Lower bounds on
+inward core flux and upper bounds on outward tail flux give a signed selection drift. Add
+cloning jitter through Gaussian radial moments, then propagate through the actual kinetic
+position update using the force-growth and cap bounds. The remainder Ep records coverage
+or class failures. Iterating the resulting affine recurrence gives the displayed moment budget.
+Markov’s inequality turns higher moments into quantitative tail localization; the entropy-floor
+calculation gives additional tail and population-fraction estimates for the normalized joint
+positional law.
+
+
+Analytic inputs
+
+Foster-Lyapunov drift; positive-weight spectral criterion; Gaussian radial moments; regional
+selection flux; coverage and tail budgets; entropy confinement floor.
+
+
+Source results
+
+• Foster-Lyapunov drift for the composed kernel [R20]. Composes the drift estimates
+  at the level of the actual kernel.
+• Fully evaluated selection-driven moment drift without a prescribed restoring
+  trap [R21]. Evaluates selection-driven moment drift, including the zero-restoring-trap
+  regime.
+• Entropy contraction to an explicit confinement floor [R22]. Converts verified
+  selection into entropy contraction toward an explicit confinement floor.
+
+
+Structural transport and mass–shape control
+
+The positional transport chapter derives the centered structural control from the cloning
+variance reset and carries the barycenter separately in its full W2 decomposition. The structural
+landscape chapter evaluates the signed Keystone, collision, and kinetic terms for the complete
+update. These results retain the inward selection flux, the donor-normalization costs, and the
+actual force increments in the same one-step ledger.
+
+
+                                                  8
+Fractal Gas: a Yang–Mills proof program                                      Research prospectus
+
+
+
+The mass, Hellinger, and transport chapter combines the alive mass with normalized shape.
+For finite measures mρ and m∗ ρ∗ , it proves the exact mass–shape identity
+                                        √     √        √
+                    H 2 (mρ, m∗ ρ∗ ) = ( m − m∗ )2 + mm∗ H 2 (ρ, ρ∗ ).
+It combines this with entropy-to-Hellinger and entropy-to-transport inequalities and also
+bounds the canonical Hellinger–Kantorovich distance. Safe-walker survival, concentration of
+alive mass, and convergence of the conditioned shape therefore control separate parts of the
+finite-measure error. This is the population normalization used in the convergence analysis.
+
+
+Results supplying these constructions
+
+• Structural/Barycenter Split for Full W2 [R23]. Carries the barycenter and centered
+  structural terms in full transport control.
+• Joint convergence of mass and shape [R24]. Assembles convergence of alive mass and
+  normalized shape.
+• Finite-horizon survival from safe-walker estimates [R25]. Controls finite-horizon
+  survival through the safe-walker estimates.
+
+
+Stage output. Population-uniform physical moment and tail controls for the chosen param-
+eter regime. These support tightness, stationary limits, smooth reconstruction, and control of
+field moments.
+
+
+4 Select the stationary or conditioned ensemble
+
+For the conservative process, the drift and common-mass estimates give convergence to its
+identified invariant law. For the killed process, the surviving-block results give the selected
+QSD and its survival eigenvalue. The finite-window and Doob constructions specify which
+conditioned history is observed.
+The recorded observation time is tn = n∆t, where ∆t includes any configured recording stride
+and fixed physical-unit calibration. Burn-in advances this same dynamics to the selected
+equilibrium ensemble. Subsequent windows retain their algorithmic time differences and all
+recorded transition data.
+The Yang–Mills chapter computes the selected QSD window weights and its relaxation error.
+The equilibrium law supplies the starting ensemble; the complete transition supplies every
+temporal correlation used below.
+
+
+                      πN PN,h = πN ,      νN QN,h = αN νN ,   0 < αN ≤ 1.
+
+
+Proof mechanism
+
+Iterate the weighted drift to enter the controlled region, then apply the appropriate common-
+mass or surviving-block comparison. In the conservative case, the coupling contracts a weighted
+distance and yields an invariant probability. In the killed case, normalized block iteration
+yields the selected eigenmeasure. For a QSD window, multiply the killed transitions and divide
+by the window survival probability. Successive survival factors cancel in the selected-history
+identity. Comparing an actual relaxed window with this eigenmeasure window introduces the
+                                                               −w
+explicit survival amplification, bounded in the chapter by 2αN    δn for a w-step window.
+
+                                               9
+Fractal Gas: a Yang–Mills proof program                                         Research prospectus
+
+
+
+Analytic inputs
+
+Weighted Harris coupling; surviving-block minorization; eigenmeasure identities; survival
+normalization; total-variation window comparison.
+
+
+Source results
+
+• A weighted coupling form of Harris’ argument [R26]. Conservative mixing from the
+  declared drift and coupling inputs.
+• QSD convergence from a two-sided surviving-block bound [R27]. QSD convergence
+  from a two-sided surviving-block bound.
+• Relaxation to the selected law of a recorded gauge window [R28]. Transfers the
+  gas relaxation rate to a selected recorded gauge window.
+
+
+Stage output. A selected long-time law and its exact history-window law, together with
+burn-in and conditioning errors. Field reconstruction takes expectations under this specified
+ensemble.
+
+
+5 Derive the population law and exact field equations
+
+Pass from the swarm empirical measure to a nonlinear population law on marked one-slot
+states. Keep the alive restriction and its normalized donor law distinct from the full population
+law, because dead positions and velocities affect revival and collision behavior.
+The construction first samples the measurement mark, then applies population standardization
+and fitness, then samples accepted edges and the limiting collision neighborhood. It finally
+composes the actual kinetic stages and terminal classification. Averaging the measurement
+before its nonlinear acceptance step would change the map.
+The resulting population equation is discrete at the fixed configured timestep. Derive its mass
+balance, weak field balances, positive alive mass, and finite-horizon moments. Stationary
+solutions are fixed points of this map. A continuous-time generator requires its own local
+consistency calculation if h is later changed.
+
+
+                                                                        µa
+                     µn+1 = Fh (µn ),     m(µ) = µ(a = 1),      ρµ =        .
+                                                                       m(µ)
+
+
+Proof mechanism
+
+Disintegrate a representative row into its measurement mark, frozen fitness, donor gate, rooted
+collision component, and independent kinetic innovations. Integrate the root output against
+this product of conditional laws to define Fh . Positivity and total mass follow from kernel
+composition. Gaussian final position noise makes terminal box classification continuous after
+averaging and supplies positive alive mass. Polynomial growth of reward is handled by the
+propagated moments. The weak mass and field balances follow by testing the same root
+input-output coupling; each term belongs to a declared stage of the complete update.
+
+
+
+
+                                               10
+Fractal Gas: a Yang–Mills proof program                                           Research prospectus
+
+
+
+Analytic inputs
+
+Normalized companion integrals; measurement marks; finite limiting collision neighborhoods;
+exact composition of BAOAB, diffusion, cap, and classification.
+
+
+Source results
+
+• The fixed-step mean-field equation [R29]. The exact fixed-step mean-field equation.
+• Exact mass and weak field balances [R30]. Exact mass and weak field balances for
+  the full population update.
+
+
+The finite algorithm already has field equations
+
+The field-equations chapter derives the hierarchy directly from the configured donor, cloning,
+innovation, and boundary maps. Its full marked state retains current and historical donor
+data, eligibility, provider state, and the inputs needed by the next update. On this state, its
+marked field and age transport are exact.
+For any square-integrable vector observable A, the complete kernel gives
+                               bA (S) = PN,h A(S) − A(S),
+                               ΓA (S) = PN,h (AA⊤ )(S) − PN,h A(S)PN,h A(S)⊤ ,
+                  A(Sn+1 ) − A(Sn ) = bA (Sn ) + ηn+1 ,
+with E[ηn+1 | Sn ] = 0 and conditional covariance ΓA (Sn ). The same formula applies to metric
+probes and gauge readouts. Fourier tests and the marked characteristic functional give the
+exact moment and field-correlation hierarchy, retaining the configured innovation law and
+cross-walker dependence.
+For a row transition (x, v, a) 7→ (y, w, b), deposit along the segment from x to y. The
+fundamental theorem of calculus gives the distributional density and current balances. Summing
+over the actual stages telescopes to
+                     ρn+1 − ρn + div Jρ = Sρ ,        jn+1 − jn + div Jj = Sj .
+All source and transport terms are computed from the executed update. The coupled-field
+theorem combines these mechanical equations with the population, history, Hessian metric,
+and thermostat covariance. Configured algorithm variants retain their own stage ordering and
+coefficients in these identities.
+
+
+Results supplying these constructions
+
+• Explicit finite-step population law [R31]. Explicit finite-step population law for the
+  configured complete state.
+• Exact field characteristics and moment hierarchy [R32]. Exact characteristics,
+  characteristic functional, and moment hierarchy.
+• Finite-step observable equation and fluctuation covariance [R33]. Exact drift and
+  conditional fluctuation covariance of derived observables.
+• Exact discrete spatial density and momentum equations [R34]. Exact finite-step
+  spatial density and momentum balances.
+• Coupled population, mechanical, and metric fields [R35]. The coupled population,
+  mechanical, and metric field system.
+
+                                                 11
+Fractal Gas: a Yang–Mills proof program                                       Research prospectus
+
+
+
+Stage output. The nonlinear population update, its sampled interaction law, and its exact
+balance relations. This is the background law for the smooth field and fluctuation constructions.
+
+
+6 Control particles, observation time, and stationarity
+
+Prove one-step consistency of the finite update with the nonlinear population map, including
+measurement concentration, collision-component convergence, and boundary/revival contribu-
+tions. Iterate to obtain finite-horizon propagation of chaos.
+For long times, use the structural landscape results appropriate to the declared regime.
+The weighted active-contraction branch provides a unique stationary population law and
+a population-independent attraction rate. Its trajectory corollary supplies uniform-time
+approximation, stationary chaos, and commuting population/time limits with explicit initial
+moment control.
+The growing-horizon branch instead supplies trajectory approximation through a diverging
+observation horizon using higher moments and the actual consistency constants. This provides
+a controlled joint population/time limit without assuming attraction. Keep the branch used
+by the field ensemble explicit.
+
+
+                                                         2∥φ∥∞ B∗
+                             E[L′N φ | S] − Fh (LN (S))φ ≤  √      ,
+                                                              N
+                         h                           i  Aφ + 4∥φ∥2∞ B∗2
+                        E |L′N φ − Fh (LN (S))φ|2 | S ≤                 .
+                                                              N
+
+Proof mechanism
+
+Condition on the input array and estimate the realized measurement-normalization fluctuations.
+Couple the resulting donor and gate laws, use rooted-component estimates for the collision
+response, and apply conditional concentration to independent kinetic innovations. This proves
+the displayed one-step bias and mean-square bounds at the actual empirical input. Continuity
+of Fh and a countable determining class give finite-horizon iteration. For stationary limits,
+combine one-step consistency with population attraction and tightness. In the weighted-
+contraction branch, expand two iterates and verify the source condition
+
+                              qw = 1 − ϵ2 /2 + 2Bw Lrem + L2rem < 1.
+
+The growing-horizon branch instead propagates its explicit error recursion and high-moment
+budget to a diverging observation horizon.
+
+
+Analytic inputs
+
+Rooted collision convergence; one-step bias and mean-square consistency; conditional concen-
+tration; weighted TV contraction; finite-row chaos; growing-horizon error recursion.
+
+
+Source results
+
+• Finite-horizon propagation of chaos for the actual update [R36]. Finite-horizon
+  propagation of chaos for the actual update.
+
+                                               12
+Fractal Gas: a Yang–Mills proof program                                          Research prospectus
+
+
+
+• Closed full-law convergence with unbounded raw reward [R37]. Closed full-law
+  population convergence with unbounded raw reward.
+• Uniform-time trajectories, stationary chaos and commuting limits [R38]. Uniform-
+  time trajectories, stationary chaos, and commuting limits.
+• Uniform trajectory approximation through a diverging horizon [R39]. A separate
+  explicit trajectory estimate through a diverging horizon.
+
+
+Exchangeability connects the empirical law to tagged fields
+
+Kernel permutation symmetry and uniqueness give exchangeability of the selected finite law.
+The exchangeability chapter derives the finite empirical-mixture representation and proves that
+a deterministic empirical limit gives fixed-row chaos. It also evaluates the finite-population
+covariance exactly:
+
+                                          N Cov(LN g, LN h) − Cov(g(Z1 ), h(Z1 ))
+                 Cov(g(Z1 ), h(Z2 )) =                                            .
+                                                         N −1
+The empirical variance bound therefore controls distinct-walker correlations with the finite-size
+diagonal term retained. This supplies the passage between population observables and fixed-row
+invariant channels used in field reconstruction.
+
+
+Results supplying these constructions
+
+• Exchangeability of a unique QSD [R40]. Exchangeability of the unique selected QSD.
+• Deterministic empirical limits imply chaos [R41]. Deterministic empirical limits
+  imply chaos.
+• Exact covariance identity for finite populations [R42]. Exact covariance identity for
+  a finite exchangeable population.
+
+
+Stage output. Quantified control of the population approximation over the observation
+regime used in the reconstruction. This controls both finite-run correlations and the approach
+to the selected limiting background.
+
+
+7 Build Poincaré and logarithmic Sobolev control
+
+The equilibrium thermodynamics section identifies the Gibbs reference, the complete population
+balance and the explicit joint-curvature specialization used in this stage.
+The confinement route begins with a quadratic Lyapunov inequality. A weighted energy
+estimate controls the exterior region, while a local Poincaré inequality controls the interior.
+Together they produce a global Poincaré bound. A defective LSI is then tightened using that
+Poincaré inequality.
+For the kinetic reference law, combine the spatial inequality with the Gaussian velocity
+inequality by tensorization. For joint swarm laws, Volume 2 supplies four explicit N -uniform
+routes: a product reference, a uniformly bounded joint tilt, uniform joint curvature, or a
+contractive additive-noise invariant flow.
+Identify which route applies to the selected joint law and retain its constant C∗ . Include the
+status-stratum entropy term when discrete alive/dead variables are part of the law. This
+
+
+                                                  13
+Fractal Gas: a Yang–Mills proof program                                            Research prospectus
+
+
+
+supplies the functional inequality used for the interacting swarm and downstream reconstructed
+observables.
+
+
+                                                N
+                                              Z X
+                         EntπN (f 2 ) ≤ 2C∗          |∇xi f |2 + |∇vi f |2 dπN .
+                                                                        
+
+                                               i=1
+
+
+
+Proof mechanism
+
+Write π(dx) = Z −1 e−V (x) dx, assume ∇2 V ⪰ −KI, and use the quadratic Lyapunov estimate.
+Choose R so ℓ = cR2 − b > 0. The exterior weighted-energy estimate and interior Poincaré
+inequality give
+                                              b         1
+                                               
+                                   CP = 1 +       Cloc + .
+                                              ℓ         ℓ
+The entropy–transport–Fisher estimate and the moment bound yield a defective LSI. Centering
+by Rothaus’ inequality removes the defect using CP . Tensorization then incorporates Gaussian
+velocities. At the joint level, the chosen product, bounded-tilt, curvature, or flow-contraction
+criterion controls the constant independently of N . The selected invariant law or QSD must
+be the law appearing in that criterion.
+
+
+Analytic inputs
+
+Lyapunov weighted energy; local-to-global Poincaré; defective-LSI tightening; Bakry–Émery
+curvature; tensorization; bounded-density perturbation; flow contraction.
+
+
+Source results
+
+• LSI from a quadratic Lyapunov bound [R43]. LSI from a quadratic Lyapunov bound,
+  including the global Poincaré step.
+• LSI for the kinetic reference measure [R2]. LSI for the kinetic reference measure.
+• N -uniform LSI for specified joint laws [R5]. N -uniform full-gradient LSI for the
+  specified joint-law families.
+
+
+Stage output. A declared joint-law LSI with an explicit population-uniform constant. Its
+Poincaré consequence and concentration estimates are used next; its coercivity is retained for
+the eventual field Hamiltonian identification.
+
+
+8 Turn functional inequalities into relaxation and fluctuations
+
+Linearize the joint LSI at the constant function to obtain Poincaré. Applied to a Lipschitz
+empirical average, the gradient sum is of order N −1 . The variance therefore scales as C∗ L2 /N ,
+even when the walkers are dependent.
+For evolution, combine the LSI with the kinetic Fisher-information identities and dissipation of
+modified entropy. Estimate the actual cloning kernel and the killing normalization in the same
+balance. The full normalized evolution result and the Doob-transform route yield entropy
+relaxation for their identified law families.
+
+
+                                                 14
+Fractal Gas: a Yang–Mills proof program                                              Research prospectus
+
+
+
+At discrete time, use the full-step survivor chain rule and numerical entropy-defect estimates
+for the actual kernel. Relative entropy controls bounded-observable bias through Pinsker,
+while concentration and Poincaré control sampling fluctuations. Fixed marginals inherit the
+same LSI constant, and the inequality passes to their limits.
+
+
+                                                                 1 X              C∗ Lip(φ)2
+                            Z X                                           !
+          VarπN (F ) ≤ C∗                 2
+                                    |∇i F | dπN ,        VarπN       φ(zi )   ≤              .
+                                i
+                                                                 N i                  N
+
+
+Proof mechanism
+
+Substitute f = 1 + ϵF in LSI and compare the second-order terms to obtain Poincaré. For
+FN = N −1 i φ(zi ), the squared gradient sum is bounded by Lip(φ)2 /N . For entropy decay,
+            P
+
+differentiate the modified kinetic functional and absorb its cross-gradient terms by the chapter’s
+quadratic-form inequalities. Add the cloning contribution and the conditioned normalization
+term. A closed negative derivative bound followed by Grönwall gives the stated relaxation
+estimate. Projection to fixed marginals preserves LSI; bounded continuous test integrands
+pass the inequality to their weak limits.
+
+
+Analytic inputs
+
+Poincaré linearization; full Fisher information; modified hypocoercive entropy; conditioned
+entropy identity; Doob transform; Pinsker and entropy transport; exact discrete entropy
+accounting.
+
+
+Source results
+
+• Poincaré inequality and empirical observables [R6]. Poincaré inequality and empirical
+  variance control.
+• Kinetic hypocoercive entropy convergence [R44]. Kinetic hypocoercive entropy
+  convergence.
+• Entropy convergence for the full normalized swarm evolution [R8]. Entropy
+  convergence for the full normalized swarm evolution.
+• LSI for fixed marginals and their limits [R10]. LSI inheritance by fixed marginals
+  and their limits.
+
+
+Stage output. Relaxation, concentration, and moment tools under the same selected
+law. These control burn-in, empirical observables, distribution-valued fluctuations, and later
+continuum test-function estimates.
+
+
+9 Obtain smooth empirical and mean-field fields
+
+Differentiate the normalized companion kernels before differentiating the fitness. Volume 2
+tracks numerator derivatives, normalization derivatives, moments, variance, standardized scores,
+and smooth fitness maps. Positive floors control denominators throughout the calculation.
+The C 3 chapter supplies force and finite-order derivative bounds. The all-order chapter extends
+the normalized calculus with recurrences and majorants, retaining bandwidth, regularizer,
+
+                                                    15
+Fractal Gas: a Yang–Mills proof program                                                    Research prospectus
+
+
+
+and population-count dependence. Smooth localization and density estimates connect these
+quantities to geometric coefficients.
+The normalized mean-field integral theorem replaces sums by integrals with the same derivative
+recurrence. The smooth empirical-field convergence theorem then upgrades weak population
+convergence to C n convergence on compact parameter sets for each fixed order, under its
+denominator and equicontinuity inputs.
+
+                                                               R
+                                                                   a(x, y)m(x, y) µ(dy)
+                            Z
+                 Aµ (x) =       a(x, y) µ(dy),      Fµ (x) =                            ,
+                                                                         Aµ (x)
+                     µN ⇒ µ,       inf Aµ > 0     =⇒     FµN −→ Fµ in C n (K),
+                                    K
+
+
+
+Proof mechanism
+
+Start with Aµ wµ = a. Differentiating this identity isolates the highest derivative of the
+normalized weight; integrating its norm gives the all-order recurrence. The same Leibniz
+calculus handles measurement moments and regularized variance. On a compact parameter
+set, a finite equicontinuity net upgrades weak convergence of the constituent integrals to
+uniform convergence of each derivative. A positive limiting denominator gives a common lower
+bound for the empirical denominators. Induction through the quotient identity then proves
+C n convergence. The result retains dependence on bandwidth and regularization parameters,
+which must be tracked along any changing-scale family.
+
+
+Analytic inputs
+
+Normalized-weight derivative recurrence; exact normalization cancellations; regularized variance
+calculus; dominated differentiation; equicontinuity; compact parameter nets; spectral bounds
+for reconstructed coefficients.
+
+
+Source results
+
+• C3 regularity of sampled, surrogate, and expected fitness [R45]. Third-order
+  regularity of the fitness construction.
+• Full sampled-fitness majorant [R46]. All-order regularity of the complete fitness
+  potential.
+• Differentiating normalized mean-field integrals [R47]. Differentiation of normalized
+  mean-field integrals.
+• Smooth convergence of normalized empirical fields [R48]. Smooth convergence of
+  normalized empirical fields.
+
+
+Fitness regularity produces the adaptive geometry
+
+The emergent-geometry chapter identifies the implemented positive spectral branch
+
+                    g = ϵg I + (Hsym )+ ,        D = g −1 ,        B=       2γT g −1/2 .
+                                                                        p
+
+
+The fitness derivative hierarchy controls the Hessian and its variation. Spectral lower and
+upper bounds then control metric inversion, adaptive diffusion, and the noise form. The
+
+
+                                                   16
+Fractal Gas: a Yang–Mills proof program                                                Research prospectus
+
+
+
+geometric-gas chapter transfers moment drift with explicit perturbation costs and provides
+Harris, joint-LSI, concentration, and tail results for its identified geometric law families.
+For reconstructed matrices g, gb, the Yang–Mills chapter uses the spectral margin to bound
+inverse and square-root errors:
+                                                                                       δ
+              ∥gb − g∥F ≤ δ,    ∥gb−1 − g −1 ∥F ≤ ϵ−2
+                                                   g δ,       ∥gb−1/2 − g −1/2 ∥F ≤     3/2
+                                                                                              .
+                                                                                      2ϵg
+
+The normalized geometric-weight comparison is evaluated on the same recorded history.
+These estimates transport the existing coefficient regularity into metric, volume-weight, and
+field-readout accuracy.
+
+
+Results supplying these constructions
+
+• Metric represented by the implemented Hessian branch [R49]. Identifies the metric
+  represented by the implemented Hessian branch.
+• Uniform ellipticity from metric bounds [R50]. Ellipticity from the established metric
+  bounds.
+• Uniform ellipticity from the spectral margin [R51]. Geometric uniform ellipticity
+  from the spectral margin.
+• N -uniform LSI for an identified geometric law [R52]. Joint population-uniform LSI
+  for the identified geometric law.
+
+
+Stage output. Controlled smooth coefficient fields and convergence of their derivatives.
+These supply the Taylor, metric, force, and local-operator regularity inputs to the continuum
+construction.
+
+
+10 Reconstruct the causal 3+1 Fractal Set
+
+Encode the complete history as a directed two-complex. CST edges record temporal transport,
+IG edges record selection interactions, IA edges record influence attribution, and interaction
+triangles carry ordered transport products. Specify the oriented incidence data used by each
+face.
+Lossless reconstruction recovers trajectories, force and diffusion data, population statistics,
+landscape information, and cloning events from the covered record. Frame changes transport
+the coordinate description while retaining the invariant readouts.
+Use the direct observable construction to pass to Gram and determinant coordinates for the
+internal orbits. Its measure isomorphism retains expectations and correlations of invariant
+observables. The recorded transition is intertwined with the original update; compressed
+channels retain exact eliminated-coordinate memory until their predictive completion is
+constructed.
+
+                                                               Z
+                          D∗ P = ν,       EP O(D(ω)) =
+                                                         
+                                                                   O(y) ν(dy).
+
+
+
+
+                                                 17
+Fractal Gas: a Yang–Mills proof program                                        Research prospectus
+
+
+
+Proof mechanism
+
+Apply the lossless decoder to a covered record, reconstruct the stage variables, and substitute
+them into the complete kernel. This identifies finite histories and their observable expectations.
+For invariant coordinates, the orbit theorem resolves the frame equivalence and the measure
+theorem pushes forward both probability and readouts. The transition intertwining follows by
+applying the same kernel to pullbacks of descriptor observables. If a descriptor is compressed,
+conditional elimination gives its exact memory term. Closing the original bounded insertion
+algebra under repeated transition action gives the prediction-complete descriptor; finite
+conditional partitions approximate its transition matrices.
+
+
+Analytic inputs
+
+Exact vector encoding; oriented two-complex; lossless decoder; invariant coordinates; orbit
+and measure isomorphisms; Markov intertwining; predictive completion.
+
+
+Source results
+
+• Lossless Reconstruction [R53]. Lossless reconstruction of the covered gas history.
+• Transport of record observables and established estimates [R54]. Transports record
+  observables and established estimates.
+• Measure and observable isomorphism for invariant coordinates [R55]. Measure
+  and observable isomorphism for invariant coordinates.
+• Exact transition and history isomorphism for the recorded algorithm [R56].
+  Exact transition and history isomorphism for the recorded algorithm.
+
+
+Three spatial coordinates and the recorded clock
+
+For this program, each walker has xi (n), vi (n) ∈ R3 , and the observation clock is tn = n∆t.
+The spacetime episode coordinate is (tn , xi (n)). CST temporal edges increase the integer
+iteration index; IG and IA data encode the recorded interactions. The causal-set theorem
+proves irreflexivity, transitivity, and local finiteness from that recorded ordering. Between two
+finite integer layers, the interval contains only finitely many episodes.
+The scutoid chapter builds slabs between successive frames using their spatial cells and neighbor
+changes. Its temporal direction comes from the recorded clock. Proper time is defined by
+the reconstructed Lorentzian metric on this ordered geometry; its relation to the recorded
+clock is kept in the trajectory-clock comparison. The continuum geometry and local-operator
+estimates are applied on this specified construction.
+The causal-set chapter makes the analytic dependency order explicit: fitness derivatives precede
+metric inversion; joint LSI precedes empirical gradient control; local bias and variance estimates
+precede operator consistency. Graph order and distance comparisons identify the recorded
+geometry to which those estimates apply. This preserves the 3 + 1 origin of the construction
+throughout the prospectus.
+
+
+Results supplying these constructions
+
+• The recorded Fractal Set is a causal set [R57]. The recorded temporal order is a
+  causal set.
+
+                                               18
+Fractal Gas: a Yang–Mills proof program                                               Research prospectus
+
+
+
+• Conditional compatibility of CST paths and geometric causality [R58]. The
+  order-to-geometric-causality comparison under its stated slab hypotheses.
+• Conditional volume matching and trajectory clocks [R59]. Volume matching and
+  trajectory clocks for the specified embedding.
+• Slab consistency and the scope of causal convergence [R60]. Slab consistency in
+  the moving-cell reconstruction.
+
+
+Stage output. A field-readable history with the same native law. Gas moment, concentration,
+entropy, and approximation estimates can now be applied to the corresponding reconstructed
+observables.
+
+
+11 Construct gauge and matter observables
+
+Choose the internal representations used for the recorded color and companion data. The
+direct algebra contains Hermitian contractions, alternating determinant contractions, doublet
+coordinates, and composite triangle observables. The orbit theorem specifies precisely which
+internal frame equivalence those coordinates resolve.
+Attach oriented transports to the declared links and form ordered products around interaction
+triangles and closed faces. The interaction holonomy detects the mismatch between attribution
+and interaction transports. Transported companion doublets retain both amplitude and
+angular matter energy.
+Use gauge-invariant loop traces and transported matter contractions as the physical readouts.
+Distinguish their native values from auxiliary scalar proxies. Gauge covariance is implemented
+by transporting endpoint frames, so adjacent transformations cancel around a closed loop.
+
+
+                            −→
+                                                 Re tr U∂f
+                    U∂f =                 Wf =                 Uij 7→ gi Uij gj−1 .
+                            Y
+                                   Ue ,                    ,
+                            e∈∂f
+                                                  dim R
+
+
+Proof mechanism
+
+Under an endpoint frame change, adjacent factors cancel in the ordered product around a
+face, leaving conjugation at the base point; the trace is invariant. The direct Gram and
+determinant coordinates retain the full declared color invariant algebra. For a companion
+doublet, compare its value with the transported neighboring doublet, separating amplitude
+and angular contributions. The interaction triangle retains the mismatch between IA and
+IG transports. This supplies the native observable whose curvature expansion and source
+response are analyzed downstream. The group representation, face incidence, and observable
+normalization are part of its definition.
+
+
+Analytic inputs
+
+Gram and determinant invariants; SU(n) orbit reconstruction; Hermitian and alternating
+doublet contractions; projector triangle observables; oriented holonomy; angular matter energy.
+
+
+
+
+                                                  19
+Fractal Gas: a Yang–Mills proof program                                        Research prospectus
+
+
+
+Source results
+
+• Gram and determinant coordinates for SU(n) orbits [R61]. Gram and determinant
+  coordinates for SU(n) orbits.
+• SU(2) from Hermitian and alternating doublet contractions [R62]. SU(2) frame
+  structure from doublet contractions.
+• Interaction holonomy and angular matter energy of the recorded connec-
+  tion [R63]. Interaction holonomy and angular matter energy of the recorded connection.
+• Gauge invariance of Wilson observables and actions [R64]. Gauge invariance of
+  Wilson observables and actions.
+
+
+Recorded loops and geometric curvature
+
+The Voronoi Wilson-loop chapter supplies a parallel construction directly from RunHistory:
+spatial Delaunay neighbor links on a frame, temporal adjacency between frames, recorded
+fitness or interaction phases, and minimal closed cycles. These are observable constructions on
+existing data.
+The curvature chapter controls holonomy composition by telescoping the difference of ordered
+transport products. With bounded face complexity and the stated edgewise comparison,
+the accumulated error is O(h3 ). For a shape-controlled plaquette with area AΠ ≍ h2 , the
+small-loop theorem yields
+                                (H[Π] − I)V
+                                            −→ R(X, Y )V,
+                                    AΠ
+                       1/2
+with an explicit O(AΠ ) leading comparison error. This is the geometric transport tool used
+alongside the gauge face-action expansion; each connection retains its declared representation
+and correspondence.
+
+
+Results supplying these constructions
+
+• Error accumulation for comparison holonomy [R65]. Telescoping error bound for
+  comparison holonomy.
+• Curvature recovery from consistent plaquette transport [R66]. Curvature recovery
+  from consistent plaquette transport.
+• Quantitative curvature expansion of the recorded face action [R67]. Quantitative
+  curvature remainder for the recorded gauge face action.
+• Reference-transport covariance [R68]. Gauge covariance and invariant norms for fixed
+  measurement paths.
+
+
+Stage output. The concrete invariant field algebra and its native interaction observables.
+This algebra is the descriptor on which the history likelihood induces the effective action.
+
+
+12 Derive the native field action and response
+
+The equilibrium thermodynamics section connects this likelihood construction to the selected
+population state, its temporal law and its susceptibility formulas.
+Start from the likelihood of the complete stochastic history, including selection, masks, cloning
+writes, rotations, and kinetic noises. Push the history and reference laws forward through the
+
+                                               20
+Fractal Gas: a Yang–Mills proof program                                            Research prospectus
+
+
+
+field descriptor, and condition the likelihood on that descriptor. Its negative logarithm is the
+effective field action.
+The generating functional is an expectation under that native field law. Its derivatives
+reproduce the recorded correlation functions. The effective predictive kernel and the completed
+descriptor algebra preserve the original history predictions; channel compression carries the
+exact memory of discarded coordinates.
+Disintegrate the action into recorded geometry and normalized conditional gauge fibers. Retain
+the fiber denominator and geometry weight so their recombination recovers the native sourced
+law. Differentiate actual source-dependent updates to obtain native response currents and the
+weak connection-variation identity. The discrete Ward identity and Wilson action give the
+gauge equations and curvature functional.
+
+
+                                                                      dP
+                                                                             
+                        Y = D(ω),         λ = D∗ R,    a(y) = ER          Y =y ,
+                                                                      dR
+                              Salg (y) = − log a(y),           dν = e−Salg dλ,
+                                                                         !
+                                  Z(J) = EP exp i              Jr Or (Y ) .
+                                                           X
+
+                                                           r
+
+
+
+Proof mechanism
+
+For bounded F , conditional expectation gives
+                        Z
+                            F (y)a(y) λ(dy) = ER [F (Y ) dP/dR] = EP F (Y ).
+
+Thus the descriptor action reproduces the original measure and all its bounded correlations.
+Disintegrate ν over geometry; the conditional gauge denominator is retained, so recombining
+the fibers recovers the same native expectation. Introduce sources through the executed force
+or metric update and differentiate its likelihood on its stated domain. This produces the native
+response current and weak variation identity. Gauge variations of the discrete face functional
+give the graph Ward identity. Matching these identities to the limiting Yang–Mills law is an
+explicit downstream identification.
+
+
+Analytic inputs
+
+Conditional likelihood; descriptor action; predictive kernel; characteristic functional; geometry-
+fiber disintegration; source tangents; native response identities; graph Ward identity.
+
+
+Source results
+
+• Action emergence from the recorded stochastic dynamics [R12]. Action emergence
+  from the recorded stochastic dynamics.
+• Effective gauge-channel action and predictive kernel of the recorded algo-
+  rithm [R69]. Effective gauge-channel action and predictive kernel.
+• Exact action on the recorded geometry fibers [R13]. Exact action on recorded
+  geometry fibers.
+• Exact source response of the algorithm-derived field action [R70]. Exact source
+  response of the algorithm-derived field action.
+
+                                                      21
+Fractal Gas: a Yang–Mills proof program                                              Research prospectus
+
+
+
+Reduced fields retain the derived memory
+
+The field-equations and direct-observable chapters both construct the exact reduction of the
+complete state. Conditional expectation onto the field descriptor splits the transition into
+resolved and unresolved blocks. Eliminating the unresolved block gives the transient memory
+equation. Conditioning on the complete observed field history gives the explicit filtering
+equation and its prediction covariance.
+The prediction-complete descriptor is formed by closing the original bounded observable algebra
+under the actual transition. Its finite conditional partitions give convergent transition matrices.
+Thus the retained gauge channels have an exact history action and prediction law, and their
+simulation approximation can be refined without postulating a closed differential equation for
+a few initial readouts.
+The expansion and macroscopic-closure chapter supplies the complementary closure calculus.
+Information closure is equality of the conditional macro-future laws given the microscopic and
+macroscopic pasts. Its theorem relates this condition to predictive causal-state maps. For
+generator-based coarse variables, its approximate Markov-closure proposition gives
+
+     sup |LN (φ ◦ f )(x) − Lφ(f (x))| ≤ ϵN       =⇒        |E[Dynkin residual over [0, t]]| ≤ tϵN .
+       x
+
+This is a quantitative tool for comparing a proposed macroscopic evolution with the complete
+recorded dynamics. The finite-step construction above continues to use its actual discrete
+kernel.
+The algorithmic-thermodynamics chapter derives stationary response from the discrete Poisson
+equation for the actual kernel. With the stated weighted mixing and differentiable-kernel
+hypotheses, put
+
+                      uA =         K n [A − π(A)],        (I − K)uA = A − π(A).
+                             X
+
+                             n≥0
+
+If D is the derivative of the configured kernel, the response is
+                                          d
+                                             πθ (A) = π(DuA ).
+                                          dθ       0
+
+This sums the delayed effect of the perturbation through the same dynamics. The path-
+KL identities likewise retain the specified forward and reverse experiments and their record
+pushforwards. They complement the native field-source likelihood calculations.
+
+
+Results supplying these constructions
+
+• Transient projected field equation [R71]. Exact reduced-field propagation with
+  eliminated-state memory.
+• Field evolution conditional on its observed history [R72]. Conditional-history
+  evolution and its primitive-computed noise covariance.
+• Prediction-complete gauge descriptors from the actual transition [R73].
+  Prediction-complete descriptors generated by the actual transition.
+• Finite transition matrices converging to the completed channel theory [R74].
+  Finite transition matrices approximating that completed field theory.
+• Closure implications and their converse [R75]. Predictive closure relations for
+  deterministic coarse observables.
+
+
+                                                     22
+Fractal Gas: a Yang–Mills proof program                                        Research prospectus
+
+
+
+• Exact and approximate Markov closure [R76]. Exact block closure and a quantified
+  approximate-generator residual.
+• Stationary response from a discrete Poisson equation [R15]. Exact stationary
+  response from the discrete Poisson equation.
+• Exact path KL identities [R77]. Path likelihood and KL identities for the specified
+  dynamics and reverse experiment.
+
+
+Stage output. A native field measure, generating functional, and source-response calculus
+whose correlations remain those of the complete gas history. These are the objects carried into
+the continuum hierarchy.
+
+
+13 Construct the recorded quantum matter algebra
+
+Build the exterior algebra of recorded modes. Alternating insertions encode fermionic words
+with the specified graded signs and preserve independent exterior combinations as operators.
+The construction retains the meaning of its recorded contractions and replica correlations.
+Transport the actual contraction into the CAR algebra. The recorded channel construction
+supplies a unital completely positive evolution, a two-point correspondence, and a higher-word
+prescription. Differentiate the transported evolution to identify its native generator.
+For local matter observables, use regional covariance and locality-defect coefficients derived
+from the recorded evolution. The local-net application is made in the declared even observable
+sector. Together with the gauge readouts, this gives the finite operator formulation used by
+the connected algorithmic field theory.
+
+
+         {a(f ), a(g)} = 0,       {a(f ), a∗ (g)} = ⟨f, g⟩I,   Ct : CAR(K) → CAR(K).
+
+
+Proof mechanism
+
+Lift the recorded one-particle mode space to its exterior algebra and represent alternating
+insertions by creation and annihilation operators. The insertion norm proves faithfulness.
+Transport the recorded contraction through the prescribed isometric dilation and compression
+to obtain a unital completely positive CAR channel. Its stated two-point and higher-word
+prescriptions retain the recorded correlations. The native generator follows by differentiating
+the transported evolution on its declared domain. Regional covariance coefficients quantify
+the locality comparison used by the CAR local-net application. This stage fixes the operator
+algebra whose physical spacetime realization remains part of the final reconstruction task.
+
+
+Analytic inputs
+
+Exterior Hilbert construction; faithful insertions; CAR relations; replica contractions; isometric
+compression and complete positivity; native generator; regional covariance.
+
+
+Source results
+
+• Faithful exterior algebra of alternating recorded insertions [R78]. Faithful oriented-
+  word algebra for recorded modes.
+
+                                                  23
+Fractal Gas: a Yang–Mills proof program                                      Research prospectus
+
+
+
+• Completely positive CAR evolution of the recorded contraction [R79]. Unital
+  completely positive CAR evolution from the recorded contraction.
+• Separate local-net application to the recorded CAR representation [R80]. Separate
+  local-net application to the recorded CAR representation.
+
+
+Native regional dynamics are already computed
+
+The lattice-QFT chapter derives localized fermion evolution and the regional covariance
+of the native readouts from the complete recorded transition. Its locality-defect theorem
+supplies coefficients for the declared regional modes. The inherited-history covariance theorem
+transports the full original temporal correlations, including overlaps and shared innovations.
+These calculations support the recorded CAR local-net application and specify its even
+observable sector.
+
+
+Results supplying these constructions
+
+• Native fermion evolution, localization, and record covariance [R81]. Native fermion
+  evolution, localization, and record covariance.
+• Exact inherited-history covariance of native regional readouts [R82]. Exact
+  inherited-history covariance of native regional readouts.
+• Existing LSI and native contraction bounds [R83]. Transport of existing LSI and
+  native contraction estimates into the recorded Fock setting.
+
+
+Stage output. A precise matter operator algebra with the recorded dynamics and word
+correlations. Its continuum identification proceeds alongside the native gauge correlation
+hierarchy.
+
+
+14 Retain fluctuations and a common correlation hierarchy
+                                                                               √
+Center empirical fields about their selected population expectation and use the N fluctuation
+scaling. The joint LSI bounds their moments. Distribution-valued compactness places the
+fluctuation correlations on a common subsequence in the declared test-function topology.
+Compute drift and covariance from the complete selected update. In particular, retain
+covariance from shared collision rotations, cloning writes, measurement marks, and kinetic
+innovations. These equations determine the fluctuation dynamics around the mean-field
+background.
+The native gauge-hierarchy theorems carry finite words and reflected products of normalized
+geometric readouts and the full color invariant algebra on a common subsequence. Uniform-
+integrability and mark-reconstruction estimates control passage of expectations. Source-action
+and geometry-fiber continuum results retain the sourced history interpretation on this same
+construction.
+
+
+                            √
+                 ΞN (φ) =                            E|ΞN (φ)|2 ≤ C∗ Lip(φ)2 .
+                                                
+                                N LN φ − E[LN φ] ,
+
+
+
+
+                                                24
+Fractal Gas: a Yang–Mills proof program                                      Research prospectus
+
+
+
+Proof mechanism
+
+Apply the joint-law LSI concentration bound to the centered Lipschitz empirical fields. Higher
+moments follow from the same law-specific bounds. The chapter’s test-space construction
+gives tightness and a common subsequence for the distributional hierarchy. For dynamics,
+use the generator product rule and conditional variance decomposition to compute drift and
+noise from the complete update. For gauge words, combine bounded normalized readouts with
+the explicit uniform-integrability and mark-reconstruction estimates. A diagonal extraction
+over the stated observable/test classes places the words and reflected products in one native
+hierarchy, preserving their common sourced-law interpretation.
+
+
+Analytic inputs
+
+Joint-LSI moment bounds; test-space compactness; all-order moment passage; full-update
+conditional variance; common subsequences; uniform integrability; reconstructed reflected-
+matrix control.
+
+
+Source results
+
+• Distribution-valued compactness from the established stationary LSI [R84].
+  Distribution-valued compactness from the established stationary LSI.
+• Drift and covariance equations for the complete selected update [R85]. Drift and
+  covariance equations for the complete selected update.
+• Native physical hierarchy of the full recorded color invariants [R86]. Common
+  native physical hierarchy of full recorded color invariants.
+• Geometry-fiber action in the common native continuum limit [R87]. Geometry-
+  fiber action in the common native continuum limit.
+
+
+The fluctuation field retains algorithmic time
+
+For the stationary discrete chain, the fluctuation theorem uses the piecewise-constant record
+at the fixed observation spacing. Its phase-space variable is z = (x, v) ∈ R6 . Physical spatial
+tests are evaluated through the same recorded positions and may be chosen independent of v;
+their temporal variable remains the algorithmic observation clock.
+The native gauge-hierarchy theorem retains the full Gram coordinates, complex determinants,
+triangle products, masks, sources, and configured weights. It constructs their finite-word and
+reflected-product limits on a common subsequence. The direct color observable theorem also
+derives nontrivial doublet fluctuations from the actual companion draw, while the paired
+momentum result gives a quantitative nonzero fluctuation estimate for its identified stationary
+model. These supply concrete finite-sector and fluctuation information within their respective
+law families.
+
+
+Results supplying these constructions
+
+• Nontrivial doublet fluctuations from the actual companion draw [R88]. Nontrivial
+  doublet fluctuations from the actual sampled companion.
+• Nonzero momentum fluctuations in the established Euclidean paired model [R89].
+  A nonzero momentum fluctuation bound for the identified paired stationary model.
+
+
+                                              25
+Fractal Gas: a Yang–Mills proof program                                            Research prospectus
+
+
+
+• Uniform integrability and reconstruction bounds for the full direct color alge-
+  bra [R90]. Explicit full-color word and mark-reconstruction bounds.
+
+
+Stage output. A distributional fluctuation theory and a common native gauge correlation
+hierarchy. The next stage controls the spatial reconstruction scales and differential operators
+used to interpret that hierarchy.
+
+
+15 Control the continuum operator with derived tools
+
+Identify the reconstructed product geometry and its sampling measure q dvolg . Smoothed
+coefficient and spectral bounds supply geometric regularity; the geometry lemma gives a
+sufficient global-hyperbolicity condition. Normalize sampling using the selected history law
+and density weights.
+Verify the kernel moments in local normal coordinates. The Taylor estimate gives bias at
+most Cb ε2 . The covariance estimate controls the density-corrected local summands and yields
+variance at most Cmix Cv /(M εD+2 ).
+Choose εM = ℓ0 M −β , with 0 < β < 1/(D + 4), as in the chapter. Both squared bias and
+variance vanish. The balanced exponent β = 1/(D + 6) gives the displayed mean-square rate.
+Compare the reconstructed episode operator with this estimator, controlling metric, density,
+neighborhood, and kernel errors after normalization.
+
+
+                             b M,ε f (p) − □g f (p)
+                                                      2                Cmix Cv
+                           E L                            ≤ Cb2 ε4 +           ,
+                                                                       M εD+2
+                                     1                     1
+        εM = ℓ0 M −β ,    0<β<          ,       β=            =⇒ MSE = O(M −4/(D+6) ).
+                                    D+4                   D+6
+
+Proof mechanism
+
+In normal coordinates Ψp , expand f ◦ Ψp to fourth order and the volume Jacobian to third
+order. Verified kernel moments remove the first-order and unwanted odd terms and select the
+intended second-order signature. The remainder is O(ε2 ) after normalization. For samples
+with density q, divide each summand by q; its second moment scales as ε−D−2 . Summing the
+chapter’s covariance bound gives the displayed variance. Balance bias and variance through
+the bandwidth schedule. Finally prove the recorded operator comparison at this normalization
+and a joint weighted quadrature estimate for action evaluation on the interacting records.
+
+
+Analytic inputs
+
+Smooth metric coefficients; geometric identification; importance weights; normal-coordinate ker-
+nel moments; Taylor bias; shrinking-neighborhood covariance; bandwidth schedule; normalized
+reconstruction comparison.
+
+
+Source results
+
+• Direct local bias estimate in specified normal coordinates [R91]. Direct local bias
+  estimate in specified normal coordinates.
+
+
+                                                 26
+Fractal Gas: a Yang–Mills proof program                                              Research prospectus
+
+
+
+• A covariance condition sufficient for A4 [R92]. Covariance condition sufficient for the
+  estimator variance bound.
+• A sufficient bandwidth schedule for A6 [R93]. Explicit sufficient bandwidth schedule.
+• Conditional continuum consistency [R94]. Transfers estimator consistency to the
+  reconstructed operator and action under its listed inputs.
+
+
+Density correction is part of the existing construction
+
+The continuum and emergent-geometry chapters distinguish the walker sampling law from the
+geometric volume measure. If the episode marginal is π(dy) = q(y) dvolg (y), then
+                                       M
+                                    1 X   F (Yi )
+                                    "               #     Z
+                                  E               =           F dvolg .
+                                    M i=1 q(Yi )
+
+This expectation identity uses the actual marginal and requires no independence. The chapter
+also gives the explicit QSD/Doob distinction and the normalized time-window density. It
+therefore computes the importance weight from the selected sampling experiment. Walker
+normalization, geometric integration, and centered field fluctuations are separate quantities
+with explicitly related formulas.
+
+
+A second continuum estimate follows directly from joint LSI
+
+For the smooth normalized summand Hε,p , the causal-set chapter differentiates the actual
+empirical estimator:
+                             ∇i AM,ε = M −1 ∇Hε,p (Yi ).
+The established joint Poincaré inequality gives
+                                               C∗                         C∗ C∇
+                                                    Z
+                                Var(AM,ε ) ≤            |∇Hε,p |2 dπ ≤           ,
+                                               M                          M εD+4
+                                                         C∗ C∇
+                       E|AM,ε − □g f (p)|2 ≤ Cb2 ε4 +           .
+                                                         M εD+4
+
+Thus ε = M −1/(D+8) gives O(M −4/(D+8) ) for that observation law and Sobolev summand. In
+D = 4, this is O(M −1/3 ). The covariance route above gives O(M −2/5 ) in D = 4 under its
+covariance hypotheses. These are two proved sufficient routes. Single-time observations use
+their joint law; pooled temporal episodes use the actual episode law or the chapter’s temporal
+covariance estimate.
+The spatial lattice-QFT chapter supplies the corresponding density-corrected kernel limit and
+sampling control for slice operators. Operator reconstruction and action quadrature are then
+composed with the same smooth-field and sampling estimates.
+The computational-proxies chapter also specifies the geometric cell weights used by recorded
+observables:                      q                          .X
+                      Vig = ViEucl det g(xi ),     wig = Vig     Vjg .
+                                                                          j
+                                   √
+The coordinate identity dvolg = det g dx supplies their geometric meaning. These weights are
+used with the chosen cell approximation; inverse sampling-density weights supply the separate
+Monte Carlo integration identity above. The chapter’s curvature, distance, and covariance
+probes provide observable diagnostics for the reconstructed geometry.
+
+
+
+                                                27
+Fractal Gas: a Yang–Mills proof program                                         Research prospectus
+
+
+
+Results supplying these constructions
+
+• Normalized sampling and the distinction between QSD and invariance [R95].
+  The actual normalized sampling law, Doob law, and inverse-density weights.
+• Normalized importance sampling and variance [R96]. Riemannian importance
+  integration and joint-LSI variance control.
+• Continuum estimator error from the established joint LSI [R97]. Direct continuum
+  estimator error from the already established joint LSI.
+• Density-corrected limit with sufficient sampling control [R98]. Spatial density-
+  corrected kernel limit with sufficient sampling control.
+• Volume Element Transformation [R99]. Coordinate volume transformation underlying
+  geometric cell weights.
+
+
+Stage output. A controlled continuum differential operator. The bias, covariance, and
+reconstruction estimates also supply the local integration bounds needed for an action limit.
+
+
+16 Pass actions, sources, and correlations through the limits
+
+Use geometric quadrature and the recorded face-action curvature expansion to obtain Wilson
+action consistency. Keep face orientation, matrix-valued curvature, face weights, and coupling
+normalization. The classical continuum term is the quadratic Yang-Mills curvature energy.
+Combine local operator convergence with weighted quadrature to pass scalar actions. For
+actions evaluated on the same interacting records as the operator, carry the joint weighted error
+estimate. The native source-action and geometry-fiber results carry the selected likelihood
+and its sourced correlations into the common continuum hierarchy.
+Assemble the quantitative errors: particle approximation, relaxation, survival conditioning,
+temporal consistency, local bias, correlated sampling, and record reconstruction. The time-
+consistency theorem propagates a local kernel defect using stability. QSD perturbation uses
+conditioned-block comparison with survival normalization. State a joint scale schedule that
+makes these errors vanish while retaining the required constants.
+
+
+                                      1
+                                              Z
+                                                           a   a
+                                SW −→ 2                   Fµν Fµν dt d3 x,
+                                     4g        Rt ×R3x
+                                                    √
+                            E|φbN − ρφ| ≤ bN +           vN,h + dh + mN,h,n .
+
+
+Proof mechanism
+
+Expand the actual small-face transport and control the remainder by the curvature and
+geometric bounds. Weighted face quadrature yields the displayed classical action under the
+chapter’s hypotheses. For temporal error, use the telescoping identity
+                                             n−1
+                               Phn − Thn =         Phj (Ph − Th )Thn−1−j .
+                                             X
+
+                                             j=0
+
+A local defect of order hp+1 and stability give a finite-time defect of order hp . Stationary
+perturbation sums the defect against the relaxation resolvent; the QSD version compares nor-
+malized surviving blocks. Combine the resulting bias, sampling, stationary, and mixing terms
+
+                                                    28
+Fractal Gas: a Yang–Mills proof program                                     Research prospectus
+
+
+
+using the total-observable-error theorem. Uniform integrability and the native source/fiber
+identities retain expectations along the common hierarchy.
+
+
+Analytic inputs
+
+Curvature remainder; geometric quadrature; same-sample action error; BAOAB weak consis-
+tency; split-system commutator terms; invariant-law perturbation; conditioned-block QSD
+stability; total observable error.
+
+
+Source results
+
+• Wilson action consistency under geometric quadrature [R100]. Wilson action
+  consistency under geometric quadrature.
+• Common continuum limit of the native source likelihood and descriptor ac-
+  tion [R101]. Common continuum limit of the native source likelihood and descriptor
+  action.
+• Time consistency for the specified transition family [R102]. Time consistency for
+  the specified transition family.
+• Total observable error [R103]. Total observable error: population bias, sampling variance,
+  time defect, and mixing error.
+
+
+Action response and geometry fibers retain the source law
+
+The native response-current theorem writes the source derivative as a distribution tested on
+the supplied recorded spacetime coordinates. The weak connection-variation identity compares
+that actual response with the Wilson/matter variation. The common source-action limit
+keeps the same likelihood and descriptor refinement throughout the passage. Geometry-fiber
+disintegration retains its conditional denominator, so recombining the fiber and geometry
+contributions recovers the original sourced correlations.
+In the present 3 + 1 roadmap the field integration domain is Rt × R3x , with t supplied by the
+calibrated recorded clock. The Yang–Mills quadratic contraction is taken with the metric
+convention of the Euclidean or Lorentzian reconstruction under discussion. This specifies the
+geometry used by the small-face and quadrature statements.
+
+
+Results supplying these constructions
+
+• Native response current in recorded spacetime [R104]. Native source-response
+  current on the recorded spacetime.
+• Native response and the weak connection-variation identity [R105]. Native response
+  and the weak connection-variation identity.
+• Exact graph Ward identity [R106]. Exact graph Ward identity.
+
+
+Stage output. A continuum action and correlation hierarchy with an explicit error budget.
+The field-law, physical symmetry, and Hamiltonian identifications are completed on this
+limiting object.
+
+
+
+
+                                             29
+Fractal Gas: a Yang–Mills proof program                                           Research prospectus
+
+
+
+17 Reconstruct fields from the equilibrium history
+
+At equilibrium, retain the complete gauge and matter descriptor hierarchy generated by
+the three-dimensional gas and its recorded time, using the population equilibrium specified
+above. The exact field-law and transition isomorphisms give its multi-time expectations. The
+fluctuation and native-hierarchy theorems supply moment bounds, test-space control, and
+common-subsequence correlation limits.
+The Euclidean-regularity theorem carries actual moment and reconstruction bounds to tem-
+pered correlations. Commuting bosonic insertions give their permutation symmetry, and the
+exterior/CAR construction supplies the graded rule for the recorded matter operators. The
+local-net results establish isotony, the stated locality identities, and covariance under the
+identified same-law implementers.
+The final physical representation is built from this equilibrium temporal hierarchy. Its reflection
+is in the algorithmic observation clock, and its spatial fields remain on R3 . The source’s positive-
+transfer and quantum-reconstruction statements specify the representation hypotheses used to
+construct the physical Hilbert space, vacuum, and self-adjoint Hamiltonian. Those hypotheses
+remain attached to the corresponding field-axiom conclusions.
+
+
+
+                      (F, G)OS = E ΘF G ,         (F, F )OS ≥ 0    (F ∈ A+ ).
+                                          
+
+
+
+Proof mechanism
+
+First transport the actual stationary history through the lossless descriptor map. The source’s
+operator-product formula computes each time-ordered correlation using the original kernel.
+Apply the existing test-space, moment, and uniform-integrability bounds to the same retained
+observable algebra. For temporal reconstruction, form the future algebra on t ≥ 0 and its clock-
+reflected pairing. The source’s positive-transfer criterion, when identified for this hierarchy,
+gives the required positive semigroup representation. Quotient null vectors, complete the
+resulting Hilbert space, and identify physical time translation and its generator. Apply the
+local-net and field-axiom statements with their covariance, locality, spectrum, and vacuum
+hypotheses. This composes the established native construction with the physical representation
+step on its actual equilibrium law.
+
+
+Analytic inputs
+
+Tempered correlation bounds; bosonic/graded symmetry; native reflected matrices; physical
+translation identities; local algebras; vacuum reconstruction; transfer Hamiltonian and physical
+clock identification.
+
+
+Source results
+
+• Euclidean regularity from actual moment bounds [R107]. Euclidean regularity from
+  actual moment bounds.
+• Symmetry of bosonic correlations [R108]. Symmetry of bosonic correlations.
+• Physical reflection on the full native color algebra [R109]. Physical reflection
+  calculation on the full native color algebra.
+
+
+
+                                                 30
+Fractal Gas: a Yang–Mills proof program                                         Research prospectus
+
+
+
+• Algorithmic QFT from recorded evolution and native bounds [R110]. Connected
+  algorithmic field theory from recorded evolution and native bounds.
+
+
+The equilibrium correlator route is already specified
+
+The twistor and calibration chapters define frame channel observables from the actual recorded
+state, including donor memory and validity data. For an invariant law of that same kernel K,
+let fea = fa − πfa . The exact algorithmic-lag correlator is
+
+                                      Cab (ℓ) = ⟨fea , K ℓ feb ⟩L2 (π) .
+
+The complete record transition fixes this correlation. The time separation is ℓ∆t. When the
+identified transfer representation is positive and self-adjoint with K = e−∆tH , the book derives
+
+                                 Caa (ℓ) =           |⟨j|fba |0⟩|2 e−Ej ℓ∆t .
+                                              X
+
+                                             Ej >0
+
+Its leading supported energy is read from the large-lag decay. The local twistor operators are
+observable channels feeding this pipeline; the mass is a spectral property of their correlator.
+
+
+Which reflection and symmetry enter this program
+
+The chosen temporal reflection acts on the stationary history clock:
+
+                                 Θ : (t, x) 7→ (−t, x),           x ∈ R3 .
+
+The reflection and transfer identities are applied to the derived temporal observable law.
+The book’s separate tests of a translated embedding coordinate have their stated coordinate
+action; they are not imported into this algorithmic-clock program without the corresponding
+identification. Likewise, symmetry is evaluated through the physical observable pushforward
+and its temporal implementers, while the complete anchored record remains available for
+decoding and prediction.
+The existing source statements give regularity, bosonic or graded symmetry, native local
+multiplication identities, the CAR local-net construction, and exact stationary temporal
+correlations. The positive-transfer and physical field-axiom statements retain their explicit
+representation and covariance hypotheses. In the proof program these hypotheses are applied
+on the same derived equilibrium hierarchy and clock. This identifies the object on which the
+final physical reconstruction is carried out.
+
+
+Results supplying these constructions
+
+• Algorithmic Evolution of Frame-Averaged Twistor Channels [R11]. Exact algo-
+  rithmic evolution and stationary frame-correlator identity.
+• Positive Transfer Representation of a Frame Correlator [R16]. Spectral expansion
+  for the same channel under its stated positive-transfer hypothesis.
+• Exact HK locality of the native multiplication representation [R111]. Exact
+  locality identity in the native multiplication representation.
+
+
+Stage output. The same equilibrium observable hierarchy, recorded-time correlators, native
+local algebras, and the stated physical representation criteria. These identify the field law and
+transfer family on which the gap-survival theorem is applied.
+
+                                                     31
+Fractal Gas: a Yang–Mills proof program                                            Research prospectus
+
+
+
+18 Preserve the physical Yang-Mills mass gap
+
+Carry the functional-inequality and evolution constants of the equilibrium construction along
+the selected cutoff and volume family. Poincaré supplies coercivity of its associated form;
+hypocoercivity supplies relaxation for the kinetic evolution. Complete the physical form
+comparison with the reconstructed gauge transfer Hamiltonian.
+For that self-adjoint Hamiltonian family Ha , prove a common positive gap λ∗ above the
+normalized vacuum. Construct isometric embeddings Ja into the limiting Hilbert space,
+show convergence of the vacuum vectors, and establish strong convergence of the embedded
+semigroups.
+The gap-survival theorem then passes the vacuum and spectral bound to H. Restriction to
+an invariant gauge sector preserves the gap under the chapter’s operator hypotheses. Fix the
+physical action and time units so the limiting energy scale remains positive. The endpoint
+theorem combines the physical reconstruction of Stage 17 with this gap passage.
+
+
+                              ∥e−tHa (I − PΩa )∥ ≤ e−λ∗ t ,      λ∗ > 0,
+                                   strong
+                     Ja e−tHa Ja∗ −−−−→ e−tH ,         spec(H) ⊂ {0} ∪ [λ∗ , ∞).
+
+
+Proof mechanism
+
+Let Ja : Ha → H be isometries with Ja Ja∗ → I strongly and Ja Ωa → Ω. For f ∈ H, put
+fa = Ja∗ f . The embedded gap bound gives
+
+                               ∥Ja e−tHa (fa − PΩa fa )∥ ≤ e−λ∗ t ∥fa ∥.
+
+Pass to the strong semigroup limit and the vacuum limit. The resulting estimate holds on
+Ω⊥ ; the spectral theorem excludes spectrum in (0, λ∗ ) and any further zero-energy vector.
+Multiplication by a fixed ℏeff converts the bound to physical energy. The program must identify
+this self-adjoint family with the gauge transfer Hamiltonians and retain the positive bound
+through cutoff removal and physical volume growth.
+
+
+Analytic inputs
+
+Same-law coercivity; physical transfer identification; self-adjoint semigroup estimate; compati-
+ble Hilbert-space embeddings; vacuum convergence; strong semigroup convergence; invariant-
+sector restriction.
+
+
+Source results
+
+• Survival of a uniformly controlled self-adjoint gap [R17]. Survival of a uniformly
+  controlled self-adjoint gap.
+• Restriction of a gap to an invariant gauge sector [R112]. Restriction of a gap to an
+  invariant gauge sector.
+
+
+Stage output. Completion target: a nontrivial four-dimensional Yang-Mills quantum field
+theory with a unique vacuum and a strictly positive physical mass gap. Its construction retains
+the original history law through the recorded and continuum identifications.
+
+                                                  32
+Fractal Gas: a Yang–Mills proof program                                                   Research prospectus
+
+
+
+19 How the proved walker dynamics supply the field theory
+
+This section collects the identifications used throughout the chapters into one dependency
+chain. Its starting point is the complete history of the three-dimensional gas at the recorded
+times tn = n∆t.
+
+
+19.1 Probability law, invariant descriptors, and frame observables
+
+The empirical walker law is
+                                                   N
+                                                1 X
+                                           LN =      δ              .
+                                                N i=1 (xi ,vi ,ai )
+The direct field law instead retains the full specified observable descriptor O of the complete
+history:
+                           µdir = O∗ Prec ,    ⟨f ⟩dir = EPrec f (O(F )).
+The direct three-color definition sets d = 3 and constructs its masked vector from the actual
+viscous force and velocity:
+                                                 a                      cei
+                             ceai = Fivisc,a eiκvi ,      ci = mi                    .
+                                                                    max(∥cei ∥, δc )
+
+The Gram and complex determinant coordinates identify the common internal-frame orbit
+and preserve its invariant history correlations. Full coordinates and masks are retained before
+forming the particular frame averages. A full-rank internal anchor chart is one explicit inverse
+chart; the full orbit theorem also covers the rank-deficient strata.
+At a recorded frame, the book distinguishes the valid-weight average and its fixed-normalization
+companion:
+                                                     1 X
+              P
+                I wI mI OI                                            Wt
+   At (O) =                           t (O) =            wI m I O I =    At (O),         Wt =
+                                                                                                X
+                             ,       AN                                                             wI mI ,
+                   Wt                                N I              N                         I
+
+with the recorded zero-denominator convention. Each is an observable of the same full history
+and has its own specified correlator. The physical meaning is read from the chosen descriptor
+and its temporal law.
+
+
+19.2 The history correlations retain the algorithmic clock
+
+For the selected invariant law π, the lossless record theorem supplies
+
+                                      Pbh U = U Ph ,          b = U LU −1
+                                                              L
+
+on the stated domain. The finite-step history formula and frame-correlator identity then give
+all retained correlations under the actual cloning and kinetic update. Cloning remains part of
+the evolution. Projection to a few channels uses the derived memory or the prediction-complete
+descriptor. Burn-in changes the initial law toward equilibrium; field time continues to be the
+calibrated recorded observation time.
+
+
+
+
+                                                         33
+Fractal Gas: a Yang–Mills proof program                                       Research prospectus
+
+
+
+19.3 Geometric integrals and fluctuations have derived normalizations
+
+For the selected sampling law q dvolg , the inverse-density formula converts normalized samples
+into geometric integrals. The normalized C n calculus controls their coefficient fields. Joint
+LSI gives the direct empirical-gradient variance estimate, and the covariance route gives the
+alternative temporal/sampling estimate.
+                                √
+The centered hierarchy uses N scaling around the actual stationary expectation. Its
+distribution-valued compactness and moment bounds retain the collective fluctuation in-
+formation. The native gauge hierarchy separately retains the complex color algebra and its
+sourced history law. These constructions supply the background, fluctuations, and gauge
+correlations as distinct derived objects.
+
+
+19.4 Native likelihood and conditional geometry
+
+Condition the complete path likelihood on the descriptor and take its negative logarithm.
+This yields the field action, predictive kernel, and generating functional. The native source
+identities differentiate the executed update, and geometry-fiber disintegration preserves the
+conditional denominator. Recombination therefore returns the same sourced correlations. The
+continuum comparison uses the derived spatial geometry and the recorded time slices.
+
+
+19.5 Equilibrium representation and the gap
+
+The source specifies quantum reconstruction through the equilibrium temporal hierarchy
+and its stated physical representation hypotheses. The resulting transfer Hamiltonian uses
+that clock and observable law. The mass-gap passage then applies the proved self-adjoint
+gap-survival theorem with its uniform bound, embeddings, vacuum limit, and strong semigroup
+convergence.
+
+Completion criterion 1 (End-to-end composition). For the configured 3 + 1 recorded family,
+apply the existing moment, population, regularity, sampling, and native-hierarchy results under
+their stated hypotheses. Identify its limiting equilibrium hierarchy with the physical Yang–Mills
+representation using the source’s field-axiom and positive-transfer hypotheses. If the resulting
+Hamiltonians satisfy the uniform gap and convergence hypotheses of the gap-survival theorem,
+then
+                    spec(H) ⊂ {0} ∪ [λ∗ , ∞),         ker H = CΩ,      λ∗ > 0.
+The calibrated energy gap is at least ℏeff λ∗ .
+
+The criterion composes the source results. Representation hypotheses remain in their state-
+ments, while the population dynamics, normalizations, field equations, and inherited correla-
+tions are the constructions already derived in the chapters.
+
+
+
+
+                                                  34
+Fractal Gas: a Yang–Mills proof program                                             Research prospectus
+
+
+
+20 The estimates that control the continuum
+
+
+Tool                       Controlled quantity                    Constant or identification retained
+Moment and tail drift      Escape, tightness, uniform             Moment order, drift coefficient,
+                           integrability                          coverage defect
+Poincaré inequality        Empirical variance and form            Joint-law C∗ , appropriate Dirichlet
+                           coercivity                             form
+Joint LSI                  Entropy, concentration, fluctuation    Full gradient, status term, law
+                           moments                                identification
+Hypocoercivity             Kinetic relaxation                     Modified norm, prefactor, positive
+                                                                  rate
+Population comparison      Particle and time approximation        Initial moments, bias, horizon,
+                                                                  attraction branch
+Normalized C n calculus    Smooth reconstructed coefficients      Kernel widths, floors, denominator
+                                                                  lower bound
+Local kernel calculus      Differential-operator bias             Geometry, moments,
+                                                                  normal-coordinate bounds
+Covariance estimate        Shrinking-neighborhood variance        Cmix /(M εD+2 )
+Direct joint-LSI           Continuum error for dependent          C∗ C∇ /(M εD+4 )
+estimate                   smooth observations
+Sampling density           Geometric integration from             Actual q, weight q −1 , selected law
+correction                 probability samples
+Recorded operator          Actual graph reconstruction            Error after ε−D−2 normalization
+comparison
+Temporal and ensemble      Weak, stationary, conditioned errors   Stability, resolvent rate, survival
+perturbation                                                      weights
+Native likelihood and      Gauge action and correlations          Descriptor support, geometry-fiber
+source identities                                                 normalization
+Physical reflection and    Quantum Hilbert space and              Selected spacetime hierarchy and
+symmetry                   dynamics                               physical clock
+Strong semigroup           Survival of a positive gap             Ja , Ωa , cutoff/volume-uniform λ∗
+convergence
+
+
+
+Joint scale choice. Fix the transition parameters for each declared family, choose its
+observation regime using the population/time estimates, and set a bandwidth for which the
+local bias and correlated variance vanish. Then control reconstruction and action quadrature
+at that normalization. If h, algorithmic locality, confinement, or noise changes, retain the
+corresponding uniform estimates for that changed transition family. Finally pass the sourced
+hierarchy and physical transfer operators through the same cutoff and volume sequence.
+
+
+
+
+                                                  35
+Fractal Gas: a Yang–Mills proof program                                    Research prospectus
+
+
+
+A Source theorem register
+
+The references below point to the full statements and proofs in the repository snapshot. File
+paths are relative to docs/source/2_fractal_gas/. Line numbers identify the start of the
+named directive. The labels provide stable search keys when line numbers change.
+
+[R1] Kinetic Gibbs reference measure
+def-gibbs-kinetic
+convergence_program/15_kl_convergence.md, line 492.
+
+[R2] LSI for the kinetic reference measure
+thm-kinetic-lsi
+convergence_program/15_kl_convergence.md, line 513.
+
+[R3] Identifying and testing a Gibbs QSD candidate
+thm-qsd-gibbs
+3_fitness_manifold/05_holography.md, line 645.
+
+[R4] A normalized interaction with an explicit curvature bound
+prop-kl-joint-interaction-curvature
+convergence_program/15_kl_convergence.md, line 571.
+
+[R5] N -uniform LSI for specified joint laws
+cor-n-uniform-lsi
+convergence_program/15_kl_convergence.md, line 544.
+
+[R6] Poincaré inequality and empirical observables
+cor-quantitative-lsi-final
+convergence_program/15_kl_convergence.md, line 2149.
+
+[R7] Kinetic and cloning convergence with a common target
+thm-main-kl-convergence
+convergence_program/15_kl_convergence.md, line 1102.
+
+[R8] Entropy convergence for the full normalized swarm evolution
+thm-kl-convergence-euclidean
+convergence_program/15_kl_convergence.md, line 1164.
+
+[R9] Convergence of macroscopic observables
+thm-thermodynamic-limit
+convergence_program/09_propagation_chaos.md, line 4112.
+
+[R10] LSI for fixed marginals and their limits
+cor-kl-lsi-mean-field-limit
+convergence_program/15_kl_convergence.md, line 2177.
+
+[R11] Algorithmic Evolution of Frame-Averaged Twistor Channels
+thm-effective-twistor-spectral-meaning
+2_fractal_set/08_twistor_formulation.md, line 854.
+
+[R12] Action emergence from the recorded stochastic dynamics
+thm-ym-recorded-action-emergence
+2_fractal_set/05_yang_mills_noether.md, line 321.
+
+[R13] Exact action on the recorded geometry fibers
+thm-ym-native-geometry-fiber-action
+2_fractal_set/05_yang_mills_noether.md, line 3714.
+
+
+                                             36
+Fractal Gas: a Yang–Mills proof program                                Research prospectus
+
+
+
+[R14] Static fluctuation-response identity for an exponential tilt
+prop-fluctuation-dissipation
+3_fitness_manifold/05_holography.md, line 681.
+
+[R15] Stationary response from a discrete Poisson equation
+thm-algorithmic-stationary-response
+3_fitness_manifold/05_holography.md, line 873.
+
+[R16] Positive Transfer Representation of a Frame Correlator
+cor-effective-twistor-positive-transfer
+2_fractal_set/08_twistor_formulation.md, line 914.
+
+[R17] Survival of a uniformly controlled self-adjoint gap
+thm-mass-gap-rg-fixed-point
+2_fractal_set/05_yang_mills_noether.md, line 5225.
+
+[R18] Component momentum, energy, and shared covariance
+thm-mean-field-component-identities
+convergence_program/08_mean_field.md, line 253.
+
+[R19] One-step collision consistency
+thm-mean-field-one-step-consistency
+convergence_program/08_mean_field.md, line 278.
+
+[R20] Foster-Lyapunov drift for the composed kernel
+thm-foster-lyapunov-main
+convergence_program/06_convergence.md, line 451.
+
+[R21] Fully evaluated selection-driven moment drift without a prescribed restoring
+trap
+thm-slceg-full-moment
+convergence_program/06a_structural_landscape_convergence.md, line 15018.
+
+[R22] Entropy contraction to an explicit confinement floor
+thm-slce-entropy-floor
+convergence_program/06a_structural_landscape_convergence.md, line 15296.
+
+[R23] Structural/Barycenter Split for Full W2
+thm-full-w2-split
+convergence_program/04_wasserstein_contraction.md, line 560.
+
+[R24] Joint convergence of mass and shape
+thm-hk-convergence-main-assembly
+convergence_program/11_hk_convergence.md, line 373.
+
+[R25] Finite-horizon survival from safe-walker estimates
+thm-exponential-survival
+convergence_program/11_hk_convergence.md, line 245.
+
+[R26] A weighted coupling form of Harris’ argument
+thm-convergence-conservative-harris
+convergence_program/06_convergence.md, line 649.
+
+[R27] QSD convergence from a two-sided surviving-block bound
+thm-main-convergence
+convergence_program/06_convergence.md, line 801.
+
+[R28] Relaxation to the selected law of a recorded gauge window
+thm-ym-qsd-window-relaxation
+2_fractal_set/05_yang_mills_noether.md, line 6228.
+
+                                           37
+Fractal Gas: a Yang–Mills proof program                                Research prospectus
+
+
+
+[R29] The fixed-step mean-field equation
+thm-mean-field-equation
+convergence_program/08_mean_field.md, line 395.
+
+[R30] Exact mass and weak field balances
+thm-mass-conservation
+convergence_program/08_mean_field.md, line 422.
+
+[R31] Explicit finite-step population law
+thm-algorithmic-explicit-transition
+3_fitness_manifold/04_field_equations.md, line 230.
+
+[R32] Exact field characteristics and moment hierarchy
+thm-algorithmic-field-characteristics
+3_fitness_manifold/04_field_equations.md, line 282.
+
+[R33] Finite-step observable equation and fluctuation covariance
+thm-algorithmic-observable-increment
+3_fitness_manifold/04_field_equations.md, line 657.
+
+[R34] Exact discrete spatial density and momentum equations
+thm-algorithmic-spatial-field-equations
+3_fitness_manifold/04_field_equations.md, line 1899.
+
+[R35] Coupled population, mechanical, and metric fields
+thm-algorithmic-coupled-field-system
+3_fitness_manifold/04_field_equations.md, line 2106.
+
+[R36] Finite-horizon propagation of chaos for the actual update
+thm-chaos-finite-time-consistency
+convergence_program/09_propagation_chaos.md, line 1190.
+
+[R37] Closed full-law convergence with unbounded raw reward
+thm-slcw-active-contraction
+convergence_program/06a_structural_landscape_convergence.md, line 14371.
+
+[R38] Uniform-time trajectories, stationary chaos and commuting limits
+cor-slcw-trajectories
+convergence_program/06a_structural_landscape_convergence.md, line 14710.
+
+[R39] Uniform trajectory approximation through a diverging horizon
+thm-slcgt-growing-trajectory
+convergence_program/06a_structural_landscape_convergence.md, line 18248.
+
+[R40] Exchangeability of a unique QSD
+thm-qsd-exchangeability
+convergence_program/12_qsd_exchangeability_theory.md, line 37.
+
+[R41] Deterministic empirical limits imply chaos
+thm-propagation-chaos-qsd
+convergence_program/12_qsd_exchangeability_theory.md, line 181.
+
+[R42] Exact covariance identity for finite populations
+thm-correlation-decay
+convergence_program/12_qsd_exchangeability_theory.md, line 212.
+
+[R43] LSI from a quadratic Lyapunov bound
+thm-unconditional-lsi
+convergence_program/15_kl_convergence.md, line 369.
+
+                                           38
+Fractal Gas: a Yang–Mills proof program                                Research prospectus
+
+
+
+[R44] Kinetic hypocoercive entropy convergence
+thm-villani-hypocoercivity
+convergence_program/15_kl_convergence.md, line 805.
+
+[R45] C3 regularity of sampled, surrogate, and expected fitness
+thm-c3-regularity
+convergence_program/14_a_geometric_gas_c3_regularity.md, line 726.
+
+[R46] Full sampled-fitness majorant
+thm-main-cinf-regularity-fitness-potential-full
+convergence_program/14_b_geometric_gas_cinf_regularity_full.md, line 963.
+
+[R47] Differentiating normalized mean-field integrals
+thm-cinf-mean-field-integrals
+convergence_program/14_b_geometric_gas_cinf_regularity_full.md, line 1396.
+
+[R48] Smooth convergence of normalized empirical fields
+thm-cinf-empirical-field-convergence
+convergence_program/14_b_geometric_gas_cinf_regularity_full.md, line 1426.
+
+[R49] Metric represented by the implemented Hessian branch
+prop-geometry-clipped-metric
+3_fitness_manifold/01_emergent_geometry.md, line 122.
+
+[R50] Uniform ellipticity from metric bounds
+thm-uniform-ellipticity-latent
+3_fitness_manifold/01_emergent_geometry.md, line 234.
+
+[R51] Uniform ellipticity from the spectral margin
+thm-gg-ueph-construction
+convergence_program/17_geometric_gas.md, line 197.
+
+[R52] N -uniform LSI for an identified geometric law
+thm-gg-lsi-main
+convergence_program/17_geometric_gas.md, line 720.
+
+[R53] Lossless Reconstruction
+thm-fractal-set-lossless
+2_fractal_set/01_fractal_set.md, line 1638.
+
+[R54] Transport of record observables and established estimates
+prop-fractal-set-analytic-transfer
+2_fractal_set/01_fractal_set.md, line 1955.
+
+[R55] Measure and observable isomorphism for invariant coordinates
+thm-sm-direct-measure-isomorphism
+2_fractal_set/04_standard_model.md, line 1759.
+
+[R56] Exact transition and history isomorphism for the recorded algorithm
+thm-sm-instantiated-record-transition
+2_fractal_set/04_standard_model.md, line 2736.
+
+[R57] The recorded Fractal Set is a causal set
+thm-fractal-is-causal-set
+2_fractal_set/02_causal_set_theory.md, line 131.
+
+[R58] Conditional compatibility of CST paths and geometric causality
+prop-fractal-causal-order-equivalence
+2_fractal_set/02_causal_set_theory.md, line 237.
+
+                                              39
+Fractal Gas: a Yang–Mills proof program                             Research prospectus
+
+
+
+[R59] Conditional volume matching and trajectory clocks
+thm-fractal-faithful-embedding
+2_fractal_set/02_causal_set_theory.md, line 616.
+
+[R60] Slab consistency and the scope of causal convergence
+prop-scutoid-cst-compatibility
+3_fitness_manifold/02_scutoid_spacetime.md, line 483.
+
+[R61] Gram and determinant coordinates for SU(n) orbits
+thm-sm-direct-orbit-isomorphism
+2_fractal_set/04_standard_model.md, line 1542.
+
+[R62] SU(2) from Hermitian and alternating doublet contractions
+thm-sm-direct-su2-invariants
+2_fractal_set/04_standard_model.md, line 1270.
+
+[R63] Interaction holonomy and angular matter energy of the recorded connection
+prop-ym-recorded-interaction-sector
+2_fractal_set/05_yang_mills_noether.md, line 605.
+
+[R64] Gauge invariance of Wilson observables and actions
+thm-wilson-action-gauge-invariance
+2_fractal_set/05_yang_mills_noether.md, line 1649.
+
+[R65] Error accumulation for comparison holonomy
+lem-regge-holonomy-approx
+3_fitness_manifold/03_curvature_gravity.md, line 955.
+
+[R66] Curvature recovery from consistent plaquette transport
+thm-riemann-scutoid
+3_fitness_manifold/03_curvature_gravity.md, line 991.
+
+[R67] Quantitative curvature expansion of the recorded face action
+lem-ym-recorded-face-action-remainder
+2_fractal_set/05_yang_mills_noether.md, line 507.
+
+[R68] Reference-transport covariance
+lem-reference-transport-covariance
+3_fitness_manifold/09_measurement.md, line 627.
+
+[R69] Effective gauge-channel action and predictive kernel of the recorded algorithm
+thm-sm-effective-recorded-gauge-dynamics
+2_fractal_set/04_standard_model.md, line 4020.
+
+[R70] Exact source response of the algorithm-derived field action
+thm-ym-native-source-response
+2_fractal_set/05_yang_mills_noether.md, line 1686.
+
+[R71] Transient projected field equation
+thm-algorithmic-transient-field-memory
+3_fitness_manifold/04_field_equations.md, line 1641.
+
+[R72] Field evolution conditional on its observed history
+thm-algorithmic-field-filter
+3_fitness_manifold/04_field_equations.md, line 1768.
+
+[R73] Prediction-complete gauge descriptors from the actual transition
+thm-sm-prediction-complete-descriptors
+2_fractal_set/04_standard_model.md, line 2083.
+
+                                           40
+Fractal Gas: a Yang–Mills proof program                              Research prospectus
+
+
+
+[R74] Finite transition matrices converging to the completed channel theory
+thm-sm-predictive-partition-convergence
+2_fractal_set/04_standard_model.md, line 2201.
+
+[R75] Closure implications and their converse
+thm-closure-equivalence-cosmo
+3_fitness_manifold/06_cosmology.md, line 351.
+
+[R76] Exact and approximate Markov closure
+prop-cosmo-generator-closure
+3_fitness_manifold/06_cosmology.md, line 391.
+
+[R77] Exact path KL identities
+prop-algorithmic-path-kl-identities
+3_fitness_manifold/05_holography.md, line 797.
+
+[R78] Faithful exterior algebra of alternating recorded insertions
+thm-lqft-oriented-word-algebra
+2_fractal_set/03_lattice_qft.md, line 681.
+
+[R79] Completely positive CAR evolution of the recorded contraction
+thm-lqft-record-car-channel
+2_fractal_set/03_lattice_qft.md, line 1018.
+
+[R80] Separate local-net application to the recorded CAR representation
+thm-ym-hk-record-instantiation
+2_fractal_set/05_yang_mills_noether.md, line 9275.
+
+[R81] Native fermion evolution, localization, and record covariance
+thm-lqft-native-local-fermion-evolution
+2_fractal_set/03_lattice_qft.md, line 1585.
+
+[R82] Exact inherited-history covariance of native regional readouts
+thm-lqft-inherited-history-covariance
+2_fractal_set/03_lattice_qft.md, line 1332.
+
+[R83] Existing LSI and native contraction bounds
+cor-lqft-fock-lsi-transfer
+2_fractal_set/03_lattice_qft.md, line 1186.
+
+[R84] Distribution-valued compactness from the established stationary LSI
+thm-ym-spacetime-fluctuation-compactness
+2_fractal_set/05_yang_mills_noether.md, line 5512.
+
+[R85] Drift and covariance equations for the complete selected update
+prop-ym-complete-fluctuation-equations
+2_fractal_set/05_yang_mills_noether.md, line 5750.
+
+[R86] Native physical hierarchy of the full recorded color invariants
+thm-ym-native-physical-gauge-hierarchy
+2_fractal_set/05_yang_mills_noether.md, line 7629.
+
+[R87] Geometry-fiber action in the common native continuum limit
+thm-ym-native-fiber-continuum
+2_fractal_set/05_yang_mills_noether.md, line 3914.
+
+[R88] Nontrivial doublet fluctuations from the actual companion draw
+thm-sm-native-doublet-fluctuations
+2_fractal_set/04_standard_model.md, line 1087.
+
+                                              41
+Fractal Gas: a Yang–Mills proof program                            Research prospectus
+
+
+
+[R89] Nonzero momentum fluctuations in the established Euclidean paired model
+cor-ym-paired-momentum-fluctuations
+2_fractal_set/05_yang_mills_noether.md, line 6405.
+
+[R90] Uniform integrability and reconstruction bounds for the full direct color
+algebra
+lem-ym-physical-gauge-word-uniform-integrability
+2_fractal_set/05_yang_mills_noether.md, line 7546.
+
+[R91] Direct local bias estimate in specified normal coordinates
+lem-continuum-local-bias
+convergence_program/16_continuum_discharge.md, line 509.
+
+[R92] A covariance condition sufficient for A4
+lem-continuum-a4-mixing
+convergence_program/16_continuum_discharge.md, line 597.
+
+[R93] A sufficient bandwidth schedule for A6
+lem-continuum-a6-scaling
+convergence_program/16_continuum_discharge.md, line 687.
+
+[R94] Conditional continuum consistency
+cor-continuum-consistency-conditional
+convergence_program/16_continuum_discharge.md, line 735.
+
+[R95] Normalized sampling and the distinction between QSD and invariance
+lem-continuum-a3-qsd-sampling
+convergence_program/16_continuum_discharge.md, line 327.
+
+[R96] Normalized importance sampling and variance
+prop-monte-carlo-riemannian-latent
+3_fitness_manifold/01_emergent_geometry.md, line 1116.
+
+[R97] Continuum estimator error from the established joint LSI
+cor-cst-inherited-lsi-consistency
+2_fractal_set/02_causal_set_theory.md, line 966.
+
+[R98] Density-corrected limit with sufficient sampling control
+prop-density-corrected-limit
+2_fractal_set/03_lattice_qft.md, line 2185.
+
+[R99] Volume Element Transformation
+thm-volume-element-transformation
+3_fitness_manifold/07_computational_proxies.md, line 1155.
+
+[R100] Wilson action consistency under geometric quadrature
+thm-continuum-limit-ym
+2_fractal_set/05_yang_mills_noether.md, line 4858.
+
+[R101] Common continuum limit of the native source likelihood and descriptor
+action
+thm-ym-continuum-source-action
+2_fractal_set/05_yang_mills_noether.md, line 2714.
+
+[R102] Time consistency for the specified transition family
+thm-correct-continuum-limit
+2_fractal_set/05_yang_mills_noether.md, line 5180.
+
+
+
+                                              42
+Fractal Gas: a Yang–Mills proof program                                    Research prospectus
+
+
+
+[R103] Total observable error
+thm-total-error-bound
+convergence_program/13_quantitative_error_bounds.md, line 719.
+
+[R104] Native response current in recorded spacetime
+thm-ym-native-response-current
+2_fractal_set/05_yang_mills_noether.md, line 2376.
+
+[R105] Native response and the weak connection-variation identity
+prop-ym-native-connection-variation-identity
+2_fractal_set/05_yang_mills_noether.md, line 4158.
+
+[R106] Exact graph Ward identity
+lem-ym-discrete-ward
+2_fractal_set/05_yang_mills_noether.md, line 4584.
+
+[R107] Euclidean regularity from actual moment bounds
+thm-os-os0-fg
+2_fractal_set/05_yang_mills_noether.md, line 7063.
+
+[R108] Symmetry of bosonic correlations
+thm-os-os4-fg
+2_fractal_set/05_yang_mills_noether.md, line 7085.
+
+[R109] Physical reflection on the full native color algebra
+prop-ym-native-color-reflected-matrices
+2_fractal_set/05_yang_mills_noether.md, line 8050.
+
+[R110] Algorithmic QFT from recorded evolution and native bounds
+thm-ym-algorithmic-qft-synthesis
+2_fractal_set/05_yang_mills_noether.md, line 9530.
+
+[R111] Exact HK locality of the native multiplication representation
+thm-ym-native-multiplication-locality
+2_fractal_set/05_yang_mills_noether.md, line 8890.
+
+[R112] Restriction of a gap to an invariant gauge sector
+thm-gauge-sector-mass-gap
+2_fractal_set/05_yang_mills_noether.md, line 7017.
+
+
+B Chapter contribution map
+
+This map records the contributions used in the proof program. Chapter-local configurations,
+laws, and theorem hypotheses are retained when their results are composed. The experiment
+and calibration chapters supply observable definitions and diagnostics alongside the analytic
+results.
+
+Microscopic definition and configured variants
+Complete state, update order, parameter floors, metric/noise choices, and each variant’s own
+transition.
+1_the_algorithm/01_algorithm_intuition.md
+02_fractal_gas_latent.md
+03_parameter_constraints.md
+04_gas_variants.md
+convergence_program/01_fragile_gas_framework.md
+02_euclidean_gas.md
+
+                                             43
+Fractal Gas: a Yang–Mills proof program                                      Research prospectus
+
+
+
+Cloning, transport, and recurrence
+Keystone pressure, reset and signed drift, barycenter/shape decomposition, kinetic estimates,
+moment/tail budgets, Harris and QSD convergence, quantified population/time limits.
+convergence_program/03_cloning.md
+04_single_particle.md
+04_wasserstein_contraction.md
+05_kinetic_contraction.md
+06_convergence.md
+06a_structural_landscape_convergence.md
+07_discrete_qsd.md
+
+Population law and exchangeability
+Fixed-step rooted population map, exact balances, particle consistency, survival normalization,
+mass–shape convergence, empirical mixtures, fixed-row chaos.
+convergence_program/08_mean_field.md
+09_propagation_chaos.md
+11_hk_convergence.md
+12_qsd_exchangeability_theory.md
+
+Entropy, quantitative errors, and regularity
+Poincaré and LSI, full-update entropy identities, hypocoercivity, observable error, normalized
+derivative calculus, smooth empirical fields, identified adaptive-law bounds.
+convergence_program/10_kl_hypocoercive.md
+13_quantitative_error_bounds.md
+14_a_geometric_gas_c3_regularity.md
+14_b_geometric_gas_cinf_regularity_full.md
+15_kl_convergence.md
+17_geometric_gas.md
+
+Causal and geometric continuum
+Recorded causal order, slabs and trajectory clocks, regular metric coefficients, sampling
+correction, two estimator-error routes, operator reconstruction, holonomy and curvature
+comparison.
+convergence_program/16_continuum_discharge.md
+2_fractal_set/02_causal_set_theory.md
+3_fitness_manifold/01_emergent_geometry.md
+02_scutoid_spacetime.md
+03_curvature_gravity.md
+
+Exact derived finite fields
+Marked characteristic hierarchy, exact density/current balances, conditional metric law,
+drift/covariance, field memory and filtering, coupled population/mechanical/metric system.
+3_fitness_manifold/04_field_equations.md
+
+Recorded gauge and matter theory
+Lossless history, invariant coordinates, CAR dynamics, native action and sources, Ward
+identities, gauge hierarchies, Wilson consistency, spectral-gap passage.
+2_fractal_set/01_fractal_set.md
+03_lattice_qft.md
+04_standard_model.md
+05_yang_mills_noether.md
+3_fitness_manifold/08_voronoi_wilson_loops.md
+
+
+                                              44
+Fractal Gas: a Yang–Mills proof program                                     Research prospectus
+
+
+
+Spectral channels and empirical checks
+Implemented channel and correlator definitions, algorithmic-time lag, source-grounded calibra-
+tion, positive-transfer spectral criterion, observable diagnostics.
+2_fractal_set/06_empirical_validation.md
+07_qft_calibration_report.md
+08_twistor_formulation.md
+09_qft_calibration.md
+partvi_experiments.md
+
+Response, measurement, and geometric extensions
+Actual-kernel path KL and stationary Poisson response, graph-cut and boundary observables,
+equilibrium centering and coarse closure, computational geometric probes, reference-transport
+covariance for measurement. These chapters develop additional observables and extensions of
+the same recorded system.
+3_fitness_manifold/05_holography.md
+06_cosmology.md
+07_computational_proxies.md
+09_measurement.md
+
+
+
+
+                                             45
+

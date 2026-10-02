@@ -1,0 +1,1 @@
+Stopped at user request to run the focused drift-normalization/covariance-regularization ablation. 516 completed runs preserved. Production engine and sweep sources remain unchanged, allowing resume with the original manifest.

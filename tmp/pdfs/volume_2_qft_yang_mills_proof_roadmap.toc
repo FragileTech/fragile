@@ -1,0 +1,81 @@
+\contentsline {section}{Introduction: a common dynamics for geometry and fields}{1}{Doc-Start}%
+\contentsline {paragraph}{A joint construction.}{1}{Doc-Start}%
+\contentsline {paragraph}{The mechanisms share the work of control.}{1}{Doc-Start}%
+\contentsline {paragraph}{Geometry is part of the feedback.}{1}{Doc-Start}%
+\contentsline {paragraph}{Interactions and the field action come from the same record.}{2}{Doc-Start}%
+\contentsline {paragraph}{How the common foundation guides the continuum proof.}{2}{Doc-Start}%
+\contentsline {section}{Objects, target, and logical structure}{3}{Doc-Start}%
+\contentsline {paragraph}{Law ledger.}{3}{Doc-Start}%
+\contentsline {paragraph}{Scale ledger.}{3}{Doc-Start}%
+\contentsline {paragraph}{Reading convention.}{3}{Doc-Start}%
+\contentsline {paragraph}{The main interface.}{3}{Doc-Start}%
+\contentsline {section}{The proof strategy at a glance}{4}{section*.1}%
+\contentsline {section}{Equilibrium thermodynamics and the field state}{5}{section*.2}%
+\contentsline {section}{\numberline {1}Fix the Euclidean gas}{8}{section.1}%
+\contentsline {paragraph}{Stage output.}{8}{section.1}%
+\contentsline {section}{\numberline {2}Resolve cloning and collision geometry}{8}{section.2}%
+\contentsline {paragraph}{Stage output.}{9}{section.2}%
+\contentsline {section}{\numberline {3}Control confinement, moments, and tails}{9}{section.3}%
+\contentsline {paragraph}{Stage output.}{11}{section.3}%
+\contentsline {section}{\numberline {4}Select the stationary or conditioned ensemble}{11}{section.4}%
+\contentsline {paragraph}{Stage output.}{12}{section.4}%
+\contentsline {section}{\numberline {5}Derive the population law and exact field equations}{12}{section.5}%
+\contentsline {paragraph}{Stage output.}{14}{section.5}%
+\contentsline {section}{\numberline {6}Control particles, observation time, and stationarity}{14}{section.6}%
+\contentsline {paragraph}{Stage output.}{15}{section.6}%
+\contentsline {section}{\numberline {7}Build Poincar\'e and logarithmic Sobolev control}{15}{section.7}%
+\contentsline {paragraph}{Stage output.}{16}{section.7}%
+\contentsline {section}{\numberline {8}Turn functional inequalities into relaxation and fluctuations}{16}{section.8}%
+\contentsline {paragraph}{Stage output.}{17}{section.8}%
+\contentsline {section}{\numberline {9}Obtain smooth empirical and mean-field fields}{17}{section.9}%
+\contentsline {paragraph}{Stage output.}{19}{section.9}%
+\contentsline {paragraph}{Gravitational application.}{19}{section.9}%
+\contentsline {section}{\numberline {10}Reconstruct the causal 3+1 Fractal Set}{19}{section.10}%
+\contentsline {paragraph}{Stage output.}{21}{section.10}%
+\contentsline {section}{\numberline {11}Construct gauge and matter observables}{21}{section.11}%
+\contentsline {paragraph}{Stage output.}{22}{section.11}%
+\contentsline {section}{\numberline {12}Derive the native field action and response}{22}{section.12}%
+\contentsline {paragraph}{Stage output.}{25}{section.12}%
+\contentsline {section}{\numberline {13}Construct the recorded quantum matter algebra}{25}{section.13}%
+\contentsline {paragraph}{Stage output.}{26}{section.13}%
+\contentsline {section}{\numberline {14}Retain fluctuations and a common correlation hierarchy}{26}{section.14}%
+\contentsline {paragraph}{Stage output.}{28}{section.14}%
+\contentsline {section}{\numberline {15}Control the continuum operator with derived tools}{28}{section.15}%
+\contentsline {paragraph}{Stage output.}{30}{section.15}%
+\contentsline {paragraph}{Gravitational application.}{30}{section.15}%
+\contentsline {section}{\numberline {16}Pass actions, sources, and correlations through the limits}{30}{section.16}%
+\contentsline {paragraph}{Stage output.}{31}{section.16}%
+\contentsline {section}{\numberline {17}Reconstruct fields from the equilibrium history}{32}{section.17}%
+\contentsline {paragraph}{Stage output.}{33}{section.17}%
+\contentsline {section}{\numberline {18}Preserve the physical Yang-Mills mass gap}{34}{section.18}%
+\contentsline {paragraph}{Stage output.}{34}{section.18}%
+\contentsline {section}{\numberline {19}Quantum gravity: two routes from the same dynamics}{35}{section.19}%
+\contentsline {subsection}{\numberline {19.1}Route A: curvature from the fitness Hessian}{36}{subsection.19.1}%
+\contentsline {paragraph}{Metric and population limit.}{36}{subsection.19.1}%
+\contentsline {paragraph}{Curvature theorem and proof mechanism.}{36}{subsection.19.1}%
+\contentsline {paragraph}{Algorithmic time and coupled evolution.}{36}{subsection.19.1}%
+\contentsline {paragraph}{Route A output.}{36}{subsection.19.1}%
+\contentsline {subsection}{\numberline {19.2}Route B: curvature and action from the Fractal Set}{37}{subsection.19.2}%
+\contentsline {paragraph}{Transfer the existing analytic control.}{37}{subsection.19.2}%
+\contentsline {paragraph}{Laplacian convergence.}{37}{subsection.19.2}%
+\contentsline {paragraph}{Scalar-curvature theorem and proof mechanism.}{37}{subsection.19.2}%
+\contentsline {paragraph}{Route B output.}{37}{subsection.19.2}%
+\contentsline {subsection}{\numberline {19.3}Compare both routes and derive the gravitational law}{38}{subsection.19.3}%
+\contentsline {paragraph}{Agreement on a common geometry.}{38}{subsection.19.3}%
+\contentsline {paragraph}{A causal-set action option.}{38}{subsection.19.3}%
+\contentsline {paragraph}{Gravitational assembly criterion.}{38}{subsection.19.3}%
+\contentsline {subsection}{\numberline {19.4}Singular limits, information geometry and quantum fluctuations}{39}{subsection.19.4}%
+\contentsline {paragraph}{Regular regions and singular regimes.}{39}{subsection.19.4}%
+\contentsline {paragraph}{Fisher and Ruppeiner descriptions of Route A.}{39}{subsection.19.4}%
+\contentsline {paragraph}{Retain the quantum geometry.}{39}{subsection.19.4}%
+\contentsline {paragraph}{Completion tasks for the combined extension.}{39}{subsection.19.4}%
+\contentsline {section}{\numberline {20}How the proved walker dynamics supply the field theory}{40}{section.20}%
+\contentsline {subsection}{\numberline {20.1}Probability law, invariant descriptors, and frame observables}{40}{subsection.20.1}%
+\contentsline {subsection}{\numberline {20.2}The history correlations retain the algorithmic clock}{40}{subsection.20.2}%
+\contentsline {subsection}{\numberline {20.3}Geometric integrals and fluctuations have derived normalizations}{41}{subsection.20.3}%
+\contentsline {subsection}{\numberline {20.4}Native likelihood and conditional geometry}{41}{subsection.20.4}%
+\contentsline {subsection}{\numberline {20.5}Equilibrium representation and the gap}{41}{subsection.20.5}%
+\contentsline {section}{\numberline {21}The estimates that control the continuum}{42}{section.21}%
+\contentsline {paragraph}{Joint scale choice.}{42}{table.1}%
+\contentsline {section}{\numberline {A}Source theorem register}{43}{appendix.A}%
+\contentsline {section}{\numberline {B}Chapter contribution map}{51}{appendix.B}%

@@ -94,11 +94,11 @@ PopulationExperiment::PopulationExperiment(const Json& input,bool remote)
     }
     resolved.object["max_evaluations"]=number(budget_);
     Benchmark b(resolved);Settings s(b.config);
-    if(s.algorithm!="wave")throw std::invalid_argument("Fractal Populations currently supports Wave members");
+    if(s.algorithm!="wave" && s.algorithm!="gas")throw std::invalid_argument("Fractal Populations supports Wave or GAS members");
     int count=integer(member["exchange_count"],s.elites,0,s.walkers,"exchange count");
     if(members.array.size()>1 && s.walkers<std::max(s.elites,count)+count)throw std::invalid_argument("Not enough walkers for protected elites and imports");
     BasinArchive archive(b,s.periodic);
-    auto key=stringify(JsonReader(archive.export_json()).read()["compatibility"]);
+    auto key=s.algorithm+":"+stringify(JsonReader(archive.export_json()).read()["compatibility"]);
     if(task_key.empty())task_key=key;else if(task_key!=key)throw std::invalid_argument("Members must share the same task and scoring semantics");
     initial+=Session::initial_evaluation_bound(s.json);
     memory+=32*1024*1024ULL+uint64_t(s.max_walkers)*(uint64_t(b.d)*32+1024);
@@ -146,7 +146,7 @@ void PopulationExperiment::accept_reports(const Json& reports,bool initial){
     if(found==reports.array.end())throw std::invalid_argument("Missing swarm report: "+id);
     auto frame=exchange_frame_read((*found)["frame"]);
     if(frame.description.id!=id)throw std::invalid_argument("Mismatched swarm frame");
-    auto expected="optimization-wave-v1:"+stringify(JsonReader(archive_->export_json()).read()["compatibility"]);
+    auto expected="optimization-"+config["members"].array[i]["settings"]["algorithm"].str()+"-v1:"+stringify(JsonReader(archive_->export_json()).read()["compatibility"]);
     if(frame.description.compatibility!=expected)throw std::invalid_argument("Incompatible population task");
     const auto eval=bounded((*found)["evaluations"],0,0,1e12,"member evaluations");
     const auto next=bounded((*found)["next_evaluations"],0,0,1e12,"next evaluations");

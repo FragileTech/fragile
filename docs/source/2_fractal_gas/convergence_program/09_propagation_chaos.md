@@ -1,6 +1,10 @@
 # The Discrete Population Limit and Propagation of Chaos
 
 :::{div} feynman-prose
+Stationary chaos needs information about the long-time population dynamics in addition to finite-horizon approximation. [Structural landscape convergence](06a_structural_landscape_convergence.md) makes that extra obligation landscape-dependent: prove attraction where the required estimates hold, or identify the limiting phase distribution when several phases persist. Finite-particle uniqueness alone does not settle this population-level question.
+:::
+
+:::{div} feynman-prose
 A large swarm has two kinds of randomness. A walker fluctuates around the
 population distribution, and the population distribution itself can fluctuate
 from run to run. Exchangeability says that the labels carry no information.
@@ -46,8 +50,9 @@ with history require a correspondingly enlarged state.
 For each $N\ge2$, let $Q_N$ be the killed full-swarm kernel on its noncemetery
 space. For the canonical quadratic-force terminal-box configuration,
 {prf:ref}`thm-chaos-canonical-finite-n-qsd` establishes its unique QSD $\nu_N$.
-For other configurations, use an applicable QSD theorem for their complete
-transition. Write
+For the general canonical terminal-box kernel with its declared continuous
+Lipschitz force, {prf:ref}`thm-chaos-general-box-qsd-existence` proves
+existence of an exchangeable QSD without asserting uniqueness. Write
 
 $$
 \nu_NQ_N=\alpha_N\nu_N,\qquad 0<\alpha_N\le1.
@@ -744,6 +749,15 @@ $\mu_N\Rightarrow\mu$ with $m(\mu)>0$. In the unbounded case use the stated
 moment bound as well. Every sufficiently large $N$ then has
 $m(\mu_N)\ge m_*>0$. The finite-step moment and terminal-survival estimates
 in {doc}`08_mean_field` propagate this class over each fixed finite horizon.
+
+These one-step theorems concern the connected-component Haar collision
+kernel specified in {prf:ref}`def-inelastic-collision-update`. The current
+Python `clone_walkers` routine uses sequential donor-star collisions
+without Haar rotation. Its separate collision calculation and
+priority-decorated one-step bound are
+{prf:ref}`thm-slc-ordered-collision-balance` and
+{prf:ref}`thm-chaos-ordered-star-quantitative`. The Haar bounds below
+retain their original kernel and constants.
 :::
 
 :::{prf:lemma} Permutation equivariance of the complete canonical kernel
@@ -1293,6 +1307,9 @@ conditioned on survival through the entire fixed horizon has the same limit:
 conditioning changes any bounded test expectation by at most twice its
 supremum times the extinction probability. Conditioning each intermediate
 transition separately is a different path-law operation.
+{prf:ref}`thm-chaos-conditioned-propagation` gives the exact
+full-path TV cost and the finite-row bound for the actual
+survivor-conditioned law.
 :::
 
 :::{prf:lemma} The actual boundary and revival contributions converge
@@ -1760,6 +1777,198 @@ bias. Apply {prf:ref}`thm-chaos-canonical-conditional-variance` to its first
 term. $\square$
 :::
 
+:::{prf:definition} Priority-decorated population map for ordered donor-star collisions
+:label: def-chaos-ordered-star-population-map
+
+For the ordered donor-star collision of
+{prf:ref}`thm-slc-ordered-collision-balance`, attach the fixed mathematical
+priority $r_i=i/N$ to finite slot $i$ and set
+$\nu_N=N^{-1}\sum_i\delta_{(r_i,z_i)}$, where $z_i$ is its complete
+physical marked state. The priority is not passed to or updated by the
+algorithm. Let $\nu(dr,dz)$ be any probability law on this decorated
+state, and let $\mu$ be its physical marginal. The limiting laws of
+interest have uniform $[0,1]$ priority marginal; the finite empirical
+$\nu_N$ have atomic grid marginals. Apply the measurement and global
+fitness construction of {doc}`08_mean_field` to $\mu$, retaining the
+priority on every resulting sampled type
+$t=(r,z,y_D,F)$. Call this type law $\eta_\nu$. The construction below
+also defines $\mathcal F_h^{\rm ord}$ for atomic priority marginals by
+choosing the outgoing-donor branch when two distinct sampled vertices
+have equal priorities; such ties have probability zero for a uniform
+priority marginal. For live $t$, define
+$$
+\beta_\nu(t,u)=
+\frac{a_u w_C(z_t,z_u)\,p(F_t,F_u)}{Z_C(\mu;z_t)},
+\qquad
+Z_C(\mu;z_t)=\int a_u w_C(z_t,z_u)\,\mu(du),             \tag{C.OS1}
+$$
+and replace $p(F_t,F_u)$ by one for dead $t$. This is the accepted-edge
+density relative to $\eta_\nu(du)$; it uses precisely the companion and
+acceptance rules of {prf:ref}`def-mean-field-rooted-collision`.
+
+Draw a root $t$ from $\eta_\nu$. Draw its outgoing accepted donor $U$
+with subprobability $\beta_\nu(t,u)\eta_\nu(du)$. Draw an independent
+incoming Poisson cloud $\Pi_t$ of types with intensity
+$\beta_\nu(u,t)\eta_\nu(du)$. If $U=u$ exists, draw an independent
+additional incoming Poisson cloud $\Pi_u^\circ$ of intensity
+$\beta_\nu(w,u)\eta_\nu(dw)$, and insert $t$ once in $u$'s star.
+Set
+$$
+m_t=\frac{v_t+\sum_{w\in\Pi_t}v_w}{1+|\Pi_t|},\qquad
+m_u=\frac{v_u+v_t+\sum_{w\in\Pi_u^\circ}v_w}
+ {2+|\Pi_u^\circ|}.                                      \tag{C.OS2}
+$$
+The root's collision velocity is
+$$
+v_t^{\rm ord}=
+\begin{cases}
+\alpha_{\rm col}v_t+(1-\alpha_{\rm col})m_t,
+ &|\Pi_t|>0\text{ and }(U=\bot\text{ or }r_t>r_U),\\
+\alpha_{\rm col}v_t+(1-\alpha_{\rm col})m_U,
+&U\ne\bot\text{ and }(|\Pi_t|=0\text{ or }r_U\ge r_t),\\
+v_t,&U=\bot,\ |\Pi_t|=0.
+\end{cases}                                               \tag{C.OS3}
+$$
+Distinct priorities tie with probability zero under a uniform
+priority marginal. Use the same frozen donor position, accepted-row jitter,
+BAOAB, cap and terminal classification as in {doc}`08_mean_field`, and
+preserve $r_t$. Their root-output law defines
+$\mathcal F_h^{\rm ord}(\nu)$. Its physical marginal describes the
+population of physical walkers. The original, permutation-equivariant
+component-Haar map $\mathcal F_h(\mu)$ remains as separately defined.
+This ordered map substitutes the Python donor-star collision into the
+declared Volume 2 kinetic and boundary stages. It is not the entire
+default Python `EuclideanGas.step` kernel: its optional kinetic terms,
+position noise, cap and boundary timing require separate matching.
+:::
+
+:::{prf:theorem} Quantitative one-step consistency for the ordered collision mode
+:label: thm-chaos-ordered-star-quantitative
+
+Use the full canonical measurement, cloning, kinetic and terminal rules
+of {prf:ref}`def-chaos-canonical-regime`, substituting only the ordered
+donor-star collision (SCK.O1). Suppose $0\le\alpha_{\rm col}\le1$ and
+the entering array has alive fraction at least $m_*>0$. Keep the
+algorithmic constants $C,B,A_D,D_D,A_T,L_T,A,M_3(C),N_0$ exactly as
+defined in {prf:ref}`lem-chaos-canonical-innovation-replacement` and
+{prf:ref}`thm-chaos-canonical-quantitative-bias`; in particular
+$A=1+C+D_D$, $N_0=\lceil(8A)^{6/5}\rceil$. For every bounded measurable
+test $\varphi(r,z)$, put $b=\|\varphi\|_\infty$ and
+$$
+K_{\rm ord}(C)=27+30C+6C^2,
+\quad A_{\rm ord,\varphi}=2b^2[A_D+K_{\rm ord}(C)+1],
+\quad B_{\rm ord}=3M_1(2C)L_T\sqrt{A_T}+4L_T^2A_T
+ +128A^2+16M_3(C)+\sqrt{N_0}.                         \tag{C.OS4}
+$$
+The constants depend on the declared fitness floors, distance weights,
+alive fraction and kinetic parameters through the cited expressions,
+but none depends on $N$. With $L_N'$ the complete physical marked
+output, still carrying fixed priorities, and
+$\nu_N=N^{-1}\sum_i\delta_{(i/N,z_i)}$, one has
+$$
+\operatorname{Var}(L_N'\varphi\mid S)
+ \le\frac{A_{\rm ord,\varphi}}N,                         \tag{C.OS5}
+$$
+$$
+\left|\mathbb E[L_N'\varphi\mid S]
+ -\mathcal F_h^{\rm ord}(\nu_N)\varphi\right|
+ \le\frac{2bB_{\rm ord}}{\sqrt N},
+\qquad
+\mathbb E\left[|L_N'\varphi-
+ \mathcal F_h^{\rm ord}(\nu_N)\varphi|^2\mid S\right]
+ \le\frac{A_{\rm ord,\varphi}+4b^2B_{\rm ord}^2}{N}.    \tag{C.OS6}
+$$
+The fixed cemetery-law convention adds the terminal-extinction correction
+from {prf:ref}`thm-chaos-canonical-conditional-variance`, with
+$A_{\rm ord,\varphi}$ in place of $A_\varphi$.
+
+If $\nu_N\Rightarrow\nu$ with uniform priority marginal and the same
+moment control as the corresponding canonical regime, then
+$\mathcal F_h^{\rm ord}(\nu_N)\Rightarrow
+\mathcal F_h^{\rm ord}(\nu)$. Consequently the ordered update has a
+finite-horizon mean-field limit on priority-decorated laws, obtained by
+iterating this single nonlinear map. The physical population law is its
+projection. The existing Haar one-step and finite-horizon bounds remain
+the unmarked statements of
+{prf:ref}`thm-chaos-canonical-quantitative-bias`.
+:::
+
+:::{prf:proof}
+First fix the complete accepted-edge plan. A row can be written by only
+two donor stars: its own incoming star, if nonempty, and the star of its
+one accepted outgoing donor. The code processes donor labels in increasing
+order, so their priority comparison gives exactly (C.OS3) as the local
+limit of (SCK.O1). Its incoming edges have the Poisson intensities of
+{prf:ref}`def-mean-field-rooted-collision`; when the root has an outgoing
+edge to $u$, that edge is inserted once and excluded from the additional
+incoming cloud at $u$. The finite-component path bound
+{prf:ref}`lem-mean-field-component-bound` makes this construction finite
+almost surely. The last-writer readout uses frozen velocities, and is
+therefore determined by this finite marked neighborhood.
+
+For the variance, use the independent innovation blocks of
+{prf:ref}`thm-chaos-canonical-conditional-variance`, omitting its Haar
+rotation block. Replacing a measurement row's draw can change accepted
+edges through the shared normalizers. The exceptional-row and component
+exposure proof of {prf:ref}`lem-chaos-canonical-innovation-replacement`
+still bounds the squared number of affected rows by $A_D$: with all
+unchanged edges fixed, every ordered-star output outside the affected
+components uses the same donor stars, priorities and frozen velocities.
+For replacement of one donor/gate row $i$, remove that row's edge first.
+If $Y_j$ is the number of other recipients at a specified center $j$,
+the independent remaining rows each hit $j$ with probability at most
+$C/N$. Hence $\mathbb EY_j\le C$ and
+$\mathbb EY_j^2\le C+C^2$, also conditional on the old and new targets
+of row $i$. Only row $i$ and the two old/new target stars can change.
+If $D_i$ counts potentially affected rows, then
+$D_i\le1+(2+Y_{j_0})+(2+Y_{j_1})$, with absent targets omitted.
+The inequality $(x+y+z)^2\le3(x^2+y^2+z^2)$ gives
+$$
+\mathbb ED_i^2\le3[1+2\mathbb E(2+Y_j)^2]
+\le27+30C+6C^2=K_{\rm ord}(C).
+$$
+Changing one row's remaining jitter and kinetic innovations affects one
+output. {prf:ref}`lem-chaos-innovation-variance` then yields (C.OS5),
+including the random normalizers and all correlated collision outputs.
+
+For the bias, the first step of
+{prf:ref}`thm-chaos-canonical-quantitative-bias` couples the actual
+sampled global normalizers to deterministic population normalizers. Its
+exceptional-edge bound uses only accepted-edge patterns and affected
+components, so it is unchanged by the star readout and gives the first
+two terms of $B_{\rm ord}$. In its finite rooted exploration, attach
+the fixed priority to each discovered vertex. The same self-exclusion,
+conditional avoidance, rejected-target mark and categorical-to-Poisson
+estimates hold, since those are estimates of the edge law. On matching
+explorations, (SCK.O1) and (C.OS3) agree exactly: they use the same
+priorities, frozen velocities, donor positions, jitter and row-local
+kinetic noise. The stated $64A^2K^3/N$ mismatch bound for an exploration
+of at most $K$ vertices can be enlarged to $128A^2K^3/N$ to include
+duplicate sampled finite labels: at most $2K$ labels are exposed, and
+their collision probability is at most $8AK^2/N$ because every queried
+label has conditional mass at most $2A/N$; $A\ge1$ absorbs it.
+The unchanged two-component tail bound is $2M_3(C)/K^3$. Choosing
+$K=\lfloor N^{1/6}\rfloor$ and treating $N<N_0$ by the elementary
+bound gives the last three terms of $B_{\rm ord}$. Thus the conditional
+bias in (C.OS6) follows; its mean-square estimate is variance plus
+squared bias. The cemetery adjustment is the same bounded rare-event
+calculation because collision velocities remain capped.
+
+For continuity, first truncate the rooted exploration to at most $K$
+vertices. The measurement and companion kernels and their positive
+denominators have the continuity proved in
+{prf:ref}`lem-chaos-canonical-map-continuity`. The only new comparison
+in the finite readout is $r_u>r_t$. Its equality set has zero probability
+because the priority marginal is uniform. The finite-tree law therefore
+converges under weak convergence of the joint marked inputs. Remove the
+truncation by the same component moment bound. The kinetic, cap and
+terminal stages then have the existing continuity proof. Combining this
+with (C.OS6) and inducting over any fixed number of steps proves the
+finite-horizon assertion. The priority is preserved during that
+induction; the physical marginal alone need not determine the next
+ordered collision law.
+:::
+
 (sec-fg-propagation-intro-uniqueness)=
 ## 5. Discrete Stationary Identification and Its Remaining Estimate
 
@@ -1828,6 +2037,1429 @@ terminal-noise bound depend on $h$. No uniform small-timestep conclusion
 follows by suppressing that dependence.
 :::
 
+:::{prf:theorem} Quantitative noncommutation for the unconditioned terminal-box gas
+:label: thm-chaos-unconditioned-extinction-obstruction
+
+Use the actual terminal-box kernel of
+{prf:ref}`def-mean-field-marked-state`, with its declared positive final
+position noise, mandatory revival while a donor exists, and absorbing
+all-dead state. No restart or conditioning is applied. Write
+$D=\prod_{k=1}^d[\ell_k,u_k]$, $w_k=u_k-\ell_k>0$,
+$s=\sigma_x\sqrt h>0$, and let $\Phi$ be the standard normal distribution
+function. Define the explicit numbers
+
+$$
+ p_D=\prod_{k=1}^d\left[2\Phi\!\left(\frac{w_k}{2s}\right)-1\right],
+ \qquad q_D=1-p_D\in(0,1),\qquad b_N=q_D^N.
+$$
+
+Let $\tau_N=\inf\{n\ge0:M_n=0\}$ for an entering population with
+$M_0>0$, and let $A_{N,n}=M_n/N$, set to zero after extinction. For every
+integer $n\ge0$ and every initial law supported on these entering states,
+
+$$
+ \Pr(\tau_N>n)\le(1-b_N)^n\le e^{-nb_N},\qquad
+ \mathbb E\tau_N\le b_N^{-1},\qquad
+ \mathbb EA_{N,n}\le(1-b_N)^n.
+ \tag{9.E1}
+$$
+
+In particular extinction occurs almost surely at every finite $N$.
+Every invariant probability of the unconditioned, absorbing full kernel
+is supported on all-dead states. For any existing QSD of the killed
+kernel, its eigenvalue instead satisfies the explicit two-sided estimate
+
+$$
+ q_D^N\le1-\alpha_N
+ \le\min\{1,e^{-pN/8}+e^{-a_0N/16}\},\qquad p=p_Jp_G,
+ \tag{9.E1a}
+$$
+
+with $a_0,p_J,p_G$ evaluated below. The QSD assertion uses its exact
+eigenmeasure equation; it does not assert QSD existence for a new class
+of forces.
+For the same fixed-step population map, write
+$\mu_n=\mathcal F_h^n(\mu_0)$, $m_n=\mu_n(a=1)$, with $m_0>0$.
+Let $a_0>0$ be the explicit Gaussian landing bound below, obtained by
+the calculation of {prf:ref}`cor-mean-field-positive-alive-mass` on a
+ball inside the box. Then $m_n\ge a_0$ for every $n\ge1$. Set
+$x_D=((\ell_k+u_k)/2)_{k=1}^d$, $r_0=\min_k w_k/4$ and
+$R_D=(\sum_k\max\{|\ell_k|,|u_k|\}^2)^{1/2}$. The constants are
+
+$$
+\begin{gathered}
+ c_h=e^{-\gamma h},\quad
+ s_h^2=\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0,\end{cases}
+ \quad
+ W=(1+2\alpha)V,\quad F_J=L_U(R_D+J)+B_U,\\
+ L=R_D+J+\frac h2(1+c_h)(W+\tfrac h2F_J)
+                   +\frac h2s_h\|B\|G,\\
+ p_J=\Pr(|\sigma_J\xi|\le J),\quad p_G=\Pr(|\xi|\le G),\\
+ a_0=p_Jp_G\,\frac{\pi^{d/2}r_0^d}{\Gamma(1+d/2)}
+       (2\pi s^2)^{-d/2}
+       \exp\!\left[-\frac{(L+|x_D|+r_0)^2}{2s^2}\right].
+\end{gathered}
+$$
+
+Here $J,G>0$ are arbitrary evaluation radii and $\xi$ is a standard
+$d$-dimensional Gaussian. For $\sigma_J>0$ these probabilities are,
+respectively, $\gamma(d/2,J^2/(2\sigma_J^2))/\Gamma(d/2)$ and
+$\gamma(d/2,G^2/2)/\Gamma(d/2)$, where $\gamma(\cdot,\cdot)$ is the
+lower incomplete gamma function; $p_J=1$ when $\sigma_J=0$.
+The ball $B(x_D,r_0)$ lies strictly inside $D$. Here $\alpha$ is the
+configured collision restitution, $V$ the completed velocity cap,
+$\gamma$ the friction, $B$ the OU noise factor, $\sigma_J$ the cloning
+jitter, and $L_U,B_U$ the declared force-growth constants
+$|\nabla U(x)|\le L_U|x|+B_U$. The bound $b_N$ is
+independent of reward, cloning, collision and force parameters because it
+holds uniformly over every possible preterminal position center.
+
+The resulting full-law error has the lower bound
+
+$$
+ \mathbb E|A_{N,n}-m_n|\ge a_0-(1-b_N)^n\quad(n\ge1),\qquad
+ \boxed{\sup_{n\ge1}\mathbb E|A_{N,n}-m_n|\ge a_0.}
+ \tag{9.E2}
+$$
+
+In particular, the error is at least $a_0/2$ whenever
+
+$$
+ n\ge n_N^{\mathrm{sep}}
+ :=\left\lceil\frac{\log(2/a_0)}{-\log(1-q_D^N)}\right\rceil.
+ \tag{9.E3}
+$$
+
+The simpler sufficient bound is
+$n\ge\lceil q_D^{-N}\log(2/a_0)\rceil$.
+Physical time is $hn$; the number of row updates through this horizon is
+$Nn$. Likewise extinction has probability at least $1-\delta$ by
+$n=\lceil q_D^{-N}\log(1/\delta)\rceil$, for $0<\delta<1$, and the
+expected physical extinction time is at most $h q_D^{-N}$.
+
+For initial arrays covered by the existing finite-horizon mean-field
+theorem, the two orders of limits satisfy
+
+$$
+ \lim_{N\to\infty}\lim_{n\to\infty}\mathbb EA_{N,n}=0,
+ \qquad
+ \liminf_{n\to\infty}\lim_{N\to\infty}\mathbb EA_{N,n}
+ =\liminf_{n\to\infty}m_n\ge a_0>0.
+ \tag{9.E4}
+$$
+
+No existence of a long-time limit of $\mu_n$ is required for this strict
+separation. Under $\|\nu-\mu\|_{\mathrm{TV}}=\sup_A|\nu(A)-\mu(A)|$,
+both $\mathbb E\|L_N(S_n)-\mu_n\|_{\mathrm{TV}}$ and
+$\|\mathbb E L_N(S_n)-\mu_n\|_{\mathrm{TV}}$ are at least the respective
+alive-mass discrepancy. The same lower bound holds for a bounded-Lipschitz
+metric whose state cost dominates $|a-\widetilde a|$ and in which the
+test $z\mapsto a$ is admitted. Thus the obstruction is present even for
+this single bounded population observable, independently of the atomic
+nature of $L_N$.
+:::
+
+:::{prf:proof}
+**1. A bound uniform over every preceding stage.** For one interval of
+width $w$, translate its center to zero and write
+$f(t)=\Pr(t+s\xi\in[-w/2,w/2])$.
+It is even and
+
+$$
+ f'(t)=s^{-1}\left[\phi((w/2+t)/s)-\phi((w/2-t)/s)\right]\le0
+ \quad(t\ge0),
+$$
+
+where $\phi$ is the standard normal density: the first argument has at
+least the absolute value of the second. Hence
+$\sup_t f(t)=2\Phi(w/(2s))-1$. The independent coordinates of the final
+position innovation give
+$\sup_x\Pr(x+s\xi\in D)=p_D$.
+
+Condition now on the entire actual update before its final position
+innovations. In particular all companions, fitnesses, accepted edges,
+component rotations, cloning jitters and OU innovations are retained in
+this conditioning. The preterminal centers $X_{2,i}$ may be arbitrarily
+dependent. The final position innovations are still independent, so
+
+$$
+ \Pr(M_{n+1}=0\mid X_{2,1},\ldots,X_{2,N},\text{preceding innovations})
+ =\prod_{i=1}^N\Pr(X_{2,i}+s\xi_i\notin D)\ge q_D^N.
+$$
+
+This holds on every nonextinct entering state. The second force kick and
+the cap do not change the terminal position. Integrating over the
+preceding innovations proves the same extinction lower bound for the
+full kernel, without independence of the unconditional output rows.
+
+**2. Iterate the actual absorption event.** Conditional on
+$\{\tau_N>j\}$, the next survival probability is at most $1-b_N$.
+Induction gives (9.E1); summing
+$\mathbb E\tau_N=\sum_{n\ge0}\Pr(\tau_N>n)$ gives the mean bound.
+Also $0\le A_{N,n}\le\mathbf1_{\{\tau_N>n\}}$ because the algorithm
+does not restart after all donors have died. The exponential relaxation
+uses $1-b_N\le e^{-b_N}$.
+For an invariant law $\Pi_N$, the one-step survival estimate gives
+$\Pi_N(M>0)\le(1-b_N)\Pi_N(M>0)$; thus $\Pi_N(M>0)=0$.
+Integrating the one-step extinction lower bound against any QSD gives
+$1-\alpha_N\ge b_N$. The two-stage Gaussian landing and Chernoff
+calculation of {prf:ref}`cor-mean-field-positive-alive-mass`, using the
+same translated core ball, gives its upper bound in (9.E1a).
+
+**3. Compare with the unchanged population map.** The positive-alive-mass
+corollary's proof applies with the core ball centered at $x_D$.
+Copying or persistence places every source in $D$, and the collision
+speed is at most $W$. On the independent jitter and OU events of
+probabilities $p_J,p_G$, the preterminal center has norm at most $L$.
+Every point in $B(x_D,r_0)$ is then at distance at most
+$L+|x_D|+r_0$ from that center. Integrating the final Gaussian density
+over this ball gives exactly $a_0$, with no population-size factor.
+This proves $m_1\ge a_0$ and inductively $m_n\ge a_0$.
+Since $m_n$ is deterministic,
+
+$$
+ \mathbb E|A_{N,n}-m_n|\ge m_n-\mathbb EA_{N,n}
+                       \ge a_0-(1-b_N)^n.
+$$
+
+Taking a supremum proves (9.E2). Solving
+$(1-b_N)^n\le a_0/2$ proves (9.E3); the exponential upper bound proves
+the simpler horizons and their physical-time conversion. The same test
+$\{a=1\}$ proves the stated TV and bounded-observable lower bounds.
+
+**4. Take the two orders separately.** At each fixed $N$, (9.E1) gives
+$\mathbb EA_{N,n}\to0$. At each fixed $n$, the proved marked
+finite-horizon limit gives $A_{N,n}\to m_n$ in probability; boundedness
+then gives convergence of its expectation. These are the two claims
+in (9.E4). None of these steps uses a stationary-attraction hypothesis.
+:::
+
+:::{prf:remark} Scope of the extinction obstruction
+:label: rem-chaos-extinction-obstruction-scope
+
+The preceding theorem applies to the unconditioned absorbing configuration
+already defined by the algorithm. It does not concern a survival-conditioned
+QSD, and it does not replace the separately declared conservative
+$D=\mathbb R^d$ problem: there $q_D=0$ and (9.E1)--(9.E3) give no positive
+extinction rate. In particular it neither proves nor disproves conservative
+nonlinear phase attraction. For the terminal-box configuration, however,
+the requested vanishing uniform-time full-law error is false even though
+its fixed-horizon mean-field law is valid. Conditioning on survival would
+change the mathematical object being compared and must be stated explicitly.
+:::
+
+(sec-chaos-survival-conditioned)=
+### Survival-conditioned population laws
+
+:::{div} feynman-prose
+Imagine collecting runs of the unchanged gas and looking at those still alive
+at time $n$. Their law is $\eta_0Q_N^n/(\eta_0Q_N^n\mathbf 1)$: evolve first,
+then normalize the surviving mass. Eventual extinction of every finite swarm
+does not obstruct studying this conditional law. Nor is this the procedure
+that rejects every fatal update and tries again; that procedure changes the
+transition rule.
+
+The alive-fraction estimate makes another distinction useful. At each current
+time, its uniform conditional bound gives probability at most $\delta_N$ of
+an insufficient alive fraction among surviving swarms. There is no factor
+$n$ in that statement. Such a factor enters when we instead demand that no
+low-fraction episode occurred anywhere in the history. Those are different
+events, and the present estimate concerns the first.
+
+Keep the whole marked population while evolving: dead rows still belong to
+the state on which revival acts. Extract and normalize the alive distribution
+afterward. These operations specify the convergence problem precisely; they
+do not by themselves prove attraction to a stationary conditional law.
+:::
+
+:::{prf:definition} Survival conditioning and the quantitative alive floor
+:label: def-chaos-survival-filter
+
+Retain the actual terminal-box kernel and parameters of
+{prf:ref}`def-mean-field-marked-state`. Let $P_N$ retain the complete
+physical output, including all-dead outputs, and let $Q_N$ be its
+restriction to $E_N=\{M>0\}$. Use the explicit $a_0,p=p_Jp_G$ of
+{prf:ref}`thm-chaos-unconditioned-extinction-obstruction`, and put
+
+$$
+ m_*=a_0/4,\qquad G_N=\{M/N\ge m_*\},\qquad
+ \delta_N=\min\{1,e^{-pN/8}+e^{-a_0N/16}\}.
+$$
+
+The proved update estimates are
+$P_N(S,G_N^c)\le\delta_N$ and
+$q_N(S):=Q_N1(S)\ge a_0$ for every nonextinct input $S$.
+The second follows also from
+$\mathbb E_S[M'/N]\ge a_0$ and $M'/N\le\mathbf1_{E_N}$.
+For an initial law $\eta_0$ on $E_N$, define the actual surviving law
+
+$$
+ \eta_n=\frac{\eta_0Q_N^n}{\eta_0Q_N^n1},\qquad
+ \eta_{n+1}=\frac{\eta_nQ_N}{\eta_nq_N},\qquad
+ e_n^{\dagger}=1-\eta_nq_N.
+$$
+
+These denominators are positive for every finite $n$, since they are
+at least $a_0^n$. For reference, the entirely explicit threshold
+
+$$
+ N_{\mathrm{surv}}=
+ \left\lceil\max\{8/p,16/a_0\}\log4\right\rceil
+$$
+
+ensures $\delta_N\le1/2$ for $N\ge N_{\mathrm{surv}}$.
+All constants except the displayed $N$ dependence are independent of
+population size. No conditioning step changes the simulated algorithm.
+:::
+
+:::{prf:corollary} Exact extinction hazard and exponential recovery window
+:label: cor-chaos-exact-hazard-recovery-window
+
+Retain the actual canonical terminal-box update and the constants of
+{prf:ref}`def-chaos-survival-filter`. Put $c_0=h/2$,
+$a=e^{-\gamma h}$, $s=\sigma_x\sqrt h$ and
+
+$$
+q^2=\sigma_v^2
+\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0,
+\end{cases}
+\qquad \tau^2=c_0^2q^2+s^2>0.
+$$
+
+Condition on the complete post-cloning positions $X_i$ and collision
+velocities $V_i^C$, before the independent row kinetic Gaussians.
+The actual position update has the exact form
+
+$$
+x_i^+=\mu_i+\tau Z_i,\qquad
+\mu_i=X_i+c_0(1+a)(V_i^C+c_0F(X_i)),
+\qquad Z_i\overset{\rm iid}{\sim}N(0,I_d).
+                                                               \tag{9.H1}
+$$
+
+For the box $D=\prod_{k=1}^d[\ell_k,u_k]$ define
+
+$$
+P_{D,\tau}(z)=\prod_{k=1}^d
+\left[\Phi\!\left(\frac{u_k-z_k}{\tau}\right)
+     -\Phi\!\left(\frac{\ell_k-z_k}{\tau}\right)\right],
+\qquad
+q_\tau=1-\prod_{k=1}^d
+ \left[2\Phi\!\left(\frac{u_k-\ell_k}{2\tau}\right)-1\right].
+                                                               \tag{9.H2}
+$$
+
+For every nonextinct entering state $S$, the complete-kernel
+one-step extinction hazard is the specified finite-plan and Gaussian
+expectation
+
+$$
+\boxed{\quad
+h_N(S):=P_N(S,M^+=0)
+=\mathbb E_S^{\rm prep}\prod_{i=1}^N
+ [1-P_{D,\tau}(\mu_i)],\qquad
+q_\tau^N\le h_N(S)\le\delta_N.
+\quad}                                                         \tag{9.H3}
+$$
+
+Here $\mathbb E_S^{\rm prep}$ uses the actual measurement,
+acceptance, mandatory revival, jitter and component-Haar laws; no
+independence of the prepared centers $\mu_i$ is asserted. The upper
+bound uses the already proved full-update alive-fraction estimate,
+not a separate survival assumption. For $N\ge N_{\rm surv}$,
+the absorption time consequently satisfies, at every integer $n\ge0$,
+
+$$
+\boxed{\quad
+(1-\delta_N)^n\le\Pr_S(\tau_N>n)
+ \le(1-q_\tau^N)^n,
+\qquad
+\delta_N^{-1}\le\mathbb E_S\tau_N\le q_\tau^{-N}.
+\quad}                                                         \tag{9.H4}
+$$
+
+The chance of *any* alive-fraction failure through step $T$ is at
+most $T\delta_N$, while the surviving law at each observation time
+obeys the sharper no-$T$ estimate (9.S1). Thus the guaranteed
+survival-only horizon at failure tolerance $\varepsilon$ is
+$T\le\varepsilon/\delta_N$ steps, or $hT$ physical time; a
+mean-field approximation on that entire horizon additionally uses
+its own finite-horizon error bound.
+
+The exact formula also resolves the role of landscape geometry.
+For $r>0$, let $D_r=\{z\in D:\operatorname{dist}(z,\partial D)
+\ge r\}$ and set
+$\epsilon_r=\min\{1,2d\Phi(-r/\tau)\}$. For $0<\rho\le1$ let
+$\mathcal H_{\rho,r}$ be the event, under the preparation law, that
+at least $\lceil\rho N\rceil$ of the centers $\mu_i$ lie in $D_r$.
+Then the same actual hazard satisfies
+
+$$
+h_N(S)\le\min\left\{\delta_N,
+\Pr_S^{\rm prep}(\mathcal H_{\rho,r}^c)
+ +\epsilon_r^{\lceil\rho N\rceil}\right\}.
+                                                               \tag{9.H5}
+$$
+
+The safe-center probability in (9.H5) is an explicit finite-plan
+Gaussian/Haar integral through (9.H1); force, reward, clone jitter,
+restitution, friction and the entering alive geometry all remain in
+that integral. The velocity cap bounds the entering stored velocities
+but does not cap the OU position displacement $c_0q\xi_v$ or the
+final position noise $s\xi_x$. Hence a one-step exit remains possible;
+(9.H3)--(9.H5) quantify how unlikely simultaneous exit is under the
+actual population geometry, without positing that ordinary exits must
+accumulate over several steps.
+
+*Proof.* Substitute the B1--A1--O--A2 equations of
+{prf:ref}`def-eg-baoab-canonical` into $x^+$: the deterministic
+center is $\mu_i$, and the independent Gaussian sum
+$c_0q\xi_{v,i}+s\xi_{x,i}$ has variance $\tau^2I_d$. The B2
+force kick and velocity cap occur after the position used for
+classification and cannot change it. Conditional on preparation,
+these Gaussian pairs are independent across rows, so their product
+gives the equality in (9.H3). The maximum probability that a
+$N(z,\tau^2I_d)$ point lies in an interval of width $w_k$ is
+$2\Phi(w_k/(2\tau))-1$, attained when $z_k$ is its midpoint;
+multiply over coordinates to get the lower bound $q_\tau^N$.
+Extinction is contained in $G_N^c$, so the proved
+$P_N(S,G_N^c)\le\delta_N$ gives the upper bound. Iterating both
+conditional hazard bounds until absorption proves (9.H4), and
+summing their survival tails gives the expectation bounds. The
+first-hit union bound gives $T\delta_N$. If $\mu_i\in D_r$,
+each coordinate's exit probability is at most
+$2\Phi(-r/\tau)$; the union bound over coordinates gives
+$1-P_{D,\tau}(\mu_i)\le\epsilon_r$. On
+$\mathcal H_{\rho,r}$ at least $\lceil\rho N\rceil$ factors in
+the product are at most $\epsilon_r$; the others are at most one.
+Average over preparation and split by this event to obtain (9.H5).
+$\square$
+:::
+
+:::{prf:proposition} Safe-center survival with arbitrary position-displacing noise
+:label: prop-chaos-safe-center-noise
+
+Use the same complete terminal-box update as in
+{prf:ref}`cor-chaos-exact-hazard-recovery-window`, but allow
+$\sigma_x\ge0$ and $\sigma_v\ge0$. Set
+$\tau^2=(h q/2)^2+h\sigma_x^2\ge0$, with $q$ as in (9.H1).
+The post-cloning/collision preparation law and centers $\mu_i$ are
+exactly those in (9.H1). At $\tau=0$ define
+$P_{D,0}(z)=\mathbf1_D(z)$; at $\tau>0$ use (9.H2). Then, for every
+nonextinct entering state $S$, including the zero-noise case,
+
+$$
+ P_N(S,M^+=0)
+ =\mathbb E_S^{\rm prep}\prod_{i=1}^N
+       [1-P_{D,\tau}(\mu_i)].                         \tag{9.H6}
+$$
+
+When $\tau>0$, the box-width argument in (9.H2) also gives
+$P_N(S,M^+=0)\ge q_\tau^N>0$ for every nonextinct $S$, even
+when $\sigma_x=0$ and the position displacement comes entirely
+from the OU innovation. At $\tau=0$ there is no such positive
+state-uniform lower bound.
+
+Fix $r>0$, $0<\rho\le1$, and integers
+$g=\lceil\rho N\rceil$ and $1\le k\le g$. Let
+$D_r=\{z\in D:\operatorname{dist}(z,\partial D)\ge r\}$,
+and define the *complete-preparation coverage deficit*
+
+$$
+ \eta_{N,g,r}(S)=
+ \mathbb E_S^{\rm prep}
+ \mathbf1\!\left\{\sum_{i=1}^N\mathbf1_{D_r}(\mu_i)<g\right\}.
+                                                               \tag{9.H7}
+$$
+
+This is an integral against the specified finite measurement,
+acceptance, donor, clone-jitter and component-rotation kernel; in
+particular it retains dependence among the $\mu_i$. Define
+
+$$
+ \epsilon_r(\tau)=
+ \begin{cases}
+  \min\{1,2d\Phi(-r/\tau)\},&\tau>0,\\
+  0,&\tau=0,
+ \end{cases}
+ \quad p_r(\tau)=1-\epsilon_r(\tau),
+ \quad
+ B_{g,k}(p)=\sum_{j=0}^{k-1}{g\choose j}p^j(1-p)^{g-j}.
+                                                               \tag{9.H8}
+$$
+
+With $0^0=1$ in the finite binomial sum, the actual full-update
+alive-fraction and extinction bounds are
+
+$$
+ \boxed{\quad
+ P_N(S,M^+<k)\le
+ \eta_{N,g,r}(S)+B_{g,k}(p_r(\tau)),\qquad
+ P_N(S,M^+=0)\le
+ \eta_{N,g,r}(S)+\epsilon_r(\tau)^g.
+ \quad}                                                         \tag{9.H9}
+$$
+
+The right sides may be truncated at one. In particular, if
+$\tau=0$ and the preparation guarantees $g$ centers in $D_r$
+($\eta_{N,g,r}(S)=0$), then $M^+\ge g$ almost surely and the
+extinction hazard is zero. This conclusion permits clone jitter:
+its effect is already included in the centers and their coverage
+deficit. Setting only $\sigma_x=0$ does **not** make $\tau=0$ when
+$q>0$; the OU innovation is applied before the second position
+drift, and the subsequent velocity cap cannot undo that displacement.
+
+The estimate also has a pathwise form without independence between
+updates. Let $\mathcal C\subseteq\{S:M(S)\ge k\}$ be a declared set of entering
+states, let $\theta=\inf\{j\ge0:S_j\notin\mathcal C\}$, and let
+$\zeta_k=\inf\{j\ge1:M_j<k\}$. Write
+$b(S)=\min\{1,\eta_{N,g,r}(S)+B_{g,k}(p_r(\tau))\}$.
+For $S_0\in\mathcal C$ and every integer $T\ge1$,
+
+$$
+ \Pr_{S_0}(\zeta_k\le T,\ \zeta_k\le\theta)
+ \le\sum_{j=0}^{T-1}
+ \mathbb E_{S_0}\!left[
+ \mathbf1_{\{j<\zeta_k,\,j<\theta\}}b(S_j)\right].
+                                                               \tag{9.H10}
+$$
+
+If $b(S)\le\bar b<1$ on $\mathcal C$, this is at most
+$1-(1-\bar b)^T\le T\bar b$; explicitly,
+$\Pr_{S_0}(\zeta_k>T\text{ or }\theta<\zeta_k)
+\ge(1-\bar b)^T$. If $\mathcal C$ is invariant up to the
+first alive-fraction failure, then
+$\mathbb E_{S_0}\zeta_k\ge1/\bar b$ for $\bar b>0$, and
+$\zeta_k=\infty$ almost surely when $\bar b=0$.
+In this invariant case, for the full path law $\mathsf P_T$ on
+$(S_0,\ldots,S_T)$ and its actual conditioning
+$\mathsf P_T^{\rm good}=\mathsf P_T(\cdot\mid\zeta_k>T)$,
+
+$$
+ \|\mathsf P_T-\mathsf P_T^{\rm good}\|_{\rm TV}
+ =\Pr_{S_0}(\zeta_k\le T)
+ \le1-(1-\bar b)^T.                                 \tag{9.H11}
+$$
+
+The equality uses the convention
+$\|P-Q\|_{\rm TV}=\sup_A|P(A)-Q(A)|$.
+It is a full-path total-variation estimate for removing rare
+low-alive-fraction histories; it is not an attraction estimate
+between two different initial populations.
+Thus a certified structural upper bound on (9.H7) translates
+directly into iteration, physical-time $hT$, and $NT$ row-update
+budgets. Neither (9.H9) nor (9.H10) requires a Markov model of the
+basin labels.
+
+*Proof.* The algebra giving (9.H1) does not use strict positivity of
+either noise parameter. When $\tau=0$, its Gaussian term is the zero
+vector almost surely, so conditional survival is
+$\mathbf1_D(\mu_i)$; otherwise it is $P_{D,\tau}(\mu_i)$.
+The row kinetic innovations are independent conditional on the full
+preparation, giving (9.H6), including at $\tau=0$.
+
+On the event complementary to (9.H7), choose measurably the first
+$g$ row indices whose centers lie in $D_r$. For each chosen center,
+the Gaussian coordinate tail and a union bound give conditional
+exit probability at most $\epsilon_r(\tau)$, including zero at
+$\tau=0$. The chosen row survival indicators are conditionally
+independent. Couple each one to an independent Bernoulli variable
+of success probability $p_r(\tau)$ using its independent uniform
+quantile; the row indicator dominates that variable. If fewer
+than $k$ of all $N$ rows survive, fewer than $k$ chosen rows survive.
+The binomial lower tail therefore bounds its conditional
+probability. On the coverage-failure event use the bound one and
+average over preparation. For $k=1$ the binomial lower tail is
+$\epsilon_r(\tau)^g$, proving both bounds in (9.H9).
+
+For (9.H10), partition the first hit of $\{M<k\}$ by its step.
+On $\{j<\zeta_k,j<\theta\}$ the entering state lies in
+$\mathcal C$ and is nonextinct. The Markov property and (9.H9)
+bound the conditional chance of the next-step hit by $b(S_j)$;
+summation proves (9.H10). If $b\le\bar b$ on $\mathcal C$,
+conditional survival at each eligible step is at least
+$1-\bar b$, yielding the geometric bound. The expectation claim
+follows by summing these survival probabilities when exit from
+$\mathcal C$ cannot occur before the first hit. Finally, for any
+probability $P$ and event $A$ of positive probability,
+$\|P-P(\cdot\mid A)\|_{\rm TV}=P(A^c)$: the upper bound follows
+by writing $P=P(A)P(\cdot\mid A)+P(A^c)P(\cdot\mid A^c)$,
+and $A^c$ attains it. Apply this identity to the full path event
+$A=\{\zeta_k>T\}$ to obtain (9.H11). $\square$
+:::
+
+:::{prf:theorem} Uniform alive-fraction control under survival
+:label: thm-chaos-survival-uniform-floor
+
+For every $n\ge1$ and every $N$ in the preceding definition,
+
+$$
+ \boxed{\eta_n(G_N^c)\le\delta_N.}
+ \tag{9.S1}
+$$
+
+Every QSD $\nu_NQ_N=\alpha_N\nu_N$ obeys the same bound
+$\nu_N(G_N^c)\le\delta_N$. More precisely, writing
+$b_N=q_D^N$ as in the extinction theorem, both bounds can be replaced by
+$\overline\delta_N=(\delta_N-b_N)/(1-b_N)\le\delta_N$.
+The exact one-step normalization satisfies
+
+$$
+ \eta_{n+1}
+ =\frac{q_N\eta_n}{\eta_nq_N}\,\overline P_N,
+ \qquad \overline P_N(S,\cdot)=Q_N(S,\cdot)/q_N(S),
+$$
+$$
+ \|\eta_{n+1}-\eta_nP_N\|_{\mathrm{TV}}
+ =e_n^{\dagger}\le\delta_N,
+ \tag{9.S2}
+$$
+
+where $\|\cdot\|_{\mathrm{TV}}=\sup_A|\cdot(A)|$ on the full marked
+swarm space. In general $\eta_n\ne\eta_0\overline P_N^n$.
+Thus (9.S1) is a bound at every current observation time under survival
+through that time; it has no factor $n$ and no inverse cumulative-survival
+factor. The statement does not exclude a low-fraction event earlier in
+the history.
+:::
+
+:::{prf:proof}
+Let $e=\eta_nP_N(E_N^c)=e_n^{\dagger}$. Extinction is a subset of
+$G_N^c$, so
+
+$$
+ \eta_{n+1}(G_N^c)
+ =\frac{\eta_nP_N(G_N^c\cap E_N)}{1-e}
+ =\frac{\eta_nP_N(G_N^c)-e}{1-e}
+ \le\frac{\delta_N-e}{1-e}\le\delta_N.
+$$
+
+The last inequality is equivalent to $e(1-\delta_N)\ge0$.
+The argument applies to every entering law on $E_N$, hence to each
+$\eta_n$ and to a QSD. Since $e\ge b_N$ and
+$(\delta_N-e)/(1-e)$ is decreasing in $e$, it also proves the sharper
+bound. In particular $\delta_N\ge b_N$ follows from the two bounds on
+the same actual update; no inconsistent probability range is introduced.
+
+Disintegration by the last input gives the displayed tilted-input
+formula. Finally $\eta_nP_N$ is a mixture of its conditional laws on
+the disjoint events $E_N$ and $E_N^c$, with respective weights $1-e,e$.
+Its first conditional law is $\eta_{n+1}$. The total variation distance
+from this mixture to $\eta_{n+1}$ is exactly $e$, proving (9.S2).
+:::
+
+:::{prf:theorem} Uniform conditional moments and QSD existence for the box kernel
+:label: thm-chaos-general-box-qsd-existence
+
+Use the existing continuous, globally Lipschitz canonical force and its
+declared growth constants $|F(x)|\le B_U+L_U|x|$. This theorem does not
+require a quadratic objective, phase-space invertibility, or an additional
+timestep restriction. With the parameters of
+{prf:ref}`def-baoab-update-rule` and the preceding landing bound, set
+
+$$
+ c=h/2,\quad b=c(1+c_h),\quad \eta=c^2(1+c_h),\quad
+ A_x=1+\eta L_U,\quad W=(1+2\alpha)V,
+$$
+$$
+ \tau_x^2=c^2s_h^2\|B\|^2+\sigma_x^2h,\qquad
+ g_{d,r}=\left[2^{r/2}\frac{\Gamma((d+r)/2)}{\Gamma(d/2)}\right]^{1/r},
+$$
+$$
+ K_r=\left[A_x(R_D+\sigma_J g_{d,r})
+                    +bW+\eta B_U+\tau_xg_{d,r}\right]^r
+ \quad(r\ge1),\qquad H_x=(2\pi\sigma_x^2h)^{-d/2}.
+$$
+
+For every $n\ge1$, every admitted initial law on $E_N$, and every row $i$,
+
+$$
+ \mathbb E_{\eta_n}\frac1N\sum_i|x_i|^r\le K_r/a_0,
+ \qquad (\eta_n)_{x_i}\le(H_x/a_0)\,dx.
+ \tag{9.S3}
+$$
+
+The actual kernel has at least one exchangeable QSD for every finite $N$.
+Every QSD obeys (9.S1), (9.S3), and
+$a_0\le\alpha_N\le1-q_D^N$, as well as (9.E1a).
+These claims concern existence and explicit moment/coverage bounds;
+they do not assert uniqueness or attraction of every initial law.
+:::
+
+:::{prf:proof}
+**1. Evaluate the actual position update.** Before jitter every source
+position $Y$ lies in $D$: a live slot either persists or copies an
+eligible donor, and a dead slot is revived from one. The prepared
+position is $X_0=Y+A\sigma_J\xi^J$ for $A\in\{0,1\}$.
+The exact collision formula gives $|V_0|\le W$. Combining B1, A1,
+O and A2, and then the final position diffusion, gives
+
+$$
+ X'=X_0+bV_0+\eta F(X_0)+cs_hB\xi^O
+                         +\sigma_x\sqrt h\,\xi^x.
+$$
+
+The last two independent Gaussian terms have covariance bounded by
+$\tau_x^2I_d$. Their $L^r$ norm is at most $\tau_xg_{d,r}$: write their
+law as $TZ$ with $\|T\|\le\tau_x$ and a standard Gaussian $Z$.
+Using the force-growth bound and Minkowski's inequality proves
+$\mathbb E_S|X_i'|^r\le K_r$ for every entering state and row.
+This argument does not require independent collision outputs.
+Conditional on the preceding innovations, the final position density
+is a translated Gaussian bounded by $H_x$. Mixing preserves this bound.
+
+**2. Normalize only the current update.** For any entering probability
+$\eta$ on $E_N$, its next survival probability is at least $a_0$.
+Restricting a nonnegative moment or a positional event to survival only
+reduces its unnormalized expectation. Division by $\eta q_N\ge a_0$
+therefore proves both bounds in (9.S3), independently of the history.
+Applying this at a QSD proves its same bounds.
+
+**3. Check a compact, convex class for the normalized map.** Work on
+the full physical marked space with the closed capped velocity ball;
+the actual formulas extend continuously to its boundary. Let
+$\mathcal K_N$ be the probability laws supported on nonextinct,
+terminally consistent states, with capped velocities, averaged second
+position moment at most $K_2/a_0$, and each positional marginal
+dominated by $(H_x/a_0)dx$. It is nonempty by Step 2, applied to any
+nonextinct input. It is convex. Its moment bound implies
+
+$$
+ \Pr_{\lambda}(\max_i|x_i|>R)
+ \le NK_2/(a_0R^2)\quad(\lambda\in\mathcal K_N),
+$$
+
+so it is tight at each fixed $N$. The moment constraint is weakly
+closed by lower semicontinuity. Density domination is weakly closed
+by testing nonnegative continuous compactly supported functions.
+In particular every limiting positional marginal gives zero mass to
+$\partial D$. Terminal mark consistency is then retained in weak
+limits, since its only possible discontinuities are at those null
+boundaries. Capped velocities and the nonempty alive masks are closed
+conditions. Thus $\mathcal K_N$ is weakly compact.
+
+**4. Verify continuity and take a fixed point.** The actual Feller
+proof {prf:ref}`thm-euclidean-feller` applies: within each fixed input
+alive mask there are finitely many companion/gate patterns with
+continuous probabilities. The force, collision, jitter, cap and kinetic
+updates are continuous for fixed innovations. Final position noise
+makes every terminal boundary a null event. For a bounded continuous
+test on output swarm states this gives continuity after survival
+restriction as well, since nonextinction is a clopen event of the
+discrete output marks. Dominated convergence proves that both $Q_Nf$
+and $q_N$ are bounded continuous on the admitted input class. This
+also gives continuity under weak limits in $\mathcal K_N$; any spatial
+boundary exceptional set has zero mass by Step 3.
+
+Consequently
+$T_N(\lambda)=\lambda Q_N/(\lambda q_N)$ is continuous on
+$\mathcal K_N$, since its denominator is at least $a_0$. Step 2 shows
+$T_N(\mathcal K_N)\subset\mathcal K_N$. The compact-convex fixed-point
+theorem in the locally convex space of signed measures with the weak
+topology supplies $\nu_N=T_N(\nu_N)$, that is,
+$\nu_NQ_N=\alpha_N\nu_N$ with $\alpha_N=\nu_Nq_N\ge a_0$.
+The same argument on the nonempty closed convex exchangeable subclass
+gives an exchangeable QSD, because the actual kernel is permutation
+equivariant. The extinction lower bound supplies
+$\alpha_N\le1-q_D^N$. No spectral gap or attraction premise was used.
+:::
+
+:::{prf:proposition} A kinetic resonance that prevents conditioned TV attraction
+:label: prop-chaos-conditioned-kinetic-resonance
+
+Retain the complete canonical box kernel, including active cloning,
+component collisions, positive thermostat and position noises, cloning
+jitter, revival, terminal absorption and the programmed radial cap
+$C_V(v)=Vv/(V+|v|)$ and restitution $0\le\alpha\le1$. Consider the parameter slice with affine restoring
+force $F(x)=-\kappa(x-x_c)$ and
+
+$$
+ \kappa>0,\qquad c=h/2,\qquad c^2\kappa=1.
+$$
+
+No noise amplitude, acceptance rule or cloning parameter is changed in
+the following calculation. If every retained slot initially has the same
+velocity $v_0$, with $0<|v_0|<V$, then on every surviving trajectory
+
+$$
+ \boxed{v_{i,n}=v_n=(-1)^n\frac{Vv_0}{V+n|v_0|}
+       \quad\text{for all }i=1,\ldots,N.}
+ \tag{9.R1}
+$$
+
+This identity is independent of $N$, initial positions, companion
+realizations, fitness values, collision components, restitution,
+friction, jitters and noise realizations. It persists under survival
+conditioning, current alive-floor conditioning, or any finite-history
+alive-floor conditioning of positive probability. Mean-field iterates
+from a monokinetic marked law have the same deterministic velocity
+marginal, as do their normalized alive laws.
+
+For any two distinct finite update indices, the corresponding
+survival-conditioned swarm laws have TV distance one, with the convention
+$\|\mu-\nu\|_{\mathrm{TV}}=\sup_A|\mu(A)-\nu(A)|$. Every QSD of
+this resonant kernel is supported on $v_1=\cdots=v_N=0$. Therefore,
+for every such QSD $\nu_N$ and every finite $n$,
+
+$$
+ \|\eta_n-\nu_N\|_{\mathrm{TV}}=1.
+ \tag{9.R2}
+$$
+
+Nevertheless the velocity magnitude decays quantitatively:
+
+$$
+ |v_n|=\frac{V|v_0|}{V+n|v_0|},\qquad
+ n\ge\left\lceil V(\epsilon^{-1}-|v_0|^{-1})\right\rceil
+ \ \Longrightarrow\ |v_n|\le\epsilon
+ \quad(0<\epsilon<|v_0|).
+$$
+
+Physical time is $nh$. These statements distinguish failure of full-law
+TV attraction from valid weak mean-field evolution. In particular they
+do not disprove uniform-time approximation in a weak population metric.
+The strict nonresonance/smoothing regimes used elsewhere exclude this
+parameter slice; the proposition makes no claim that those stronger
+theorem conditions hold here.
+:::
+
+:::{prf:proof}
+**1. Keep the actual cloning and collision stages.** If all incoming
+velocities equal $v$, every component has mean $v$ and every relative
+velocity is zero. The prescribed collision is consequently
+$v+\alpha R_C0=v$, for every component and every matrix. Dead slots
+participate with their retained velocity and are revived without
+changing this conclusion. Copying and jitter change positions only.
+
+**2. Evaluate all kinetic substeps.** Write $X$ for an arbitrary actual
+prepared position, including its jitter. At resonance, the first kick
+and drift give
+
+$$
+ v_1=v-(X-x_c)/c,\qquad x_1=X+cv_1=x_c+cv.
+$$
+
+The thermostat supplies its actual $v_2=c_hv_1+s_hB\xi^O$. The next
+drift and force kick then give, for every value of that innovation,
+
+$$
+ x_2=x_c+c(v+v_2),\qquad
+ v_3=v_2-(x_2-x_c)/c=-v.
+$$
+
+The final position diffusion changes no velocity. Applying the actual
+cap gives $v^+=-Vv/(V+|v|)$. Inverting its magnitude yields
+$|v^+|^{-1}=|v|^{-1}+V^{-1}$. Induction proves (9.R1).
+Because this is a pathwise identity, conditioning cannot change it.
+For the rooted population kernel, all velocities in each finite
+component are again equal; the same calculation proves the population
+claim. Finite-time survival and the normalized alive laws are defined
+by the positive landing bound already proved.
+
+**3. Identify the velocity support of every QSD.** This step does not
+assume common entering velocities. Let
+$E_v(S)=N^{-1}\sum_i|v_i|^2$. Component momentum and energy balance
+gives $E_v(S^c)\le E_v(S)$, pathwise, for the configured restitution
+$0\le\alpha\le1$. The resonant kinetic calculation applies separately
+to each prepared row, so its precap velocity is $-v_i^c$.
+The scalar function
+
+$$
+ f(t)=\frac{t}{(1+\sqrt t/V)^2},\qquad
+ f'(t)=(1+\sqrt t/V)^{-3},\qquad
+ f''(t)=-\frac{3}{2V\sqrt t}(1+\sqrt t/V)^{-4}\quad(t>0)
+$$
+
+is increasing and concave, with its continuous extension at zero.
+Jensen's inequality and component dissipation therefore imply
+
+$$
+ E_v(S^+)\le f(E_v(S^c))\le f(E_v(S)).
+$$
+
+Every admitted input has $\sqrt{E_v(S)}\le V$. Along every surviving
+$n$-step path, iteration gives
+$\sqrt{E_v(S_n)}\le V/(n+1)$. If the entering law is a QSD, its
+law conditional on survival at time $n$ is that same QSD. It must
+therefore satisfy $E_v\le V^2/(n+1)^2$ almost surely for every $n$.
+Intersecting these events proves $E_v=0$ under the QSD.
+
+**4. Evaluate TV rather than infer it from weak decay.** For the
+monokinetic initial law, $v_n\ne0$ at every finite $n$ and the vectors
+$v_n$ at distinct indices are different. The measurable event
+$\{v_1=v_n\}$ has probability one under $\eta_n$ and zero under
+each other $\eta_m$ and under every QSD. This proves the stated TV
+distances. For normalized alive laws the velocity marginal is likewise
+$\delta_{v_n}$, so those laws are pairwise at TV distance one and
+cannot have a TV limit. Solving the exact magnitude formula gives
+the displayed weak velocity-relaxation time. No phase-space smoothing
+has been assumed where the actual update cancels the thermostat noise.
+:::
+
+:::{prf:theorem} Quantitative mean-field equation under survival and alive normalization
+:label: thm-chaos-conditioned-quantitative-map
+
+Let $d$ be the diameter-one countable-test metric of
+{prf:ref}`def-slc-empirical-metric`, and let $W_d$ be its transport
+metric on laws of population measures. Evaluate the explicit constants
+$A,B_*$ in that definition at the derived floor $m_*=a_0/4$, and set
+
+$$
+ C_{\mathrm{upd}}=\sqrt{A+4B_*^2},\qquad
+ \varepsilon_N=\min\{1,C_{\mathrm{upd}}/(2\sqrt N)\}.
+$$
+
+This is the full displayed dependency chain of the existing one-step
+proof, including companion kernels, feature radii, diversity floor,
+fitness exponents, rescalers, regularization and acceptance parameters.
+Its dependence on force, jitter, friction, collision restitution, noise,
+domain and cap additionally enters through the derived $a_0$ and $m_*$.
+There is no unspecified optimal mixing constant.
+Put $\Lambda_{N,n}=(L_N)_\#\eta_n$. Uniformly over every $n\ge1$,
+
+$$
+ \boxed{W_d\bigl(\Lambda_{N,n+1},
+                 (\mathcal F_h)_\#\Lambda_{N,n}\bigr)
+       \le\varepsilon_N+2\delta_N.}
+ \tag{9.S4}
+$$
+
+For a deterministic population trajectory $\mu_{n+1}=\mathcal F_h\mu_n$
+the exact consequence is
+
+$$
+ \mathbb E_{\eta_{n+1}}d(L_N,\mu_{n+1})
+ \le\varepsilon_N+2\delta_N+
+       \mathbb E_{\eta_n}d(\mathcal F_h(L_N),\mathcal F_h(\mu_n)).
+ \tag{9.S5}
+$$
+
+To express the alive distribution, write
+$\mathcal R(\mu)=\mu(a\,\cdot)/\mu(a)$ when $\mu(a)>0$.
+Choose bounded continuous determining tests $|\psi_j|\le1$ on
+position-velocity space and set
+$d_a(\rho,\zeta)=\frac12\sum_{j\ge1}2^{-j}|\rho\psi_j-\zeta\psi_j|$.
+Then, with
+$\varepsilon_N^a=\min\{1,C_{\mathrm{upd}}/(a_0\sqrt N)\}$,
+
+$$
+ W_{d_a}\bigl((\mathcal R\circ L_N)_\#\eta_{n+1},
+              (\mathcal R\circ\mathcal F_h\circ L_N)_\#\eta_n\bigr)
+ \le\varepsilon_N^a+2\delta_N.
+ \tag{9.S6}
+$$
+
+Thus the conditioning and one-step population errors vanish with all
+their constants independent of time and population size. The response
+term in (9.S5) is retained; (9.S4) is a uniform approximate evolution
+equation, not by itself a uniform trajectory-attraction estimate.
+:::
+
+:::{prf:proof}
+For each input $S\in G_N$, the actual one-step consistency estimate
+{prf:ref}`lem-slc-empirical-error` bounds
+$\mathbb E_S d(L_N',\mathcal F_h(L_N(S)))$ by $\varepsilon_N$.
+For other nonextinct inputs use the metric diameter one. Integrating
+over $\eta_n$ gives a coupling with cost at most
+$\varepsilon_N+\eta_n(G_N^c)\le\varepsilon_N+\delta_N$
+between $(L_N)_\#(\eta_nP_N)$ and
+$(\mathcal F_h)_\#\Lambda_{N,n}$. By (9.S2), replacing the first law
+by $(L_N)_\#\eta_{n+1}$ costs at most $\delta_N$ in any
+diameter-one transport metric. The triangle inequality proves (9.S4).
+The same joint law followed by the triangle inequality against
+$\mu_{n+1}$ proves (9.S5). Neither step divides by the probability of
+surviving from time zero.
+
+For (9.S6), fix $|\psi|\le1$ and an input $S\in G_N$. Write
+$v=L_N'a$, $U=L_N'(a\psi)$,
+$m=\mathcal F_h(L_N(S))a\ge a_0$ and
+$u=\mathcal F_h(L_N(S))(a\psi)$. On $v>0$, $|U|\le v$ implies
+
+$$
+ \left|\frac Uv-\frac um\right|
+ \le\frac{|U-u|+|v-m|}{m}.
+$$
+
+Indeed $U/v-u/m=(U/v)(m-v)/m+(U-u)/m$.
+On $v=0$ choose any probability as the auxiliary normalized-alive
+output; its test value has absolute value at most one, and the same
+bound holds since $U=0$ and its right side is $1+|u|/m$.
+Apply the actual bounded-test mean-square consistency bound to $a\psi$
+and $a$. Each expected absolute error is at most
+$C_{\mathrm{upd}}/\sqrt N$. The ratio inequality therefore gives
+$2C_{\mathrm{upd}}/(a_0\sqrt N)$ for each test. Multiply by
+$2^{-j}/2$ and sum to obtain $\varepsilon_N^a$.
+The preceding good-input and survival-conditioning argument adds
+$2\delta_N$. On the surviving output the auxiliary definition at
+extinction disappears. Dead input coordinates still enter
+$\mathcal F_h$; (9.S6) does not replace it by an unproved closed
+evolution on the normalized alive law alone.
+:::
+
+:::{prf:corollary} Noise-dependent law conditioned on survival
+:label: cor-chaos-noise-conditioned-law
+
+Use the actual terminal-box full kernel $P_N$, its killed restriction
+$Q_N$, and $\eta_n=\eta_0Q_N^n/(\eta_0Q_N^n1)$.
+The formulas also apply when $\sigma_x=0$ whenever their survival
+denominators are positive. Fix $r,\rho,g,k$ as in
+{prf:ref}`prop-chaos-safe-center-noise`, and write
+
+$$
+\begin{aligned}
+ u_k(S)&=P_N(S,M^+<k),&h_N(S)&=P_N(S,M^+=0),\\
+ b_k(S)&=\min\{1,\eta_{N,g,r}(S)+B_{g,k}(p_r(\tau))\},
+ &b_0(S)&=\min\{1,\eta_{N,g,r}(S)+\epsilon_r(\tau)^g\},\\
+ U_n&=\eta_nu_k,&e_n&=\eta_nh_N,
+ &\beta_n^k&=\eta_nb_k,\quad\beta_n^0=\eta_nb_0.
+\end{aligned}                                                    \tag{9.S6a}
+$$
+
+By (9.H9), $0\le e_n\le\beta_n^0\le\beta_n^k\le1$.
+Whenever $e_n<1$, the next survivor law satisfies
+
+$$
+\boxed{\quad
+ \eta_{n+1}(M<k)=\frac{U_n-e_n}{1-e_n}
+ \le\frac{\beta_n^k-e_n}{1-e_n}\le\beta_n^k,
+ \qquad
+ \|\eta_{n+1}-\eta_nP_N\|_{\rm TV}=e_n\le\beta_n^0.
+\quad}                                                         \tag{9.S6b}
+$$
+
+This has no factor $n$ and no inverse probability of survival from
+time zero. At $\tau=0$, if the preparation coverage deficit
+$\eta_{N,g,r}(S)$ vanishes for $\eta_n$-almost every input, then
+$\beta_n^k=\beta_n^0=0$: at least $g$ rows survive, and
+conditioning does not change the next law. If the same coverage
+identity holds at every subsequently reached conditioned input,
+induction gives $\eta_n=\eta_0P_N^n$ and $M_n\ge g$ almost
+surely for every $n\ge1$.
+
+To transfer this estimate to the existing one-step mean-field law,
+choose $k=\lceil m_*N\rceil\le g$ with fixed $m_*>0$, and evaluate
+$C_{\rm upd}(m_*)$ in {prf:ref}`def-slc-empirical-metric`.
+Whenever the canonical hypotheses of its empirical-consistency
+lemma hold for these parameters, put
+$\Lambda_{N,n}=(L_N)_\#\eta_n$. For $n\ge1$,
+
+$$
+\boxed{\quad
+ W_d\bigl(\Lambda_{N,n+1},
+       (\mathcal F_h)_\#\Lambda_{N,n}\bigr)
+ \le\min\{1,C_{\rm upd}(m_*)/(2\sqrt N)\}
+       +\beta_{n-1}^k+\beta_n^0.
+\quad}                                                         \tag{9.S6c}
+$$
+
+For $n=0$, replace $\beta_{-1}^k$ by $\eta_0(M<k)$.
+If $\sup_n\beta_n^k\le\bar\beta_N\to0$ and the displayed
+one-step constant is independent of $N$, (9.S6c) is a uniform-in-time
+*one-step* mean-field equation with error at most
+$C_{\rm upd}(m_*)/(2\sqrt N)+2\bar\beta_N$. It concerns the
+complete marked population law. Extracting its normalized alive
+row distribution additionally needs a positive population alive-mass
+denominator, as in (9.S6); neither operation closes a law on that
+normalized row distribution alone.
+
+*Proof.* Extinction is a subset of $\{M^+<k\}$, so restricting the
+next output to survival removes exactly $e_n$ from the numerator
+of its low-fraction probability and its total mass. This proves the
+equality in (9.S6b). Average (9.H9) against $\eta_n$ to obtain
+$U_n\le\beta_n^k$ and $e_n\le\beta_n^0$. Since
+$\beta_n^k\le1$, $(\beta_n^k-e_n)/(1-e_n)\le\beta_n^k$.
+The TV equality is the mixture identity (9.S2), valid for any
+positive survival denominator. At $\tau=0$, both noise terms in
+(9.H8) vanish for $k\le g$.
+
+For (9.S6c), on $G_N=\{M\ge k\}$ the one-step empirical lemma
+bounds the expected diameter-one metric error by
+$\min\{1,C_{\rm upd}(m_*)/(2\sqrt N)\}$; off $G_N$ it is at
+most one. Equation (9.S6b) at time $n-1$ gives
+$\eta_n(G_N^c)\le\beta_{n-1}^k$. Couple the full next-output
+empirical law to $(\mathcal F_h)_\#\Lambda_{N,n}$ by this
+conditional input. Replacing that full output by its survivor law
+costs at most $e_n\le\beta_n^0$ in the bounded transport metric.
+The triangle inequality proves (9.S6c). $\square$
+:::
+
+:::{prf:corollary} Conditioning also on a controlled alive fraction
+:label: cor-chaos-good-fraction-conditioning
+
+For $N\ge N_{\mathrm{surv}}$, the current-time law
+$\zeta_n=\eta_n(\,\cdot\mid G_N)$ is defined for every $n\ge1$ and
+$\|\zeta_n-\eta_n\|_{\mathrm{TV}}\le\delta_N$.
+Its counterparts of (9.S4) and (9.S6) have respective right sides
+$\varepsilon_N+3\delta_N$ and $\varepsilon_N^a+3\delta_N$.
+
+If the chosen event instead excludes every previous alive-floor
+failure, define the restricted kernel
+$Q_N^G(S,A)=P_N(S,A\cap G_N)$ and
+
+$$
+ \xi_n=\frac{\eta_0(Q_N^G)^n}{\eta_0(Q_N^G)^n1}.
+$$
+
+This is the original path law conditioned on
+$S_1,\ldots,S_n\in G_N$, not a rejection-and-retry algorithm.
+Its one-step counterparts of (9.S4) and (9.S6), for $n\ge1$, have
+right sides $\varepsilon_N+\delta_N$ and
+$\varepsilon_N^a+\delta_N$, respectively. Its conditioning event has
+probability at least $(1-\delta_N)^n>0$. No uniform closeness of
+$\xi_n$ and $\eta_n$ over all times is asserted.
+:::
+
+:::{prf:proof}
+The first TV identity is conditioning on an event of complement
+probability at most $\delta_N$. On $\zeta_n$ the one-step consistency
+bound costs only $\varepsilon_N$, because its inputs all lie in $G_N$.
+Compare $\zeta_nP_N$ to $\eta_nP_N$, then to $\eta_{n+1}$, then
+to $\zeta_{n+1}$. Each of the three TV changes costs at most
+$\delta_N$. Pushforward does not increase TV, giving the stated bounds
+also for the alive normalization.
+
+For the history-conditioned law, $Q_N^G1(S)\ge1-\delta_N$ on every
+nonextinct input. Iterating conditional probabilities proves the
+event-probability lower bound. Its exact normalized recursion is
+$\xi_{n+1}=\xi_nQ_N^G/(\xi_nQ_N^G1)$, and all $\xi_n$ for $n\ge1$
+are supported on $G_N$. Restricting its physical next-step law to
+$G_N$ changes it in TV by at most $\delta_N$. Combining this with
+one-step consistency on $G_N$ proves the two bounds. This normalization
+is performed on laws of observed paths, not on separately resampled
+individual transitions.
+:::
+
+:::{prf:theorem} Propagation of chaos under survival conditioning
+:label: thm-chaos-conditioned-propagation
+
+Let $\mathsf P_{N,T}$ be the law of the complete marked trajectory
+$(S_0,\ldots,S_T)$ under the unchanged terminal-box kernel, with an
+exchangeable nonextinct initial law. Let
+$\mathsf P_{N,T}^{\rm surv}$ be this path law conditioned on
+$\tau_N>T$, whenever the event has positive probability. Keep
+$h_N(S)$ from (9.H6) and put
+
+$$
+ H_{N,T}=\sum_{j=0}^{T-1}
+ \mathbb E_{\mathsf P_{N,T}}
+ [\mathbf1_{\{\tau_N>j\}}h_N(S_j)].
+                                                               \tag{9.S6d}
+$$
+
+The full-path survival transfer is exact:
+
+$$
+ \boxed{\quad
+ H_{N,T}=\Pr(\tau_N\le T),\qquad
+ \|\mathsf P_{N,T}-\mathsf P_{N,T}^{\rm surv}\|_{\rm TV}
+ =H_{N,T}.
+ \quad}                                                         \tag{9.S6e}
+$$
+
+For arbitrary position-displacing noise, (9.H9) gives the
+parameterized bound
+
+$$
+ H_{N,T}\le\sum_{j<T}\mathbb E
+ [\mathbf1_{\{\tau_N>j\}}b_0(S_j)].
+                                                               \tag{9.S6f}
+$$
+
+If $b_0(S)\le\bar b_N<1$ on the nonextinct states reached through
+step $T-1$, then $H_{N,T}\le1-(1-\bar b_N)^T\le T\bar b_N$.
+For the canonical $\sigma_x>0$ box regime, the proved global bound
+also gives $H_{N,T}\le1-(1-\delta_N)^T\le T\delta_N$.
+Writing $c_{\rm surv}=\min\{p/8,a_0/16\}>0$ as in
+{prf:ref}`def-chaos-survival-filter`, every $0<c<c_{\rm surv}$
+and $T_N=\lfloor e^{cN}\rfloor$ therefore give the explicit
+full-path conditioning cost
+$H_{N,T_N}\le2e^{-(c_{\rm surv}-c)N}$.
+More sharply, if the evaluated preparation integral satisfies
+$\eta_{N,g,r}(S)\le C_\eta e^{-\kappa_\eta N}$ on those reached
+states, with $C_\eta\ge0$, $\kappa_\eta>0$ and
+$\epsilon_r(\tau)<1$, put
+$\kappa_*=\min\{\kappa_\eta,
+\rho\log(1/\epsilon_r(\tau))\}$, taking the second term as
+$+\infty$ when $\epsilon_r=0$. Then every $0<c<\kappa_*$
+gives, for $T_N=\lfloor e^{cN}\rfloor$,
+$H_{N,T_N}\le(C_\eta+1)e^{-(\kappa_*-c)N}$.
+At $\tau=0$, safe-center coverage with
+$\eta_{N,g,r}(S)=0$ on the reached states gives $H_{N,T}=0$.
+
+Suppose the initial empirical laws converge in probability to the
+deterministic $\mu_0$ of
+{prf:ref}`thm-chaos-finite-time-consistency`, and retain that theorem's
+actual kernel, moment and continuity hypotheses. Put
+$\mu_n=\mathcal F_h^n\mu_0$, let $d$ be the bounded countable-test
+metric of {prf:ref}`def-slc-empirical-metric`, and define the
+unconditioned finite-horizon error
+
+$$
+ E_{N,T}=\max_{0\le n\le T}
+ \mathbb E_{\mathsf P_{N,T}}d(L_N(S_n),\mu_n).
+$$
+
+For $N$ with $H_{N,T}<1$, the survival-conditioned empirical laws
+obey the explicit transfer bound
+
+$$
+ \max_{0\le n\le T}
+ \mathbb E_{\mathsf P_{N,T}^{\rm surv}}
+ d(L_N(S_n),\mu_n)
+ \le\min\{1,E_{N,T}+H_{N,T}\}.
+                                                               \tag{9.S6g}
+$$
+
+In particular $E_{N,T}\to0$ at every fixed $T$ by the cited
+finite-horizon theorem, while $H_{N,T}\to0$ by the displayed
+exponential survival bound. Thus conditioning on survival through
+any fixed $T$ preserves the full empirical trajectory limit.
+No uniqueness or attraction of $\mu_n$ is used.
+
+For a single observation $n\le T$, use its actual current-time law
+$\eta_n=\mathcal L(S_n\mid\tau_N>n)$ and put
+$e_{N,n}^{\rm cond}=\mathbb E_{\eta_n}d(L_N,\mu_n)$.
+For any $1\le\ell\le N$ and indices $j_1,\ldots,j_\ell$ from the
+defining test family $(\varphi_j)$ of $d$, the finite-row
+propagation estimate is
+
+$$
+\boxed{\quad
+ \left|\mathbb E_{\eta_n}
+       \prod_{i=1}^{\ell}\varphi_{j_i}(z_i)
+       -\prod_{i=1}^{\ell}\mu_n\varphi_{j_i}\right|
+ \le\frac{\ell(\ell-1)}N
+   +2\sum_{i=1}^{\ell}2^{j_i}e_{N,n}^{\rm cond},
+ \qquad
+ e_{N,n}^{\rm cond}\le E_{N,T}+H_{N,n}.
+ \quad}                                                         \tag{9.S6h}
+$$
+
+For arbitrary bounded continuous row tests $|f_i|\le1$, the same
+argument gives the more general bound
+
+$$
+ \left|\mathbb E_{\eta_n}\prod_{i=1}^{\ell}f_i(z_i)
+       -\prod_{i=1}^{\ell}\mu_nf_i\right|
+ \le\frac{\ell(\ell-1)}N+
+       \sum_{i=1}^{\ell}
+       \mathbb E_{\eta_n}|L_Nf_i-\mu_nf_i|.
+                                                               \tag{9.S6i}
+$$
+
+In the canonical $\sigma_x>0$ box regime, the population trajectory
+has $m_n=\mu_n(a)\ge a_0>0$ for $n\ge1$. Define the normalized alive
+laws $\rho_n=\mu_n(a\,\cdot)/m_n$ and
+$\rho_N(S)=L_N(S)(a\,\cdot)/L_N(S)a$ on surviving states.
+For every bounded continuous physical-row test $|\psi|\le1$,
+
+$$
+ \mathbb E_{\eta_n}|\rho_N\psi-\rho_n\psi|
+ \le\frac{
+ \mathbb E_{\eta_n}|L_N(a\psi)-\mu_n(a\psi)|
+ +\mathbb E_{\eta_n}|L_Na-m_n|}{a_0}.
+                                                               \tag{9.S6j}
+$$
+
+Consequently the normalized alive empirical law converges weakly
+in probability to $\rho_n$ for each fixed $n\ge1$.
+More concretely, sample $\ell$ *distinct* alive indices uniformly
+conditional on a surviving configuration with $M\ge\ell$; on
+$M<\ell$ use any fixed fallback value. If
+$N\ge\lceil\ell/m_*\rceil$, then for $|\psi_i|\le1$,
+
+$$
+\begin{aligned}
+&\left|\mathbb E_{\eta_n}
+  \prod_{i=1}^{\ell}\psi_i(Z_i^{\rm alive})
+  -\prod_{i=1}^{\ell}\rho_n\psi_i\right|\\
+&\quad\le2\delta_N+\frac{\ell(\ell-1)}{m_*N}
+ +\frac1{a_0}\sum_{i=1}^{\ell}
+ \left(\mathbb E_{\eta_n}|L_N(a\psi_i)-\mu_n(a\psi_i)|
+       +\mathbb E_{\eta_n}|L_Na-m_n|\right).
+\end{aligned}                                                    \tag{9.S6k}
+$$
+
+Here $m_*=a_0/4$ and $\delta_N$ are the explicit constants of
+{prf:ref}`def-chaos-survival-filter`. Thus distinct alive samples
+also converge to $\rho_n^{\otimes\ell}$ at fixed time. The
+normalized alive projection is a consequence of the complete
+marked-law evolution, rather than a separately closed update.
+
+Hence for each fixed $n$ and $\ell$, the survivor-conditioned
+$\ell$-row marginal converges weakly to $\mu_n^{\otimes\ell}$.
+The result is phase compatible: another deterministic initial law
+produces its own trajectory under the same $\mathcal F_h$.
+If an explicit unconditioned trajectory error is available on a
+chosen horizon, (9.S6g)--(9.S6h) add the displayed survival cost to
+that error for the same kernel and parameter regime.
+
+*Proof.* On $\{\tau_N>j\}$ the conditional probability of extinction
+at update $j+1$ is $h_N(S_j)$. The first-extinction events for
+$j=0,\ldots,T-1$ are disjoint, proving the first equality in
+(9.S6e). Conditioning a probability law on an event of probability
+$1-H_{N,T}$ changes it in TV by exactly $H_{N,T}$, as proved in
+(9.H11); apply that identity to the full path. Equation (9.H9),
+then conditional geometric survival under a uniform hazard upper
+bound, proves (9.S6f) and its specializations. For the exponential
+windows use $\delta_N\le2e^{-c_{\rm surv}N}$ and
+$\epsilon_r^{\lceil\rho N\rceil}
+\le e^{-\rho N\log(1/\epsilon_r)}$ when $0<\epsilon_r<1$;
+the $\epsilon_r=0$ term vanishes exactly. Multiply each one-step
+upper bound by $T_N\le e^{cN}$.
+
+The functional $d(L_N(S_n),\mu_n)$ takes values in $[0,1]$.
+Its expectation under two path laws differs by at most their TV
+distance, proving (9.S6g). The finite-horizon theorem gives
+convergence in probability of each empirical output, and boundedness
+of $d$ upgrades it to convergence of $E_{N,T}$.
+
+Survival through time $n$ is invariant under permutation of row
+labels, so $\eta_n$ is exchangeable. Conditional on its empirical
+multiset, the first $\ell$ labels are sampled without replacement.
+Independent sampling from the same multiset repeats a label with
+probability at most $\ell(\ell-1)/(2N)$; because every displayed
+product test has absolute value at most one, the two expectations
+differ by at most $\ell(\ell-1)/N$. The independent empirical
+expectation is $\prod_iL_N\varphi_{j_i}$. Telescope this product
+against $\prod_i\mu_n\varphi_{j_i}$ and use
+$|L_N\varphi_j-\mu_n\varphi_j|\le2^{j+1}d(L_N,\mu_n)$.
+Finally, the $n$-step path TV identity bounds
+$e_{N,n}^{\rm cond}$ by its unconditioned expectation plus
+$H_{N,n}\le H_{N,T}\,$. This proves (9.S6h).
+The identical sampling and telescoping calculation for general
+$f_i$ proves (9.S6i). Each final expectation there tends to zero:
+empirical weak convergence in probability under $\eta_n$ and the
+boundedness $|L_Nf_i-\mu_nf_i|\le2$ give convergence in mean.
+Finite products of bounded continuous row tests determine weak
+convergence on the fixed finite product space.
+
+For (9.S6j), put $v=L_Na>0$, $U=L_N(a\psi)$,
+$m=m_n\ge a_0$, and $u=\mu_n(a\psi)$. Since $|U|\le v$,
+$|U/v-u/m|\le(|U-u|+|v-m|)/m$, exactly as in the proof of
+(9.S6). This proves the displayed expectation bound.
+On $G_N=\{M/N\ge m_*\}$, at least $\ell$ alive rows are
+available. Sampling them without replacement rather than from
+$\rho_N^{\otimes\ell}$ changes a product-test expectation by at
+most $\ell(\ell-1)/M\le\ell(\ell-1)/(m_*N)$, by the same
+repeat-index coupling. On $G_N^c$ the fallback contributes at most
+$2\eta_n(G_N^c)\le2\delta_N$. Telescope the product of
+$\rho_N\psi_i$ against that of $\rho_n\psi_i$ and apply
+(9.S6j) to every factor, proving (9.S6k). Weak convergence of
+$\rho_N$ follows from (9.S6j), the marked empirical limit and a
+countable convergence-determining family of physical-row tests.
+$\square$
+:::
+
+:::{prf:corollary} Quantitative stationary mean-field identification under survival
+:label: cor-chaos-conditioned-stationary-defect
+
+For any QSD of the preceding actual kernel let
+$\Lambda_N=(L_N)_\#\nu_N$. Then
+
+$$
+ \boxed{W_d(\Lambda_N,(\mathcal F_h)_\#\Lambda_N)
+             \le\varepsilon_N+2\delta_N\longrightarrow0.}
+ \tag{9.S7}
+$$
+
+The same actual stationary defect has a landscape- and noise-sensitive
+refinement. Choose $k=\lceil m_*N\rceil\le g$ and $r>0$ as in
+{prf:ref}`cor-chaos-noise-conditioned-law`, and set
+$\beta_{N,\nu}^k=\nu_Nb_k$,
+$\beta_{N,\nu}^0=\nu_Nb_0$. Since $\eta_n=\nu_N$ for a QSD,
+(9.S6c) gives
+
+$$
+ W_d(\Lambda_N,(\mathcal F_h)_\#\Lambda_N)
+ \le\varepsilon_N+
+ \min\{2\delta_N,\beta_{N,\nu}^k+\beta_{N,\nu}^0\}.
+                                                               \tag{9.S7a}
+$$
+
+These $\beta$ terms are integrals of the specified preparation
+coverage deficit and Gaussian binomial tail under the QSD; no
+independence of its walkers is used.
+
+The normalized-alive projection has the corresponding bound
+$\varepsilon_N^a+2\delta_N$. The laws $\Lambda_N$ are tight without
+an added stationary-moment hypothesis. Every subsequential limit
+satisfies $(\mathcal F_h)_\#\Lambda=\Lambda$ and is supported on
+marked laws with alive mass at least $a_0$ and capped velocities.
+Exchangeable QSDs exist by
+{prf:ref}`thm-chaos-general-box-qsd-existence`; for those, along the
+same subsequence, each fixed $k$-row law converges weakly to
+$\int\mu^{\otimes k}\Lambda(d\mu)$.
+For $N\ge\lceil\ell/m_*\rceil$, sample $\ell$ distinct alive
+rows uniformly when $M\ge\ell$, with any fixed fallback on the
+complement. Writing $\mathcal R(\mu)=\mu(a\,\cdot)/\mu(a)$, the
+stationary alive-sample law obeys, for $|\psi_i|\le1$,
+
+$$
+ \left|\mathbb E_{\nu_N}\prod_{i=1}^{\ell}
+       \psi_i(Z_i^{\rm alive})
+ -\int\prod_{i=1}^{\ell}\mathcal R(\mu)\psi_i\,
+                         \Lambda_N(d\mu)\right|
+ \le2\delta_N+\frac{\ell(\ell-1)}{m_*N}.
+                                                               \tag{9.S7b}
+$$
+
+Along the same subsequence its limit is therefore the mixture
+$\int\mathcal R(\mu)^{\otimes\ell}\Lambda(d\mu)$.
+
+This is a stationary population law invariant under the actual
+mean-field evolution. Identifying its support as particular stationary
+phases, or proving attraction and selecting their weights, remains a
+population-dynamics question; it is not an extinction or alive-floor
+obligation.
+:::
+
+:::{prf:proof}
+Use $\eta_n=\nu_N$ in (9.S4) and (9.S6); a QSD is fixed by the exact
+survival-conditioned evolution. For tightness, (9.S3) at $r=2$ gives
+$\mathbb E_{\Lambda_N}\mu(|x|^2)\le K_2/a_0$. For any $R>0$,
+the probability that this moment exceeds $R$ is at most $K_2/(a_0R)$.
+The set of probability measures with second moment at most $R$, capped
+velocity, and discrete marks is weakly compact, proving tightness of
+$\Lambda_N$. The uniform alive-floor bound and $\delta_N\to0$ imply
+that every limit is supported on $\mu(a)\ge m_*>0$.
+
+For completeness, terminal consistency is preserved in these empirical
+limits despite their finite-$N$ atoms. For the open boundary layer
+$U_t=\{x:\operatorname{dist}(x,\partial D)<t\}$, (9.S3) implies
+$\mathbb E_{\Lambda_N}\mu(U_t)\le(H_x/a_0)|U_t|$. The volume tends
+to zero as $t\downarrow0$. Weak lower semicontinuity, followed by this
+bound for each $t$, shows that $\mu(\partial D)=0$ almost surely under
+any limit. Empirical terminal consistency therefore passes to that limit.
+
+The actual map is weakly continuous on the resulting admitted class
+with alive mass bounded below; this is
+{prf:ref}`lem-mean-field-map-continuity`. Alive reward is bounded on
+the box. Retained dead coordinates enter companion probabilities through
+the bounded features and are replaced before force evaluation, as in
+that proof. Applying a bounded Lipschitz population test $H$ to (9.S7)
+and passing to the weak limit gives
+$\int H\,d\Lambda=\int H\circ\mathcal F_h\,d\Lambda$.
+The usual almost-sure continuity form of weak convergence applies here;
+the limit gives full mass to the admitted continuity set just verified.
+This proves invariance. Since every output $\mathcal F_h(\mu)$ has
+alive mass at least $a_0$, invariance improves the limit's alive-floor
+support from $m_*$ to $a_0$.
+
+For exchangeable QSDs, sampling $k$ labels without replacement versus
+independently from $L_N$ differs in TV by at most $k(k-1)/(2N)$.
+Integrating and then using weak convergence of $\Lambda_N$ proves the
+displayed mixture limit. This step does not assume independent walkers
+inside a finite collision component. For alive labels use the same
+repeat-index coupling on $G_N$ and its uniform bound
+$M\ge m_*N$; the complement has $\nu_N$-probability at most
+$\delta_N$ by (9.S1), yielding (9.S7b). The map $\mathcal R$ is
+weakly continuous on marked laws with positive alive mass because
+the mark is discrete. Since $\Lambda$ is supported on
+$\mu(a)\ge a_0$, weak convergence of $\Lambda_N$ passes the
+bounded product test through this map, proving the final mixture.
+:::
+
 :::{prf:theorem} Exact stationary variance budget for the complete update
 :label: thm-chaos-qsd-variance-budget
 
@@ -1862,7 +3494,7 @@ $A_\varphi$ of {prf:ref}`thm-chaos-canonical-conditional-variance`,
 $$
 0\leq \widetilde\nu_Ns_N
 \leq \frac{A_\varphi}{N\alpha_N}
- +\frac{M^2\delta_N}{\alpha_N^2},
+ +\frac{M^2\delta_N}{\alpha_N},
 \qquad
 \|\widetilde\nu_N-\nu_N\|_1
 \leq\frac{2\delta_N}{\alpha_N}.
@@ -1874,23 +3506,39 @@ $$
 \left|\operatorname{Var}_{\nu_N}(H)
  -\operatorname{Var}_{\nu_N}(r_N)\right|
 \leq \frac{A_\varphi}{N\alpha_N}
- +\frac{M^2\delta_N}{\alpha_N^2}
+ +\frac{M^2\delta_N}{\alpha_N}
  +\frac{6M^2\delta_N}{\alpha_N}.
 $$
 
 For a bounded continuous $\varphi$, put
 $g_N(S)=\mathcal F_h(L_N(S))\varphi$ and
-$b_N=\nu_N|r_N-g_N|$. The proved stationary moment bounds and actual
-one-step consistency give $b_N\to0$. Consequently
+$b_N=\nu_N|r_N-g_N|$. With the explicit $B_*$ evaluated at
+$m_*=a_0/4$, the actual one-step consistency and conditional floor give
+
+$$
+ b_N\le\frac{2MB_*}{\sqrt N}+4M\delta_N\longrightarrow0.
+$$
+
+Consequently
 
 $$
 \left|\operatorname{Var}_{\nu_N}(L_N\varphi)
  -\operatorname{Var}_{\nu_N}
    \bigl(\mathcal F_h(L_N)\varphi\bigr)\right|
 \leq \frac{A_\varphi}{N\alpha_N}
- +\frac{M^2\delta_N}{\alpha_N^2}
+ +\frac{M^2\delta_N}{\alpha_N}
  +\frac{6M^2\delta_N}{\alpha_N}
  +4Mb_N.
+$$
+
+In particular, eliminating the unknown QSD eigenvalue by its proved
+lower bound $\alpha_N\ge a_0$, the right side is at most the fully
+parameterized quantity
+
+$$
+ \frac{A_\varphi}{Na_0}
+ +\frac{8M^2B_*}{\sqrt N}
+ +M^2\left(\frac7{a_0}+16\right)\delta_N.
 $$
 :::
 
@@ -1920,8 +3568,8 @@ $$
 The first inequality follows because the conditional mean on $E$ minimizes
 the conditional squared error. On $G_N$ the conditional variance theorem
 bounds the right side by $A_\varphi/N$; on its complement it is at most
-$M^2$. The QSD equation and the uniform output good-set bound give
-$\nu_N(G_N^c)\leq\delta_N/\alpha_N$. Integrating the preceding inequality
+$M^2$. The survival-conditioned floor theorem gives the sharper bound
+$\nu_N(G_N^c)\leq\delta_N$. Integrating the preceding inequality
 and dividing by $\alpha_N$ proves the bound on $\widetilde\nu_Ns_N$.
 
 Since $q_N\in[1-\delta_N,1]$ and
@@ -1945,11 +3593,14 @@ Indeed, the second moments differ by at most $M^2\|\rho-\eta\|_1$,
 and the squared means differ by at most twice that amount. Apply this to
 $f=r_N$ and use the exact budget.
 
-For the last estimate, the stationary output moment bounds, the QSD
-identity, and the positive alive-fraction estimate place the input family
-in the compact localization class of the one-step theorem. Its uniform
-localized conditional-mean consistency gives $b_N\to0$; passage from an
-unconditioned mean to $r_N$ adds at most $2M\delta_N$.
+For the last estimate, on $G_N$ the quantitative bias theorem bounds the
+unconditioned mean error by $2MB_*/\sqrt N$; on its complement it is
+at most $2M$. The sharper QSD floor bound
+{prf:ref}`thm-chaos-survival-uniform-floor` gives
+$\nu_N(G_N^c)\le\delta_N$. Passage from each unconditioned mean to
+$r_N$ adds at most $2M(1-q_N(S))$, since the two means differ by the
+weight of the extinct part times a difference of numbers in $[-M,M]$.
+Integrating proves the displayed explicit bound for $b_N$.
 Finally, for $|f|,|g|\leq M$ under the same probability law,
 
 $$
@@ -1957,7 +3608,8 @@ $$
 \leq4M\,\mathbb E|f-g|.
 $$
 
-Use this with $f=r_N$ and $g=g_N$. This completes each asserted estimate.
+Use this with $f=r_N$ and $g=g_N$, and then substitute the explicit
+$b_N$ bound and $\alpha_N\ge a_0$. This completes each asserted estimate.
 :::
 
 :::{prf:theorem} Deterministic QSD empirical limits are fixed points
@@ -2542,4 +4194,120 @@ analysis of their own specified transition; the canonical theorem does not
 silently identify those extensions with its kernel. These distinctions
 carry into {doc}`10_kl_hypocoercive`, {doc}`12_qsd_exchangeability_theory`,
 and {doc}`16_continuum_discharge`.
+:::
+
+:::{prf:remark} Quantitative trajectory, structural confinement and long-time scope
+:label: rem-chaos-structural-quantitative-scope
+
+The scalar constants in this chapter enter the matching weak-metric
+estimate of {prf:ref}`thm-slct-trajectory`, its active quadratic-growth
+reward extension {prf:ref}`thm-slct-unbounded-trajectory`, and the regional
+force-profile extension {prf:ref}`cor-slcs-trajectory`.
+{prf:ref}`cor-slct-finite-marginals` makes their finite-row chaos error
+explicit. The structural confinement estimates use selection flux,
+regional adverse transfers and tail defects, rather than imposing
+convexity at infinity.
+
+Uniform-time empirical approximation and stationary-limit exchange are
+fully evaluated in {prf:ref}`cor-slcp-uniform-iid-mean-field`, whose zero
+fitness exponents are essential to its independence proof. For active
+cloning, {prf:ref}`thm-slcr-structural-path-rate` gives a finite-particle
+TV rate when its full-update tail and communication estimates close.
+Its population-size dependence does not supply uniform-time nonlinear
+phase attraction. Such attraction still requires a population-level
+argument within the declared attraction region, with its recovery and
+communication defects controlled. Distinct attracting phases remain
+compatible with the unique evolution map defined for each initial law.
+
+The long-time extension in {prf:ref}`thm-slcm-joint-invariant` identifies
+stationary and joint occupation limits of this same population map with
+explicit error $a_N+1/T$. The actual active-cloning regime in
+{prf:ref}`thm-slca-active-stationary` and
+{prf:ref}`cor-slca-joint-stationary-time` supplies uniform moments,
+finite-population stationarity and an explicit simultaneous large-population,
+long-time observation schedule. These results identify invariant population
+dynamics. Fixed-phase support, arbitrary instantaneous diagonals and unique
+stationary mixture weights follow under the distinct quantified conditions of
+{prf:ref}`thm-slcm-fixed-support`, {prf:ref}`cor-slclt-moment-localization`
+and {prf:ref}`thm-slcj-phase-weights`, respectively. The order obstruction
+{prf:ref}`thm-slcj-order-obstruction` explains why distinct nonlinear phases
+need not preserve the same weights in both orders of limits.
+
+The population-independent Keystone bound in
+{prf:ref}`thm-slcn-keystone-power` is transferred through the exact signed
+balances of {prf:ref}`thm-slkd-signed-cloning` and
+{prf:ref}`thm-slkd-full-position`. The complete quadratic drift differs
+between the finite and population updates by the explicit $N^{-1/4}$ bound
+of {prf:ref}`thm-slqc-quadratic-consistency`. Given the quantified phase
+attraction and coverage inputs, {prf:ref}`thm-slcn-uniform-rate` and
+{prf:ref}`cor-slcn-general-profile` supply an $N$-independent time-decay
+profile and a fully displayed particle-error floor tending to zero.
+Quadratic drift alone does not distinguish all population laws; its
+full-law consequences require the stated additional dissipation estimate.
+
+
+A closed active-cloning regime is now proved by
+{prf:ref}`thm-slcc-active-contraction`: its population contraction constant
+$q_2=1-\epsilon_2+2L_R+L_R^2$ is computed from the actual kinetic
+minorization and marked-component perturbation. It retains actual collisions,
+and {prf:ref}`cor-slcc-positive-exponents` gives a strictly positive,
+explicit selection interval. Under its bounded configured reward and finite
+discrete-center hypotheses, {prf:ref}`thm-slcf-nonlinear-restart` proves
+uniform-time empirical approximation with an explicit vanishing error floor;
+{prf:ref}`cor-slcf-stationary-limits` proves stationary chaos and both orders
+of limits. The population law converges in TV; empirical approximation uses
+the stated bounded transport metric. No phase-attraction constant is assumed
+in this closed regime.
+
+
+For unbounded quadratic-growth raw reward,
+{prf:ref}`thm-slcw-active-contraction` replaces ordinary TV feedback control
+by its explicit fourth-moment weighted norm. It derives $q_w<1$ from the
+actual marked collision law and kinetic kernel, with a nonempty positive
+selection interval. {prf:ref}`thm-slcw-transfer` gives the complete vanishing
+particle-error floor; {prf:ref}`cor-slcw-trajectories` proves uniform-time
+initialized approximation, stationary chaos and both limit orders. The
+same-potential substitution {prf:ref}`cor-slcw-same-potential` preserves
+$R=-U$ and $F=-\nabla U$ without clipping. The finite kinetic-center
+profile and the computed feedback inequality remain explicit hypotheses.
+
+
+Reward-driven self-confinement without a bounded kinetic center is supplied by
+{prf:ref}`thm-slceg-full-moment` and {prf:ref}`thm-slce-entropy-floor`.
+Their selection coefficients come from the actual regional accepted-edge
+flux; the zero-trap criterion is explicit. The latter theorem controls the
+normalized entropy of the full joint positional law, retaining dependence
+between walkers. Its tail and coverage budgets are quantitative and
+population-independent. For full-law entropy relaxation, the exact balance
+{prf:ref}`prop-slce-exact-balance` retains the transported-reference
+production alongside cloning and kinetic information losses.
+
+:::
+
+
+:::{prf:remark} Full-kernel feedback and phase-compatible time horizons
+:label: rem-chaos-long-time-audit
+
+The structural chapter now bounds unbounded-reward normalization uniformly
+through the actual sigmoid derivatives in
+{prf:ref}`lem-slcef-logistic-normalization`, and controls the full frozen
+root kernel's environment dependence in {prf:ref}`thm-slcef-environment`.
+The rootwise selection Harris estimate does not complete nonlinear attraction:
+{prf:ref}`prop-slcfz-unsigned-empty` proves that this specific unsigned
+assembly has no admissible contraction parameters. The finite-particle
+class-exit estimate {prf:ref}`thm-slcex-one-step` and the explicit growing
+window {prf:ref}`cor-slcex-global-growth-window` retain the associated
+probability of departure. Finally {prf:ref}`prop-slcfu-phase-obstruction`
+proves why distinct nonlinear stationary phases and finite-particle
+ergodicity cannot justify uniform-time approximation to every initial phase.
+These results preserve the fixed-step mean-field evolution law while
+specifying the extra mathematical content required for a long-time claim.
+The positive trajectory conclusion is now quantitative on a diverging
+horizon in {prf:ref}`thm-slcgt-growing-trajectory`, with explicit
+uniform-ball initialization and fixed-row chaos. The complete infinite
+path of empirical population laws converges in the stated product metric
+by {prf:ref}`cor-slcgt-infinite-population-path`. These results require
+neither stationary attraction nor a bounded kinetic center; they do not
+change the topology to uniform convergence over all times.
+
 :::

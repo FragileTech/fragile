@@ -1645,6 +1645,18 @@ $$
 P_b^N(i,j)=\frac{\mathbf1_{j\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,j)^2/(2\epsilon_b^2)]}
 {\sum_{k\in\mathcal A\setminus\{i\}}\exp[-d_{\mathrm{alg}}(i,k)^2/(2\epsilon_b^2)]}.
 $$
+The **uniform-companion specialization** sets either width
+$\epsilon_b=\infty$ and uses the convention
+$\exp[-d_{\mathrm{alg}}(i,j)^2/(2\infty^2)]=1$ for finite
+input coordinates. Thus an alive row with $M\ge2$ chooses each
+other alive row with probability $1/(M-1)$; a dead clone recipient
+chooses each alive donor with probability $1/M$. The two widths may
+be specialized independently. All measurement, fitness, acceptance,
+cloning, collision, kinetic and boundary rules remain as stated.
+The finite-width canonical Rust preset is unchanged. The complete
+one-step specialization and its quantitative finite-width limit are
+proved in {prf:ref}`cor-slc-uniform-companion-step`.
+
 An alive singleton uses the zero-distance exception and cannot clone from itself. Dead rows still select the sole alive donor.
 
 Fix the separation floor $\delta_D>0$. Independently for each alive $i$, sample $J_i^D$ and retain

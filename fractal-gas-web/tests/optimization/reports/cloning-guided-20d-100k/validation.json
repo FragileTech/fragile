@@ -1,0 +1,20 @@
+{
+  "runs": 420,
+  "groups": 42,
+  "seeds": 10,
+  "dimensions": 20,
+  "fractal_population": 128,
+  "fractal_elites": 5,
+  "budget_cap": 100000,
+  "actual_evaluations": 41436170,
+  "errors": 18,
+  "errors_by_problem_method": {
+    "bbob_5 / Cloning combined": 9,
+    "bbob_5 / Cloning drift": 9
+  },
+  "baseline_outcomes_exactly_matching_previous_engine": 240,
+  "fingerprints_verified": 45,
+  "native_suites": "3/3 passed",
+  "wasm_recording_tests": "30/30 passed",
+  "browser": "Chromium and Firefox passed for both adaptive_fractal and cloning_guided; isolated Firefox rerun passed after one timeout"
+}

@@ -1,0 +1,237 @@
+[
+  {
+    "page": 1,
+    "characters": 1482,
+    "opening": "Fragile / Volume 2 / From the Euclidean Gas / to Quantum Yang\u2013Mills"
+  },
+  {
+    "page": 2,
+    "characters": 1788,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Contents / Objects, target, and logical structure 1"
+  },
+  {
+    "page": 3,
+    "characters": 2237,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Objects, target, and logical structure / The construction begins with three spatial coordinates and algorithmic time:"
+  },
+  {
+    "page": 4,
+    "characters": 2646,
+    "opening": "The proof strategy at a glance / One configured gas, one selected history law, three spatial coordinates and recorded algorithmic time. Stage numbers link to the detailed arguments. / THE COMPLETE EUCLIDEAN GAS AND ITS EQUILIBRIUM"
+  },
+  {
+    "page": 5,
+    "characters": 2446,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Equilibrium thermodynamics and the field state / The equilibrium construction fixes both the population statistics and the temporal law from"
+  },
+  {
+    "page": 6,
+    "characters": 2496,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / For the continuous coordinates of that same law, these estimates imply / Z"
+  },
+  {
+    "page": 7,
+    "characters": 2785,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / This is the equilibrium correlator identity used in Stage 17 [R11]. The spatial coordinates / remain in R3, and the temporal separation is measured by the recorded algorithmic clock."
+  },
+  {
+    "page": 8,
+    "characters": 2687,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 1 Fix the Euclidean gas / Begin with the complete marked swarm S = ((x ,v ,a ))N with positions, velocities, and"
+  },
+  {
+    "page": 9,
+    "characters": 2272,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Thetagged-walkerpopulationdescriptionmustretainitsrandomcollisionneighborhood. Strict / fitness increase along accepted live edges supplies component control in the canonical current-"
+  },
+  {
+    "page": 10,
+    "characters": 2568,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / The structural landscape chapter also derives selection-driven confinement from accepted / inward and outward donor fluxes. Its complete moment inequality retains the selection excess"
+  },
+  {
+    "page": 11,
+    "characters": 2829,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / The mass, Hellinger, and transport chapter combines the alive mass with normalized shape. / For finite measures m\u03c1 and m \u03c1 , it proves the exact mass\u2013shape identity"
+  },
+  {
+    "page": 12,
+    "characters": 2486,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Analytic inputs / Weighted Harris coupling; surviving-block minorization; eigenmeasure identities; survival"
+  },
+  {
+    "page": 13,
+    "characters": 2542,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Analytic inputs / Normalized companion integrals; measurement marks; finite limiting collision neighborhoods;"
+  },
+  {
+    "page": 14,
+    "characters": 2501,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Stage output. The nonlinear population update, its sampled interaction law, and its exact / balancerelations. Thisisthebackgroundlawforthesmoothfieldandfluctuationconstructions."
+  },
+  {
+    "page": 15,
+    "characters": 2701,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Closed full-law convergence with unbounded raw reward [R37]. Closed full-law / population convergence with unbounded raw reward."
+  },
+  {
+    "page": 16,
+    "characters": 2251,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / suppliesthefunctionalinequalityusedfortheinteractingswarmanddownstreamreconstructed / observables."
+  },
+  {
+    "page": 17,
+    "characters": 2442,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / At discrete time, use the full-step survivor chain rule and numerical entropy-defect estimates / for the actual kernel. Relative entropy controls bounded-observable bias through Pinsker,"
+  },
+  {
+    "page": 18,
+    "characters": 2355,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / and population-count dependence. Smooth localization and density estimates connect these / quantities to geometric coefficients."
+  },
+  {
+    "page": 19,
+    "characters": 2344,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / geometric-gas chapter transfers moment drift with explicit perturbation costs and provides / Harris, joint-LSI, concentration, and tail results for its identified geometric law families."
+  },
+  {
+    "page": 20,
+    "characters": 2901,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Proof mechanism / Apply the lossless decoder to a covered record, reconstruct the stage variables, and substitute"
+  },
+  {
+    "page": 21,
+    "characters": 2535,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Conditional compatibility of CST paths and geometric causality [R58]. The / order-to-geometric-causality comparison under its stated slab hypotheses."
+  },
+  {
+    "page": 22,
+    "characters": 2523,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Source results / \u2022 Gram and determinant coordinates for SU(n) orbits [R61]. Gram and determinant"
+  },
+  {
+    "page": 23,
+    "characters": 2500,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / field descriptor, and condition the likelihood on that descriptor. Its negative logarithm is the / effective field action."
+  },
+  {
+    "page": 24,
+    "characters": 2854,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Reduced fields retain the derived memory / The field-equations and direct-observable chapters both construct the exact reduction of the"
+  },
+  {
+    "page": 25,
+    "characters": 2697,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Exact and approximate Markov closure [R76]. Exact block closure and a quantified / approximate-generator residual."
+  },
+  {
+    "page": 26,
+    "characters": 2557,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Completely positive CAR evolution of the recorded contraction [R79]. Unital / completely positive CAR evolution from the recorded contraction."
+  },
+  {
+    "page": 27,
+    "characters": 2864,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Proof mechanism / Apply the joint-law LSI concentration bound to the centered Lipschitz empirical fields. Higher"
+  },
+  {
+    "page": 28,
+    "characters": 2513,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Uniform integrability and reconstruction bounds for the full direct color alge- / bra [R90]. Explicit full-color word and mark-reconstruction bounds."
+  },
+  {
+    "page": 29,
+    "characters": 2562,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 A covariance condition sufficient for A4 [R92]. Covariance condition sufficient for the / estimator variance bound."
+  },
+  {
+    "page": 30,
+    "characters": 2718,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Results supplying these constructions / \u2022 Normalized sampling and the distinction between QSD and invariance [R95]."
+  },
+  {
+    "page": 31,
+    "characters": 2408,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / using the total-observable-error theorem. Uniform integrability and the native source/fiber / identities retain expectations along the common hierarchy."
+  },
+  {
+    "page": 32,
+    "characters": 2838,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 17 Reconstruct fields from the equilibrium history / At equilibrium, retain the complete gauge and matter descriptor hierarchy generated by"
+  },
+  {
+    "page": 33,
+    "characters": 2814,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / \u2022 Algorithmic QFT from recorded evolution and native bounds [R110]. Connected / algorithmic field theory from recorded evolution and native bounds."
+  },
+  {
+    "page": 34,
+    "characters": 2503,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 18 Preserve the physical Yang-Mills mass gap / Carry the functional-inequality and evolution constants of the equilibrium construction along"
+  },
+  {
+    "page": 35,
+    "characters": 2119,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 19 How the proved walker dynamics supply the field theory / This section collects the identifications used throughout the chapters into one dependency"
+  },
+  {
+    "page": 36,
+    "characters": 2589,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 19.3 Geometric integrals and fluctuations have derived normalizations / For the selected sampling law qdvol , the inverse-density formula converts normalized samples"
+  },
+  {
+    "page": 37,
+    "characters": 2204,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / 20 The estimates that control the continuum / Tool Controlled quantity Constant or identification retained"
+  },
+  {
+    "page": 38,
+    "characters": 2047,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / A Source theorem register / The references below point to the full statements and proofs in the repository snapshot. File"
+  },
+  {
+    "page": 39,
+    "characters": 2159,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R14] Static fluctuation-response identity for an exponential tilt / prop-fluctuation-dissipation"
+  },
+  {
+    "page": 40,
+    "characters": 2185,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R29] The fixed-step mean-field equation / thm-mean-field-equation"
+  },
+  {
+    "page": 41,
+    "characters": 2167,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R44] Kinetic hypocoercive entropy convergence / thm-villani-hypocoercivity"
+  },
+  {
+    "page": 42,
+    "characters": 2205,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R59] Conditional volume matching and trajectory clocks / thm-fractal-faithful-embedding"
+  },
+  {
+    "page": 43,
+    "characters": 2220,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R74] Finite transition matrices converging to the completed channel theory / thm-sm-predictive-partition-convergence"
+  },
+  {
+    "page": 44,
+    "characters": 2102,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R89] Nonzero momentum fluctuations in the established Euclidean paired model / cor-ym-paired-momentum-fluctuations"
+  },
+  {
+    "page": 45,
+    "characters": 2041,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / [R103] Total observable error / thm-total-error-bound"
+  },
+  {
+    "page": 46,
+    "characters": 2163,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Cloning, transport, and recurrence / Keystone pressure, reset and signed drift, barycenter/shape decomposition, kinetic estimates,"
+  },
+  {
+    "page": 47,
+    "characters": 853,
+    "opening": "Fractal Gas: a Yang\u2013Mills proof program Research prospectus / Spectral channels and empirical checks / Implemented channel and correlator definitions, algorithmic-time lag, source-grounded calibra-"
+  }
+]

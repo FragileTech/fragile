@@ -1,0 +1,17 @@
+[
+  {
+    "variant": "Bounded adaptive",
+    "seed": 3,
+    "exact_final_state_match": true
+  },
+  {
+    "variant": "Bounded + basin restarts",
+    "seed": 6,
+    "exact_final_state_match": true
+  },
+  {
+    "variant": "BIPOP-active CMA-ES",
+    "seed": 8,
+    "exact_final_state_match": true
+  }
+]

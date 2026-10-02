@@ -385,10 +385,10 @@ uint64_t Session::initial_evaluation_bound(const Json& config) {
   Benchmark b(config);Settings s(b.config);validate_resources(b,s);return initialization_cost(b,s);
 }
 std::unique_ptr<fractal::PopulationMember> Session::exchange_member(const std::string& id,int count) {
-  if(!controller) throw std::invalid_argument("Population exchange requires Wave");
+  if(!controller) throw std::invalid_argument("Population exchange requires a fractal algorithm");
   controller->collect_basin_events=true;
   const auto archive=JsonReader(controller->archive.export_json()).read();
-  return algorithm->exchange_member(id,"optimization-wave-v1:"+stringify(archive["compatibility"]),count);
+  return algorithm->exchange_member(id,"optimization-"+settings.algorithm+"-v1:"+stringify(archive["compatibility"]),count);
 }
 Json Session::take_basin_events() {
   Json result;result.kind=Json::Array;
@@ -396,7 +396,7 @@ Json Session::take_basin_events() {
   return result;
 }
 void Session::synchronize_basins(const std::string& data) {
-  if(!controller) throw std::invalid_argument("Population exchange requires Wave");
+  if(!controller) throw std::invalid_argument("Population exchange requires a fractal algorithm");
   controller->archive.synchronize_json(data);
 }
 Session::~Session()=default;

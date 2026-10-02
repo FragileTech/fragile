@@ -1,6 +1,7 @@
 # Fractal Populations
 
-A population combines independent Wave instances on the same task. Each member owns
+A population combines independent instances on the same task. Optimization supports
+homogeneous Wave or GAS populations; other backend adapters use Wave. Each member owns
 its RNG, parameters, backend resources, and movement/adaptation state. Only selected
 walker snapshots cross member boundaries. `population.hpp` remains the row-storage
 container; `populations.hpp` implements the multi-swarm controller.
@@ -46,6 +47,20 @@ The `members` list defines the count. Omit it to obtain the four-swarm preset.
 walker counts, elite counts, coefficients, perturbations, durations, and seeds are
 supported. All members must have the same task, dimensions, bounds, objective
 orientation, and periodic geometry. Unsupported algorithm families fail explicitly.
+Use `"algorithm": "gas"` in Optimization defaults for GAS populations. All members
+must use the same algorithm family because their walker formats differ. GAS exports
+its best currently alive walkers; it does not preserve historical elite slots during
+its own movement step. Exports are excluded from import destinations. Imports copy
+coordinates, velocities, objectives, fitness and flags, preserve the donor lineage,
+and reset row-local parent/companion indices. Family IDs are namespaced once at the
+originating swarm and remain stable through subsequent transfers. Tabu memory, covariance models and RNGs
+remain private to the recipient. The browser workspace still presets Wave; GAS is
+available through the native/configuration API.
+
+For GAS-adaptive noise, vary `gas_scale_multiplier` (with `gas_scale_controlled: false`).
+For `local_covariance`, vary `perturbation_std`. For `adaptive_fractal`, vary
+`adaptive_min_scale`/`adaptive_max_scale`; changing only `perturbation_std` has no
+effect while `adaptive_scale` is enabled.
 One member runs without imports. Membership, task, and shared-budget changes require
 reset. Native `settings` requests and browser `updateMember` support safe live tuning;
 resolved settings are included in status and recordings. The browser workspace exposes

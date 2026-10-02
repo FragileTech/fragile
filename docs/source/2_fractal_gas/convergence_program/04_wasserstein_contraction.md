@@ -1,4 +1,4 @@
-# Wasserstein-2 Control via Keystone-Based Variance Proxy
+# Wasserstein-2 Control from Signed Keystone Accounting
 
 ## 0. TLDR
 
@@ -7,17 +7,23 @@ $W_2^2(\mu_1, \mu_2) = \|\bar{z}_1 - \bar{z}_2\|^2 + W_2^2(\tilde{\mu}_1, \tilde
 $V_{\text{x,struct}} := W_{2,x}^2(\tilde{\mu}_{x,1}, \tilde{\mu}_{x,2})$ and define the variance proxy
 $V_{\text{x,proxy}} := \text{Var}_x(S_1) + \text{Var}_x(S_2)$.
 Lemma {prf:ref}`lem-centered-w2-variance-bound` shows $V_{\text{x,struct}} \le V_{\text{x,proxy}}$.
-Using the Quantitative Keystone Lemma ({doc}`03_cloning`), cloning yields the N-uniform drift bound
-$\mathbb{E}[\Delta V_{\text{x,proxy}}] \le -\kappa_x V_{\text{x,proxy}} + C_x$.
-Thus cloning gives N-uniform **control** of the centered positional $W_2$ component via a contractive proxy.
+The source positional theorem gives an $N$-uniform reset bound
+$\mathbb E V_{\text{x,proxy}}'\le C_{\rm reset}$.
+The Keystone Lemma separately gives an $N$-uniform lower bound on
+error-weighted cloning pressure. Its conversion to signed drift uses
+the actual donor, collision and kinetic terms in
+{prf:ref}`thm-slc-signed-complete-update`.
 
-**No alignment axiom**: The analysis avoids cross-swarm alignment assumptions. It relies on the Keystone causal chain (high error → fit/unfit signal → cloning pressure) and the positional variance drift proved in {doc}`03_cloning`.
+**No alignment axiom**: The pressure estimate does not require a minimum
+matching probability. The full-update calculation uses the specified
+common-source coupling and keeps its mismatch costs.
 
-**Full $W_2$ contraction needs kinetic**: Cloning does not contract the barycenter or velocity components. The kinetic operator $\Psi_{\text{kin}}$ provides this missing contraction, so the combined dynamics yields full phase-space $W_2$ contraction.
+**Complete-update contraction requires coupled estimates**: The variance proxy bounds centered positional discrepancy but can remain positive when two laws coincide. Full phase-space contraction requires matched component estimates for the coupled cloning and kinetic updates, followed by a verified composition inequality. See {doc}`06a_structural_landscape_convergence` for that accounting.
 
-**Explicit constants**: $\kappa_x = \frac{\chi(\varepsilon)}{4} c_{\text{struct}}$ with
-$\chi(\varepsilon)=p_u(\varepsilon)c_{\text{err}}(\varepsilon)$ and
-$g_{\max}(\varepsilon)=\max(p_u(\varepsilon) g_{\text{err}}(\varepsilon), \chi(\varepsilon) R_{\text{spread}}^2)$ (Section 8). All constants are N-uniform.
+**Explicit constants**: The Keystone coefficient and its finite-size
+correction are in {prf:ref}`thm-slcn-keystone-power`; the reset constant
+is in {prf:ref}`thm-positional-variance-proxy`. Neither is by itself
+a full-update contraction coefficient.
 
 **Dependencies**: {doc}`03_cloning`, {doc}`02_euclidean_gas`
 
@@ -25,7 +31,12 @@ $g_{\max}(\varepsilon)=\max(p_u(\varepsilon) g_{\text{err}}(\varepsilon), \chi(\
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to prove that the **cloning operator** $\Psi_{\text{clone}}$ of the Fragile Gas framework induces an **N-uniform drift bound on a variance proxy** that controls the centered/structural component of the Wasserstein-2 distance. A closed drift inequality for the centered positional term is obtained under an explicit structural-dominance assumption. These results bridge the finite-particle dynamics to the mean-field limit and support propagation of chaos.
+This document records the centered Wasserstein decomposition, the
+source Keystone pressure estimate and the cloning variance reset.
+The signed complete-update derivation that combines pressure with
+donor transfer, collisions and kinetics is
+{prf:ref}`thm-slc-signed-complete-update`. Its TV conversion for
+sampled marked positions is {prf:ref}`thm-slc-keystone-tagged-tv`.
 
 The central mathematical object is the Wasserstein-2 distance $W_2(\mu_1, \mu_2)$ between two empirical swarm distributions $\mu_1, \mu_2$ on **phase space** $z := (x, v)$, supported on $N$ walkers. We decompose it into barycenter and centered components and control the centered **positional** part under cloning. Let $\bar{z}_k := \int z \, d\mu_k = (\bar{x}_k, \bar{v}_k)$ and $\tilde{\mu}_k := (z - \bar{z}_k)_\# \mu_k$, so that:
 
@@ -50,43 +61,58 @@ $$
 
 In the all-alive regime, $\text{Var}_x(S_k) = \frac{1}{N}\sum_{i=1}^N \|\delta_{x,k,i}\|^2$. Lemma {prf:ref}`lem-centered-w2-variance-bound` shows
 $V_{\text{x,struct}} \le V_{\text{x,proxy}}$.
-We prove that applying the cloning operator to both swarms yields a **variance-proxy drift bound**:
+The cloning stage gives the reset bound
 
 $$
-\mathbb{E}[\Delta V_{\text{x,proxy}}] \leq -\kappa_x V_{\text{x,proxy}} + C_x
+\mathbb E\Delta V_{\text{x,proxy}}
+\le -V_{\text{x,proxy}}+C_{\rm reset},
 
 $$
 
-where $\kappa_x > 0$ is N-uniform and $C_x$ is a state-independent noise constant. This gives N-uniform control of the centered positional $W_2$ component via a contractive proxy. By coercivity in {doc}`03_cloning`, the hypocoercive structural error satisfies
+whose offset may cover the entire input range. The bound is not a
+strict contraction attributable to Keystone pressure. By coercivity
+in {doc}`03_cloning`, the hypocoercive structural error satisfies
 $V_{\text{struct}} \geq \lambda_2 W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \geq \lambda_2 V_{\text{x,struct}}$. The barycenter term $\|\bar{z}_1 - \bar{z}_2\|^2$ is handled by the kinetic operator.
 
-The critical challenge is establishing **N-uniformity** of the drift coefficient. Previous attempts using single-walker coupling failed because they required a minimum matching probability $q_{\min} > 0$ independent of $N$, which is impossible for $N!$ permutations. This document resolves this obstruction by importing the Keystone Lemma's N-uniform constants and working with variance-level quantities that are invariant under relabeling.
+The Keystone pressure coefficient is independent of $N$ because its
+coverage proof uses normalized error over all geometric clusters.
+The signed donor and kinetic balance must be evaluated before that
+coefficient becomes a complete-update rate.
 
-The scope of this document is strictly focused on the cloning operator's centered/structural Wasserstein control via a variance proxy (and the conditional closed drift under structural dominance). The complementary analysis of the kinetic operator $\Psi_{\text{kin}}$, which provides contraction in the velocity and barycenter/location components, and the full convergence analysis combining both operators are addressed in companion documents. We use the framework axioms and proven results from {doc}`03_cloning` (particularly Chapters 6-8 on the Keystone Principle) as foundational building blocks.
+The scope here is the centered decomposition and the exact input
+supplied by the Keystone and reset theorems. The complete-update
+calculation retains the Keystone mechanism in
+{doc}`06a_structural_landscape_convergence`.
 
 ### 1.2. Why Wasserstein-2 Contraction Matters
 
-Centered Wasserstein-2 control via the variance proxy under the cloning operator is not merely a technical result—it is the **rigorous justification** for treating the Fragile Gas as a continuum physics model and for deriving its mean-field limit.
+Centered Wasserstein-2 control via the variance proxy quantifies one contribution of cloning to the convergence programme. Its relation to a population limit depends on separate consistency and stability estimates.
 
-**Connection to Mean-Field Theory**: The propagation of chaos framework (documented in {doc}`09_propagation_chaos`) establishes that an N-particle system converges to a mean-field limit if its dynamics contract in Wasserstein distance with **N-uniform constants**. Without this property, the limiting behavior could degenerate as $N \to \infty$, invalidating the mean-field PDE. Our result shows that the cloning operator supplies an N-uniform drift on a **variance proxy** that controls the centered positional $W_2$ component; full phase-space $W_2$ contraction follows once the kinetic operator controls the barycenter and velocity components.
+**Connection to Mean-Field Theory**: The finite-horizon results in {doc}`09_propagation_chaos` use consistency, moment control and continuity of the actual fixed-step population map. They do not require an N-uniform contraction rate. A matching N-uniform two-swarm contraction can additionally control accumulated errors over long times, as described in {doc}`06a_structural_landscape_convergence`. A variance reset alone does not supply that two-law estimate.
 
-**Role in Convergence Theory**: The Fragile Gas alternates between two operators: the cloning operator $\Psi_{\text{clone}}$ (which we analyze here) and the kinetic operator $\Psi_{\text{kin}}$ (analyzed in {doc}`02_euclidean_gas` and {doc}`05_kinetic_contraction`). Together, they form a **hypocoercive** dynamics where each operator contracts different error components:
-- **Cloning operator**: Contracts the positional variance proxy $V_{\text{x,proxy}}$ that bounds $V_{\text{x,struct}}$
-- **Kinetic operator**: Contracts barycenter and velocity components
+**Role in Convergence Theory**: The Fractal Gas alternates cloning and kinetics. Its keystone–kinetic proof architecture combines complementary estimates under their declared hypotheses:
 
-The Foster-Lyapunov drift analysis (Chapter 12 of {doc}`03_cloning`) combines these partial contractions to prove exponential convergence to a unique quasi-stationary distribution (QSD). Our centered Wasserstein-2 **proxy control** provides the geometric foundation for this convergence.
+- **Cloning operator**: Supplies an $N$-uniform Keystone pressure bound
+  and a separate positional reset bound. Their signed donor balance is
+  retained before any rate is claimed.
+- **Kinetic operator**: Supplies dissipation and cross-component estimates for an appropriate coupled observable.
 
-**Complementary to KL-Convergence**: An alternative convergence analysis using Kullback-Leibler (KL) divergence and log-Sobolev inequalities (LSI) is developed in {doc}`15_kl_convergence`. The KL approach may yield faster convergence rates via entropy methods, while the Wasserstein-2 approach provides geometric intuition and explicit N-uniform constants. Both frameworks are valid and mutually reinforcing—the existence of multiple independent proofs strengthens confidence in the Fragile Gas's stability.
+The complete-update analysis in
+{doc}`06a_structural_landscape_convergence` retains the cross-component
+terms and the landscape-dependent defects. The reset bound supplies
+moment control; it is not substituted for the signed Keystone term.
+
+**Complementary to KL-Convergence**: {doc}`15_kl_convergence` studies entropy and functional inequalities for its specified laws and dynamics. Comparing those estimates with Wasserstein control requires matching their hypotheses and targets. Neither a static LSI nor the variance proxy alone establishes contraction for the complete gas.
 
 :::{important}
-**Why N-Uniformity is Non-Negotiable**
+**What N-uniformity supplies**
 
-A drift coefficient $\kappa_x(N)$ that vanishes as $N \to \infty$ (e.g., $\kappa_x(N) \sim 1/N$) would imply that large swarms contract the positional variance arbitrarily slowly. This would invalidate:
-1. The mean-field limit (no well-defined continuum behavior)
-2. The propagation of chaos (N-particle correlations could persist)
-3. The interpretation of the Fragile Gas as a physical system with thermodynamic properties
-
-Our Keystone-based proof establishes that $\kappa_x$ is built from the N-uniform constants $\chi(\varepsilon)$ and $c_{\text{struct}}$ ({doc}`03_cloning`). This validates the Fragile Gas as a scalable, physically meaningful model.
+The Keystone pressure coefficient is independent of $N$, with its
+explicit self-exclusion correction. That fact is retained in
+(SCK.5)--(SCK.6). It does not imply an $N$-uniform drift
+coefficient for the variance proxy or an $N$-uniform full-swarm TV
+mixing rate. Uniform-time conclusions use the complete signed update,
+not this one-sided proxy bound.
 :::
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
@@ -112,17 +138,17 @@ graph TD
 
     subgraph "Keystone Core (§4)"
         D["<b>§4.1: Quantitative Keystone Lemma</b><br>χ(ε), g_max(ε) from the 03_cloning chapter"]:::lemmaStyle
-        E["<b>§4.2: Positional Variance Drift</b><br>𝔼[Δ V_{x,proxy}] ≤ -κ_x V_{x,proxy} + C_x"]:::theoremStyle
+        E["<b>§4.2: Positional Reset</b><br>𝔼[V′_{x,proxy}] ≤ C_reset"]:::theoremStyle
     end
 
     subgraph "Main Result (§5-6)"
         F["<b>§5: Centered W₂ Control</b><br>V_{x,struct} ≤ V_{x,proxy}<br>Proxy drift yields control"]:::stateStyle
-        G["<b>§6: Structural/Barycenter Split</b><br>Full W₂ via kinetic + cloning"]:::theoremStyle
+        G["<b>§6: Structural/Barycenter Split</b><br>Components requiring coupled estimates"]:::theoremStyle
     end
 
     subgraph "Analysis (§7-8)"
         H["<b>§7: Comparison</b><br>No q_min; no alignment axiom"]:::stateStyle
-        I["<b>§8: Explicit Constants</b><br>χ, g_max, κ_x derived"]:::stateStyle
+        I["<b>§8: Explicit Constants</b><br>Keystone pressure and reset tracked"]:::stateStyle
     end
 
     A --> B
@@ -146,15 +172,19 @@ graph TD
 
 **Section 3 (Variance + Centered $W_2$ Bound)**: We prove the variance decomposition ({prf:ref}`lem-variance-decomposition`) and show that the centered positional Wasserstein term is bounded by the sum of internal variances ({prf:ref}`lem-centered-w2-variance-bound`).
 
-**Section 4 (Keystone Core)**: We import the Quantitative Keystone Lemma and the positional variance drift theorem from {doc}`03_cloning`, yielding a direct drift bound for the variance proxy $V_{\text{x,proxy}}$.
+**Section 4 (Keystone Core)**: We import the Quantitative Keystone
+Lemma and the separate positional reset theorem from {doc}`03_cloning`.
 
-**Section 5 (Centered $W_2$ Control)**: We combine the proxy drift with the bound $V_{\text{x,struct}} \le V_{\text{x,proxy}}$ to obtain N-uniform control of the centered positional component.
+**Section 5 (Centered $W_2$ Control)**: We combine the reset bound
+with $V_{\text{x,struct}}\le V_{\text{x,proxy}}$ for moment control;
+the signed Keystone--kinetic update supplies the rate calculation.
 
-**Section 6 (Full $W_2$ Split)**: We combine the barycenter decomposition with the kinetic contraction results to explain how the full phase-space $W_2$ contracts when cloning and kinetic steps are composed.
+**Section 6 (Full $W_2$ Split)**: We identify the barycenter and centered phase-space components whose coupled estimates must close under cloning–kinetic composition.
 
 **Section 7 (Comparison)**: We contrast the Keystone-based variance approach with the failed single-walker $q_{\min}$ strategy.
 
-**Section 8 (Explicit Constants)**: We derive parameter-level expressions for $\chi(\varepsilon)$, $g_{\max}(\varepsilon)$, and $\kappa_x$.
+**Section 8 (Explicit Constants)**: We distinguish pressure and reset
+constants from a complete-update rate.
 
 **Key Proof Principles**:
 
@@ -163,7 +193,9 @@ graph TD
 3. **No cross-swarm alignment**: Avoid brittle alignment assumptions and $q_{\min}$ arguments
 4. **Framework consistency**: Use exact definitions from the Keystone Lemma proof
 
-The result is a rigorous, self-contained proof of centered Wasserstein-2 **control via a variance proxy** (with a closed drift bound under structural dominance), with explicit N-uniform constants.
+The result is a rigorous centered Wasserstein decomposition and
+reset bound, with the $N$-uniform Keystone pressure carried into
+the complete-update proof cited above.
 
 
 
@@ -241,16 +273,19 @@ $V_{\text{x,proxy}} := \text{Var}_x(S_1) + \text{Var}_x(S_2)$. $\text{Var}_x(S_k
 
 **Relationship to Continuum Limit**: The fitness function $F(x)$ and its valley structure are properties of the continuum state space $\mathcal{X}$, while the clusters $I_k, J_k$ are finite-sample objects constructed from the empirical distribution. The proofs in this document use properties of the limiting landscape (e.g., Confining Potential axiom, fitness valleys) to reason about finite-sample cluster behavior.
 
-**Approximation Errors**: For finite $N$, there are approximation errors $O(1/\sqrt{N})$ when estimating continuum properties (like the potential $F(x)$) from empirical measures. These errors are absorbed into:
-1. The noise term $C_x = \frac{g_{\max}(\varepsilon)}{4} + 4d\delta^2$ in the variance-proxy drift inequality
-2. The clustering threshold $\varepsilon$, which depends on $N$ implicitly through the error tolerance
+**Finite-population correction**: The complete measurement-averaged
+Keystone estimate in {prf:ref}`thm-keystone-discharged-averaged-pressure`
+has an explicit $N^{-2}$ self-exclusion term. It is not a generic
+$O(N^{-1/2})$ approximation of the reward or force. The actual
+finite-swarm measurements and common empirical normalizers are used
+throughout that proof. Population-limit sampling errors belong to the
+separate consistency analysis in {doc}`09_propagation_chaos`.
 
-**N-Uniformity Justification**: The key result is that these finite-sample approximation errors do not affect the *sign* or *N-independence* of the drift coefficient $\kappa_x > 0$. This is because:
-- The clustering algorithm thresholds (Definition 6.3) are calibrated to maintain $O(1)$ cluster fractions
-- The framework axioms (Confining Potential, Environmental Richness) provide $O(1)$ landscape features that dominate the finite-sample noise
-- All critical bounds ($f_{UH}, p_u, \chi, g_{\max}$) are proven N-uniform in {doc}`03_cloning`
-
-This remark clarifies that while the analysis is formally at the $N$-particle level, the use of continuum landscape properties is justified by the framework's built-in error control mechanisms.
+**N-uniformity**: The positive Keystone pressure coefficient does
+not contain $N$. This claim concerns pressure, not a closed drift
+coefficient for the variance proxy. The complete signed donor and
+kinetic terms are retained in
+{prf:ref}`thm-slc-signed-complete-update`.
 :::
 
 ### 2.2. No Cross-Swarm Alignment Assumption
@@ -410,14 +445,17 @@ $$
 
 $$
 
-then the proxy control in Section 5 combines with the decomposition above to yield geometric $W_2$ contraction. In practice this regime is obtained after composing with $\Psi_{\text{kin}}$ (see {doc}`05_kinetic_contraction` and {doc}`06_convergence`).
+then this term is bounded by the positional discrepancy. This inequality alone
+does not control the centered joint position–velocity law or close the proxy
+drift in the initial Wasserstein distance. A full contraction conclusion uses
+matched coupled component estimates and {prf:ref}`thm-slc-defect-composition`.
 :::
 
 
 
 ## 4. Keystone-Driven Positional Variance Contraction
 
-We now import the Keystone Lemma and the positional variance drift bound from {doc}`03_cloning`. These results provide the N-uniform contraction mechanism used in this document.
+We import the Keystone pressure estimate and the separate positional reset bound from {doc}`03_cloning`. The $N$-uniform pressure coefficient enters the signed complete-update calculation; the reset bound controls a moment without determining the sign of that calculation.
 
 ### 4.1. Quantitative Keystone Lemma (Recall)
 
@@ -434,107 +472,90 @@ $$
 This is Lemma 8.1.1 in {doc}`03_cloning` ({prf:ref}`lem-quantitative-keystone`).
 :::
 
-### 4.2. Positional Variance Drift
+### 4.2. Positional variance and the signed Keystone bridge
 
-:::{prf:theorem} Positional Variance Proxy Drift
+:::{prf:theorem} Positional variance reset for the cloning stage
 :label: thm-positional-variance-proxy
 
 Define the variance proxy
 $V_{\text{x,proxy}} := \text{Var}_x(S_1) + \text{Var}_x(S_2)$.
-In the all-alive regime, $V_{\text{x,proxy}}$ agrees with the $N$-normalized variance component $V_{\text{Var},x}(S_1) + V_{\text{Var},x}(S_2)$ from {doc}`03_cloning`, and the cloning operator satisfies:
+Suppose the eligible frozen donor positions in each swarm have diameter
+at most $D_x$ and use the canonical recipient jitter
+$\sigma_{\rm clone}$. The actual cloning proposal obeys
 
 $$
-\mathbb{E}[\Delta V_{\text{x,proxy}}] \leq -\kappa_x V_{\text{x,proxy}} + C_x
-
+\mathbb E V_{\text{x,proxy}}'
+\le D_x^2+2(1-1/N)d\sigma_{\rm clone}^2=:C_{\rm reset},
+\qquad
+\mathbb E\Delta V_{\text{x,proxy}}
+\le-V_{\text{x,proxy}}+C_{\rm reset}.
 $$
 
-with N-uniform
-$\kappa_x = \frac{\chi(\varepsilon)}{4} c_{\text{struct}}$
-and
-$C_x = \frac{g_{\max}(\varepsilon)}{4} + C_{\text{jitter}}$.
-Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}`03_cloning` (Section 10.3.6), and $C_{\text{jitter}} = 4 d \delta^2$ is a conservative bound from the positional cloning jitter.
+This is precisely the two-swarm sum of
+{prf:ref}`thm-positional-variance-contraction`. Its $N$-uniform
+coefficient is a reset coefficient with a possibly large offset;
+it is **not** $\chi(\varepsilon)c_{\rm struct}/4$ and does not
+turn Keystone pressure into signed drift. The latter calculation is
+(SCK.1)--(SCK.3) in
+{prf:ref}`thm-slc-signed-complete-update`, with its marked version
+{prf:ref}`thm-slc-marked-keystone-port`.
 
-**Reference**: This is a direct restatement of {doc}`03_cloning`, Theorem 10.3.1 ({prf:ref}`thm-positional-variance-contraction`), specialized to the all-alive regime.
+*Proof.* The cited single-swarm theorem gives
+$\mathbb E\operatorname{Var}_x(S_s')
+\le D_x^2/2+(1-1/N)d\sigma_{\rm clone}^2$ for each $s=1,2$.
+Add the two inequalities and subtract the entering proxy. $\square$
 :::
 
 :::{prf:remark} Jitter Scale Convention
 :label: rem-jitter-scale
 
-$\delta$ is the positional jitter scale in the cloning update. In the Euclidean Gas implementation, one typically sets $\delta = \sigma_x$ (or $\delta = \sqrt{\tau}\,\sigma_x$ for a discretized step), but the analysis keeps $\delta$ explicit.
+$\sigma_{\rm clone}$ is the recipient-position jitter in cloning.
+It is independent of the final kinetic position-noise scale
+$\sigma_x\sqrt h$; identifying them would change both the update
+and its constant.
 :::
 
 
 
-## 5. From Variance Contraction to Centered $W_2$ Control
+## 5. From Variance Contraction
 
-We now combine the proxy drift with the centered Wasserstein bound.
+The reset estimate gives a moment bound. The Keystone route to a
+rate instead carries the exact signed donor term through collision
+and kinetics before testing a landscape's regional constants.
 
 :::{prf:proposition} Centered Positional Control via Variance Proxy
 :label: prop-centered-w2-control
 
-Under the conditions of Theorem {prf:ref}`thm-positional-variance-proxy`, the centered positional Wasserstein term satisfies:
+Under the conditions of {prf:ref}`thm-positional-variance-proxy`,
+the centered positional Wasserstein term satisfies
 
 $$
-\mathbb{E}\left[V_{\text{x,struct}}(S_1', S_2')\right] \leq (1 - \kappa_x) V_{\text{x,proxy}}(S_1, S_2) + C_x.
-
+\mathbb E V_{\text{x,struct}}(S_1',S_2')\le C_{\rm reset}.
 $$
 
-**Proof.**
-By Lemma {prf:ref}`lem-centered-w2-variance-bound`, $V_{\text{x,struct}} \le V_{\text{x,proxy}}$. Apply Theorem {prf:ref}`thm-positional-variance-proxy` and take expectations. □
+*Proof.* Lemma {prf:ref}`lem-centered-w2-variance-bound` gives
+$V_{\text{x,struct}}\le V_{\text{x,proxy}}$ at the output.
+Apply the preceding reset theorem and take expectations. $\square$
 :::
 
 :::{prf:remark} Closed Drift for $V_{\text{x,struct}}$
 :label: rem-closed-drift-vxstruct
 
-Without additional alignment structure, the bound above is **one-sided**: it controls $V_{\text{x,struct}}$ by a contractive proxy but does not produce a closed drift inequality in $V_{\text{x,struct}}$ alone. A regime-specific dominance assumption (Assumption {prf:ref}`ass-structural-dominance`) yields a closed drift bound (Corollary {prf:ref}`cor-closed-drift-vxstruct`).
-This additional assumption is **not** required for the main control result.
-:::
-
-:::{prf:assumption} Structural-Dominance Regime (Positional)
-:label: ass-structural-dominance
-
-There exists an N-uniform constant $c_{\text{proxy}} \ge 1$ such that, at the times of interest,
-
-$$
-V_{\text{x,proxy}} \le c_{\text{proxy}} V_{\text{x,struct}}.
-$$
-
-**Interpretation**: the centered shape mismatch dominates the internal variance. This is a high-mismatch regime; it typically fails when the swarms are already nearly aligned.
-:::
-
-:::{prf:remark} Sufficient Geometric Condition
-:label: rem-structural-dominance-sufficient
-
-If the centered supports satisfy a separation condition, the dominance constant can be made explicit. Suppose both centered supports are contained in a ball of radius $R$ (e.g., $R \le D_{\text{valid}}$) and have minimal separation
-$\operatorname{dist}(\operatorname{supp}\tilde{\mu}_{x,1}, \operatorname{supp}\tilde{\mu}_{x,2}) \ge D > 0$.
-Then $\text{Var}_x(S_k) \le R^2$ and $V_{\text{x,struct}} \ge D^2$, so
-
-$$
-V_{\text{x,proxy}} \le 2 R^2 \le \frac{2 R^2}{D^2} V_{\text{x,struct}}.
-$$
-
-Thus the assumption holds with $c_{\text{proxy}} = 2 (R/D)^2$. This illustrates that the dominance regime corresponds to **strong shape mismatch** (large $D$ relative to $R$).
-:::
-
-:::{prf:corollary} Closed Drift Under Structural Dominance
-:label: cor-closed-drift-vxstruct
-
-Assume {prf:ref}`ass-structural-dominance` and Theorem {prf:ref}`thm-positional-variance-proxy`. Then:
-
-$$
-\mathbb{E}[\Delta V_{\text{x,struct}}] \le -\kappa_{\text{eff}} V_{\text{x,struct}} + C_x,
-\qquad
-\kappa_{\text{eff}} := 1 - (1-\kappa_x) c_{\text{proxy}}.
-$$
-
-In particular, if $c_{\text{proxy}} < 1/(1-\kappa_x)$, then $\kappa_{\text{eff}} > 0$ and the centered positional error contracts geometrically. The correction term is linear in $V_{\text{x,struct}}$, so larger mismatch yields stronger expected correction. When the mismatch is small and the dominance condition fails, the kinetic step provides the remaining contraction.
+This reset bound may cover the entire range of input positional
+variance. It therefore yields no strict centered-$W_2$ contraction
+rate. The rate calculation uses the Keystone pressure with the
+donor, barycenter, collision and kinetic terms of the actual update,
+as in {prf:ref}`thm-slc-keystone-tagged-tv` and
+{prf:ref}`thm-slc-marked-keystone-port`.
 :::
 
 
 
 ## 6. Full $W_2$ Contraction After the Kinetic Step
 
-The full phase-space $W_2$ contraction is obtained by combining the centered control above with the kinetic operator's barycenter and velocity contraction.
+The full phase-space decomposition identifies what the signed
+Keystone--kinetic calculation must control. The reset bound is a
+moment estimate; it is not substituted as a strict contraction.
 
 :::{prf:theorem} Structural/Barycenter Split for Full $W_2$
 :label: thm-full-w2-split
@@ -546,7 +567,20 @@ W_2^2(\mu_1, \mu_2) = \|\bar{z}_1 - \bar{z}_2\|^2 + W_2^2(\tilde{\mu}_1, \tilde{
 
 $$
 
-Cloning controls the centered positional component via Proposition {prf:ref}`prop-centered-w2-control`. The kinetic operator $\Psi_{\text{kin}}$ contracts the barycenter and velocity components ({doc}`05_kinetic_contraction`). Therefore the composed dynamics $\Psi_{\text{kin}} \circ \Psi_{\text{clone}}$ yields full phase-space $W_2$ contraction as in {doc}`06_convergence`.
+The identity holds for the ordinary Euclidean phase-space cost; for a fixed
+positive-definite quadratic cost, use its norm in both terms. It identifies the
+components required by a complete two-swarm contraction estimate. A centered
+positional variance proxy alone is not that estimate. When coupled component
+bounds control all these terms for the same full kernel, their composition is
+{prf:ref}`thm-slc-defect-composition`; its population-limit transfer is
+{prf:ref}`thm-slc-contraction-transfer` in the matching metric.
+
+*Proof.* Every coupling of the two measures corresponds bijectively, by separate
+translation, to a coupling of their centered measures. Write the displacement as
+$z_1-z_2=(\bar z_1-\bar z_2)+(\tilde z_1-\tilde z_2)$. The cross term integrates
+to zero because both centered marginals have zero mean. The mean-displacement
+term is constant over couplings. Taking the infimum proves the identity; the
+same calculation applies to a fixed quadratic form. $\square$
 :::
 
 
@@ -565,21 +599,21 @@ Result: N-uniformity BROKEN
 
 **Keystone approach** (this document):
 ```
-Track variance proxy V_{x,proxy} = Var_x(S_1) + Var_x(S_2)
-Use: Keystone constants χ(ε), g_max(ε) to get drift
-No cross-swarm alignment assumptions required
-Result: N-uniformity PRESERVED
+Track the error-weighted cloning pressure with N-normalized errors.
+Carry the signed donor, barycenter, collision and kinetic terms.
+Result: the Keystone coefficient is N-uniform; a full-update rate
+requires the displayed signed balance to close.
 ```
 
 ### 7.2. Advantages Summary
 
 | Aspect | Single-Walker | Keystone-Based |
 |--------|---------------|---------------|
-| **Coupling** | Individual matching with q_min | Variance proxy; no matching requirement |
-| **Geometry** | Per-walker alignment (brittle) | No cross-swarm alignment needed |
-| **Proof method** | Dynamic (survival probability) | Keystone lemma + variance drift |
-| **N-uniformity** | BROKEN (q_min → 0) | ✓ PROVEN (Keystone constants from {doc}`03_cloning`) |
-| **Framework consistency** | Ad-hoc definitions | Uses exact definitions from Chapters 6-8 |
+| **Coupling** | Individual matching with $q_{\min}$ | Actual common-source plan and signed update |
+| **Geometry** | Per-walker alignment | Error-weighted coverage of all declared clusters |
+| **Proof method** | Minimum matching probability | Keystone pressure plus donor and kinetic accounting |
+| **N-uniformity** | Lost in the matching minimum | Proved for pressure; full-update rate is a separate calculation |
+| **Kernel** | Depends on the proposed matching | Uses the canonical accepted graph and complete update |
 
 
 
@@ -674,39 +708,46 @@ $$
 g_{\max}(\varepsilon) = \max\left(p_u(\varepsilon) \cdot g_{\text{err}}(\varepsilon),\; \chi(\varepsilon) R_{\text{spread}}^2\right).
 $$
 
-10. **Positional variance drift constants** (Theorem 10.3.1, {doc}`03_cloning`):
+10. **Positional variance reset constant**
+({prf:ref}`thm-positional-variance-contraction`):
 
 $$
-\kappa_x = \frac{\chi(\varepsilon)}{4} c_{\text{struct}}, \qquad
-C_x = \frac{g_{\max}(\varepsilon)}{4} + 4 d \delta^2.
+C_{\rm reset}=D_x^2+2(1-1/N)d\sigma_{\rm clone}^2.
 $$
 
-Here $c_{\text{struct}} > 0$ is the structural-variance link constant from {doc}`03_cloning` (Section 10.3.6); in balanced all-alive regimes, $c_{\text{struct}} = 1/2$ is a conservative choice.
+The Keystone constants in items 1--9 are pressure constants. The
+reset constant here is a moment constant. There is no derived
+$\kappa_x=\chi c_{\rm struct}/4$ in the source positional theorem.
 
-### 8.2. Convergence Rate (Proxy)
+### 8.2. Reset control and the complete-update rate
 
-The variance proxy satisfies geometric decay:
-
-$$
-\mathbb{E}[V_{\text{x,proxy}}(t)] \leq (1 - \kappa_x)^t V_{\text{x,proxy}}(0) + \frac{C_x}{\kappa_x}.
-$$
-
-By Lemma {prf:ref}`lem-centered-w2-variance-bound`, this yields:
+The reset estimate gives, for each cloning output,
 
 $$
-\mathbb{E}[V_{\text{x,struct}}(t)] \leq \mathbb{E}[V_{\text{x,proxy}}(t)].
+\mathbb E V_{\text{x,proxy}}'\le C_{\rm reset}.
 $$
 
-Full phase-space $W_2$ contraction follows after composing with the kinetic operator, which contracts the barycenter and velocity components ({doc}`05_kinetic_contraction`, {doc}`06_convergence`).
+The centered positional Wasserstein term therefore obeys
+
+$$
+\mathbb E V_{\text{x,struct}}'\le C_{\rm reset}.
+$$
+
+The signed complete-update rate calculation is (SCK.3)--(SCK.6)
+in {prf:ref}`thm-slc-signed-complete-update`. Its direct sampled-row
+TV conversion is {prf:ref}`thm-slc-keystone-tagged-tv`. They retain
+the reward-dependent donor flux, barycenter, collisions and kinetic
+terms that the reset bound does not evaluate.
 
 ### 8.3. Comparison with KL-Convergence
 
 The KL-convergence framework ({doc}`15_kl_convergence`) may provide faster convergence rates via entropy methods. The centered/structural Wasserstein-2 control proven here is complementary:
 
-- **Centered positional $W_2$ control (via variance proxy)**: Geometric proxy decay, explicit constants, suitable for mean-field limit
+- **Centered positional $W_2$ control (via variance proxy)**: A
+  reset bound for the cloning stage
 - **KL contraction**: Entropy-based, potentially faster, uses LSI theory
 
-Both approaches are valid; the Keystone-based variance proxy control provides an independent verification of convergence with explicit N-uniform constants.
+Each approach retains its own hypotheses. The proxy estimate controls one geometric component; it is not an independent proof of complete-law convergence.
 
 
 
@@ -714,27 +755,30 @@ Both approaches are valid; the Keystone-based variance proxy control provides an
 
 ### 9.1. Main Achievements
 
-This document establishes **centered positional $W_2$ control** for the cloning operator using a **Keystone-based variance proxy** that:
+This document establishes the centered positional $W_2$ decomposition,
+the cloning reset bound and the $N$-uniform Keystone pressure input:
 
 1. ✅ **Avoids q_min problem**: No dependence on minimum matching probability
-2. ✅ **Leverages Keystone bounds**: Constants sourced from {doc}`03_cloning` Chapters 6-8
+2. **Keystone pressure**: Constants sourced from {doc}`03_cloning`
 3. ✅ **No alignment axiom**: No cross-swarm geometric alignment assumptions required
-4. ✅ **N-uniform throughout**: All constants independent of N
+4. **N-uniform input**: The pressure coefficient is independent of $N$;
+   the finite-size correction is explicit
 5. ✅ **Framework-consistent**: Uses exact cluster definitions from the Keystone Lemma chain
 
 ### 9.2. Open Questions
 
-1. **Optimal constants**: Can $\chi(\varepsilon)$ or $c_{\text{struct}}$ be tightened to improve $\kappa_x$?
-2. **Closed drift for $V_{\text{x,struct}}$**: Identify regimes where $V_{\text{x,proxy}} \le c_{\text{proxy}} V_{\text{x,struct}}$ holds.
-3. **Adaptive extensions**: How does viscous coupling affect the proxy decay rate?
-4. **Numerical validation**: Swarm simulations to verify proxy decay and combined kinetic+cloning $W_2$ contraction
+1. **Signed rate evaluation**: Evaluate the donor and kinetic terms in
+   (SCK.3) with the declared regional landscape profiles.
+2. **Phase-resolved control**: Apply the resulting rate only on the
+   population classes certified by those profiles.
 
 ### 9.3. Relation to Framework
 
-This result enables:
-- **Propagation of Chaos** ({doc}`09_propagation_chaos`): N-particle system → mean-field limit
-- **Mean-Field Convergence** ({doc}`08_mean_field`): Measure-level contraction
-- **Combined with kinetic contraction**: Full Wasserstein contraction for alternating operator $\Psi_{\text{kin}} \circ \Psi_{\text{clone}}$
+This result contributes positional control to the larger programme:
+
+- **Finite-horizon propagation of chaos** ({doc}`09_propagation_chaos`) also requires the actual population map's consistency and continuity estimates.
+- **Long-time population analysis** ({doc}`08_mean_field`) requires additional stability or phase-identification arguments.
+- **Complete-update contraction** requires matched cloning–kinetic coupling estimates and a composition criterion, with the landscape dependence retained as in {doc}`06a_structural_landscape_convergence`.
 
 
 
@@ -749,7 +793,7 @@ This result enables:
 - Lemma 8.3.2 (line 4881): Cloning Pressure on Unfit Set (p_u > 0)
 - Lemma 8.4.1: Error Concentration in the Target Set ($c_{\text{err}}, g_{\text{err}}$)
 - Lemma 8.1.1: Quantitative Keystone Lemma ($\chi, g_{\max}$)
-- Theorem 10.3.1: Positional Variance Contraction
+- Theorem 10.3.1: Positional variance reset and exact drift
 - Theorem 7.5.2.4: Stability Condition (fitness ordering)
 - Theorem 8.7.1 (line 5521): N-Uniformity of Keystone Constants
 

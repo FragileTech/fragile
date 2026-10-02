@@ -94,6 +94,7 @@ parts:
     - file: source/2_fractal_gas/convergence_program/04_wasserstein_contraction
     - file: source/2_fractal_gas/convergence_program/05_kinetic_contraction
     - file: source/2_fractal_gas/convergence_program/06_convergence
+    - file: source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence
   - file: source/2_fractal_gas/parts/03_mean_field
     title: Part III — Mean-Field Limits and Equilibrium
     sections:

@@ -1,0 +1,16 @@
+{
+  "runs": 1200,
+  "groups": 120,
+  "seeds_per_group": 10,
+  "dimensions": 20,
+  "elites": 5,
+  "actual_evaluations": 117087014,
+  "errors": 0,
+  "round_counts": {
+    "1": 1200
+  },
+  "controller_runs_identical_to_standalone": 300,
+  "fingerprints_verified": 44,
+  "cma_reference_runs_verified": 60,
+  "budget_and_population_checks": "passed"
+}

@@ -1,5 +1,9 @@
 # The Keystone Principle and the Contractive Nature of Cloning
 
+:::{div} feynman-prose
+The selection probabilities in the keystone argument can vary across a landscape. [Structural landscape convergence](06a_structural_landscape_convergence.md) records that regional dependence and shows where the resulting terms enter the composition with kinetics. This preserves the same corrective-selection mechanism while exposing which properties of the landscape its quantitative bound needs.
+:::
+
 (sec-cloning-tldr)=
 ## 0. TLDR
 

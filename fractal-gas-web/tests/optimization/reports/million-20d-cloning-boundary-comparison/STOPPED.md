@@ -1,0 +1,1 @@
+Stopped at user request before starting the replacement clone-score algorithm benchmark. 1159 completed runs retained. Original compiled library preserved as original-libfg_optimization.so and original sources as original-engine-sources.tar.gz. This report describes the superseded algorithm; do not resume it with the replacement library.

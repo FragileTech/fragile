@@ -1,6 +1,10 @@
 # Convergence, Survival, and Parameter Dependence
 
 :::{div} feynman-prose
+The contraction calculation becomes more informative when its constants retain their landscape dependence. [Structural landscape convergence](06a_structural_landscape_convergence.md) follows that dependence through regional kinetic and keystone estimates, basin communication and tail control. Its convergence statements specify which additional certificates make the complete-update argument applicable to a given landscape.
+:::
+
+:::{div} feynman-prose
 A cloning step can pull positions together while adding kinetic energy. A kinetic
 step can dissipate that energy while moving positions apart. To understand the
 whole algorithm, we must keep an account of what each step transfers to the
@@ -176,10 +180,16 @@ A_C=\operatorname{diag}(r_{C,x},1,r_{C,\mu},r_{C,b}),\qquad
 A_K=\operatorname{diag}(r_{K,x},r_{K,v},r_{K,\mu},r_{K,b}).
 $$
 
-Here $r_{C,x}=1-\kappa_x$ and $r_{C,b}=1-\kappa_b$ when the corresponding
-cloning contraction estimates hold. A bounded expansion uses coefficient one;
-a uniform bound uses coefficient zero. Every source vector must include the
-jitter, collision, and discretization terms appropriate to that estimate.
+Here $r_{C,x}=1-\kappa_x$ only when the corresponding affine cloning
+estimate, including its source term, holds. In particular, (3.AC3) of
+{prf:ref}`thm-complete-cloning-drift` obtains such a coefficient from a
+uniform positional reset bound, with the full $C_x$ offset. Its chosen
+$\kappa_x$ is **not** the $N$-uniform Keystone pressure coefficient and
+does not certify attraction to a stationary phase. A bounded expansion
+uses coefficient one; a uniform bound uses coefficient zero. Every source
+vector must include the jitter, collision, and discretization terms
+appropriate to that estimate. The rate-sensitive Keystone calculation
+is (SCK.3)--(SCK.6) of {prf:ref}`thm-slc-signed-complete-update`.
 
 The complete cloning statement {prf:ref}`thm-complete-cloning-drift` supplies
 one collection of such inputs. Its boundary component uses the favorable

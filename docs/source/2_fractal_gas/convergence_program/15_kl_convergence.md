@@ -2462,3 +2462,23 @@ The proofs of these implications are contained in this chapter. The operator-spe
 :::{div} feynman-prose
 The essential calculation is now visible: an LSI controls entropy by full Fisher information, and a hypocoercive derivative controls the modified entropy by that same information. Killing adds a normalization term; cloning adds a kernel contribution. Once those contributions are estimated for the actual law, the final step is Grönwall's inequality. The resulting statement says exactly which distribution converges, which functional decays, and which constants remain independent of the population.
 :::
+
+
+:::{prf:remark} Structural confinement and the actual nonlinear entropy balance
+:label: rem-kl-structural-feedback
+
+
+Reward-driven self-confinement without a bounded kinetic center is supplied by
+{prf:ref}`thm-slceg-full-moment` and {prf:ref}`thm-slce-entropy-floor`.
+Their selection coefficients come from the actual regional accepted-edge
+flux; the zero-trap criterion is explicit. The latter theorem controls the
+normalized entropy of the full joint positional law, retaining dependence
+between walkers. Its tail and coverage budgets are quantitative and
+population-independent. For full-law entropy relaxation, the exact balance
+{prf:ref}`prop-slce-exact-balance` retains the transported-reference
+production alongside cloning and kinetic information losses.
+
+The identity uses the actual frozen population environment. Its reference
+is transported by that same kernel before comparison to the original
+target, so common invariance is not inferred from nonlinear stationarity.
+:::

@@ -758,3 +758,23 @@ The final rate has a concrete interpretation: the numerator is the dissipation r
 
 For a mean-field conclusion, combine the finite-particle estimate with an identified marginal limit and the existence and uniqueness results for its equation. The LSI passes to fixed marginal limits under the conditions of {prf:ref}`cor-kl-lsi-mean-field-limit`. This keeps the finite-particle entropy theorem and the mean-field identification in one chain, with each estimate doing its stated job.
 :::
+
+
+:::{prf:remark} Structural confinement and the actual nonlinear entropy balance
+:label: rem-hypocoercive-structural-feedback
+
+
+Reward-driven self-confinement without a bounded kinetic center is supplied by
+{prf:ref}`thm-slceg-full-moment` and {prf:ref}`thm-slce-entropy-floor`.
+Their selection coefficients come from the actual regional accepted-edge
+flux; the zero-trap criterion is explicit. The latter theorem controls the
+normalized entropy of the full joint positional law, retaining dependence
+between walkers. Its tail and coverage budgets are quantitative and
+population-independent. For full-law entropy relaxation, the exact balance
+{prf:ref}`prop-slce-exact-balance` retains the transported-reference
+production alongside cloning and kinetic information losses.
+
+The identity uses the actual frozen population environment. Its reference
+is transported by that same kernel before comparison to the original
+target, so common invariance is not inferred from nonlinear stationarity.
+:::

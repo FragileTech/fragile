@@ -1,5 +1,9 @@
 # The Mean-Field Law of the Euclidean Gas
 
+:::{div} feynman-prose
+Finite-horizon population approximation and long-time population control answer different questions. [Structural landscape convergence](06a_structural_landscape_convergence.md) sets out the additional estimates needed to keep approximation errors controlled as time grows. It also retains the possibility of several stationary phases, so that a valid population description need not assume every initialization selects the same phase.
+:::
+
 (sec-mean-field-foundations)=
 ## 1. A population law for one complete update
 
@@ -309,6 +313,13 @@ $2\|\phi\|_\infty B_*/\sqrt N$, giving a full conditional mean-square
 error of order $N^{-1}$. It derives the normalization error and the finite
 marked-exploration error separately; convergence of $L_N(S)$ to a different
 prescribed law remains a separate input approximation.
+
+For the ordered donor-star collision used by the Python routine, the corresponding
+priority-decorated population map and explicit one-step bounds are
+{prf:ref}`def-chaos-ordered-star-population-map` and
+{prf:ref}`thm-chaos-ordered-star-quantitative`. The priority coordinate
+records the fixed order of donor writes and is retained through later
+population steps; the present component-Haar map remains unchanged.
 :::
 
 :::{div} feynman-prose
@@ -615,4 +626,129 @@ The Part III Rust experiments test the actual stage predictions:
 - stationary concentration and dependence on initialization are measured separately from fixed-horizon chaos.
 
 The bounds on component tails and alive mass are inequality predictions. Their conservative constants are not fitted rates or expected equalities. Empirical agreement with a one-step identity does not supply the unresolved stationary attraction estimate.
+:::
+
+:::{prf:remark} Quantitative structural refinement of this population law
+:label: rem-mean-field-structural-refinement
+
+The population equation in {prf:ref}`thm-mean-field-equation` is the equation
+used in {prf:ref}`thm-slct-unbounded-trajectory` and
+{prf:ref}`cor-slcs-trajectory`. Those results give finite-horizon metric
+errors and probabilities in terms of regional force increments, interface
+defects, reward growth, moment tails and the primitive swarm parameters.
+They compare the finite population with the iterates from its specified
+initial law; no contraction between different initial laws is assumed.
+The regional theorem replaces global force Lipschitzness by its displayed
+modulus and Gaussian excursion charges. Its all-alive and integrability
+hypotheses remain part of the statement.
+
+For confinement on the unbounded domain,
+{prf:ref}`thm-slcr-population-flux` gives the exact selected-source moment
+balance and an explicit full-update drift with coverage-failure defects.
+No force restoration or convexity at infinity is required by that route.
+{prf:ref}`thm-slcr-coercive-envelope` supplies general coercive tail
+observables for the particle kernel; stronger reward moments remain
+necessary when used by the quantitative population estimates.
+
+{prf:ref}`thm-slcg-flux-coefficients` derives the confinement inputs from
+regional reward integrals, fitness bands, donor geometry and outward leakage.
+{prf:ref}`thm-slco-trap-interval` tests zero auxiliary force and gives explicit
+sufficient intervals for an optional added force, retaining its effect on the
+population class and local regularity. For convergence of one evolving law,
+{prf:ref}`thm-slcpd-phase-attraction` and
+{prf:ref}`thm-slcpd-local-dissipation` give full-law TV bounds from quantified
+successive-law residuals. Their all-time or class-uniform inequalities must
+be verified; they do not require different initial laws to share a limit.
+
+The long-time extension in {prf:ref}`thm-slcm-joint-invariant` identifies
+stationary and joint occupation limits of this same population map with
+explicit error $a_N+1/T$. The actual active-cloning regime in
+{prf:ref}`thm-slca-active-stationary` and
+{prf:ref}`cor-slca-joint-stationary-time` supplies uniform moments,
+finite-population stationarity and an explicit simultaneous large-population,
+long-time observation schedule. These results identify invariant population
+dynamics. Fixed-phase support, arbitrary instantaneous diagonals and unique
+stationary mixture weights follow under the distinct quantified conditions of
+{prf:ref}`thm-slcm-fixed-support`, {prf:ref}`cor-slclt-moment-localization`
+and {prf:ref}`thm-slcj-phase-weights`, respectively. The order obstruction
+{prf:ref}`thm-slcj-order-obstruction` explains why distinct nonlinear phases
+need not preserve the same weights in both orders of limits.
+
+The population-independent Keystone bound in
+{prf:ref}`thm-slcn-keystone-power` is transferred through the exact signed
+balances of {prf:ref}`thm-slkd-signed-cloning` and
+{prf:ref}`thm-slkd-full-position`. The complete quadratic drift differs
+between the finite and population updates by the explicit $N^{-1/4}$ bound
+of {prf:ref}`thm-slqc-quadratic-consistency`. Given the quantified phase
+attraction and coverage inputs, {prf:ref}`thm-slcn-uniform-rate` and
+{prf:ref}`cor-slcn-general-profile` supply an $N$-independent time-decay
+profile and a fully displayed particle-error floor tending to zero.
+Quadratic drift alone does not distinguish all population laws; its
+full-law consequences require the stated additional dissipation estimate.
+
+
+A closed active-cloning regime is now proved by
+{prf:ref}`thm-slcc-active-contraction`: its population contraction constant
+$q_2=1-\epsilon_2+2L_R+L_R^2$ is computed from the actual kinetic
+minorization and marked-component perturbation. It retains actual collisions,
+and {prf:ref}`cor-slcc-positive-exponents` gives a strictly positive,
+explicit selection interval. Under its bounded configured reward and finite
+discrete-center hypotheses, {prf:ref}`thm-slcf-nonlinear-restart` proves
+uniform-time empirical approximation with an explicit vanishing error floor;
+{prf:ref}`cor-slcf-stationary-limits` proves stationary chaos and both orders
+of limits. The population law converges in TV; empirical approximation uses
+the stated bounded transport metric. No phase-attraction constant is assumed
+in this closed regime.
+
+
+For unbounded quadratic-growth raw reward,
+{prf:ref}`thm-slcw-active-contraction` replaces ordinary TV feedback control
+by its explicit fourth-moment weighted norm. It derives $q_w<1$ from the
+actual marked collision law and kinetic kernel, with a nonempty positive
+selection interval. {prf:ref}`thm-slcw-transfer` gives the complete vanishing
+particle-error floor; {prf:ref}`cor-slcw-trajectories` proves uniform-time
+initialized approximation, stationary chaos and both limit orders. The
+same-potential substitution {prf:ref}`cor-slcw-same-potential` preserves
+$R=-U$ and $F=-\nabla U$ without clipping. The finite kinetic-center
+profile and the computed feedback inequality remain explicit hypotheses.
+
+
+Reward-driven self-confinement without a bounded kinetic center is supplied by
+{prf:ref}`thm-slceg-full-moment` and {prf:ref}`thm-slce-entropy-floor`.
+Their selection coefficients come from the actual regional accepted-edge
+flux; the zero-trap criterion is explicit. The latter theorem controls the
+normalized entropy of the full joint positional law, retaining dependence
+between walkers. Its tail and coverage budgets are quantitative and
+population-independent. For full-law entropy relaxation, the exact balance
+{prf:ref}`prop-slce-exact-balance` retains the transported-reference
+production alongside cloning and kinetic information losses.
+
+:::
+
+
+:::{prf:remark} Full-kernel feedback and phase-compatible time horizons
+:label: rem-mean-field-long-time-audit
+
+The structural chapter now bounds unbounded-reward normalization uniformly
+through the actual sigmoid derivatives in
+{prf:ref}`lem-slcef-logistic-normalization`, and controls the full frozen
+root kernel's environment dependence in {prf:ref}`thm-slcef-environment`.
+The rootwise selection Harris estimate does not complete nonlinear attraction:
+{prf:ref}`prop-slcfz-unsigned-empty` proves that this specific unsigned
+assembly has no admissible contraction parameters. The finite-particle
+class-exit estimate {prf:ref}`thm-slcex-one-step` and the explicit growing
+window {prf:ref}`cor-slcex-global-growth-window` retain the associated
+probability of departure. Finally {prf:ref}`prop-slcfu-phase-obstruction`
+proves why distinct nonlinear stationary phases and finite-particle
+ergodicity cannot justify uniform-time approximation to every initial phase.
+These results preserve the fixed-step mean-field evolution law while
+specifying the extra mathematical content required for a long-time claim.
+The positive trajectory conclusion is now quantitative on a diverging
+horizon in {prf:ref}`thm-slcgt-growing-trajectory`, with explicit
+uniform-ball initialization and fixed-row chaos. The complete infinite
+path of empirical population laws converges in the stated product metric
+by {prf:ref}`cor-slcgt-infinite-population-path`. These results require
+neither stationary attraction nor a bounded kinetic center; they do not
+change the topology to uniform convergence over all times.
+
 :::

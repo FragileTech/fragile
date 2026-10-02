@@ -1,0 +1,58 @@
+{
+  "dimensions": 20,
+  "budget": 100000,
+  "seeds": 5,
+  "workers": 2,
+  "variants": [
+    "Population GAS gas_adaptive",
+    "Single GAS gas_adaptive",
+    "Population GAS local_covariance",
+    "Single GAS local_covariance",
+    "BIPOP-active CMA-ES"
+  ],
+  "covariance_scales": [
+    0.0001,
+    0.0002326918168776363,
+    0.0005414548164181542,
+    0.0012599210498948732,
+    0.0029317331822241704,
+    0.006821903207721968,
+    0.015874010519681993,
+    0.036937523489595156,
+    0.0859505945175426,
+    0.2
+  ],
+  "gas_multipliers": [
+    0.1,
+    0.1668100537200059,
+    0.2782559402207125,
+    0.46415888336127786,
+    0.774263682681127,
+    1.291549665014884,
+    2.1544346900318834,
+    3.5938136638046276,
+    5.9948425031894095,
+    10.0
+  ],
+  "problems": {
+    "quadratic": "Quadratic bowl",
+    "bbob_10": "Rotated ill-conditioned ellipsoid",
+    "rastrigin": "Rastrigin",
+    "bbob_15": "Rotated Rastrigin",
+    "rosenbrock": "Rosenbrock",
+    "bbob_5": "Boundary optimum (linear slope)"
+  },
+  "library_sha256": "6605474de7265a7d92734cc99ef6b9ab6057a80130ebda079067a05ef5e0d65a",
+  "runner_sha256": "285c291c61c1ea0ddef411af7b3ca9b990130042a0c0b542422ba478441c5a25",
+  "helper_sha256": "fd981ec739dfe675d741c1de82799b570afadcb3de0745bac0b178405bcce47b",
+  "execution_history": [
+    {
+      "workers": 4,
+      "runner_sha256": "8429b9239f8a7cab7973fedfb6ecc3fb4af30e1d8465c6ff7e45ce897ef94b01"
+    },
+    {
+      "workers": 2,
+      "runner_sha256": "285c291c61c1ea0ddef411af7b3ca9b990130042a0c0b542422ba478441c5a25"
+    }
+  ]
+}

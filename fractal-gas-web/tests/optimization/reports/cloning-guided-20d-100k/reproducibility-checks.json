@@ -1,0 +1,41 @@
+[
+  {
+    "problem": "quadratic",
+    "variant": "Cloning geometry",
+    "seed": 0,
+    "exact_match": true,
+    "fields": [
+      "best",
+      "evaluations",
+      "error",
+      "iterations",
+      "final_status"
+    ]
+  },
+  {
+    "problem": "rastrigin",
+    "variant": "Cloning combined",
+    "seed": 0,
+    "exact_match": true,
+    "fields": [
+      "best",
+      "evaluations",
+      "error",
+      "iterations",
+      "final_status"
+    ]
+  },
+  {
+    "problem": "bbob_5",
+    "variant": "Cloning drift",
+    "seed": 0,
+    "exact_match": true,
+    "fields": [
+      "best",
+      "evaluations",
+      "error",
+      "iterations",
+      "final_status"
+    ]
+  }
+]

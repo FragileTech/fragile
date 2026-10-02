@@ -1,0 +1,11 @@
+{
+  "runs": 300,
+  "dimensions": 20,
+  "actual_evaluations": 25734563,
+  "errors": 49,
+  "fractal_elites": 5,
+  "matrix_complete": true,
+  "evaluation_ceiling_verified": true,
+  "source_and_library_unchanged": true,
+  "engine_dimensions_verified": true
+}

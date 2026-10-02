@@ -26,67 +26,74 @@ const preset = (n) => ({
     settings: { perturbation_std: 0.01 * (i + 1) },
   })),
 });
-test("WASM coordinator exchanges complete foreign rows and respects shared budgets", async () => {
-  const coordinator = new NativePopulationCoordinator(await create());
-  const config = coordinator.create(preset(4));
-  const engines = await Promise.all(
-    config.members.map(async (member) => {
-      const m = await create(),
-        e = new NativeOptimization(m);
-      e.create(member.settings);
-      e.exchange = (request) =>
-        populationJson(m, "_fgo_exchange", e.handle, request);
-      e.exchange({
-        op: "configure",
-        id: member.id,
-        count: member.exchange_count,
+for (const algorithm of ["wave", "gas"]) {
+  test(`WASM ${algorithm} coordinator exchanges complete foreign rows and respects shared budgets`, async () => {
+    const coordinator = new NativePopulationCoordinator(await create());
+    const input = preset(4);
+    input.defaults.algorithm = algorithm;
+    input.defaults.gas_local_search = false;
+    const config = coordinator.create(input);
+    const engines = await Promise.all(
+      config.members.map(async (member) => {
+        const m = await create(),
+          e = new NativeOptimization(m);
+        e.create(member.settings);
+        e.exchange = (request) =>
+          populationJson(m, "_fgo_exchange", e.handle, request);
+        e.exchange({
+          op: "configure",
+          id: member.id,
+          count: member.exchange_count,
+        });
+        return e;
+      }),
+    );
+    try {
+      coordinator.request({
+        op: "initialize",
+        reports: engines.map((e) => e.exchange({ op: "capture" })),
       });
-      return e;
-    }),
-  );
-  try {
-    coordinator.request({
-      op: "initialize",
-      reports: engines.map((e) => e.exchange({ op: "capture" })),
-    });
-    const { archive } = coordinator.request({ op: "prepare" });
-    engines.forEach((e) => e.exchange({ op: "sync", archive }));
-    coordinator.request({
-      op: "admit",
-      reports: engines.map((e) => e.exchange({ op: "capture" })),
-    });
-    engines.forEach((e) => e.step());
-    const before = engines.map((e) => e.snapshot());
-    const reports = engines.map((e) => e.exchange({ op: "capture" }));
-    // Arrival order is deliberately unrelated to member order.
-    const { plans } = coordinator.request({
-      op: "finish",
-      reports: reports.toReversed(),
-    });
-    assert.equal(plans.length, 4);
-    for (let i = 0; i < 4; i++) {
-      assert.equal(plans[i].imports.length, 5);
-      assert.ok(plans[i].imports.every((x) => x.walker.source !== plans[i].id));
-      engines[i].exchange({ op: "stage", imports: plans[i].imports });
-      assert.deepEqual(engines[i].snapshot(), before[i]);
+      const { archive } = coordinator.request({ op: "prepare" });
+      engines.forEach((e) => e.exchange({ op: "sync", archive }));
+      coordinator.request({
+        op: "admit",
+        reports: engines.map((e) => e.exchange({ op: "capture" })),
+      });
+      engines.forEach((e) => e.step());
+      const before = engines.map((e) => e.snapshot());
+      const reports = engines.map((e) => e.exchange({ op: "capture" }));
+      // Arrival order is deliberately unrelated to member order.
+      const { plans } = coordinator.request({
+        op: "finish",
+        reports: reports.toReversed(),
+      });
+      assert.equal(plans.length, 4);
+      for (let i = 0; i < 4; i++) {
+        assert.equal(plans[i].imports.length, 5);
+        assert.ok(
+          plans[i].imports.every((x) => x.walker.source !== plans[i].id),
+        );
+        engines[i].exchange({ op: "stage", imports: plans[i].imports });
+        assert.deepEqual(engines[i].snapshot(), before[i]);
+      }
+      engines.forEach((e) => e.exchange({ op: "commit" }));
+      const status = coordinator.request({ op: "commit" });
+      assert.equal(status.round, 1);
+      assert.equal(status.exchanges, 1);
+      assert.equal(status.members.length, 4);
+      assert.ok(status.global_elites.length <= 20);
+      const encoded = encodePopulationRecording(config, [
+        { status, frames: engines.map((e) => e.snapshot()) },
+      ]);
+      const decoded = decodePopulationRecording(encoded);
+      assert.equal(decoded.frames.length, 1);
+      assert.deepEqual(decoded.frames[0].frames[0], engines[0].snapshot());
+    } finally {
+      engines.forEach((e) => e.dispose());
+      coordinator.dispose();
     }
-    engines.forEach((e) => e.exchange({ op: "commit" }));
-    const status = coordinator.request({ op: "commit" });
-    assert.equal(status.round, 1);
-    assert.equal(status.exchanges, 1);
-    assert.equal(status.members.length, 4);
-    assert.ok(status.global_elites.length <= 20);
-    const encoded = encodePopulationRecording(config, [
-      { status, frames: engines.map((e) => e.snapshot()) },
-    ]);
-    const decoded = decodePopulationRecording(encoded);
-    assert.equal(decoded.frames.length, 1);
-    assert.deepEqual(decoded.frames[0].frames[0], engines[0].snapshot());
-  } finally {
-    engines.forEach((e) => e.dispose());
-    coordinator.dispose();
-  }
-});
+  });
+}
 test("single member can retain every walker as an elite", async () => {
   const coordinator = new NativePopulationCoordinator(await create());
   const input = preset(1);

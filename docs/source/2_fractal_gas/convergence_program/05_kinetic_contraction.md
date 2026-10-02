@@ -1,5 +1,9 @@
 # Hypocoercivity and Convergence of the Euclidean Gas
 
+:::{div} feynman-prose
+A force estimate valid inside one region must account for a noisy step that leaves it. [Structural landscape convergence](06a_structural_landscape_convergence.md) develops this regional accounting and carries the excursion terms into the complete update. The kinetic mechanism stays the same; the additional estimates specify where its hypotheses apply and what must control the rest.
+:::
+
 ## 0. TLDR
 
 *Notation: $V_{\text{Var},x}$, $V_{\text{Var},v}$ = positional and velocity variance; $\mu_v$ = velocity barycenter; $W_b$ = boundary potential; $\Psi_{\text{kin}}$, $\Psi_{\text{clone}}$ = kinetic and cloning operators. The TV-focused Lyapunov is $V_{\text{TV}} = c_V\!\left(V_{\text{Var},x} + V_{\text{Var},v}\right) + c_\mu \|\mu_v\|^2 + c_B W_b$.*
@@ -18,7 +22,7 @@
 
 ### 1.1. Goal and Scope
 
-The goal of this document is to provide a complete, rigorous analysis of the **kinetic operator** $\Psi_{\text{kin}}$ and prove the drift properties required for **total-variation convergence** of the composed Euclidean Gas chain. While the companion document *"The Keystone Principle and the Contractive Nature of Cloning"* ({doc}`03_cloning`) proved that the cloning operator $\Psi_{\text{clone}}$ achieves contraction of positional variance $V_{\text{Var},x}$ and boundary potential $W_b$, this document establishes the corresponding kinetic drift and minorization properties used in the TV proof.
+The goal of this document is to analyze the **kinetic operator** $\Psi_{\text{kin}}$ and its contribution to the complete Euclidean Gas update. The companion chapter {doc}`03_cloning` proves an $N$-uniform Keystone pressure estimate and a separate positional reset bound. Neither is, by itself, a signed contraction of positional variance. The full signed composition is recorded in {prf:ref}`thm-slc-signed-complete-update`.
 
 The central mathematical object of study is the **underdamped Langevin dynamics** that governs walker evolution between cloning events. This dynamics combines deterministic drift from a confining potential, friction that dissipates kinetic energy, and thermal noise that maintains ergodicity. We prove that this operator achieves (TV-focused):
 
@@ -37,20 +41,20 @@ The Euclidean Gas achieves stability through a carefully orchestrated interplay 
 
 | **Lyapunov Component** | **Cloning $\Psi_{\text{clone}}$** | **Kinetics $\Psi_{\text{kin}}$** | **Net Effect** |
 |:-----------------------|:-----------------------------------|:----------------------------------|:---------------|
-| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x} \tau + C_x \tau$ | $\leq C_{\text{kin},x}\tau$ | **Contraction** |
+| $V_{\text{Var},x}$ (position) | Keystone pressure plus signed donor terms; a separate reset bound | Kinetic transport, force, and noise terms | **Rate decided by the complete signed balance** |
 | $V_{\text{Var},v}$ (velocity) | $\leq C_v$ | $-(2\gamma-\epsilon) V_{\text{Var},v}\tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau$ | **Contraction** |
 | $\|\mu_v\|^2$ (velocity barycenter) | $\leq C_{\mu}^{\text{clone}}$ | $-2\gamma \|\mu_v\|^2\tau + C_{\mu}^{\text{kin}}\tau$ | **Contraction** |
 | $W_b$ (boundary)       | $-\kappa_b W_b \tau + C_b \tau$ | $-\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau$ | **Strong contraction** |
 
 **The Physical Intuition:**
 
-- **Cloning** is a *positional* mechanism: it resamples walker positions based on fitness, causing positional variance $V_{\text{Var},x}$ to contract as clones concentrate in high-reward regions. Inelastic collisions inject momentum noise, causing bounded expansion of $V_{\text{Var},v}$ and the velocity barycenter.
+- **Cloning** is a *positional* mechanism: it resamples walker positions based on fitness. Keystone pressure measures favourable replacement, while donor insertion can contribute with either sign to positional variance. Inelastic collisions perturb velocities and their barycenter.
 
 - **Kinetics** is a *velocity* mechanism: the friction term $-\gamma v$ directly dissipates velocity variance and $\|\mu_v\|^2$, while thermal noise injects bounded positional diffusion. These effects offset the cloning-induced velocity perturbations.
 
 - **Boundary safety** benefits from **dual independent mechanisms**: cloning eliminates boundary-proximate walkers (Safe Harbor), while the confining potential actively pushes walkers away from the boundary.
 
-This synergistic architecture is fundamental to the Fragile Gas framework. The decomposition into complementary operators enables each mechanism to be analyzed independently using Foster-Lyapunov techniques, while the composition achieves full TV convergence.
+The decomposition identifies the terms in the complete update. A TV rate requires the signed composition to close on the same state class; the separate component estimates do not establish it by themselves.
 
 ### 1.3. Overview of the Proof Strategy and Document Structure
 
@@ -78,9 +82,9 @@ graph TD
     end
 
     subgraph "Integration with Cloning Operator"
-        J["<b>From 03_cloning</b><br>Cloning provides:<br>ΔV_Var,x ≤ -κ_x V_Var,x τ + C_x τ<br>ΔW_b ≤ -κ_b W_b τ + C_b τ"]:::axiomStyle
+        J["<b>From 03_cloning</b><br>N-uniform Keystone pressure<br>and a separate positional reset bound"]:::axiomStyle
         K["<b>Synergistic Composition</b><br>Balance weights c_V, c_μ, c_B in<br>V_TV = c_V(V_Var,x+V_Var,v)+c_μ||μ_v||²+c_B W_b"]:::stateStyle
-        L["<b>Result (in 06_convergence)</b><br>Full Foster-Lyapunov Drift:<br>ΔV_TV ≤ -κV_TV + C"]:::theoremStyle
+        L["<b>Complete update</b><br>Signed Keystone, donor and kinetic balance<br>with explicit residual"]:::theoremStyle
     end
 
     A --> B
@@ -101,7 +105,7 @@ graph TD
     H --> K
     I --> K
     I2 --> K
-    J -- "Provides complementary<br>contractions" --> K
+    J -- "Supplies Keystone pressure<br>and donor accounting" --> K
     K --> L
 
     classDef stateStyle fill:#4a5f8c,stroke:#8fa4d4,stroke-width:2px,color:#e8eaf6
@@ -118,7 +122,7 @@ graph TD
 
 - **Chapter 5 (Velocity Dissipation):** Proves that Langevin friction provides direct linear dissipation of velocity variance $V_{\text{Var},v}$ and barycenter energy $\|\mu_v\|^2$.
 
-- **Chapter 6 (Positional Expansion):** Establishes that thermal noise causes bounded positional expansion $\Delta V_{\text{Var},x} \leq C_{\text{kin},x}$, which is overcome by the strong positional contraction from cloning.
+- **Chapter 6 (Positional Expansion):** Bounds the kinetic contribution on its stated moment class. The signed Keystone, donor, and kinetic terms are combined in {prf:ref}`thm-slc-signed-complete-update`.
 
 - **Chapter 7 (Boundary Safety + Minorization):** Proves boundary protection and establishes a small-set/minorization condition for the kinetic kernel on compact interior sets.
 
@@ -138,7 +142,7 @@ The Euclidean Gas achieves stability through the complementary action of two ope
 
 | Component (TV Track) | $\Psi_{\text{clone}}$ ({doc}`03_cloning`) | $\Psi_{\text{kin}}$ (this document) | Net Effect |
 |:---------------------|:------------------------------------------|:-------------------------------------|:-----------|
-| $V_{\text{Var},x}$ (position) | $-\kappa_x V_{\text{Var},x}$ | $+C_{\text{kin},x}$ | **Contraction** |
+| $V_{\text{Var},x}$ (position) | Keystone pressure, signed donor terms, and a reset bound | Transport, force, and noise terms | **Use the complete signed balance** |
 | $V_{\text{Var},v}$ (velocity) | $+C_v$ | $-(2\gamma-\epsilon)V_{\text{Var},v} + C_v'$ | **Contraction** |
 | $\|\mu_v\|^2$ | $+C_{\mu}^{\text{clone}}$ | $-\gamma\|\mu_v\|^2 + C_{\mu}^{\text{kin}}$ | **Contraction** |
 | $W_b$ (boundary) | $-\kappa_b W_b$ | $-\kappa_{\text{pot}} W_b + C_{\text{pot}}$ | **Strong contraction** |
@@ -2757,9 +2761,9 @@ This chapter has proven:
 **Key Mechanism:** The friction term $-\gamma v$ provides direct dissipation that overcomes both thermal noise and cloning-induced perturbations in velocities and their barycenter.
 
 **Synergy with Cloning:**
-- Cloning contracts position variance ({doc}`03_cloning`, Ch 10)
+- Cloning supplies $N$-uniform Keystone pressure and an independent positional reset bound ({doc}`03_cloning`)
 - Kinetics contracts velocity variance and barycenter energy (this chapter)
-- Together: full phase-space contraction
+- Together: the full phase-space drift is the signed expression in {prf:ref}`thm-slc-signed-complete-update`
 
 **Next:** Chapter 6 analyzes the positional diffusion that causes bounded expansion of $V_{\text{Var},x}$.
 
@@ -2774,7 +2778,7 @@ The Langevin equation includes thermal noise in velocity: $dv = \ldots + \Sigma 
 - **Benefit:** Noise enables exploration and prevents kinetic collapse
 - **Cost:** Noise causes random walk in position, expanding positional variance
 
-This chapter proves that this expansion is **bounded** - it doesn't grow with the system size or state. The strong positional contraction from cloning ({doc}`03_cloning`, Ch 10) overcomes this bounded expansion.
+The kinetic contribution is bounded on the moment class stated below. Whether Keystone pressure overcomes the donor and kinetic terms is decided by the complete-update estimate, not by the positional reset bound alone.
 
 ### 6.2. Positional Variance (Recall)
 
@@ -3027,14 +3031,7 @@ These bounds are ensured by:
 
 1. **Velocity variance:** {prf:ref}`thm-velocity-variance-contraction-kinetic` establishes that velocity variance equilibrates to $V_{\text{Var},v}^{\text{eq}}$ with exponential convergence. Thus $M_v = V_{\text{Var},v}^{\text{eq}}$.
 
-2. **Positional variance:** {prf:ref}`thm-positional-variance-contraction` (from {doc}`03_cloning`, Chapter 10) establishes the Foster-Lyapunov drift inequality:
-
-   $$
-   \mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
-
-   $$
-
-   with $\kappa_x > 0$ and $C_x < \infty$ independent of $N$. This implies a uniform equilibrium bound $M_x = C_x / \kappa_x$ when combined with the bounded expansion from the kinetic operator (this theorem).
+2. **Positional variance:** the positional theorem in {doc}`03_cloning` gives a reset estimate. It does not establish a strict $\kappa_x$ drift. An a priori $M_x$ for this kinetic calculation must therefore be supplied by a verified complete-update bound on the same moment class. The signed candidate and its explicit residual are (SCK.3)--(SCK.6) in {prf:ref}`thm-slc-signed-complete-update`.
 :::
 
 With this assumption:
@@ -3081,40 +3078,22 @@ $$
 **Q.E.D.**
 :::
 
-### 6.5. Balancing with Cloning Contraction
+### 6.5. Balancing with Keystone Pressure
 
-:::{prf:corollary} Net Positional Variance Contraction for Composed Operator
+:::{prf:corollary} Complete-update positional balance
 :label: cor-net-positional-contraction
 
-From {doc}`03_cloning` Theorem 10.3.1, the cloning operator satisfies:
+For the canonical kernel, the signed one-step identity is (SCK.3) of
+{prf:ref}`thm-slc-signed-complete-update`. Its $N$-uniform Keystone
+substitution is (SCK.6). The remaining donor, barycenter, collision,
+force, cap, and boundary contributions are retained in its explicit
+residual $\mathscr D_N$. Thus a net rate follows only from an upper
+estimate for that residual on the stated input class.
 
-$$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + C_x
-
-$$
-
-Combining with kinetic expansion:
-
-$$
-\mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},x}] \leq -\kappa_x V_{\text{Var},x} + (C_x + C_{\text{kin},x}\tau)
-
-$$
-
-**For net contraction:**
-
-$$
-\kappa_x V_{\text{Var},x} > C_x + C_{\text{kin},x}\tau
-
-$$
-
-**This holds when:**
-
-$$
-V_{\text{Var},x} > \frac{C_x + C_{\text{kin},x}\tau}{\kappa_x}
-
-$$
-
-**Interpretation:** As long as positional variance exceeds a threshold (determined by the balance of forces), the cloning contraction dominates the kinetic diffusion.
+*Proof.* Equation (SCK.3) is the conditional full-update identity;
+the source Keystone lower bound on activity gives (SCK.6) by the
+sign reversal of its coefficient $-\alpha/2$. No separate
+$\kappa_x$ inequality is used. $\square$
 :::
 
 ### 6.6. Summary
@@ -3125,9 +3104,9 @@ This chapter has proven:
 
 ✅ **State-independent bound** - doesn't grow with system size or configuration
 
-✅ **Overcome by cloning** - the contraction rate $\kappa_x$ from cloning is stronger
+The full balance retains the Keystone pressure and the signed donor and kinetic contributions.
 
-**Key Insight:** While thermal noise causes random walk in position (via $\dot{x} = v$), this expansion is **bounded and manageable**. The geometric variance contraction from cloning (Keystone Principle) dominates.
+Thermal positional spreading, force transport, and donor insertion must be evaluated together in the complete-update identity before a contraction rate is asserted.
 
 **Next:** Chapter 7 proves that the confining potential provides additional contraction of the boundary potential.
 

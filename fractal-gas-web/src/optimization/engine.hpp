@@ -62,7 +62,7 @@ class Algorithm {
     throw std::invalid_argument("This optimizer does not support live settings");
   }
   virtual std::unique_ptr<fractal::PopulationMember> exchange_member(const std::string&, const std::string&, int) {
-    throw std::invalid_argument("Population exchange currently requires Wave");
+    throw std::invalid_argument("Population exchange requires Wave or GAS");
   }
   virtual void refresh_exchange() {}
   virtual void step() = 0;

@@ -1,0 +1,9 @@
+{
+  "runs": 600,
+  "actual_evaluations": 53620443,
+  "errors": 68,
+  "fractal_elites": 5,
+  "matrix_complete": true,
+  "evaluation_ceiling_verified": true,
+  "source_and_library_unchanged": true
+}
