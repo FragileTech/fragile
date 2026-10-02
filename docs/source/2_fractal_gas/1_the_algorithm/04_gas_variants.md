@@ -8,7 +8,7 @@ All the algorithms of this volume are the same step operator with different part
 
 This chapter fixes the vocabulary and writes down the tuples. The **Fractal Gas** is the family of all such variants. The **Fragile Gas** is the abstract Markov chain and its axioms. **Algorithmic Gas** is the Rust engine that executes a variant, not a variant itself. The named variants are the Euclidean, Viscous Euclidean, Einstein–Hilbert, Geometric, Latent Fractal and Environment gases. Mean-field and continuum limits are limits of a named variant.
 
-The chapter also says, variant by variant, which theorems of this volume actually apply and which hypotheses are still owed. Only the Euclidean Gas carries the convergence program's conclusions; for the others what is established is stated, and what is not established is stated just as plainly.
+The chapter also says, variant by variant, which theorems of this volume apply. The Euclidean Gas has the original convergence program. The Viscous Euclidean Gas now has direct coupled-kick estimates, a finite-population quasi-stationary and entropy proof in its verified quadratic regime, and fixed-step population limits for both existing Gaussian normalizations. A passive recorder adds three-dimensional geometry and correctly aligned color fields while preserving that transition law. The other dynamical variants retain their own stated proof scope.
 :::
 
 (sec-variants-intro)=
@@ -17,7 +17,7 @@ The chapter also says, variant by variant, which theorems of this volume actuall
 :::{div} feynman-prose
 Several names in this subject sit very close together. A reader meets "Fractal Gas" as the subject of the whole volume, "Fragile Gas" as an abstract chain with axioms, "Algorithmic Gas" as a piece of Rust, and then a list of gases with adjectives in front of them. Each name is clear on its own page. But a name alone cannot answer the only question that matters when a theorem is quoted: *does this result apply to the thing I am running?*
 
-The answer is a matter of components, not of names. Write the step operator as a composition of stages and a variant is the list of choices made at those stages. Two variants are equal when all twelve entries are equal, and a proof written for one transfers to the other only after every changed entry has been checked against that proof's hypotheses. This is a deliberately strict convention, and it is what makes the rest of the chapter short: the Viscous Euclidean Gas differs from the Euclidean Gas in one entry, the viscous coupling inside the kinetic operator, and that single difference is enough to invalidate every estimate whose proof assumed that the kinetic stage acts on one row at a time.
+The answer is a matter of components. Write the step operator as a composition of stages and a variant is the list of choices made at those stages. Two variants are equal when all twelve entries are equal, and a proof written for one transfers after the changed entries have been checked against that proof's hypotheses. The Viscous Euclidean Gas differs from the Euclidean Gas in its kinetic coupling. Its proof therefore follows the whole population through both kicks. The coupled estimates below do that calculation explicitly and retain the established cloning and collision results wherever their stages are unchanged.
 
 Five levels keep the vocabulary straight. A **family** collects all variants. A **framework** supplies an abstract chain and the axioms an instance must satisfy before the framework's estimates may be used. An **engine** executes instances. A **variant** is a component tuple. A **limit** — mean-field in $N$, continuum in $h$ — is always taken from a named variant and inherits its hypotheses.
 :::
@@ -40,9 +40,9 @@ flowchart TB
 ```
 
 :::{div} feynman-prose
-The second half of each variant section is an audit. For the Euclidean Gas it lists the transition, operator, finite-$N$ quasi-stationary and mean-field results proved in the convergence program, together with the conditions each one carries. For the Viscous Euclidean, Einstein–Hilbert, Latent Fractal and Environment gases it says that no convergence, quasi-stationary or mean-field theorem is established here, and enumerates what a future proof would have to supply — a confining mechanism, time homogeneity at a fixed gate phase, regularity of a tessellation that jumps across degenerate configurations, a minorization for a hypoelliptic map. For the Geometric Gas the results exist but are conditional on named axioms that are not verified for a general instance.
+The second half of each variant section is an audit. For the Euclidean and Viscous Euclidean gases it identifies the proved transition, moment, finite-$N$ quasi-stationary, entropy and population results, with the configuration and constants belonging to each proof. The Einstein–Hilbert, Latent Fractal and Environment gases still have unresolved long-time questions, stated in their own sections. For the Geometric Gas the long-time results retain the named premises that a concrete instance must verify.
 
-The closing sections compare the tuples side by side and settle a question that only becomes askable once variants are separated: which field-theoretic observables of {doc}`../2_fractal_set/04_standard_model` a given variant can even define. A colour state divides by the viscous force, so it is undefined when that force is zero; a mutual pairing makes exchange-odd frame means vanish identically; a Euclidean-time axis exists only where a component distinguishes a coordinate. Those are consequences of the component tuple, computed once, here.
+The closing sections compare the tuples and identify the inputs to the observables of {doc}`../2_fractal_set/04_standard_model`. Color needs a nonzero viscous force paired with the velocity that produced it; mutual pairing cancels suitably weighted exchange-odd frame means. The recorded viscous construction uses three spatial coordinates and the existing update time $nh$. A separate position-coordinate time convention, such as the Einstein–Hilbert preset's last coordinate, is stated separately. Each observable can then be traced to its actual stage and law.
 :::
 
 (sec-variants-taxonomy)=
@@ -55,7 +55,7 @@ Here is the picture I want in your head before you read the next definition. Ima
 
 Why bother being this pedantic? Because of the question that keeps coming up and keeps getting answered badly: *does this theorem apply to the thing I am running?* If a variant is a name, the answer is a matter of taste and nobody wins the argument. If a variant is a twelve-entry tuple, the answer is mechanical. You put the two tuples side by side, you find the entries that differ, and for each difference you go and read the proof to see whether it used that entry. If it did, the theorem does not transfer until somebody redoes the work.
 
-That sounds harsh, and it is meant to. You will see in {ref}`sec-variants-viscous-euclidean` that changing *one* entry — switching on a coupling that is zero in the Euclidean Gas — costs us every long-time theorem in the convergence program. Not because the results are believed to be false. Because their proofs assumed the kinetic stage handles one walker at a time, and with the coupling on, it doesn't.
+The viscous example shows why this bookkeeping is useful. Switching on the coupling means that a kick reads every eligible velocity. The new estimates follow that coupled map and prove what happens to its moments and derivative. They then reuse the unchanged selection stage and the final independent position noise to obtain the finite-population quasi-stationary result in the verified parameter regime. A changed entry tells us where the new calculation belongs; the completed calculation tells us which conclusions carry through.
 :::
 
 :::{prf:definition} Gas variant
@@ -213,7 +213,7 @@ Read that list carefully, because it is shorter than it looks. There is a real l
 
 But notice two things that are *not* on the ladder. First, most of the operator estimates are conditional — the landscape condition {prf:ref}`axiom-non-deceptive` is a hypothesis you supply about your objective, not a fact we proved about the algorithm. Point the gas at an adversarial landscape and the conclusion is simply unavailable; the theorem hasn't failed, you just never met its hypothesis. Second, the constants in the finite-$N$ quasi-stationary result may depend on $N$, and the problem there is the quadratic potential $U(x)=|x|^2/2$. That is a long way from "we proved the optimizer works."
 
-And the last sentence of the section is the one to tattoo somewhere: every one of these results assumes $F^{\mathrm{visc}}\equiv0$ and $\mathsf G=\varnothing$. Zero viscosity, no geometry stage. The next four sections are what happens when you give up one of those, and the honest accounting is that you give up the whole ladder with it.
+These original results concern zero viscosity and no consumed geometry stage. The next section checks the positive-viscosity update directly and states the conclusions now proved for it. It also makes a useful distinction: computing a graph from a saved position array preserves the dynamics, while feeding that graph into the force or reward changes the transition. The record-transport theorem lets us use the same proved law when the graph is an observation.
 :::
 
 (sec-variants-viscous-euclidean)=
@@ -311,21 +311,815 @@ Is that bad? It depends entirely on what you want. As an optimizer, row normaliz
 
 ### 4.2 Established results and hypotheses
 
-For $\nu>0$ the only results established in this volume for the Viscous Euclidean Gas are {prf:ref}`prop-variant-viscous-kernel` and the collision identities of {prf:ref}`thm-eg-component-balances`, which concern an unchanged stage. **No convergence theorem, no existence or uniqueness theorem for a quasi-stationary distribution, and no mean-field limit theorem is established for $\nu>0$.** The form that the population force takes is recorded in {prf:ref}`remark-separation-kinetic-death`, which also states that a theorem for the zero-viscosity configuration is not a theorem for a viscous one.
+For $\nu>0$, {prf:ref}`prop-variant-viscous-kernel` and the unchanged
+collision identities are supplemented by the following full proofs for the
+actual coupled update, rather than a transfer of row-independent kinetic proofs.
 
-The results of {ref}`sec-variants-euclidean` were proved for a kinetic stage that acts on each row separately given the post-collision population. With $\nu>0$ the two kicks couple all rows. To assert any of those results for this variant, the following must be verified for the coupled kinetic map:
+1. {prf:ref}`lem-cgd-count-kick`, {prf:ref}`lem-cgd-row-kick`,
+   {prf:ref}`lem-cgd-viscous-local-lipschitz`,
+   {prf:ref}`thm-cgd-kinetic-moments` and
+   {prf:ref}`cor-cgd-boundary-comparison` control alignment, uncapped
+   intermediate velocities and the terminal Gaussian landing law. Count
+   normalization gives a population-independent mean-square force bound;
+   row normalization retains its actual degree-weighted form.
+2. {prf:ref}`thm-cgd-phase-smoothing` and
+   {prf:ref}`def-cgd-minorization-certificate` verify nonlinear joint
+   smoothing and an explicit common density for the existing quadratic,
+   capped, terminal-box configuration. Consequently
+   {prf:ref}`thm-cgd-finite-n-qsd` and
+   {prf:ref}`thm-cgd-discrete-entropy` prove its unique finite-$N$ QSD,
+   conditioned mixing and full-step entropy contraction. The existing
+   preset is discharged directly by {prf:ref}`cor-cgd-reference-qsd`;
+   its force and parameters are not changed to obtain this conclusion.
+3. {prf:ref}`thm-cgd-uniform-marginal-qsd-tails` and
+   {prf:ref}`cor-cgd-reference-uniform-tails` give population-independent
+   retained-position Gaussian tails, marginal moments and an expected
+   alive-fraction floor for both existing normalizations. These are
+   marginal bounds, not joint concentration or population-uniform mixing.
+4. {prf:ref}`thm-cg-mf-kinetic-limit`,
+   {prf:ref}`thm-cg-mf-row-kinetic-limit` and
+   {prf:ref}`cor-cg-mf-full-update` prove fixed-horizon population
+   consistency for both existing normalizations of the unchanged reference
+   landscape, retaining the original selection-consistency inputs.
+   The row proof derives local degree positivity from the actual target
+   moments; it assumes no global degree lower bound.
+   {prf:ref}`thm-cg-mf-kinetic-variance` gives an explicit $N^{-1}$
+   conditional kinetic variance estimate through the coupled second kick
+   for count normalization.
+5. The passive record in Section 4.3 preserves exactly these laws and
+   bounds. Its B2 native color is almost surely valid by
+   {prf:ref}`thm-variant-b2-color-nondegeneracy`, with B1 consensus and
+   numerical masks retained.
 
-1. the kinetic moment, Lipschitz and boundary estimates of {doc}`../convergence_program/05_kinetic_contraction` with the additional velocity-dependent force, including the bound $\|F_i^{\mathrm{visc}}\|\le2\nu\max_j\|v_j\|$ and its dependence on the uncapped intermediate velocities;
-2. the compactness, minorization and two-sided block bounds used in {prf:ref}`thm-chaos-canonical-finite-n-qsd` and {prf:ref}`thm-hypocoercive-canonical-discrete-entropy`;
-3. one-step consistency and conditional concentration of the population map of {doc}`../convergence_program/08_mean_field` and {doc}`../convergence_program/09_propagation_chaos` with the law-dependent force of {prf:ref}`remark-separation-kinetic-death`;
-4. for row normalization, the degree comparison recorded in {prf:ref}`axiom-gg-viscous-kernel`, since the alignment dissipation of {prf:ref}`lem-gg-viscous-dissipative` is degree-weighted.
+The finite-QSD rates are not claimed uniform in $N$, and the eigenfunction
+ratio remains identified spectral data. An actual population-uniform
+full-gradient inequality, stationary attraction and chaos, a quantitative
+row-normalized B2 concentration estimate, and coupled metric/Boris/adaptive-noise results
+remain unresolved unless established for their own unchanged kernel.
+{prf:ref}`prop-cgd-lsi-scope`, {prf:ref}`conj-cg-mf-stationary-control`
+and {prf:ref}`conj-cg-mf-geometry-consistency` state those boundaries.
 
 :::{div} feynman-prose
-I expect this to feel like an overreaction. One parameter went from $0$ to something small, the trajectories look almost the same on a plot, and we have just thrown away every long-time theorem in the book. Surely by continuity the results survive for small $\nu$?
+Watch one kick with the coupling switched on. Each row is pulled toward a weighted mean of the other velocities. That is a linear operation in the velocities once the positions are fixed. The Gaussian weights are nonnegative and bounded, so we can estimate the population norm of that operation directly. This calculation covers the intermediate velocities, before the terminal cap, and gives the moment bounds used by the subsequent drift and thermostat.
 
-They might. But "might" is not a theorem, and here is the concrete thing that breaks. Nearly all of the Euclidean machinery is built on a factorization: condition on the population after cloning, and then the $N$ rows evolve *independently*. That is what lets you bound one row at a time, couple two copies of the chain row by row, and build a minorization out of a single Gaussian. Switch on $\nu$ and the kick at row $i$ reads every velocity in the swarm. The conditional law no longer factorizes, and every one of those arguments needs a new proof, not a continuity remark.
+The finite-population proof follows the second kick as well. In the quadratic instance the displayed, checked parameter margin gives coercivity and surjectivity of the velocity map. Its Jacobian is nonsingular at a consensus configuration; the analytic determinant argument then makes its critical set null. Critical points can still occur. Together with the existing Gaussian innovations, these results supply the density and block estimates needed for the quasi-stationary law and entropy decay. The actual reference parameters satisfy that margin. The constants remain functions of the complete parameter register and may depend on $N$.
 
-There is a second, sharper problem hiding in item 1 of the list. The velocity cap is applied at the *end* of the kinetic stage, but the viscous force is evaluated on the intermediate velocities, before the cap. The bound $\|F_i^{\mathrm{visc}}\|\le2\nu\max_j\|v_j\|$ is therefore in terms of uncapped quantities, and a force that grows with the largest velocity in the swarm is exactly the shape that can defeat a Lyapunov argument. Small $\nu$ helps, but you have to do the estimate to find out how small, and nobody has.
+The population calculation follows both existing normalizations. Count normalization writes the force as an empirical integral and gives the displayed conditional variance estimate despite coupling after the second kick. Row normalization also retains its actual nonself denominator. The limiting law's moment bounds supply positive degree on each analysis region; convergence and tail control then identify the ratio. The final cap upgrades the resulting velocity comparison to fourth-order transport convergence. Both limit proofs keep the original cloning, BAOAB order and final cap. The count variance estimate retains its stated count-only scope.
+:::
+
+### 4.3 A recorded color and geometry instance
+
+:::{div} feynman-prose
+Suppose you have saved the gas positions, velocities and force evaluations.
+You can build a spatial graph from those positions just as you can plot a
+trajectory. Computing that graph does not push a walker. The distinction
+becomes concrete in the definition below: the existing viscous update runs,
+and a recorder reads its arrays. The same invariant or quasi-stationary law
+then supplies the recorded observables through an explicit pushforward.
+
+For color, the recorder has to be precise about time within a step. A B kick
+reads one velocity field to calculate the viscous force. We save that field
+alongside the force and use it again in the color phase. For geometry, we
+retain all three spatial coordinates and index the slices by the existing
+algorithmic time $nh$. A dead slot still has retained coordinates, so the
+full-record graph and an alive-only graph are different readouts.
+
+The theorems below show that the exact later-kick colors are valid almost
+surely and that a finite color-invariant contraction has positive variance.
+The geometric payloads also have explicit bounds. Those conclusions have
+their own parameter dependence; a smooth continuum geometry or a uniform
+continuum gauge variance requires the corresponding limiting estimates.
+:::
+
+:::{prf:definition} Recorded color–geometry Viscous Euclidean Gas
+:label: def-variant-recorded-color-geometry
+
+A **recorded color–geometry Viscous Euclidean Gas** is an instance of
+{prf:ref}`def-variant-viscous-euclidean` together with the following observation
+instrument. Its twelve dynamical component laws remain those of that definition.
+The complete parameterized canonical family, rather than an implicit preset,
+has the register
+
+$$
+\begin{aligned}
+\theta={}&(d=3,N,h,\gamma,b_O,\sigma_x,\sigma_J,V_{\max},\alpha_{\rm col},
+ R_x^{\rm feat},R_v^{\rm feat},\lambda_{\rm alg},\epsilon_D,\epsilon_C,
+ \delta_D,A_r,A_s,\eta_r,\eta_s,p_r,p_s,\sigma_r,\sigma_s,s_c,\epsilon_c;
+ U,R,D),\\
+\Theta_{\rm CG}={}&(\theta;\nu,\rho,\mathsf n;\vartheta_G,\vartheta_O),\\
+\vartheta_G={}&(\mathscr S_G,\mathsf D_G,\varepsilon_G,g_-,g_+,g_0,
+ \delta_{\det},\delta_{\ell},\varepsilon_{\ell},\varepsilon_w,\ell_G,
+ \mathsf{tie},\mathsf{rank};\mathscr P_G,B_{\rm edge},H_G),\\
+\vartheta_O={}&(\mathscr S_O,\mathsf A_{\rm color},\delta_c,m,\ell_0,
+ \hbar_{\rm eff},c_{\rm phys},\mathsf{codec},\mathsf{precision}).
+\end{aligned}
+$$
+
+The entries of $\theta$ have exactly the meanings and admissible ranges of
+{prf:ref}`def-slc-parameter-register`: $\sigma_J$ is clone jitter,
+$b_O$ is the OU diffusion factor, $\alpha_{\rm col}$ is restitution,
+the two feature radii and $\lambda_{\rm alg}$ specify the squashed
+phase-space donor metric, $\epsilon_D,\epsilon_C$ specify the Gaussian
+donor laws, $(A_r,\eta_r,p_r,\sigma_r)$ and
+$(A_s,\eta_s,p_s,\sigma_s)$ specify the reward and diversity fitness
+channels, and $(s_c,\epsilon_c)$ specify the clone-acceptance scale and
+regularizer. The global standardizers, independent current-population
+donors, one Haar rotation per accepted collision component and terminal
+boundary schedule are fixed component laws. There is no donor history,
+the cloning gate is open on every update, and curl is absent. The force
+$F=-\nabla U$, reward $R$, valid domain $D$, initial law and extinction
+convention are specified data. Their analytic profiles are those of
+{prf:ref}`def-slc-profiles`. A positive theorem here uses already stated
+canonical hypotheses or verifies its conditions from the configured instance;
+an unverified regularity, tail or confinement condition is not added as a
+premise to declare an outstanding point discharged. The preset is the numerical
+subinstance in {prf:ref}`def-variant-euclidean` and
+{prf:ref}`rem-variant-viscous-euclidean-rust`, with $d=3$.
+
+Here $\mathsf n\in\{\mathrm{count},\mathrm{row}\}$, $\nu>0$, $\rho>0$;
+$\mathscr S_G,\mathscr S_O$ are the finite stage/evaluation schedules.
+$\mathsf D_G=\mathrm{Open}$ for the observation formulas below;
+other domains include their complete image-site rule. The positive geometry
+parameters satisfy $0<g_-\le g_+<\infty$ and
+$\varepsilon_G,g_0,\delta_{\det},\ell_G>0$.
+The three weight floors are retained **fixed implementation constants**, not
+new configuration controls:
+
+$$
+\delta_\ell^2=10^{-8},\qquad
+\varepsilon_\ell=10^{-8},\qquad
+\varepsilon_w=10^{-12}
+$$
+
+in the pipeline's normalized coordinate units. The metric recipe below
+uses the existing `RidgeScale::Absolute` and `MetricPolicy::Clipped`
+choices; `RidgeScale::RelativeToTrace` is a different existing readout
+and does not use that absolute-ridge formula. The conventions
+$\mathsf{tie},\mathsf{rank}$ are the implemented determinant-predicate
+ordering, duplicate policy, affine-rank projection and failure policy of
+{prf:ref}`def-tessellation-rust-representation`, retained with the pipeline.
+The geometry coordinate units, deterministic tie and affine-rank rules
+$\mathsf{tie},\mathsf{rank}$ are part of the header. The observable
+parameters satisfy $\delta_c\ge0$, $m,\ell_0,\hbar_{\rm eff},c_{\rm phys}>0$;
+the stage/color alignment, decoder and run precision are declared.
+These observation parameters do not alter $P$.
+
+The execution data $\mathscr P_G$ retain the complete existing
+`GeometryPipelineConfig`: position-field key, full projection, domain,
+tessellator, duplicate/rank/failure policy, metric and volume enums, named
+weight and curvature specifications, optional Voronoi-cell configuration,
+and parallelism. $B_{\rm edge}$ is the actual `max_edges` argument, and
+$H_G$ is the supplied previous-cell-volume array, or `None` when no
+configured estimator reads it. For the displayed covariance/conformal
+recipe no previous-cell history is consumed. These are observation data,
+not new gas controls. The recorder preserves the pipeline's actual
+`Ok(payload)` or `Err(error)` outcome: in particular an edge-budget error
+is not silently replaced by a graph or a changed budget. A configured
+`FailurePolicy::EmptyGraph` retains its existing failure flag and applies
+only where the native pipeline applies it.
+
+The actual OU coefficients and final position standard deviation are
+
+$$
+a_O=e^{-\gamma h},\qquad
+q_O^2=b_O^2\begin{cases}(1-e^{-2\gamma h})/(2\gamma),&\gamma>0,\\h,&\gamma=0,
+\end{cases}
+\qquad s_x=\sigma_x\sqrt h.
+$$
+
+They are derived quantities, not further unspecified parameters. Every
+certificate for this instance is a function of $\Theta_{\rm CG}$, its
+specified initial law and its displayed analysis choices. An independence
+of any entry is stated as a conclusion.
+
+1. The physical position and velocity have three components,
+   $x_i,v_i\in\mathbb R^3$. Fix $N\ge2$, $\nu>0$, $\rho>0$, and one of the two
+   declared Gaussian-kernel normalizations. The complete eligible set at both
+   B stages is $\{1,\ldots,N\}$ on every nonabsorbed update. Confinement,
+   cloning, the thermostat, the terminal velocity cap and the absorbing or
+   conservative boundary convention are unchanged. In particular the
+   quadratic confined instance has $U(x)=\lambda_U\|x\|^2/2$,
+   $\lambda_U>0$, with $\lambda_U=1$ for the numerical preset, and the
+   same boundary policy as the corresponding Euclidean instance.
+2. Retain the complete executed record of
+   {prf:ref}`def-fractal-set-record-coverage`. At each chosen B-stage label
+   $s\in\{\mathrm{B1},\mathrm{B2}\}$ retain $(x_i^s,v_i^s,F_i^{\mathrm{visc},s})$
+   **before** applying that kick. The velocity $v_i^s$ is the input velocity
+   in the actual force sum at that same stage. The stage-native color is
+   $c_i^{s,a}=F_i^{\mathrm{visc},s,a}e^{i\kappa v_i^{s,a}}/
+   \|F_i^{\mathrm{visc},s}\|$ on nonzero-force rows, where
+   $\kappa=m\ell_0/\hbar_{\mathrm{eff}}$ has inverse-velocity units. Its
+   validity mask is $m_i^s=\mathbf1_{\{\|F_i^{\mathrm{visc},s}\|>0\}}$ and
+   its measurable zero extension is $m_i^sc_i^s$. A numerical threshold
+   $\delta_c>0$ replaces this mask by
+   $\mathbf1_{\{\|F_i^{\mathrm{visc},s}\|>\delta_c\}}$ and is recorded.
+   Pre-clone frame contractions additionally use the identity/alignment
+   masks of {prf:ref}`def-sm-color-alignment`; a stage-native contraction
+   uses the positions, rows and companion rule declared for that stage.
+3. At a declared stage, construct a passive spatial neighbor graph and
+   its geometric payloads from **all three** coordinates $x_i^s$ of all
+   $N$ recorded slots. A terminal-stage observation retains dead-slot
+   positions as well; an alive-only observer is a different instrument
+   and can have fewer than four sites with positive probability. One
+   permitted instrument is the open-space Delaunay and
+   `MetricKind::NeighborCovariance` readout of
+   {prf:ref}`def-tessellation-rust-representation`. On its indexed neighbor
+   set $j\sim i$, put
+
+   $$
+   \begin{aligned}
+   C_i&=\begin{cases}\deg(i)^{-1}\sum_{j\sim i}\Delta x_{ij}\Delta x_{ij}^{\mathsf T},
+          &\deg(i)>0,\\0,&\deg(i)=0,\end{cases}\\
+   g_i&=\operatorname{clip}_{[g_-,g_+]}\!
+       \left(\operatorname{pinv}_{3\epsilon_T}(C_i+\varepsilon_G I)\right),
+   &\operatorname{vol}_i&=\sqrt{\max\{\det g_i,\delta_{\det}\}},\\
+   d_{g,ij}^2&=\Delta x_{ij}^{\mathsf T}(g_i+g_j)\Delta x_{ij}/2,
+   &u_i&=\tfrac16\log(\max\{\det g_i,\delta_{\det}\}/g_0^3),\\
+   a^R_{ij}&=(\sqrt{\max\{d_{g,ij}^2,\delta_\ell^2\}}+\varepsilon_\ell)^{-1},
+   &a^V_{ij}&=e^{-d_{g,ij}^2/(2\ell_G^2)}\operatorname{vol}_j,\\
+   w^b_{ij}&=a^b_{ij}/\max\{\sum_{k\sim i}a^b_{ik},\varepsilon_w\},
+   \quad b\in\{R,V\},
+   &R_i^{\rm obs}&=-4\sum_{j\sim i}w^R_{ij}(u_j-u_i).
+   \end{aligned}
+   $$
+
+   The pseudo-inverse is the existing implementation's spectral rule:
+   if $C_i+\varepsilon_G I=Q_i\operatorname{diag}(\lambda_{ik})Q_i^{\mathsf T}$
+   and $\Lambda_i=\max_k|\lambda_{ik}|$, it substitutes zero for
+   $|\lambda_{ik}|\le3\epsilon_T\Lambda_i$ and $1/\lambda_{ik}$
+   otherwise, before the displayed clamp. Here $\epsilon_T$ is the fixed
+   machine epsilon of the recorded scalar type, $2^{-52}$ for `f64`
+   or $2^{-23}$ for `f32`; it is not a new configuration knob.
+   The ordinary inverse agrees with this rule only when every eigenvalue
+   passes that threshold. No such comparison is assumed on unbounded sites.
+   The clip is applied to the resulting eigenvalues; empty neighbor rows have zero
+   weights and zero scalar curvature. The factor $g_0^3$ makes the logarithm
+   dimensionless and cancels from every $u_j-u_i$, leaving the configured
+   conformal-Laplacian readout unchanged. All floors and reference scales
+   use the recorded coordinate units. Its spatial dimension is three;
+   no coordinate is discarded. The graph, weights, metric, volume and
+   estimator-validity marks are retained at their own evaluation labels.
+   These are data computed from the sites. They are not used by the reward,
+   donor probabilities, cloning, force, thermostat or boundary policy.
+   Thus $\mathsf G=\varnothing$ as a **consumed** dynamical geometry stage,
+   while $\mathsf G_{\mathrm{obs}}$ denotes the passive record map.
+4. Algorithmic time is $\tau_n=nh$, with the kinetic stage retained as a
+   second label. The spacetime record has sites $(\tau_n,x_i^s)$, spatial
+   graph edges within a slice and the declared CST history edges between
+   slices. The time coordinate is not a fourth stochastic position
+   coordinate. Treating it as physical time is the time convention of the
+   chosen field theory; covariance or a continuum Lorentzian metric remains
+   a theorem to verify for that theory.
+5. For the direct three-color representation use the fixed Hermitian fiber
+   $\mathbb C^3$ with its determinant volume form and the recorded component
+   basis of {prf:ref}`thm-sm-su3-emergence`. Local frame comparisons, if used,
+   are additional recorded maps. The pointwise color descriptor and its
+   common-frame $SU(3)$ invariants do not by themselves specify independent
+   non-Abelian parallel transports.
+
+Changing $\mathsf G_{\mathrm{obs}}$ changes an observation instrument.
+Feeding any of its outputs into $\mathsf R$, $\mathsf K$, the companion laws
+or another dynamical component defines a different gas variant. In
+particular the Einstein–Hilbert and Geometric gases are not passive
+decorations of this instance.
+:::
+
+:::{prf:remark} Exact correspondence with the existing passive pipeline
+:label: rem-variant-recorded-geometry-config
+
+The following existing enum arms implement the displayed readout. They
+specify observation settings only; the gas remains
+`GasConfig::viscous_euclidean(3, h, viscosity)` with its actually configured
+parameters recorded.
+
+| Mathematical data | Existing pipeline field and value |
+|---|---|
+| Full three-coordinate sites | `positions: "positions"`, `projection: Projection::Full`, all-slot eligibility mask `[true; N]` |
+| Open spatial Delaunay graph | `domain: TessellationDomain::Open`, `tessellator: TessellatorKind::Auto`, the retained `DegeneracyPolicy` |
+| Absolute covariance metric and clamps | `MetricKind::NeighborCovariance { ridge: ε_G, min_eig: Some(g_-), max_eig: Some(g_+), scale: RidgeScale::Absolute, policy: MetricPolicy::Clipped }` |
+| Determinant density | `VolumeKind::SqrtDetMetric { det_floor: δ_det }` |
+| $w^R$ | `WeightMode::InverseRiemannianDistance`, `normalize: true`; its squared-distance and additive floors are both fixed at `1e-8` |
+| $w^V$ | `WeightMode::RiemannianKernelVolume`, `normalize: true`, `length_scale: ℓ_G` |
+| Scalar $R_i^{\rm obs}$ | `CurvatureKind::ConformalLaplacian { weights: <key of w^R>, det_floor: δ_det }` |
+| Row-weight denominator floor | existing `normalize_rows` constant `1e-12` |
+| Complete execution settings | retained `GeometryPipelineConfig`, `max_edges`, optional previous-cell volumes and the native success/error outcome |
+
+The reference $g_0$ converts the determinant to dimensionless units; it
+cancels algebraically from the curvature differences and is not a new
+engine control. The pseudo-inverse tolerance is the fixed implementation
+value $3\epsilon_T$ for this three-dimensional readout. Run precision and
+spectral repair masks are retained, including a flag when a thresholded
+direction is replaced by the configured lower clamp. The displayed
+identities and bounds describe these same thresholded operations in exact
+arithmetic, with floating-point evaluation error retained separately.
+
+`variants::viscous_euclidean::observe_recorded_geometry` calls the existing
+`GeometryPipelineConfig::evaluate` on all retained slots without writing
+back fields or consuming random addresses. Its result belongs to the
+supplied observation stage. In contrast, `GeometryStageConfig::refresh`
+uses the population's eligibility mask and writes observation fields into
+the population; enabling it is not the all-slot passive instrument above.
+:::
+
+:::{prf:proposition} Measurable finite geometry and explicit payload bounds
+:label: prop-variant-passive-geometry-bounds
+
+The full-slot geometric readout, including its native failure result, of
+{prf:ref}`def-variant-recorded-color-geometry` is a Borel map when its
+deterministic tie and affine-rank conventions are Borel. In particular the
+finite determinant-predicate rules of
+{prf:ref}`def-tessellation-rust-representation` have this property.
+For every successful finite evaluation, including a rank-deficient or
+isolated configuration accepted by its configured policy, define
+
+$$
+D_-:=\max\{g_-^3,\delta_{\det}\},\qquad
+D_+:=\max\{g_+^3,\delta_{\det}\}.
+$$
+
+Its payloads satisfy
+
+$$
+\begin{gathered}
+g_-I\preceq g_i\preceq g_+I,\qquad
+\sqrt{D_-}\le\operatorname{vol}_i\le\sqrt{D_+},\qquad
+w^b_{ij}\ge0,\quad \sum_{j\sim i}w^b_{ij}\le1\quad(b\in\{R,V\}),\\
+|R_i^{\rm obs}|\le\frac23\log(D_+/D_-).
+\end{gathered}
+$$
+
+These bounds are independent of $N$, force, reward, viscosity and the
+observation law. They concern the configured metric/volume/curvature
+**readouts**, whose geometric consistency is a separate estimate.
+
+*Proof.* With finitely many sites there are finitely many indexed candidate
+complexes. Each orientation, coincidence, rank and in-sphere predicate is
+a polynomial equality or inequality in the site coordinates, hence defines
+a Borel region. A finite tie rule selects one candidate measurably; the
+lower-rank and duplicate rules are finite Borel partitions of the same
+kind. On each selected graph the covariance is a finite sum of continuous
+matrix-valued functions. Its positive scalar ridge makes it invertible.
+The thresholded spectral pseudo-inverse is Borel, spectral clipping is
+continuous on symmetric matrices, and determinants,
+floored logarithms, exponentials and positively floored divisions are
+Borel. The recorded masks and native error outcome complete the observation
+map on every region. No success is assumed for an insufficient edge budget or
+a configuration rejected by its actual policy. Payload inequalities below
+refer only to successful evaluations; an error carries no fictitious metric.
+
+The eigenvalue clamp gives the matrix bound and
+$g_-^3\le\det g_i\le g_+^3$, proving the volume bound.
+Each row weight is a nonnegative raw weight divided by a denominator at
+least its row sum, hence the subunit row bound. The range of $u_i$ has
+width at most $\frac16\log(D_+/D_-)$. Therefore
+
+$$
+|R_i^{\rm obs}|\le4\sum_{j\sim i}w^R_{ij}|u_j-u_i|
+\le\frac23\log(D_+/D_-).
+$$
+
+For an empty row both sides of the curvature formula are zero. No bound
+on the physical sites or continuum curvature was used. $\square$
+:::
+
+:::{prf:definition} Passive step instrument and state decoration
+:label: def-variant-passive-record-kernel
+
+Let $P$ be the full marked-state kernel of a fixed gas on a standard Borel
+space $\Sigma$, including the all-dead state when present. A **passive step
+instrument** is a kernel
+
+$$
+M(S,dS',dr),\qquad M(S,A\times\mathscr R)=P(S,A),
+$$
+
+where $r$ contains the declared intermediate samples and geometric
+readouts. It is obtained by applying those readouts to the same draws and
+stages that execute $P$, without changing any draw or stage. Its
+last-record lift is
+
+$$
+\overline P((S,r),dS'\,dr')=M(S,dS',dr').
+$$
+
+A **state decoration** is the special deterministic graph embedding
+$J(S)=(S,R(S))$ for a measurable $R$. Its lifted kernel is
+$P^J(J(S),\cdot)=J_*P(S,\cdot)$, and its image is equipped with the
+transported measurable structure. A B-stage record is generally a step
+instrument, not a deterministic function of the terminal state.
+:::
+
+:::{prf:theorem} Transfer through passive recording
+:label: thm-variant-passive-record-transfer
+
+For {prf:ref}`def-variant-passive-record-kernel`:
+
+1. The projected last-record chain has exactly kernel $P$. For every
+   initial law and finite observation schedule its projected path law,
+   extinction probability, moments and state-observable correlations equal
+   those of the undecorated gas.
+2. If $\pi P=\pi$, then
+   $\overline\pi(dS',dr)=\int\pi(dS)M(S,dS',dr)$ is invariant for
+   $\overline P$ and has marginal $\pi$.
+3. Let $E\subset\Sigma$ be the nonabsorbed state set and let
+   $Q(S,dS')=\mathbf1_E(S')P(S,dS')$ on $E$. If
+   $\nu Q=\theta\nu$, $0<\theta\le1$, then the killed last-record lift
+   has QSD
+
+   $$
+   \overline\nu(dS',dr)=\theta^{-1}\mathbf1_E(S')
+      \int_E\nu(dS)M(S,dS',dr),
+   $$
+
+   with marginal $\nu$ and the same one-step survival probability
+   $\theta$. The source state of a surviving recorded step need not have
+   marginal $\nu$.
+4. A deterministic state decoration transports $P$, $Q$, their invariant
+   laws and their QSDs by $J$. Any already established Dirichlet form
+   $\mathcal E$ transports by
+   $\mathcal E^J(f\circ J^{-1},f\circ J^{-1})=\mathcal E(f,f)$,
+   preserving its LSI and Poincaré constants. A complete finite-history
+   encoding likewise transports any inequality established on that
+   history law by {prf:ref}`prop-fractal-set-analytic-transfer`.
+
+The last-record lift does not assert an LSI on all functions of the
+intermediate noise or an LSI on a full path law from a state-law LSI.
+Nor does passive recording transfer a theorem from one dynamical variant
+to another.
+
+*Proof.* Integrating $\overline P$ over $r'$ gives $P(S,dS')$ independently
+of the old record. Iteration proves the path-law identity in Item 1;
+expectations, conditional survival laws and correlations follow by
+projection. For Item 2, the marginal of $\overline\pi$ is $\pi P=\pi$,
+so
+
+$$
+\overline\pi\,\overline P
+=\int\pi(dS)M(S,dS',dr')=\overline\pi.
+$$
+
+For Item 3, integration over $r$ gives
+$\theta^{-1}\nu Q=\nu$, proving both normalization and the stated
+marginal. The killed transition from $(S,r)$ depends on $S$ alone, hence
+
+$$
+\overline\nu\,\overline Q
+=\mathbf1_E(S')\int_E\nu(dS)M(S,dS',dr')
+=\theta\overline\nu.
+$$
+
+The source marginal in this integral is proportional to
+$P(S,E)\nu(dS)$, explaining the distinction. For Item 4, $J^{-1}$ is
+the state projection on the embedded image, so the kernels are conjugate.
+The map $f\mapsto f\circ J^{-1}$ is unitary by pushforward. It preserves
+integrals of $f$, $f^2$ and $f^2\log f^2$, and therefore variance and
+entropy. Substituting the transported form proves the unchanged
+functional-inequality constants. The complete-record statement follows
+from its lossless encoding/decoding identity in the cited proposition.
+These arguments use forms already proved for the indicated law; they
+create no inequality for independent new record coordinates. $\square$
+:::
+
+### 4.4 Exact force degeneracy and valid later-kick colors
+
+:::{div} feynman-prose
+A saved graph and a saved step contain different amounts of information.
+A graph computed from a particular state is a function of that state.
+Saving the state alongside it gives a reversible change of representation:
+read the first entry and you recover the original state. This is why a proved
+Dirichlet form and its constants pass directly to that decorated record.
+
+A saved step also contains intermediate Gaussian draws and velocities that
+the terminal state need not determine. Its state projection still follows
+the original gas exactly, but an inequality for state observables does not
+automatically cover every function of those extra samples. The theorem
+states the transfer at the level where the inequality was proved.
+
+Survival conditioning has a similar stage distinction. Start with a
+quasi-stationary law, execute one update, and retain surviving records. The
+terminal state again has the quasi-stationary law. The starting state is
+weighted by its chance of surviving that update. Keeping both stage labels
+lets us calculate color and geometry under the right recorded law.
+:::
+
+:::{prf:lemma} Zero viscous force and weighted consensus
+:label: lem-variant-viscous-consensus
+
+Fix finite positions, $N\ge2$, $\nu>0$, and the complete Gaussian kernel
+of {prf:ref}`def-variant-viscous-euclidean`. Put
+$s_i=\sum_{j\ne i}K_\rho(x_i,x_j)>0$. For eligible-count normalization,
+
+$$
+\sum_i v_i\cdot F_i^{\mathrm{visc}}
+=-\frac{\nu}{2N}\sum_{i\ne j}K_\rho(x_i,x_j)\|v_j-v_i\|^2.
+$$
+
+For row normalization,
+
+$$
+\sum_i s_i v_i\cdot F_i^{\mathrm{visc}}
+=-\frac\nu2\sum_{i\ne j}K_\rho(x_i,x_j)\|v_j-v_i\|^2.
+$$
+
+Consequently the forces vanish on **every** row if and only if all
+velocities agree. On one particular row they vanish exactly when
+$v_i=s_i^{-1}\sum_{j\ne i}K_\rho(x_i,x_j)v_j$; this does not imply
+population consensus.
+
+*Proof.* Multiply the force by its indicated prefactor, sum, and pair the
+ordered terms $(i,j)$ and $(j,i)$. Their sum is
+$-K_\rho(x_i,x_j)\|v_j-v_i\|^2$. All kernel values are strictly
+positive, so a zero energy sum forces every pairwise velocity difference
+to vanish. Consensus also visibly makes every force zero. Dividing the
+individual force equation by its positive total weight gives the
+weighted-average characterization. For example, with three coincident
+sites and velocities $(-u,0,u)$, $u\ne0$, the middle force vanishes
+while the other two do not. $\square$
+:::
+
+:::{prf:theorem} Almost-sure validity of the exact B2 color record
+:label: thm-variant-b2-color-nondegeneracy
+
+Take a nonabsorbed update of {prf:ref}`def-variant-viscous-euclidean`
+with $N\ge2$, $\nu>0$, finite $\rho>0$ and nondegenerate OU innovation
+amplitude $q>0$ from {prf:ref}`def-eg-baoab-canonical`. For either
+complete Gaussian-kernel normalization,
+
+$$
+\mathbb P\!\left(F_i^{\mathrm{visc},\mathrm{B2}}=0
+   \text{ for some }i\mid\text{post-collision population}\right)=0.
+$$
+
+Thus all exact stage-native B2 colors have unit norm almost surely before
+terminal classification. The assertion persists under any positive-probability
+survival event in the same finite record and simultaneously over a countable
+sequence of executed steps. It proves validity of the descriptor, not
+nonzero gauge curvature or a gauge-sector two-point lower bound. For every
+fixed such law,
+$\mathbb P(\|F_i^{\mathrm{visc},\mathrm{B2}}\|\le\delta)\to0$
+as $\delta\downarrow0$; no positive numerical threshold or population-uniform
+lower bound follows.
+
+*Proof.* Condition on the entire post-collision population. The first
+viscous kick and drift are then fixed. Write their outputs as $v_1,x_1$.
+The OU and second drift give
+
+$$
+z_i:=v_{2,i}=cv_{1,i}+q\xi_i,\qquad
+x_{2,i}=x_{1,i}+\tfrac h2z_i,
+$$
+
+where $z\in\mathbb R^{dN}$ has a strictly positive Gaussian density.
+For fixed row $i$, its count-normalized force numerator is
+
+$$
+A_i(z)=\sum_{j\ne i}
+ \exp\!\left[-\frac{\|x_{1,j}-x_{1,i}
+                    +\frac h2(z_j-z_i)\|^2}{2\rho^2}\right](z_j-z_i).
+$$
+
+This is real analytic in the entire vector $z$. Its first component is
+not identically zero: set $z_i=0$ and $z_j=u e_1$ for every $j\ne i$,
+with $u>0$. Every summand in that component is then strictly positive.
+The row-normalized force has the same numerator and a strictly positive
+denominator, so its zeros are the same.
+
+A nonzero real-analytic scalar function on $\mathbb R^m$ has a
+Lebesgue-null zero set. For completeness, prove this by induction on $m$.
+In one dimension its zeros are isolated unless it vanishes identically.
+For $m>1$, choose $t_0$ for which $g(y)=f(y,t_0)$ is not identically
+zero. The exceptional set $g(y)=0$ is null by induction; for each other
+$y$, the analytic function $t\mapsto f(y,t)$ is nonzero and its zeros
+are null. Fubini on bounded boxes, followed by their countable union,
+proves the claim. Apply it to the displayed first component of $A_i$.
+Absolute continuity of $z$ proves the conditional zero probability;
+the union over finitely many rows remains null. Integrate over the
+post-collision population and take a countable union over steps.
+Positive-probability conditioning preserves null events, and continuity
+from above applied to $\{\|F_i\|\le\delta\}$ proves the final assertion.
+The proof never conditions on $x_2$: those positions depend on the same
+Gaussian innovations as $z$. $\square$
+:::
+
+:::{prf:theorem} Explicit nontriviality of a finite color-invariant observable
+:label: thm-variant-finite-color-variance
+
+Use the exact B2 colors of
+{prf:ref}`def-variant-recorded-color-geometry`, with the configured positive
+$q_O$ and $\kappa=m\ell_0/\hbar_{\rm eff}$. Conditional on any finite
+post-collision population, let $x_1,v_1$ be the actual outputs of its
+first viscous kick and drift. Define
+
+$$
+Y=|c_1^{\mathrm{B2}\dagger}c_2^{\mathrm{B2}}|^2\in[0,1].
+$$
+
+This is invariant under a simultaneous $SU(3)$ change of the recorded
+color basis. Its conditional variance is strictly positive for **both**
+existing Gaussian-kernel normalizations, with the following explicit
+bound depending on the configured parameters and those actual arrays.
+Put
+
+$$
+\begin{aligned}
+u&=\pi/\kappa,& W&=\sqrt5u,&
+D_1&=\max_{i,j}|x_{1,i}-x_{1,j}|,\\
+L_\rho&=e^{-1/2}/\rho,&
+k_*&=\exp[-(D_1+\tfrac h2W)^2/(2\rho^2)],&
+f_*&=\nu k_*u/N,\\
+L_*&=\nu(2+4hL_\rho W/k_*),&
+Q_*&=2L_*/f_*+\kappa,&
+r_*&=\min\{k_*/(2hL_\rho),\ f_*/(2L_*),\ 1/(25Q_*)\}.
+\end{aligned}
+$$
+
+For $b\in\{A,B\}$ define the two center arrays
+
+$$
+z_1^A=z_1^B=0,\quad
+z_j^A=(u,0,0),\quad z_j^B=(u,2u,0)\quad(j\ne1),
+$$
+
+and their Gaussian mass lower bounds
+
+$$
+p_b=\left[\frac{4\pi r_*^3/3}{(2\pi q_O^2)^{3/2}}\right]^N
+\exp\!\left[-\frac1{2q_O^2}
+ \sum_i(|z_i^b-a_Ov_{1,i}|+r_*)^2\right]>0.
+$$
+
+Then
+
+$$
+\operatorname{Var}(Y\mid\text{post-collision population})
+\ge\frac{64}{625}\,p_Ap_B>0.
+$$
+
+In the configured absorbing-box instance
+$D=\prod_{a=1}^3[-b_a,b_a]$, $b_a>0$, with its actual $s_x>0$, this
+also proves nontriviality of the surviving one-step record. Put
+$b_D=\min_a b_a$ and
+
+$$
+t_b=\left[\frac{4\pi b_D^3/3}{(2\pi s_x^2)^{3/2}}\right]^N
+\exp\!\left[-\frac1{2s_x^2}
+ \sum_i\left(|x_{1,i}|+\tfrac h2(|z_i^b|+r_*)+b_D\right)^2\right]>0.
+$$
+
+Conditioning additionally on nonextinction of that update gives the lower
+bound $\frac{64}{625}p_Ap_Bt_At_B$. Integrating over any finite
+post-collision law, including the incoming-record law of a proved QSD,
+gives positive variance. These are finite-record bounds. The arrays and
+the Gaussian masses retain their full parameter and population dependence;
+no uniform continuum lower bound or nonzero gauge curvature is asserted.
+The observable uses the exact zero-force mask; a positive numerical color
+threshold retains its own validity condition.
+
+*Proof.* The actual OU velocities are
+$z_i=a_Ov_{1,i}+q_O\xi_i$ and their B2 positions are
+$x_{2,i}=x_{1,i}+(h/2)z_i$. At either center, all rows other than row 1
+have the same velocity $w_b$. Every kernel value is positive, so
+$F_1$ is a positive multiple of $w_b$ and $F_2$ is a negative multiple
+of $w_b$. For count normalization their magnitudes are at least
+$\nu k_*|w_b|/N\ge f_*$. For row normalization row 1 has magnitude
+$\nu|w_b|$, while row 2 has magnitude
+$\nu K_{21}|w_b|/\sum_{j\ne2}K_{2j}
+\ge\nu k_*|w_b|/(N-1)\ge f_*$.
+The common-direction factors cancel in the normalized contraction,
+yielding
+
+$$
+Y(z^A)=1,\qquad
+Y(z^B)=\left|\tfrac15e^{i\pi}+\tfrac45e^{2i\pi}\right|^2=\frac9{25}.
+$$
+
+Consider the product ball $\mathcal B_b=\{\max_i|z_i-z_i^b|<r_*\}$.
+Each kernel changes by at most $hL_\rho r_*$ because its position
+difference changes by at most $hr_*$. Thus each kernel in the relevant
+rows stays at least $k_*/2$. The count-normalized force changes by at
+most $\nu(2+hL_\rho W)r_*$. For row normalization, if $K_j,K_j^0$
+denote one row's kernels and $s=\sum_jK_j$, then
+
+$$
+\sum_j\left|\frac{K_j}{s}-\frac{K_j^0}{s_0}\right|
+\le\frac{2\sum_j|K_j-K_j^0|}{s}
+\le\frac{4hL_\rho r_*}{k_*}.
+$$
+
+The centered velocity differences have size at most $W$; adding their
+perturbations gives the force-change bound $L_*r_*$ for both
+normalizations. The two relevant forces therefore stay at least $f_*/2$.
+For nonzero $F,F_0$, the normalization identity gives
+$|F/|F|-F_0/|F_0||\le2|F-F_0|/|F_0|$.
+The component phase map changes by at most $\kappa r_*$ in norm.
+Hence each of the two colors changes by at most $Q_*r_*$, their
+contraction by at most $2Q_*r_*$, and $Y$ by at most
+$4Q_*r_*\le4/25$. On $\mathcal B_A$ we have $Y\ge21/25$;
+on $\mathcal B_B$ we have $Y\le13/25$.
+
+The Gaussian density on $\mathcal B_b$ is bounded below by the density
+at the displayed worst-distance envelope. Multiplying by its product
+volume $(4\pi r_*^3/3)^N$ gives $\mathbb P(\mathcal B_b)\ge p_b$.
+For an independent conditional copy $Y'$, the two orders of the events
+$\mathcal B_A,\mathcal B_B$ in
+$\operatorname{Var}(Y)=\frac12\mathbb E|Y-Y'|^2$ give
+$\operatorname{Var}(Y)\ge(8/25)^2p_Ap_B$.
+
+For the killed record, on $\mathcal B_b$ the terminal position means
+satisfy $|x_{2,i}|\le|x_{1,i}|+(h/2)(|z_i^b|+r_*)$.
+The independent final position Gaussians land **every** row in
+$B(0,b_D)\subset D$ with conditional probability at least $t_b$,
+by the same density-times-volume calculation. This event implies
+nonextinction, so after conditioning on nonextinction the masses of
+$\mathcal B_b$ are at least $p_bt_b$, since the conditioning denominator
+is at most one. Repeat the two-copy variance argument. Finally the
+conditional-variance identity bounds the variance of any mixture below
+the integral of these positive conditional bounds. Every finite array
+has a strictly positive bound, so that integral is positive. $\square$
+:::
+
+### 4.5 Spatial covariance and the scope of geometry
+
+:::{div} feynman-prose
+The positive-variance proof gives two concrete velocity patterns. In the
+first, the other walkers move along one coordinate. In the second, they
+move along two coordinates in a fixed ratio. For either pattern, row 1
+feels a force along that shared velocity and row 2 feels a force in the
+opposite direction. The normalized color contraction is therefore a small
+calculation, and its squared magnitude takes two different values.
+
+The thermostat gives every small neighborhood of both patterns positive
+probability. The displayed radius keeps the forces nonzero and keeps the
+two values separated throughout those neighborhoods. The Gaussian mass
+formula then turns that separation into an explicit variance bound. Even
+after survival conditioning, the final independent position noise can land
+both patterns inside the configured box.
+
+This demonstrates a nonconstant finite color-invariant observable under the
+actual update. The probability bound also shows exactly why a limit needs
+more work: its dependence on population size and the realized arrays must
+be controlled along the selected limiting sequence.
+:::
+
+:::{prf:proposition} Spatial symmetry of the force, kernel and passive geometry
+:label: prop-variant-spatial-covariance
+
+For $O\in O(3)$ let $T_O(x_i,v_i,a_i)=(Ox_i,Ov_i,a_i)$.
+
+1. Both complete Gaussian viscous normalizations satisfy
+   $F^{\mathrm{visc}}(Ox,Ov)=O F^{\mathrm{visc}}(x,v)$.
+2. The full gas kernel is $O$-equivariant if $OD=D$, the reward obeys
+   $r(T_OS)=r(S)$, the conservative acceleration satisfies
+   $F(Ox)=OF(x)$, and all remaining component laws commute with $T_O$.
+   Under these hypotheses $P(T_OS,T_OA)=P(S,A)$. A radial potential,
+   radial cap, scalar Gaussian innovations and conjugation-invariant
+   collision rotations satisfy their respective requirements. The canonical
+   cube $D=[-2,2]^3$ permits its signed coordinate-permutation subgroup;
+   it does not supply full $O(3)$ symmetry.
+3. The open-space, three-coordinate Delaunay observation graph is
+   unchanged as an indexed graph by $O$ on generic configurations, its
+   neighbor-covariance metric satisfies $g_i\mapsto Og_iO^{\mathsf T}$,
+   and metric edge lengths, determinant volumes and conformal-Laplacian
+   scalar readouts are invariant. With $N\ge4$, $q>0$ and a B2 observation
+   stage, the spatial cloud is generic almost surely on every nonabsorbed
+   update. A clipped or periodic observation domain additionally requires
+   its domain and image rules to be preserved by $O$.
+
+The numerical color map of {prf:ref}`thm-sm-su3-emergence` is generally
+nonlinear under $O(3)$ component mixing. These spatial symmetry statements
+therefore do not assert that it transforms as the linear fundamental
+$SU(3)$ representation. Nor does a covariant finite geometry readout
+establish its continuum consistency.
+
+*Proof.* Orthogonal maps preserve Gaussian pair distances and normalizers.
+Move $O$ through the weighted velocity sum to prove Item 1. For Item 2,
+transport every intermediate position, velocity and vector innovation by
+$O$, and every collision rotation by $R\mapsto ORO^{\mathsf T}$. The
+assumed laws are unchanged, while every stage output is transported by
+$T_O$. Boundary marks agree because $OD=D$. Integrating the transported
+draws proves the kernel identity. A generic orthogonal rotation does not
+preserve the cube, which gives the stated subgroup restriction.
+
+For Item 3, orthogonal maps preserve empty circumspheres, hence transport
+the unique generic Delaunay complex to the complex of the transformed
+sites. The covariance matrix
+$C_i=\deg(i)^{-1}\sum_{j\sim i}(x_j-x_i)(x_j-x_i)^{\mathsf T}$
+transforms to $OC_iO^{\mathsf T}$. Adding a scalar ridge, applying the
+same eigenvalue-thresholded pseudo-inverse and applying scalar spectral
+clamps commute with this conjugation.
+The metric edge lengths and determinant are consequently unchanged, as
+are the scalar curvature formula and its weights. Conditional on the
+post-collision population, $x_2=x_1+(h/2)z$ has an everywhere positive
+density because $hq>0$. Coincident sites, coplanar four-site subsets and
+cospherical five-site subsets are zeros of nonzero polynomial distance
+or determinant predicates. The analytic zero-set argument in
+{prf:ref}`thm-variant-b2-color-nondegeneracy` makes their finite union
+null. Thus for $N\ge4$ the cloud is full dimensional and Delaunay-generic
+almost surely. Degenerate initial or B1 clouds retain the instrument's
+declared duplicate/rank convention. The last statements are precisely
+the nonlinear-encoding calculation of {prf:ref}`thm-sm-su3-emergence`
+and the distinction between a finite estimator and its continuum error
+theorem. $\square$
 :::
 
 (sec-variants-einstein-hilbert)=
@@ -704,9 +1498,9 @@ The kinetic, hypocoercive and entropy chapters of the convergence program assume
 :::{div} feynman-prose
 Now put them all in one table and read down the columns, because the pattern that emerges is not the one the names suggest.
 
-Look at the "Convergence or QSD theorem" row first. One column says established. One says conditional. Four say not established. That is the actual state of the subject, and no amount of family resemblance between the tuples changes it.
+Look at the "Convergence or QSD theorem" row first. The Euclidean and Viscous Euclidean columns now identify proved results for their specified configurations. The Geometric Gas retains its conditional results. The Einstein–Hilbert, Latent Fractal and Environment entries retain the limitations stated in their own sections. Read the configuration and law alongside each result; the column names alone do not determine its scope.
 
-Then look at the rows that differ. Every other variant differs from the Euclidean Gas in the *kinetic* rows, and most differ in the *geometry* row. The fitness and cloning rows change in their details — a matching instead of independent draws, an exponential instead of a logistic — but never in their pattern. That is not an accident: selection is the robust part of this algorithm. Measuring reward and diversity, standardizing, squashing through a logistic, letting the loser copy the winner — that pattern survives being moved to a latent chart, to a graph, to an opaque simulator. What does not survive is motion. Change how walkers move and you change what you can prove, because everything in the convergence program that was hard was about the kinetic stage.
+Then compare the component rows. Selection follows a recognizable sequence across the variants: measure reward and diversity, standardize, compute fitness and decide who copies whom. Its concrete probability law still depends on the companion, standardizer and collision choices. Motion and any geometry feedback have their own differences. The positive-viscosity proofs keep the unchanged selection mechanism and calculate the changed kicks explicitly. A passive geometry readout uses that same law through the record theorem.
 
 One more row deserves a second look: "Companion map involutive." Only the Einstein–Hilbert Gas says yes, and that single entry is worth an entire section — {ref}`sec-variants-measurability` — because a mutual pairing silently annihilates a whole class of measurements. A yes in that row is the difference between a statistic that reports something and a statistic that reports zero no matter what the gas does.
 :::
@@ -741,7 +1535,7 @@ Abbreviations: EG Euclidean Gas, VEG Viscous Euclidean Gas, EHG Einstein–Hilbe
 | $\mathsf G$ | $\varnothing$ | $\varnothing$ | Delaunay tessellation | fitness-Hessian metric | $G$ and fitness-Hessian factor | $\varnothing$ |
 | Engine constructor | `GasConfig::euclidean` | `GasConfig::viscous_euclidean` | `GasConfig::einstein_hilbert` | none | none | none (`KineticKind::Environment`) |
 | Precision of the preset | `Precision::F64` | `Precision::F64` | `Precision::F32` | no preset | no preset | no preset |
-| Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | not established for $\nu>0$ | not established | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
+| Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | finite-$N$ QSD/entropy, uniform marginal tails and fixed-horizon mean field for both existing normalizations of the quadratic terminal-box instance, Section 4.2 | not established | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
 :::
 
 :::{admonition} Which variant should I run?
@@ -751,9 +1545,9 @@ The formal tables above say what each variant *is*. This one is a practical crib
 
 | If your job is… | Run | Because | And the price is |
 |---|---|---|---|
-| minimize a function you can evaluate (and ideally differentiate) on $\mathbb R^d$ | **Euclidean Gas** | it is the only variant carrying proved finite-$N$ and mean-field results, and the only one with a preset that fixes every constant | the box $[-2,2]^d$ and the normalization of your objective are part of the algorithm, not of the problem |
-| the same, but you need a colour observable | **Viscous Euclidean Gas**, $\nu>0$ | it is the smallest change that makes $F^{\mathrm{visc}}$ nonzero, so the colour state of {prf:ref}`thm-sm-su3-emergence` is defined | every long-time theorem of {ref}`sec-variants-euclidean` goes away ({ref}`sec-variants-viscous-euclidean`) |
-| study emergent geometry, curvature, or a Euclidean-time axis | **Einstein–Hilbert Gas** | it is the only variant producing a graph record and a distinguished coordinate | no confinement, a gate every 20 steps, exchange-odd frame means identically zero, and no long-time theorem |
+| minimize a function you can evaluate (and ideally differentiate) on $\mathbb R^d$ | **Euclidean Gas** | its specified reference configurations have the original finite-$N$ and population results | the configured box and objective normalization enter the update and its estimates |
+| the same, with the actual viscous color field and optional recorded spatial geometry | **Viscous Euclidean Gas**, $\nu>0$, with the recorder of {prf:ref}`def-variant-recorded-color-geometry` | its later B-stage colors are valid almost surely; the finite color-invariant variance and coupled convergence results concern the same update | keep the force/velocity alignment and masks; fixed-$N$ constants and finite-horizon results do not establish population-uniform stationary or continuum control |
+| make estimated geometry enter the reward and graph force, with the preset's distinguished position coordinate | **Einstein–Hilbert Gas** | its graph and curvature payloads participate in its specified dynamics | no confinement, a gate every 20 steps, exchange-odd paired frame cancellations, and no long-time theorem |
 | use fitness curvature to precondition exploration | **Geometric Gas** | adaptive force and Hessian-shaped noise | no engine constructor, and every result conditional on {ref}`sec-gg-axioms` |
 | search in a learned latent chart with a direction-valued reward | **Latent Fractal Gas** | metric-aware distances, cap and noise; reward as a 1-form | conditional criteria only; you must supply the metric and verify its regularity |
 | drive an external simulator or RL environment | **Environment Gas** | the only tuple that accepts opaque, non-arithmetic states | no jitter, no collisions, no thermostat; exploration comes entirely from the environment or the policy |
@@ -873,7 +1667,7 @@ Now read component 9 of {prf:ref}`def-variant-euclidean`: $F^{\mathrm{visc}}\equ
 
 And you cannot rescue it by substituting some other force. The conservative force $-\nabla U$ is available, but it is a gradient of a function on configuration space — it knows nothing about the other walkers and nothing about velocities, so whatever you encoded would describe the landscape and not the crowd; it is not the object the theorem defines. The softened denominator $\sqrt{\|F\|^2+\delta^2}$ doesn't help either: the theorem points out that this gives a vector of norm *at most* one, not a unit vector, and at $F=0$ it returns the zero vector, which carries no direction at all. The construction needs a genuinely nonzero force, and only a coupling between walkers supplies one.
 
-So there are exactly two ways to get colour, and both cost something. Turn on $\nu>0$ and you have the Viscous Euclidean Gas — one changed component, and by {ref}`sec-variants-viscous-euclidean` no convergence theorem survives. Or run the Einstein–Hilbert Gas, whose graph viscous force is nonzero by construction — and give up confinement, time homogeneity and every long-time result at once.
+The Viscous Euclidean Gas supplies this force through its existing positive coupling. Its later B-stage record now has an almost-sure nonzero-force theorem, together with a positive finite variance for a color-invariant contraction. The coupled convergence results in {ref}`sec-variants-viscous-euclidean` concern this actual update. A passive spatial graph can be recorded from the same run. The Einstein–Hilbert and other positive-viscosity variants also offer color inputs, with their own dynamics, masks and proof scope.
 
 Even then, be careful. A nonzero coupling constant does not guarantee a nonzero force. Reason 3 in the list below makes the point concretely: the Einstein–Hilbert force $\nu\sum_j w_{ij}(v_j-v_i)$ vanishes identically on a population whose velocities all agree — which is exactly the reference initial condition, every walker at the origin at rest. It also vanishes on any walker the tessellation left without neighbors. Those rows have no colour state and must be masked out, not silently treated as zero. Availability is a property of the variant; validity is a property of the sample.
 :::
@@ -895,7 +1689,15 @@ A denotes available and U unavailable in the sense of {prf:ref}`def-variant-meas
 Structural reasons:
 
 1. $F^{\mathrm{visc}}\equiv0$. By {prf:ref}`thm-sm-su3-emergence` the colour encoding divides by $\|F_i^{\mathrm{visc}}\|$ and is undefined at zero force, so the colour state is undefined on every row at every step.
-2. The viscous coupling is nonzero for $\nu>0$. The colour state is defined on the rows with $F_i^{\mathrm{visc}}\ne0$; rows with zero force, for example in a population with equal velocities, are excluded, and any replacement at zero force must be declared. The kernel is invariant under simultaneous orthogonal maps of positions and velocities, as the covariance statement of {prf:ref}`thm-sm-su3-emergence` requires.
+2. The viscous coupling is nonzero for $\nu>0$. The colour state is defined
+   on nonzero-force rows; consensus rows and numerical thresholds retain
+   their declared masks. The complete Gaussian force is covariant under
+   simultaneous orthogonal position/velocity transformations. This is not
+   an $O(3)$ invariance statement for the terminal-box law or a linear
+   covariance statement for the componentwise color encoding.
+   {prf:ref}`prop-variant-spatial-covariance` states the exact distinction;
+   {prf:ref}`thm-variant-b2-color-nondegeneracy` proves almost-sure B2
+   validity for the configured positive OU noise.
 3. The graph viscous force with $\nu=3$ is the recorded force. It vanishes on a population at rest, in particular at the reference initial condition, and on rows without neighbors; those rows are excluded. For $d\ge3$ the weights are invariant under $O(d-1)\times O(1)$ only, and on Delaunay-generic configurations (Item 5 of {prf:ref}`prop-variant-eh-identities`), so the covariance hypothesis of {prf:ref}`thm-sm-su3-emergence` holds for that subgroup and not for $O(d)$.
 4. $\mathcal W$ has no velocity field and $\mathsf K$ has no B stage, so neither factor of the colour encoding exists.
 5. $\mathsf G=\varnothing$, or $\mathsf G$ is a per-walker metric without a neighbor graph. No graph record is produced by the tuple.
@@ -907,9 +1709,9 @@ Structural reasons:
 :::
 
 :::{div} feynman-prose
-Read that table and you find an uncomfortable trade running right through it. The variant with the richest measurement structure — colour, a graph, a time axis, all available — is the Einstein–Hilbert Gas, and it is also the variant about which we can prove the least. The variant with the theorems is the Euclidean Gas, and three of its five columns say U. Richness of observables and strength of results are, at the moment, anticorrelated. That is a fact about where the work has been done, not a law of nature, but you should plan around it.
+The table records fields produced by the dynamical tuples themselves. The passive instrument in {prf:ref}`def-variant-recorded-color-geometry` supplies a further option: retain the color-capable viscous update, construct a three-coordinate spatial graph from its saved arrays, and use the update index as time. The finite-population proofs then refer to the same transition law. Feeding geometry back into a reward or kick instead calls for the proof appropriate to that changed component.
 
 The other thing the table teaches is how many different ways an observable can be empty. There is "the field isn't there" (reason 4: no velocities, so no colour factor at all). There is "the field is there but identically zero" (reason 1: the Euclidean viscous force). There is "the record exists but the statistic is constant" (reason 7: a uniform matching law makes every $U(1)$ amplitude modulus the same number, though the phases still carry information). There is "the estimator cancels by construction" (reason 8). And there is "nothing in the tuple distinguishes the coordinate, so the analyst would have to declare an axis by hand, and then it is the analyst's choice and not a property of the gas" (reason 6). Five different failures, and only one of them looks like a missing field.
 
-That last distinction is the one I would most like you to take away. If you pick a time axis yourself in a variant that treats all $d$ coordinates identically, you will get numbers out. They will be reproducible. They will not be measuring a property of the algorithm — they will be measuring your choice. The virtue of doing this bookkeeping once, up front, from the component tuple, is that it tells you which of your numbers are about the gas and which are about you.
+Time deserves the same care as the other recorded fields. Every executed update has an index and a declared step $h$, so the history already carries algorithmic time $nh$. Choosing one position coordinate as a Euclidean-time axis is a separate convention; the Einstein–Hilbert preset singles out such a coordinate. The recorded viscous construction keeps three spatial coordinates and uses the history time. The physical symmetry and spectrum claims must be proved for whichever time convention the field theory uses.
 :::

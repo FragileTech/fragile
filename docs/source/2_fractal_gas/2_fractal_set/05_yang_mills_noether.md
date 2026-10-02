@@ -7037,6 +7037,215 @@ Hamiltonian. A QSD sampling gap without those identifications has the scope
 of its own stochastic semigroup.
 :::
 
+:::{prf:theorem} Exact finite gauge-sector certificate for the recorded edge Hamiltonian
+:label: thm-ym-edge-gauge-spectral-certificate
+
+Fix the full $(\theta,Y)$ and the already defined finite
+$h_\theta(Y)$, $H_\theta(Y)$ of
+{prf:ref}`def-lqft-edge-spectral-parameters`. Use the ground shift
+$H_0$, occupation spectral projections $P_e$, and complete ground
+projection $P_0$ of {prf:ref}`thm-lqft-edge-filled-ground-gap`.
+Let a compact gauge group $G$ act on this same finite mode space by a
+declared continuous unitary representation $u_g=u_{g;\theta,Y}$.
+Compute the exact, parameter-specific commutation certificate
+
+$$
+u_g h_\theta(Y)=h_\theta(Y)u_g\quad\text{for every }g\in G.
+$$
+
+This is an algebraic certificate to evaluate, not a new assumption on
+the gas or its physical gauge law. The invariant recorded modes in
+{prf:ref}`cor-ym-edge-filled-gauge-closure` discharge it identically.
+An unverified representation is not assigned an invariant Hamiltonian
+sector by this theorem.
+
+Its exterior action $\Gamma_g=\Gamma_-(u_g)$ then commutes with
+$H_0$ and parity. For a selected parity $p$, put
+
+$$
+Q_p=\tfrac12(I+(-1)^pQ),\qquad
+P_{G,p}=Q_p\int_G\Gamma_g\,dg,
+\qquad\mathcal H_{G,p}=P_{G,p}\mathcal F_-(E).
+$$
+
+Normalized Haar measure is used. These data give the following exact
+finite conclusions.
+
+1. The ground of the full edge operator belongs to this sector exactly
+   when $P_{G,p}P_0\ne0$. Its multiplicity there is
+   $\operatorname{Tr}(P_{G,p}P_0)$.
+2. If this multiplicity is positive and the sector has an excited vector,
+   its gap above that complete ground space is
+
+   $$
+   \delta_{G,p}(\theta,Y)
+   =\min\{e>0:\operatorname{Tr}(P_{G,p}P_e)>0\}
+   \ge\delta_{\rm edge}(\theta,Y).
+   $$
+
+   If $z=0$ and $p\equiv r\pmod2$, the stronger bound is
+   $\delta_{G,p}\ge d_1+d_2$ whenever an excited vector exists.
+   Absence of an excited vector is recorded as such, not as a physical
+   positive-mass excitation.
+3. A non-ground gauge excitation exists exactly when
+
+   $$
+   \operatorname{Tr}(P_{G,p}(I-P_0))>0.
+   $$
+
+   This criterion tests the gauge sector of this Hamiltonian directly.
+4. If $P_{G,p}P_0=0$ and $\mathcal H_{G,p}\ne\{0\}$, its lowest
+   energy is the smallest $e$ with
+   $\operatorname{Tr}(P_{G,p}P_e)>0$. Its gap above that minimum must
+   be computed from the next retained energy. The full-space bound
+   $\delta_{\rm edge}$ does not bound that difference merely because
+   the restricted minimum is positive.
+
+If a normalized $\xi\in\mathcal H_{G,p}\cap\mathcal G_0$ is chosen,
+the full even gauge-invariant algebra is cyclic on
+$\mathcal H_{G,p}$ from $\xi$. For any even CAR polynomial $B$, define
+
+$$
+\overline B_G=\int_G\Gamma_gB\Gamma_g^{-1}\,dg.
+$$
+
+Then $\overline B_G$ is even and gauge invariant, and
+
+$$
+\|(I-P_0)\overline B_G\xi\|^2
+=\|(I-P_0)P_{G,p}B\xi\|^2.
+$$
+
+A strictly positive value is a constructive excitation certificate.
+When the sector's ground is the single line $\mathbb C\xi$, this
+quantity equals
+$\|\overline B_G\xi\|^2-|\langle\xi,\overline B_G\xi\rangle|^2$.
+For a degenerate ground, subtracting only that scalar expectation can
+also detect a different ground vector and does not certify excitation.
+Every representation, eigenvalue, trace and excitation norm here depends
+on the declared $(\theta,Y)$ and readout data; no uniform gap over
+parameters or random histories follows from this finite theorem.
+:::
+
+:::{prf:proof}
+**Commuting projections.** The sector formula for $d\Gamma(h)$ shows
+that $u_gh=hu_g$ implies
+$\Gamma_gH\Gamma_g^{-1}=H$. Exterior degree is preserved, so
+$\Gamma_g$ also commutes with $Q$. Haar averaging gives a self-adjoint
+idempotent: invariance of Haar measure proves idempotence, inversion
+proves self-adjointness, and averaging fixes exactly the invariant
+vectors. It therefore commutes with $Q_p$, $H_0$, and every $P_e$.
+Thus $P_{G,p}P_e$ is the orthogonal projection onto the retained
+energy-$e$ subspace, with dimension equal to its trace.
+
+**Spectrum and excitation.** The occupation diagonalization gives a
+finite orthogonal direct sum $I=\sum_eP_e$. Restricting by the commuting
+projection retains exactly the summands of positive trace. At $e=0$
+this proves the ground criterion and multiplicity. When zero is retained,
+the least retained positive energy is the gap. Restricting cannot create
+an energy below the full-space positive minimum; the parity restriction
+in {prf:ref}`thm-lqft-edge-parity-ground-gap` gives the stronger bound
+when its hypotheses hold. Summing the positive-energy retained dimensions
+proves the non-ground criterion. When zero is absent, the first retained
+energy is the sector's minimum and must be subtracted from the second
+one to compute its own gap.
+
+**Cyclic algebra and a test polynomial.** For every
+$\eta\in\mathcal H_{G,p}$, the rank-one operator
+$|\eta\rangle\langle\xi|$ commutes with $\Gamma_g$, since both
+vectors are fixed by it. It preserves parity and vanishes on the other
+parity block. By {prf:ref}`thm-lqft-edge-parity-ground-gap` it is an
+even CAR polynomial. It maps $\xi$ to $\eta$, proving cyclicity for
+the full even invariant algebra. A smaller prescribed local algebra
+retains its own cyclic-space condition.
+
+Since $\Gamma_g^{-1}\xi=\xi$,
+$\overline B_G\xi=(\int_G\Gamma_g\,dg)B\xi$.
+Evenness of $B$ preserves its selected parity, so the right side is
+$P_{G,p}B\xi$. Applying $I-P_0$ proves the excitation identity.
+If the retained ground is one dimensional, its projection on this
+sector is $|\xi\rangle\langle\xi|$, giving the stated variance.
+With additional retained ground directions that subtraction removes
+only one of them. $\square$
+:::
+
+:::{prf:corollary} Filled-ground character and gauge-invariant-mode closure
+:label: cor-ym-edge-filled-gauge-closure
+
+Use {prf:ref}`thm-ym-edge-gauge-spectral-certificate`.
+If $z=0$, the unique filled ground $\xi_-$ transforms by the
+one-dimensional character
+
+$$
+\Gamma_g\xi_-=\chi_-(g)\xi_-,\qquad
+\chi_-(g)=\det(u_g|_{E_-}).
+$$
+
+It is a vector in the untwisted gauge-invariant Hilbert space exactly
+when $\chi_-=1$. The phased implementation
+$V_g=\overline{\chi_-(g)}\Gamma_g$ is a unitary representation that
+fixes $\xi_-$ and implements the same gauge conjugation on observables.
+For its invariant, filled-ground-parity sector the exact projector is
+
+$$
+P_{\chi_-,p_0}
+=Q_{p_0}\int_G\overline{\chi_-(g)}\Gamma_g\,dg,
+\qquad p_0\equiv r\pmod2.
+$$
+
+The preceding spectral and excitation tests apply with this projector.
+Selecting this phased implementation is explicit representation data;
+it is not an assertion that the original untwisted ground was invariant.
+
+In particular, suppose $E$ consists of recorded mode functions invariant
+under the actual same-law gauge action. Then $u_g=I$ on $E$, the exact
+commutation condition is automatic for any declared edge recipe, and
+all even CAR observables are gauge invariant. For a nonzero real-edge
+Hamiltonian, its ground-containing parity sector has a non-ground gauge
+excitation. Its ground multiplicity and exact gap are
+
+$$
+\begin{array}{c|c|c}
+\text{zero-mode count}&\text{ground multiplicity in the selected parity}
+   &\text{gap above that ground space}\\ \hline
+z=0,\ p\equiv r\pmod2&1&2\delta_{\rm edge}(\theta,Y)\\
+z\ge1,\ p\in\{0,1\}&2^{z-1}&\delta_{\rm edge}(\theta,Y).
+\end{array}
+$$
+
+If the original empty-vacuum even sector is retained, the first row
+contains the filled ground only when $r$ is even. For odd $r$ its
+minimum and gap are the opposite-parity formulas of
+{prf:ref}`thm-lqft-edge-parity-ground-gap`. For $h=0$ there is no
+non-ground excitation. This is a closure of the finite invariant-mode
+representation; identifying it with a local non-Abelian connection
+or with the recorded Markov generator requires the corresponding
+native identification hypotheses.
+:::
+
+:::{prf:proof}
+Commutation with $h$ preserves $E_-$, so its top exterior power is
+multiplied by the determinant of $u_g|_{E_-}$. Determinants multiply
+under composition and have modulus one. Thus $\chi_-$ is a unitary
+character, the phased implementation is a representation, and its
+scalar phases cancel in conjugation. Haar averaging this implementation
+gives exactly the displayed character projector. Its filled ground is
+fixed, so the preceding theorem applies.
+
+If every mode function is invariant, its induced representation is
+$u_g=I$; its exterior lift is also the identity. The gauge projection
+then reduces to $Q_p$. If the real-edge matrix is nonzero and
+invertible, $m=2r\ge2$. Changing two nonzero occupations produces an
+even observable excitation of the filled ground, with least cost
+$2\delta_{\rm edge}$. If a zero mode exists, a single nonzero change
+of least cost can be paired with one zero-mode change, giving an
+even observable excitation of cost $\delta_{\rm edge}$. Both
+constructions use an even creation/annihilation word and a ground
+occupation projection, hence lie in the proved even CAR algebra.
+The multiplicities and parity conditions follow from
+{prf:ref}`thm-lqft-edge-parity-ground-gap`. $\square$
+:::
+
 ### 12.2. Euclidean correlations and reflection positivity
 
 :::{prf:definition} Euclidean correlations and the reflection form

@@ -36,6 +36,31 @@ with their displayed hypotheses. The statements called **remaining deliverables*
 are proposed proof tasks, not additional proved theorems. The distinction keeps the
 roadmap usable as a dependency list.
 
+### Current discharge, without changing the algorithm
+
+The following additions concern the already implemented Viscous Euclidean Gas
+and passive observations of it. They do not replace the metric-feedback,
+Boris, adaptive-noise or historical-donor variants by that simpler kernel.
+No unverified premise is counted as a completed proof.
+
+| Discharged point | Main-chapter proof | Exact scope |
+|---|---|---|
+| Complete color/geometry recording and analytic transfer | `def-variant-recorded-color-geometry`, `thm-variant-passive-record-transfer` in [Gas variants](../source/2_fractal_gas/1_the_algorithm/04_gas_variants.md) | Existing three-spatial-coordinate viscous transition; geometry is a passive instrument using existing pipeline configurations |
+| Valid B2 color and full-slot spatial general position | `thm-variant-b2-color-nondegeneracy` | Fresh positive OU noise; complete positive Gaussian force; no assertion that a resting initial B1 force is nonzero |
+| Uncapped coupled-kick moments and terminal survival | `thm-cgd-kinetic-moments`, `cor-cgd-boundary-comparison` in [Coupled finite-population discharge](../source/2_fractal_gas/convergence_program/18_coupled_gas_discharge.md) | Both force evaluation stages retained; no maximum-over-population replacement and no truncation of Gaussian draws |
+| Finite-population QSD, mixing and full-step entropy | `thm-cgd-finite-n-qsd`, `thm-cgd-discrete-entropy` | Actual killed quadratic/capped/terminal-box gas; reference preset's numerical coercivity margins are verified; constants are not asserted uniform in population size |
+| Population-independent QSD marginal tails and survival floor | `thm-cgd-uniform-marginal-qsd-tails`, `cor-cgd-reference-uniform-tails` | Both existing normalizations; Gaussian retained-position tails, all marginal moments and expected alive fraction; no joint concentration or uniform mixing assertion |
+| Fixed-step coupled kinetic population consistency | `thm-cg-mf-kinetic-limit`, `thm-cg-mf-row-kinetic-limit`, `cor-cg-mf-full-update` in [Viscous population limit](../source/2_fractal_gas/convergence_program/19_color_geometry_mean_field.md) | Both existing normalizations, unchanged reference landscape and original selection inputs; exact self-exclusion and local row degrees derived from moments, not assumed; finite horizons, not stationary attraction |
+| Conditional variance through the coupled B2 stage | `thm-cg-mf-kinetic-variance` | Explicit kinetic-stage budget given the entire cloned array; cloning fluctuations are not silently omitted from a purported full-update bound |
+| Ground space, parity and spectral gap of the existing edge Hamiltonian | `thm-lqft-edge-filled-ground-gap`, `thm-lqft-edge-parity-ground-gap` in [Lattice QFT](../source/2_fractal_gas/2_fractal_set/03_lattice_qft.md) | Exact finite directed-edge operator, filled negative modes and all zero modes; the Hamiltonian is not reconstructed anew |
+| Finite gauge-sector spectral and excitation tests | `thm-ym-edge-gauge-spectral-certificate`, `cor-ym-edge-filled-gauge-closure` in [Yang–Mills](../source/2_fractal_gas/2_fractal_set/05_yang_mills_noether.md) | Actual same-operator invariant modes discharge commutation identically; no inferred local Yang–Mills action or uniform random-record gap |
+
+The primitive-parameter minorization is explicit. The QSD mixing and entropy
+rates additionally retain the exact eigenfunction minimum and weighted minorizing
+mass of the identified full-kernel eigenproblem. These are named functions of the
+complete parameter register, not supplied primitive-parameter closed bounds.
+Obtaining such closed spectral bounds remains a quantitative task.
+
 ## 1. What is already constructed
 
 ### Exact algorithm, records and effective fields
@@ -144,14 +169,18 @@ of this programme.
 
 ## 2. Stage 1 — specify and control the actual coupled model
 
-The first remaining deliverable is a single model specification and a theorem
-register for it. Fix the implemented donor/history convention, cloning gate,
+The model specification and finite-population/finite-horizon theorem register
+are now explicit for the recorded Viscous Euclidean instance above. The remaining
+analytic deliverable is population-uniform long-time control for the required
+physical law, and corresponding verification for any other existing variant
+actually used downstream. Retain the implemented donor/history convention, cloning gate,
 collision law, kinetic splitting, viscous kernel and normalization, any Boris
 rotation, metric provider, cap, graph reconstruction and observable readout.
 Write its complete kernel as $P_{N,h}$, retaining the marks needed to make it a
 well-defined Markov process.
 
-The physical dependence is a feedback chain. For example,
+For a variant that actually consumes geometry the physical dependence is a
+feedback chain. For example,
 
 $$
 g\longrightarrow K_{ij}(g)\longrightarrow
@@ -163,6 +192,9 @@ while fitness and cloning change the population from which the next metric and
 force are computed. Metric-dependent viscosity changes the direction of the
 color-generating force even when the instantaneous velocities are fixed.
 Normalizing its magnitude does not remove this effect.
+The recorded Viscous Euclidean instance instead uses the existing physical-distance
+Gaussian kernel; its geometry instrument does not feed that kernel. Neither
+description may be substituted for the other.
 
 Specify which probability law is used at each stage: a conservative invariant law
 $\Pi_N$, a killed-chain QSD $\nu_N$, a survival-selected history law, or the invariant
@@ -176,9 +208,11 @@ minorization or contraction, and full-gradient entropy estimates. The source
 scope matters here: `def-slc-parameter-register` explicitly excludes viscosity,
 donor history and population-dependent force from its canonical parameter record.
 [Gas variants](../source/2_fractal_gas/1_the_algorithm/04_gas_variants.md), §4.2,
-also identifies the coupled-kick estimates needed for the viscous variant. The
-canonical results are available machinery; applying them to this larger kernel
-requires these additional estimates.
+now points to the discharged coupled-kick and finite-law estimates. The canonical
+results supply the unchanged selection machinery; Chapters 18 and 19 prove the
+new kinetic estimates rather than silently transferring row-independent proofs.
+Population-uniform stationary attraction, the actual full-law LSI and the
+geometry-feedback variants remain outside these conclusions.
 
 The intended LSI convention is
 
@@ -193,10 +227,9 @@ $$
 The gradient here is the full gradient used by the fluctuation estimates. The
 kinetic noise carré du champ acts only in velocity; hypocoercivity links transport
 to that dissipation. Neither should be substituted for the displayed inequality
-without the relevant theorem. Choosing strongly convex force/reward data is a
-concrete way to strengthen the analytic estimates, but the resulting constants
-must concern the complete coupled law and remain adequate along the physical
-scaling.
+without the relevant theorem. The force, reward and algorithm are fixed data:
+derive the needed constants from them. Choosing new landscape or algorithm
+parameters to make an estimate close is not a discharge of the stated model.
 
 ## 3. Stage 2 — one joint continuum scaling
 
@@ -453,16 +486,28 @@ readout and active invariance of a physical law are separate assertions.
 
 ## 8. Stage 8 — identify and pass the physical mass gap
 
-Construct the self-adjoint physical transfer Hamiltonians $H_a$ for the
-reconstructed gauge sector. Here $a$ collects the physical cutoffs and volume
-parameters, and is not merely particle number. Prove
+The finite directed-edge Hamiltonian is already constructed, self-adjoint, and
+now has an exact occupation-spectrum proof. For its actual matrix
+$h=i(K-K^{\mathsf T})$, the filled-ground shift has gap
+$\delta_{\rm edge}=\min_{\lambda_j(h)\ne0}|\lambda_j(h)|$ above its complete
+ground space. Zero modes determine ground degeneracy; the original empty Fock
+vacuum is not the ground when negative modes occur. Its physical energy unit is
+$\hbar_{\rm eff}\delta_{\rm edge}$. Parity and gauge restriction must use the
+explicit tests above, including whether an excited gauge vector exists.
+
+No new spatial cutoff or cutoff family is required for these finite native
+statements. The remaining task is to establish the target physical-sector
+identification and the uniform gap relevant to the endpoint actually claimed.
+If a continuum or infinite-volume endpoint is claimed through an already
+specified family, retain that family's existing parameters (call them $a$) and
+prove
 
 $$
 \|e^{-tH_a}(I-P_{\Omega_a})\|\le e^{-\lambda_*t},
 \qquad\lambda_*>0,
 $$
 
-uniformly in the required family, and the strong semigroup convergence
+uniformly in that declared family, together with the strong semigroup convergence
 
 $$
 J_ae^{-tH_a}J_a^*\longrightarrow e^{-tH},\qquad
@@ -500,7 +545,7 @@ flowchart TD
     D --> F[6. Physical quantum reconstruction in algorithmic time]
     E -->|Coupled gravity endpoint| F
     F --> G[7. Locality, covariance and physical spectrum]
-    G --> H[8. Physical transfer Hamiltonian and uniform gap]
+    G --> H[8. Identify existing Hamiltonian and target-sector gap]
     H --> I[Apply established gap-survival theorem]
 ```
 
@@ -511,14 +556,53 @@ covariance → physical transfer/gap convergence → the existing gap theorem.
 
 | Remaining deliverable | Inputs to retain | Evidence that completes it |
 |---|---|---|
-| Coupled-kernel analytic theorem | Actual marks, viscosity, metric feedback, cloning and chosen law | Uniform moments/tails, dependence control and the stated full-gradient LSI/Poincaré or justified alternative |
+| Population-uniform stationary analytic theorem | Actual marks, viscosity, any actually consumed metric, cloning and chosen law | Use the proved uniform marginal tails; still derive stationary dependence control and the stated full-gradient LSI/Poincaré or justified alternative |
 | Joint continuum theorem | One parameter schedule and correlated graph law | Common metric, volume, causal and operator convergence with quantified local/tail errors |
 | Physical gauge fluctuation theorem | Exact drift/bracket and joint source hierarchy | Identified limiting dynamics, phase/uniqueness statement and gauge nondegeneracy |
 | Native local Yang–Mills theorem | Actual fiber action and force-source score | Local connection, weak variation identity, limiting action/first variations and required UV identification |
 | Coupled gravitational theorem | Exact metric increments, stress and both curvature routes | Controlled metric evolution/variation, coefficients, constraints and specified singular-region extension |
 | Quantum reconstruction theorem | Native physical-time correlations and positivity test | Nontrivial positive-energy physical Hilbert representation and physical observables |
 | Physical locality/covariance theorem | Reconstructed algebra and emergent causal geometry | Spacelike commutation, target covariance, spectrum and vacuum properties in one representation |
-| Uniform physical gap theorem | Identified self-adjoint physical transfer operators | Cutoff/volume-uniform gap and strong semigroup/Hilbert-space convergence |
+| Target physical gap theorem | Existing native Hamiltonian and identified physical sector | Target-family uniform gap and semigroup/Hilbert-space convergence only when that endpoint calls for a limit |
+
+### Remaining work, from lower to higher proof difficulty
+
+This is a dependency-aware mathematical ranking, not a time estimate. Finite
+algebraic and moment tasks already discharged above are excluded.
+
+1. **Quantitative extensions of existing certificates — moderate.** Bound the
+   QSD eigenfunction ratio from primitive parameters, and discharge uncovered
+   landscape/normalization cases without changing their configured force or
+   clipping their unbounded noise. These extend an explicit existing proof.
+2. **Population-uniform stationary control — hard.** Close signed selection and
+   coupled kinetic errors for the actual phase; derive a suitable full-law
+   derivative/discrete form and stationary chaos. Uniform marginal QSD tails
+   are now proved, but fixed-population mixing is
+   insufficient, and alive/dead status cannot be controlled by continuous
+   gradients alone.
+3. **Same-record geometry and joint scaling — very hard.** Control interacting
+   shrinking-scale graph estimators, retessellation, metric errors, tails and
+   the native action with their actual correlations.
+4. **Nontrivial limiting gauge dynamics — very hard.** Prove native gauge
+   fluctuation nondegeneracy and the complete drift/bracket limit. Nonzero finite
+   color is not a nonzero continuum gauge field.
+5. **Local Yang–Mills identification — very hard and structural.** Derive the
+   local non-Abelian connection and identify the native action and force-score
+   first variations; a common-frame orbit algebra or a Wilson Taylor expansion
+   is not that identification.
+6. **Physical-time reconstruction, locality and covariance — very hard and
+   structural.** Discharge positivity, positive energy and the physical local
+   algebra for the same reconstructed dynamics. The existing pullback and CAR
+   tests identify precisely which literal implementations need further work.
+7. **Target uniform physical gap — highest difficulty for a continuum
+   Yang–Mills endpoint.** Use the already constructed operator, identify its
+   physical sector and prove the target's uniform spectral/limit estimates.
+   The finite native spectrum is settled; it is not a substitute for these
+   physical identifications.
+
+The gravitational extension is a separate structural branch after joint geometry
+control; its Einstein/action identification is of comparable difficulty to steps
+5–6, not an additional prerequisite for the finite native Hamiltonian theorem.
 
 The analytic discharge uses recognizable tools already developed in Volume 2:
 Lyapunov and signed selection estimates, entropy interpolation, LSI/Poincaré,
@@ -536,7 +620,8 @@ The labels below refer to the current source snapshot. Relative links open the
 source chapters; the labels identify the formal result to locate within each file.
 
 1. [Gas variants](../source/2_fractal_gas/1_the_algorithm/04_gas_variants.md):
-   §4.2 coupled-viscosity hypotheses and the distinct configured variants.
+   §4.2 coupled-viscosity discharge, §4.3–4.5 exact passive color/geometry,
+   and the distinct configured variants.
 2. [Structural landscape convergence](../source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md):
    `def-slc-parameter-register`, `thm-slcc-active-contraction`,
    `cor-slcf-stationary-limits`, `thm-slcgt-growing-trajectory`,
@@ -575,3 +660,13 @@ source chapters; the labels identify the formal result to locate within each fil
 13. [Holography and information geometry](../source/2_fractal_gas/3_fitness_manifold/05_holography.md):
     native response/Fisher constructions and the distinction between fitness,
     stationary, transition and path geometries.
+14. [Coupled finite-population discharge](../source/2_fractal_gas/convergence_program/18_coupled_gas_discharge.md):
+    `def-cgd-minorization-certificate`, `thm-cgd-phase-smoothing`,
+    `thm-cgd-finite-n-qsd`, `thm-cgd-discrete-entropy`,
+    `thm-cgd-uniform-marginal-qsd-tails`, `prop-cgd-lsi-scope`.
+15. [Viscous population limit](../source/2_fractal_gas/convergence_program/19_color_geometry_mean_field.md):
+    `lem-cg-viscous-force-stability`, `lem-cg-mf-moments`,
+    `thm-cg-mf-kinetic-variance`, `thm-cg-mf-kinetic-limit`,
+    `lem-cg-mf-row-local-normalization`, `thm-cg-mf-row-kinetic-limit`,
+    `cor-cg-mf-full-update`, `conj-cg-mf-stationary-control`,
+    `conj-cg-mf-geometry-consistency`.

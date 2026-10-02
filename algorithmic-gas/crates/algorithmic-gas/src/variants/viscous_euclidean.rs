@@ -4,7 +4,48 @@
 //! kick on the whole population. Coupling, bandwidth and normalization are free
 //! parameters of the variant; no theorem of the Euclidean Gas carries over for
 //! nu > 0 without rechecking its hypotheses.
-use crate::{GasConfig, Result, kinetic::ViscousForceConfig};
+use crate::{
+    GasConfig, ObservationBatch, Real, Result,
+    error::require,
+    kinetic::ViscousForceConfig,
+    tessellation::{GeometryPipelineConfig, TessellationGeometry},
+};
+
+/// Observe all three spatial coordinates of every retained slot at one
+/// declared recording stage, including slots marked dead in the gas.
+///
+/// This is the passive all-slot instrument of the book's
+/// `def-variant-recorded-color-geometry`. The caller supplies the complete
+/// geometry pipeline, any prior cell volumes required by a history-dependent
+/// estimator, and the edge budget. The function reads observations only: it
+/// cannot change gas fields, eligibility, reward, kinetics or random addresses.
+/// Unlike `GeometryStageConfig::refresh`, it does not filter by alive marks or
+/// write geometry back into the dynamical population. The returned geometry
+/// belongs to the supplied stage; it must not be paired with another stage's
+/// color force or velocity without an explicit alignment convention.
+pub fn observe_recorded_geometry<T: Real>(
+    observations: &ObservationBatch<T>,
+    pipeline: &GeometryPipelineConfig,
+    previous_cell_volume: Option<&[T]>,
+    max_edges: usize,
+) -> Result<TessellationGeometry<T>> {
+    let positions = observations.field(&pipeline.positions)?;
+    require(
+        positions.item_shape() == [3],
+        "recorded color-geometry gas requires three spatial coordinates",
+    )?;
+    require(
+        pipeline.projection.axes(3)? == [0, 1, 2],
+        "recorded geometry must retain all three spatial coordinates",
+    )?;
+    pipeline.validate::<T>(3)?;
+    pipeline.evaluate(
+        observations,
+        &vec![true; positions.rows()],
+        previous_cell_volume,
+        max_edges,
+    )
+}
 
 /// Coupling of the reference instance: nu = 0.3 per unit time, bandwidth
 /// rho = 1 (half the companion width and half the box half-width of the

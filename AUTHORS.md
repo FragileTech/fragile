@@ -1,5 +1,7 @@
 # Authors
 
+* OpenAI - Parameterized coupled viscous-gas proofs, recorded color and geometry variants, and finite Hamiltonian spectral verification.
+
 * OpenAI - Volume 2 remaining-proof roadmap and source-linked theorem dependency document.
 
 * Guillem Duran Ballester - fragile.tech

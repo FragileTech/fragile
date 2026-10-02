@@ -1,5 +1,7 @@
 # Changelog
 
+- Define the recorded color–geometry viscous gas with a full parameter register, exact stage masks and the implemented thresholded covariance pseudo-inverse. Prove coupled kinetic moments, finite-population QSD/entropy, population-independent QSD marginal tails and fixed-step population limits for both existing Gaussian normalizations, and the filled-ground/parity/gauge-sector spectrum of the existing finite Hamiltonian. Add a passive native geometry observer, numerical diagnostics and independent occupation-spectrum, viscous-balance and observer-noninterference tests; retain explicit conjectures for uniform stationary control and continuum physical identification. Repair labelled-proof index metadata so the two-volume book renders with the installed proof extension, with a native Sphinx regression test.
+
 - Document the remaining Volume 2 Yang–Mills and quantum-gravity proof steps, with source-linked theorem dependencies, continuum-control requirements, and the three-space-plus-algorithmic-time reconstruction programme.
 
 - Prove separate one-step bounds for the component-Haar collision and for substituting Python's ordered donor-star collision into the declared Volume 2 update. Derive the last-writer collision matrix, population-independent velocity bounds, and a priority-decorated mean-field map with explicit one-step variance and bias constants for that collision substitution.

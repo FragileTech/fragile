@@ -860,6 +860,252 @@ The one-particle restriction recovers $A$ exactly; two such lifts can be
 equal only when their one-particle operators are equal. $\square$
 :::
 
+:::{prf:definition} Parameters of the recorded finite edge spectrum
+:label: def-lqft-edge-spectral-parameters
+
+Fix the full algorithm, landscape, color, geometry, and recording parameter
+tuple $\theta$ of {prf:ref}`def-variant-recorded-color-geometry`, and a
+realized complete recorded history $Y$. Declare the finite recorded mode
+selection $E_\theta(Y)$, its orthonormal basis, the real directed edge
+coefficient recipe $K_\theta(Y)$, and the conversion from the recording
+clock to physical time as readout data. These data specify
+
+$$
+\widetilde K_\theta(Y)=K_\theta(Y)-K_\theta(Y)^{\mathsf T},\qquad
+h_\theta(Y)=i\widetilde K_\theta(Y),\qquad
+H_\theta(Y)=d\Gamma(h_\theta(Y)).
+$$
+
+All eigenvalues, ground multiplicities and spectral gaps below are
+deterministic functions of these declared data. For nonzero
+$\widetilde K_\theta(Y)$ the gap above its complete ground space is
+
+$$
+\delta_{\rm edge}(\theta,Y)
+=\min\{s>0:s\text{ is a singular value of }
+                 \widetilde K_\theta(Y)\}.
+$$
+
+The minimum excludes exact zero singular values. No positive lower bound
+uniform in $\theta$, the history $Y$, population, or observation window is
+asserted by specifying this finite operator.
+:::
+
+:::{prf:theorem} Exact spectrum and filled ground space of the finite edge Hamiltonian
+:label: thm-lqft-edge-filled-ground-gap
+
+On the finite mode space $E$ of
+{prf:ref}`thm-lqft-edge-second-quantization`, let $h=h^*$ have eigenvalues
+$\lambda_1,\ldots,\lambda_m$, counted with multiplicity, and orthonormal
+eigenmodes $e_1,\ldots,e_m$. For the realized edge operator, every symbol
+is evaluated at the declared $(\theta,Y)$ in
+{prf:ref}`def-lqft-edge-spectral-parameters`. Write
+
+$$
+E=E_-\oplus E_0\oplus E_+,
+\qquad r=\dim E_-,\quad z=\dim E_0,
+\qquad E_{\rm sea}=\sum_{\lambda_j<0}\lambda_j.
+$$
+
+For $H=d\Gamma(h)$, the ordered occupation wedges $e_S$ indexed by
+$S\subseteq\{1,\ldots,m\}$ are an orthonormal eigenbasis, and
+
+$$
+H e_S=\left(\sum_{j\in S}\lambda_j\right)e_S.
+$$
+
+The ground energy is $E_{\rm sea}$, and its complete eigenspace is
+
+$$
+\mathcal G_0
+=\Lambda^rE_-\wedge\mathcal F_-(E_0),
+\qquad \dim\mathcal G_0=2^z.
+$$
+
+Define $H_0=H-E_{\rm sea}I$ and its ground projection $P_0$.
+If $h$ has at least one nonzero eigenvalue, put
+
+$$
+\delta_{\rm edge}=\min_{\lambda_j\ne0}|\lambda_j|>0.
+$$
+
+Then the gap above the complete ground space is exactly
+$\delta_{\rm edge}$, and
+
+$$
+H_0\ge\delta_{\rm edge}(I-P_0),
+\qquad
+\|e^{-tH_0}(I-P_0)\|=e^{-t\delta_{\rm edge}}\quad(t\ge0).
+$$
+
+If $h=0$, then $H_0=0$ and there is no excited sector. The ground is
+unique exactly when $z=0$; uniqueness is separate from positivity of the
+gap above $\mathcal G_0$.
+
+For the already constructed real-edge choice
+$h=i\widetilde K=i(K-K^{\mathsf T})$, complex conjugation maps the
+$\lambda$ eigenspace onto the $-\lambda$ eigenspace. Consequently
+$\dim E_-=\dim E_+$, $m=2r+z$, and, if $h\ne0$, $E_{\rm sea}<0$.
+The empty exterior vacuum $\Omega$ has energy zero for $H$, whereas the
+filled negative-mode wedge is a ground vector. Thus $\Omega$ is not a
+ground vector for a nonzero real-edge Hamiltonian. Subtracting
+$E_{\rm sea}I$ preserves its unitary conjugation action on observables.
+If $h$ has units of inverse physical time, the physical energies and gap
+of $\hbar_{\rm eff}H_0$ are $\hbar_{\rm eff}$ times the displayed rates.
+This theorem concerns the specified finite edge operator itself.
+:::
+
+:::{prf:proof}
+**Occupation diagonalization.** The sector formula in
+{prf:ref}`thm-lqft-edge-second-quantization` applies $h$ to each occupied
+eigenmode. It therefore gives the asserted eigenvalue on $e_S$. The
+occupation wedges form an orthonormal basis by the exterior inner product,
+so this computes the whole spectrum, including all multiplicities.
+
+**Ground and excitation costs.** For every $S$,
+
+$$
+\sum_{j\in S}\lambda_j-E_{\rm sea}
+=\sum_{\substack{\lambda_j<0\\j\notin S}}|\lambda_j|
+ +\sum_{\substack{\lambda_j>0\\j\in S}}|\lambda_j|.
+$$
+
+Every term is nonnegative. The sum vanishes exactly when every negative
+mode is filled, every positive mode is empty, and the zero modes have
+arbitrary occupations. This proves the ground-space formula and its
+dimension. Any excited occupation has at least one nonzero cost, so its
+energy is at least $\delta_{\rm edge}$. Removing a negative mode or
+filling a positive mode whose absolute eigenvalue is
+$\delta_{\rm edge}$ attains this bound. Spectral diagonalization then
+proves both the operator inequality and the semigroup norm identity.
+When all eigenvalues vanish every occupation is a ground vector.
+
+**Real-edge symmetry and energy normalization.** If $J$ is coordinate
+conjugation, reality of $\widetilde K$ gives
+$JhJ=-h$. Hence $h e=\lambda e$ implies $hJe=-\lambda Je$;
+$J$ is an antiunitary bijection between these eigenspaces. Any nonzero
+spectrum therefore includes both a positive and a negative eigenvalue.
+The vacuum is the empty occupation, whose eigenvalue is zero; the minimum
+is the strictly negative sum of the negative eigenvalues. Finally
+$e^{-itH_0}=e^{itE_{\rm sea}}e^{-itH}$, and the scalar phases cancel
+in conjugation of every observable. Since the Hermitian
+$h_\theta(Y)=i\widetilde K_\theta(Y)$ has singular values
+$|\lambda_j(\theta,Y)|$, the expression for
+$\delta_{\rm edge}(\theta,Y)$ in
+{prf:ref}`def-lqft-edge-spectral-parameters` is identical to the proved
+eigenvalue expression. $\square$
+:::
+
+:::{prf:theorem} Exact parity sectors and cyclicity from a filled ground
+:label: thm-lqft-edge-parity-ground-gap
+
+Use the data of {prf:ref}`thm-lqft-edge-filled-ground-gap`. Let
+$Q=(-1)^{\mathsf N}$ be fermion parity, where $\mathsf N=d\Gamma(I)$,
+and let $\mathcal F_p=\ker(Q-(-1)^pI)$ for $p\in\{0,1\}$.
+Then $H$ and $H_0$ preserve each $\mathcal F_p$, and the exact spectrum
+there is the occupation spectrum with $|S|\equiv p\pmod2$.
+Equivalently, if $D$ is the set of changed nonzero occupations relative
+to the filled negative modes and $Z\subseteq\{j:\lambda_j=0\}$ is the
+set of filled zero modes, then
+
+$$
+\operatorname{Spec}(H_0|_{\mathcal F_p})
+=\left\{\sum_{j\in D}|\lambda_j|:
+ r+|D|+|Z|\equiv p\pmod2\right\},
+$$
+
+with multiplicities obtained by counting these occupation pairs.
+
+If $z\ge1$, the ground multiplicity in each parity is $2^{z-1}$.
+When a nonzero eigenvalue exists, the gap above that parity's complete
+ground space is $\delta_{\rm edge}$: a zero-mode occupation can compensate
+the parity of one nonzero excitation.
+
+If $z=0$, the unique filled ground has parity $p_0\equiv r\pmod2$.
+In its own parity sector, let $d_1\le d_2\le\cdots\le d_m$ be the
+ordered absolute eigenvalues, including multiplicities. For $m\ge2$,
+the gap is exactly $d_1+d_2$. For $m<2$ that parity sector has no
+excited vector. For $m\ge1$, in the opposite parity sector the minimum energy of
+$H_0$ is $d_1$, with multiplicity $\#\{j:|\lambda_j|=d_1\}$;
+its gap above this minimum is exactly
+
+$$
+\delta_{\rm opp}
+=\min\left\{
+\min_{j:d_j>d_1}(d_j-d_1),\quad d_2+d_3\right\}.
+$$
+
+Here the first term is $+\infty$ when there is no larger single cost,
+the second is $+\infty$ when $m<3$, and $\delta_{\rm opp}=+\infty$
+denotes the absence of an excited sector, rather than an arbitrarily
+large physical gap. If $m=0$, the even sector is $\mathbb C\Omega$
+and the odd sector is zero. For invertible nonzero real-edge $h$,
+the paired spectrum gives $d_1=d_2=\delta_{\rm edge}$, so the
+filled-ground parity gap is $2\delta_{\rm edge}$.
+
+The algebra $\mathfrak A_{\rm ev}(E)$ generated by all even CAR words
+is
+
+$$
+\mathfrak A_{\rm ev}(E)
+=\mathcal B(\mathcal F_0)\oplus\mathcal B(\mathcal F_1).
+$$
+
+Every nonzero vector of a fixed parity is cyclic for its restriction to
+that parity sector. In particular, any fixed-parity filled ground has
+this cyclicity, but has no cyclicity on a nonzero opposite-parity sector.
+An application to the regional net requires its global regional modes
+to span this $E$; restriction to a smaller algebra requires its own
+cyclic-space calculation.
+:::
+
+:::{prf:proof}
+**Parity and the exact spectrum.** Every term $a_i^\dagger a_j$ has
+even degree, hence commutes with $Q$. Changing either a filled negative
+mode or an empty positive mode changes occupation parity once. Filling
+a zero mode changes it once as well. This proves the displayed
+occupation formula. If $z\ge1$, exactly half of the $2^z$ zero-mode
+subsets have each specified parity. A change in one nonzero mode with
+cost $\delta_{\rm edge}$ can be accompanied by a zero-mode change;
+it attains the lower bound in either sector.
+
+For $z=0$, a vector of the filled-ground parity has an even number of
+changed occupations. A non-ground vector therefore has at least two
+changes. The two smallest costs are attainable together and minimize
+their sum. Opposite parity requires an odd number of changes, whose
+minimum is one change of cost $d_1$. Every combination with at least
+three changes has strictly greater cost, so the minimum multiplicity
+counts exactly the modes of cost $d_1$. The paired real-edge spectrum
+duplicates its smallest absolute eigenvalue.
+
+An opposite-parity occupation above its minimum either changes one
+mode at a strictly larger cost, or changes at least three modes. The
+smallest cost of the latter type is $d_1+d_2+d_3$, attained by those
+three modes when they exist. Every odd subset with at least five
+elements has larger cost. Subtracting the opposite-parity minimum
+$d_1$ proves the displayed formula and its no-excitation convention.
+
+**Matrix units of the even algebra.** Write $n_j=a_j^\dagger a_j$.
+The occupation projection
+
+$$
+P_S=\prod_{j\in S}n_j\prod_{j\notin S}(I-n_j)
+$$
+
+is an even CAR polynomial and projects onto the line $\mathbb C e_S$.
+For occupations $S,T$ of the same parity, first annihilate every mode in
+$S\setminus T$, then create every mode in $T\setminus S$, and apply
+the resulting word to $P_S$. Its degree is $|S\triangle T|$, which
+is even. The CAR give $e_S\mapsto\pm e_T$, and the preceding
+projection annihilates every other occupation. Adjusting the sign
+therefore gives the matrix unit $|e_T\rangle\langle e_S|$ in the
+even algebra. These matrix units span both full parity blocks. Every
+even word preserves parity, so there are no off-block matrix units.
+This proves the algebra identity. A full matrix algebra maps any
+nonzero vector onto every vector of its block, proving cyclicity.
+Parity preservation excludes the opposite block. $\square$
+:::
+
 :::{div} feynman-prose
 Think of a fermionic word as a sequence of instructions applied to a list
 of modes. Read from right to left: creation inserts a mode, a transition

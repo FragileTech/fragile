@@ -34,8 +34,11 @@ from fragile.fractalai.core.fitness import FitnessOperator
 from fragile.fractalai.core.history import RunHistory
 from fragile.fractalai.core.kinetic_operator import KineticOperator
 
-# Import utilities from qsd_variance.py
-from fragile.theory.qsd_variance import compute_hypocoercive_variance, estimate_edge_budget
+# Import from the current package, avoiding the legacy re-export cycle.
+from fragile.fractalai.theory.qsd_variance import (
+    compute_hypocoercive_variance,
+    estimate_edge_budget,
+)
 
 
 # ==============================================================================

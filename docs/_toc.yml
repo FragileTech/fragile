@@ -95,11 +95,13 @@ parts:
     - file: source/2_fractal_gas/convergence_program/05_kinetic_contraction
     - file: source/2_fractal_gas/convergence_program/06_convergence
     - file: source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence
+    - file: source/2_fractal_gas/convergence_program/18_coupled_gas_discharge
   - file: source/2_fractal_gas/parts/03_mean_field
     title: Part III — Mean-Field Limits and Equilibrium
     sections:
     - file: source/2_fractal_gas/convergence_program/08_mean_field
     - file: source/2_fractal_gas/convergence_program/09_propagation_chaos
+    - file: source/2_fractal_gas/convergence_program/19_color_geometry_mean_field
     - file: source/2_fractal_gas/convergence_program/07_discrete_qsd
     - file: source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory
   - file: source/2_fractal_gas/parts/04_entropy_regularity

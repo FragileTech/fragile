@@ -42,6 +42,7 @@ class LabelledProofDirective(SphinxDirective):
                 LOGGER.warning("Duplicate proof label %s", label, location=section)
             self.env.proof_list[label] = {
                 "docname": self.env.docname,
+                "type": "proof",
                 "countertype": "theorem",
                 "realtype": "proof",
                 "ids": [anchor],
