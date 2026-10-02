@@ -1,5 +1,7 @@
 # Changelog
 
+- Document the remaining Volume 2 Yang–Mills and quantum-gravity proof steps, with source-linked theorem dependencies, continuum-control requirements, and the three-space-plus-algorithmic-time reconstruction programme.
+
 - Add Fractal Populations: configurable parallel Wave swarms with per-member settings, modular elite exchange, shared global elites and optimization basins, a shared evaluation budget, and an Optimization population workspace with recording/playback. Native snapshot, Control, and reference-backed LLM adapters use staged full-state imports; imported replay roots use Control checkpoint version 4.
 
 - Build the native Optimization Lab reference alongside WebAssembly in the Pages deployment job so adaptive and boundary parity checks can run before publishing.
