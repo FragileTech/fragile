@@ -331,12 +331,25 @@ actual coupled update, rather than a transfer of row-independent kinetic proofs.
    conditioned mixing and full-step entropy contraction. The existing
    preset is discharged directly by {prf:ref}`cor-cgd-reference-qsd`;
    its force and parameters are not changed to obtain this conclusion.
-3. {prf:ref}`thm-cgd-uniform-marginal-qsd-tails` and
+3. {prf:ref}`thm-cgd-analytic-force-qsd` extends the finite-$N$ QSD
+   certificate to the actual globally analytic force with a finite global
+   derivative profile, for either existing Gaussian normalization when its
+   calculated profile and displayed margins pass.
+   {prf:ref}`thm-cgd-primitive-eigenfunction` then bounds the QSD
+   eigenfunction ratio and conditioned TV/entropy rates from primitive
+   parameters under its additional derivative and tail conditions. For
+   $N>1$ this quantitative extension requires existing positive clone jitter.
+   {prf:ref}`cor-cgd-primitive-reference` verifies both normalizations of the
+   unchanged reference and supplies explicit profiles for additional
+   configured landscapes; {prf:ref}`rem-cgd-primitive-limitations` records
+   the remaining restrictions. No force replacement or noise clipping is
+   used, and no fitness-separation hypothesis is imposed.
+4. {prf:ref}`thm-cgd-uniform-marginal-qsd-tails` and
    {prf:ref}`cor-cgd-reference-uniform-tails` give population-independent
    retained-position Gaussian tails, marginal moments and an expected
    alive-fraction floor for both existing normalizations. These are
    marginal bounds, not joint concentration or population-uniform mixing.
-4. {prf:ref}`thm-cg-mf-kinetic-limit`,
+5. {prf:ref}`thm-cg-mf-kinetic-limit`,
    {prf:ref}`thm-cg-mf-row-kinetic-limit` and
    {prf:ref}`cor-cg-mf-full-update` prove fixed-horizon population
    consistency for both existing normalizations of the unchanged reference
@@ -346,13 +359,16 @@ actual coupled update, rather than a transfer of row-independent kinetic proofs.
    {prf:ref}`thm-cg-mf-kinetic-variance` gives an explicit $N^{-1}$
    conditional kinetic variance estimate through the coupled second kick
    for count normalization.
-5. The passive record in Section 4.3 preserves exactly these laws and
+6. The passive record in Section 4.3 preserves exactly these laws and
    bounds. Its B2 native color is almost surely valid by
    {prf:ref}`thm-variant-b2-color-nondegeneracy`, with B1 consensus and
    numerical masks retained.
 
-The finite-QSD rates are not claimed uniform in $N$, and the eigenfunction
-ratio remains identified spectral data. An actual population-uniform
+The quantitative eigenfunction and rate bounds concern the real-coordinate,
+fixed-step, capped, terminal-box killed kernel. Their constants are not
+claimed uniform in $N$; outside the additional hypotheses of
+{prf:ref}`thm-cgd-primitive-eigenfunction`, the earlier qualitative theorem
+retains its spectral-data rates. An actual population-uniform
 full-gradient inequality, stationary attraction and chaos, a quantitative
 row-normalized B2 concentration estimate, and coupled metric/Boris/adaptive-noise results
 remain unresolved unless established for their own unchanged kernel.
@@ -1132,11 +1148,11 @@ The Einstein–Hilbert Gas is a free gas: no potential force acts on the walkers
 :::{div} feynman-prose
 This one is strange, so let me tell you what it is doing before you meet the table.
 
-There is no objective function. $U\equiv0$: nothing pushes the walkers anywhere. What the walkers do instead is *be* a space. At each step you take their positions, throw away the last coordinate, build a Delaunay triangulation of what's left, and read off — from the spread of each walker's neighbors — a local metric $g_i$. From the metric you get a volume element $\sqrt{\det g_i}$, and from how the volume element varies across the graph you get a scalar curvature $R_i$. A walker's reward is $R_i\sqrt{\det g_i}$: its personal share of the Einstein–Hilbert action of the cloud it is part of.
+There is no confining potential: $U\equiv0$. Graph forces still change the velocities, but no potential pulls the cloud toward a preferred location. At each step you take the positions, omit the last coordinate when $d\ge3$, build a Delaunay tessellation, and read off a local metric $g_i$ from the spread of each walker's neighbors. From the metric you get a volume element $\sqrt{\det g_i}$, and from how that volume element varies across the graph you get a scalar-curvature estimator $R_i$. A walker's reward is $R_i\sqrt{\det g_i}$: its share of the discretely estimated Einstein–Hilbert action.
 
-So the gas is trying to make a geometry whose curvature-times-volume is large, by the only means it has — killing off walkers in bad neighborhoods and copying walkers in good ones. The dropped coordinate is left out of the triangulation on purpose; it is the Euclidean-time axis, and correlations along it are what {ref}`sec-variants-measurability` will let you ask about.
+That reward enters the selection score alongside companion distance. When the cloning gate opens, a less-fit member of a pair can move onto its donor's position. This does not establish that the total estimated action increases. For $d\ge3$, the omitted coordinate is the declared Euclidean-time axis; {ref}`sec-variants-measurability` explains the corresponding observables.
 
-Now, I have to be blunt about what this is not. Nothing here solves the Einstein field equations. Nothing derives them. $R_i$ and $\sqrt{\det g_i}$ are estimators computed from a point cloud by a specified recipe, and {prf:ref}`def-tessellation-rust-representation` is that recipe. Whether they converge to anything as $N\to\infty$ is not addressed in this volume. Take the names as labels for formulas, and the enterprise stays honest.
+To study this cloud, follow its spread around its own center. Cloning contributes a signed change in that spread, and the kinetic stages contribute transport, mixing, rotation and thermostat noise. The calculations in {ref}`sec-eh-rust-bounds` keep those terms separate until they can be combined into a drift estimate. They also identify the neighborhood information needed for a population limit. The reward formula itself does not establish convergence of the geometry estimators or derive the Einstein field equations.
 :::
 
 :::{prf:definition} Einstein–Hilbert Gas
@@ -1157,7 +1173,7 @@ Let $T>0$ [length$^2$/time$^2$] be a temperature and $h>0$ [time] a time step. L
 | 9 | $\mathsf K$ | BAOAB with $F=-\nabla U\equiv0$. Each B stage is the graph viscous kick with Boris curl rotation of {prf:ref}`alg-einstein-hilbert-gas`. OU thermostat $v\leftarrow cv+\sqrt{T(1-c^2)}\,\xi$, $c=e^{-\gamma h}$. No position diffusion and no velocity cap | $\gamma=1$ [1/time], $\sigma_v=\sqrt{2\gamma T}$, $\nu=3$ [1/time], $\beta_{\mathrm{curl}}=1$, $\sigma_x=0$, $V_{\mathrm{alg}}=\infty$ |
 | 10 | $\mathsf B$ | $D=\mathbb R^d$. A row is dead only if one of its fields is non-finite; marks are checked after the clone transform and after every kinetic substage. A dead row is revived at the cloning stage from a donor drawn uniformly from $\mathcal A$, at every step. The engine halts when $\mathcal A=\varnothing$ | unbounded |
 | 11 | $\mathsf R$ | $r_i=R_i\sqrt{\det g_i}$, the walker's share of the Einstein–Hilbert action, with $R_i$ the scalar curvature and $\sqrt{\det g_i}$ the volume element produced by $\mathsf G$ | scale $\lambda=1$; curvature field `ricci_scalar` |
-| 12 | $\mathsf G$ | Delaunay tessellation of the projected sites $\bar x_i$ (all of $x_i$ if $d<3$); neighbor-covariance metric $g_i$, the ridge-regularized inverse of the covariance of the displacements to the neighbors, with clamped spectrum; volume element $\sqrt{\max\{\det g_i,10^{-12}\}}$; conformal-Laplacian scalar curvature $R_i=-2(d'-1)\sum_{j\sim i}w^{R}_{ij}(u_j-u_i)$ with $u_i=\log\max\{\det g_i,10^{-12}\}/(2d')$; two row-normalized edge-weight families $w^{R}$ and $w^{\mathrm{visc}}$ ({prf:ref}`def-tessellation-rust-representation`). Evaluated whenever positions have changed before a reward evaluation | metric ridge $10^{-5}$, eigenvalue floor $10^{-6}$; kernel length $\ell=1$ [length] |
+| 12 | $\mathsf G$ | Delaunay tessellation of the projected sites $\bar x_i$ (all of $x_i$ if $d<3$); neighbor-covariance metric $g_i$, with relative-trace ridge, thresholded pseudoinverse and lower eigenvalue clamp as specified in {prf:ref}`rem-eh-relative-metric`; volume element $\sqrt{\max\{\det g_i,10^{-12}\}}$; conformal-Laplacian scalar curvature $R_i=-2(d'-1)\sum_{j\sim i}w^{R}_{ij}(u_j-u_i)$ with $u_i=\log\max\{\det g_i,10^{-12}\}/(2d')$; two row-normalized edge-weight families $w^{R}$ and $w^{\mathrm{visc}}$ ({prf:ref}`def-tessellation-rust-representation`). Evaluated whenever positions have changed before a reward evaluation | metric ridge $10^{-5}\tau_i$, eigenvalue floor $10^{-6}/\tau_i$, no configured upper clamp; kernel length $\ell=1$ [length] |
 
 The edge weights are, before normalization over the neighbors $j\sim i$ of each walker,
 
@@ -1251,24 +1267,24 @@ The marks are also reclassified after each of Steps 7–11; a row that becomes d
 :::
 
 :::{div} feynman-prose
-Twelve steps is a lot to hold at once, so here is the shape of it. Steps 1–5 are selection: measure the geometry, score everybody, pair everybody off, let the losers jump onto the winners. Steps 6–12 are motion: rebuild the geometry at the new positions and run BAOAB — kick, drift, thermostat, drift, kick — with the graph frozen at $\mathcal G_\star$ for the whole sweep. Freezing the graph matters. If you rebuilt the Delaunay complex in the middle of a kick, the force would jump discontinuously whenever a triangle flipped, and you would not have an integrator at all.
+Twelve steps is a lot to hold at once, so here is the shape of it. Steps 1–5 are selection: measure the geometry, score everybody, pair everybody off, and allow cloning when the gate opens. Steps 6–12 are motion: rebuild the geometry at the new positions and run BAOAB — kick, drift, thermostat, drift, kick — with the graph and weights frozen at $\mathcal G_\star$ for the whole sweep. That frozen graph is part of the implemented algorithm. Rebuilding it between substages would define a different splitting, whose stability would need its own analysis.
 
-The part worth staring at is Step 7. The first line is ordinary viscous drag along graph edges. Then something less ordinary: we fit a matrix $J_i$ that best explains how the drag force changes as you step to each neighbor — a least-squares Jacobian of the force field at walker $i$ — take its antisymmetric part $\Omega_i$, and rotate the velocity by it. That is a curl. The gas measures how much the local force field swirls, and then swirls the walker to match.
+The part worth staring at is Step 7. Its quarter-kick mixes each velocity with its neighbors. If $h\nu/4\le1$, the nonnegative row weights make this a convex combination, so it cannot increase the largest speed. Then we fit a matrix $J_i$ to the changes in graph force across neighboring sites, take its antisymmetric part $\Omega_i$, and use that estimate to rotate the velocity.
 
-Why a Cayley transform, $(I-\Theta)^{-1}(I+\Theta)$, rather than just adding $\Theta v$? Because that expression is *exactly* orthogonal for any skew $\Theta$, at any step size — Item 3 will prove it in two lines. A naive rotation would pump energy in or out at $O(h^2)$, and you would spend the rest of your life arguing with the thermostat about where the heat came from.
+The Cayley transform $(I-\Theta)^{-1}(I+\Theta)$ preserves the norm exactly for every real skew matrix $\Theta$; Item 3 proves it. Together, these facts give a useful velocity bound. They do not make the ordinary sum of squared speeds decrease: row normalization generally makes the graph weights asymmetric. For a frozen geometry, the reversible weights identified in {ref}`sec-eh-rust-bounds` supply an energy that the B stage does not increase. When the geometry changes, those energy weights change too.
 :::
 
 :::{prf:proposition} Elementary identities of the Einstein–Hilbert update
 :label: prop-variant-eh-identities
 
-For the update of {prf:ref}`alg-einstein-hilbert-gas`:
+For the real-coordinate update of {prf:ref}`alg-einstein-hilbert-gas`, with finite successful geometry evaluations and initially live rows (see {prf:ref}`def-eh-native-interpretation`):
 
 1. **Collision.** The clone transform leaves every velocity unchanged: $\widetilde v_i=v_i$ for all $i$. An accepted row receives the position of its donor and keeps its own velocity.
 2. **Accepted graph.** At most one member of each pair $\{i,c^{C}(i)\}$ of alive walkers is accepted, a self-companion is never accepted, and the accepted components among alive walkers are pairs.
 3. **Rotation.** For every skew-symmetric $\Theta$, the matrix $Q=(I-\Theta)^{-1}(I+\Theta)$ exists and is orthogonal. Hence $\|v_i^{(2)}\|=\|v_i^{(1)}\|$ in Step 7.
 4. **Thermostat.** The O stage has the unique stationary law $\mathcal N(0,TI_d)$ for each velocity; in particular its stationary velocity variance is $T$ per coordinate.
 5. **Translations and the time split.** Call a configuration *Delaunay-generic* when the Delaunay complex of its distinct projected sites is unique; this holds, for example, when the sites affinely span $\mathbb R^{d'}$ and no $d'+2$ of them lie on a common sphere. Assume that every configuration at which $\mathcal G$ is evaluated in the step is Delaunay-generic. Then the one-step kernel is equivariant under a simultaneous translation $x_i\mapsto x_i+b$ of all positions, and, for $d\ge3$, under the simultaneous maps $(x_i,v_i)\mapsto(Ox_i,Ov_i)$ with $O=\operatorname{diag}(O',\pm1)$, $O'\in O(d-1)$. At the remaining configurations the tessellator selects one Delaunay complex, and equivariance holds there exactly when that selection commutes with the map; this is not established.
-6. **Survival.** Every map of the update is finite-valued on finite inputs. For finite initial data, $M=N$ at every step.
+6. **Survival on defined real-coordinate steps.** If each geometry refresh returns its specified finite fields, the algebraic stages with finite innovations preserve finite coordinates and all live marks. Hence $M=N$ on every such trajectory. This is not a totality or overflow guarantee for the Rust program.
 :::
 
 :::{prf:proof}
@@ -1288,40 +1304,42 @@ The matrix $\Omega_i$ is skew by construction, so $\Theta_i$ is skew.
 
 **Item 5.** Positions enter Steps 1–7 only through differences $x_j-x_i$: the distances, the Delaunay complex of the projected sites, the metric $g_i$, the edge lengths $d_g$, and the matrices $\Phi_i$ and $\Xi_i$. The drifts of Steps 8 and 10 commute with translations. For the orthogonal maps, $O$ preserves the splitting $\mathbb R^{d-1}\oplus\mathbb R$, so the projected sites are rotated by $O'$. The empty-sphere property is preserved by translations and by $O'$, so the image of a Delaunay complex is a Delaunay complex of the image sites; on a Delaunay-generic configuration it is the unique one, which is the only place where the genericity assumption is used. Hence the neighbor graph is invariant, $g_i\mapsto O'g_iO'^{\mathsf T}$, and $d_g$, $\det g_i$, $R_i$, the weights and the pairing law are invariant. The force transforms as $F\mapsto OF$, so $\Phi_i\mapsto O\Phi_iO^{\mathsf T}$, $\Xi_i\mapsto O\Xi_iO^{\mathsf T}$, the ridge $\varrho_i$ is unchanged, and $J_i\mapsto OJ_iO^{\mathsf T}$; hence $\Theta_i\mapsto O\Theta_iO^{\mathsf T}$ and the Cayley rotation is covariant. The Gaussian innovations have an $O(d)$-invariant law.
 
-**Item 6.** The fitness is a product of logistic values in $(0,2)$, the acceptance ratio has a positive denominator, $\Xi_i+\varrho_iI$ is positive definite, and $I-\Theta_i$ is invertible by Item 3. The geometry stage is defined for every finite configuration by the duplicate and rank rules of {prf:ref}`def-tessellation-rust-representation`, and the metric and curvature floors of {prf:ref}`def-variant-einstein-hilbert` keep $g_i$, $\det g_i$ and $u_i$ finite. A finite population is mapped to a finite population for every finite innovation, so no row is classified dead. $\square$
+**Item 6.** Given finite geometry outputs, finite sample statistics and the positive standardization regularizer give finite standardized channels. In real arithmetic their logistic values are strictly positive, so the acceptance ratio is defined. Nonnegative graph weights and $\varrho_i>0$ make $\Xi_i+\varrho_iI$ positive definite; $I-\Theta_i$ is invertible by Item 3. Every remaining stage consists of finite sums, products and these finite-dimensional inverses. Finite innovations therefore preserve finite fields and the unbounded boundary rule leaves all rows live. This induction requires success at each geometry refresh. The native counterexample and additional error paths in {prf:ref}`rem-eh-relative-metric` prevent replacing that hypothesis by an unconditional execution claim. $\square$
 :::
 
 :::{div} feynman-prose
-Six small facts, and together they tell you what kind of animal this is.
+These identities separate three questions: what selection changes, what a successful step preserves, and what can converge over many steps.
 
-Items 1 and 2 say the cloning stage is much gentler than it looks. With $\alpha_{\mathrm{restitution}}=1$ and $R_C=I$, the collision formula collapses to $\widetilde v_i=v_i$: a clone teleports to its donor's position and keeps its own velocity, and nobody else is touched. Combine that with Item 2 — walkers are matched into pairs, and within a pair only the loser can be accepted — and cloning here is nothing but resampling in position space, one pair at a time.
+For an all-alive swarm, Items 1 and 2 say that the elastic identity collision restores each row's own velocity exactly: an accepted clone moves onto its donor's position and keeps its velocity. Among matched alive pairs, at most one row is accepted. The velocity estimates can therefore pass through this cloning stage without an extra amplification factor.
 
-Item 6 is the one that reorients everything. $M=N$ at every step, always. There is no boundary, no killing, no cemetery. Every quasi-stationary argument in the convergence program is about a chain that *dies*, and this chain cannot die, so that machinery is not weakened here, it is simply about a different object.
+Item 6 concerns successful steps with finite real-valued fields. Starting with every row alive, such a step preserves the alive marks. A native run can nevertheless stop: tessellation budgets can be exhausted, arithmetic can overflow, fitness can underflow to zero, and matrix solvers can fail. Those implementation failures are not the boundary killing assumed by the quasi-stationary proofs elsewhere in the book. A theorem about that killed chain cannot be transferred merely by calling an execution error a death.
 
-Which leaves Item 5 holding the bad news. Away from the degenerate configurations where the triangulation is ambiguous, the update commutes with translating the whole swarm. There is no potential and no box. So if any law were stationary, translating it would give another stationary law, and nothing in the update pulls the centre of mass back toward any particular place. The question is not "does it converge slowly" — wherever that symmetry holds, it rules out a unique stationary law for the positions. Any honest stationarity statement for this gas has to be made about the translation-reduced process, the shape of the cloud rather than its location, or else somebody has to add a confining mechanism and pay for it with moment bounds.
+The centered calculation now makes the selection effect quantitative. If $W_x$ is the entering positional variance, {prf:ref}`thm-eh-centered-cloning` gives the exact expected change in $W_x$, including its signed donor contribution and the correction from moving the center. The random center displacement has covariance trace at most $3W_x/N$. The kinetic calculation then carries this centered state through both actual Boris kicks and the OU stage. Keeping the second kick's dependence on the same noise is essential: dropping that correlation would change the drift being proved.
+
+These identities feed the twenty-step drift test, but its contracting margin must be checked on the declared class of states. For the phase beginning with an open gate, the balanced two-cluster inputs in {prf:ref}`cor-eh-global-quadratic-margin` rule out a fixed quadratic Foster bound with a contraction factor below one and an additive constant both uniform in $N$ over all states of an increasing population family. A centered long-time proof therefore needs a different functional or a distributional argument, or must establish the necessary estimates for a restricted class reached from its specified initial law. Convergence from the reference start remains open; the two-cluster calculation does not decide it.
 :::
 
 ### 5.3 Established results and hypotheses
 
-**No convergence theorem, no existence or uniqueness theorem for an invariant or quasi-stationary law, and no mean-field or continuum limit theorem is established in this volume for the Einstein–Hilbert Gas.** The established statements are the identities of {prf:ref}`prop-variant-eh-identities`, the pairing arguments of {prf:ref}`cor-sm-physics-paired-cloning` and {prf:ref}`cor-sm-paired-doublet-cancellation`, whose proofs use only a uniform mutual-pair companion law and the pair collision rule, and the cancellation {prf:ref}`prop-exchange-odd-cancellation`. The estimators of $\mathsf G$ are discrete constructions; by {prf:ref}`def-tessellation-rust-representation` none of them imposes a field equation.
+The complete proofs in {ref}`sec-eh-rust-bounds` establish convex-kick and frozen reversible-energy bounds, fixed-population velocity moments, empirical moment bounds under explicit column control, and a uniform-in-$N$ conditional mean-field estimate for matched cloning. The selection-stage population limit includes both native matchings and sample standardization under convergence of the geometric marked input law ({prf:ref}`thm-eh-selection-mean-field`). The centered operator estimates ({prf:ref}`thm-eh-centered-cloning`, {prf:ref}`thm-eh-centered-transition`) extend the signed variance strategy to both native matchings and both Boris kicks, with explicit population-uniform barycenter fluctuations and the drift coefficient test in {prf:ref}`cor-eh-centered-drift`. A full graph-dependent population limit remains {prf:ref}`conj-eh-full-population-limit`. These results supplement the identities of {prf:ref}`prop-variant-eh-identities`, the pairing arguments of {prf:ref}`cor-sm-physics-paired-cloning` and {prf:ref}`cor-sm-paired-doublet-cancellation`, and the cancellation {prf:ref}`prop-exchange-odd-cancellation`. No invariant/QSD or continuum field-equation theorem for the full preset follows from these statements.
 
 The hypotheses of the Euclidean Gas results fail structurally for this variant, so none of those results transfers. To establish a long-time statement the following must be supplied.
 
 1. **A state space on which stationarity is possible.** By Item 5 of {prf:ref}`prop-variant-eh-identities` the update is translation equivariant on Delaunay-generic configurations, $D=\mathbb R^d$, and $U\equiv0$: there is no confining envelope and no Safe Harbor estimate. A stationarity statement must be formulated for a translation-reduced process or must add and analyze a confinement mechanism, together with moment and tail bounds.
 2. **Time homogeneity.** With $q=20$ the chain is homogeneous only on $\Sigma_N\times\mathbb Z/20\mathbb Z$. The phase observable of {prf:ref}`rem-sm-actual-step-and-clock` excludes a strict mixing estimate on the phase-augmented space; a convergence statement must use the $20$-step kernel at a fixed phase.
-3. **Regularity of the geometry stage.** The Delaunay complex is a discontinuous function of the positions across degenerate configurations (coincident, affinely dependent or cospherical sites). With $\sigma_{\mathrm{clone}}=0$ a clone coincides exactly with its donor, so degenerate configurations occur with positive probability, and with $\sigma_x=0$ no final position innovation makes them null. Measurability of $\mathcal G$ with its duplicate and rank rules, and a Feller or strong Feller property of the composed kernel, have to be proved; the proof of {prf:ref}`thm-euclidean-feller` does not apply.
+3. **Regularity of the geometry stage.** The Delaunay complex changes across degenerate configurations (coincident, affinely dependent or cospherical sites). With $\sigma_{\mathrm{clone}}=0$, an accepted clone coincides exactly with its donor at the intermediate post-cloning refresh, before the OU innovation. Later motion can separate them; it does not remove the need to analyze that intermediate geometry. A measurable, almost-surely defined geometric transition and any Feller property required by a chosen convergence argument must be established for this update; the proof of {prf:ref}`thm-euclidean-feller` does not apply.
 4. **Accessibility.** Noise enters the velocities only. A minorization must come from a multi-step hypoelliptic argument for a kinetic map whose force is defined on a state-dependent graph and is discontinuous across changes of that graph.
-5. **Coupled rows and asymmetric weights.** The B stages couple all rows, and the row-normalized weights are not symmetric, so the viscous kick need not conserve momentum and the degree-weighted dissipation of {prf:ref}`lem-gg-viscous-dissipative` requires the degree comparison of {prf:ref}`axiom-gg-viscous-kernel` for the tessellation weights.
-6. **Population limit.** The mutual-pair companion law, the periodic gate and a tessellation-defined force are outside the canonical regime of {doc}`../convergence_program/08_mean_field` and {doc}`../convergence_program/09_propagation_chaos`. A population map for this variant has not been defined.
+5. **Coupled rows and asymmetric weights.** The B stages couple all rows, and the row-normalized weights are not symmetric. The frozen weights nevertheless satisfy the exact detailed-balance identity of {prf:ref}`lem-eh-frozen-reversible-energy`. Iterating this energy estimate across changing geometries requires the weight-transfer control identified in {prf:ref}`rem-eh-weight-transfer`; unweighted moment estimates require the stated column-sum control.
+6. **Population limit.** The selection map is defined and its conditional limit proved in {prf:ref}`thm-eh-selection-mean-field`. The native two-kick transition has the quantitative neighborhood-marked limit of {prf:ref}`thm-eh-marked-kinetic-limit` and the unbounded-tail Wasserstein estimates of {prf:ref}`cor-eh-quantitative-wasserstein`. Iterating these estimates requires convergence and moment control of the refreshed geometric neighborhoods. In particular, {prf:ref}`prop-eh-sparse-force-obstruction` computes a population-independent neighbor fluctuation for the supported one-dimensional preset, and separates its real-geometry extrapolation from the native rank cutoff. The mean-field results for the different kernels of {doc}`../convergence_program/08_mean_field` and {doc}`../convergence_program/09_propagation_chaos` do not supply this missing graph limit.
 
 :::{div} feynman-prose
-Six obligations, and I want to single out the third, because it is the one that a reader used to smooth dynamics will walk straight past.
+The third obligation deserves a close look, because a reader used to smooth dynamics can easily miss it.
 
-A Delaunay triangulation is not a continuous function of the point positions. Slide four points until they sit on a common circle and the diagonal of the quadrilateral flips; an instant before and an instant after, the neighbor lists differ, and so does every force built on them. Usually one shrugs: degenerate configurations form a measure-zero set, generic point clouds are fine, move on.
+A Delaunay triangulation is not a continuous function of the positions. Slide four planar points through a configuration on one circle and the diagonal can flip. The neighbor lists change, so a force built on those lists can jump. A measure-zero argument needs the law of the actual intermediate configurations, not just a picture of randomly scattered points.
 
-You cannot shrug here, and the reason is right there in the tuple. The jitter is $\sigma_{\mathrm{clone}}=0$, so when a walker clones it lands on its donor *exactly* — same floating-point position, zero separation. And $\sigma_x=0$, so no position noise is sprinkled on at the end of the step to smear it off again. Degenerate configurations are not a null set for this chain. They happen with positive probability, by construction, every time the gate opens. The duplicate and rank rules of {prf:ref}`def-tessellation-rust-representation` say what the code does when it meets one, but saying what the code does is not the same as proving the resulting kernel is measurable, let alone Feller.
+Here the cloning jitter is zero. Whenever a nontrivial clone is accepted, it lands exactly on its donor, and the next geometry refresh encounters those duplicate sites. The later thermostat and drift can separate them; they do not remove the earlier evaluation at a duplicate configuration. The duplicate and rank rules in {prf:ref}`def-tessellation-rust-representation` specify that evaluation, but a regularity proof must still analyze the resulting map.
 
-That is the honest state of affairs. This variant is a well-specified, runnable, reproducible algorithm about which no long-time theorem is claimed here — and item 3 is a decent guess at where the first hard lemma will have to go.
+For the population limit, carry the neighbors along with the walker. The graph force reads their positions, velocities and weights, so these belong in the limiting description. {prf:ref}`thm-eh-marked-kinetic-limit` proves a quantitative transition limit when this marked neighborhood law converges and neighborhood overlap is controlled. If the mean size of the required radius-six graph ball is bounded by $L$, the transition fluctuation for a test bounded by $B$ is at most $B\sqrt{L/N}$. Together with the two-matching selection estimates, this identifies the operators and the errors that a full argument must compose. The remaining task is to prove that geometry refreshes preserve the required neighborhood convergence and moment bounds along the evolving cloud.
 :::
 
 (sec-variants-geometric)=
@@ -1377,7 +1395,7 @@ The results of {doc}`../convergence_program/17_geometric_gas` apply to the Geome
 These are conditional statements. The spectral margin, the $N$-uniformity of the measurement bounds, the cloning estimate for the declared cloning operator, the minorization, and the identification of the stationary law are hypotheses; they are not verified in this volume for a general instance, and each must be checked for the instance under study. A discrete-time instance must use bounds on the actual kernel difference, as stated in {prf:ref}`thm-gg-foster-lyapunov-drift`.
 
 :::{div} feynman-prose
-This is a different situation from the previous two sections, and the difference is worth naming precisely. For the Einstein–Hilbert Gas there are no long-time results. For the Geometric Gas there are plenty of them — drift, ergodicity, a log-Sobolev inequality, a propagation-of-chaos comparison — and every single one is an implication whose antecedent is an axiom nobody has verified for a concrete instance.
+The proof obligations differ between these variants. For the Einstein–Hilbert Gas, {ref}`sec-eh-rust-bounds` computes the signed centered cloning drift, both native kinetic kicks, and the twenty-step drift coefficients. Its population estimates cover selection and transfer a convergent marked neighborhood law through the kinetic transition. Evolving geometry still needs control, and the two-cluster calculation limits the long-time proof strategy: a fixed quadratic cannot supply a population-uniform Foster contraction on every state. Other functionals and estimates for the evolving law remain possible. For the Geometric Gas, the drift, ergodicity, log-Sobolev, and propagation-of-chaos results retain explicit axioms that a concrete instance must verify.
 
 That is a perfectly respectable way to do mathematics. The theorems say: *if* the potential confines, *if* the friction is positive, *if* the ridge beats the negative curvature, *if* the cloning operator satisfies its estimate, *if* the viscous degrees compare, *then* here is your geometric ergodicity. What it is not is a licence to quote the conclusion. Between "we proved $A\Rightarrow B$" and "we have $B$" sits the entire job of checking $A$, and for a general instance that job is open.
 
@@ -1498,7 +1516,7 @@ The kinetic, hypocoercive and entropy chapters of the convergence program assume
 :::{div} feynman-prose
 Now put them all in one table and read down the columns, because the pattern that emerges is not the one the names suggest.
 
-Look at the "Convergence or QSD theorem" row first. The Euclidean and Viscous Euclidean columns now identify proved results for their specified configurations. The Geometric Gas retains its conditional results. The Einstein–Hilbert, Latent Fractal and Environment entries retain the limitations stated in their own sections. Read the configuration and law alongside each result; the column names alone do not determine its scope.
+Look at the "Convergence or QSD theorem" row first. The Euclidean and Viscous Euclidean columns identify proved results for their specified configurations. The Einstein–Hilbert column gives quantitative centered operator estimates and population-limit steps with explicit geometry hypotheses. The Geometric Gas retains its conditional results, while the Latent Fractal and Environment entries retain the limitations stated in their sections. Read the configuration and law alongside each result; the column names alone do not determine its scope.
 
 Then compare the component rows. Selection follows a recognizable sequence across the variants: measure reward and diversity, standardize, compute fitness and decide who copies whom. Its concrete probability law still depends on the companion, standardizer and collision choices. Motion and any geometry feedback have their own differences. The positive-viscosity proofs keep the unchanged selection mechanism and calculate the changed kicks explicitly. A passive geometry readout uses that same law through the record theorem.
 
@@ -1535,7 +1553,7 @@ Abbreviations: EG Euclidean Gas, VEG Viscous Euclidean Gas, EHG Einstein–Hilbe
 | $\mathsf G$ | $\varnothing$ | $\varnothing$ | Delaunay tessellation | fitness-Hessian metric | $G$ and fitness-Hessian factor | $\varnothing$ |
 | Engine constructor | `GasConfig::euclidean` | `GasConfig::viscous_euclidean` | `GasConfig::einstein_hilbert` | none | none | none (`KineticKind::Environment`) |
 | Precision of the preset | `Precision::F64` | `Precision::F64` | `Precision::F32` | no preset | no preset | no preset |
-| Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | finite-$N$ QSD/entropy, uniform marginal tails and fixed-horizon mean field for both existing normalizations of the quadratic terminal-box instance, Section 4.2 | not established | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
+| Convergence or QSD theorem | established under the hypotheses of {ref}`sec-variants-euclidean` | finite-$N$ QSD/entropy, uniform marginal tails and fixed-horizon mean field for both existing normalizations of the quadratic terminal-box instance, Section 4.2 | quantitative centered cloning/transition bounds and conditional population limits; global population-uniform fixed-quadratic Foster contraction is excluded in the stated phase; reference-start convergence and evolving-geometry closure remain open, {ref}`sec-eh-rust-bounds` | conditional on {ref}`sec-gg-axioms` | not established; conditional criteria only | not established |
 :::
 
 :::{admonition} Which variant should I run?
@@ -1547,7 +1565,7 @@ The formal tables above say what each variant *is*. This one is a practical crib
 |---|---|---|---|
 | minimize a function you can evaluate (and ideally differentiate) on $\mathbb R^d$ | **Euclidean Gas** | its specified reference configurations have the original finite-$N$ and population results | the configured box and objective normalization enter the update and its estimates |
 | the same, with the actual viscous color field and optional recorded spatial geometry | **Viscous Euclidean Gas**, $\nu>0$, with the recorder of {prf:ref}`def-variant-recorded-color-geometry` | its later B-stage colors are valid almost surely; the finite color-invariant variance and coupled convergence results concern the same update | keep the force/velocity alignment and masks; fixed-$N$ constants and finite-horizon results do not establish population-uniform stationary or continuum control |
-| make estimated geometry enter the reward and graph force, with the preset's distinguished position coordinate | **Einstein–Hilbert Gas** | its graph and curvature payloads participate in its specified dynamics | no confinement, a gate every 20 steps, exchange-odd paired frame cancellations, and no long-time theorem |
+| make estimated geometry enter the reward and graph force, with the preset's distinguished position coordinate | **Einstein–Hilbert Gas** | its graph and curvature payloads participate in its specified dynamics; quantitative centered estimates follow the actual cloning and kinetic stages | long-time closure needs an argument beyond global population-uniform fixed-quadratic contraction, and population limits need the marked-neighborhood hypotheses; reference-start convergence remains open, and exchange-odd paired frame means cancel |
 | use fitness curvature to precondition exploration | **Geometric Gas** | adaptive force and Hessian-shaped noise | no engine constructor, and every result conditional on {ref}`sec-gg-axioms` |
 | search in a learned latent chart with a direction-valued reward | **Latent Fractal Gas** | metric-aware distances, cap and noise; reward as a 1-form | conditional criteria only; you must supply the metric and verify its regularity |
 | drive an external simulator or RL environment | **Environment Gas** | the only tuple that accepts opaque, non-arithmetic states | no jitter, no collisions, no thermostat; exploration comes entirely from the environment or the policy |

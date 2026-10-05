@@ -426,24 +426,45 @@ $$
 
 $$
 
-where $\tau_{\max}$ depends on the domain size and friction:
+where $\tau_{\max}$ must satisfy the hypotheses of the discrete estimate being used.
+Friction and domain scales give the preliminary heuristic
 
 $$
 \tau_{\max} \lesssim \min\left(\frac{1}{\gamma}, \frac{r_{\text{valid}}^2}{\sigma_v^2}\right)
 
 $$
 
-This ensures numerical stability and prevents walkers from crossing the domain in a single step.
+This heuristic does not certify integrator stability: the actual force, curvature,
+diffusion and Lyapunov derivative bounds must also be supplied. In the quadratic
+specialization of {prf:ref}`thm-kinetic-exact-baoab-cap-coupling`, the explicit
+condition is $0<\tau<2$. A nondegenerate Gaussian position increment can cross
+a bounded valid domain at every positive timestep. The configured terminal
+boundary test classifies that event; its probability is controlled by
+{prf:ref}`lem-kinetic-terminal-status-coupling`.
 
 **3. Velocity Squashing (Always On):**
 
-There exists a smooth map $S:\mathbb{R}^d \to \mathbb{R}^d$ and a constant $v_{\max} < \infty$ such that:
+The configured radial cap has radius $v_{\max}>0$ and is the continuously
+differentiable map
 
 $$
-\|S(v)\| \leq v_{\max} \quad \text{and} \quad S(v) = v \text{ for } \|v\| \leq v_{\text{soft}}
+S(v)=\frac{v_{\max}v}{v_{\max}+\|v\|},\qquad
+\|S(v)\|=\frac{v_{\max}\|v\|}{v_{\max}+\|v\|}<v_{\max}.
 $$
 
-for some $v_{\text{soft}} < v_{\max}$. The map $S$ is applied after each kinetic step (Definition {prf:ref}`def-kinetic-operator-stratonovich`), making all velocity moments uniformly bounded without additional assumptions.
+It satisfies $S(0)=0$, $DS(0)=I_d$, and
+
+$$
+\|S(v)-S(w)\|\leq\|v-w\|,\qquad
+0<\|S(v)\|<\|v\|\quad\text{for }v\ne0.
+$$
+
+Thus there is no positive-radius region on which the cap is the identity.
+The map is applied after each configured capped kinetic step
+(Definition {prf:ref}`def-kinetic-operator-stratonovich`), bounding all output
+velocity moments. Derivative-based weak-error estimates must check their own
+regularity hypotheses; continuous differentiability of this cap does not
+provide higher derivatives at the origin.
 
 **4. Fluctuation-Dissipation Balance (Optional):**
 
@@ -454,7 +475,12 @@ $$
 
 $$
 
-where $k_B$ is Boltzmann's constant and $m$ is the particle mass. This ensures the invariant velocity distribution is $\sim e^{-\frac{m\|v\|^2}{2k_B T}}$.
+where $k_B$ is Boltzmann's constant and $m$ is the particle mass. For the
+underlying uncapped Ornstein--Uhlenbeck velocity component with constant
+diffusion and zero force, this gives the invariant density proportional to
+$e^{-m\|v\|^2/(2k_B T)}$. The capped output is supported in the velocity ball,
+so that unbounded Gaussian law is not its invariant output law. Invariance
+for the complete selected or killed kernel requires a separate argument.
 
 For optimization applications, this balance is **not required** - $\gamma$ and $\sigma_v$ are independent algorithmic parameters.
 :::
@@ -680,55 +706,75 @@ then this immediately implies exponential decay of $V$ in continuous time. The c
 :::{prf:theorem} Discrete-Time Inheritance of Generator Drift
 :label: thm-discretization
 
-Let $V: \mathbb{R}^{2dN} \to [0, \infty)$ be a Lyapunov function with:
-1. $V \in C^3$ (three times continuously differentiable)
-2. Bounded second and third derivatives on compact sets: $\|\nabla^2 V\|, \|\nabla^3 V\| \leq K_V$ on $\{S : V(S) \leq M\}$
-
-Suppose the continuous-time generator satisfies:
-
-$$
-\mathcal{L}V(S) \leq -\kappa V(S) + C \quad \text{for all } S
+Let $P_h$ be the exact semigroup of the stated kinetic generator $\mathcal L$
+and let $K_h$ be a discrete extension approximating that same generator.
+For a nonnegative observable $V$, assume integrability sufficient for Dynkin's
+formula and the **verified observable weak-error certificate**
 
 $$
-
-with constants $\kappa > 0$, $C < \infty$.
-
-**Then for the BAOAB integrator with timestep $\tau$:**
-
-$$
-\mathbb{E}[V(S_\tau) | S_0] \leq V(S_0) + \tau(\mathcal{L}V(S_0)) + R_\tau
-
+|K_hV(S)-P_hV(S)|\le K_Vh^2(1+V(S)),\qquad 0<h\le H,    \tag{5.D1}
 $$
 
-where the **remainder term** satisfies:
+where $K_V$ is explicit and independent of population size. Assume also
+$\mathcal LV\le-\kappa V+C$, with $\kappa>0$, $C\ge0$. Then
 
 $$
-R_\tau \leq \tau^2 \cdot K_{\text{integ}} \cdot (V(S_0) + C_0)
-
+K_hV(S)\le\left(e^{-\kappa h}+K_Vh^2\right)V(S)
+ +\frac C\kappa(1-e^{-\kappa h})+K_Vh^2.                \tag{5.D2}
 $$
 
-with $K_{\text{integ}} = K_{\text{integ}}(\gamma, \sigma_v, K_V, \|F\|_{C^2}, d, N)$ independent of $\tau$.
-
-**Combining with the generator bound:**
+In particular, for
 
 $$
-\mathbb{E}[V(S_\tau) | S_0] \leq V(S_0) - \kappa \tau V(S_0) + C\tau + \tau^2 K_{\text{integ}}(V(S_0) + C_0)
-
+h\le h_*:=\min\!\left(H,\frac{\kappa}{\kappa^2+2K_V}\right),
+\qquad
+K_hV(S)\le(1-\kappa h/2)V(S)+(C+K_VH)h.               \tag{5.D3}
 $$
 
-**For sufficiently small $\tau < \tau_*$:** Taking $\tau_* = \frac{\kappa}{4K_{\text{integ}}}$, we get:
+The regularity and moment hypotheses establishing (5.D1) must be checked for
+its observable and transition family. Bounded derivatives on compact sets
+alone do not supply a global coefficient or generator consistency.
 
-$$
-\mathbb{E}[V(S_\tau) | S_0] \leq (1 - \frac{\kappa\tau}{2}) V(S_0) + (C + K_{\text{integ}}C_0\tau)\tau
-
-$$
-
-which is the **discrete-time drift inequality** with effective contraction rate $\kappa\tau/2$.
+This transfer applies to generator-consistent uncapped extensions, or to other
+families for which (5.D1) is separately proved. The canonical fixed map
+$C_V(v)=Vv/(V+|v|)$ is not near the identity as $h\downarrow0$:
+for $v\ne0$, $C_V(v)-v\ne0$ has a nonzero limit. Its weak error against the
+uncapped Langevin semigroup is therefore generally of order one, even for a
+linear velocity test. A velocity bound from that cap does not establish (5.D1).
+The native capped quadratic estimate is the direct theorem (5.K1).
 :::
 
+:::{prf:proof}
+Dynkin's formula and Gronwall give
+$P_hV\le e^{-\kappa h}V+C(1-e^{-\kappa h})/\kappa$.
+Add (5.D1) to obtain (5.D2). The elementary inequalities
+$e^{-u}\le1-u+u^2/2$ and $1-e^{-u}\le u$ for $u\ge0$ give
 
+$$
+K_hV\le[1-\kappa h+(\kappa^2/2+K_V)h^2]V+Ch+K_Vh^2.
+$$
+
+The restriction defining $h_*$ makes the quadratic coefficient at most
+$\kappa h/2$, and $h\le H$ bounds the additive error by $K_VHh$.
+This proves (5.D3). For the cap statement, apply the deterministic small-step
+limit to a nonzero input velocity: uncapped kicks and friction tend to the
+identity, while the final cap tends to $C_V$. Their limits differ. $\square$
+:::
 
 #### 3.7.3. Rigorous Component-Wise Weak Error Analysis
+
+:::{prf:remark} Scope of all later generator transfers
+:label: rem-kinetic-generator-transfer-scope
+
+Every invocation of {prf:ref}`thm-discretization` in Sections 4--7 requires
+(5.D1) for the exact observable and transition being used. Generator calculations
+with fixed averaging sets describe the continuous extension. Status changes,
+reselection and killed-boundary conventions require their own source bounds.
+The canonical fixed radial cap has no such uncapped Langevin weak limit and
+must use a direct finite-step estimate. Its deterministic velocity bound is
+valid for the native output, but cannot be inserted into an uncapped generator
+calculation without a separate moment argument for that continuous process.
+:::
 
 This section provides **complete rigorous proofs** that {prf:ref}`thm-discretization` applies to each **TV component** of
 $$
@@ -753,72 +799,50 @@ The Wasserstein component $V_W$ belongs to the deferred W2 track and is treated 
 :::{prf:proposition} BAOAB Weak Error for Variance Lyapunov Functions
 :label: prop-weak-error-variance
 
-For $V_{\text{Var}} = V_{\text{Var},x} + V_{\text{Var},v} = \frac{1}{N}\sum_{k,i} \|\delta_{x,k,i}\|^2 + \|\delta_{v,k,i}\|^2$ where $\delta_{z,k,i} = z_{k,i} - \mu_{z,k}$:
+Use a generator-consistent extension as in {prf:ref}`thm-discretization`, with
+fixed averaging sets and the same observable conventions in both kernels.
+Put $M_2=N^{-1}\sum_i|z_i|^2$ and $B_2=|\bar z|^2$.
+Assume separately proved, population-uniform weak-error certificates
 
 $$
-\left|\mathbb{E}[V_{\text{Var}}(S_\tau^{\text{BAOAB}})] - \mathbb{E}[V_{\text{Var}}(S_\tau^{\text{exact}})]\right| \leq K_{\text{Var}} \tau^2 (1 + V_{\text{Var}}(S_0))
-
+|(K_h-P_h)M_2|\le K_Mh^2(1+M_2),\qquad
+|(K_h-P_h)B_2|\le K_Bh^2(1+M_2).
 $$
 
-where $K_{\text{Var}} = C(d,N) \cdot \max(\gamma^2, L_F^2, \sigma_{\max}^2)$ with $C(d,N)$ polynomial in $d$ and $N$.
+Then the normalized variance $V_{\rm Var}=M_2-B_2$ satisfies
+
+$$
+|(K_h-P_h)V_{\rm Var}|
+\le(K_M+K_B)h^2(1+M_2).                               \tag{5.D4}
+$$
+
+The coefficient is independent of $N$. Replacing $M_2$ by a multiple of
+$1+V_{\rm Var}$ additionally requires control of the barycenter moment.
+The certificates require analytic force/diffusion regularity and global
+moment bounds, or an exact affine calculation. The fixed radial cap does not
+provide a weak approximation to the uncapped semigroup.
 :::
 
 :::{prf:proof}
-**Proof (Many-Body Taylor Expansion with Self-Referential Truncation).**
-
-**PART I: Derivative Structure**
-
-The variance $V_{\text{Var}} = \frac{1}{N}\sum_i \|z_i - \mu\|^2$ where $\mu = \frac{1}{N}\sum_j z_j$.
-
-**First derivative:**
-
-$$
-\frac{\partial V_{\text{Var}}}{\partial z_i} = \frac{2}{N}(z_i - \mu)
-
-$$
-
-Bounded on the squashed state space: since $\|z_i\|$ is uniformly bounded (velocity squashing and bounded $\mathcal{X}_{\text{valid}}$), $\|\nabla V_{\text{Var}}\|$ is uniformly bounded.
-
-**Second derivative:** The Hessian has both diagonal and off-diagonal blocks:
-
-$$
-\frac{\partial^2 V_{\text{Var}}}{\partial z_i \partial z_j} = \begin{cases}
-\frac{2}{N}(1 - \frac{1}{N})I_d & i = j \\
--\frac{2}{N^2}I_d & i \neq j
-\end{cases}
-
-$$
-
-Bounded: $\|\nabla^2 V_{\text{Var}}\| \leq \frac{2}{N} \cdot N = 2$ (independent of individual particles).
-
-**Third derivative:** Constant (zero for quadratic functions), so trivially bounded.
-
-**PART II: Standard Weak Error Bound**
-
-Since all derivatives of $V_{\text{Var}}$ are **uniformly bounded on the squashed state space** (bounded velocities and compact $\mathcal{X}_{\text{valid}}$), the standard BAOAB weak error theory applies directly:
-
-By Leimkuhler & Matthews (2015), Theorem 7.5:
-
-$$
-\left|\mathbb{E}[V_{\text{Var}}(S_\tau^{\text{BAOAB}})] - \mathbb{E}[V_{\text{Var}}(S_\tau^{\text{exact}})]\right| \leq \tau^2 \cdot C(d,N) \cdot \|\nabla^2 V_{\text{Var}}\| \cdot \max(\gamma^2, L_F^2, \sigma_{\max}^2) \cdot (1 + V_{\text{Var}}(S_0))
-
-$$
-
-**PART III: N-Dependence Analysis**
-
-The constant $C(d,N)$ grows at most polynomially in $N$ because:
-- The Hessian norm is $O(1)$
-- The number of particles is $N$, contributing a factor of $N$ from summing error terms
-- Each particle's error is $O(\tau^2)$, so total error is $O(N\tau^2)$
-
-For practical purposes, this is absorbed into $K_{\text{Var}}$.
-
-**Q.E.D.**
+The parallel-axis identity gives
+$N^{-1}\sum_i|z_i-\bar z|^2=M_2-B_2$ for every empirical measure.
+Linearity of both kernels and the triangle inequality prove (5.D4).
+Both inputs are normalized observables; there is no sum of unnormalized
+particle errors. For per-atom certificates, averaging their bounds gives
+$N^{-1}\sum_i K h^2(1+|z_i|^2)=Kh^2(1+M_2)$.
+The barycenter certificate must still be proved for its actual joint noise
+covariance. For affine quadratic dynamics these covariances propagate by
+finite matrices, as in the exact specialization below. $\square$
 :::
 
 :::{prf:remark}
 :label: rem-fg-kinetic-weak-error-velocity
-The same weak-error bound applies to $V_{\mu_v}(S) := \|\mu_v\|^2$. This is a quadratic function of the particle velocities with uniformly bounded derivatives on the squashed state space, so the BAOAB weak error theory applies verbatim with a constant $K_{\mu}$ of the same form as $K_{\text{Var}}$.
+The velocity barycenter observable $|\mu_v|^2$ requires its own certificate
+of the form (5.D1), with the actual barycenter covariance and a global moment
+envelope. Smoothness of this quadratic observable does not make a fixed-cap
+transition generator consistent. For the affine uncapped extension its mean
+and covariance can be propagated exactly; the corresponding weak coefficient
+is population uniform for a normalized barycenter moment envelope.
 :::
 
 ##### 3.7.3.2. Weak Error for Boundary Component ($W_b$)
@@ -826,20 +850,32 @@ The same weak-error bound applies to $V_{\mu_v}(S) := \|\mu_v\|^2$. This is a qu
 :::{prf:proposition} BAOAB Weak Error for Boundary Lyapunov Function
 :label: prop-weak-error-boundary
 
-For $W_b = \frac{1}{N}\sum_i \varphi_{\text{barrier}}(x_i)$ with $\varphi_{\text{barrier}} \in C^3(\mathcal{X}_{\text{valid}})$ and bounded derivatives (as in Section 7.4), the BAOAB weak error satisfies:
+Use the same generator-consistent extension, status convention and boundary
+observable in both kernels. Let $W_b=N^{-1}\sum_i\varphi(x_i)$ and assume a
+verified per-atom observable weak-error certificate
 
 $$
-\left|\mathbb{E}[W_b(S_\tau^{\text{BAOAB}})] - \mathbb{E}[W_b(S_\tau^{\text{exact}})]\right| \leq K_b \tau^2
-
+|(K_h-P_h)\varphi(x_i)|\le K_\varphi h^2\mathcal M_i(S),
+\qquad N^{-1}\sum_i\mathcal M_i(S)\le\mathcal M(S),
 $$
 
-with $K_b$ depending only on $(\gamma, \sigma_{\max}, \|\varphi_{\text{barrier}}\|_{C^3}, d, N)$.
+with $K_\varphi$ and the moment envelope $\mathcal M$ population uniform.
+Then
+
+$$
+|(K_h-P_h)W_b(S)|\le K_\varphi h^2\mathcal M(S).        \tag{5.D5}
+$$
+
+Force/diffusion regularity, integrable barrier derivatives on the reachable
+space, and any killed-boundary discontinuities must be checked when proving
+the certificate. A bounded boundary-layer formula and the fixed velocity cap
+alone do not provide it.
 :::
 
 :::{prf:proof}
-Because $\varphi_{\text{barrier}}$ is supported on a bounded boundary layer and has bounded derivatives (Section 7.4), $W_b$ is a smooth function with globally bounded first three derivatives on the velocity-squashed state space. The standard BAOAB weak error estimate (Leimkuhler & Matthews, 2015, Theorem 7.5) applies directly, giving an $O(\tau^2)$ bound with constant $K_b$ depending on the stated parameters.
-
-**Q.E.D.**
+Linearity and the triangle inequality bound the weak error of the average by
+$N^{-1}\sum_i K_\varphi h^2\mathcal M_i$. The stated envelope gives (5.D5),
+without a population-size factor. $\square$
 :::
 
 ##### 3.7.3.3. Weak Error for Wasserstein Component ($V_W$) - Synchronous Coupling
@@ -851,7 +887,11 @@ This subsection is part of the **deferred W2 track** and is **not used** in the 
 :::{prf:proposition} BAOAB Weak Error for Wasserstein Distance
 :label: prop-weak-error-wasserstein
 
-For $V_W = W_h^2(\mu_1, \mu_2)$ (Wasserstein distance between empirical measures with hypocoercive cost):
+Assume a generator-consistent uncapped extension, an $N$-uniform fixed-coupling
+quadratic weak-error certificate with a global moment envelope, and a separately
+proved uniform matching-stability estimate transferring that certificate to the
+assignment minimum. Under these additional hypotheses, for
+$V_W=W_h^2(\mu_1,\mu_2)$:
 
 $$
 \left|\mathbb{E}[V_W(S_\tau^{\text{BAOAB}})] - \mathbb{E}[V_W(S_\tau^{\text{exact}})]\right| \leq K_W \tau^2 (1 + V_W(S_0))
@@ -1039,112 +1079,21 @@ The correct approach uses **synchronous coupling at the particle level** - a sta
 ##### 3.7.3.4. Assembly: Proof of {prf:ref}`thm-discretization` for $V_{\text{total}}^{W2}$ (Deferred)
 
 :::{prf:proof}
-**Proof of {prf:ref}`thm-discretization` for the Synergistic Lyapunov Function.**
-
-**Note:** This assembly uses $V_W$ and belongs to the deferred W2 track. It is not used in the TV convergence proof.
-
-**PART I: Decompose by Components**
-
-$$
-V_{\text{total}}^{W2} = V_W + c_V(V_{\text{Var},x} + V_{\text{Var},v}) + c_B W_b
+**Conditional assembly for the deferred transport track.**
+Assume all component weak-error certificates have been established for the
+same generator-consistent extension, with a common global envelope dominated
+by $1+V_{\rm total}^{W2}$. The transport certificate additionally requires its
+matching-stability hypothesis. By linearity and the triangle inequality,
 
 $$
-
-**PART II: Apply Component-Wise Weak Error Bounds**
-
-From Propositions 1.7.3.1, 1.7.3.2, and 1.7.3.3:
-
-$$
-\left|\mathbb{E}[V_W^{\text{BAOAB}}] - \mathbb{E}[V_W^{\text{exact}}]\right| \leq K_W \tau^2 (1 + V_W(S_0))
-
+|(K_h-P_h)V_{\rm total}^{W2}|
+\le (K_W+c_VK_{\rm Var}+c_BK_b)h^2(1+V_{\rm total}^{W2}).
 $$
 
-$$
-\left|\mathbb{E}[V_{\text{Var}}^{\text{BAOAB}}] - \mathbb{E}[V_{\text{Var}}^{\text{exact}}]\right| \leq K_{\text{Var}} \tau^2 (1 + V_{\text{Var}}(S_0))
-
-$$
-
-$$
-\left|\mathbb{E}[W_b^{\text{BAOAB}}] - \mathbb{E}[W_b^{\text{exact}}]\right| \leq K_b \tau^2 (1 + V_{\text{total}}^{W2}(S_0))
-
-$$
-
-**PART III: Combine with Triangle Inequality**
-
-$$
-\left|\mathbb{E}[V_{\text{total}}^{W2,\text{BAOAB}}] - \mathbb{E}[V_{\text{total}}^{W2,\text{exact}}]\right|
-
-$$
-
-$$
-\leq \left|\mathbb{E}[V_W^{\text{BAOAB}}] - \mathbb{E}[V_W^{\text{exact}}]\right| + c_V\left|\mathbb{E}[V_{\text{Var}}^{\text{BAOAB}}] - \mathbb{E}[V_{\text{Var}}^{\text{exact}}]\right| + c_B\left|\mathbb{E}[W_b^{\text{BAOAB}}] - \mathbb{E}[W_b^{\text{exact}}]\right|
-
-$$
-
-$$
-\leq [K_W (1 + V_W) + c_V K_{\text{Var}}(1 + V_{\text{Var}}) + c_B K_b(1 + V_{\text{total}}^{W2})] \tau^2
-
-$$
-
-$$
-\leq K_{\text{integ}} \tau^2 (1 + V_{\text{total}}^{W2}(S_0))
-
-$$
-
-where:
-
-$$
-K_{\text{integ}} = K_W + c_V K_{\text{Var}} + c_B K_b
-
-$$
-
-**PART IV: Combine with Generator Bound**
-
-From the continuous-time analysis (Chapters 2-5):
-
-$$
-\mathcal{L}V_{\text{total}} \leq -\kappa_{\text{total}} V_{\text{total}} + C_{\text{total}}
-
-$$
-
-By Gronwall's inequality (standard argument):
-
-$$
-\mathbb{E}[V_{\text{total}}^{\text{exact}}(S_\tau)] \leq V_{\text{total}}(S_0) - \kappa_{\text{total}} \tau V_{\text{total}}(S_0) + C_{\text{total}}\tau + O(\tau^2)
-
-$$
-
-**PART V: Final Discrete-Time Inequality**
-
-Combining the weak error bound:
-
-$$
-\mathbb{E}[V_{\text{total}}^{\text{BAOAB}}(S_\tau)] \leq \mathbb{E}[V_{\text{total}}^{\text{exact}}(S_\tau)] + K_{\text{integ}}\tau^2(1 + V_{\text{total}}(S_0))
-
-$$
-
-$$
-\leq V_{\text{total}}(S_0) - \kappa_{\text{total}} \tau V_{\text{total}}(S_0) + C_{\text{total}}\tau + K_{\text{integ}}\tau^2(1 + V_{\text{total}}(S_0))
-
-$$
-
-For $\tau < \tau_* = \frac{\kappa_{\text{total}}}{4K_{\text{integ}}}$:
-
-$$
-K_{\text{integ}}\tau^2 V_{\text{total}}(S_0) < \frac{\kappa_{\text{total}}\tau}{2} V_{\text{total}}(S_0)
-
-$$
-
-Thus:
-
-$$
-\mathbb{E}[V_{\text{total}}(S_\tau)] \leq (1 - \frac{\kappa_{\text{total}}\tau}{2}) V_{\text{total}}(S_0) + (C_{\text{total}} + K_{\text{integ}})\tau
-
-$$
-
-**This completes the rigorous proof of {prf:ref}`thm-discretization` for the synergistic Lyapunov function, addressing all technical challenges.**
-
-**Q.E.D.**
+Apply {prf:ref}`thm-discretization` with this sum as $K_V$ and a separately
+proved generator drift for $V_{\rm total}^{W2}$. This gives (5.D2)--(5.D3).
+The argument assembles verified inputs; it does not prove matching stability,
+global derivative bounds, or fixed-cap generator consistency. $\square$
 :::
 
 :::{admonition} Key Achievement
@@ -1162,36 +1111,87 @@ To make the above theorem fully constructive, we now provide explicit formulas f
 :::{prf:proposition} Explicit Discretization Constants
 :label: prop-explicit-constants
 
-Under the axioms of Chapter 3, with:
-- Lipschitz force: $\|F(x) - F(y)\| \leq L_F\|x - y\|$
-- Bounded force growth: $\|F(x)\| \leq C_F(1 + \|x\|)$
-- Diffusion bounds: $\sigma_{\min}^2 I_d \leq \Sigma\Sigma^T \leq \sigma_{\max}^2 I_d$
-- Lyapunov regularity: $\|\nabla^k V\| \leq K_V$ on $\{V \leq M\}$ for $k = 2, 3$
-
-The integrator constant satisfies:
+For the uncapped one-dimensional extension
+$dx=v\,dt$, $dv=(-x-v)\,dt+dW$, no added position diffusion or killing,
+$f(z)=|x|^2+|v|^2$, $|z_0|^2\le0.8$, $T=0.16$ and $0<h\le H=0.04$ dividing
+$T$, the native BAOAB expectation satisfies
 
 $$
-K_{\text{integ}} \leq C_d \cdot \max(\kappa^2, L_F^2, \sigma_{\max}^2, \gamma^2) \cdot K_V
-
+|\mathbb E f(Z_T^{h})-\mathbb E f(Z_T)|\le C_{\rm weak}h^2,
+\qquad C_{\rm weak}=12.29925819\ldots.                 \tag{5.D6}
 $$
 
-where $C_d$ is a dimension-dependent constant (polynomial in $d$).
-
-**Practical guideline:**
-
-$$
-\tau_* \sim \frac{1}{\max(\kappa, L_F, \sigma_{\max}, \gamma)}
-
-$$
-
-For typical parameters $(\gamma = 1, \sigma_v = 1, \kappa \sim 0.1)$, taking $\tau = 0.01$ is safe.
+The same coefficient holds for the normalized average of $f$ over any
+population with average initial squared norm at most $0.8$. For independent
+particle noises, the barycenter moment has the same upper coefficient, and
+the normalized variance has coefficient at most $2C_{\rm weak}$ by (5.D4).
+These are coefficients for the specified affine extension and observable;
+they do not establish a general nonlinear $K_W$ or a fixed-cap SDE transfer.
 :::
 
-:::{note}
-A full derivation of $K_{\text{integ}}$ follows standard BAOAB weak-error expansions for smooth test functions (Leimkuhler & Matthews, 2015). The constants above are stated explicitly to keep the TV proof constructive.
+:::{prf:proof}
+Let $A=\left(\begin{smallmatrix}0&1\\-1&-1\end{smallmatrix}\right)$,
+$L=\|A\|=(1+\sqrt5)/2$ and $S=3$, the sum of the norms of the three splitting
+generators. The palindromic BAOAB transition $A_h$ and $e^{Ah}$ have equal
+derivatives of orders zero, one and two at zero: $I,A,A^2$. Product
+differentiation and Taylor's integral remainder give
+
+$$
+\|A_h-e^{Ah}\|\le C_Ah^3,\qquad
+C_A=\frac{S^3e^{SH}+L^3e^{LH}}6.
+$$
+
+Write the native noise covariance as
+$Q_h=q(h)u(h)u(h)^\top$, with
+$q(h)=(1-e^{-2h})/2$ and $u(h)=(h/2,1-h^2/4)^\top$.
+The exact covariance is $Q(h)=\int_0^h e^{As}Je^{A^\top s}\,ds$, where
+$J=\operatorname{diag}(0,1)$. Both covariances have derivatives at zero
+$0,J,AJ+JA^\top$, the last being
+$\left(\begin{smallmatrix}0&1\\1&-2\end{smallmatrix}\right)$.
+Set
+
+$$
+U=\sqrt{(H/2)^2+(1+H^2/4)^2},\quad
+U_1=\sqrt{1/4+(H/2)^2},\quad U_2=1/2.
+$$
+
+On $[0,H]$ these bound $|u|,|u'|,|u''|$, while
+$q\le H$, $|q'|\le1$, $|q''|\le2$ and $|q'''|\le4$.
+The product rule bounds $\|Q_h'''\|$ by
+$4U^2+12UU_1+6(U_1^2+UU_2)+6HU_1U_2$.
+Differentiating $Q(h)$ gives $\|Q'''(h)\|\le4L^2e^{2LH}$.
+Consequently
+
+$$
+\|Q_h-Q(h)\|\le C_Qh^3,\qquad
+C_Q=\frac{4U^2+12UU_1+6(U_1^2+UU_2)+6HU_1U_2+4L^2e^{2LH}}6.
+$$
+
+The exact uncentered second-moment matrix has trace at most
+$M_2=e^{2LT}(0.8+T)$. Subtract its recursion from the native recursion, and
+write $D$ for their difference. Using nuclear norm in phase dimension two,
+$\|A_h\|\le e^{Sh}$, $\|e^{Ah}\|\le e^{Lh}$ and
+$\|Q_h-Q(h)\|_1\le2C_Qh^3$ gives
+
+$$
+\|D_{n+1}\|_1\le e^{2Sh}\|D_n\|_1
+ +h^3\{C_A(e^{SH}+e^{LH})M_2+2C_Q\}.
+$$
+
+Since $D_0=0$, summing $T/h$ steps proves (5.D6) with
+
+$$
+C_{\rm weak}=Te^{2ST}\{C_A(e^{SH}+e^{LH})M_2+2C_Q\}.
+$$
+
+Substitution gives $C_A=5.82695229\ldots$, $C_Q=4.41612835\ldots$ and the
+stated coefficient. Averaging the per-particle bound introduces no $N$.
+For independent particle noises, the mean process is the same linear
+transition with diffusion reduced by $N^{-1/2}$; its initial squared norm is
+at most the average initial squared norm. The same bounds therefore hold
+for its moment. Apply (5.D4) to conclude the variance coefficient.
+$\square$
 :::
-
-
 
 #### 3.7.5. Application to Each Lyapunov Component
 
@@ -1206,14 +1206,14 @@ In the subsequent chapters, we prove generator bounds for each component:
 
 **Deferred:** The inter-swarm $V_W$ bounds in Chapter 4 belong to the W2 track and are not used here.
 
-**By {prf:ref}`thm-discretization`:** Each of these immediately implies a discrete-time inequality:
+**By {prf:ref}`thm-discretization`:** A component with a verified generator-consistency and observable weak-error certificate inherits a discrete-time inequality:
 
 $$
-\mathbb{E}[V_{\text{component}}(S_\tau)] \leq (1 - \frac{\kappa_{\text{component}}\tau}{2})V_{\text{component}}(S_0) + C_{\text{component}}'\tau
+\mathbb{E}[V_{\text{component}}(S_\tau)] \leq (1 - \frac{\kappa_{\text{component}}\tau}{2})V_{\text{component}}(S_0) + (C_{\text{component}}'+K_{\text{component}}H)\tau
 
 $$
 
-for $\tau < \tau_*(\kappa_{\text{component}})$.
+for its explicit range (5.D3). A zero-contraction component instead retains its proved expansion bound.
 
 **Unified timestep:** Taking $\tau < \tau_{\text{global}} := \min_{\text{components}} \tau_*(\kappa_{\text{component}})$ ensures all components satisfy their drift inequalities simultaneously.
 
@@ -1233,7 +1233,7 @@ for $\tau < \tau_*(\kappa_{\text{component}})$.
 **How this resolves the reviewer's concern:**
 - Previous proofs mixed $\mathcal{L}V$ and $\Delta V$ notation without justification
 - Now we have a **rigorous bridge** between the two frameworks
-- All subsequent proofs will first establish $\mathcal{L}V \leq -\kappa V + C$, then invoke {prf:ref}`thm-discretization`
+- A generator drift requires the additional observable certificate before invoking {prf:ref}`thm-discretization`; native fixed-cap estimates use their direct finite-step proof.
 
 **Cost:**
 - Requires $\tau$ to be "sufficiently small" (but explicit bound given)
@@ -1286,24 +1286,18 @@ Standard elliptic regularity requires noise in all variables. Since $x$ has no d
 
 This chapter proves that this hypocoercive mechanism contracts the inter-swarm Wasserstein distance $V_W$.
 
-:::{prf:remark} No Convexity Required
+:::{prf:remark} Hypocoercive contraction requires a matrix certificate
 :label: rem-kinetic-009
 :class: important
 
-**Critical clarification:** The hypocoercive contraction proven in this chapter uses **only**:
-1. **Coercivity** of $U$ ({prf:ref}`axiom-confining-potential`) - confinement at infinity
-2. **Lipschitz continuity** of forces on compact regions
-3. **Friction-transport coupling** through the hypocoercive norm
-4. **Non-degenerate noise** ({prf:ref}`axiom-diffusion-tensor`)
-
-We do **NOT** assume:
-- Convexity of $U$ (monotonicity of forces)
-- Strong convexity (uniform lower bound on $\nabla^2 U$)
-- Dissipativity outside the boundary
-
-The proof works for **W-shaped potentials**, **multi-well landscapes**, and any coercive potential. The effective contraction rate $\alpha_{\text{eff}}$ depends on $\min(\gamma, \alpha_U)$ but not on convexity moduli.
-
-**Contrast with classical results:** Many hypocoercivity proofs in the literature assume convex potentials for simplicity. Our proof uses a **two-region decomposition** (core + exterior) to handle non-convex cases rigorously.
+The contraction theorem below requires the actual macroforce/centered-force
+closure, a common positive metric and its uniform Lyapunov matrix inequality.
+Confinement, local force Lipschitz continuity and nondegenerate velocity noise
+alone do not imply synchronous quadratic transport contraction. In particular,
+this argument does not certify every coercive multiwell landscape.
+The affine unit-quadratic specialization verifies the closure and matrix
+inequality explicitly. A nonconvex specialization is admissible only if its
+own stated closure, residual and matrix hypotheses are established.
 :::
 
 ### 4.2. The Hypocoercive Norm
@@ -1361,38 +1355,31 @@ The optimal choice of $b$ depends on $\gamma$, $\sigma_v$, and the potential $U$
 :::{prf:theorem} Inter-Swarm Error Contraction Under Kinetic Operator
 :label: thm-inter-swarm-contraction-kinetic
 
-Under the axioms of Chapter 3, there exist constants $\kappa_W > 0$, $C_W' < \infty$, and hypocoercive parameters $(\lambda_v, b)$, all independent of $N$, such that:
+Assume the macroforce closure and positive matrix certificate of
+{prf:ref}`lem-location-error-drift-kinetic`, the centered-coupling hypotheses of
+{prf:ref}`lem-structural-error-drift-kinetic`, and population-uniform observable
+weak-error certificates for the same generator-consistent discrete extension.
+Use one common positive metric $P$ and a timestep admissible for both lemmas.
+Then
 
 $$
-\mathbb{E}_{\text{kin}}[V_W(S'_1, S'_2) \mid S_1, S_2] \leq (1 - \kappa_W \tau) V_W(S_1, S_2) + C_W' \tau
-
+\mathbb E_{\rm kin}[V_W(S'_1,S'_2)\mid S_1,S_2]
+\le(1-\kappa_Wh)V_W(S_1,S_2)+C_W'h,
 $$
 
-where $\tau$ is the timestep and $S'_1, S'_2$ are the outputs after the kinetic evolution.
-
-**Equivalently (one-step drift):**
+where
 
 $$
-\frac1\tau\mathbb{E}_{\text{kin}}[\Delta V_W] \leq -\kappa_W V_W + C_W'
-
+\kappa_W=\tfrac14\min(\kappa_{\rm loc},\kappa_s)>0,
+\qquad C_W'=C_{\rm loc}+C_s+(K_{\rm loc}+K_s)H.
 $$
 
-**Key Properties:**
+The constants are independent of $N$ when the hypotheses are uniform in $N$.
+Coercivity and force Lipschitz continuity alone do not provide these matrix or
+closure certificates. A fixed radial cap is not a generator-consistent
+Langevin approximation as $h\downarrow0$; its executed unit-quadratic stage is
+covered separately by {prf:ref}`thm-kinetic-exact-baoab-cap-coupling`.
 
-1. **Contraction rate** $\kappa_W$ scales as:
-
-$$
-\kappa_W \sim \min(\gamma, \alpha_U, \sigma_{\min}^2)
-
-$$
-   where $\gamma$ is friction, $\alpha_U$ is the confinement strength, and $\sigma_{\min}^2$ is the minimum diffusion eigenvalue.
-
-2. **Expansion bound** $C_W'$ accounts for:
-   - Bounded noise injection ($\sim \sigma_{\max}^2$)
-   - Status changes (deaths creating divergence)
-   - Boundary effects
-
-3. **N-uniformity:** All constants are independent of swarm size $N$.
 :::
 
 ### 4.4. Exact finite-step coupling for the quadratic kinetic stage
@@ -1533,6 +1520,340 @@ Substitute the specified constants into the positive expressions for
 $q,\eta,T,D$. The symbolic expressions in (5.K1) specify the constants exactly;
 substitution gives $\eta=0.018414\ldots$ and
 $\delta=0.0000060320\ldots$, with the stated strict lower bounds.
+:::
+
+:::{prf:lemma} Shift-uniform radial Gaussian cap dissipation
+:label: lem-kinetic-shift-uniform-radial-cap
+
+Let $C_V(v)=Vv/(V+|v|)$, $V>0$, $\sigma>0$ and $Z\sim N(0,I_d)$.
+Set $p_d=4$ for $d=1$ and $p_d=2$ for $d\ge2$. Then
+
+$$
+\sup_m\mathbb E\|DC_V(m+\sigma Z)\|_{\rm op}^2
+=\mathbb E\left(\frac V{V+\sigma\chi_d}\right)^{p_d},
+\qquad
+\eta_d=1-\mathbb E\left(\frac V{V+\sigma\chi_d}\right)^{p_d}>0. \tag{5.DIM1}
+$$
+
+For every deterministic pair $u,\widetilde u$ and the same $Z$,
+
+$$
+\mathbb E|C_V(u+\sigma Z)-C_V(\widetilde u+\sigma Z)|^2
+\le(1-\underline\eta_d)|u-\widetilde u|^2,             \tag{5.DIM2}
+$$
+
+where $0<\underline\eta_d\le\eta_d$ is any certified lower bound.
+The dimension-one derivative power is different, so $\eta_1\le\eta_2$ is
+not asserted. For fixed $p=2$, increasing dimension increases the dissipation.
+:::
+
+:::{prf:proof}
+At radius $r$ the cap's radial derivative eigenvalue is $V^2/(V+r)^2$.
+In dimension one it is the only eigenvalue. In dimension at least two the
+largest derivative eigenvalue is the tangential value $V/(V+r)$.
+This proves the stated powers after squaring the operator norm.
+
+A centered isotropic Gaussian maximizes the probability of every ball among
+its translates. To verify this directly, rotate the translate so its center
+lies on the first coordinate axis. For fixed remaining coordinates the ball
+section is either empty or an interval of fixed length in the first coordinate.
+The integral of a one-dimensional centered Gaussian over such an interval is
+maximal when its center is zero: differentiating its integral with respect to
+the interval center gives a nonpositive derivative for positive shifts.
+Integrate over the remaining independent coordinates. Every radial decreasing
+nonnegative function is a layer-cake integral of ball indicators; applying
+the ball inequality inside that integral proves that its Gaussian expectation
+is maximal at zero shift. Apply it to $(V/(V+r))^{p_d}$ to get (5.DIM1).
+Since $\chi_d>0$ almost surely, the expectation is strictly less than one.
+
+Integrate $DC_V$ along the line segment between $u+\sigma Z$ and
+$\widetilde u+\sigma Z$. Jensen's inequality bounds the squared chord by
+$|u-\widetilde u|^2$ times the integral of squared operator norms along that
+segment. Each segment point is a deterministic translate of $\sigma Z$;
+(5.DIM1) bounds its expectation by $1-\eta_d\le1-\underline\eta_d$.
+This proves (5.DIM2). For dimensions at least two, couple
+$\chi_{d+1}^2=\chi_d^2+Z_{d+1}^2$ to obtain the last monotonicity claim.
+$\square$
+:::
+
+:::{prf:theorem} Dimension- and curvature-aware native quadratic cap contraction
+:label: thm-kinetic-dimension-curvature-cap
+
+Use the actual isotropic quadratic force $F(x)=-\omega x+f_0$, $\omega>0$,
+with friction $\gamma>0$, velocity diffusion $B>0$, timestep $h>0$ and
+$k=1-\omega h^2/4>0$. Put
+
+$$
+c=h/2,\quad a=e^{-\gamma h},\quad
+q=B\sqrt{(1-a^2)/(2\gamma)},\quad\sigma=kq,
+\qquad Q_\omega=\operatorname{diag}(\omega k,1)\otimes I_d.
+$$
+
+Use any certified $\underline\eta_d$ from (5.DIM1)--(5.DIM2), and define
+
+$$
+T_d=1-a^2+\underline\eta_d[a^2+\omega c^2(1-a^2)],\quad
+D_d=\underline\eta_d\omega c^2(1-a^2),\qquad
+\delta_d=\frac{2D_d}{T_d+\sqrt{T_d^2-4D_d}}.          \tag{5.DIM3}
+$$
+
+For the complete native kinetic stage with shared innovations, final position
+noise and the radial cap, its physical-coordinate empirical transport obeys
+
+$$
+\mathbb E\mathcal W_{Q_\omega}^2(\mu^+,\widetilde\mu^+)
+\le(1-\underline\delta_d)\mathcal W_{Q_\omega}^2(\mu,\widetilde\mu),
+\qquad0<\underline\delta_d\le\delta_d.                \tag{5.DIM4}
+$$
+
+Here $\mathcal W_{Q_\omega}^2$ uses the optimal coupling of equal-mass empirical
+measures and total physical squared cost divided by $N$. There is no factor
+$N$ in the constants. The statement concerns kinetics; selected cloning,
+count viscosity, status marks and nonlinear-force transfer require separate
+estimates. The curvature $\omega$ and dimension $d$ are explicit parameters.
+:::
+
+:::{prf:proof}
+The exact pre-cap difference matrix and cap-input noise are
+
+$$
+H=\begin{pmatrix}
+1-\omega c^2(1+a)&c(1+a)\\
+-\omega c(1+a)k&a-\omega c^2(1+a)
+\end{pmatrix},\qquad v_3=b^\top z+kqZ,
+$$
+
+where $b=(-\omega c(1+a)k,a-\omega c^2(1+a))^\top$.
+Direct multiplication gives
+
+$$
+H^\top Q_\omega H=Q_\omega-k(1-a^2)ww^\top,
+\qquad w=(-\omega c,1)^\top.
+$$
+
+Use (5.DIM2) on the actual final cap. The common final position innovation
+cancels. Thus the removed quadratic form is
+$k(1-a^2)ww^\top+\underline\eta_d bb^\top$.
+After conjugation by $Q_\omega^{-1/2}$, its trace is $T_d$ and determinant is
+$D_d$: the determinant calculation uses $\det(w,b)=\omega c$.
+Both coefficients are positive, and the smallest eigenvalue is exactly
+$2D_d/(T_d+\sqrt{T_d^2-4D_d})$. This rationalized form avoids cancellation
+in $(T_d-\sqrt{T_d^2-4D_d})/2$ and improves the former lower bound $D_d/T_d$.
+A verified lower interval endpoint $\underline\delta_d$ preserves the inequality.
+
+Choose an input-optimal empirical coupling and share independent innovations
+according to that representative. Each marginal keeps its native noise law.
+Average the single-pair bound with weights $1/N$; the propagated pairing is
+admissible at output, so the output assignment minimum is no larger.
+Storage permutations do not change either assignment minimum. $\square$
+:::
+
+:::{prf:corollary} Certified numerical radial integral
+:label: cor-kinetic-certified-chi-cap-integral
+
+Let $f_d(r)=c_dr^{d-1}e^{-r^2/2}$,
+$c_1=\sqrt{2/\pi}$, $c_2=1$, $c_{d+2}=c_d/d$ and
+$g(r)=1-(V/(V+\sigma r))^{p_d}$.
+For a finite partition $0=r_0<\cdots<r_m=R$ and certified bounds
+$\underline f_i\le f_d(r)\le\overline f_i$ on each interval,
+
+$$
+\sum_{i=0}^{m-1}g(r_i)(r_{i+1}-r_i)\underline f_i
+\le\eta_d
+\le\sum_{i=0}^{m-1}g(r_{i+1})(r_{i+1}-r_i)\overline f_i
+ +2^{d/2}e^{-R^2/4}.                                \tag{5.DIM5}
+$$
+
+Clipping the two bounds to $[0,1]$ is valid. The implemented certificate uses
+a dyadic partition, $R=\lceil\sqrt d\rceil+12$, directed IEEE interval arithmetic
+and outward-rounded square roots. No unbounded numerical quadrature is treated
+as an exact constant. The API supports positive integer $d\le256$ and rejects
+parameter combinations whose floating-point enclosure cannot certify positivity.
+:::
+
+:::{prf:proof}
+The chi density increases up to $\sqrt{d-1}$ and decreases afterwards, as seen
+from its logarithmic derivative $(d-1)/r-r$; for $d=1$ it decreases from zero.
+Its minimum on each interval is at an endpoint, and its maximum is at an
+endpoint or the mode. These facts supply certified density bounds.
+The increasing function $g$ then gives the lower and upper rectangle sums.
+The tail contributes at most its probability because $0\le g\le1$.
+Since $\mathbb E e^{\chi_d^2/4}=2^{d/2}$, Markov's inequality supplies the tail
+term. Normalizer recurrence follows by integration by parts in the radial
+Gaussian integral.
+
+For the floating implementation, every basic interval operation is rounded
+outwards using adjacent representable numbers. To enclose $e^{-t}$, reduce
+$t$ by a power of two until $u\le1/8$, use the degree-16 alternating Taylor
+sum and its next-term remainder, then repeatedly square the interval.
+The terms decrease in magnitude, so the omitted error lies between minus the
+next term and zero. The normalizer uses
+$\pi=16\arctan(1/5)-4\arctan(1/239)$, with alternating-series remainder bounds;
+the identity follows from the tangent addition formula and angles in
+$(0,\pi/2)$. Consequently the interval procedure bounds every density and
+rectangle contribution, including its rounding error. Positivity of the
+resulting lower endpoints, rather than a tolerance, gates contraction.
+$\square$
+:::
+
+:::{prf:theorem} Curvature-aware whole-step radial-cap sector certificate
+:label: thm-kinetic-dimension-curvature-sector
+
+For the same isotropic quadratic native stage, use scaled coordinates
+$y=(\sqrt\omega x,v)$ and the positive metric
+$G_\beta=\left(\begin{smallmatrix}1&\beta\\\beta&1\end{smallmatrix}\right)\otimes I_d$,
+$|\beta|<1$. Let $\widehat H$ be $H$ in these coordinates and let
+$\widehat H_j=\operatorname{diag}(1,j)\widehat H$, $j=0,1$.
+If certified endpoint inequalities give
+
+$$
+G_\beta-\widehat H_j^\top G_\beta\widehat H_j
+\succeq\underline\delta_\beta G_\beta,\qquad j=0,1,
+\qquad\underline\delta_\beta>0,                        \tag{5.DIM6}
+$$
+
+then, pathwise for every shared Gaussian realization and every entering pair,
+
+$$
+\frac1N\sum_i|y_i^+-\widetilde y_i^+|_{G_\beta}^2
+\le(1-\underline\delta_\beta)
+       \frac1N\sum_i|y_i-\widetilde y_i|_{G_\beta}^2.  \tag{5.DIM7}
+$$
+
+The corresponding optimal empirical transport bound follows by choosing an
+input-optimal representative. These constants are independent of dimension,
+population, diffusion amplitude and cap radius; the noise and native cap
+remain present. Each selected $\beta$ must have a certified endpoint LMI.
+For the reference $h=.04$, $\gamma=\omega=1$, $\beta=1/25$, the established
+{prf:ref}`thm-rcap-harmonic-whole-update` gives $\underline\delta_\beta=1/1040$;
+the exact generalized endpoint eigenvalues yield a stronger admissible value.
+:::
+
+:::{prf:proof}
+By {prf:ref}`lem-rcap-sector`, the cap's difference is $DZ$ for a
+symmetric $0\preceq D\preceq I$. This also follows by integrating its symmetric
+Jacobian along the segment between the two pre-cap inputs. Orthogonally
+diagonalize $D$; the isotropic blocks of $\widehat H$ and $G_\beta$ commute
+with that basis change. For each eigenvalue $s\in[0,1]$ the output quadratic
+matrix $\widehat H_s^\top G_\beta\widehat H_s$ is convex in $s$: its second
+derivative as a quadratic form is twice the square of the second row.
+It is therefore bounded above by the chord between $s=0$ and $s=1$.
+Apply the two endpoint inequalities to get the same contraction for every $s$,
+then sum over coordinates and average over pairs. Both shared additive noise
+arrays cancel before this calculation. Choosing an input-optimal coupling
+bounds the optimal output cost without intrinsic particle labels.
+
+The implemented generalized minimum endpoint eigenvalue is evaluated through
+$2D/(T+\sqrt{T^2-4D})$ with certified intervals, where now $T$ and $D$ are the
+trace and determinant of $G_\beta^{-1}$ times the endpoint deficit.
+A deterministic candidate family may select the largest certified lower
+endpoint; no measured decay rate enters that selection. $\square$
+:::
+
+:::{prf:corollary} Harmonic reference in a declared curvature-adapted metric
+:label: cor-kinetic-regional-harmonic-reference
+
+Retain all kinetic and isotropic quadratic force hypotheses of
+{prf:ref}`thm-kinetic-dimension-curvature-sector`, with
+$y=(\sqrt\omega x,v)$ and its exact matrix $\widehat H$.
+Choose numerical $\alpha>0$ and $\beta^2<\alpha$, and put
+$G_{\alpha,\beta}=\left(\begin{smallmatrix}\alpha&\beta\\\beta&1\end{smallmatrix}\right)\otimes I_d$.
+For example, $\alpha$ may be a chosen representable approximation to
+$k=1-\omega h^2/4$; its actual numerical value must enter the certificate.
+If directed arithmetic verifies both endpoint inequalities
+
+$$
+G_{\alpha,\beta}-\widehat H_j^\top G_{\alpha,\beta}\widehat H_j
+\succeq\underline\delta_{\alpha,\beta}G_{\alpha,\beta},\qquad j=0,1,
+\quad\underline\delta_{\alpha,\beta}>0,\quad\alpha>\beta^2,
+\tag{5.DIM10}
+$$
+
+then the native harmonic kinetic stage satisfies, for every shared realization,
+
+$$
+\frac1N\sum_i|y_i^+-\widetilde y_i^+|_{G_{\alpha,\beta}}^2
+\le(1-\underline\delta_{\alpha,\beta})
+       \frac1N\sum_i|y_i-\widetilde y_i|_{G_{\alpha,\beta}}^2.
+\tag{5.DIM11}
+$$
+
+These are harmonic reference constants for a declared curvature $\omega$.
+Using them on a nonquadratic region additionally requires a proved force
+remainder estimate at both native kick queries and the probability-weighted
+observable charge for leaving that region. A regional curvature value alone
+does not prove global contraction for a nonquadratic force.
+:::
+
+:::{prf:proof}
+The proof of {prf:ref}`thm-kinetic-dimension-curvature-sector` uses only that
+the metric is positive and has scalar isotropic blocks. Those properties
+hold here because $\alpha>\beta^2$. After diagonalizing the cap secant,
+$\widehat H_s^\top G_{\alpha,\beta}\widehat H_s$ again has second
+derivative equal to twice the square of the second row of $\widehat H$,
+since the metric's velocity coefficient is one. Its endpoint chord is
+therefore controlled by the two assumed LMIs. Sum the resulting scalar
+quadratic inequalities and divide by $N$. No nonlinear force is substituted
+for the declared harmonic reference in this argument. $\square$
+:::
+
+:::{prf:corollary} Explicit conversion between the two physical metrics
+:label: cor-kinetic-dimension-metric-equivalence
+
+Let $m_\beta$ and $M_\beta$ be the smallest and largest eigenvalues of
+$Q_\omega^{-1/2}G_\beta Q_\omega^{-1/2}$, interpreted in scaled coordinates
+where $Q_\omega=\operatorname{diag}(k,1)\otimes I_d$. Then
+
+$$
+m_\beta\mathcal W_{Q_\omega}^2\le\mathcal W_{G_\beta}^2
+\le M_\beta\mathcal W_{Q_\omega}^2,\qquad
+\mathbb E\mathcal W_{Q_\omega}^2(n)
+\le\frac{M_\beta}{m_\beta}(1-\underline\delta_\beta)^n
+                \mathcal W_{Q_\omega}^2(0).          \tag{5.DIM8}
+$$
+
+The ratio is an explicit population- and dimension-independent prefactor.
+A rate in $G_\beta$ is not silently substituted into the diagonal-Q metric.
+:::
+
+:::{prf:proof}
+The defining matrix eigenvalue inequalities hold for each atom difference,
+hence for every transport coupling and then its minimum. Combine those two
+inequalities with the sector contraction iterated $n$ steps. $\square$
+:::
+
+:::{prf:corollary} Iterated normalized physical transport for the quadratic kinetic kernel
+:label: cor-kinetic-dimension-iterated-transport
+
+Under the complete hypotheses of {prf:ref}`thm-kinetic-dimension-curvature-cap`
+and, for the second estimate, {prf:ref}`thm-kinetic-dimension-curvature-sector`,
+let both chains use the specified kinetic kernel at every step, with no
+selection, death, or count viscosity. Use an optimal entering permutation
+and common independent Gaussian innovations for that representative coupling.
+For every integer $n\ge0$,
+
+$$
+\mathbb E\mathcal W_{Q_\omega}^2(n)
+\le(1-\underline\delta_d)^n\mathcal W_{Q_\omega}^2(0).
+\tag{5.DIM9a}
+$$
+
+$$
+\mathbb E\mathcal W_{G_\beta}^2(n)
+\le(1-\underline\delta_\beta)^n\mathcal W_{G_\beta}^2(0).
+\tag{5.DIM9b}
+$$
+
+:::
+
+:::{prf:proof}
+The one-step diagonal estimate applies conditionally to every entering
+representative coupling; the sector estimate holds for every innovation
+realization. Iterate the respective conditional expectation inequalities
+for the exhibited coupling. At time zero its cost is the optimal physical
+transport cost. At each later time optimal transport costs no more than
+this coupling. The normalized sums retain the same coefficients for every
+population size. $\square$
 :::
 
 :::{prf:lemma} Terminal status coupling under the final position noise
@@ -1822,107 +2143,114 @@ We now execute this strategy in detail.
 :::{prf:lemma} Drift of Location Error Under Kinetics
 :label: lem-location-error-drift-kinetic
 
-The location error $V_{\text{loc}} = \|\Delta\mu_x\|^2 + \lambda_v\|\Delta\mu_v\|^2 + b\langle\Delta\mu_x, \Delta\mu_v\rangle$ satisfies:
+Fix a coupled continuous-time kinetic extension and nonempty averaging sets.
+Put $z=(\Delta\mu_x,\Delta\mu_v)$ and
 
 $$
-\mathbb{E}[\Delta V_{\text{loc}}] \leq -\left[\frac{\alpha_{\text{eff}}}{2} + \gamma \lambda_v - \frac{b^2}{4\lambda_v}\right] V_{\text{loc}} \tau + C_{\text{loc}}' \tau
-
+P=\begin{pmatrix}I_d&(b/2)I_d\\(b/2)I_d&\lambda_v I_d\end{pmatrix},
+\qquad \lambda_v>b^2/4,\qquad V_{\rm loc}=z^\top Pz.
 $$
 
-where:
-- $\alpha_{\text{eff}} = \alpha_{\text{eff}}(\gamma, \alpha_U, L_F, \sigma_{\min})$ is the effective contraction rate from hypocoercivity (not requiring convexity)
-- $C_{\text{loc}}' = O(\sigma_{\max}^2 + n_{\text{status}})$ accounts for noise and status changes
+Assume the **macroforce closure**
 
-**Key:** This result uses **coercivity** ({prf:ref}`axiom-confining-potential`) and **hypocoercive coupling**, not convexity.
+$$
+\Delta\bar F=-K_t\Delta\mu_x+r_t,
+\qquad A_{K_t}=\begin{pmatrix}0&I_d\\-K_t&-\gamma I_d\end{pmatrix}
+$$
+
+holds for the actual averaged forces. Require one fixed $P$ and an explicit
+$\kappa_0>0$ satisfying the matrix inequality
+
+$$
+A_{K_t}^{\top}P+PA_{K_t}\preceq-\kappa_0 P                 \tag{5.L1}
+$$
+
+for every admissible $K_t$. The force residual, joint quadratic variation
+$R_t\,dt$ of $z$, and any status/reselection jump contribution must satisfy
+
+$$
+2z^\top P\binom0{r_t}\le\epsilon_r V_{\rm loc}+C_r,
+\quad \operatorname{tr}(PR_t)\le C_{\rm noise},
+\quad \mathcal J V_{\rm loc}\le\epsilon_J V_{\rm loc}+C_J,
+$$
+
+with $\kappa_{\rm loc}:=\kappa_0-\epsilon_r-\epsilon_J>0$ and constants
+uniform in population size. A fixed-set extension has $\mathcal J=0$.
+Then, writing $C_{\rm loc}=C_r+C_{\rm noise}+C_J$,
+
+$$
+\mathcal L V_{\rm loc}\le-\kappa_{\rm loc}V_{\rm loc}+C_{\rm loc},
+\qquad
+\mathbb E V_{\rm loc}(t)\le e^{-\kappa_{\rm loc}t}V_{\rm loc}(0)
+ +\frac{C_{\rm loc}}{\kappa_{\rm loc}}(1-e^{-\kappa_{\rm loc}t}). \tag{5.L2}
+$$
+
+For a discrete kernel satisfying the generator-consistency and observable
+weak-error certificate of {prf:ref}`thm-discretization`, with coefficient
+$K_{\rm loc}$, $h\le\min(1/\kappa_{\rm loc},\kappa_{\rm loc}/(4K_{\rm loc}),H)$
+(with the second restriction omitted if $K_{\rm loc}=0$),
+
+$$
+\mathbb E[\Delta V_{\rm loc}]
+\le-\frac{\kappa_{\rm loc}}4 hV_{\rm loc}
+ +(C_{\rm loc}+K_{\rm loc}H)h.                         \tag{5.L3}
+$$
+
+A Lipschitz bound on individual forces and coercivity of the potential do
+not establish (5.L1) or macroforce closure. For nonlinear forces, differences
+of averaged forces need not be controlled by differences of barycenters.
+These are additional analytic hypotheses. The fixed radial cap is governed
+by the direct finite-step theorem {prf:ref}`thm-kinetic-exact-baoab-cap-coupling`;
+its continuum transfer must not be inferred from (5.L2).
 :::
 
 :::{prf:proof}
-**Proof (Drift Matrix Analysis).**
-
-This proof establishes hypocoercive contraction **without assuming convexity** of $U$. Instead, we use:
-1. **Coercivity** ({prf:ref}`axiom-confining-potential`): $U$ confines particles to a bounded region
-2. **Lipschitz forces**: $\|\nabla U(x) - \nabla U(y)\| \leq L_F \|x - y\|$
-3. **Coupling between position and velocity** via the drift matrix
-
-**PART I: State Vector and Positive Definite Weight Matrix**
-
-Define the state vector:
+Positive definiteness follows from the Schur complement
+$\lambda_v-b^2/4>0$. Itô's formula, including the stated jump term, gives
 
 $$
-z = \begin{bmatrix} \Delta\mu_x \\ \Delta\mu_v \end{bmatrix} \in \mathbb{R}^{2d}
-
+\mathcal L(z^\top Pz)
+=z^\top(A_{K_t}^{\top}P+PA_{K_t})z
+ +2z^\top P\binom0{r_t}+\operatorname{tr}(PR_t)+\mathcal J V_{\rm loc}.
 $$
 
-where $\Delta\mu_x = \mu_{x,1} - \mu_{x,2}$ and $\Delta\mu_v = \mu_{v,1} - \mu_{v,2}$.
+Apply (5.L1) and the three source bounds. This proves the generator
+inequality in (5.L2); localization with the assumed integrable quadratic
+variation followed by Gronwall proves its expectation bound. In particular,
+no sign is assigned to a symmetric cross matrix without checking the full
+matrix inequality.
 
-The Lyapunov function is:
+For the discrete extension, its observable weak-error certificate adds
+$K_{\rm loc}h^2(1+V_{\rm loc})$ to the exact expectation in (5.L2).
+For $\kappa_{\rm loc}h\le1$, $e^{-\kappa_{\rm loc}h}\le1-\kappa_{\rm loc}h/2$;
+the timestep restriction absorbs $K_{\rm loc}h^2V_{\rm loc}$ into
+$\kappa_{\rm loc}hV_{\rm loc}/4$. The exact source integral is at most
+$C_{\rm loc}h$, and $K_{\rm loc}h^2\le K_{\rm loc}Hh$. This proves (5.L3).
 
-$$
-V_{\text{loc}}(z) = z^T Q z = \|\Delta\mu_x\|^2 + \lambda_v \|\Delta\mu_v\|^2 + b\langle \Delta\mu_x, \Delta\mu_v \rangle
-
-$$
-
-with weight matrix:
-
-$$
-Q = \begin{bmatrix} I_d & \frac{b}{2}I_d \\ \frac{b}{2}I_d & \lambda_v I_d \end{bmatrix}
-
-$$
-
-**Positive definiteness requirement:** $Q \succ 0$ if and only if $\lambda_v > b^2/4$ (strict inequality).
-
-**PART II: Linear Dynamics and Drift Matrix**
-
-The barycenter differences evolve (neglecting noise and force terms temporarily) as:
+**Verified affine specialization.** For $F(x)=-x+f_0$ and $\gamma=1$,
+averaging commutes with the force for every empirical measure. Thus $K_t=I_d$
+and $r_t=0$, without particle labels. Take
 
 $$
-\frac{d}{dt}\begin{bmatrix} \Delta\mu_x \\ \Delta\mu_v \end{bmatrix} = \begin{bmatrix} 0 & I_d \\ 0 & -\gamma I_d \end{bmatrix} \begin{bmatrix} \Delta\mu_x \\ \Delta\mu_v \end{bmatrix} + \begin{bmatrix} 0 \\ \Delta F \end{bmatrix}
-
+P=\begin{pmatrix}1&1/3\\1/3&2/3\end{pmatrix}\otimes I_d,
+\quad \lambda_v=2/3,\quad b=2/3.
 $$
 
-Define the linear dynamics matrix:
+Direct multiplication gives
 
 $$
-M = \begin{bmatrix} 0 & I_d \\ 0 & -\gamma I_d \end{bmatrix}
-
+A_I^\top P+PA_I=-\frac23 I_{2d},\qquad
+\lambda_{\max}(P)=\frac{5+\sqrt5}{6},\qquad
+\kappa_0=\frac4{5+\sqrt5}=0.552786\ldots.               \tag{5.L4}
 $$
 
-The drift of the quadratic form is:
-
-$$
-\frac{d}{dt}V_{\text{loc}} = z^T (M^T Q + QM) z + 2z^T Q \begin{bmatrix} 0 \\ \Delta F \end{bmatrix} + \text{(noise)}
-
-$$
-
-**Compute the drift matrix $D = M^T Q + QM$:**
-
-$$
-M^T Q = \begin{bmatrix} 0 & 0 \\ I_d & -\gamma I_d \end{bmatrix} \begin{bmatrix} I_d & \frac{b}{2}I_d \\ \frac{b}{2}I_d & \lambda_v I_d \end{bmatrix} = \begin{bmatrix} 0 & 0 \\ (1 - \frac{b\gamma}{2})I_d & (\frac{b}{2} - \gamma\lambda_v)I_d \end{bmatrix}
-
-$$
-
-$$
-QM = \begin{bmatrix} I_d & \frac{b}{2}I_d \\ \frac{b}{2}I_d & \lambda_v I_d \end{bmatrix} \begin{bmatrix} 0 & I_d \\ 0 & -\gamma I_d \end{bmatrix} = \begin{bmatrix} 0 & (1 - \frac{b\gamma}{2})I_d \\ 0 & (\frac{b}{2} - \gamma\lambda_v)I_d \end{bmatrix}
-
-$$
-
-$$
-D = M^T Q + QM = \begin{bmatrix} 0 & (1 - \frac{b\gamma}{2})I_d \\ (1 - \frac{b\gamma}{2})I_d & (b - 2\gamma\lambda_v)I_d \end{bmatrix}
-
-$$
-
-**PART III: Force Contribution (No Convexity Assumption)**
-
-The force difference contributes:
-
-$$
-2z^T Q \begin{bmatrix} 0 \\ \Delta F \end{bmatrix} = 2(\Delta\mu_x)^T \frac{b}{2}\Delta F + 2(\Delta\mu_v)^T \lambda_v \Delta F
-
-$$
-
-where $\Delta F = \frac{1}{N_1}\sum_{i \in S_1} F(x_{1,i}) - \frac{1}{N_2}\sum_{i \in S_2} F(x_{2,i})$.
-
-**Key insight:** We do NOT assume $F = -\nabla U$ is monotone (i.e., convexity of $U$). Instead, we use a **two-region analysis** based on distance from the boundary:
+Since $P\preceq\lambda_{\max}(P)I$, this verifies (5.L1). Common additive
+noise cancels in the barycenter difference of equal-size swarms under an
+admissible matched coupling, so $C_{\rm noise}=0$ for that specialization.
+Independent noises give a quadratic-variation source that can instead be
+bounded uniformly in $N$ using their actual covariance. Neither case changes
+the metric or its verified contraction coefficient. $\square$
+:::
 
 :::{prf:definition} Core and Exterior Regions
 :label: def-core-exterior-regions
@@ -1946,365 +2274,104 @@ $$
 **Choice of $\delta_{\text{core}}$**: We take $\delta_{\text{core}} = \delta_{\text{boundary}}/2$ where $\delta_{\text{boundary}}$ is from {prf:ref}`axiom-confining-potential` (boundary compatibility), ensuring the exterior region is strictly contained in the boundary barrier zone.
 :::
 
-**In the core region** ($x \in \mathcal{R}_{\text{core}}$):
-- Use **Lipschitz bound**: $\|\Delta F\| \leq L_F \|\Delta\mu_x\|$
-- Apply Cauchy-Schwarz: $(\Delta\mu_x)^T \Delta F \leq L_F \|\Delta\mu_x\|^2$
-
-**In the exterior region** ($x \in \mathcal{R}_{\text{ext}}$):
-- Use **coercivity** ({prf:ref}`axiom-confining-potential`): Force points inward, providing $-\langle \Delta\mu_x, \Delta F \rangle \geq \alpha_U \|\Delta\mu_x\|^2$ when away from equilibrium
-
-:::{note}
-**Proof strategy**: While the two-region decomposition provides intuition for how hypocoercivity works without convexity, the actual proof below uses a **global bound** (line 1372) that holds uniformly across both regions. This avoids needing to track which particles are in which region, simplifying the analysis.
-:::
-
-**Two-region decomposition (heuristic):** Define effective rate:
-
-$$
-\alpha_{\text{eff}} = \begin{cases}
-\alpha_U & \text{(exterior: coercivity dominates)} \\
-\min(\gamma, \frac{\gamma}{1 + L_F/\gamma}) & \text{(core: hypocoercivity via coupling)}
-\end{cases}
-
-$$
-
-For simplicity, take the global bound:
-
-$$
-\langle \Delta\mu_x, -\Delta F \rangle \geq -L_F \|\Delta\mu_x\|^2
-
-$$
-
-**PART IV: Optimal Parameter Selection (Corrected)**
-
-Choose hypocoercive parameters satisfying the strict inequality:
-
-$$
-\lambda_v = \frac{1 + \epsilon}{\gamma}, \quad b = \frac{2}{\sqrt{\gamma}}, \quad \epsilon \in (0, 1)
-
-$$
-
-**Verification of strict positive definiteness:**
-
-$$
-\lambda_v = \frac{1 + \epsilon}{\gamma} > \frac{1}{\gamma} = \frac{b^2}{4} = \frac{(2/\sqrt{\gamma})^2}{4} = \frac{1}{\gamma}
-
-$$
-
-Thus $\lambda_v - b^2/4 = \epsilon/\gamma > 0$, ensuring $Q \succ 0$ (strictly positive definite).
-
-With these choices:
-
-$$
-b - 2\gamma\lambda_v = \frac{2}{\sqrt{\gamma}} - 2\gamma \cdot \frac{1 + \epsilon}{\gamma} = \frac{2}{\sqrt{\gamma}} - 2(1 + \epsilon)
-
-$$
-
-For $\gamma = 1, \epsilon = 0$: $b - 2\gamma\lambda_v = 0$ (critical damping).
-
-For small $\epsilon > 0$: $b - 2\gamma\lambda_v < 0$ (ensures strict positive definiteness of Q).
-
-**Drift matrix with optimal parameters:**
-
-$$
-D = \begin{bmatrix} 0 & I_d \\ I_d & 0 \end{bmatrix} \quad \text{(for } \gamma = 1\text{)}
-
-$$
-
-This is a **skew-symmetric perturbation of a negative-definite matrix** after including force terms.
-
-**PART V: Negative Definiteness**
-
-Including force contributions, the full drift becomes:
-
-$$
-\frac{d}{dt}\mathbb{E}[V_{\text{loc}}] \leq z^T D z + 2\lambda_v L_F \|\Delta\mu_x\| \|\Delta\mu_v\| + C_{\text{noise}}
-
-$$
-
-Using $\|\Delta\mu_x\| \|\Delta\mu_v\| \leq \frac{1}{2\epsilon}\|\Delta\mu_x\|^2 + \frac{\epsilon}{2}\|\Delta\mu_v\|^2$:
-
-$$
-\leq -\left[\gamma - \frac{L_F}{\gamma \epsilon}\right]\|\Delta\mu_x\|^2 - \left[\gamma - \epsilon L_F \lambda_v\right]\|\Delta\mu_v\|^2 + C_{\text{noise}}
-
-$$
-
-Choose $\epsilon = \frac{\gamma}{L_F}$:
-
-$$
-\leq -\frac{\gamma}{2}\|\Delta\mu_x\|^2 - \frac{\gamma}{2}\|\Delta\mu_v\|^2 + C_{\text{noise}}
-
-$$
-
-Since $V_{\text{loc}} \sim \|\Delta\mu_x\|^2 + \|\Delta\mu_v\|^2$:
-
-$$
-\frac{d}{dt}\mathbb{E}[V_{\text{loc}}] \leq -\kappa_{\text{hypo}} V_{\text{loc}} + C_{\text{noise}}
-
-$$
-
-where:
-
-$$
-\kappa_{\text{hypo}} = \min\left(\gamma, \frac{\gamma}{1 + L_F/\gamma}\right) = \frac{\gamma^2}{\gamma + L_F}
-
-$$
-
-**PART VI: Discrete-Time Version**
-
-Apply {prf:ref}`thm-discretization` (BAOAB weak error bounds) to convert continuous-time drift to discrete-time:
-
-$$
-\mathbb{E}[\Delta V_{\text{loc}}] = \mathbb{E}[V_{\text{loc}}(t + \tau) - V_{\text{loc}}(t)] \leq -\kappa_{\text{hypo}} V_{\text{loc}} \tau + C_{\text{loc}}' \tau + O(\tau^3)
-
-$$
-
-For sufficiently small $\tau$, the $O(\tau^3)$ term is absorbed into $C_{\text{loc}}'$.
-
-**Final result:**
-
-$$
-\mathbb{E}[\Delta V_{\text{loc}}] \leq -\left[\frac{\alpha_{\text{eff}}}{2} + \gamma\lambda_v - \frac{b^2}{4\lambda_v}\right] V_{\text{loc}} \tau + C_{\text{loc}}' \tau
-
-$$
-
-where $\alpha_{\text{eff}} = \min(\kappa_{\text{hypo}}, \alpha_U)$ combines hypocoercivity in the core with coercivity in the exterior.
-
-**Key Achievement:** This proof establishes contraction **without convexity**, using only:
-- Coercivity (confinement)
-- Lipschitz continuity of forces
-- Hypocoercive coupling between position and velocity
-
-**Q.E.D.**
-:::
-
 ### 4.7. Structural Error Drift
 
 :::{prf:lemma} Drift of Structural Error Under Kinetics
 :label: lem-structural-error-drift-kinetic
 
-The structural error $V_{\text{struct}} = W_h^2(\tilde{\mu}_1, \tilde{\mu}_2)$ (Wasserstein distance between centered measures) satisfies:
+Consider equal-size swarms and the centered empirical measures
+$\widetilde\mu_k=N^{-1}\sum_i\delta_{z_{k,i}-\bar z_k}$, with
+$V_{\rm struct}=W_P^2(\widetilde\mu_1,\widetilde\mu_2)$ and the same positive
+metric $P$ as in {prf:ref}`lem-location-error-drift-kinetic`.
+Choose an input-optimal coupling and construct a joint kinetic extension with
+the correct marginal dynamics. Assume every centered coupled atom difference
+obeys the macroforce/LMI, residual, quadratic-variation and status-source bounds
+of that lemma, with a common positive coefficient $\kappa_s$ and averaged source
+bound $C_s$, independent of $N$. Then
 
 $$
-\mathbb{E}[\Delta V_{\text{struct}}] \leq -\kappa_{\text{struct}} V_{\text{struct}} \tau + C_{\text{struct}}' \tau
-
+\mathbb E V_{\rm struct}(t)
+\le e^{-\kappa_s t}V_{\rm struct}(0)
+ +\frac{C_s}{\kappa_s}(1-e^{-\kappa_s t}).               \tag{5.S1}
 $$
 
-where $\kappa_{\text{struct}} \sim \min(\gamma, \sigma_{\min}^2/\text{diam}^2)$ and $C_{\text{struct}}' = O(\sigma_{\max}^2)$.
+If the transported quadratic coupling cost also has a uniform observable
+weak-error certificate with coefficient $K_s$ for the generator-consistent
+discrete extension, the restrictions
+$h\le\min(H,1/\kappa_s,\kappa_s/(4K_s))$ give
+
+$$
+\mathbb E[\Delta V_{\rm struct}]
+\le-\frac{\kappa_s}{4}hV_{\rm struct}+(C_s+K_sH)h.      \tag{5.S2}
+$$
+
+The certificate is for the smooth transported coupling cost; differentiability
+of the assignment minimum is not assumed. Affine unit-quadratic force with
+common additive noise satisfies the centered closure and LMI with the metric
+and coefficient in (5.L4). Arbitrary confining nonlinear forces require their
+own centered closure and matrix certificate.
 :::
 
 :::{prf:proof}
-**Proof (Empirical Measure and Optimal Transport).**
+For equal-mass finite empirical measures an optimal permutation exists.
+Choose any minimizing representative and feed each paired atom the same
+Brownian innovation, while preserving the independent noises required within
+each marginal swarm. The representative is a coupling construction, not an
+intrinsic particle label. Reordering either storage array changes the chosen
+representative without changing the assignment minimum.
 
-This proof adapts Wasserstein gradient flow theory to **discrete N-particle systems** using empirical measures and optimal transport.
-
-**PART I: Empirical Measure Representation**
-
-For swarm $k$ with $N_k$ particles at positions $\{x_{k,i}\}$ and velocities $\{v_{k,i}\}$, define the **empirical measure**:
-
-$$
-\mu_k^N = \frac{1}{N_k} \sum_{i=1}^{N_k} \delta_{(x_{k,i}, v_{k,i})}
-
-$$
-
-This is a probability measure on phase space $\mathbb{R}^{2d}$ (position + velocity).
-
-**Centered empirical measure:** Shift by the barycenter:
+Apply the quadratic Itô estimate from
+{prf:ref}`lem-location-error-drift-kinetic` to each centered coupled difference.
+For the transported average cost $C_t=N^{-1}\sum_i|\Delta\widetilde z_i(t)|_P^2$,
+the hypotheses give
 
 $$
-\tilde{\mu}_k^N = \frac{1}{N_k} \sum_{i=1}^{N_k} \delta_{(x_{k,i} - \mu_{x,k}, v_{k,i} - \mu_{v,k})}
-
+\frac{d}{dt}\mathbb E C_t\le-\kappa_s\mathbb E C_t+C_s,
+\qquad C_0=V_{\rm struct}(0).
 $$
 
-where $\mu_{x,k} = \frac{1}{N_k}\sum_i x_{k,i}$ and $\mu_{v,k} = \frac{1}{N_k}\sum_i v_{k,i}$.
+The source is an average of the atom sources and has no factor $N$.
+Gronwall bounds $\mathbb E C_t$. The transported pairing is an admissible
+coupling of the centered output measures, hence
+$V_{\rm struct}(t)\le C_t$ even if that pairing is no longer optimal.
+This proves (5.S1) without differentiating a Wasserstein minimum or equating
+it to a persistent storage pairing.
 
-**PART II: Empirical Fokker-Planck Equation**
-
-The empirical measure evolves according to the **empirical Fokker-Planck equation**:
-
-$$
-\frac{\partial \mu_k^N}{\partial t} = \sum_{i=1}^{N_k} \frac{1}{N_k} \left[\nabla_{x_i} \cdot (v_i \mu_k^N) + \nabla_{v_i} \cdot ((F(x_i) - \gamma v_i) \mu_k^N) + \frac{1}{2}\nabla_{v_i}^2 : (\Sigma\Sigma^T \mu_k^N)\right]
-
-$$
-
-**Key observation:** This is a sum of $N_k$ **individual Fokker-Planck operators**, each acting on a single Dirac mass.
-
-**PART III: Optimal Transport and Synchronous Coupling**
-
-The Wasserstein-2 distance between centered measures is:
-
-$$
-V_{\text{struct}} = W_2^2(\tilde{\mu}_1^N, \tilde{\mu}_2^N)
-
-$$
-
-**Index-matching coupling:** For computational tractability with synchronized swarm dynamics, we use the synchronous coupling where particles are **matched by index**:
-
-$$
-\pi^N = \frac{1}{N} \sum_{i=1}^N \delta_{(z_{1,i}, z_{2,i})}
-
-$$
-
-where $z_{k,i} = (x_{k,i} - \mu_{x,k}, v_{k,i} - \mu_{v,k})$ are centered coordinates.
-
-:::{note}
-**On optimality**: The index-matching coupling is generally **suboptimal** for the Wasserstein distance. Computing the true optimal coupling requires solving an assignment problem (e.g., via the Hungarian algorithm). However, for swarms evolved with **synchronized dynamics** (same Brownian motion realization for both swarms), the index-matching coupling becomes natural and provides a **computable upper bound**:
-
-$$
-W_2^2(\tilde{\mu}_1^N, \tilde{\mu}_2^N) \leq \frac{1}{N}\sum_{i=1}^N \|z_{1,i} - z_{2,i}\|_h^2
-
-$$
-
-The structural error drift bound proven below applies to this upper bound, which is sufficient for establishing contraction of the coupled system.
-:::
-
-**Wasserstein distance bound via index-matching:**
-
-$$
-W_2^2(\tilde{\mu}_1^N, \tilde{\mu}_2^N) \leq \frac{1}{N}\sum_{i=1}^N \|z_{1,i} - z_{2,i}\|_h^2
-
-$$
-
-where $\|\cdot\|_h$ is the hypocoercive norm from {prf:ref}`lem-location-error-drift-kinetic`:
-
-$$
-\|z\|_h^2 = \|\Delta x\|^2 + \lambda_v \|\Delta v\|^2 + b\langle \Delta x, \Delta v \rangle
-
-$$
-
-**PART IV: Drift Analysis via Coupling**
-
-The time derivative of $V_{\text{struct}}$ is:
-
-$$
-\frac{d}{dt} V_{\text{struct}} = \frac{d}{dt} \frac{1}{N}\sum_{i=1}^N \|z_{1,i} - z_{2,i}\|_h^2
-
-$$
-
-For each particle pair $(z_{1,i}, z_{2,i})$, apply the **drift matrix analysis** from {prf:ref}`lem-location-error-drift-kinetic`.
-
-**Key technical tool:** Use **synchronous coupling** - evolve both particles with the **same** Brownian motion $W_i$:
-
-$$
-\begin{aligned}
-dx_{k,i} &= v_{k,i} dt \\
-dv_{k,i} &= [F(x_{k,i}) - \gamma v_{k,i}] dt + \Sigma(x_{k,i}, v_{k,i}) \circ dW_i \quad \text{(same } W_i \text{ for both swarms)}
-\end{aligned}
-
-$$
-
-This coupling is **dynamically consistent** - each marginal has the correct Langevin dynamics.
-
-**PART V: Single-Pair Drift Inequality**
-
-By {prf:ref}`lem-location-error-drift-kinetic`, for each particle pair:
-
-$$
-\frac{d}{dt}\mathbb{E}[\|z_{1,i} - z_{2,i}\|_h^2] \leq -\kappa_{\text{hypo}} \|z_{1,i} - z_{2,i}\|_h^2 + C_{\text{loc}}'
-
-$$
-
-where:
-- $\kappa_{\text{hypo}} = \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ is the hypocoercive contraction rate
-- $C_{\text{loc}}' = O(\sigma_{\max}^2)$ is the noise-induced expansion
-
-**PART VI: Aggregation Over All Particles**
-
-Sum over all $N$ particle pairs:
-
-$$
-\frac{d}{dt}\mathbb{E}[V_{\text{struct}}] = \frac{1}{N}\sum_{i=1}^N \frac{d}{dt}\mathbb{E}[\|z_{1,i} - z_{2,i}\|_h^2]
-
-$$
-
-$$
-\leq \frac{1}{N}\sum_{i=1}^N \left[-\kappa_{\text{hypo}} \|z_{1,i} - z_{2,i}\|_h^2 + C_{\text{loc}}'\right]
-
-$$
-
-$$
-= -\kappa_{\text{hypo}} \left[\frac{1}{N}\sum_{i=1}^N \|z_{1,i} - z_{2,i}\|_h^2\right] + C_{\text{loc}}'
-
-$$
-
-$$
-= -\kappa_{\text{hypo}} V_{\text{struct}} + C_{\text{loc}}'
-
-$$
-
-**PART VII: Discrete-Time Version**
-
-Apply {prf:ref}`thm-discretization` (BAOAB weak error bounds) to convert to discrete-time:
-
-$$
-\mathbb{E}[\Delta V_{\text{struct}}] \leq -\kappa_{\text{struct}} V_{\text{struct}} \tau + C_{\text{struct}}' \tau
-
-$$
-
-where:
-- $\kappa_{\text{struct}} = \kappa_{\text{hypo}} = \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$
-- $C_{\text{struct}}' = C_{\text{loc}}' = O(\sigma_{\max}^2)$
-
-**PART VIII: Key Technical Points**
-
-1. **Why synchronous coupling works:** It preserves the correct marginal dynamics while minimizing the Wasserstein distance (Villani, 2009, Theorem 5.10).
-
-2. **Why we sum over particles:** Each particle contributes $1/N$ to the empirical measure, so the total drift is the average of individual drifts.
-
-3. **Relation to continuous-time theory:** As $N \to \infty$, $\mu_k^N \to \mu_k$ (law of large numbers), and the empirical Fokker-Planck equation converges to the classical Fokker-Planck PDE.
-
-**PART IX: References for Rigor**
-
-This proof uses:
-- **Optimal transport:** Ambrosio, Gigli & Savaré (2008), "Gradient Flows in Metric Spaces"
-- **Concentration inequalities:** Bolley, Guillin & Villani (2007), "Quantitative concentration inequalities"
-- **Kinetic equilibration rates:** Carrillo et al. (2010), "Kinetic equilibration rates for granular media"
-
-**Final Result:**
-
-$$
-\mathbb{E}[\Delta V_{\text{struct}}] \leq -\kappa_{\text{struct}} V_{\text{struct}} \tau + C_{\text{struct}}' \tau
-
-$$
-
-where $\kappa_{\text{struct}} \sim \min(\gamma, \frac{\gamma^2}{\gamma + L_F})$ depends on friction and force Lipschitz constant (no convexity required).
-
-**Q.E.D.**
+For the discrete extension apply its transported-cost weak-error certificate,
+then the same exponential and timestep estimates used for (5.L3). Since the
+optimal output cost is bounded by the transported cost, (5.S2) follows.
+For the affine specialization, centering commutes with its linear force and
+common additive noise cancels pairwise and in the matched barycenters. Thus
+(5.L4) verifies the centered assumptions with $C_s=0$. $\square$
 :::
 
 ### 4.8. Proof of Main Theorem
 
 :::{prf:proof}
 **Proof of {prf:ref}`thm-inter-swarm-contraction-kinetic`.**
-
-Combine Lemmas 2.5.1 and 2.6.1 using the decomposition $V_W = V_{\text{loc}} + V_{\text{struct}}$:
-
-$$
-\begin{aligned}
-\mathbb{E}[\Delta V_W] &= \mathbb{E}[\Delta V_{\text{loc}}] + \mathbb{E}[\Delta V_{\text{struct}}] \\
-&\leq -\left[\frac{\alpha_U}{2} + \gamma\lambda_v - \frac{b^2}{4\lambda_v}\right] V_{\text{loc}} \tau - \kappa_{\text{struct}} V_{\text{struct}} \tau + (C_{\text{loc}}' + C_{\text{struct}}') \tau
-\end{aligned}
+For a common quadratic metric, the parallel-axis identity applied to every
+transport coupling gives the exact decomposition
+$V_W=V_{\rm loc}+V_{\rm struct}$. The barycenter term is independent of the
+coupling, so minimizing leaves the centered transport minimum.
+Apply (5.L3) and (5.S2), using their common admissible timestep range. Set
 
 $$
-
-Define $\kappa_W := \min\left(\frac{\alpha_U}{2} + \gamma\lambda_v - \frac{b^2}{4\lambda_v}, \kappa_{\text{struct}}\right)$ and $C_W' := C_{\text{loc}}' + C_{\text{struct}}'$.
-
-Then:
-
-$$
-\mathbb{E}[\Delta V_W] \leq -\kappa_W (V_{\text{loc}} + V_{\text{struct}}) \tau + C_W' \tau = -\kappa_W V_W \tau + C_W' \tau
-
+\kappa_W=\frac14\min(\kappa_{\rm loc},\kappa_s),\qquad
+C_W'=C_{\rm loc}+C_s+(K_{\rm loc}+K_s)H.
 $$
 
-Rearranging:
+Both errors are nonnegative, so summing proves
 
 $$
-\mathbb{E}[V_W(S')] \leq (1 - \kappa_W \tau) V_W(S) + C_W' \tau
-
+\mathbb E[\Delta V_W]\le-\kappa_WhV_W+C_W'h.
 $$
 
-**N-uniformity:** All constants depend only on $(\gamma, \alpha_U, \sigma_{\min}, \sigma_{\max}, \text{domain geometry})$, not on $N$.
-
-**Q.E.D.**
+All constants are population independent by the stated closure, LMI, averaged
+source and observable-error hypotheses. No inequality asserting that this
+coefficient exceeds a cloning expansion follows without a separate comparison
+of those coefficients. The native capped quadratic kernel has the direct
+finite-step estimate (5.K1), which does not use this continuum transfer.
+$\square$
 :::
 
 ### 4.9. Summary
@@ -2315,7 +2382,7 @@ This chapter has proven:
 
 ✅ **N-uniform bounds** - contraction doesn't degrade with swarm size
 
-✅ **Overcomes $C_W$ from cloning** - the contraction rate $\kappa_W$ is designed to exceed the bounded expansion from the cloning operator
+The signed comparison with cloning requires a separate calculation of the actual cloning and kinetic coefficients.
 
 **Key Insight:** Even though noise only acts on velocity, the coupling between position and velocity through the hypocoercive norm allows effective dissipation of positional error.
 
@@ -2372,34 +2439,41 @@ This term is added to the TV Lyapunov function to control global velocity drift 
 :::{prf:theorem} Velocity Variance Contraction Under Kinetic Operator
 :label: thm-velocity-variance-contraction-kinetic
 
-Under the axioms of Chapter 3, for any $\epsilon \in (0, 2\gamma)$ the velocity variance satisfies:
+For the continuous uncapped kinetic extension with fixed nonempty averaging
+sets, independent particle Brownian noises, $u=0$, and an actual force bound
+$|F(x)|\le F_{\max}$ on its reachable space, set
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau
-
+\rho_v=2\gamma-\epsilon>0,\qquad
+C_v^{\rm gen}=F_{\max}^2/\epsilon+d\sigma_{\max}^2,
+\qquad 0<\epsilon<2\gamma.
 $$
 
-where:
-- $\gamma > 0$ is the friction coefficient
-- $F_{\max}$ bounds $\|F(x)\|$ on $\mathcal{X}_{\text{valid}}$
-- $\sigma_{\max}^2$ is the maximum eigenvalue of $\Sigma\Sigma^T$
-- $d$ is the spatial dimension
-
-Define the equilibrium upper bound:
+Then
 
 $$
-V_{\text{Var},v}^{\text{eq}} := \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma - \epsilon}
-
+\mathcal L V_{{\rm Var},v}\le-\rho_v V_{{\rm Var},v}+C_v^{\rm gen},
+\quad
+\mathbb E V_{{\rm Var},v}(t)
+\le e^{-\rho_v t}V_{{\rm Var},v}(0)
+ +\frac{C_v^{\rm gen}}{\rho_v}(1-e^{-\rho_v t}).
 $$
 
-**Equivalently:**
+The quotient $C_v^{\rm gen}/\rho_v$ is a moment upper envelope, not an
+identified equilibrium law. For a generator-consistent discrete extension
+with an independently proved (5.D1) certificate of coefficient $K_v$, (5.D3)
+gives, on its admissible timestep range,
 
 $$
-\mathbb{E}_{\text{kin}}[V_{\text{Var},v}(S')] \leq (1 - (2\gamma-\epsilon)\tau) V_{\text{Var},v}(S) + \left(\frac{F_{\max}^2}{\epsilon} + \sigma_{\max}^2 d\right)\tau
-
+\mathbb E[\Delta V_{{\rm Var},v}]
+\le-\rho_v hV_{{\rm Var},v}/2+(C_v^{\rm gen}+K_vH)h.
 $$
 
-**Critical Property:** When $V_{\text{Var},v} > \frac{F_{\max}^2}{\epsilon(2\gamma-\epsilon)} + \frac{\sigma_{\max}^2 d}{2\gamma-\epsilon}$, the drift is strictly negative.
+If forces are unbounded, their actual averaged force-square envelope must
+replace $F_{\max}^2$. Removing/reviving walkers requires separate status-source
+bounds; a fixed-cap algorithm does not inherit this continuum rate by weak
+transfer. All stated coefficients are independent of population size.
+
 :::
 
 ### 5.4. Proof
@@ -2609,26 +2683,22 @@ $$
 
 $$
 
-**PART VI: Discrete-Time Version**
-
-Apply {prf:ref}`thm-discretization` (BAOAB weak error) to obtain the discrete-time inequality:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},v}] = \mathbb{E}[V_{\text{Var},v}(t+\tau) - V_{\text{Var},v}(t)]
-
-$$
+**PART VI: Exact semigroup and conditional discrete version.**
+The generator estimate established above yields its exact exponential
+expectation bound by Dynkin's formula and Gronwall. To transfer it to a
+numerical extension, (5.D1) must hold for $V_{{\rm Var},v}$ with its actual
+global moment envelope. Then (5.D3) gives
 
 $$
-\leq -(2\gamma-\epsilon) V_{\text{Var},v}(t) \tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + O(\tau^2)
-
+\mathbb E[\Delta V_{{\rm Var},v}]
+\le-\rho_v hV_{{\rm Var},v}/2+(C_v^{\rm gen}+K_vH)h.
 $$
 
-For sufficiently small $\tau$, absorb $O(\tau^2)$ into the constant term:
-
-$$
-\mathbb{E}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau
-
-$$
+An error proportional to $h^2V_{{\rm Var},v}$ is absorbed into the contraction
+coefficient through the explicit timestep restriction, rather than into an
+additive constant. The canonical fixed cap requires direct finite-step
+analysis. The generator coefficient $\rho_v$ applies to the continuous
+extension; its conditional numerical coefficient here is $\rho_v/2$.
 
 **PART VII: Physical Interpretation**
 
@@ -2647,32 +2717,48 @@ This result shows:
 :::{prf:theorem} Velocity Barycenter Drift Under Kinetics
 :label: thm-velocity-barycenter-dissipation
 
-Under the axioms of Chapter 3 and with velocity squashing, the barycenter energy satisfies:
+For the continuous uncapped extension with fixed $N$ walkers, independent
+particle Brownian noises and $|F|\le F_{\max}$ on the reachable space,
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau
-
+\mathcal L|\mu_v|^2\le-\gamma|\mu_v|^2+C_\mu,
+\qquad C_\mu=F_{\max}^2/\gamma+d\sigma_{\max}^2/N.
 $$
 
-where $F_{\max}$ is the uniform bound on $\|F(x)\|$ over $\mathcal{X}_{\text{valid}}$.
+Consequently
+
+$$
+\mathbb E|\mu_v(t)|^2\le e^{-\gamma t}|\mu_v(0)|^2
+ +(C_\mu/\gamma)(1-e^{-\gamma t}).
+$$
+
+For a generator-consistent extension with a verified (5.D1) coefficient
+$K_\mu$, (5.D3) gives
+
+$$
+\mathbb E[\Delta|\mu_v|^2]
+\le-\gamma h|\mu_v|^2/2+(C_\mu+K_\mu H)h.
+$$
+
+This is not a weak-limit assertion for the fixed radial cap. Correlated
+innovations require their actual mean-noise covariance in $C_\mu$.
 :::
 
 :::{prf:proof}
-For a single swarm,
-$$
-d\mu_v = F_{\text{avg}}\,dt - \gamma \mu_v\,dt + \frac{1}{N}\sum_{i \in \mathcal{A}(S)} \Sigma_i\, dW_i,
-$$
-with $F_{\text{avg}} = \frac{1}{N}\sum_i F(x_i)$. Itô's lemma gives
-$$
-d\|\mu_v\|^2 = 2\langle \mu_v, F_{\text{avg}} - \gamma \mu_v\rangle dt + \frac{1}{N^2}\sum_i \text{Tr}(\Sigma_i\Sigma_i^T)\,dt + dM_t,
-$$
-for a martingale $M_t$. Using $2\langle \mu_v, F_{\text{avg}}\rangle \leq \gamma\|\mu_v\|^2 + \frac{1}{\gamma}\|F_{\text{avg}}\|^2$ and $\|F_{\text{avg}}\|\leq F_{\max}$ yields
-$$
-\frac{d}{dt}\mathbb{E}\|\mu_v\|^2 \leq -\gamma \mathbb{E}\|\mu_v\|^2 + \frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}.
-$$
-This implies the discrete-time bound for timestep $\tau$.
+For the stated fixed-set continuous extension,
 
-**Q.E.D.**
+$$
+d\mu_v=(\bar F-\gamma\mu_v)dt+N^{-1}\sum_i\Sigma_i\,dW_i.
+$$
+
+Itô's formula and independence give the trace source
+$N^{-2}\sum_i\operatorname{tr}(\Sigma_i\Sigma_i^\top)\le d\sigma_{\max}^2/N$.
+Young's inequality
+$2\langle\mu_v,\bar F\rangle\le\gamma|\mu_v|^2+|\bar F|^2/\gamma$
+and $|\bar F|\le F_{\max}$ establish the generator estimate. Gronwall gives
+its exact semigroup bound. Under the additional certificate, apply (5.D3)
+with $\kappa=\gamma$, $C=C_\mu$ to obtain the discrete statement.
+$\square$
 :::
 
 ### 5.5. Balancing with Cloning Expansion
@@ -2680,68 +2766,50 @@ This implies the discrete-time bound for timestep $\tau$.
 :::{prf:corollary} Net Velocity Variance Contraction for Composed Operator
 :label: cor-net-velocity-contraction
 
-From {doc}`03_cloning`, the cloning operator satisfies:
+Assume the actual cloning and kinetic kernels satisfy
+$P_CV_v\le V_v+C_{C,v}$ and $P_KV_v\le r_vV_v+b_{K,v}$ on every cloning
+output, with $0\le r_v<1$ and population-uniform sources. Then for the
+algorithmic order cloning followed by kinetics,
 
 $$
-\mathbb{E}_{\text{clone}}[\Delta V_{\text{Var},v}] \leq C_v
-
+P_CP_KV_v\le r_vV_v+r_vC_{C,v}+b_{K,v}.
 $$
 
-Combining with the kinetic dissipation:
+The drift is negative above
+$(r_vC_{C,v}+b_{K,v})/(1-r_v)$.
+For the certified uncapped extension in the preceding theorem,
+$r_v=1-\rho_vh/2$ and $b_{K,v}=(C_v^{\rm gen}+K_vH)h$.
+For the canonical capped kernel these inputs require their own native estimate.
+:::
 
-$$
-\mathbb{E}_{\text{clone} \circ \text{kin}}[\Delta V_{\text{Var},v}] \leq -(2\gamma-\epsilon) V_{\text{Var},v} \tau + \left(\left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + C_v\right)
-
-$$
-
-**For net contraction, we need:**
-
-$$
-(2\gamma-\epsilon) V_{\text{Var},v} \tau > \left(\frac{F_{\max}^2}{\epsilon} + d\sigma_{\max}^2\right)\tau + C_v
-
-$$
-
-**This holds when:**
-
-$$
-V_{\text{Var},v} > V_{\text{Var},v}^{\text{eq}} + \frac{C_v}{(2\gamma-\epsilon)\tau}
-
-$$
-
-**Equilibrium bound:**
-At equilibrium where $\mathbb{E}[\Delta V_{\text{Var},v}] = 0$:
-
-$$
-V_{\text{Var},v}^{\text{eq}} \approx \frac{F_{\max}^2/\epsilon + d\sigma_{\max}^2}{2\gamma-\epsilon} + \frac{C_v}{(2\gamma-\epsilon)\tau}
-
-$$
-
-**Interpretation:** The equilibrium velocity variance is determined by the balance between:
-- Thermal noise injection ($\sigma_{\max}^2$)
-- Friction dissipation ($\gamma$)
-- Cloning perturbations ($C_v$)
+:::{prf:proof}
+Apply the pointwise kinetic bound to the cloning output, then apply the
+cloning expectation bound and use $r_v\ge0$. Subtract $V_v$ and rearrange.
+$\square$
 :::
 
 :::{prf:corollary} Barycenter Drift Under the Composed Operator
 :label: cor-net-barycenter-drift
 
-With velocity squashing, the cloning step satisfies:
+Assume cloning outputs satisfy $P_C|\mu_v|^2\le v_{\max}^2$, and that the
+actual kinetic kernel has a pointwise bound
+$P_K|\mu_v|^2\le r_\mu|\mu_v|^2+b_{K,\mu}$ on every such output.
+Then
 
 $$
-\mathbb{E}_{\text{clone}}[\|\mu_v'\|^2] \leq v_{\max}^2,
-
+P_CP_K|\mu_v|^2\le r_\mu v_{\max}^2+b_{K,\mu}.
 $$
 
-so $\mathbb{E}_{\text{clone}}[\Delta \|\mu_v\|^2] \leq v_{\max}^2$. Combining with Theorem {prf:ref}`thm-velocity-barycenter-dissipation` yields:
-
-$$
-\mathbb{E}_{\text{clone}\circ\text{kin}}[\Delta \|\mu_v\|^2] \leq -\gamma \|\mu_v\|^2 \tau + \left(\frac{F_{\max}^2}{\gamma} + \frac{\sigma_{\max}^2 d}{N}\right)\tau + v_{\max}^2.
-
-$$
+For a certified generator-consistent extension,
+$r_\mu=1-\gamma h/2$ and $b_{K,\mu}=(C_\mu+K_\mu H)h$ on its admissible
+range. For a native capped output, the direct deterministic bound
+$|\mu_v^+|^2\le v_{\max}^2$ is available without a continuum transfer.
 :::
 
-:::{note}
-The composition argument is a direct application of the drift bounds in Theorem {prf:ref}`thm-velocity-variance-contraction-kinetic` and the cloning expansion bound from {doc}`03_cloning`.
+:::{prf:proof}
+Integrate the pointwise kinetic estimate over cloning, then use the cloning
+bound. The direct capped estimate is the squared norm bound for an average
+of vectors in the velocity ball. $\square$
 :::
 
 ### 5.6. Summary
@@ -2797,285 +2865,148 @@ where $\delta_{x,k,i} = x_{k,i} - \mu_{x,k}$ is the centered position.
 
 ### 6.3. Main Theorem: Bounded Positional Expansion
 
-:::{prf:theorem} Bounded Positional Variance Expansion Under Kinetics
+:::{prf:theorem} Finite-horizon Positional Variance Expansion Under Kinetics
 :label: thm-positional-variance-bounded-expansion
 
-Under the axioms of Chapter 3, the positional variance satisfies:
+Consider the continuous kinetic extension with a fixed nonempty averaging set,
+$dx_i=v_i\,dt$, and no position diffusion or status jumps. Fix $H>0$ and
+assume the actual transient moment bounds in
+{prf:ref}`assump-uniform-variance-bounds` on $[0,H]$. For $0\le h\le H$,
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}] \leq C_{\text{kin},x} \tau
-
+\mathbb E[V_{{\rm Var},x}(h)-V_{{\rm Var},x}(0)]
+\le 2\sqrt{M_xM_v}\,h+M_vh^2
+\le C_{{\rm kin},x}(H)h,                              \tag{5.X1}
 $$
 
-where $C_{\text{kin},x} = C_1 + C_2$ is a state-independent constant defined in the proof.
+where
 
-The constant $C_{\text{kin},x}$ is **state-independent** when velocity variance is bounded (which is ensured by Chapter 5).
+$$
+C_1=2\sqrt{M_xM_v},\qquad C_2(H)=HM_v,\qquad
+C_{{\rm kin},x}(H)=C_1+C_2(H).                         \tag{5.X2}
+$$
 
-**Key Property:** The expansion is **bounded** - it does not grow with $V_{\text{Var},x}$ itself.
+These constants are independent of population size whenever the supplied
+transient moment bounds are. No equilibrium or exponential velocity
+covariance hypothesis is used. An additional position diffusion adds its
+actual centered quadratic-variation source; changes of the averaging set
+require their own status-source terms. The native capped BAOAB kernel has
+the separate conditional identity (5.X3) below and does not inherit (5.X1)
+through an unproved continuum transfer.
 :::
 
 ### 6.4. Proof
 
 :::{prf:proof}
-**Proof (Integral Representation with OU Covariance Bounds).**
-
-**PART I: Integral Representation**
-
-For walker $i$ in swarm $k$, the centered position evolves deterministically:
+Write $\delta x_i=x_i-\bar x$ and $\delta v_i=v_i-\bar v$ on the fixed
+averaging set of size $n$. The exact integral identity is
 
 $$
-d\delta_{x,k,i} = \delta_{v,k,i} \, dt
-
+\delta x_i(h)=\delta x_i(0)+I_i(h),\qquad
+I_i(h)=\int_0^h\delta v_i(t)\,dt.
 $$
 
-where $\delta_{x,k,i}(t) = x_{k,i}(t) - \mu_{x,k}(t)$ and $\delta_{v,k,i}(t) = v_{k,i}(t) - \mu_{v,k}(t)$.
-
-**Key observation:** Position has no direct stochastic term—it evolves as $dx = v \, dt$. Therefore, Itô's lemma yields **no dt² correction term**.
-
-Integrating from $t=0$ to $t=\tau$:
+Consequently
 
 $$
-\delta_{x,k,i}(\tau) = \delta_{x,k,i}(0) + \int_0^\tau \delta_{v,k,i}(s) \, ds
-
+V_{{\rm Var},x}(h)-V_{{\rm Var},x}(0)
+=\frac2n\sum_i\delta x_i(0)\cdot I_i(h)
+ +\frac1n\sum_i|I_i(h)|^2.
 $$
 
-Squaring both sides:
+Cauchy--Schwarz first in time and then across walkers and probability gives
 
 $$
-\|\delta_{x,k,i}(\tau)\|^2 = \|\delta_{x,k,i}(0)\|^2 + 2\left\langle \delta_{x,k,i}(0), \int_0^\tau \delta_{v,k,i}(s) \, ds \right\rangle + \left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2
-
+\mathbb E\frac1n\sum_i|I_i(h)|^2
+\le h\int_0^h\mathbb EV_{{\rm Var},v}(t)\,dt
+\le M_vh^2,
 $$
 
-**PART II: Linear Term—Position-Velocity Coupling**
-
-For the linear cross-term, expand to first order in $\tau$:
+and
 
 $$
-\int_0^\tau \delta_{v,k,i}(s) \, ds \approx \delta_{v,k,i}(0) \tau + O(\tau^2)
-
+\left|\mathbb E\frac2n\sum_i\delta x_i(0)\cdot I_i(h)\right|
+\le 2\left(\mathbb EV_{{\rm Var},x}(0)\right)^{1/2}
+       \left(\mathbb E\frac1n\sum_i|I_i(h)|^2\right)^{1/2}
+\le 2\sqrt{M_xM_v}\,h.
 $$
 
-Thus:
-
-$$
-2\left\langle \delta_{x,k,i}(0), \int_0^\tau \delta_{v,k,i}(s) \, ds \right\rangle \approx 2\langle \delta_{x,k,i}(0), \delta_{v,k,i}(0) \rangle \tau + O(\tau^2)
-
-$$
-
-Taking expectations and using Cauchy-Schwarz:
-
-$$
-\left|\mathbb{E}[\langle \delta_{x,k,i}, \delta_{v,k,i} \rangle]\right| \leq \sqrt{\mathbb{E}[\|\delta_{x,k,i}\|^2] \cdot \mathbb{E}[\|\delta_{v,k,i}\|^2]}
-
-$$
-
-At equilibrium, the underdamped Langevin dynamics ensures position-velocity decorrelation:
-
-$$
-\mathbb{E}_{\text{eq}}[\langle \delta_x, \delta_v \rangle] = 0
-
-$$
-
-During transients, we use uniform bounds on variances (see Assumption {prf:ref}`assump-uniform-variance-bounds` below):
-
-$$
-\left|\mathbb{E}\left[2\left\langle \delta_{x,k,i}(0), \int_0^\tau \delta_{v,k,i}(s) \, ds \right\rangle\right]\right| \leq 2\sqrt{M_x \cdot M_v} \, \tau
-
-$$
-
-Define:
-
-$$
-C_1 := 2\sqrt{M_x \cdot M_v}
-
-$$
-
-**PART III: Quadratic Term—Velocity Accumulation via Exponential Covariance Decay**
-
-The critical term is:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2\right]
-
-$$
-
-Expanding the squared norm:
-
-$$
-\left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2 = \int_0^\tau \int_0^\tau \langle \delta_{v,k,i}(s_1), \delta_{v,k,i}(s_2) \rangle \, ds_1 \, ds_2
-
-$$
-
-Taking expectations:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2\right] = \int_0^\tau \int_0^\tau \mathbb{E}[\langle \delta_{v,k,i}(s_1), \delta_{v,k,i}(s_2) \rangle] \, ds_1 \, ds_2
-
-$$
-
-**Velocity covariance bound:** The centered velocity $\delta_v$ satisfies the underdamped Langevin SDE:
-
-$$
-d\delta_v = [F(x) - F(\mu_x) - \gamma \delta_v] \, dt + \Sigma \circ dW
-
-$$
-
-While $\delta_v$ is not an exact Ornstein-Uhlenbeck (OU) process for general non-quadratic potentials $U$ (due to the nonlinear force term $F(x) - F(\mu_x)$), the friction term $-\gamma \delta_v$ governs exponential decay of velocity correlations. Under the Lipschitz condition on $F$ (Axiom {prf:ref}`axiom-confining-potential`, part 5) and constant friction $\gamma > 0$, the velocity autocovariance satisfies the upper bound:
-
-$$
-\mathbb{E}[\langle \delta_{v}(s_1), \delta_{v}(s_2) \rangle] \leq V_{\text{Var},v}^{\text{eq}} e^{-\gamma |s_1 - s_2|}
-
-$$
-
-where $V_{\text{Var},v}^{\text{eq}}$ is the equilibrium velocity variance bound from {prf:ref}`thm-velocity-variance-contraction-kinetic`.
-
-**Double integral evaluation:**
-
-Using the exponential bound:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2\right] \leq V_{\text{Var},v}^{\text{eq}} \int_0^\tau \int_0^\tau e^{-\gamma |s_1 - s_2|} \, ds_1 \, ds_2
-
-$$
-
-By symmetry:
-
-$$
-\int_0^\tau \int_0^\tau e^{-\gamma |s_1 - s_2|} \, ds_1 \, ds_2 = 2\int_0^\tau \int_0^{s_2} e^{-\gamma(s_2 - s_1)} \, ds_1 \, ds_2
-
-$$
-
-Inner integral:
-
-$$
-\int_0^{s_2} e^{-\gamma(s_2 - s_1)} \, ds_1 = \frac{1}{\gamma}(1 - e^{-\gamma s_2})
-
-$$
-
-Outer integral:
-
-$$
-2\int_0^\tau \frac{1}{\gamma}(1 - e^{-\gamma s_2}) \, ds_2 = \frac{2}{\gamma}\left[\tau - \frac{1}{\gamma}(1 - e^{-\gamma \tau})\right]
-
-$$
-
-This exact identity holds for all $\tau \geq 0$. We analyze two regimes:
-
-**Regime 1: Small timesteps ($\gamma \tau \ll 1$):**
-
-Expand $e^{-\gamma \tau} \approx 1 - \gamma \tau + \frac{\gamma^2 \tau^2}{2}$:
-
-$$
-\frac{2}{\gamma}\tau - \frac{2}{\gamma^2}\left(\gamma \tau - \frac{\gamma^2 \tau^2}{2}\right) = \frac{2}{\gamma}\tau - \frac{2}{\gamma}\tau + \tau^2 = \tau^2 + O(\tau^3)
-
-$$
-
-Multiplying by $V_{\text{Var},v}^{\text{eq}}$:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq V_{\text{Var},v}^{\text{eq}} \tau^2 + O(\tau^3)
-
-$$
-
-**Regime 2: Finite timesteps ($\gamma \tau \sim O(1)$):**
-
-Using $(1 - e^{-\gamma \tau})/\gamma \leq \tau$, we obtain the uniform bound:
-
-$$
-\frac{2}{\gamma}\tau - \frac{2}{\gamma^2}(1 - e^{-\gamma \tau}) \leq \frac{2\tau}{\gamma}
-
-$$
-
-Multiplying by $V_{\text{Var},v}^{\text{eq}}$:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v}(s) \, ds\right\|^2\right] \leq \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma} \tau
-
-$$
-
-**Uniform bound for all $\tau \geq 0$:**
-
-Define:
-
-$$
-C_2 := \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma}
-
-$$
-
-Then for all $\tau \geq 0$:
-
-$$
-\mathbb{E}\left[\left\|\int_0^\tau \delta_{v,k,i}(s) \, ds\right\|^2\right] \leq C_2 \tau
-
-$$
-
-**Physical interpretation:** Despite the integral being "quadratic" in form, the exponential correlation decay with characteristic time $1/\gamma$ causes the effective accumulation to scale as $O(\tau)$ for timesteps $\tau \sim 1/\gamma$, not $O(\tau^2)$. This is a standard result for OU-type processes and reflects the finite correlation time of velocity fluctuations.
-
-**PART IV: State-Independence via Uniform Variance Bounds**
-
-The constant $C_2$ depends only on system parameters ($d$, $\sigma_{\max}$, $\gamma$) and is **inherently state-independent**.
-
-The constant $C_1$ requires uniform bounds on positional and velocity variances:
-
-:::{prf:assumption} Uniform Variance Bounds
-:label: assump-uniform-variance-bounds
-
-There exist constants $M_x, M_v > 0$ such that for all swarm configurations along the kinetic evolution:
-
-$$
-\mathbb{E}[V_{\text{Var},x}] \leq M_x, \quad \mathbb{E}[V_{\text{Var},v}] \leq M_v
-
-$$
-
-These bounds are ensured by:
-
-1. **Velocity variance:** {prf:ref}`thm-velocity-variance-contraction-kinetic` establishes that velocity variance equilibrates to $V_{\text{Var},v}^{\text{eq}}$ with exponential convergence. Thus $M_v = V_{\text{Var},v}^{\text{eq}}$.
-
-2. **Positional variance:** the positional theorem in {doc}`03_cloning` gives a reset estimate. It does not establish a strict $\kappa_x$ drift. An a priori $M_x$ for this kinetic calculation must therefore be supplied by a verified complete-update bound on the same moment class. The signed candidate and its explicit residual are (SCK.3)--(SCK.6) in {prf:ref}`thm-slc-signed-complete-update`.
+Adding proves the first bound in (5.X1). The second uses $h^2\le Hh$.
+All normalization factors stay inside the averaged moments, so none grows
+with $n$. The estimates are exact and retain the quadratic term; no
+unquantified numerical remainder is discarded. The same proof applies to
+the average of two swarms with their common moment envelopes. $\square$
 :::
 
-With this assumption:
+:::{prf:assumption} Transient Uniform Variance Bounds
+:label: assump-uniform-variance-bounds
+
+Fix a horizon $H>0$ and a law of the continuous kinetic extension with a
+fixed averaging set. Supply population-uniform constants $M_x,M_v$ such that
 
 $$
-C_1 = 2\sqrt{M_x \cdot M_v}
-
+\mathbb EV_{{\rm Var},x}(0)\le M_x,\qquad
+\sup_{0\le t\le H}\mathbb EV_{{\rm Var},v}(t)\le M_v.
 $$
 
-is **state-independent**.
+When {prf:ref}`thm-velocity-variance-contraction-kinetic` applies with an
+actual force-square envelope throughout this time interval, one valid
+choice is
+$M_v=\max\{\mathbb EV_{{\rm Var},v}(0),C_v^{\rm gen}/\rho_v\}$.
+The equilibrium upper envelope alone is insufficient when the initial
+moment is larger. A complete-update positional moment estimate must
+supply $M_x$ for the required input class: neither a cloning reset nor a
+sampled maximum establishes such a uniform bound. In the canonical
+complete update, retain the signed donor and kinetic residual of
+(SCK.3)--(SCK.6) in {prf:ref}`thm-slc-signed-complete-update`.
+:::
 
-**PART V: Aggregation and Final Bound**
+:::{prf:corollary} Conditional native positional moments
+:label: cor-kinetic-native-positional-moments
 
-Summing over all particles:
-
-$$
-\Delta V_{\text{Var},x} = \frac{1}{N}\sum_{k=1,2}\sum_{i \in \mathcal{A}(S_k)} \Delta\|\delta_{x,k,i}\|^2
-
-$$
-
-Taking expectations and using Parts II-III:
-
-$$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}] \leq C_1 \tau + C_2 \tau + O(\tau^2)
-
-$$
-
-Define:
-
-$$
-C_{\text{kin},x} = C_1 + C_2 = 2\sqrt{M_x \cdot M_v} + \frac{2 V_{\text{Var},v}^{\text{eq}}}{\gamma}
-
-$$
-
-For sufficiently small $\tau$, the $O(\tau^2)$ terms are negligible, yielding:
-
-$$
-\mathbb{E}_{\text{kin}}[\Delta V_{\text{Var},x}] \leq C_{\text{kin},x} \tau
+Condition on an actual complete prepared nonextinct population with $N$
+active rows, after cloning, revival, jitter and collision. Assume the
+configured OU and final position innovations are independent across rows,
+constant isotropic Gaussians of respective amplitudes $q$ and $s$. Put
+$c=h/2$, $a=e^{-\gamma h}$, $b=c(1+a)$, and let $v_{1,i}$ be the actual
+first kick output, including its configured deterministic viscous force.
+The completed physical position is
+$x_i^+=m_i+cq\xi_i+s\zeta_i$, where $m_i=x_i+bv_{1,i}$.
+Final velocity capping and terminal classification do not change these
+physical coordinates, including the retained coordinates of dead rows.
+Thus, with $\tau_x^2=c^2q^2+s^2$,
 
 $$
+\begin{aligned}
+\mathbb E[V_{{\rm Var},x}^+\mid x,v_1]
+ &=V_{{\rm Var}}(m)+(1-N^{-1})d\tau_x^2,\\
+\mathbb E[N^{-1}\sum_i|x_i^+|^2\mid x,v_1]
+ &=N^{-1}\sum_i|m_i|^2+d\tau_x^2,\\
+\mathbb E[|\bar x^+|^2\mid x,v_1]
+ &=|\bar m|^2+d\tau_x^2/N.                           \tag{5.X3}
+\end{aligned}
+$$
 
-**Key property:** The expansion is **bounded**—it does not grow with $V_{\text{Var},x}$ itself. The constant $C_{\text{kin},x}$ is state-independent under the uniform variance bounds from Assumption {prf:ref}`assump-uniform-variance-bounds`.
+In particular the conditional centered-variance increment is at most
 
-**Q.E.D.**
+$$
+2b\sqrt{V_{{\rm Var},x}V_{{\rm Var}}(v_1)}
+ +b^2V_{{\rm Var}}(v_1)+d\tau_x^2.                  \tag{5.X4}
+$$
+
+These formulas require the recorded first-kick state; a cap only at step
+end does not bound the intermediate $v_1$. If noises are correlated,
+state-dependent, or graph-driven, replace the independent trace terms by
+the actual conditional covariance. They do not concern a law conditioned
+on terminal survival.
+
+*Proof.* The native two drift stages give
+$x^+=x+cv_1+c(av_1+q\xi)+s\zeta$. Centering the independent Gaussian
+increments gives total trace $d\tau_x^2$, barycenter trace
+$d\tau_x^2/N$, and their difference
+$(1-N^{-1})d\tau_x^2$. Expand the squared norms and use the zero mean of
+the innovations to obtain (5.X3). Expanding $V_{{\rm Var}}(x+bv_1)$ and
+applying Cauchy--Schwarz to its cross term gives (5.X4). $\square$
 :::
 
 ### 6.5. Balancing with Keystone Pressure
@@ -3140,393 +3071,109 @@ where $\varphi_{\text{barrier}}: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq
 
 ### 7.3. Main Theorem: Potential-Driven Safety
 
-:::{prf:theorem} Boundary Potential Contraction Under Kinetic Operator
+:::{prf:theorem} Boundary Potential Contraction Under Verified Corrector Bounds
 :label: thm-boundary-potential-contraction-kinetic
 
-Under the axioms of Chapter 3, particularly the confining potential axiom, the boundary potential satisfies:
+Consider a continuous kinetic extension with fixed averaging sets, $u=0$,
+and a nonnegative $C^2$ barrier $\varphi$ with integrable derivatives on its
+reachable space. Put
 
 $$
-\mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau
-
+W_b=N^{-1}\sum_i\varphi(x_i),\quad
+R_b=(\gamma N)^{-1}\sum_i v_i\cdot\nabla\varphi(x_i),
+\quad \Phi_b=W_b+R_b.
 $$
 
-where:
-- $\kappa_{\text{pot}} > 0$ depends on the strength of the confining force near the boundary
-- $C_{\text{pot}}$ accounts for noise-induced boundary approach
+Assume, for the laws under consideration, the actual force alignment and
+**barrier-weighted velocity/Hessian bound**
 
-**Key Property:** This provides **independent safety** beyond the cloning-based Safe Harbor mechanism.
+$$
+N^{-1}\sum_i\mathbb E[F_i\cdot\nabla\varphi_i]
+ \le-\alpha_{\rm align}\mathbb EW_b+C_F,
+\quad
+N^{-1}\sum_i\mathbb E[v_i^\top\nabla^2\varphi_i v_i]
+ \le M_H\mathbb EW_b+C_H.
+$$
+
+Also require the signed corrector-source bound
+
+$$
+-\frac d{dt}\mathbb E R_b\le\epsilon_R\mathbb EW_b+C_R,
+\qquad
+\kappa_b^{\rm gen}:=(\alpha_{\rm align}-M_H)/\gamma-\epsilon_R>0.
+$$
+
+These bounds, including any additional diffusion or status sources, must be
+uniform in population size and valid throughout the evolution. Then
+
+$$
+\frac d{dt}\mathbb EW_b
+\le-\kappa_b^{\rm gen}\mathbb EW_b+C_b^{\rm gen},
+\qquad C_b^{\rm gen}=(C_F+C_H)/\gamma+C_R.
+$$
+
+If these are pointwise generator bounds and a generator-consistent discrete
+extension has the observable certificate (5.D1) with coefficient $K_b$, then
+(5.D3) yields
+
+$$
+\mathbb E[\Delta W_b]\le-\kappa_{\rm pot}hW_b+C_{\rm pot}h,
+\quad \kappa_{\rm pot}=\kappa_b^{\rm gen}/2,
+\quad C_{\rm pot}=C_b^{\rm gen}+K_bH.
+$$
+
+A velocity variance bound does not bound total velocity moments or their
+barrier-weighted versions. The fixed native radial cap does not provide a
+continuous Langevin moment bound or the required weak-error certificate.
+For that kernel, a boundary contraction coefficient must be established
+directly for its actual output and status convention.
 :::
 
 ### 7.4. Proof
 
 :::{prf:proof} Boundary Potential Contraction from Confining Force
-**Proof (Velocity-Weighted Lyapunov with Corrected Signs).**
-
-This proof establishes that the confining potential $U$ creates negative drift for the boundary potential $W_b$ through alignment between the inward-pointing force $F = -\nabla U$ and the outward-pointing barrier gradient $\nabla\varphi_{\text{barrier}}$.
-
-**PART I: Barrier Function Specification**
-
-We use an **exponential-distance barrier** on a boundary layer to ensure controlled derivatives. Let $\rho: \mathcal{X}_{\text{valid}} \to \mathbb{R}$ be the **signed distance function**:
-
-$$
-\rho(x) = \begin{cases}
--\text{dist}(x, \partial\mathcal{X}_{\text{valid}}) & \text{if } x \in \mathcal{X}_{\text{valid}} \\
-0 & \text{if } x \in \partial\mathcal{X}_{\text{valid}}
-\end{cases}
-
-$$
-
-so $\rho < 0$ in the interior and $\nabla\rho = \vec{n}(x)$ (outward unit normal) near the boundary.
-
-**Barrier construction:** Fix $\delta > 0$ (boundary layer width) and $c > 0$ (barrier strength). Define:
-
-$$
-\varphi_{\text{barrier}}(x) = \begin{cases}
-0 & \text{if } \rho(x) < -\delta \text{ (safe interior)} \\
-\exp\left(\frac{c \cdot \rho(x)}{\delta}\right) & \text{if } -\delta \leq \rho(x) < 0 \text{ (boundary layer)} \\
-+\infty & \text{if } x \notin \mathcal{X}_{\text{valid}}
-\end{cases}
-
-$$
-
-with smooth transition at $\rho = -\delta$.
-
-**Geometric properties in the boundary layer** ($-\delta \leq \rho < 0$):
-
-1. **Gradient alignment:**
-
-$$
-\nabla\varphi = \frac{c}{\delta} \varphi \cdot \nabla\rho = \frac{c}{\delta} \varphi \cdot \vec{n}(x)
-
-$$
-
-where $\vec{n}(x)$ is the outward unit normal. This gives:
-
-$$
-\|\nabla\varphi\| = \frac{c}{\delta} \varphi
-
-$$
-
-2. **Hessian bound:** Assuming $\mathcal{X}_{\text{valid}}$ has $C^2$ boundary with bounded principal curvatures $\|\nabla\vec{n}\| \leq K_{\text{curv}}$:
-
-$$
-\nabla^2\varphi = \frac{c}{\delta}\varphi \nabla\vec{n} + \left(\frac{c}{\delta}\right)^2 \varphi \, \vec{n}\vec{n}^T
-
-$$
-
-Thus:
-
-$$
-v^T (\nabla^2\varphi) v \leq \varphi \left[\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}\right] \|v\|^2
-
-$$
-
-**PART II: Compatibility Condition (Corrected Sign)**
-
-By {prf:ref}`axiom-confining-potential` part 4, the confining force satisfies:
-
-$$
-\langle \vec{n}(x), F(x) \rangle \leq -\alpha_{\text{boundary}} \quad \text{for } \text{dist}(x, \partial\mathcal{X}_{\text{valid}}) < \delta_{\text{boundary}}
-
-$$
-
-where $\vec{n}(x)$ is the **outward** unit normal.
-
-In the boundary layer, using $\nabla\varphi = \frac{c}{\delta}\varphi \cdot \vec{n}$:
-
-$$
-\langle F(x), \nabla\varphi(x) \rangle = \frac{c}{\delta}\varphi(x) \langle F(x), \vec{n}(x) \rangle \leq -\frac{c}{\delta} \alpha_{\text{boundary}} \varphi(x)
-
-$$
-
-**Key inequality (correct sign):**
-
-$$
-\langle F(x), \nabla\varphi(x) \rangle \leq -\alpha_{\text{align}} \varphi(x)
-
-$$
-
-where $\alpha_{\text{align}} := \frac{c}{\delta} \alpha_{\text{boundary}} > 0$.
-
-**Physical interpretation:** The confining force $F$ points **inward** (toward safe region), the barrier gradient $\nabla\varphi$ points **outward** (away from safe region), so their inner product is **negative**. This creates the **negative drift** needed for contraction.
-
-**PART III: Velocity-Weighted Lyapunov Function**
-
-For particle $i$, define:
-
-$$
-\Phi_i := \varphi_i + \epsilon \langle v_i, \nabla\varphi_i \rangle
-
-$$
-
-where $\varphi_i = \varphi_{\text{barrier}}(x_i)$ and $\epsilon > 0$ is a coupling parameter (to be optimized).
-
-**Rationale:**
-- $\varphi_i$ measures current proximity to boundary
-- $\langle v_i, \nabla\varphi_i \rangle$ measures velocity component **toward** boundary
-- The coupling balances position and velocity contributions to achieve net contraction
-
-**PART IV: Generator Calculation (Corrected)**
-
-Apply the Fokker-Planck generator $\mathcal{L}$ from {prf:ref}`def-generator`:
-
-$$
-\mathcal{L}f = v \cdot \nabla_x f + (F - \gamma v) \cdot \nabla_v f + \frac{1}{2}\text{Tr}(A \nabla_v^2 f)
-
-$$
-
-where $A = \Sigma\Sigma^T$ is the velocity diffusion matrix.
-
-**Term 1: Generator of $\varphi_i$**
-
-Since $\varphi_i = \varphi(x_i)$ (no velocity dependence):
-
-$$
-\mathcal{L}\varphi_i = v_i \cdot \nabla\varphi_i + (F(x_i) - \gamma v_i) \cdot \underbrace{\nabla_v \varphi_i}_{=0} + \frac{1}{2}\text{Tr}(A_i \underbrace{\nabla_v^2 \varphi_i}_{=0})
-
-$$
-
-$$
-= v_i \cdot \nabla\varphi_i
-
-$$
-
-**Term 2: Generator of $\langle v_i, \nabla\varphi_i \rangle$ (CRITICAL CORRECTION)**
-
-Let $g(x, v) := \langle v, \nabla\varphi(x) \rangle$.
-
-**Velocity derivatives:**
-
-$$
-\nabla_v g = \nabla\varphi(x)
-
-$$
-
-$$
-\nabla_v^2 g = 0 \quad \text{(linear in } v \text{, no second derivative!)}
-
-$$
-
-**Position derivatives:**
-
-$$
-\nabla_x g = (\nabla^2\varphi) v
-
-$$
-
-so:
-
-$$
-v \cdot \nabla_x g = v^T (\nabla^2\varphi) v
-
-$$
-
-**Generator:**
-
-$$
-\mathcal{L}g = v^T (\nabla^2\varphi) v + (F - \gamma v) \cdot \nabla\varphi + \frac{1}{2}\text{Tr}(A \underbrace{\nabla_v^2 g}_{=0})
-
-$$
-
-$$
-= v^T (\nabla^2\varphi) v + \langle F, \nabla\varphi \rangle - \gamma \langle v, \nabla\varphi \rangle
-
-$$
-
-**Critical note:** The diffusion term vanishes because $g$ is **linear in $v$**, so $\nabla_v^2 g = 0$. The original proof incorrectly included $\frac{1}{2}\text{Tr}(A \nabla^2\varphi)$, which mixes velocity diffusion with position Hessian — this is **wrong**.
-
-**PART V: Combine Terms**
-
-$$
-\mathcal{L}\Phi_i = \mathcal{L}\varphi_i + \epsilon \mathcal{L}\langle v_i, \nabla\varphi_i \rangle
-
-$$
-
-$$
-= v_i \cdot \nabla\varphi_i + \epsilon\left[v_i^T (\nabla^2\varphi_i) v_i + \langle F(x_i), \nabla\varphi_i \rangle - \gamma \langle v_i, \nabla\varphi_i \rangle\right]
-
-$$
-
-$$
-= (1 - \epsilon\gamma) \langle v_i, \nabla\varphi_i \rangle + \epsilon \langle F(x_i), \nabla\varphi_i \rangle + \epsilon v_i^T (\nabla^2\varphi_i) v_i
-
-$$
-
-**PART VI: Optimal Choice of $\epsilon$**
-
-Choose $\epsilon = \frac{1}{\gamma}$ to **completely eliminate** the cross-term:
-
-$$
-1 - \epsilon\gamma = 1 - \frac{1}{\gamma} \cdot \gamma = 0
-
-$$
-
-This gives:
-
-$$
-\mathcal{L}\Phi_i = \frac{1}{\gamma}\langle F(x_i), \nabla\varphi_i \rangle + \frac{1}{\gamma} v_i^T (\nabla^2\varphi_i) v_i
-
-$$
-
-**PART VII: Apply Corrected Compatibility and Hessian Bounds**
-
-In the boundary layer ($-\delta \leq \rho(x_i) < 0$):
-
-**Compatibility (corrected sign):**
-
-$$
-\langle F(x_i), \nabla\varphi_i \rangle \leq -\alpha_{\text{align}} \varphi_i
-
-$$
-
-where $\alpha_{\text{align}} = \frac{c}{\delta} \alpha_{\text{boundary}}$.
-
-**Hessian bound:**
-
-$$
-v_i^T (\nabla^2\varphi_i) v_i \leq \varphi_i \left[\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}\right] \|v_i\|^2
-
-$$
-
-Define:
-
-$$
-K_{\varphi} := \left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}
-
-$$
-
-**PART VIII: Substitute and Bound**
-
-$$
-\mathcal{L}\Phi_i \leq \frac{1}{\gamma}\left[-\alpha_{\text{align}} \varphi_i + K_{\varphi} \varphi_i \|v_i\|^2\right]
-
-$$
-
-$$
-= \frac{\varphi_i}{\gamma}\left[K_{\varphi} \|v_i\|^2 - \alpha_{\text{align}}\right]
-
-$$
-
-**Velocity moment bound:** By velocity squashing, $\|v_i\| \leq v_{\max}$ deterministically, hence $\mathbb{E}[\|v_i\|^2] \leq v_{\max}^2$. Using {prf:ref}`thm-velocity-variance-contraction-kinetic` yields a (potentially tighter) bound $\mathbb{E}[\|v_i\|^2] \leq V_{\text{Var},v}^{\text{eq}}$.
-
-**Taking expectation:**
-
-$$
-\mathbb{E}[\mathcal{L}\Phi_i] \leq \frac{\varphi_i}{\gamma}\left[K_{\varphi} V_{\text{Var},v}^{\text{eq}} - \alpha_{\text{align}}\right]
-
-$$
-
-**PART IX: Barrier Parameter Selection for Contraction**
-
-To ensure **negative drift**, we need:
-
-$$
-K_{\varphi} V_{\text{Var},v}^{\text{eq}} < \alpha_{\text{align}}
-
-$$
-
-Substituting definitions:
-
-$$
-\left[\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta} K_{\text{curv}}\right] V_{\text{Var},v}^{\text{eq}} < \frac{c}{\delta} \alpha_{\text{boundary}}
-
-$$
-
-Multiply both sides by $\frac{\delta}{c}$ (assuming $c > 0$):
-
-$$
-\left[\frac{c}{\delta} + K_{\text{curv}}\right] V_{\text{Var},v}^{\text{eq}} < \alpha_{\text{boundary}}
-
-$$
-
-**Sufficient condition:** Choose $c$ small enough:
-
-$$
-c < \delta \left[\frac{\alpha_{\text{boundary}}}{V_{\text{Var},v}^{\text{eq}}} - K_{\text{curv}}\right]
-
-$$
-
-This is **achievable** provided $\alpha_{\text{boundary}} > K_{\text{curv}} V_{\text{Var},v}^{\text{eq}}$, which is an explicit strength requirement on the confining potential near the boundary.
-
-**Resulting contraction rate:**
-
-$$
-\kappa_{\text{pot}} := \frac{1}{\gamma}\left[\alpha_{\text{align}} - K_{\varphi} V_{\text{Var},v}^{\text{eq}}\right] > 0
-
-$$
-
-**PART X: Aggregate Over All Particles**
-
-Sum over all particles:
-
-$$
-\sum_{k,i} \mathbb{E}[\mathcal{L}\Phi_{k,i}] \leq -\kappa_{\text{pot}} \sum_{k,i} \varphi_{k,i} + C_{\text{interior}}
-
-$$
-
-where $C_{\text{interior}}$ accounts for particles in the safe interior (where $\varphi = 0$) and the smooth transition region.
-
-Recall:
-
-$$
-W_b = \frac{1}{N}\sum_{k,i} \varphi_{\text{barrier}}(x_{k,i})
-
-$$
-
-Thus:
-
-$$
-\frac{1}{N}\sum_{k,i} \mathbb{E}[\mathcal{L}\Phi_{k,i}] \leq -\kappa_{\text{pot}} W_b + C_{\text{pot}}
-
-$$
-
-where $C_{\text{pot}} = \frac{C_{\text{interior}}}{N}$ is independent of $W_b$ (depends only on geometry and equilibrium statistics).
-
-**PART XI: Discrete-Time Version**
-
-By {prf:ref}`thm-discretization` (Discrete-Time Inheritance of Generator Drift), the continuous-time drift translates to discrete-time:
-
-$$
-\mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau + O(\tau^2)
-
-$$
-
-For sufficiently small $\tau$, the $O(\tau^2)$ term is absorbed into the modified constant.
-
-**Final result:**
-
-$$
-\boxed{\mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}} \tau}
-
-$$
-
-**Explicit constants:**
-
-$$
-\kappa_{\text{pot}} = \frac{1}{\gamma}\left[\frac{c}{\delta}\alpha_{\text{boundary}} - \left(\left(\frac{c}{\delta}\right)^2 + \frac{c}{\delta}K_{\text{curv}}\right)V_{\text{Var},v}^{\text{eq}}\right]
-
-$$
-
-$$
-C_{\text{pot}} = O(1) \quad \text{(geometry-dependent)}
-
-$$
-
-**PART XII: Physical Interpretation**
-
-This result demonstrates:
-
-1. **Confining force creates drift:** The negative alignment $\langle F, \nabla\varphi \rangle \leq -\alpha_{\text{align}}\varphi$ ensures particles near the boundary are pushed inward, creating negative drift in $\varphi$.
-
-2. **Velocity-weighted correction:** The term $\epsilon\langle v, \nabla\varphi \rangle$ with $\epsilon = \frac{1}{\gamma}$ captures particles **moving toward** the boundary, allowing the generator to act on both position and momentum.
-
-3. **Hessian competition:** The Hessian term $v^T(\nabla^2\varphi)v$ represents curvature effects that can add positive drift. For small $c$ (weak barrier strength), this is dominated by the negative alignment term.
-
-4. **Independent safety mechanism:** This contraction is **independent** of cloning — it's a fundamental property of the confining potential $U$. Combined with the Safe Harbor mechanism ({doc}`03_cloning`, Ch 11), this provides **layered defense** against extinction.
-
-5. **Parameter tradeoff:** Smaller $c$ gives stronger contraction (larger $\kappa_{\text{pot}}$) but weaker barrier strength. The choice balances safety (keep $\varphi$ finite) with convergence speed.
-
-**Q.E.D.**
+Itô's formula for the continuous extension gives
+$\mathcal LW_b=N^{-1}\sum_i v_i\cdot\nabla\varphi_i$.
+For the linear-in-velocity corrector, its velocity Hessian is zero. Using
+$dv_i=(F_i-\gamma v_i)dt+\Sigma_i\,dW_i$ and $dx_i=v_i\,dt$ gives
+
+$$
+\mathcal L\Phi_b=(\gamma N)^{-1}\sum_i
+\left[F_i\cdot\nabla\varphi_i+v_i^\top\nabla^2\varphi_i v_i\right].
+$$
+
+The position-drift terms cancel against the friction term in the corrector.
+If a different generator includes position diffusion, correlated increments,
+or status jumps, their actual additional terms must be included in the source
+bounds in the statement.
+
+After localization justified by the integrability assumptions, expectation
+and the alignment/Hessian bounds give
+
+$$
+\frac d{dt}\mathbb E\Phi_b
+\le-\frac{\alpha_{\rm align}-M_H}{\gamma}\mathbb EW_b
+ +(C_F+C_H)/\gamma.
+$$
+
+This controls the corrected observable, not yet $W_b$. Subtract the derivative
+of $\mathbb ER_b$ and apply its signed source bound to obtain the asserted
+inequality for $\mathbb EW_b$. Gronwall proves its continuous expectation
+bound. If the assumptions hold pointwise and (5.D1) is proved for $W_b$, apply
+{prf:ref}`thm-discretization` to get the discrete statement with its reduced
+coefficient and discretization source.
+
+For an exponential-distance barrier, a geometric estimate
+$\nabla^2\varphi\preceq K_\varphi\varphi I$ reduces the Hessian hypothesis to
+an actual weighted-moment bound
+$N^{-1}\sum_i\mathbb E[\varphi_i|v_i|^2]\le M_\varphi\mathbb EW_b+C_\varphi$;
+then $M_H=K_\varphi M_\varphi$ and $C_H=K_\varphi C_\varphi$.
+Neither an unweighted velocity variance nor a cap applied only at native step
+end establishes this continuous weighted bound. The signed corrector estimate
+must also be checked; force alignment alone cannot make
+$\mathcal LW_b=v\cdot\nabla\varphi$ uniformly negative for arbitrary outward
+velocities. These explicit hypotheses supply every step of the proof.
+$\square$
 :::
 
 ### 7.5. Layered Safety Architecture
@@ -3534,60 +3181,114 @@ This result demonstrates:
 :::{prf:corollary} Total Boundary Safety from Dual Mechanisms
 :label: cor-total-boundary-safety
 
-Combining the Safe Harbor mechanism from cloning ({doc}`03_cloning`, Ch 11) with the confining potential:
-
-**From cloning:**
-
-$$
-\mathbb{E}_{\text{clone}}[\Delta W_b] \leq -\kappa_b W_b + C_b
+Suppose the same boundary observable and status extension satisfy
+$P_CW_b\le r_CW_b+b_C$ and $P_KW_b\le r_KW_b+b_K$ on every cloning output,
+with $r_C,r_K\ge0$ and population-uniform sources. Then
 
 $$
-
-**From kinetics:**
-
-$$
-\mathbb{E}_{\text{kin}}[\Delta W_b] \leq -\kappa_{\text{pot}} W_b \tau + C_{\text{pot}}\tau
-
+P_CP_KW_b\le r_Kr_CW_b+r_Kb_C+b_K.
 $$
 
-**Combined:**
+When $r_C=1-\kappa_b$ and $r_K=1-\kappa_{\rm pot}h$, the complete-step
+coefficient is
 
 $$
-\mathbb{E}_{\text{total}}[\Delta W_b] \leq -(\kappa_b + \kappa_{\text{pot}}\tau) W_b + (C_b + C_{\text{pot}}\tau)
-
+1-r_Kr_C=\kappa_b+\kappa_{\rm pot}h-\kappa_b\kappa_{\rm pot}h.
 $$
 
-**Result:** **Layered defense** - even if one mechanism temporarily fails, the other provides safety.
+The kinetic coefficient from the preceding theorem is available only when
+all its corrector/moment and numerical-transfer hypotheses hold. Native
+fixed-cap boundary estimates can instead be inserted directly.
+:::
+
+:::{prf:proof}
+Apply the kinetic inequality to each cloning output, integrate over cloning,
+and use $r_K\ge0$. Expanding the product gives the complete-step coefficient.
+$\square$
 :::
 
 ### 7.6. Small-Set Minorization for the Kinetic Kernel
 
-:::{prf:lemma} Minorization on Compact Interior Sets
+:::{prf:lemma} Constructive native minorization on bounded input sets
 :label: lem-kinetic-minorization
 
-Fix $\delta_{\text{core}} > 0$ and define the compact interior set:
+Use the native isotropic BAOAB row kernel with independent OU and final
+position Gaussians of actual amplitudes $q>0$ and $s>0$, terminal-only
+classification, and the radial cap $C_V(w)=Vw/(V+|w|)$ with $V>0$.
+Assume $F\in C^1(\mathbb R^d)$, $|F(0)|\le B_F$ and
+$\|DF\|\le L_F$ on all physical positions, and no viscous or graph forces
+coupling the row updates. Put $c=h/2$, $a=e^{-\gamma h}$ and
+$\ell=c^2L_F<1$. Restrict actual prepared inputs to
+$|x|\le B_x$, $|v|\le B_v$; a distance from the boundary alone does not
+make this set bounded on an unbounded space.
+
+Choose a position ball $B(x_*,r_x)$ contained in the valid interior and
+$0<r_v<V$. Define
 
 $$
-\mathcal{K}_{\text{core}} := \{(x,v) : \text{dist}(x,\partial\mathcal{X}_{\text{valid}}) \geq \delta_{\text{core}},\ \|v\| \leq v_{\max}\}.
-
+\begin{gathered}
+A_v=B_v+c(B_F+L_FB_x),\qquad A_x=B_x+cA_v,\\
+B_3=\frac{Vr_v}{V-r_v},\qquad
+W=\frac{B_3+c(B_F+L_FA_x)}{1-\ell},\qquad X_2=A_x+cW,\\
+\log p_*=-d\log(2\pi qs)-\frac{(W+aA_v)^2}{2q^2}
+ -\frac{(|x_*|+r_x+X_2)^2}{2s^2}-d\log(1+\ell),\\
+\log\epsilon_{\rm kin}=\log p_*+2\log\omega_d
+ +d\log r_x+d\log r_v,                              \tag{5.M1}
+\end{gathered}
 $$
 
-Under uniform ellipticity of $\Sigma$ and velocity squashing, there exist $\epsilon_{\text{kin}} > 0$ and a probability measure $\nu_{\text{kin}}$ with compact support such that for all $(x,v) \in \mathcal{K}_{\text{core}}$ and all measurable sets $A$:
+where $\omega_d$ is the unit-ball volume. Let $\nu_{\rm kin}$ be uniform
+probability on $B(x_*,r_x)\times B(0,r_v)$ with its terminal alive mark.
+Then the complete physical row kernel satisfies
 
 $$
-P_{\text{kin}}((x,v), A) \geq \epsilon_{\text{kin}}\, \nu_{\text{kin}}(A).
-
+K((x,v),A)\ge\epsilon_{\rm kin}\nu_{\rm kin}(A),
+\qquad \epsilon_{\rm kin}=e^{\log\epsilon_{\rm kin}}>0. \tag{5.M2}
 $$
+
+This is the density construction of
+{prf:ref}`cor-eg-compact-kinetic-covariance`, with the OU damping coefficient
+written explicitly. The row coefficient is independent of $N$. For $N$
+prepared rows in this input class, the independent row specialization gives
+$\epsilon_{\rm kin}^N$ on the product reference and on its quotient by
+permutations; this does not establish an $N$-uniform whole-swarm coefficient.
+With nonzero viscosity or graph forces, retain their coupled random-state
+Jacobian and noise law in a separate density proof; a row-product argument
+cannot be transferred silently. Zero final position noise does not supply
+the two independent $d$-dimensional innovations required here.
 :::
 
 :::{prf:proof}
-During the O-step, the velocity update is Gaussian with covariance
-$$
-Q(x,v) = \frac{1 - e^{-2\gamma\tau}}{2\gamma}\Sigma(x,v)\Sigma(x,v)^T,
-$$
-and uniform ellipticity implies $Q(x,v) \succeq q_{\min} I_d$ on $\mathcal{K}_{\text{core}}$. The A/B steps and the squashing map are smooth with uniformly bounded Jacobian on $\mathcal{K}_{\text{core}}$, so the pushforward of the Gaussian has a smooth density bounded below on a fixed ball inside the image of $\mathcal{K}_{\text{core}}$. Choosing $\nu_{\text{kin}}$ as normalized Lebesgue on that ball yields the stated minorization. See Meyn & Tweedie (2009, Ch. 5) and Hairer & Mattingly (2011) for the standard construction.
+The first kick and drift give $|v_1|\le A_v$, $|x_1|\le A_x$.
+Write the OU velocity as $z=av_1+q\xi$, the second drift position as
+$x_2=x_1+cz$, and the pre-cap velocity as
+$T(z)=z+cF(x_1+cz)$. For every target $w$, the equation
+$z=w-cF(x_1+cz)$ is a contraction of complete Euclidean space with
+constant $\ell<1$. Thus $T$ is a global $C^1$ diffeomorphism and its
+singular values lie in $[1-\ell,1+\ell]$.
 
-**Q.E.D.**
+For $|v^+|\le r_v$, the inverse cap obeys
+$|C_V^{-1}(v^+)|\le B_3$. Global force growth gives
+$(1-\ell)|z|\le B_3+c(B_F+L_FA_x)$, hence $|z|\le W$ and
+$|x_2|\le X_2$. Its OU density is at least
+$(2\pi q^2)^{-d/2}\exp[-(W+aA_v)^2/(2q^2)]$.
+The independent final position density at
+$x^+\in B(x_*,r_x)$ is at least
+$(2\pi s^2)^{-d/2}\exp[-(|x_*|+r_x+X_2)^2/(2s^2)]$.
+The change of variables $z\mapsto T(z)$ contributes an inverse determinant
+at least $(1+\ell)^{-d}$. Every singular value of $DC_V$ is at most one,
+so the inverse-cap determinant is at least one. Multiplying proves the
+joint density lower bound $p_*$ on the target product ball. Integrating
+against its volume $\omega_d^2r_x^dr_v^d$ proves (5.M2), including its
+terminal alive mark. In particular $\epsilon_{\rm kin}\le1$ because it
+minorizes a probability law.
+
+Conditional on a complete prepared population in this class, the declared
+uncoupled kinetic innovations are independent across rows. Multiplying
+the row inequalities gives the displayed $N$th-power coefficient.
+Taking the permutation quotient is a common measurable pushforward and
+preserves the minorization. Logarithms in (5.M1) retain its coefficient
+when binary64 exponentiation underflows. $\square$
 :::
 
 ### 7.7. Summary

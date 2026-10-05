@@ -512,6 +512,14 @@ pub fn apply_component_rotations<T: Real>(
         let mut before_energy = 0.;
         let mut after_energy = 0.;
         let mut after_momentum = vec![0.; d];
+        // The elastic identity collision is exactly the identity on frozen
+        // velocities. Reconstructing mean + (v - mean) can erase a small v
+        // next to a large component mean, even with f64 intermediates.
+        let identity = restitution == 1.
+            && rotation
+                .iter()
+                .enumerate()
+                .all(|(k, &x)| x == if k % (d + 1) == 0 { 1. } else { 0. });
         for &i in members {
             let relative: Vec<_> = old
                 .row(i)?
@@ -520,17 +528,21 @@ pub fn apply_component_rotations<T: Real>(
                 .map(|(v, m)| v.to_f64() - m)
                 .collect();
             before_energy += 0.5 * relative.iter().map(|x| x * x).sum::<f64>();
-            let output: Vec<T> = (0..d)
-                .map(|a| {
-                    T::from_f64(
-                        center[a]
-                            + restitution
-                                * (0..d)
-                                    .map(|b| rotation[a * d + b] * relative[b])
-                                    .sum::<f64>(),
-                    )
-                })
-                .collect();
+            let output: Vec<T> = if identity {
+                old.row(i)?.to_vec()
+            } else {
+                (0..d)
+                    .map(|a| {
+                        T::from_f64(
+                            center[a]
+                                + restitution
+                                    * (0..d)
+                                        .map(|b| rotation[a * d + b] * relative[b])
+                                        .sum::<f64>(),
+                        )
+                    })
+                    .collect()
+            };
             require(
                 output.iter().all(|x| x.is_finite()),
                 "component collision output overflow",

@@ -505,6 +505,30 @@ $$
 \leq A_qL_N|x|^q+B_q,\qquad |v_i'|\leq V.
 $$
 
+One explicit choice, with $G\sim N(0,I_d)$, is
+
+$$
+\beta_h=\frac h2(1+c_h),\qquad \eta_h=\frac h2\beta_h,
+\qquad a_h=1+\eta_hL_U,\qquad
+G_{q,d}=\mathbb E|G|^q=
+2^{q/2}\frac{\Gamma((d+q)/2)}{\Gamma(d/2)},
+$$
+
+$$
+A_q=5^{q-1}a_h^q\left(1+\frac2{\kappa_C}\right),
+$$
+
+$$
+B_q=5^{q-1}\left[
+(a_h\sigma_J)^qG_{q,d}
++(\beta_hW+\eta_hB_U)^q
++\left(\frac h2s_h\|B\|\right)^qG_{q,d}
++(\sigma_x\sqrt h)^qG_{q,d}\right].
+$$
+
+These constants retain dimension explicitly and are independent of $N$.
+For even $q=2k$, $G_{q,d}=\prod_{j=0}^{k-1}(d+2j)$.
+
 The same estimate holds for $\mathcal F_h$. Thus finite initial moments propagate uniformly in $N$ at every fixed finite horizon. If an initial moment of order $q+\delta$ is uniformly bounded, moments of order $q$ are uniformly integrable at those horizons.
 
 *Proof.* For $N\geq2$, each eligible donor probability is at most $2/(\kappa_CN)$; for a singleton the position is retained. Therefore frozen position copying obeys
@@ -514,7 +538,15 @@ $$
 \leq\left(1+\frac2{\kappa_C}\right)L_N|x|^q.
 $$
 
-Gaussian jitter has every finite moment. Collision velocities are bounded by $W$. Linear growth of $\nabla U$ and the finite BAOAB coefficients then bound $|X_2|^q$ by a constant times $1+|X_0|^q+|\xi^O|^q$. Add the finite final position-noise moment. The cap proves the velocity bound, and induction gives the assertion. Applying the estimate at $q+\delta$ proves uniform integrability at order $q$. No compact physical support or stationary moment bound was used. $\square$
+Write $X_{\rm copy}$ for the frozen selected position. The complete positional update obeys
+
+$$
+|X_3|\leq a_h|X_{\rm copy}|+a_h\sigma_J|\xi^J|
++\beta_hW+\eta_hB_U
++\frac h2s_h\|B\||\xi^O|+\sigma_x\sqrt h|\xi^x|.
+$$
+
+The jitter term can be assigned to every row as an upper bound, including a row without an accepted outgoing edge. For five nonnegative terms, convexity gives $(\sum_{j=1}^5t_j)^q\leq5^{q-1}\sum_{j=1}^5t_j^q$. Combine the deterministic term $\beta_hW+\eta_hB_U$ as one of those terms, integrate the three Gaussian norm moments, and apply the preceding selected-position bound. This gives exactly $A_q,B_q$ displayed above. The cap proves the velocity bound, and induction gives the assertion. Applying the estimate at $q+\delta$ proves uniform integrability at order $q$. No compact physical support or stationary moment bound was used. $\square$
 :::
 
 :::{prf:lemma} Continuity of the actual population map

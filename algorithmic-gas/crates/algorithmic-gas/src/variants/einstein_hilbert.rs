@@ -25,6 +25,69 @@ use crate::{
 /// Temperature of the reference instance (`RunConfig::einstein_hilbert`).
 pub const REFERENCE_TEMPERATURE: f64 = 0.33;
 
+/// Bounds for the actual quarter-kick matrix P = I + (h nu / 4)(W - diag(W 1)).
+/// These are diagnostics of one supplied graph, not a uniform-in-population
+/// certificate for a changing tessellation or a stationarity assertion.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct GraphKickBounds {
+    pub maximum_row_sum: f64,
+    pub maximum_column_sum: f64,
+    /// Maximum column sum of P. Jensen gives sum |P v|^p <= kappa sum |v|^p
+    /// for p >= 1. One Boris B stage has factor kappa^2 in this estimate.
+    pub quarter_kick_moment_factor: f64,
+}
+
+/// Check nonnegative finite weights and the convexity condition for a frozen
+/// graph. Includes isolated rows and the row-sum floor used by the native
+/// weighting code. Does not change or renormalize the executed weights.
+pub fn graph_kick_bounds<T: crate::Real>(
+    graph: &crate::tessellation::NeighborGraph,
+    weights: &[T],
+    coefficient: f64,
+    dt: f64,
+) -> Result<GraphKickBounds> {
+    graph.validate()?;
+    require(
+        graph.nodes() > 0
+            && weights.len() == graph.edges()
+            && coefficient.is_finite()
+            && coefficient >= 0.
+            && dt.is_finite()
+            && dt > 0.,
+        "invalid graph kick bound inputs",
+    )?;
+    let a = (dt * 0.25) * coefficient;
+    require(a.is_finite(), "graph kick coefficient overflow")?;
+    let mut rows = vec![0.; graph.nodes()];
+    let mut columns = vec![0.; graph.nodes()];
+    for (i, row) in rows.iter_mut().enumerate() {
+        for e in graph.range(i) {
+            let w = weights[e].to_f64();
+            require(w.is_finite() && w >= 0., "invalid graph kick weight")?;
+            *row += w;
+            columns[graph.neighbors()[e] as usize] += w;
+        }
+    }
+    require(
+        rows.iter().chain(&columns).all(|x| x.is_finite()),
+        "graph kick weight sum overflow",
+    )?;
+    let maximum_row_sum = rows.iter().copied().fold(0., f64::max);
+    require(
+        a * maximum_row_sum <= 1.,
+        "graph quarter-kick is not a convex average: dt * coefficient * max_row_sum > 4",
+    )?;
+    Ok(GraphKickBounds {
+        maximum_row_sum,
+        maximum_column_sum: columns.iter().copied().fold(0., f64::max),
+        quarter_kick_moment_factor: rows
+            .iter()
+            .zip(&columns)
+            .map(|(&row, &column)| 1. - a * row + a * column)
+            .fold(0., f64::max),
+    })
+}
+
 impl GasConfig {
     /// Einstein-Hilbert gas over the fields `positions` and `velocities`, at
     /// the given temperature and BAOAB time step. Build it with

@@ -13,8 +13,7 @@ fn population() -> Population<f64> {
     let x = vec![
         0., 0., 0., 0.4, 0., 0., 0., 0.5, 0., 0., 0., 0.6, 0.2, 0.3, 0.4,
     ];
-    let mut observations =
-        ObservationBatch::positions(TensorBatch::vectors(5, 3, x).unwrap());
+    let mut observations = ObservationBatch::positions(TensorBatch::vectors(5, 3, x).unwrap());
     observations.fields.insert(
         "velocities".into(),
         TensorBatch::vectors(5, 3, vec![0.; 15]).unwrap(),
@@ -64,12 +63,8 @@ fn dropping_a_spatial_coordinate_is_rejected() {
 fn the_observer_preserves_edge_budget_errors_and_the_input() {
     let p = population();
     let before = p.clone();
-    let result = observe_recorded_geometry(
-        &p.observations,
-        &GeometryPipelineConfig::default(),
-        None,
-        0,
-    );
+    let result =
+        observe_recorded_geometry(&p.observations, &GeometryPipelineConfig::default(), None, 0);
     assert!(result.unwrap_err().to_string().contains("above the budget"));
     assert_eq!(p, before);
 }

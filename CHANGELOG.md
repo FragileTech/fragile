@@ -1,5 +1,95 @@
 # Changelog
 
+- Extend native Rust validation through Chapters 10–12 with source-specific
+  entropy/Fisher, mass–shape/transport and exchangeability checks. Tighten
+  separable nonconvex LSI constants through coordinate tensorization and retain
+  independent native trajectory ensembles, whole-trajectory uncertainty, full
+  permutation replays and lossless archives for later analyses.
+
+- Extend Rust validation to Chapters 7–9 with independently sampled Poisson
+  clouds, complete marked mean-field updates, native kinetic resonance,
+  population-independent component and fluctuation constants, and measured
+  population scaling. Preserve full stages, rooted component draws, innovations,
+  source snapshots and reusable compressed data. Prove explicit dimension
+  dependence of finite-horizon moments and extend the canonical chaos reward
+  hypotheses to confining nonquadratic landscapes.
+
+- Complete retained-stage kinetic moment comparisons and source-scoped chapter
+  ledgers; repair transient positional and native joint-density bounds. Add a
+  global nonquadratic landscape-axiom certificate, population-independent
+  weak-selection moment and tail rates, and lossless native parameter sweeps.
+
+- Make convergence bounds dimension-explicit and extend the Rust validation
+  registers to regional landscape axioms, nonquadratic force moduli, slow zones,
+  Gaussian excursions and unbounded reward tails. Add complete regional error
+  and native force-perturbation proofs, independent interval certificates for
+  Rastrigin within-well rates, and reusable native nonconvex experiment archives.
+  Keep all errors population-normalized and test theorem applicability separately
+  from observed transport decay.
+
+- Add fresh native Rust experiments for Chapters 4–6: paired cloning clouds,
+  dense viscous reference runs, normalized permutation-invariant capped kinetic
+  contraction, exact-SDE timestep refinement and independent killed-chain
+  ensembles. Retain lossless stage/noise archives, resumable checkpoints,
+  checksums, source snapshots and saved-data re-analysis.
+  Resolve quadratic timestep errors with exact Gaussian cubature and an explicit
+  population-independent weak-error prefactor. Repair the continuum location
+  metric, macroforce closure, generator-transfer and boundary-corrector
+  hypotheses, and propagate them to the convergence composition.
+
+- Add parallel chapter 4–6 analyses of retained Rust experiments, with source
+  expression inventories, reconstructed rate and moment predictions, strict
+  applicability gates and input provenance. Use exact Gaussian quadratic
+  uncertainty for the saved small-ensemble linear controls, and align Chapter 5
+  cap, timestep and thermostat-law statements with the actual native kernel.
+
+- Complete the Chapter 3 source-expression validation gate and add independent
+  native measurements of Keystone feedback, conditional cloning moments,
+  collision dissipation, boundary bounds and complete weighted proposal drift.
+  Retain predictions, residual uncertainty and population-independent bounds.
+
+- Complete default harmonic kinetic contraction on positional-shape classes,
+  a signed nonconstant inward-velocity family and its actual alive-law
+  terminal transfer. Prove preserved source-boundary envelopes, complete
+  full-dead feedback and exact delayed signed law/moment accounts; retain
+  the remaining unrestricted active default convergence obligation.
+  Complete the full recipient-jitter first-provider consumer, conditional
+  noisy-cap derivative deficit and centered first-force operator bound;
+  the default positional margin passes under its proved velocity budgets.
+  Prove actual mean-cap matrix sectors and a signed first-provider/cap
+  auxiliary margin; bound mixed extinction and empirical-position losses
+  through full Gaussian source plans and each own survival denominator.
+  Retain the complete second-provider and full alive-law proof obligations.
+
+- Prove default harmonic velocity burn and full-Gaussian provider feedback,
+  noncommuting count/cap principal contraction, actual finite marked
+  consistency and uniform-time empirical-provider budgets under own survival.
+  Retain the separate signed preparation and full-law convergence obligation.
+
+- Prove complete native stationary functional fluctuations and original unbounded-source response. Derive full interacting downstream population linearization and covariance, actual two-copy clone/Haar and sampled-normalizer brackets and complete conditional-entering Gaussian innovations with strictly positive covariance trace, uniform weighted-color time limits, and hard-threshold harmonic color Gaussian laws with strictly positive covariance on every joint population/time schedule. Reconstruct full native color histories with exact population-uniform gaps and a positive interacting full stationary family with its complete color-clock classification and exact scalar-orbit history spectrum; derive same-record stationary phase/graph scaling with critical marked action, nondegenerate complete spatial-action history with native retessellation and every-schedule joint time limits, and fixed-phase divergence; classify the native weighted Yang–Mills equation and source variations, and exhibit actual positive-viscosity color-only reflection and regional CAR tests with explicit parameter regimes. Derive the literal coupled Einstein–Hilbert kernel/action response, its actual relative-rank moment obstruction, and uncut bounded-action, spectral-interface and full-history thermal/source/ridge and viscosity/curl force-score responses for the existing absolute metric. Update the proof difficulty assessment to credit these results.
+
+- Complete the actual row-normalized raw-reward surviving alive-law extension with an N-independent relaxation rate and an explicit vanishing uniform-time particle floor. Prove both true row denominator interfaces with uncapped correlated OU velocities, source-box weak continuity and exact recent-survival normalization; cover both alive sampling orders and separately surviving two-swarm laws. Sharpen the count surviving floor without a dead-moment cutoff, and prove default-box alive coverage plus reference-viscosity frozen-provider gaps. Repair the complete-map cap contraction and enlarge its positive count-viscosity interval while retaining the separate nonlinear default-law obligation.
+
+- Extend the native proof programme with quantitative full marked stationary chaos and commuting limits, primitive population-uniform QSD eigenfunction/history comparison, full-state block entropy and L2 estimates, stationary terminal color martingales, quantitative marked geometry and literal hard-mask bounds, separated-root and alive-normalized space/time covariance, actual zero-final-noise spatial projector curvature and uncut compact-chart Wilson limits. Characterize the zero-threshold origin divergence and retain each result's exact algorithm, readout and parameter regime.
+
+- Prove preparation-exact Rastrigin survival and inverse-alive bounds for both dense normalizations, certify the finite Gaussian integrals, and retain every gate, Haar and unbounded noise contribution. Derive the complete rejected/surviving entropy identity with population-uniform conditioning cost, and extend physical mean-field and stationary population-orbit invariance to the unchanged native Rastrigin force. Compute the discounted central-discovery clock at every population, complete seed offspring law, positive-volume joint-core producer and exact correlated joint-energy ledger. Bound actual sampled mean fitness by 1.614 and derive signed Gaussian source pressure with exact revival. Quantify the finite-population two-update source producer and uniform initial joint prices; compute exact component-Haar orbital, death and extinction charges. Reduce global eigenfunction comparison to full-state reached-phase oscillation and retain continued source quality and entropy production as separate obligations.
+
+- Prove population-uniform active harmonic alive-law mixing at the original nonresonant timestep with an explicit positive selection interval. With active selection and positive count viscosity, prove a unique population stationary law and actual finite-swarm alive Wasserstein relaxation with an explicit vanishing uniform-time particle floor. Establish exact positive-viscosity invariant-law relaxation with cloning disabled, joint active count-viscous smoothing, active-cloning fourth-moment drift at the original count viscosity, and finite-future survival-weight ratios with sharp alive-law conditioning bounds. Complete actual survivor-conditioned alive empirical-law and sampled-law Wasserstein relaxation, including the unchanged raw quadratic reward, with N-independent rates and explicit vanishing particle floors in a nonempty small-positive-viscosity/selection and fixed-large-box regime. Retain the original ν=0.3/L=2 and exact finite-QSD mixing extensions explicitly.
+
+- Preserve frozen velocities exactly in elastic identity collisions. Add quantitative Einstein–Hilbert centered cloning moments, population-uniform center and spread fluctuations, native fitness-tail and selection-continuity estimates, both Boris/OU transition budgets, reversible dissipation, signed cycle martingale bounds, native curvature balance and neighborhood-marked population estimates. Validate the formulas with native Rust stage records, exhaustive matching calculations, independent checkpoint replicas and extended shape/geometry simulations. Correct geometry regularization and execution-totality claims; retain the unresolved full graph-dependent population limit.
+
+- Complete population-uniform alive-law convergence in an explicit conservative weak-selection regime: prove exact finite-swarm invariant-law mixing through sampled global fitness, finite accepted-component coupling and two-update Gaussian bridges, with population-independent alive-sampled TV and empirical-law Wasserstein rates. Upgrade the unbounded-reward mean-field result to physical Wasserstein distance with its explicit vanishing particle floor, and verify nonempty primitive parameter profiles.
+
+- Add native Rust validation for the first three convergence chapters, with exhaustive source inventories, continuity and drift coefficients, exact transport and cloning moments, independent kinetic/cloning/reset ensembles, parameter matrices, and logarithmic Keystone rates. Correct Sasaki measurement and optimal-transport coercivity bounds, enforce permutation-invariant empirical observables, repair boundary-smoothing normalization and rescale constants, and validate scheduled revival from live donors even with unrestricted retained dead positions. Prove population-independent empirical standardization bounds and decreasing native measurement error; test paired complete-update alive-law error trajectories, fixed contraction rates, noise floors and empirical temporal decay. Preserve full marked transport as a separate diagnostic and support reanalysis of retained native trajectories.
+
+- Extend the coupled gas through the original alive-centered Keystone and regional landscape method: retain actual normalizers, donor/revival flux, shared Haar, both viscous kicks, cap and terminal conditioning. Compute population-uniform row, moment, inverse-alive and regional Rastrigin bounds with unrestricted Gaussian jitter; separate centroid and between-phase geometry, evaluate actual phase crossings and QSD killing corrections, and prove exact symmetry-orbit weights.
+
+- Advance the Volume II proof programme with complete native parameter records, population-independent B2 force bounds, discrete marked-law entropy, finite-time geometry and survival, same-sample graph consistency, population-uniform reference determinant amplitude and nonzero limiting centered innovations, conditional gauge and metric variations, filled-ground physical-time positivity, native locality budgets and exact implemented spectral/dispersion bounds. Characterize the full tagged determinant's failing square-root scaling and retain explicit stationary, physical correspondence and uniform-gap obligations. Extend this with uniform spatial survivor inequalities, invariant stationary population-law limits, a causal nonzero gauge innovation process with exact bracket, the actual capped B2 conditional action and correlated face-action limit, and complete native transfer decay. Prove the actual interacting count kernel's full-record time-reversal cycle, while retaining the separate physical gauge-sector reconstruction obligation. Derive a positive active-cloning marked stationary-chaos regime, native non-Abelian projector transport and noncommuting curvature, a complete scaled native jump-diffusion/gauge-process limit, and reflection/transfer tests inside the actual projector observable dictionary. Prove the unchanged reference's native sparse Delaunay/Poisson geometry, local spatial likelihood and score, exact ridge and row-floor regimes, and predictive leakage of the actual common-SU(3) color quotient for every configured threshold. Derive conditional empirical same-record geometry concentration and the actual conformal-curvature/allocated-density limits. Prove population-uniform full marked stationary variance and unconditional entropy/transport estimates in the derived active-cloning count regime. Derive shared-force marked spatial limits and native smeared color CLTs, and classify the actual centroid-history reflection regimes with a positive strided physical reconstruction and exact uniform centroid gap.
+
+- Repair the Volume II cloning signal proof: replace the unattainable global-variance condition with within-group variance bounds and explicit orientation, prove conditional measurement-event bounds, retain vector cluster geometry and invalid-cluster contributions, and propagate the complete averaged Keystone estimate with its velocity and finite-population remainders into Wasserstein control. Complete finite-population survival-conditioned TV and alive-marginal Wasserstein convergence through primitive kernel estimates, verify the unchanged reference analytically, and prove the obstruction to the coarse cap-charged kinetic test at the canonical step size. Complete terminal-mark and singleton-revival full-array counterexamples, and an active near-tie counterexample for the prescribed labeled coupling, to the respective global quadratic estimates with a vanishing residual. Distinguish those costs from optimal alive empirical transport and alive-sampled marginal laws; prove actual Rastrigin one-update alive-transport expansion and separate phase-local contraction from convergence in law.
+
+- Derive primitive-parameter QSD eigenfunction and conditioned mixing/entropy bounds using the actual two-update viscous gas. Extend the finite-population certificate to analytic forces with calculated global derivative profiles for both Gaussian normalizations, verify the unchanged reference, and add logarithmic evaluation with independent stage-map and Perron checks. Preserve the force, gate, unbounded innovations and existing terminal/cap conventions.
+
 - Define the recorded color–geometry viscous gas with a full parameter register, exact stage masks and the implemented thresholded covariance pseudo-inverse. Prove coupled kinetic moments, finite-population QSD/entropy, population-independent QSD marginal tails and fixed-step population limits for both existing Gaussian normalizations, and the filled-ground/parity/gauge-sector spectrum of the existing finite Hamiltonian. Add a passive native geometry observer, numerical diagnostics and independent occupation-spectrum, viscous-balance and observer-noninterference tests; retain explicit conjectures for uniform stationary control and continuum physical identification. Repair labelled-proof index metadata so the two-volume book renders with the installed proof extension, with a native Sphinx regression test.
 
 - Document the remaining Volume 2 Yang–Mills and quantum-gravity proof steps, with source-linked theorem dependencies, continuum-control requirements, and the three-space-plus-algorithmic-time reconstruction programme.

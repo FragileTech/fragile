@@ -1,0 +1,11 @@
+{
+  "timestep": 0.04,
+  "friction": 1.0,
+  "velocity_cap": 1.0,
+  "position_diffusion": 0.25,
+  "clone_jitter": 0.0,
+  "restitution": 0.0,
+  "reward_exponent": 1.0,
+  "diversity_exponent": 1.0,
+  "cloning_bandwidth": 2.0
+}

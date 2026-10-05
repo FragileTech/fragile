@@ -95,7 +95,7 @@
     "part": "II",
     "title": "Compare the variance proxy with transport cost",
     "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
-    "target": "5. From Variance Contraction"
+    "target": "5. Centered Positional Control from the Reset Bound"
   },
   {
     "id": "II-05",

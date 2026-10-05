@@ -66,6 +66,54 @@ fn close(a: f64, b: f64) {
 }
 
 #[test]
+fn elastic_identity_restores_frozen_velocities_bit_for_bit() {
+    fn check<T: Real>() {
+        let mut observations =
+            ObservationBatch::positions(TensorBatch::vectors(2, 2, vec![T::ZERO; 4]).unwrap());
+        let frozen = vec![
+            T::from_f64(1e16),
+            T::from_f64(-1e16),
+            T::ONE,
+            T::from_f64(-0.),
+        ];
+        observations.fields.insert(
+            "velocities".into(),
+            TensorBatch::vectors(2, 2, frozen.clone()).unwrap(),
+        );
+        let before = Population::new(observations).unwrap();
+        let mut after = before.clone();
+        // Literal donor copying has overwritten the recipient velocity.
+        after
+            .observations
+            .field_mut("velocities")
+            .unwrap()
+            .replace_row(1, &frozen[..2])
+            .unwrap();
+        apply_component_rotations(
+            &before,
+            &mut after,
+            &[vec![0, 1]],
+            &[vec![1., 0., 0., 1.]],
+            "velocities",
+            1.,
+        )
+        .unwrap();
+        for (actual, expected) in after
+            .observations
+            .field("velocities")
+            .unwrap()
+            .values()
+            .iter()
+            .zip(&frozen)
+        {
+            assert_eq!(actual.to_f64().to_bits(), expected.to_f64().to_bits());
+        }
+    }
+    check::<f32>();
+    check::<f64>();
+}
+
+#[test]
 fn overlapping_edges_use_frozen_velocities_including_revived_dead_slots() {
     block_on(async {
         for d in [1, 2, 3] {

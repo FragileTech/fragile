@@ -87,6 +87,241 @@ QSD is a measure on $E_N$; its one-particle marginal is not by definition a QSD
 of a frozen single-particle kernel.
 :::
 
+:::{prf:remark} Completed population-uniform conservative alive-law mixing
+:label: rem-convergence-completed-uniform-alive-law
+
+For the current-frame conservative nonviscous canonical gas,
+{prf:ref}`thm-slcw-finite-uniform-law` proves exact convergence of the
+uniformly alive-sampled law to its finite-swarm stationary law:
+$$
+ \|\lambda_{N,n}^a-\lambda_N^{a,*}\|_{\rm TV}
+ \le q_f^{\lfloor n/2\rfloor},\qquad N\ge2,
+$$
+with $q_f<1$ independent of $N$. The same theorem proves Wasserstein
+relaxation for the law of the random alive empirical measure. Its actual
+finite-component coupling and two-update Gaussian bridge supply a primitive
+nonempty weak-selection interval in
+{prf:ref}`cor-slcw-finite-positive-exponents`. The bounded raw reward,
+bounded completed force-center profile, positive kinetic noises, capped
+velocity and death-disabled hypotheses remain part of that theorem.
+For a same-potential unbounded raw reward,
+{prf:ref}`thm-slcw-alive-uniform-law` instead controls convergence toward
+the stationary population law with an explicit vanishing particle floor.
+The quadratic and Rastrigin regimes are verified in
+{prf:ref}`cor-slcw-concrete-alive-profile` and
+{prf:ref}`cor-slcw-rastrigin-uniform-law`.
+
+At the original nonresonant harmonic timestep,
+{prf:ref}`thm-kuhw-active-exact-uniform-law` proves exact
+finite-swarm invariant alive-law mixing at weak positive selection
+with no particle floor. Its uniform weighted coupling and moment
+drift include the actual current-frame global fitness normalizers
+and accepted collision components. The complete bounded-reward
+profile is {prf:ref}`cor-kuhw-original-step-active-profile`; viscosity
+and death remain disabled in this active theorem.
+
+For the conservative harmonic kernel with cloning disabled,
+{prf:ref}`cor-ku-count-kinetic-invariant-law` additionally proves
+exact finite-swarm invariant-law and alive-law Wasserstein
+relaxation with an $N$-independent rate at strictly positive count
+viscosity in {prf:ref}`cor-ku-original-step-positive-count`.
+For active cloning at the original count viscosity $\nu=0.3$,
+{prf:ref}`lem-ku-count-active-harmonic-drift` supplies an explicit
+population-uniform fourth-moment drift at weak positive selection.
+That moment result does not close the active-law feedback estimate.
+
+The complete-update native-cap certificate
+{prf:ref}`thm-rcap-harmonic-whole-update` now gives a stronger
+cloning-disabled baseline. Its enlarged strictly positive count-viscosity
+interval is {prf:ref}`cor-rcap-positive-count-interval`, with exact
+finite-swarm invariant and alive-law Wasserstein relaxation and no
+particle floor. At the original harmonic parameters, its diagnostic
+endpoint is approximately $0.000260436$; its exact formula, rather than
+this decimal, certifies the interval. It still does not reach $0.3$.
+
+For active selection and strictly positive count viscosity,
+{prf:ref}`thm-pvb-active-population-convergence` and
+{prf:ref}`thm-vupt-uniform-time` now prove actual alive-observation
+relaxation toward the conservative population stationary law.
+With the explicit $q'<1$, $\varepsilon_N\to0$ and $C_G,C_*$ of
+{prf:ref}`cor-vupt-alive-w2`,
+$$
+ \mathbb E W_{2,G}^2(\widehat\mu_n^N,\pi_{\nu,\theta}),\qquad
+ W_{2,G}^2(\mathbb E\widehat\mu_n^N,\pi_{\nu,\theta})
+ \le C_G\sqrt{\min\{1,C_*q'^n+\varepsilon_N\}}.
+$$
+The random empirical-measure law obeys the same estimate. The actual
+sampled preparation and both correlated viscous kicks are retained;
+entering swarms need no independence or exchangeability. The sufficient
+regime includes $F=-x$, $h=0.04$, bounded configured reward
+$-\tanh(|x|^2/2)$, explicit positive selection and viscosity intervals,
+death disabled, and a uniform initial averaged eighth-moment budget.
+This result has a population target and a particle floor; it does not
+assert exact dense finite-array invariant mixing or certify $\nu=0.3$.
+
+For the raw same-potential channels $F=-x$, $R=-|x|^2/2$,
+{prf:ref}`cor-rqf-active-population` and
+{prf:ref}`thm-rqpt-uniform-time` prove population attraction and actual
+finite-swarm alive Wasserstein relaxation with an explicit vanishing
+uniform-time particle floor, using the actual logistic derivative decay.
+The optimal alive empirical-law and alive-sampled bounds are
+{prf:ref}`cor-rqpt-alive-w2`, under the raw primitive positive selection
+and count-viscosity intervals and initial averaged eighth-moment budget.
+For the terminal-box marked population update,
+{prf:ref}`thm-kpf-large-box-population-convergence` additionally proves
+attraction to a unique stationary revival population law in a primitive
+nonempty regime with a fixed sufficiently large box and positive selection
+and viscosity. {prf:ref}`cor-kpf-current-alive-relaxation` gives its current
+alive TV and Wasserstein relaxation. Mandatory revival, each environment's
+alive normalizer and terminal death are retained. This marked population
+law is not identified with a finite-swarm QSD or survivor law.
+
+The actual surviving finite-swarm transfer is now proved in
+{prf:ref}`thm-spt-uniform-surviving-law` and {prf:ref}`cor-spt-alive-w2`.
+For the fixed large-box, positive weak-selection and count-viscosity regime,
+its optimal current-alive empirical-law and swarm-first sampled bounds are
+$$
+ \mathbb E[W_{2,G}^2(\widehat\alpha_n^N,\pi_L^A)\mid\tau_N>n],\qquad
+ W_{2,G}^2(\mathbb E[\widehat\alpha_n^N\mid\tau_N>n],\pi_L^A)
+ \le\mathcal D_G^2\min\{1,2u_{N,n}/m_f+c_{\rm s}r_N\},
+$$
+where $u_{N,n}=\min\{1,C_{\rm pop}r_*^{n-1}+\varepsilon_N^{\rm s}\}$,
+$r_*<1$ is independent of $N$, and
+$\varepsilon_N^{\rm s},r_N\to0$. The proof retains each swarm's own
+survival denominator and the actual alive empirical normalization; it
+charges survival only over a recent restart window. Arbitrary retained
+entering dead coordinates are allowed. Its target is the alive restriction
+of the marked population stationary law, with a vanishing particle floor,
+and is not identified with an exact finite-swarm QSD.
+
+The same-potential raw quadratic surviving law is completed in
+{prf:ref}`cor-rqk-surviving-alive-law`. Its unchanged channels are
+$F=-x$, $R=-|x|^2/2$; all population endpoints are computed before the
+fixed sufficiently large box is chosen. Only the finite weak comparison
+uses the subsequent alive-box reward bounds. It gives the preceding
+survival-conditioned optimal alive-law estimate with its own explicit
+raw positive selection/viscosity interval and vanishing particle floor.
+
+The true row-normalized kernel also has a completed population and
+actual finite surviving-swarm law in
+{prf:ref}`thm-rpf-marked-population`,
+{prf:ref}`thm-rft-uniform-surviving-law` and
+{prf:ref}`cor-rft-alive-wasserstein`. The rate is independent of $N$;
+the explicit particle floor vanishes uniformly over all times. Both
+alive sampling orders are covered, with their separate normalization
+in {prf:ref}`cor-rft-all-slot-alive-sample`. The proof retains the raw
+same-potential reward, true empirical row degrees, self exclusion,
+uncapped joint OU providers, original component velocities, both kicks
+and each own survival denominator. Its nonempty primitive regime is
+{prf:ref}`def-rpf-positive-endpoints`: small positive selection and
+row viscosity after one fixed sufficiently large box has been chosen.
+Its target is the stationary row population alive law, with a particle
+floor, rather than an identified finite-swarm QSD.
+
+The default alive coverage and recent-survival bounds are proved in
+{prf:ref}`thm-dsa-default-box-alive-floor` and
+{prf:ref}`cor-dsa-recent-window-normalization` for both normalizations.
+The original count-viscosity frozen root-kernel mixing theorem is
+{prf:ref}`thm-rcb-source-box-frozen-gap`; it compares common providers.
+The actual harmonic default moment and finite consistency interfaces
+are additionally proved in {prf:ref}`thm-rvb-population-burn`,
+{prf:ref}`thm-rfk-two-count-principal`,
+{prf:ref}`thm-dmc-default-interface` and
+{prf:ref}`thm-dev-current-provider-budget`. At $\nu=.3,L=2$ they
+retain the native cap, both count graphs, full Gaussian tails,
+mandatory revival and current-survival starting reweighting.
+Their finite interface uses an explicit nonempty weak positive
+fitness interval and vanishing errors uniformly over current time.
+The full own-provider spatial and preparation/marking absorption
+remains unproved; these moment and consistency results are not
+a default convergence rate or a finite-swarm QSD mixing theorem.
+The actual nonlinear default block still requires comparison of each
+law's own preparation and both own providers.
+
+The original count profile now has complete physical kinetic transport
+on arbitrary-position constant-velocity slices, nonconstant pointwise
+velocity bands and a signed inward-velocity family, in
+{prf:ref}`thm-dsa53-physical-shapes`,
+{prf:ref}`cor-csb-optimal-law` and
+{prf:ref}`thm-dsg-inward-family`. The last family also has actual
+finite kinetic alive empirical-law and both sampled-law estimates,
+retaining each own survival normalization, in
+{prf:ref}`thm-siat-signed-alive-laws`. These prepared-input classes
+are not asserted invariant or obtained from arbitrary active swarms.
+The preserved boundary envelopes and exact delayed source/Haar/cap
+moment response are {prf:ref}`thm-dsti-preserved-boundary` and
+{prf:ref}`thm-dsti-delayed-moments`. The complete full-dead
+marked feedback and chronological law response are
+{prf:ref}`thm-dlb-default-feedback` and
+{prf:ref}`thm-dlb-delayed-response`, whose loose absolute gain does
+not certify default mixing. The remaining task is a closed delayed
+signed bound through genuine noisy velocity laws, actual preparation
+and each own alive normalizer. The local empirical-law regularity
+result {prf:ref}`thm-tqp-empirical-local-regularity` only restricts a
+one-update Lipschitz proof; it does not refute this delayed target.
+
+The exact general physical signed account is
+{prf:ref}`thm-dbl68-ledger`, with its full cap loss and both providers.
+The actual conditional cap bound
+{prf:ref}`thm-ccl-conditional-coercivity` preserves local
+velocity/displacement correlations. The full own-OU graph trace and
+inward mixed flux in {prf:ref}`thm-icb-stein-cap` and
+{prf:ref}`cor-icb-cross-flux` also remain raw Gaussian expectations
+until each actual next-survival division is charged. Their primitive
+remainder is proved, but their general signed absorption and delayed
+source/Haar comparison remain open.
+The entire original recipient-jitter account, including the finite
+coincident-environment force square, is
+{prf:ref}`thm-fjt73-first-account`. Its matched-status inward-source
+sign covers the linear part only and leaves the complete absorption
+and alive-law obligations explicit.
+The conditional coefficient $159/200$ of
+{prf:ref}`thm-gca74-cap-deficit` applies to pre-OU-fixed vectors
+with the actual noisy graph retained. The full correlated force
+and cross terms in {prf:ref}`cor-gca74-signed-cap-account` and
+the weighted own restrictions in
+{prf:ref}`prop-gca74-own-restriction` remain necessary; a scalar
+conditional deficit alone does not close default law mixing.
+The actual first-provider positional margin now passes in
+{prf:ref}`cor-ffo77-position`, from the general centered operator
+{prf:ref}`thm-ffo77-operator`. The endpoint positional estimate
+retains $b\|\Delta P\|_2$, its declared RMS budgets and each
+random-array mixed moment. It precedes terminal restriction and
+does not close the phase, preparation or surviving alive-law account.
+The full source-plan population capped-force consumers in
+{prf:ref}`thm-nca76-first-cap-force` and
+{prf:ref}`thm-nca76-second-cap-force` retain both own noisy fields
+and their complete noncommuting spatial residual. The signed
+second-provider cross products and actual preparation, marks
+and own normalization remain unabsorbed. Their population moments
+are not substituted into random finite empirical products.
+The actual mean-cap matrix sector is proved in
+{prf:ref}`thm-mcm79-lower`, with its full-jitter weighted
+population Gram sector in {prf:ref}`thm-mcm79-source-sector`.
+The signed first response is now absorbed by
+{prf:ref}`thm-sfc80-first-consumer`, for its auxiliary
+$(R,DZ_b)$ differential under the stated prepared budgets.
+The exact complete second response remains explicitly in
+{prf:ref}`cor-sfc80-second-interface`; that auxiliary margin
+has not been integrated into a transport map or iterated.
+The mixed source-weighted extinction and empirical-position
+charges are bounded in {prf:ref}`thm-wsd81-surviving-deficit`.
+Its own-survivor paired cap deficit applies in a declared
+pathwise low-speed class and explicit sufficiently-large-$N$
+regime. It does not compare two separately surviving alive
+readouts or establish class invariance.
+
+The conservative results use all-alive normalization; the large-box
+surviving result uses the separate killed proof and its own normalized
+alive law. The original $L=2$, $\nu=0.3$ reference remains outside the
+population-uniform survivor-law certificate.
+The whole-horizon normalization step is proved in
+{prf:ref}`thm-ku-finite-future-survival-ratio` and
+{prf:ref}`cor-ku-future-conditioned-alive-law`, conditional on the
+stated actual full-state block comparison. It retains each swarm's
+own survival denominator.
+:::
+
 :::{prf:definition} Single-swarm moment observable
 :label: def-tv-lyapunov
 
@@ -168,7 +403,21 @@ P_K\mathbf V\le A_K\mathbf V+\mathbf b_K.
 $$
 
 The inequalities are componentwise and apply to the same observables, including
-the cemetery extension. If cloning has a separate intermediate state space,
+the cemetery extension.
+A kinetic coefficient imported from a continuous generator additionally
+requires a proved observable weak-error certificate for a generator-consistent
+transition family, as specified in
+{prf:ref}`thm-discretization` and
+{prf:ref}`rem-kinetic-generator-transfer-scope`.
+The canonical fixed radial velocity cap is not near the identity as the timestep
+tends to zero and does not inherit an uncapped Langevin rate by that argument.
+Its coefficients must come from direct native finite-step estimates, such as
+{prf:ref}`thm-kinetic-exact-baoab-cap-coupling` for unit-quadratic physical
+coordinates. A location or centered-transport coefficient using
+{prf:ref}`lem-location-error-drift-kinetic` also requires its actual macroforce
+closure, positive matrix certificate and residual/status bounds; confinement
+and a force Lipschitz constant alone do not supply those inputs.
+ If cloning has a separate intermediate state space,
 the observables must be defined there and the kinetic estimate must cover
 every intermediate state to which cloning assigns mass. This includes proposed
 jittered positions under the specified status-update convention. The diagonal
@@ -270,8 +519,50 @@ $$
 D_h^2=h^2v_{\max}^2+hd\sigma_{\rm pos}^2.
 $$
 
-For a capped BAOAB position update without a separate position Gaussian,
-$D_h^2=h^2v_{\max}^2$. These are different kinetic specifications.
+If both BAOAB half-position velocities are capped and there is no separate
+position Gaussian, $D_h^2=h^2v_{\max}^2$. The standard native BAOAB cap is
+terminal-only and does not supply this pathwise premise. Instead freeze the
+complete prepared first-kick velocities $v_{1,i}$ before independent OU and
+position Gaussians. Put $a_O=e^{-\gamma h}$,
+$c_h=h(1+a_O)/2$, let $\sigma_v$ denote the actual OU innovation amplitude,
+and let $\sigma_x$ denote the actual final position Gaussian amplitude. Then
+
+$$
+\Delta_i=c_hv_{1,i}+\frac h2\sigma_v\eta_i+\sigma_x\zeta_i,
+\qquad
+\tau_h^2=(h\sigma_v/2)^2+\sigma_x^2,
+$$
+
+with independent standard $d$-dimensional Gaussians $\eta_i,\zeta_i$. For the
+prepared sigma-field $\mathscr G_1$, before these innovations,
+
+$$
+\widehat D_h^2(\mathscr G_1)
+ =\frac{c_h^2}{N}\sum_{i\in A}\|v_{1,i}\|^2
+  +\frac{|A|}{N}d\tau_h^2,
+\qquad
+D_h^2(S)=\mathbb E_S\widehat D_h^2(\mathscr G_1).
+$$
+
+The displayed kinetic inequality holds with this state-dependent budget.
+For the all-alive prepared population, $|A|=N$. Terminal capping does not
+bound $v_1$. The budget retains the actual first force, viscosity, OU noise
+and full-support final position noise; predictable innovation shifts or a
+different kinetic specification require their own displacement expression.
+
+A sharper centred budget also applies:
+
+$$
+\widehat D_{h,\mathrm{cent}}^2(\mathscr G_1)
+ =c_h^2 V_v(v_1;A)
+  +\frac{(|A|-1)_+}{N}d\tau_h^2,
+\qquad
+V_v(v_1;A)=\frac1N\sum_{i\in A}\|v_{1,i}-\bar v_{1,A}\|^2.
+$$
+
+One may replace $D_h^2(S)$ by
+$\mathbb E_S\widehat D_{h,\mathrm{cent}}^2$ in the same kinetic inequality.
+This removes common displacement without assigning identities to walkers.
 :::
 
 :::{prf:proof}
@@ -281,6 +572,17 @@ input alive indices before taking expectations. For EG-kin$^+$, independence
 and centring remove the mixed term, while
 $\mathbb E\|\xi_i^x\|^2=d$. The cap bounds the remaining deterministic
 velocity contribution.
+For standard native BAOAB, the two half-position updates give the displayed
+increment exactly. Conditional centring and independence remove its mixed
+terms, and each Gaussian squared norm has expectation $d$. Integrate first
+over these innovations and then over the prepared first kick. For the centred
+refinement, choose the centre $\bar x_A+\bar\Delta_A$ for the surviving
+subset and enlarge its nonnegative sum to all proposed rows in $A$.
+Independent identical Gaussian rows have expected centred squared sum
+$d(|A|-1)_+\tau_h^2$; the deterministic part contributes
+$c_h^2\sum_{i\in A}\|v_{1,i}-\bar v_{1,A}\|^2$. Empty and absorbed
+outputs have zero observable. No terminal cap is substituted for a transient
+first-kick velocity.
 :::
 
 :::{prf:proposition} Positional drift from the cloning estimate and the cap
@@ -303,6 +605,21 @@ For $r_{C,x}=0$, every $\theta>0$ works. The positional decrement per full step
 is $\kappa_x^{\rm step}=1-r_x$. Under
 {prf:ref}`cor-convergence-displacement-moment`, replace
 $h^2v_{\max}^2$ in $b_x$ by $D_h^2$.
+
+For the standard native state-dependent displacement budget, instead assume
+the additional same-kernel estimate
+$P_CD_h^2\le a_DV_x+b_D$, with $a_D,b_D\ge0$. The coefficients then are
+
+$$
+r_x=(1+\theta)r_{C,x}+(1+\theta^{-1})a_D,
+\qquad
+b_x=(1+\theta)b_{C,x}+(1+\theta^{-1})b_D.
+$$
+
+Contraction requires this full $r_x<1$. A recorded displacement budget alone
+does not supply the additional affine closure, and a transient first-kick
+force cannot be bounded using the terminal velocity cap. The centred budget
+may be used under its corresponding affine closure.
 :::
 
 :::{prf:proof}
@@ -310,6 +627,10 @@ Apply $P_C$ to the kinetic inequality. Since $P_C1\le1$, its constant term
 increases by at most the displayed amount. Substitute the cloning bound and
 collect the coefficient and source. The restriction on $\theta$ is exactly
 $(1+\theta)r_{C,x}<1$.
+For a state-dependent budget apply $P_C$ to its complete kinetic inequality
+and substitute both the cloning drift and $P_CD_h^2\le a_DV_x+b_D$.
+Collecting their coefficients gives the second displayed pair; no term is
+discarded before testing $r_x<1$.
 :::
 
 :::{prf:proposition} Kinetic velocity rates and their time convention
@@ -400,6 +721,368 @@ reward, or absorbing boundary.
 Apply $P_C$ to the kinetic inequality, use $P_C1\le1$, and substitute its
 bound on $W_b$. Expanding $1-(1-\kappa_b)(1-\kappa_{\rm pot}h)$ yields the
 decrement.
+:::
+
+:::{prf:lemma} Final-Gaussian logarithmic barrier with explicit dimension
+:label: lem-convergence-dimension-log-barrier
+
+Let $N,d\ge1$, $L>0$, $h>0$, $\sigma_{\rm pos}>0$, and
+$s=\sigma_{\rm pos}\sqrt h$. Condition on the complete preparation
+$\mathscr G$ before the final independent positional Gaussian of the actual
+split update. Suppose
+
+$$
+X_{ij}=m_{ij}+sZ_{ij},\qquad 1\le i\le N,\quad 1\le j\le d,
+$$
+
+where, conditional on $\mathscr G$, the $Z_{ij}$ in each row are independent
+standard Gaussians and the prepared means $m_{ij}\in\mathbb R$ are arbitrary.
+Define $D_L=(-L,L)^d$, $\phi_1(x)=-\log(1-(x/L)^2)$ on $(-L,L)$, and
+
+$$
+\widetilde W_b=\frac1N\sum_{i=1}^N
+ \mathbf1_{D_L}(X_i)\sum_{j=1}^d\phi_1(X_{ij}).
+$$
+
+The actual alive barrier $W_b'$ is bounded by $\widetilde W_b$ if the final
+alive set is contained in $\{i:X_i\in D_L\}$; assigning zero to a swarm
+cemetery state preserves this inequality. Put
+
+$$
+p_s(m)=\int_{-L}^L\frac{e^{-(x-m)^2/(2s^2)}}{\sqrt{2\pi}s}\,dx,
+\qquad
+g_s(m)=\int_{-L}^L\phi_1(x)
+ \frac{e^{-(x-m)^2/(2s^2)}}{\sqrt{2\pi}s}\,dx,
+\qquad
+a=\frac{2L}{\sqrt{2\pi}s},\quad q=\min\{1,a\}.
+$$
+
+Then the tensor identity and dimension-explicit bounds are
+
+$$
+\mathbb E[\widetilde W_b\mid\mathscr G]
+=\frac1N\sum_{i=1}^N\sum_{j=1}^d
+ g_s(m_{ij})\prod_{\ell\ne j}p_s(m_{i\ell}),
+\qquad
+\mathbb E[W_b'\mid\mathscr G]
+\le B_d:=d\Lambda(a)q^{d-1}
+\le\frac{4dL(1-\log2)}{\sqrt{2\pi}s},
+$$
+
+where
+
+$$
+\Lambda(a)=
+\begin{cases}
+2a(1-\log2),&0<a\le1,\\
+\log a-\log(2-1/a)+2+2a\log(1-1/(2a)),&a>1.
+\end{cases}
+$$
+
+Thus $QW_b\le B_d$ for either the native zero-alive killed kernel or the
+additional fewer-than-two cemetery convention under these Gaussian and box
+hypotheses. The constant is independent of $N$; for $a\ge1$ its dependence
+on $d$ is linear and $\Lambda(a)=\log(a/2)+1+O(a^{-1})$ as $a\to\infty$.
+The identity concerns the candidate box observable; additional killing can
+reduce its expectation. For a survival-conditioned law one must instead use
+
+$$
+\mathbb E_\mu[W_b(S_n)\mid\tau>n]
+=\frac{\mu Q^nW_b}{\mu Q^n1}
+$$
+
+when the denominator is positive. A bound on the unconditioned numerator
+is not a bound with the same constant after conditioning.
+:::
+
+:::{prf:proof}
+Nonnegativity permits Tonelli throughout. Conditional coordinate
+independence factors the integral of each summand into $g_s$ in its marked
+coordinate and $p_s$ in the others, proving the identity. No independence
+between swarm rows is required. The Gaussian density is at most
+$D=(\sqrt{2\pi}s)^{-1}$, so $p_s(m)\le q$ for every real mean. Direct
+integration gives
+
+$$
+\int_{-L}^L\phi_1(x)\,dx=4L(1-\log2).
+$$
+
+Consequently $g_s(m)\le4LD(1-\log2)$, and retaining the other-coordinate
+probabilities gives $2da(1-\log2)q^{d-1}$. Dropping only those probabilities
+gives the displayed linear bound. Bounding the whole $d$-dimensional
+Gaussian by $D^d$ and integrating the entire cube would introduce the
+unnecessary factor $a^{d-1}$ when $a>1$.
+
+For the sharper coordinate bound, the layer-cake representation yields
+
+$$
+g_s(m)=\int_0^\infty
+ \mathbb P\bigl(|X|<L,\ \phi_1(X)>t\mid\mathscr G\bigr)\,dt
+\le\int_0^\infty
+ \min\{1,a(1-\sqrt{1-e^{-t}})\}\,dt.
+$$
+
+Indeed the level set consists of two intervals adjacent to the box
+endpoints, with total length $2L(1-\sqrt{1-e^{-t}})$. For $a\le1$ the minimum
+never changes branch. Substituting $u=\sqrt{1-e^{-t}}$ gives
+$2a\int_0^1u/(1+u)\,du=2a(1-\log2)$. For $a>1$ the branch changes at
+
+$$
+t_0=\log a-\log(2-1/a),\qquad u_0=1-1/a.
+$$
+
+The integral is
+$t_0+2a\int_{u_0}^1u/(1+u)\,du
+=t_0+2+2a\log(1-1/(2a))=\Lambda(a)$.
+Inserting this coordinate bound and $p_s\le q$ into the tensor identity
+proves $B_d$. The asymptotic expression follows by expanding
+$\log(1-1/(2a))$ and $\log(2-1/a)$. Averaging $N$ identical uniform bounds
+cancels $N$ exactly. Conditional means are unrestricted and the Gaussian
+is integrated over its full law before applying the box indicator; no
+compact-support replacement occurs. Additional swarm killing preserves
+the nonnegative upper bound. The survival identity follows from the
+killed semigroup definition and requires its own nonzero denominator.
+:::
+
+:::{prf:lemma} State-aware analytic barrier envelopes and independent-seed precision
+:label: lem-convergence-state-log-barrier
+
+Under {prf:ref}`lem-convergence-dimension-log-barrier`, write
+$D=(\sqrt{2\pi}s)^{-1}$ and
+
+$$
+q_m=\min\{1,2LD e^{-(|m|-L)_+^2/(2s^2)}\},\qquad
+F(r)=L\left[2u-(1+u)\log(1+u)+(1-u)\log(1-u)\right],\quad u=r/L,
+$$
+
+with $0\log0=0$. For $|m|<r<L$, set
+
+$$
+T_1(r)=4L(1-\log2)-2F(r),\qquad
+T_2(r)=2L(1-r/L)\left[\log^2(1-r/L)-2\log(1-r/L)+2\right],
+$$
+
+and $D_{m,r}=D e^{-(r-|m|)^2/(2s^2)}$.
+Valid first- and second-moment coordinate upper bounds are
+
+$$
+\begin{aligned}
+G(m)&=\min\left\{\Lambda(a),\ 4LD(1-\log2)e^{-(|m|-L)_+^2/(2s^2)},
+\ \inf_{|m|<r<L}\bigl[\phi_1(r)q_m+D_{m,r}T_1(r)\bigr]\right\},\\
+H(m)&=\min\left\{4LD e^{-(|m|-L)_+^2/(2s^2)},
+\ \inf_{|m|<r<L}\bigl[\phi_1(r)^2q_m+D_{m,r}T_2(r)\bigr]\right\}.
+\end{aligned}
+$$
+
+An infimum over an empty set is $+\infty$. Any finite set of admissible
+radii gives a valid, possibly larger bound; no numerical quadrature or
+unproved supremum search is needed. For a prepared row, its candidate
+barrier $Y_i=\mathbf1_{D_L}(X_i)\sum_j\phi_1(X_{ij})$ satisfies
+
+$$
+\begin{aligned}
+\mathbb E[Y_i\mid\mathscr G]
+&\le U_i=\sum_jG(m_{ij})\prod_{\ell\ne j}q_{m_{i\ell}},\\
+\mathbb E[Y_i^2\mid\mathscr G]
+&\le R_i=\sum_jH(m_{ij})\prod_{\ell\ne j}q_{m_{i\ell}}
+ +2\sum_{j<k}G(m_{ij})G(m_{ik})
+   \prod_{\ell\notin\{j,k\}}q_{m_{i\ell}}.
+\end{aligned}
+$$
+
+Therefore $\mathbb E[W_b'\mid\mathscr G]\le N^{-1}\sum_iU_i$ and
+$\mathbb E[(W_b')^2\mid\mathscr G]\le N^{-1}\sum_iR_i$.
+For $M$ independently seeded trajectories with their own preparations,
+including absorbed zero observables, let $U^{(r)},R^{(r)}$ denote these
+swarm bounds. For any $0<\delta<1$, with conditional probability at least
+$1-\delta$,
+
+$$
+\frac1M\sum_{r=1}^M W_b'^{(r)}
+\le \frac1M\sum_{r=1}^M U^{(r)}
+ +\frac1M\sqrt{\frac{1-\delta}{\delta}\sum_{r=1}^M R^{(r)}}.
+$$
+
+The independent uncertainty units are trajectories, not walkers or serial
+updates. Dividing the empirical unconditional average by its own empirical
+survival fraction gives the corresponding observed survivor average only
+when that fraction is positive.
+:::
+
+:::{prf:proof}
+The maximum Gaussian density on $[-L,L]$ is
+$D e^{-(|m|-L)_+^2/(2s^2)}$, giving the stated $q_m$ and the first alternatives
+for $G,H$. The derivative of $F$ is $\phi_1$ and
+$F(L)=2L(1-\log2)$, so $T_1$ is the exact barrier integral on
+$\{r<|x|<L\}$. On $|x|\le r$, $\phi_1(x)\le\phi_1(r)$ and its probability
+is at most $q_m$. On $r<|x|<L$, the Gaussian density is at most $D_{m,r}$.
+Splitting the first-moment integral proves the remaining $G$ bounds.
+For the second moment, use
+$\phi_1(x)\le-\log(1-|x|/L)$ and integrate its square on the two tails:
+
+$$
+2L\int_0^{1-r/L}\log^2 v\,dv=T_2(r).
+$$
+
+At $r=0$ this integral is $4L$. The same split proves the $H$ bounds.
+Expanding $Y_i^2$ and factoring marked-coordinate moments and unmarked
+survival probabilities proves the row formulas. Jensen's inequality gives
+$(N^{-1}\sum_iY_i)^2\le N^{-1}\sum_iY_i^2$, so correlations introduced by
+cloning do not insert any factor growing with $N$.
+
+Conditional on all preparations, independent trajectory seeds and their
+independent current Gaussian innovations give independent observables.
+Their average has variance at most $M^{-2}\sum_rR^{(r)}$ and mean at most
+$M^{-1}\sum_rU^{(r)}$. Cantelli's one-sided inequality with the displayed
+allowance gives failure probability at most $\delta$. Preparations of
+already absorbed trajectories contribute zero. A union bound can allocate
+a declared family budget over times, initial distributions and cemetery
+conventions; serial times do not create additional independent units.
+The survivor-average identity is purely its own normalization and does not
+identify a quasi-stationary law.
+:::
+
+:::{prf:lemma} Gaussian regional landing and weighted tail envelopes
+:label: lem-convergence-gaussian-regional-tail
+
+Condition on a preparation for which the actual one-particle positional
+update is $X=m+AZ$, with $Z\sim\mathcal N(0,I_d)$, $d\ge1$,
+$\sigma_-^2I_d\preceq AA^T\preceq\sigma_+^2I_d$ and
+$0<\sigma_-\le\sigma_+$. Suppose the mean satisfies the proved coordinate
+enclosure $m_j\in[a_j,b_j]$. For a target analysis box
+$B=\prod_j[\ell_j,u_j]$ with $\ell_j<u_j$, define
+
+$$
+D_j=\max\{|\ell_j-b_j|,|u_j-a_j|\},\qquad
+L_B=\frac{\prod_j(u_j-\ell_j)}{(\sqrt{2\pi}\sigma_+)^d}
+      \exp\!\left[-\frac{\sum_jD_j^2}{2\sigma_-^2}\right].
+$$
+
+Then $\mathbb P(X\in B\mid\mathscr G)\ge L_B$. When all mean intervals
+are contained in the target intervals, the additional escape upper bound is
+
+$$
+U_B=\min\!\left\{1,\sum_{j=1}^d
+ \left[e^{-(a_j-\ell_j)^2/(2\sigma_+^2)}
+       +e^{-(u_j-b_j)^2/(2\sigma_+^2)}\right]\right\}.
+$$
+
+Consequently the landing lower bound is $\max\{L_B,1-U_B\}$ and the
+escape upper bound is $\min\{1-L_B,U_B\}$; use $U_B=1$ when containment
+fails. These are one-particle transition bounds, not coefficients of a
+coupled discrepancy contraction.
+
+More generally, suppose only $\|m\|\le c$ and $\|A\|_{\rm op}\le\sigma$,
+with $c\ge0$ and $\sigma>0$. For $R>0$ set
+$u=((R-c)_+/\sigma)^2$ and, for integers $k\ge0$, define
+
+$$
+T_k(d,u)=\left[\prod_{j=0}^{k-1}(d+2j)\right]
+\begin{cases}
+1,&u\le d+2k,\\
+\exp\!\left[\frac{d+2k-u+(d+2k)\log(u/(d+2k))}{2}\right],
+ &u>d+2k.
+\end{cases}
+$$
+
+The empty product is one. For $q>0$, $k=\lceil q\rceil$ and
+$T_q=T_k^{q/k}T_0^{1-q/k}$; for $q=k$ take $T_q=T_k$ directly. For
+$r>0$,
+
+$$
+\mathbb P(\|X\|>R\mid\mathscr G)\le T_0(d,u),\qquad
+\mathbb E[\|X\|^r\mathbf1_{\{\|X\|>R\}}\mid\mathscr G]
+ \le 2^{(r-1)_+}\{c^rT_0(d,u)+\sigma^rT_{r/2}(d,u)\}.
+$$
+
+For $r=0$ the weighted bound is $T_0$. All noise remains Gaussian on its
+unbounded support; the analysis boxes and cutoffs do not modify the chain.
+For the native isotropic BAOAB positional step, conditional on the
+post-cloning $(x,v)$, the force-dependent center and covariance are
+
+$$
+b=\frac h2(1+e^{-\gamma h}),\qquad
+m=x+bv-\frac{hb}{2}\nabla V(x),\qquad
+AA^T=\left[\frac{h^2}{4}\frac{\tau^2(1-e^{-2\gamma h})}{2\gamma}
+                       +h\sigma_{\rm pos}^2\right]I_d,
+$$
+
+when the O-noise is isotropic with thermostat amplitude $\tau$. For a
+frozen O-geometry matrix $\Lambda$ the first covariance summand is instead
+multiplied by $\Lambda\Lambda^T$ and its spectral bounds must be supplied.
+The last force kick and radial velocity cap do not change the position.
+:::
+
+:::{prf:proof}
+The Gaussian density determinant is at most $\sigma_+^{2d}$ and its
+precision matrix is at most $\sigma_-^{-2}I_d$. Every point of $B$ is at
+squared distance at most $\sum_jD_j^2$ from every admitted mean. Integrating
+this uniform density lower bound over $B$ gives $L_B$. Each coordinate
+marginal has variance at most $\sigma_+^2$. The scalar Gaussian Chernoff
+inequality and a union bound over the two faces in each coordinate give
+$U_B$, without requiring coordinate independence.
+
+Put $Y=\|Z\|^2$. The event $\|X\|>R$ implies $Y>u$ by the triangle
+inequality and the operator-norm bound. For $0\le\lambda<1/2$ the Gaussian
+integral gives
+
+$$
+\mathbb E[Y^ke^{\lambda Y}]
+ =\left[\prod_{j=0}^{k-1}(d+2j)\right](1-2\lambda)^{-d/2-k}.
+$$
+
+Multiplication by $e^{-\lambda u}$ bounds the truncated moment. Its
+minimum over $\lambda\ge0$ is attained at zero when $u\le d+2k$, and at
+$\lambda=(1-(d+2k)/u)/2$ otherwise, giving $T_k$. Hölder's inequality on
+the tail event gives the displayed fractional moment. Finally
+$(c+\sigma\sqrt Y)^r\le2^{(r-1)_+}(c^r+\sigma^rY^{r/2})$.
+The BAOAB formula follows by substituting its first B, first A, O and
+second A updates; the independently added final position Gaussian
+contributes $h\sigma_{\rm pos}^2I_d$.
+:::
+
+:::{prf:lemma} Moment tails for permutation-invariant coupled costs
+:label: lem-convergence-moment-tail-transfer
+
+Let a coupling $(X,Y)$ have proved marginal moment bounds
+$\mathbb E\|X\|^p\le M_x$ and $\mathbb E\|Y\|^p\le M_y$, with
+$p>r\ge0$ and $R>0$. The law may be a uniformly sampled member of an
+unlabelled permutation-invariant swarm coupling, provided these moments
+use its specified normalization. Each marginal satisfies
+
+$$
+\mathbb P(\|X\|>R)\le\min\{1,M_x/R^p\},\qquad
+\mathbb E[\|X\|^r\mathbf1_{\{\|X\|>R\}}]\le M_x/R^{p-r}.
+$$
+
+Suppose the pair cost is at most
+$c_0+c_1(\|X\|^r+\|Y\|^r)$, $c_0,c_1\ge0$, and let
+$H=\{\max(\|X\|,\|Y\|)>R\}$. For $r>0$ its tail contribution is at most
+
+$$
+c_0\min\{1,(M_x+M_y)/R^p\}
++\frac{c_1}{R^{p-r}}
+ \left[M_x+M_y+M_x^{r/p}M_y^{1-r/p}+M_y^{r/p}M_x^{1-r/p}\right].
+$$
+
+For $r=0$ the bound is
+$(c_0+2c_1)\min\{1,(M_x+M_y)/R^p\}$.
+These estimates require proved moment hypotheses for the precise laws
+being compared. In particular, an $N^{-1}$-normalized alive moment and
+a survival-conditioned uniform-alive marginal moment have different
+denominators; one cannot replace the latter by the former.
+:::
+
+:::{prf:proof}
+On $\{\|X\|>R\}$, $1\le\|X\|^p/R^p$ and
+$\|X\|^r\le\|X\|^p/R^{p-r}$, proving the marginal estimates. Split
+$\|X\|^r\mathbf1_H$ into its own tail and the event $\|Y\|>R$.
+Hölder bounds the cross term by
+$M_x^{r/p}\mathbb P(\|Y\|>R)^{1-r/p}
+\le M_x^{r/p}M_y^{1-r/p}/R^{p-r}$.
+Repeat with $X,Y$ interchanged and use the union bound for the constant
+cost. This uses no independence, no persistent walker labels and no
+factor of swarm size. The $r=0$ case follows directly from the union bound.
 :::
 
 :::{prf:proposition} Wasserstein control requires a coupling observable

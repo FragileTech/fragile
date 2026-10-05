@@ -1,0 +1,972 @@
+{
+  "python_source_path": "/home/guillem/fragile/src/fragile/fractalai/theory/landscape_phase.py",
+  "python_source_sha256": "7e6c69dac8666ab6a1667810463eeae02c5bcc06ae6b597664f9a647d3e92889",
+  "extraction": "Verbatim AST of existing functions/classes, using existing SciPy brentq",
+  "extracted_source": "class RastriginRegionalProfile:\n    \"\"\"Native force, core curvature and actual one-dimensional barriers.\"\"\"\n\n    integer_centers: tuple[int, ...]\n    stable_roots: tuple[float, ...]\n    barriers: tuple[float, ...]\n    core_curvature_lower: float\n    global_curvature_upper: float\n\nclass RastriginRegionalBound:\n    \"\"\"KUR.1 regional multipliers; no population parameter is required.\"\"\"\n\n    mean_map_squared: float\n    accepted_coordinate_variance: float\n    gate_refresh_bound: float\n    positional_coefficient: float\n    conservative_floor: float\n\ndef rastrigin_regional_bound(\n    *,\n    dimension: int,\n    timestep: float,\n    friction: float,\n    clone_jitter: float,\n    ou_amplitude: float,\n    position_amplitude: float,\n    velocity_cap: float,\n    restitution: float,\n    viscosity: float,\n    core_radius: float = 1 / 16,\n    largest_well: int = 2,\n) -> RastriginRegionalBound:\n    \"\"\"Evaluate the unchanged native force on the declared root cores.\n\n    Both positive dense first-kick matrices obey the same bound. Sources\n    must satisfy the stated core condition; their unrestricted output noise\n    and crossings remain in the phase ledger. This floor does not establish\n    long residence or global inter-phase mixing.\n    \"\"\"\n    positive = (timestep, velocity_cap, core_radius)\n    nonnegative = (friction, clone_jitter, ou_amplitude, position_amplitude, viscosity)\n    if (\n        not isinstance(dimension, int)\n        or isinstance(dimension, bool)\n        or dimension <= 0\n        or any(not math.isfinite(v) or v <= 0 for v in positive)\n        or any(not math.isfinite(v) or v < 0 for v in nonnegative)\n    ):\n        msg = \"invalid dimension or physical coefficient\"\n        raise ValueError(msg)\n    if (\n        not isinstance(largest_well, int)\n        or isinstance(largest_well, bool)\n        or not 0 <= largest_well <= 21\n        or not math.isfinite(restitution)\n        or not 0 <= timestep * viscosity / 2 <= 1\n    ):\n        msg = \"invalid root range, restitution or nonconvex first viscous kick\"\n        raise ValueError(msg)\n    omega = 2 * math.pi\n    m = 2 + 20 * math.sqrt(2) * math.pi**2\n    radius = core_radius + 2 * largest_well / m\n    if radius >= 1 / 8:\n        msg = \"declared root core is outside the proved regional curvature interval\"\n        raise ValueError(msg)\n    t = timestep / 2\n    c = math.exp(-friction * timestep)\n    b = t * (1 + c)\n    eta = t * b\n    ell = 1 - 2 * eta\n    amplitude = 20 * math.pi * eta\n    a = math.exp(-(omega**2) * clone_jitter**2 / 2)\n    cos_min = math.cos(omega * radius)\n    rho = max(abs(ell - amplitude * omega * a), abs(ell - amplitude * omega * a * cos_min))\n    if not 0 < rho < 1 or ell < 0:\n        msg = \"the displayed regional attraction criterion does not pass\"\n        raise ValueError(msg)\n    kj = (\n        ell**2 * clone_jitter**2\n        - 2 * ell * amplitude * omega * clone_jitter**2 * a * cos_min\n        + amplitude**2\n        / 2\n        * (1 - math.exp(-2 * omega**2 * clone_jitter**2) * math.cos(2 * omega * radius))\n    )\n    refresh = amplitude * (1 - a) * math.sin(omega * radius)\n    coefficient = (1 + rho**2) / 2\n    epsilon = math.sqrt(coefficient / rho**2) - 1\n    vc = (1 + 2 * abs(restitution)) * velocity_cap\n    floor = (\n        (1 + epsilon) * ((1 + 1 / epsilon) * dimension * refresh**2 + dimension * kj)\n        + (1 + 1 / epsilon) * b**2 * vc**2\n        + dimension * (t**2 * ou_amplitude**2 + position_amplitude**2)\n    )\n    return RastriginRegionalBound(rho**2, kj, refresh, coefficient, floor)\n\ndef rastrigin_regional_profile(first_well: int, last_well: int) -> RastriginRegionalProfile:\n    \"\"\"Evaluate roots inside proved integer/half-integer brackets.\n\n    Native U=sum[x^2+10(1-cos(2*pi*x))]. The brackets used here\n    certify wells -21,...,21; the declared domain determines which to retain.\n    \"\"\"\n    integer_indices = (\n        isinstance(first_well, int)\n        and isinstance(last_well, int)\n        and not isinstance(first_well, bool)\n        and not isinstance(last_well, bool)\n    )\n    if not integer_indices or first_well > last_well or first_well < -21 or last_well > 21:\n        msg = \"integer well indices must lie in the proved bracket range [-21,21]\"\n        raise ValueError(msg)\n\n    def gradient(x: float) -> float:\n        return 2 * x + 20 * math.pi * math.sin(2 * math.pi * x)\n\n    wells = tuple(range(first_well, last_well + 1))\n    roots = tuple(brentq(gradient, k - 0.125, k + 0.125) for k in wells)\n    barriers = tuple(brentq(gradient, k + 0.375, k + 0.625) for k in wells[:-1])\n    return RastriginRegionalProfile(\n        wells, roots, barriers, 2 + 20 * math.sqrt(2) * math.pi**2, 2 + 40 * math.pi**2\n    )",
+  "cases": [
+    {
+      "id": "d1_jitter0.0_count",
+      "parameters": {
+        "dimension": 1,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14528641871748987
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14238175955679336,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d1_jitter0.0_row",
+      "parameters": {
+        "dimension": 1,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14528641871748987
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14238175955679336,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d1_jitter0.1_count",
+      "parameters": {
+        "dimension": 1,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.19028488132304577
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.18704173352180697,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d1_jitter0.1_row",
+      "parameters": {
+        "dimension": 1,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.19028488132304577
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.18704173352180697,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d2_jitter0.0_count",
+      "parameters": {
+        "dimension": 2,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14633118439578893
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14279713628751603,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d2_jitter0.0_row",
+      "parameters": {
+        "dimension": 2,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14633118439578893
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14279713628751603,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d2_jitter0.1_count",
+      "parameters": {
+        "dimension": 2,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.19820923050258588
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.19450469953641014,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d2_jitter0.1_row",
+      "parameters": {
+        "dimension": 2,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.19820923050258588
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.19450469953641014,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d3_jitter0.0_count",
+      "parameters": {
+        "dimension": 3,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14737595007408802
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.1432125130182387,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d3_jitter0.0_row",
+      "parameters": {
+        "dimension": 3,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14737595007408802
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.1432125130182387,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d3_jitter0.1_count",
+      "parameters": {
+        "dimension": 3,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.20613357968212598
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2019676655510133,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d3_jitter0.1_row",
+      "parameters": {
+        "dimension": 3,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.20613357968212598
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2019676655510133,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d4_jitter0.0_count",
+      "parameters": {
+        "dimension": 4,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14842071575238708
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14362788974896137,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d4_jitter0.0_row",
+      "parameters": {
+        "dimension": 4,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.14842071575238708
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14362788974896137,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d4_jitter0.1_count",
+      "parameters": {
+        "dimension": 4,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.21405792886166608
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2094306315656165,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d4_jitter0.1_row",
+      "parameters": {
+        "dimension": 4,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.21405792886166608
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2094306315656165,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d8_jitter0.0_count",
+      "parameters": {
+        "dimension": 8,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.15259977846558334
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14528939667185206,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d8_jitter0.0_row",
+      "parameters": {
+        "dimension": 8,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.0,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.524300192742342,
+        "accepted_coordinate_variance": 0.0005220220723811751,
+        "gate_refresh_bound": 0.0,
+        "positional_coefficient": 0.7621500963711709,
+        "conservative_floor": 0.15259977846558334
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.0,
+          "error": 0.0
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0,
+          "error": 0.0
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0,
+        "positional_coefficient": 0.7595290967166777,
+        "epsilon": 0.20966240234394573,
+        "conservative_floor": 0.14528939667185206,
+        "physical_multiplier_rate": 6.876416183060664
+      }
+    },
+    {
+      "id": "d8_jitter0.1_count",
+      "parameters": {
+        "dimension": 8,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "count"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.24575532557982646
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2392824956240292,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    },
+    {
+      "id": "d8_jitter0.1_row",
+      "parameters": {
+        "dimension": 8,
+        "timestep": 0.04,
+        "friction": 1.0,
+        "clone_jitter": 0.1,
+        "ou_amplitude": 0.19606587364118752,
+        "position_amplitude": 0.02,
+        "velocity_cap": 2.0,
+        "restitution": 0.5,
+        "viscosity": 0.3,
+        "core_radius": 0.0625,
+        "largest_well": 2,
+        "bandwidth": 1.0,
+        "normalization": "row"
+      },
+      "expected": {
+        "mean_map_squared": 0.5978840815787646,
+        "accepted_coordinate_variance": 0.006371638355086487,
+        "gate_refresh_bound": 0.0040927561398052745,
+        "positional_coefficient": 0.7989420407893824,
+        "conservative_floor": 0.24575532557982646
+      },
+      "tightened_root_displacement": 0.010101282915930264,
+      "full_gaussian_quadrature": [
+        {
+          "mu": 0.0,
+          "variance": 0.005556161166479024,
+          "error": 3.46024882481081e-11
+        },
+        {
+          "mu": 0.07260128291593027,
+          "variance": 0.0059715624202431325,
+          "error": 3.95512236002342e-11
+        }
+      ],
+      "expected_tightened": {
+        "geometry_iterations": 32,
+        "enlarged_core_radius": 0.07260128291593027,
+        "accepted_coordinate_variance": 0.0059715624202431325,
+        "positional_coefficient": 0.7966431865704702,
+        "epsilon": 0.15877665272051367,
+        "conservative_floor": 0.2392824956240292,
+        "physical_multiplier_rate": 5.683709902078039
+      }
+    }
+  ],
+  "profile": {
+    "integer_centers": [
+      -2,
+      -1,
+      0,
+      1,
+      2
+    ],
+    "stable_roots": [
+      -1.9899122337088966,
+      -0.9949586376523141,
+      0.0,
+      0.9949586376523141,
+      1.9899122337088966
+    ],
+    "barriers": [
+      -1.5076407318705365,
+      -0.5025460365546754,
+      0.5025460365546754,
+      1.5076407318705365
+    ],
+    "core_curvature_lower": 281.15456798555516,
+    "global_curvature_upper": 396.78417604357435
+  }
+}

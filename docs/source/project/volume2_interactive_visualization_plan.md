@@ -159,7 +159,7 @@ The experiment catalog and admitted controls are maintained in the shared Rust r
 ### II-04 — Compare measured transport with an independent coupling
 
 :::{div} feynman-prose
-**Where and why.** [Lecture chapter](../2_fractal_gas/convergence_program/04_wasserstein_contraction.md), at `5. From Variance Contraction`. How loose is the independent coupling cost for two measured clouds?
+**Where and why.** [Lecture chapter](../2_fractal_gas/convergence_program/04_wasserstein_contraction.md), at `5. Centered Positional Control from the Reset Bound`. How loose is the independent coupling cost for two measured clouds?
 
 **Executed experiment.** Compare the one-dimensional optimal matching cost with the independent coupling cost formed from the measured means and variances. The latter is an admissible coupling and therefore an upper bound. No full phase-space optimality is claimed.
 

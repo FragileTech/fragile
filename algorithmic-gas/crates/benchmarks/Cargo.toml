@@ -21,6 +21,10 @@ serde.workspace = true
 serde_json.workspace = true
 ciborium.workspace = true
 futures-lite.workspace = true
+num-bigint = "0.4"
+num-traits = "0.2"
+flate2 = "1.1.10"
+sha2 = "0.10.9"
 
 [dev-dependencies]
 futures-lite.workspace = true

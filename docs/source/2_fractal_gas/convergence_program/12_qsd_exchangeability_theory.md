@@ -74,6 +74,16 @@ in the symmetry check.
 :::{prf:remark} Equivariance is a property of the complete update
 :label: rem-exchangeability-complete-kernel
 
+The ordered coordinates used in this chapter represent an unlabelled physical
+swarm: configurations related by a permutation are the same swarm. Array
+addresses identify recorded states and independent innovation coordinates;
+they are not physical walker identifiers. Equivariance makes the transition
+well-defined on this permutation quotient. A pathwise comparison transports
+companion sources, gate uniforms, one Haar matrix for each whole collision
+component, and one-particle innovations with the physical rows. Reusing the
+same numerical seed at different array addresses does not implement that
+transport.
+
 The symmetry condition must include companion selection, collisions, status
 updates and all tie-breaking rules. Identical single-particle equations alone
 are insufficient. In particular, sequential processing of overlapping

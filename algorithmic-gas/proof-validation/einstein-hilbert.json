@@ -1,0 +1,20 @@
+{
+  "walkers": [
+    32,
+    64,
+    128,
+    256
+  ],
+  "seeds": [
+    7,
+    1729,
+    991
+  ],
+  "steps": 400,
+  "replica_walkers": [
+    32,
+    64
+  ],
+  "replicas": 128,
+  "warmup": 39
+}

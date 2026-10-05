@@ -1338,6 +1338,20 @@ Apply (15.39) with $w=1/\eta_N$ to (15.38), then use the transformed entropy est
 :label: rem-kl-doob-uniformity
 
 The invariant law of the transformed process is $\widehat\pi_N=\eta_N\nu_N$, not $\nu_N$. Its LSI must be established for that law. The estimates (15.40)--(15.41) preserve population-uniform constants only when the reweighting costs are also uniform. On an absorbing domain the right eigenfunction may approach zero at the boundary, so the bounded-reweighting argument is not automatic; the direct balance (15.27) remains available.
+
+For the actual discrete terminal-box gas,
+{prf:ref}`thm-kue-direct-entropy-transfer` retains the rejected-input
+entropy and proves a population-uniform survivor transfer directly
+for the QSD eigenmeasure. Its native Rastrigin extinction coefficients
+are computed in {prf:ref}`lem-kurc-certified-reference`.
+The physical mean-field and stationary population-trajectory results
+{prf:ref}`thm-kurp-rastrigin-physical-mean-field` and
+{prf:ref}`thm-kurp-rastrigin-qsd-population-invariance` therefore do not
+require a right-eigenfunction comparison. This direct transfer does
+not supply an entropy decay rate: that requires the actual backward
+information and phase-production lower bound. Likewise a uniform
+right-eigenfunction ratio would bound (15.40)--(15.41), but would not
+by itself prove a uniform LSI for $\widehat\pi_N$.
 :::
 
 (sec-fg-kl-conv-curvature)=

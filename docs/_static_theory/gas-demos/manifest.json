@@ -1015,7 +1015,7 @@
     "part": "II",
     "title": "Compare measured transport with an independent coupling",
     "chapter": "source/2_fractal_gas/convergence_program/04_wasserstein_contraction",
-    "target": "5. From Variance Contraction",
+    "target": "5. Centered Positional Control from the Reset Bound",
     "kind": "Rust engine experiment",
     "prediction": "The independent coupling cost bounds the one-dimensional optimal transport cost.",
     "question": "How loose is the independent coupling cost for two measured clouds?",

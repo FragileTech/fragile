@@ -1,0 +1,77 @@
+{
+  "native_constants": {
+    "quarter_kick_coefficient": 0.0015,
+    "ou_factor": 0.9980019986673331,
+    "position_transport_coefficient": 0.0019980019986673334,
+    "ou_variance": 0.0013173635164828103,
+    "position_noise_variance": 1.3173635164828103e-09,
+    "strict_velocity_kappa_threshold": 1.0010005001667084
+  },
+  "reports": [
+    "algorithmic-gas/outputs/convergence/einstein-hilbert/report.json",
+    "algorithmic-gas/outputs/convergence/einstein-hilbert/long-report.json"
+  ],
+  "trajectory_steps": 40800,
+  "replicas": 768,
+  "exact_failures": 0,
+  "max_relative_identity_residual": 1.3345074069817461e-15,
+  "late_runs": [
+    {
+      "N": 32,
+      "final_W_mean": 0.8387643255079626,
+      "final_energy_mean": 0.2650352568048094,
+      "late_clone_ratio_mean": 1.001767194068378,
+      "late_negative_clone_drifts": 161,
+      "late_gates": 300,
+      "max_kappa": 1.0081115013668704
+    },
+    {
+      "N": 128,
+      "final_W_mean": 2.0635892970827747,
+      "final_energy_mean": 0.3137321585618974,
+      "late_clone_ratio_mean": 1.0074160035707396,
+      "late_negative_clone_drifts": 91,
+      "late_gates": 300,
+      "max_kappa": 1.007566946672379
+    },
+    {
+      "N": 500,
+      "final_W_mean": 3.7683933491020687,
+      "final_energy_mean": 0.29250788807723443,
+      "late_clone_ratio_mean": 1.007620013473301,
+      "late_negative_clone_drifts": 37,
+      "late_gates": 300,
+      "max_kappa": 1.0093189880600286
+    }
+  ],
+  "replica_checks": [
+    {
+      "N": 32,
+      "step": 40,
+      "samples": 128,
+      "cloning_z": 1.0281038735869794,
+      "kinetic_z": -0.7941320389889893
+    },
+    {
+      "N": 64,
+      "step": 40,
+      "samples": 128,
+      "cloning_z": 1.0292337576756945,
+      "kinetic_z": 1.3946372698751588
+    },
+    {
+      "N": 128,
+      "step": 4000,
+      "samples": 256,
+      "cloning_z": -0.7632200196452207,
+      "kinetic_z": 0.1317264980485077
+    },
+    {
+      "N": 500,
+      "step": 4000,
+      "samples": 256,
+      "cloning_z": -0.39209499179141766,
+      "kinetic_z": -0.18926686966655415
+    }
+  ]
+}

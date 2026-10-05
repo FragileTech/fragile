@@ -609,7 +609,7 @@ complex.
 | `TessellatorKind` | Delaunay complex of the distinct sites: sorted path ($d=1$), planar triangulation ($d=2$), tetrahedralization with exact orientation and in-sphere predicates ($d=3$). Coincident walkers share a site and are mutual neighbors; a swarm confined to an affine subspace is triangulated inside that subspace; no coordinate is perturbed |
 | `TessellationDomain` | Open space, a clip box realized by mirror-image sites, or a periodic box realized by translated image sites with minimum-image displacements |
 | `VoronoiCells` | Dual cells from the circumcenters: facet measure $A_{ij}$ and volume $V_i=\sum_j A_{ij}\lVert x_j-x_i\rVert/(2d)$ |
-| `MetricKind::NeighborCovariance` | Emergent metric $g_i=\bigl(\tfrac{1}{\deg i}\sum_{j\sim i}\Delta x_{ij}\Delta x_{ij}^{\mathsf T}+\varepsilon I\bigr)^{+}$ with clamped spectrum, its determinant, and the diffusion factor $g_i^{-1/2}$ |
+| `MetricKind::NeighborCovariance` | Let $C_i=(\max\{\deg i,1\})^{-1}\sum_{j\sim i}\Delta x_{ij}\Delta x_{ij}^{\mathsf T}$. The default relative-trace metric is the thresholded pseudoinverse of $C_i+\varepsilon\tau_iI$, with $\tau_i=\operatorname{tr}(C_i)/d$ when positive and $1$ otherwise; configured eigenvalue bounds are divided by $\tau_i$. Absolute scaling instead uses $\tau_i=1$. The preset's cutoff, lower clamp and absent upper clamp are specified in {prf:ref}`rem-eh-relative-metric` |
 | `VolumeKind` | $\sqrt{\det g_i}$, the Voronoi volume $V_i$, or their product |
 | `WeightMode` | Edge weights $w_{ij}$ from Euclidean or metric edge lengths $d_g(i,j)^2=\Delta x_{ij}^{\mathsf T}\tfrac12(g_i+g_j)\Delta x_{ij}$, volumes, or facet measures, optionally normalized over each walker's neighbors |
 | `CurvatureKind::ConformalLaplacian` | With $u_i=\log\det g_i/(2d)$, the conformal scalar curvature $R_i=-2(d-1)\sum_j w_{ij}(u_j-u_i)$ |
@@ -618,11 +618,16 @@ complex.
 | `CurvatureKind::{VolumeDistortion, ShapeDistortion, RaychaudhuriExpansion}` | Voronoi-cell indicators: $1-V_i/\langle V\rangle$, $1-r_{\mathrm{in}}/r_{\mathrm{circ}}$, and $-\theta_i$ with $\theta_i=(V_i-V_i^{\mathrm{prev}})/(\Delta t\,V_i)$ ({ref}`sec-discrete-raychaudhuri`) |
 | `RewardAllocationKind::EinsteinHilbertDensity` | The walker's share $r_i=\lambda R_i\,\mathrm{vol}_i$ of the Einstein–Hilbert action |
 
-The conformal estimators measure the curvature of the conformal class
-$e^{2u}\delta$ with $\det g=e^{2du}$; they are exact for a conformally
-flat metric and ignore the trace-free part of $g$. The quadratic fit is
-exact for quadratic $u$ up to its ridge, which is absolute and must stay
-far below the squared neighbor spacing. A Regge deficit angle is
+The conformal estimators use the conformal representative
+$e^{2u}\delta$ with $\det g=e^{2du}$ and ignore the trace-free part of $g$.
+The `ConformalLaplacian` formula is a specified graph observable; it is not
+the exact Riemannian scalar curvature of a general conformally flat metric.
+No consistency theorem for its row-normalized graph differences is assumed
+in the Einstein–Hilbert dynamics. The continuum formula used by the quadratic
+fit gives that scalar curvature when supplied with the exact derivatives of
+$u$. Its discrete derivative fit reproduces quadratic $u$ only when the local
+design has the required rank and its ridge is removed; the configured ridge
+introduces bias. A Regge deficit angle is
 $O(h^2)$ in the neighbor spacing $h$, the same order as the relative
 error of a length built from the endpoint metrics; the Regge action
 converges to the continuum one for exact geodesic edge lengths, and with

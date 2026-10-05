@@ -6,7 +6,7 @@
 :::{div} feynman-prose
 The Euclidean Gas advances a complete marked population through one fixed sequence: sampled measurements, frozen acceptance decisions, connected-component collisions, BAOAB, position diffusion, smooth velocity compression, and terminal boundary classification. One shared orthogonal matrix rotates all relative velocities in a component. This gives exact component momentum conservation and multiplies its relative kinetic energy by the square of the restitution coefficient.
 
-The comparison coordinates are bounded; the physical coordinates are retained. Dead slots use those retained coordinates when choosing revival donors and entering collisions. The primary population description is the discrete map $\mu_{n+1}=\mathcal F_h(\mu_n)$ derived in {doc}`08_mean_field`.
+The comparison coordinates are bounded; the physical coordinates are retained. Dead slots use those retained coordinates when choosing revival donors and entering collisions. Here the complete finite swarm evolves by the Markov kernel defined below. Its empirical measure is random: companion choices and shared component collisions couple the walkers, even when the later kinetic noises are independent. The deterministic map $\mu_{n+1}=\mathcal F_h(\mu_n)$ describes mean-field evolution under the separate hypotheses developed in {doc}`08_mean_field`.
 :::
 
 (sec-eg-introduction)=
@@ -161,7 +161,7 @@ For any constant $C>0$ define $\psi_C: \mathbb R^d\to B(0,C)$ by $\psi_C(z):=C\,
   D\psi_C(z)=\frac{C}{C+\|z\|}I-\frac{C}{(C+\|z\|)^2}\,\frac{z z^{\top}}{\|z\|}.
 
   $$
-  Setting $\alpha := C/(C+\|z\|)$ and $\hat{z} := z/\|z\|$, this becomes $D\psi_C(z) = \alpha I - (\alpha^2\|z\|/C)\hat{z}\hat{z}^\top$. The eigenvalues are $\alpha$ (with multiplicity $d-1$, for directions perpendicular to $z$) and $\alpha - \alpha^2\|z\|/C = \alpha^2 = C^2/(C+\|z\|)^2$ (for the $z$ direction). Since $0 < \alpha < 1$ and $C^2/(C+\|z\|)^2 < \alpha$ for $\|z\| > 0$, the operator norm is $\|D\psi_C(z)\| = \alpha = C/(C+\|z\|) < 1$ for all $z\neq 0$. At $z=0$, $\psi_C$ is differentiable with $D\psi_C(0) = I$, so $\|D\psi_C(0)\| = 1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
+  Setting $\alpha := C/(C+\|z\|)$ and $\hat{z} := z/\|z\|$, this becomes $D\psi_C(z) = \alpha I - (\alpha^2\|z\|/C)\hat{z}\hat{z}^\top$. The eigenvalues are $\alpha$ (with multiplicity $d-1$, for directions perpendicular to $z$) and $\alpha - \alpha^2\|z\|/C = \alpha^2 = C^2/(C+\|z\|)^2$ (for the $z$ direction). Since $0 < \alpha < 1$ and $C^2/(C+\|z\|)^2 < \alpha$ for $\|z\| > 0$, the operator norm is $\|D\psi_C(z)\|=\alpha$ when $d\ge2$ and $\|D\psi_C(z)\|=\alpha^2$ when $d=1$, in either case at most $\alpha=C/(C+\|z\|)<1$ for $z\neq0$. At $z=0$, $\psi_C$ is differentiable with $D\psi_C(0) = I$, so $\|D\psi_C(0)\| = 1$. The mean-value inequality then implies $\|\psi_C(z)-\psi_C(z')\|\le\|z-z'\|$ for all $z,z'\in\mathbb R^d$.
 
 2. *Smoothness away from the origin.* For $z\neq 0$, $\psi_C$ is a composition of smooth functions: $z\mapsto\|z\|$, inversion on $(0,\infty)$, and scalar-vector multiplication. Hence $\psi_C\in C^{\infty}(\mathbb R^d\setminus\{0\})$.
 
@@ -223,11 +223,11 @@ We measure dispersion in the Sasaki metric and retain the canonical aggregation 
 
   $$
   d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1,\mathcal S_2)^2
-  := \frac{1}{N}\sum_{i=1}^{N} d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(x_{1,i},v_{1,i}),\varphi(x_{2,i},v_{2,i})\big)^2
-  + \frac{\lambda_{\mathrm{status}}}{N}\sum_{i=1}^{N}(s_{1,i}-s_{2,i})^2,
+  :=\min_{\pi\in\mathfrak S_N}\left\{\frac1N\sum_{i=1}^N d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(x_{1,i},v_{1,i}),\varphi(x_{2,\pi(i)},v_{2,\pi(i)})\big)^2
+  +\frac{\lambda_{\mathrm{status}}}{N}\sum_{i=1}^N(s_{1,i}-s_{2,\pi(i)})^2\right\},
 
   $$
-  with status penalty $\lambda_{\mathrm{status}}>0$ as in the canonical framework. Because the Sasaki metric adds a velocity term, Section 4.3 re-validates every deterministic Lipschitz bound against $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$.
+  with status penalty $\lambda_{\mathrm{status}}>0$ as in the canonical framework. Every paired-row estimate below uses representatives attaining this minimum. Row indices enumerate the chosen coupling; they are not particle identities. A different admissible coupling gives an upper bound on quotient dispersion. Because the Sasaki metric adds a velocity term, Section 4.3 re-validates every deterministic Lipschitz bound against $d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}$.
 
   :::{admonition} Distinction: Algorithmic Distance vs. Sasaki Metric
   :class: note
@@ -295,7 +295,7 @@ The squashed comparison metric has the same topology on finite physical states, 
 :::{prf:lemma} Scheduled revival
 :label: lem-eg-scheduled-revival
 
-If at least one slot is alive, every dead slot draws an eligible donor using its retained position and velocity in the Gaussian weights and is accepted with probability one. Thus the post-cloning population has $N$ alive slots. If no slot is alive, the swarm is absorbing. This conclusion does not require an inequality relating the fitness floor to the clone acceptance denominator.
+If at least one slot is alive, every dead slot draws an eligible donor using its retained position and velocity in the Gaussian weights and is accepted with probability one. Thus the post-cloning alive count satisfies $M_{\mathrm{post-clone}}=N$. If no slot is alive, the swarm is absorbing. This conclusion does not require an inequality relating the fitness floor to the clone acceptance denominator.
 
 *Proof.* The Gaussian donor weights are positive for all finite coordinates. Their sum over the nonempty alive pool is positive. The dead-row branch of the cloning rule accepts the selected donor deterministically. The component transform and jitter are then applied before any terminal classification. $\square$
 :::
@@ -329,7 +329,12 @@ $$
 $$
 For a domain with Lebesgue-null boundary, $\mathbb P(x^+\in\partial D)=0$.
 
-*Proof.* Two Gaussians with covariance $s_h^2I$ and mean separation $r$ have total variation distance $2\Phi(r/(2s_h))-1$. To see this, divide their densities: the region where the first is larger is the half-space through their midpoint perpendicular to the mean difference. Integrating over that half-space reduces the distance to the displayed one-dimensional expression. Since $\Phi'$ is at most $1/\sqrt{2\pi}$, this distance is at most $r/(\sqrt{2\pi}s_h)$. Apply the bound to the exit event and then use {prf:ref}`lem-sasaki-kinetic-lipschitz`. The null-boundary assertion follows from the Gaussian density. $\square$
+*Proof.* For means $m,m'$ with $r=\|m-m'\|$, the exact Gaussian total variation formula and its linear bound are
+$$
+\|\mathcal N(m,s_h^2I)-\mathcal N(m',s_h^2I)\|_{\mathrm{TV}}
+=2\Phi(r/(2s_h))-1\le\frac{r}{\sqrt{2\pi}s_h}.
+$$
+To see this, divide their densities: the region where the first is larger is the half-space through their midpoint perpendicular to the mean difference. Integrating over that half-space reduces the distance to the displayed one-dimensional expression. Since $\Phi'$ is at most $1/\sqrt{2\pi}$, this distance is at most $r/(\sqrt{2\pi}s_h)$. Apply the bound to the exit event and then use {prf:ref}`lem-sasaki-kinetic-lipschitz`. The null-boundary assertion follows from the Gaussian density. $\square$
 :::
 
 
@@ -344,6 +349,22 @@ The physical state remains Euclidean, and the retained dead coordinates need not
 
 The reward function $R(x,v)=R_{\mathrm{pos}}(x)-\lambda_{\mathrm{vel}}\|v\|^2$ is continuous in physical coordinates and Lipschitz on each compact physical set. Expressed in squashed coordinates it is Lipschitz on the image of each such compact set. This gives the reward-regularity bound on the alive box with capped velocities. It does not assert a bounded continuous extension to the boundary of the full feature-space compactification.
 
+Quantitatively, on $\|x\|\le B_x$ and $\|v\|\le B_v$, let
+$L_{\mathrm{pos}}^{\mathrm{phys}}$ be a Lipschitz constant for
+$R_{\mathrm{pos}}$ on the physical position ball. Define
+$$
+K_x:=\left(1+\frac{B_x}{R_x}\right)^2,\qquad
+K_v:=\left(1+\frac{B_v}{V_{\mathrm{alg}}}\right)^2.
+$$
+Then the reward in squashed Sasaki coordinates has the bound
+$$
+L_R^{\mathrm{Sasaki}}
+\le L_{\mathrm{pos}}^{\mathrm{phys}}K_x
+  +\frac{2\lambda_{\mathrm{vel}}B_v K_v}{\sqrt{\lambda_v}}.
+$$
+For the completed alive rows in $[-r,r]^d$, one may take
+$B_x=r\sqrt d$ and $B_v=V_{\mathrm{alg}}$, so $K_v=4$.
+
 
 ```{dropdown} Proof
 :::{prf:proof}
@@ -353,6 +374,14 @@ $$
 \psi_C^{-1}(y)=\frac{y}{1-\|y\|/C}\qquad(\|y\|<C).
 
 $$
+
+The derivative of this inverse has radial eigenvalue
+$(1-\|y\|/C)^{-2}$ and tangential eigenvalues
+$(1-\|y\|/C)^{-1}$. The image of the physical ball of radius $B$
+lies in the squashed ball of radius $CB/(C+B)$, on which the inverse
+is $(1+B/C)^2$-Lipschitz. Apply this estimate to both coordinates,
+and use $|\|v\|^2-\|v'\|^2|\le2B_v\|v-v'\|$ and the
+velocity weight $\lambda_v$ to obtain the displayed reward constant.
 
 Define $R_{\mathcal Y}:\mathcal Y^{\circ}\to\mathbb R$ by
 
@@ -379,7 +408,7 @@ Then $\operatorname{Var}_{\pi_B}R\ge p_1p_2\Delta^2$.
 
 *Proof.* If $Z,Z'$ are independent with law $\pi_B$, then $\operatorname{Var}R=\frac12\mathbb E[(R(Z)-R(Z'))^2]$. The two ordered events $B_1\times B_2$ and $B_2\times B_1$ contribute at least $2p_1p_2\Delta^2$. $\square$
 
-A nonzero kinetic penalty creates local reward variation, but a pair of distinct reward values alone does not provide the probability factors $p_1,p_2$. A uniform richness axiom requires these factors and the gap to be bounded uniformly over the specified regions and reference law. The canonical fixed-step population proofs use positive regularization floors and do not assume this additional richness statement. For a constant objective with zero kinetic penalty, reward variance is exactly zero while the regularized algorithm remains defined.
+A nonzero kinetic penalty creates local reward variation, but a pair of distinct reward values alone does not provide the probability factors $p_1,p_2$. A uniform richness axiom requires these factors and the gap to be bounded uniformly over the specified regions and reference law. The canonical fixed-step population proofs use positive regularization floors and do not assume this additional richness statement. For a constant objective with zero kinetic penalty, $\operatorname{Var}R=0$ while the regularized algorithm remains defined.
 :::
 
 
@@ -416,7 +445,7 @@ $$
 The smooth cap gives $\|v^+-v\|^2\le2V_{\mathrm{alg}}^2+2\|v\|^2$. Sum these inequalities with velocity weight $\lambda_v$. Every BAOAB substep and the cap are continuous in the input for each fixed pair of innovations. Dominated convergence proves the asserted kernel continuity. The bound for projected displacement follows from the squashing maps' 1-Lipschitz property. $\square$
 :::
 
-:::{prf:lemma} Kinetic drift, positional covariance, and local phase-space nondegeneracy
+::::{prf:lemma} Kinetic drift, positional covariance, and local phase-space nondegeneracy
 :label: lem-euclidean-geometric-consistency
 
 For the same transition,
@@ -436,10 +465,36 @@ Its perturbation of the identity has Lipschitz constant $h^2L_F/4<1$. For every 
 
 A nonzero linear functional cannot be constant on this open set, so its variance is positive. Covariance entries depend continuously on the initial state by Gaussian moment domination and the velocity bound. Compactness therefore supplies a positive minimum eigenvalue and a finite maximum eigenvalue on each compact input set. Their ratio is the stated local condition-number bound. $\square$
 
+:::{prf:corollary} Explicit compact kinetic covariance bounds
+:label: cor-eg-compact-kinetic-covariance
+
+Assume the hypotheses of {prf:ref}`lem-euclidean-geometric-consistency` and restrict input rows to $\|x\|\le B_x$, $\|v\|\le B_v$. Fix target radii $r_x>0$ and $0<r_v<V_{\mathrm{alg}}$. Put
+$$
+a:=h^2L_F/4<1,\quad A_v:=B_v+\tfrac h2(B_F+L_FB_x),\quad A_x:=B_x+\tfrac h2A_v,
+$$
+$$
+B_3:=\frac{V_{\mathrm{alg}}r_v}{V_{\mathrm{alg}}-r_v},\quad
+W:=\frac{B_3+\tfrac h2(B_F+L_FA_x)}{1-a},\quad X_2:=A_x+\tfrac h2W.
+$$
+The full kinetic density on $K=B(0,r_x)\times B(0,r_v)$ is at least $\ell>0$, where
+$$
+\log\ell=-\frac d2\log(2\pi q^2)-\frac{(W+cA_v)^2}{2q^2}
+-\frac d2\log(2\pi h\sigma_x^2)-\frac{(r_x+X_2)^2}{2h\sigma_x^2}-d\log(1+a).
+$$
+Let $\omega_d$ be the volume of the unit ball and set $\theta=\ell\omega_d^2r_x^dr_v^d$. Then
+$$
+\theta\frac{\min(r_x^2,r_v^2)}{d+2}\le\lambda_{\min}(\operatorname{Cov}(x^+,v^+)),\qquad
+\lambda_{\max}(\operatorname{Cov}(x^+,v^+))\le ds_h^2+V_{\mathrm{alg}}^2.
+$$
+In particular the local covariance condition number is at most $(ds_h^2+V_{\mathrm{alg}}^2)(d+2)/(\theta\min(r_x^2,r_v^2))$. These constants depend on the compact input bounds and timestep, and are independent of the swarm size.
+
+*Proof.* The B1–A1 equations give $\|v_1\|\le A_v$ and $\|x_1\|\le A_x$. The inverse cap satisfies $\|\psi_v^{-1}(v^+)\|\le B_3$ on the target velocity ball. From $T(w)=\psi_v^{-1}(v^+)$ and global force growth, $(1-a)\|w\|\le B_3+h(B_F+L_FA_x)/2$, so $\|w\|\le W$ and $\|x_2\|\le X_2$. The O-stage Gaussian density is bounded below by its displayed radius bound. Independent final position diffusion has the second Gaussian bound. The singular values of $DT$ lie in $[1-a,1+a]$, hence $|\det DT|\le(1+a)^d$. The cap Jacobian has singular values at most one, so its inverse determinant is at least one. The change-of-variables formula gives the displayed $\ell$ and minorization by $\theta$ times uniform probability on $K$. The latter covariance has minimum eigenvalue $\min(r_x^2,r_v^2)/(d+2)$. The law of total covariance gives the lower bound. The covariance trace is at most $ds_h^2+V_{\mathrm{alg}}^2$, giving the upper bound. Logarithms retain these bounds when a floating-point representation of $\ell$ underflows. $\square$
+:::
+
 For the unit quadratic potential used by the canonical experiments, $F(x)=-x$ and $L_F=1$, so the positive-definiteness condition is verified whenever $0<h<2$, including the experiment default $h=0.04$. There is an exact obstruction at $h=2$: $x_2=x_1+v_2$ and $v_3=v_2-x_2=-x_1$, so the final velocity is deterministic conditional on the kinetic input, despite positive thermostat noise. Its velocity covariance is zero. The final position still has the displayed nondegenerate Gaussian law.
 
 These are fixed-step drift and covariance statements. The mean force drift, the full covariance, and contraction of the selection–collision kernel are different quantities.
-:::
+::::
 
 
 3. **Auxiliary distance continuity.** The following inequalities isolate the geometric and scalar-array calculations used when their sampling law and input bounds apply.
@@ -458,7 +513,7 @@ For the canonical weighted law, use the normalized-kernel denominator bounds, ma
 :::{prf:definition} Notation for auxiliary finite-swarm continuity estimates
 :label: def-eg-auxiliary-continuity-notation
 
-For two swarms $\mathcal S_r$ let $\mathcal A_r$ be their alive sets, $k_r=|\mathcal A_r|$, and $\mathcal A_{\mathrm{stable}}=\mathcal A_1\cap\mathcal A_2$. Set
+Choose paired representatives attaining the quotient dispersion minimum. For two swarms $\mathcal S_r$ let $\mathcal A_r$ be their alive sets, $k_r=|\mathcal A_r|$, and $\mathcal A_{\mathrm{stable}}=\mathcal A_1\cap\mathcal A_2$. Set
 $$
 n_c(\mathcal S_1,\mathcal S_2)=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2,\qquad
 \Delta_{\mathrm{pos,Sasaki}}^2=
@@ -569,53 +624,94 @@ We substitute our specific function bound $M_f = D_{\mathcal Y}$ and the support
 
 
 ::::
-::::{prf:lemma} Mean-square error on stable walkers (Sasaki)
+::::{prf:lemma} Positional and structural error on stable walkers (Sasaki)
 :label: lem-sasaki-total-squared-error-stable
 
-Let $\mathcal S_1,\mathcal S_2$ be swarms with alive sets $\mathcal A_r$ and let $\mathbf d^{(r)}$ denote the expected raw distance vector produced by the measurement operator on $\mathcal S_r$. Write $\mathcal A_{\mathrm{stable}}:=\mathcal A_1\cap\mathcal A_2$ and $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$. Then
+Use the auxiliary uniform-companion law of
+{prf:ref}`remark-eg-uniform-estimates`. Let $\mathcal S_1,\mathcal S_2$
+have nonempty alive sets $\mathcal A_r$ and expected raw distance vectors
+$\mathbf d^{(r)}$. Write $\mathcal A_{\mathrm{stable}}:=\mathcal A_1\cap\mathcal A_2$
+and $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$. For a stable row define
+the positional change with the companion law held fixed:
 
 $$
-\sum_{i\in\mathcal A_{\mathrm{stable}}}\big|d^{(1)}_i-d^{(2)}_i\big|^2\le C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
-
+P_i:=\left|\mathbb E_{c\sim\mathbb C_i(\mathcal S_1)}
+\left[d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{1,c}))
+-d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{2,i}),\varphi(w_{2,c}))\right]\right|.
 $$
 
-where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}}):=2\Big(1+\frac{k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\Big)$.
+Then
+
+$$
+\sum_{i\in\mathcal A_{\mathrm{stable}}}P_i^2
+\le C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})
+\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
+$$
+
+where $C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})
+:=2(1+k_{\mathrm{stable}}/\max\{1,k_1-1\})$.
+The full change, including a change of companion support, satisfies
+
+$$
+\sum_{i\in\mathcal A_{\mathrm{stable}}}|d_i^{(1)}-d_i^{(2)}|^2
+\le 2C_{\mathrm{pos}}^{\mathrm{Sasaki}}\Delta_{\mathrm{pos,Sasaki}}^2
++\frac{8k_{\mathrm{stable}}D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}n_c^2.
+$$
 
 Referenced by {prf:ref}`thm-sasaki-distance-ms`.
 
 ```{dropdown} Proof
 :::{prf:proof}
-For $i\in\mathcal A_{\mathrm{stable}}$ set $\Delta_i:=|d^{(1)}_i-d^{(2)}_i|$. Lemma {prf:ref}`lem-sasaki-single-walker-positional-error` gives
+For $k_1\ge2$, {prf:ref}`lem-sasaki-single-walker-positional-error` gives
 
 $$
-\Delta_i\le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i})) + \mathbb E_{c\sim\mathbb C_i(\mathcal S_1)}\big[d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}),\varphi(w_{2,c}))\big].
-
+P_i\le d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))
++\mathbb E_{c\sim\mathbb C_i(\mathcal S_1)}
+ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,c}),\varphi(w_{2,c})).
 $$
 
-Apply $(a+b)^2\le 2a^2+2b^2$ and Jensen's inequality to obtain
+Applying $(a+b)^2\le2a^2+2b^2$ and Jensen's inequality yields
 
 $$
-\Delta_i^2\le 2\,d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))^2 + \frac{2}{k_1-1}\sum_{j\in\mathcal A_1} d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,j}),\varphi(w_{2,j}))^2,
-
+P_i^2\le2d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,i}),\varphi(w_{2,i}))^2
++\frac{2}{k_1-1}\sum_{j\in\mathcal A_1}
+ d_{\mathcal Y}^{\mathrm{Sasaki}}(\varphi(w_{1,j}),\varphi(w_{2,j}))^2.
 $$
-where the averaging denominator $k_1-1$ is interpreted as $1$ when $k_1=1$. Summing over $i\in\mathcal A_{\mathrm{stable}}$ yields
 
-$$
-\sum_{i\in\mathcal A_{\mathrm{stable}}}\Delta_i^2\le 2\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2)+\frac{2k_{\mathrm{stable}}}{\max\{1,k_1-1\}}\,\Delta_{\mathrm{pos,Sasaki}}^2(\mathcal S_1,\mathcal S_2),
+Summing proves the positional bound. If $k_1=1$, the sole live row is
+its own companion and $P_i=0$, so that bound holds in the singleton case.
 
-$$
-which is the claimed bound.
+Let $Q_i$ be the difference of expected second-swarm distances when changing
+only the companion law. The triangle inequality gives
+$|d_i^{(1)}-d_i^{(2)}|\le P_i+Q_i$.
+For $k_1,k_2\ge2$, {prf:ref}`lem-sasaki-single-walker-structural-error`
+gives $Q_i\le2D_{\mathcal Y}n_c/(k_1-1)$.
+If $k_2=1<k_1$, then $Q_i\le D_{\mathcal Y}$ and $n_c\ge k_1-1$
+supply the same bound. If $k_1=1<k_2$, then
+$Q_i\le D_{\mathcal Y}\le2D_{\mathcal Y}n_c$.
+If both alive sets are the same singleton, $Q_i=0$; if they are different
+singletons, there are no stable rows.
+Thus $Q_i\le2D_{\mathcal Y}n_c/\max\{1,k_1-1\}$ throughout.
+Applying $(P_i+Q_i)^2\le2P_i^2+2Q_i^2$ and summing proves the full bound.
 :::
 ```
 
+The count $n_c$ in these inequalities compares the entering measurement
+supports. It does not count permanent particle loss. Under the canonical
+scheduled revival, each dead slot draws from the current live donor pool
+when that pool is nonempty. Cloning moments and convergence estimates for
+the completed transition must therefore use the revived output coordinates
+and the subsequent kinetic boundary, as in {prf:ref}`lem-eg-scheduled-revival`
+and {doc}`03_cloning`.
 ::::
+
 ::::{prf:theorem} Mean-square continuity of the distance measurement (Sasaki)
 :label: thm-sasaki-distance-ms
 
-Let $\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\mathcal S_r$. With $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$, and alive-difference count $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$, define
+Let $\mathbf d^{(r)}$ be the expected raw distance vectors of swarms $\mathcal S_r$ with nonempty alive sets, under the auxiliary uniform-companion law. With $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, $k_{\mathrm{stable}}:=|\mathcal A_{\mathrm{stable}}|$, and alive-difference count $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$, define
 
 $$
-F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+4k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+D_{\mathcal Y}^2 n_c.
+F_{d,ms}^{\mathrm{Sasaki}}(\Delta_{\mathrm{pos}}^2,n_c):=2C_{\mathrm{pos}}^{\mathrm{Sasaki}}(k_1,k_{\mathrm{stable}})\,\Delta_{\mathrm{pos}}^2+8k_{\mathrm{stable}}\frac{D_{\mathcal Y}^2}{\max\{1,k_1-1\}^2}\,n_c^2+D_{\mathcal Y}^2 n_c.
 
 $$
 
@@ -632,7 +728,7 @@ $$
 :::{prf:proof}
 Decompose the index set into stable walkers $\mathcal A_{\mathrm{stable}}$ and the complement. For stable walkers the bound in Lemma {prf:ref}`lem-sasaki-total-squared-error-stable` applies. For walkers whose status changes between the two swarms we use $|d^{(1)}_i-d^{(2)}_i|\le D_{\mathcal Y}$ because each expected distance is bounded by the diameter of the Sasaki algorithmic space. There are at most $n_c$ such indices (one per status change), contributing at most $D_{\mathcal Y}^2 n_c$ to the squared error.
 
-Finally, the structural perturbation of the companion distribution for stable walkers is controlled by Lemma {prf:ref}`lem-sasaki-single-walker-structural-error`. Squaring its bound and summing over the $k_{\mathrm{stable}}$ indices yields the middle term in $F_{d,ms}^{\mathrm{Sasaki}}$. Adding the three contributions completes the proof.
+The stable-row bound already includes its positional and structural parts, combined with the factor $2$ from the squared triangle inequality. Adding the unstable-row contribution completes the proof.
 :::
 ```
 ::::
@@ -641,10 +737,10 @@ Finally, the structural perturbation of the companion distribution for stable wa
 
 5. **Sufficient amplification.** The weights $\alpha,\beta\ge 0$ satisfy $\alpha+\beta>0$ exactly as in the canonical swarm ({prf:ref}`axiom-sufficient-amplification`).
 
-6. **Aggregator axioms.** Let $R_{\max}:=\sup_{x\in\mathcal X}|R_{\mathrm{pos}}(x)|+\lambda_{\mathrm{vel}}V_{\mathrm{alg}}^2$ and recall from Lemma {prf:ref}`lem-euclidean-reward-regularity` that the reward satisfies the Lipschitz bound
+6. **Aggregator axioms.** Let $R_{\max}:=\sup_{x\in\mathcal X}|R_{\mathrm{pos}}(x)|+\lambda_{\mathrm{vel}}V_{\mathrm{alg}}^2$ and recall from Lemma {prf:ref}`lem-euclidean-reward-regularity` that, on the image of the physical compact set $\|x\|\le B_x$, $\|v\|\le B_v$, the reward satisfies the Lipschitz bound
 
 $$
-|R(x_1,v_1)-R(x_2,v_2)|\le L_R^{\mathrm{Sasaki}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}\big((x_1,v_1),(x_2,v_2)\big),\qquad L_R^{\mathrm{Sasaki}}:=L_{\mathrm{pos}}+\frac{2\lambda_{\mathrm{vel}}V_{\mathrm{alg}}}{\sqrt{\lambda_v}}.
+|R(x_1,v_1)-R(x_2,v_2)|\le L_R^{\mathrm{Sasaki}}\,d_{\mathcal Y}^{\mathrm{Sasaki}}\big(\varphi(x_1,v_1),\varphi(x_2,v_2)\big),\qquad L_R^{\mathrm{Sasaki}}:=L_{\mathrm{pos}}^{\mathrm{phys}}K_x+\frac{2\lambda_{\mathrm{vel}}B_vK_v}{\sqrt{\lambda_v}}.
 
 $$
 Whenever aggregators act on reward vectors we use the uniform bound $V_{\mathrm{max}}^{(R)}:=\max\{|R_{\min}|,R_{\max}\}$; for distance vectors we use $V_{\mathrm{max}}^{(d)}:=D_{\mathcal Y}$. For swarms $\mathcal S_r$ write $k_r:=|\mathcal A(\mathcal S_r)|$, define $k_{\min}:=\max\{1,\min(k_1,k_2)\}$, and let $n_c:=\sum_{i=1}^N(s_{1,i}-s_{2,i})^2$ count the status changes.
@@ -683,7 +779,7 @@ $$
 
 ```{dropdown} Proof
 :::{prf:proof}
-The proof mirrors Lemma 6.2.2.b of the framework. Decompose the difference in means into contributions from walkers that remain alive in both swarms and those that change status. The former vanish, whereas the latter introduce at most $V_{\max}$ per status flip. Accounting for the normalisation factors $1/k_r$ and the difference in alive counts yields the stated bounds. The argument for $m_2$ uses $|a^2-b^2|\le 2V_{\max}|a-b|$.
+The proof mirrors Lemma 6.2.2.b of the framework. Decompose the difference in means into contributions from walkers that remain alive in both swarms and those that change status. The unchanged raw values on the intersection still have different normalization factors when $k_1\ne k_2$. Their contribution is at most $V_{\max}|k_1-k_2|/k_{\min}$, while the symmetric difference contributes at most $V_{\max}n_c/k_{\min}$. Since $|k_1-k_2|\le n_c$, the resulting $2V_{\max}n_c/k_{\min}$ bound implies the displayed coefficient $3V_{\max}/k_{\min}$. Apply the same argument to the common vector $(v_i^2)$, bounded by $V_{\max}^2$, to obtain the second-moment claim.
 
 :::
 ```
@@ -758,11 +854,17 @@ The following coefficients bound the error in the standardization operator when 
     $$
 
 #### Structural Error Coefficients
-The structural error coefficients, which are used in the subsequent theorem for structural continuity, remain as defined:
+For nonempty alive sets and a common bounded raw vector, the linear structural coefficients are:
 
 $$
-C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}}+\frac{2\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2},
-\qquad C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}(k_{\min}):=\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{6\big(V_{\mathrm{max}}^{(R)}\big)^2}{\sigma_{\min,\mathrm{patch}}^2k_{\min}}L_{\sigma',M}^{\mathrm{Sasaki}}(k_{\min}).
+C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}:=\frac{2V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}},\qquad
+L_{\sigma',S}^{\mathrm{Sasaki}}:=L_{\sigma'_{\mathrm{patch}}}\left(\frac{3(V_{\mathrm{max}}^{(R)})^2}{k_{\min}}+\frac{6(V_{\mathrm{max}}^{(R)})^2}{k_{\min}}\right),\qquad
+C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}:=\sqrt{k_{\mathrm{stable}}}\left(\frac{3V_{\mathrm{max}}^{(R)}}{\sigma_{\min,\mathrm{patch}}k_{\min}}+\frac{2V_{\mathrm{max}}^{(R)}L_{\sigma',S}^{\mathrm{Sasaki}}}{\sigma_{\min,\mathrm{patch}}^2}\right).
+$$
+For a fixed raw vector the corresponding unsquared structural bound is
+$$
+\|z(\mathcal S_1,\mathbf r)-z(\mathcal S_2,\mathbf r)\|_2
+\le C_{S,\mathrm{direct}}^{\mathrm{Sasaki}}\sqrt{n_c}+C_{S,\mathrm{indirect}}^{\mathrm{Sasaki}}n_c.
 
 $$
 :::
@@ -770,7 +872,7 @@ $$
 The squared coefficients used in the mean-square bounds are defined in {prf:ref}`def-sasaki-standardization-constants-sq`.
 
 
-Set $C_R:=L_R^{\mathrm{Sasaki}}\sqrt{N}+R_{\max}\sqrt{\tfrac{N}{\lambda_{\mathrm{status}}}}$ for later use.
+The finite-array bounds below are auxiliary coupling estimates. Population error uses normalized empirical laws, as in {prf:ref}`cor-eg-native-standardization-uniform`, whose constants do not grow with $N$.
 
 These constants verify the continuity axioms for the patched standardization and logistic rescale operators in the Sasaki geometry.
 
@@ -1168,7 +1270,7 @@ where $L_{\mu,M}^{\mathrm{Sasaki}}(k)$ and $L_{\sigma',M}^{\mathrm{Sasaki}}(k)$ 
 :::{prf:theorem} Structural Continuity of Patched Standardization (Sasaki)
 :label: thm-sasaki-standardization-structural-sq
 
-For general swarms $\mathcal S_1,\mathcal S_2$ with alive counts $k_r\ge 1$, the squared L2-norm of the output error of the standardization operator is bounded by a function of the number of status changes, $n_c(\mathcal S_1,\mathcal S_2)$.
+For swarms $\mathcal S_1,\mathcal S_2$ with alive counts $k_r\ge1$ and a single fixed raw vector $\mathbf r$ satisfying $|r_i|\le V_{\max}^{(R)}$ on $\mathcal A_1\cup\mathcal A_2$, write $z(\mathcal S_r)=z(\mathcal S_r,\mathbf r)$, with unused dead entries zero. The squared L2-norm of this pure structural output error is bounded by a function of the number of status changes, $n_c(\mathcal S_1,\mathcal S_2)$.
 
 Referenced by {prf:ref}`def-sasaki-structural-coeffs-sq` and {prf:ref}`lem-sasaki-standardization-lipschitz`.
 
@@ -1472,7 +1574,7 @@ where $L_{\mu,S}^{\mathrm{Sasaki}}$ and $L_{\sigma',S}^{\mathrm{Sasaki}}$ are th
 ::::{prf:theorem} Composite Continuity of the Patched Standardization Operator (Sasaki)
 :label: thm-sasaki-standardization-composite-sq
 
-The N-dimensional standardization operator $z(\mathcal S)$, when applied to the reward vector, is continuous with respect to the dispersion metric. For any two swarms $\mathcal S_1, \mathcal S_2$ with $k_1=|\mathcal A(\mathcal S_1)|\ge 1$, the squared L2-norm of the output error is bounded by a composite function of the squared dispersion distance:
+The N-dimensional standardization operator $z(\mathcal S)$, when applied to the reward vector, is continuous with respect to the dispersion metric. For any two swarms $\mathcal S_1, \mathcal S_2$ with $k_r=|\mathcal A(\mathcal S_r)|\ge1$ for both $r=1,2$, the squared L2-norm of the output error is bounded by a composite function of the squared dispersion distance:
 
 $$
 \|z(\mathcal S_1)-z(\mathcal S_2)\|_2^2 \le L_{z,L}^2(\mathcal S_1,\mathcal S_2) \cdot d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1, \mathcal S_2)^2 + L_{z,H}^2(\mathcal S_1,\mathcal S_2) \cdot d_{\mathrm{Disp},\mathcal Y}^{\mathrm{Sasaki}}(\mathcal S_1, \mathcal S_2)^4
@@ -1575,6 +1677,23 @@ The inequality is precisely the statement of Theorem {prf:ref}`thm-sasaki-standa
 
 ### 4.4 Swarm-level continuity and population evolution
 
+:::{prf:corollary} Native standardization and logistic population bounds
+:label: cor-eg-native-standardization-uniform
+
+For either actual sampled reward or actual sampled separation, let $\mu_r$ be the empirical probability law on the nonempty alive measurement array of swarm $r$. The alive counts may differ. For the native global regularizer with floor $m>0$, let $\operatorname{Std}_m\mu$ denote the law of $(Y-\mathbb EY)/\sqrt{\operatorname{Var}Y+m^2}$. For $g(z)=A/(1+e^{-z})+\eta$, $A,\eta>0$, the normalized empirical laws satisfy
+$$
+W_2^2(\operatorname{Std}_m\mu_1,\operatorname{Std}_m\mu_2)\le m^{-2}W_2^2(\mu_1,\mu_2),\qquad
+\int z^2\,d\operatorname{Std}_m\mu_r(z)\le1,
+$$
+$$
+|g'(z)|=\frac{Ae^{-z}}{(1+e^{-z})^2}\le A/4,\qquad
+W_2^2(g_\#\operatorname{Std}_m\mu_1,g_\#\operatorname{Std}_m\mu_2)\le\frac{A^2}{16m^2}W_2^2(\mu_1,\mu_2).
+$$
+Thus these population error constants are independent of $N$ and the alive counts. They act on the realized sampled arrays; they do not substitute average distance before fitness or imply a bound on a joint position–fitness law from scalar marginals alone.
+
+*Proof.* The standardization inequality and unit second moment follow from {prf:ref}`lem-empirical-standardization-uniform`, applied to the empirical probability laws. Direct differentiation gives the logistic derivative bound, with maximum at zero. Push an optimal scalar transport plan through $g$ to obtain the last inequality. All operations are invariant under independent storage permutations. $\square$
+:::
+
 :::{prf:remark} Constants and their scope
 :label: remark-eg-continuity-scope
 
@@ -1602,6 +1721,111 @@ $$
 **Applicability:** This inequality is an additional quantitative landscape hypothesis wherever a theorem uses it. Continuity alone does not prove a positive lower bound. It is not required to define the canonical transition or its finite-horizon population limit; any geometric-ergodicity application must verify it for its specified potential and scales.
 :::
 
+:::{prf:corollary} Non-deception for a confining quadratic with bounded nonlinear force
+:label: cor-eg-nonquadratic-gradient-certificate
+
+Suppose the physical positional reward satisfies
+$\nabla R_{\mathrm{pos}}(z)=-H(z-z_0)+e(z)$ on every segment in question,
+where $H$ is symmetric positive definite with $\lambda_{\min}(H)\ge m>0$
+and $\|e(z)\|\le M_d$. For any segment of length $L>0$,
+
+$$
+\frac1L\int_0^L\|\nabla R_{\mathrm{pos}}(x+t u)\|^2\,dt
+\ge \left(\frac{mL}{\sqrt{12}}-M_d\right)_+^2,
+\qquad u=\frac{y-x}{L}.
+$$
+
+Consequently any declared $L_{\mathrm{grad}}>\sqrt{12}M_d/m$ gives
+the explicit constant
+
+$$
+\kappa_{\mathrm{grad}}
+=\left(\frac{mL_{\mathrm{grad}}}{\sqrt{12}}-M_d\right)^2>0.
+$$
+
+For the standard Rastrigin reward, $m=2$ and $M_d=20\pi\sqrt d$.
+One admissible choice on the unbounded physical space is
+$L_{\mathrm{grad}}=40\pi\sqrt{3d}$ and
+$\kappa_{\mathrm{grad}}=400\pi^2d$. These constants are independent
+of population size. This verifies the stated landscape axiom; estimates of
+source pressure and of the complete transition require their own hypotheses.
+
+*Proof.* Write $c=(x+y)/2-z_0$ and parametrize the segment by
+$c+s u$, $-L/2\le s\le L/2$. Its normalized quadratic-force energy is
+
+$$
+\frac1L\int_{-L/2}^{L/2}\|H(c+s u)\|^2\,ds
+=\|Hc\|^2+\frac{L^2}{12}\|Hu\|^2
+\ge\frac{m^2L^2}{12}.
+$$
+
+The normalized $L^2$ norm of the residual force is at most $M_d$.
+The reverse triangle inequality in this normalized Hilbert space gives
+the first bound. Its right side is increasing in $L$, so the declared
+minimum length gives the second bound. Rastrigin has quadratic gradient
+$2z$ and residual coordinates $20\pi\sin(2\pi z_j)$; changing the
+reward sign does not change their squared norm. Thus
+$\|e(z)\|\le20\pi\sqrt d$ everywhere, including tails and saddle
+regions. Substitution proves the displayed constants. $\square$
+:::
+
+
+:::{prf:corollary} Short-segment non-deception from the actual Rastrigin oscillations
+:label: cor-eg-rastrigin-short-gradient
+
+For the standard Rastrigin reward on unbounded physical space, define
+
+$$
+A=20\pi,\qquad
+\Phi(\ell)=\frac{\ell^2}{3}
+ +A^2\left(\frac12-\frac1{4\pi\ell}-\frac1{\pi^2\ell^2}\right)
+ -4A\left(\frac1{2\pi}+\frac1{2\pi^2\ell}\right).
+$$
+
+For any segment of length $L\ge\sqrt d$, its normalized squared-gradient
+energy is at least $\Phi(L/\sqrt d)$. In particular the non-deception
+axiom holds with
+
+$$
+L_{\mathrm{grad}}=\sqrt d,\qquad
+\kappa_{\mathrm{grad}}=\Phi(1)
+=200\pi^2-100\pi-440-\frac{40}{\pi}+\frac13
+>1207.
+$$
+
+The length is smaller than the general bounded-force certificate, and the
+energy floor is independent of both dimension and population size. Both
+certificates remain available; at a declared longer length one may take
+the larger of their proved lower bounds.
+
+*Proof.* Some coordinate spans an interval of length
+$\ell\ge L/\sqrt d\ge1$. Under uniform segment parameter, its coordinate
+$X$ is uniform on that interval, with midpoint $c$. Write
+$g(X)=2X+A\sin(2\pi X)$; changing the reward sign preserves its variance.
+The complete gradient energy dominates $\mathbb E g^2$, which dominates
+$\operatorname{Var}(g)$. Direct integration gives
+
+$$
+\begin{aligned}
+\operatorname{Var}(X)&=\ell^2/12,\\
+|\mathbb E\sin(2\pi X)|&\le1/(\pi\ell),\\
+\mathbb E\sin^2(2\pi X)&\ge1/2-1/(4\pi\ell),\\
+|\operatorname{Cov}(X,\sin(2\pi X))|
+&\le1/(2\pi)+1/(2\pi^2\ell).
+\end{aligned}
+$$
+
+For the last bound the exact covariance is
+$\cos(2\pi c)[-\cos(\pi\ell)/(2\pi)+\sin(\pi\ell)/(2\pi^2\ell)]$.
+Expanding the variance of $g$ proves its lower bound $\Phi(\ell)$.
+Every positive term in the derivative of $\Phi$ is strictly positive
+for positive length, so $\Phi(\ell)\ge\Phi(L/\sqrt d)\ge\Phi(1)$.
+Substitution gives the displayed constant. The rational enclosure
+$3.14159<\pi<3.14160$ certifies its lower bound $1207$; positivity
+already follows from $\pi>3$. No midpoint restriction, compact physical support, or exclusion
+of slow zones is used. $\square$
+:::
+
 
 
 (sec-eg-verified-kernel)=
@@ -1614,7 +1838,11 @@ For finite $N\ge1$, positive Gaussian donor widths, positive regularization and 
 
 *Proof.* With at least one alive row the donor normalizers are positive; self-exclusion and singleton rules specify every draw. Positive regularization denominators make the sampled fitness finite, and all acceptance probabilities lie in $[0,1]$. A finite undirected graph has a unique partition into connected components. The common-rotation formula assigns each row exactly one output. BAOAB, final diffusion, cap, and status classification are measurable, so their composition with the finite draws is a probability kernel. The all-dead branch is absorbing.
 
-For each component, $\sum_{i\in C}(v_i-\bar v_C)=0$, so summing its velocity formula gives $\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i$. Relabeling the input, donor indices, innovations, and components relabels the output: weights, empirical statistics, connectedness, and component means are unchanged as unlabeled objects. Haar matrices have the same independent law after this transport. This proves kernel equivariance, without requiring equality of arbitrary fixed-seed trajectories under relabeling. The Feller assertion is proved in {prf:ref}`thm-euclidean-feller`. $\square$
+For each component, $\sum_{i\in C}(v_i-\bar v_C)=0$, so summing its velocity formula gives $\sum_{i\in C}\widetilde v_i=\sum_{i\in C}v_i$. Relabeling the input, donor indices, innovations, and components relabels the output: weights, empirical statistics, connectedness, and component means are unchanged as unlabeled objects. Haar matrices have the same independent law after this transport. This proves kernel equivariance,
+$$
+\Psi_{\mathcal F_{\mathrm{EG}}}(\pi S,\pi B)=\Psi_{\mathcal F_{\mathrm{EG}}}(S,B),\qquad \pi\in\mathfrak S_N,
+$$
+without requiring equality of arbitrary fixed-seed trajectories under storage reordering. The Feller assertion is proved in {prf:ref}`thm-euclidean-feller`. $\square$
 :::
 
 :::{prf:remark} What requires a separate convergence argument
@@ -1627,7 +1855,7 @@ Kernel existence and symmetry do not imply every axiom of an abstract convergenc
 (sec-eg-kernel)=
 ## 6. Swarm Update Operator Kernel
 
-We define the one-step kernel $\Psi_{\mathcal F_{\mathrm{EG}}}$ on the ordered swarm space $\Sigma_N=(\mathcal X\times\mathbb R^d\times\{0,1\})^N$. Measurement and donor innovations are independent across recipient rows conditional on the input, while rotations are independent across accepted components. Output walkers within a component share one rotation. When no walkers are alive the process becomes absorbing.
+We define the one-step kernel $\Psi_{\mathcal F_{\mathrm{EG}}}$ on the unordered swarm space $\Sigma_N=(\mathcal X\times\mathbb R^d\times\{0,1\})^N/\mathfrak S_N$. Arrays enumerate representatives as in {prf:ref}`def-swarm-and-state-space`; row numbers carry no particle identity. The array transition is permutation equivariant and therefore induces this kernel on empirical swarms. Measurement and donor innovations are independent across recipient atoms conditional on the input, while rotations are independent across accepted components. Output walkers within a component share one rotation. When no walkers are alive the process becomes absorbing.
 
 (sec-eg-stage1)=
 ### 6.1 Stage 1 — Cemetery absorption
@@ -1763,7 +1991,7 @@ The equivalent representation with input-independent uniforms realizes each cate
 
 For fixed $N$, continuous reward, globally Lipschitz force, positive donor and standardization denominators, $\sigma_x>0$, and Lebesgue-null $\partial D$, the canonical marked kernel maps bounded continuous functions to bounded continuous functions on
 $$
-\Sigma_N=(\mathbb R^d\times\mathbb R^d\times\{0,1\})^N,
+\Sigma_N=(\mathbb R^d\times\mathbb R^d\times\{0,1\})^N/\mathfrak S_N,
 $$
 with the discrete topology on the marks. Restricting to terminally consistent marked states preserves this assertion. The physical and squashed coordinate metrics induce the same topology on finite states.
 
@@ -1771,7 +1999,7 @@ with the discrete topology on the marks. Restricting to terminally consistent ma
 
 There are finitely many possible measurement donor arrays, clone donor arrays, and acceptance arrays. Their probabilities depend continuously on $S$: Gaussian weights have positive denominators, measured features and rewards are continuous, and regularized scales and positive fitness denominators do not vanish. Fix one such discrete array. Its accepted graph and connected components are fixed. Each component mean is a continuous linear function of the frozen velocities, and the rotation and position-copy maps are continuous for each fixed set of Haar and Gaussian innovations. BAOAB and the cap are likewise continuous.
 
-The terminal status indicator can be discontinuous only when one output position lies on $\partial D$. Conditional on all earlier innovations, independent final Gaussian position noise gives this event probability zero. Hence the marked outputs converge almost surely under the common innovations for the fixed discrete array. A bounded continuous test function then converges in expectation by dominated convergence. Sum over the finitely many discrete arrays with their continuous weights. This proves the assertion. No independence of output rows is used. $\square$
+The terminal status indicator can be discontinuous only when one output position lies on $\partial D$. Conditional on all earlier innovations, independent final Gaussian position noise gives this event probability zero. Hence the marked outputs converge almost surely under the common innovations for the fixed discrete array. A bounded continuous test function then converges in expectation by dominated convergence. Sum over the finitely many discrete arrays with their continuous weights. For a convergent sequence of empirical swarms, choose representative permutations realizing the minimum transport distance to the limiting representative. Apply this argument to the symmetric lift of a bounded continuous function on the quotient. Permutation equivariance then gives Feller continuity of the descended kernel. No independence of output rows is used. $\square$
 :::
 
 

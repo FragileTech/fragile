@@ -74,9 +74,13 @@ version = "0.1.0"
 dependencies = [
  "algorithmic-gas",
  "ciborium",
+ "flate2",
  "futures-lite",
+ "num-bigint",
+ "num-traits",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]

@@ -738,7 +738,11 @@ and donor widths are fixed independently of $N$.
 The squashed algorithmic distances give actual weight bounds
 $0<\kappa_D\le w_D\le1$ and $0<\kappa_C\le w_C\le1$. They do not bound
 physical positions. Take either the terminal absorbing box, or the unbounded
-confining configuration with quadratic reward. In the box, alive positions
+configuration with continuous reward of at most quadratic growth,
+$|R(x)|\le C_R(1+|x|^2)$, as in
+{prf:ref}`def-mean-field-marked-state`. This includes quadratic rewards
+and quadratic rewards with bounded smooth nonquadratic perturbations.
+The force retains the stated global Lipschitz and linear-growth hypotheses. In the box, alive positions
 are bounded and all retained velocities obey the cap. In the unbounded case,
 assume initial empirical convergence and a uniform initial $(4+\delta)$
 position moment for some $\delta>0$; independent initialization with that
@@ -826,9 +830,9 @@ contribution is a deterministic empirical integral.
 bounded diversity and its square, restricted to live rows, and divide by
 the deterministic alive fraction. Their conditional variances are bounded
 by constants times $1/(m_*^2N)$. Reward statistics are deterministic functions
-of the input array. In the box they converge by boundedness; for quadratic
-reward in the unbounded case the $(4+\delta)$ position moment gives uniform
-integrability of squared reward. {prf:ref}`lem-reward-continuity` applies.
+of the input array. In the box they converge by boundedness; for at-most-quadratic
+reward in the unbounded case, $R(x)^2\le2C_R^2(1+|x|^4)$ and the
+$(4+\delta)$ position moment give uniform integrability of squared reward. {prf:ref}`lem-reward-continuity` applies.
 
 **Fitness remains a mark.** Replace only the empirical normalization
 statistics by their limits. Positive regularizers and positive bounded

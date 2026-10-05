@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-02",
+  "scope": "Reference f64 executable and operator/report content hashes from this validation; working tree includes concurrent uncommitted work.",
+  "sha256": {
+    "algorithmic-gas/target/release/gas-eh-proof": "0640803275aa03825c50adb85998b09740f835c1e6ae4cf16ece8e594c54df35",
+    "algorithmic-gas/crates/benchmarks/src/convergence_einstein_hilbert.rs": "72e62a54ce55b522fe6415c3ce745c5c24519c54d5bcaa94ca5d0b21df850041",
+    "algorithmic-gas/crates/benchmarks/src/bin/gas-eh-proof.rs": "62a50848b09055b0b2fe2d9df6c5b433b226c2a5441185bc13fc92c31238f15a",
+    "algorithmic-gas/crates/algorithmic-gas/src/variants/einstein_hilbert.rs": "6206a1ba8e6c9cec7bc9f3759d134721ba53ee46b9efcb3db1e440fccdb79a31",
+    "algorithmic-gas/crates/algorithmic-gas/src/kinetic.rs": "ac986cc9548fb072301bdc332beaa9a910fd2843a4e946c9d146d40c70d82ee9",
+    "algorithmic-gas/crates/algorithmic-gas/src/cloning.rs": "161a72f782336b87ae1f48b6f6b3117bd617e82f7c97ad9e8b3b7113f69d7f66",
+    "algorithmic-gas/crates/algorithmic-gas/src/donor.rs": "358f751a853f6d9bb1f776b4b6523bf22207af85797f911f575ddb45ed84fdb4",
+    "algorithmic-gas/crates/algorithmic-gas/src/fitness.rs": "c7b6c2c2b06204aa875086f3b68f21fefadb192afaceb55ce62e9f91c38c0a31",
+    "algorithmic-gas/crates/algorithmic-gas/src/tessellation/forces.rs": "70338cd95ce7770d0de988efda10f332b6241a58eeb9d25def0a6ec4539a5b45",
+    "algorithmic-gas/outputs/convergence/einstein-hilbert/report.json": "303df10b7357e7122970e13cf6f3e8eb9391a9225dbb780fe0787a7d957da93b",
+    "algorithmic-gas/outputs/convergence/einstein-hilbert/long-report.json": "db88b45932ab5d790d95ff79b013fa3b8c6447cfd952f64cba3c38abed3e550d"
+  }
+}

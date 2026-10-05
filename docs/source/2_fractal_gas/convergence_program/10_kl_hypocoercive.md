@@ -149,6 +149,32 @@ $$
 satisfies a negative quadratic drift for $\Delta-\theta^{-1}\nabla U\cdot\nabla$. The weighted-energy estimate, local Poincaré inequality, entropy-transport bound, and centering argument in {prf:ref}`thm-nonconvex-main` prove the spatial LSI. Gaussian LSI and the full tensorization proof in {prf:ref}`thm-tensorization` then give $C_0$, independently of $N$.
 :::
 
+:::{prf:corollary} Coordinatewise nonconvex LSI without dimensional inflation
+:label: cor-hypocoercive-separable-landscape-lsi
+
+Let $U(x)=\sum_{j=1}^d[\kappa_j x_j^2/2+B_j(x_j)]$, where
+$\kappa_j>0$ and $\operatorname{osc}(B_j)\leq b_j$. Then the spatial and
+kinetic product references satisfy
+
+$$
+C_x\leq\max_{1\leq j\leq d}\frac{\theta}{\kappa_j}e^{b_j/\theta},
+\qquad C_0=\max\{C_x,\theta\}.
+$$
+
+*Proof.* Apply the first regime of {prf:ref}`thm-unconditional-lsi-explicit`
+in one coordinate: curvature is $\kappa_j$ and its bounded perturbation
+has oscillation at most $b_j$. Tensorization across coordinates takes the
+maximum of their LSI constants. Tensorization across walkers and with the
+velocity Gaussian again takes a maximum. Thus neither step multiplies
+$C_0$ by $d$ or $N$.
+
+For $U(x)=\sum_j[x_j^2+10(1-\cos(2\pi x_j))]$, one may take
+$\kappa_j=2$, $b_j=20$, and $C_x\leq(\theta/2)e^{20/\theta}$.
+The global Hessian norm is at most $2+40\pi^2$, also independent of $d$.
+The estimate applies to the unbounded confining law and retains the
+nonconvex wells and saddle regions.
+:::
+
 :::{prf:remark} The actual joint law
 :label: rem-hypocoercive-joint-lsi
 

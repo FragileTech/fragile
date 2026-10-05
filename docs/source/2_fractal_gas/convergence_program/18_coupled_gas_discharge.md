@@ -657,9 +657,11 @@ $$
 $$
 
 The quantities $m_N^\Theta$ and $\theta_0(e_N^\Theta)$ are defined by the
-identified full-kernel eigenproblem. The theorem does not replace them by
-unproved primitive-parameter lower bounds, and does not assert uniformity in
-$N$. Dead physical positions remain unbounded and retained.
+identified full-kernel eigenproblem. The primitive bounds in
+{prf:ref}`thm-cgd-primitive-eigenfunction` replace them in the quantitative
+subregime derived below, including the existing reference configuration.
+Neither theorem asserts uniformity in $N$. Dead physical positions remain
+unbounded and retained.
 :::
 
 :::{prf:proof}
@@ -810,6 +812,509 @@ from the existing configuration. The four analysis radii lie strictly within
 the required intervals, and $J/\sigma_J=G=1$. They select positive-probability
 events in the proof and leave the actual Gaussian innovations unchanged.
 $\square$
+:::
+
+### 5.1. Analytic force profiles and closed eigenfunction bounds
+
+:::{div} feynman-prose
+Why look at two updates? In one update, changing the OU draw also changes
+the position where the final force is evaluated. That map can fold, and its
+density can become large near a critical point. The first update leaves a
+fresh Gaussian position draw for the second update. For each possible donor
+pattern, retained positions inherit that noise; copied positions have their
+own clone jitter. We can then hold the second-stage positions fixed while
+changing velocity. The velocity map is affine in those coordinates. Under
+the stated derivative margins, this gives an upper density bound on the
+favorable part of the second update, without assuming away the one-update
+critical points.
+
+Now normalize the survival eigenfunction to have maximum one. From a state
+at that maximum, two updates must carry a definite amount of eigenfunction
+mass. The upper density bound prevents all that mass from hiding in an
+arbitrarily tiny region. The one-update lower density then lets every starting
+state reach the same region, forcing the eigenfunction's minimum above zero.
+That is how the unknown ratio becomes a bound calculated from parameters.
+
+The favorable event is a device for estimating probability. Every Gaussian
+draw remains unbounded; the exceptional draws remain in the kernel and are
+accounted for by a tail-probability bound. Nor do we require fitness values to differ:
+donor-pattern probabilities are bounded above by one, never divided out.
+The force and noise margins, rather than fitness separation, determine where
+this certificate applies.
+:::
+
+:::{prf:definition} Actual force profiles for the quantitative extension
+:label: def-cgd-analytic-force-profile
+
+Retain the entire canonical marked kernel, terminal box, cap, two Gaussian
+viscous normalizations and passive-record convention of
+{prf:ref}`def-cgd-parameter-register`. For its configured force define
+
+$$
+B_F=|F(0)|,\qquad L_F=\sup_{x\in\mathbb R^d}\|DF(x)\|_{2\to2}.
+$$
+
+The extension below concerns globally defined real-analytic $F$ with finite
+$L_F$. These profiles must be calculated from the original force; a divergent
+profile is not replaced by an assumed finite constant. Set $\nu_N=\nu$ for
+$N\ge2$ and $\nu_N=0$ for $N=1$, and define
+
+$$
+\kappa_F=1-t^2L_F-\chi t\nu_N>0,\qquad
+\chi=\begin{cases}1,&\mathfrak n=\mathrm{count},\\
+2,&\mathfrak n=\mathrm{row}.
+\end{cases}
+\tag{CGD.8}
+$$
+
+For an analysis jitter radius $J_0>0$, put $p_0=G_d(J_0/\sigma_J)$ if
+$\sigma_J>0$ and $p_0=1$ otherwise, and
+
+$$
+\begin{aligned}
+B_0(J)&=R_D+J,\\
+B_1(J)&=(1+2t\nu_N)V_c+t[B_F+L_FB_0(J)],\\
+B_x(J)&=B_0(J)+tB_1(J).
+\end{aligned}
+$$
+
+For any position cube radius $R>0$ and pre-cap row velocity radius $H>0$, let
+
+$$
+Z(H)=\begin{cases}
+\sqrt N\{H+t[B_F+L_FB_x(J_0)]\}/\kappa_F,&\mathrm{count},\\
+\{H+t[B_F+L_FB_x(J_0)]\}/\kappa_F,&\mathrm{row},
+\end{cases}
+\qquad R_2(H)=B_x(J_0)+tZ(H).
+$$
+
+Define $D_F(H)=1+t^2L_F$ for $N=1$. For $N\ge2$ define
+
+$$
+D_F(H)=1+t^2L_F+2t\nu_N+
+\begin{cases}
+4t^2\nu_N\ell_KZ(H),&\mathrm{count},\\
+8t^2\nu_N\ell_KZ(H)e^{2R_2(H)^2/\rho^2},&\mathrm{row},\ N>2,\\
+0,&\mathrm{row},\ N=2.
+\end{cases}
+$$
+
+With $m=dN$, the following is a lower bound for the density in **raw position
+and pre-cap velocity coordinates**, before removing extinction:
+
+$$
+\mathfrak l_N(R,H)=
+\frac{p_0^N(2\pi q s)^{-m}}{(\sqrt N D_F(H))^m}
+\exp\left[-\frac{N[Z(H)+cB_1(J_0)]^2}{2q^2}
+-\frac{N[\sqrt dR+B_x(J_0)+tZ(H)]^2}{2s^2}\right].
+\tag{CGD.9}
+$$
+
+Choose $L_0=L_D/2$, $r_v=V/2$ and $H_0=Vr_v/(V-r_v)=V$. A corresponding
+one-update common part is
+
+$$
+\epsilon_F=\min\left\{\tfrac12,
+\mathfrak l_N(L_0,H_0)(2L_0)^m[v_d(r_v)]^N\right\}.
+\tag{CGD.10}
+$$
+
+The cap's inverse determinant is at least one, explaining the use of capped
+target volume in (CGD.10); no such determinant occurs in (CGD.9).
+:::
+
+:::{prf:theorem} Finite-population QSD for the actual analytic force
+:label: thm-cgd-analytic-force-qsd
+
+Under {prf:ref}`def-cgd-analytic-force-profile`, retain $q,s>0$ and the
+canonical continuity and positive regularizers of
+{prf:ref}`thm-cgd-finite-n-qsd`. The same full killed marked kernel has a
+unique QSD, a continuous eigenfunction $e$ with $\max e=1$, and the
+conditioned TV and entropy estimates (CGD.6)--(CGD.7), with its own spectral
+data and $\epsilon_F$ in place of $\epsilon_N$.
+
+For either normalization, the primitive survival floor is
+
+$$
+\begin{aligned}
+\sigma_h&=(t^2q^2+s^2)^{1/2},\\
+A&=L_D+J_0+t(1+c)B_1(J_0),\\
+a_F&=p_0\left[
+\Phi\left(\frac{L_D-A}{\sigma_h}\right)
+-\Phi\left(\frac{-L_D-A}{\sigma_h}\right)\right]^d>0.
+\end{aligned}
+\tag{CGD.11}
+$$
+
+Thus $Q1(k)\ge a_F$ and its eigenvalue $\alpha_Q\ge a_F$ uniformly over
+all nonextinct capped inputs. Constants need not be uniform in $N$.
+:::
+
+:::{prf:proof}
+**1. Keep the original B2 force.** For fixed $x_1$, its actual map is
+
+$$
+T_{x_1}(z)=z+tF(x_1+tz)+tF^{\mathrm{visc}}(x_1+tz,z).
+$$
+
+The global derivative profile gives $|F(x)|\le B_F+L_F|x|$.
+The count Laplacian has Euclidean operator norm at most one; the row
+Laplacian has maximum-row operator norm at most two. Consequently, in these
+respective norms,
+
+$$
+\|T_{x_1}(z)\|\ge\kappa_F\|z\|
+-t\{\|F(0)\mathbf1\|+L_F\|x_1\|\}.
+$$
+
+The same bound holds along the homotopy from this map to $z\mapsto z$.
+It is proper, and the degree argument in
+{prf:ref}`thm-cgd-phase-smoothing` proves surjectivity. At a consensus $z$,
+weight-derivative terms vanish, and
+
+$$
+DT_{x_1}(z)=I+t^2\operatorname{diag}(DF(x_{1,i}+tz_0))
+-t\nu_NL_{x_1+tz_0}.
+$$
+
+The derivative profile and (CGD.8) give an invertible matrix by the Neumann
+series in the indicated norm. Its analytic determinant is not identically
+zero. The null-critical-set and TV-continuity proof in
+{prf:ref}`thm-cgd-phase-smoothing` therefore applies with the original $F$.
+
+**2. Calculate the common density.** On the all-latent-jitter event of radius
+$J_0$, all preparation positions and velocities have the bounds $B_0(J_0)$
+and $V_c$. B1 and A1 give $B_1(J_0),B_x(J_0)$. The preceding coercivity
+bound gives a preimage with each $|z_i|\le Z(H)$. Differentiate the map on
+that preimage set. The force derivative contributes $1+t^2L_F$; the viscous
+terms are bounded exactly as in (CGD.4), giving $D_F(H)$. For a row-normalized
+pair the only nonself weight is one, so its weight derivative is zero.
+The maximum-row derivative bound gives determinant at most
+$(\sqrt N D_F(H))^m$. Gaussian change of variables now gives (CGD.9), for
+every $R,H$ and almost every target in the corresponding raw cube/ball.
+Removal of all-dead targets leaves the same lower density on the surviving
+targets. The cap then gives (CGD.10).
+
+**3. Compute survival without restricting other rows.** Choose any tagged
+row after revival. Its selected original position belongs to the existing
+box. On that row's latent-jitter event of radius $J_0$, every coordinate is
+at most $L_D+J_0$ in magnitude. Both normalizations give
+$|F_i^{\mathrm{visc}}|\le2\nu_NV_c$ at B1 regardless of other jitters, so
+$|v_{1,i}|\le B_1(J_0)$. The exact final-position identity is
+$x_i^+=x_i+t(1+c)v_{1,i}+tq\xi_i+s\zeta_i$.
+Conditional on preparation, its coordinates are independent Gaussians with
+standard deviation $\sigma_h$ and means of magnitude at most $A$.
+The Gaussian probability of $[-L_D,L_D]$ is minimized at mean $\pm A$:
+differentiate its interval integral with respect to the mean to verify this.
+Multiply the $d$ coordinate probabilities and the tagged jitter probability.
+That row being alive implies survival, yielding (CGD.11), without asserting
+independence between final velocities or different preparation rows.
+
+**4. Verify the full eigenproblem.** The effective input compactification,
+continuous pattern probabilities, TV-continuity, compactness and strong
+positivity checks in {prf:ref}`thm-cgd-finite-n-qsd` are unchanged. Force
+evaluation still occurs after mandatory revival and uses no raw dead input
+coordinate. The common part is now (CGD.10); a uniform positive extinction
+event follows from bounded latent jitter and OU draws followed by sufficiently
+large final position draws, as in its Step 3. Its spectral, Doob, uniqueness,
+physical-coordinate and entropy arguments apply verbatim. The minimum
+eigenfunction equation also gives $\alpha_Q\ge\inf Q1\ge a_F$.
+No alteration of force, gate, donor law or noise was used. $\square$
+:::
+
+:::{prf:lemma} Two-update upper density with an explicit discarded mass
+:label: lem-cgd-two-update-density
+
+Under {prf:ref}`thm-cgd-analytic-force-qsd`, suppose $\sigma_J>0$ when
+$N>1$. Choose analysis radii $J,G>0$. Write $\nu_N$ as above and let
+
+$$
+\begin{aligned}
+\beta_F&=t^2(L_F+C_x)<1,\\
+C_x&=\begin{cases}
+4\nu_NV_c\ell_K,&\mathrm{count},\\
+16\nu_NV_c B_0(J)/\rho^2,&\mathrm{row},\ N>2,\\
+0,&\mathrm{row},\ N\le2,
+\end{cases}\\
+k_B&=1-\chi t\nu_N>0,\qquad
+\tau=\begin{cases}\min(s,\sigma_J),&N>1,\\s,&N=1,\end{cases}\\
+M_N&=(4N^2)^N(2\pi\tau q)^{-m}
+[(1-\beta_F)k_B]^{-m}.
+\end{aligned}
+\tag{CGD.12}
+$$
+
+Set
+
+$$
+\begin{aligned}
+Z_0&=cB_1(J)+qG,&R'_2&=B_x(J)+tZ_0,\\
+H&=(1+2t\nu_N)Z_0+t(B_F+L_FR'_2),&R&=R'_2+sG,\\
+p_{\mathrm{bad}}&=N\{\mathbf1_{\sigma_J>0}[1-G_d(J/\sigma_J)]
++2[1-G_d(G)]\}.
+\end{aligned}
+\tag{CGD.13}
+$$
+
+Let $E_N(x,y)=e(x,C_V(y),\mathbf1_D(x))$ on nonextinct physical targets,
+and set it to zero on all-dead targets. Let
+$\mathcal B=[-R,R]^{dN}\times B(0,H)^N$ in raw position/pre-cap coordinates.
+Then, for every effective input $k$,
+
+$$
+Q^2e(k)\le M_N\int_{\mathcal B}E_N(x,y)\,dx\,dy+p_{\mathrm{bad}}.
+\tag{CGD.14}
+$$
+
+The first-update density need not have a bounded Jacobian inverse. All its
+critical-point behavior is retained.
+:::
+
+:::{prf:proof}
+**1. Use the noise at the correct stage.** Condition on all first-update
+randomness except its final position innovation. Its complete velocities are
+now fixed and capped. The input positions for the second update are independent
+Gaussians of standard deviation $s$, with arbitrary centers. Partition the
+second-update integral into its incoming masks, measurement donor arrays,
+cloning donor arrays and gate arrays: their number is at most
+$2^N N^N N^N2^N=(4N^2)^N$. Pattern probabilities depend on the positions,
+but each is at most one. Drop those probabilities when bounding an unnormalized
+submeasure; do not condition and divide by a pattern probability.
+
+For each pattern, integrate its normalized independent Haar rotations. Given
+a rotation realization and the fixed input velocities, the collision velocities
+are fixed, independent of continuous position coordinates, and bounded by
+$V_c$. A row which does not copy retains its own input position, with density
+at most $(2\pi s^2)^{-d/2}$. A copying row, including a revived row, has its
+own independent Gaussian jitter, with density at most
+$(2\pi\sigma_J^2)^{-d/2}$. Retained rows have distinct original labels.
+Condition first on the retained original positions, bound each copying-row
+density by its supremum, and integrate unused original positions. This proves
+a joint preparation-position density bound $(2\pi\tau^2)^{-m/2}$ for
+each pattern, even when donors copy or several recipients share a donor.
+For $N=1$, the singleton cannot copy and the first position noise suffices.
+Restricting this submeasure to any jitter event cannot increase its density.
+
+**2. Check the first drift, including row normalization.** On the second
+update's all-latent-jitter event of radius $J$, every prepared position belongs
+to $B(0,B_0(J))$. With fixed collision velocities $v$, the first drift is
+
+$$
+A_v(x)=x+tv+t^2[F(x)+F^{\mathrm{visc}}(x,v)].
+$$
+
+The count bound for its force's position derivative is
+$4\nu_NV_c\ell_K$. For a row-normalized weight and position perturbation
+of maximum-row norm $\delta$ on this ball,
+$|d\log K_{ij}|\le4B_0(J)\delta/\rho^2$. Differentiating normalized weights
+gives $\sum_j|d\omega_{ij}|\le8B_0(J)\delta/\rho^2$. Since
+$|v_j-v_i|\le2V_c$, their force derivative is at most
+$16\nu_NV_cB_0(J)\delta/\rho^2$. This bound uses the actual ratio and needs
+no population-independent Gaussian degree floor. For a pair, that ratio is
+identically one; for a singleton viscosity is zero.
+
+Thus $A_v-I$ is $\beta_F$-Lipschitz in maximum-row norm on a convex product
+of balls. It is injective there. Every eigenvalue of its Jacobian perturbation
+has modulus at most $\beta_F$, so
+$|\det DA_v|\ge(1-\beta_F)^m$. Change variables from prepared $x$ to $x_1$,
+then use the fresh independent OU density for $z$. The transformation
+$(x_1,z)\mapsto(x_2=x_1+tz,z)$ has determinant one. Their joint density is
+bounded by
+$(2\pi\tau q)^{-m}(1-\beta_F)^{-m}$ per pattern.
+
+**3. Hold the actual second-stage positions fixed.** In coordinates $(x_2,z)$,
+B2 is the affine velocity map
+
+$$
+y=(I-t\nu_NL_{x_2})z+tF(x_2).
+$$
+
+Its count eigenvalues are at least $1-t\nu_N$. Its row Laplacian is similar
+to a symmetric matrix with spectrum in $[0,2]$, giving eigenvalues at least
+$1-2t\nu_N$. Hence its velocity determinant is at least $k_B^m$.
+This argument differs from differentiating the one-update map while keeping
+$x_1$ fixed; it does not discard the critical points of that map.
+Finally, convolution in $x_2$ with the second final-position Gaussian has
+integral one. Sum the unnormalized pattern bounds to obtain density at most
+$M_N$ in $(x^+,y)$ on the good-jitter submeasure. Terminal killing only
+removes mass.
+
+**4. Retain every exceptional event in the bound.** If all second-update
+latent jitters have norm at most $J$ and both standard kinetic innovations
+have row norm at most $G$, the maximum-row force bound at both B stages gives
+the stage budgets in (CGD.13). The output belongs to $\mathcal B$.
+The union bound gives exceptional mass at most $p_{\mathrm{bad}}$; it remains
+in the actual kernel. On this part use $0\le e\le1$. On the good part use
+the density bound and integrate $E_N$ over $\mathcal B$. This proves
+(CGD.14), also at compactification inputs by the established TV-continuity.
+$\square$
+:::
+
+:::{prf:theorem} Primitive-parameter eigenfunction ratio and conditioned rates
+:label: thm-cgd-primitive-eigenfunction
+
+Under {prf:ref}`lem-cgd-two-update-density`, choose its radii so that
+$p_{\mathrm{bad}}\le a_F^2/2$. Define
+
+$$
+\underline m_F=\min\left\{1,
+\frac{\mathfrak l_N(R,H)a_F^2}{2M_N}\right\}>0,
+\qquad \underline\delta_F=\epsilon_F\underline m_F>0.
+\tag{CGD.15}
+$$
+
+The actual full-kernel eigenfunction and Doob common part satisfy
+
+$$
+\min e\ge\underline m_F,\quad
+\frac{\max e}{\min e}\le\underline m_F^{-1},\quad
+\theta_0(e)\ge\underline m_F,\quad
+\delta_N\ge\underline\delta_F.
+$$
+
+For every initial law $\eta$, its conditioned law obeys
+
+$$
+\left\|\frac{\eta Q^n}{\eta Q^n1}-\nu_Q\right\|_{\mathrm{TV}}
+\le4\underline m_F^{-2}(1-\underline\delta_F)^n.
+\tag{CGD.16}
+$$
+
+For every $\eta$ with finite initial relative entropy,
+
+$$
+D\left(\frac{\eta Q^n}{\eta Q^n1}\middle\Vert\nu_Q\right)
+\le\underline m_F^{-2}(1-\underline\delta_F)^nD(\eta\Vert\nu_Q).
+\tag{CGD.17}
+$$
+
+Every displayed constant now depends only on the original primitive parameters,
+the calculated force profiles and explicit analysis radii. No eigenfunction
+minimum, weighted spectral mass or eigenvalue remains an unevaluated input.
+No positive cloning-acceptance or fitness-separation premise is used.
+:::
+
+:::{prf:proof}
+At an effective input attaining $\max e=1$, the eigenfunction equation twice
+gives $Q^2e=\alpha_Q^2\ge a_F^2$. By (CGD.14),
+
+$$
+\int_{\mathcal B}E_N(x,y)\,dx\,dy\ge\frac{a_F^2}{2M_N}.
+$$
+
+For every starting input, the one-update density lower bound (CGD.9) on that
+same raw target set gives
+
+$$
+\alpha_Qe(k)=Qe(k)\ge\mathfrak l_N(R,H)
+\int_{\mathcal B}E_N(x,y)\,dx\,dy
+\ge\frac{\mathfrak l_N(R,H)a_F^2}{2M_N}.
+$$
+
+Since $\alpha_Q\le1$, (CGD.15) follows. Also
+$\delta_N=\epsilon_F\theta_0(e)/\alpha_Q\ge\epsilon_F\underline m_F$.
+Substitute these lower bounds into the already proved full-kernel TV and
+entropy inequalities. The lower/upper comparison used raw pre-cap coordinates
+on both sides and the same $E_N$, so no cap Jacobian or physical coordinate
+has been silently dropped. $\square$
+:::
+
+:::{prf:corollary} Explicit radii, reference closure, and nonquadratic cases
+:label: cor-cgd-primitive-reference
+
+For $\sigma_J>0$ set $J_0=\sigma_J$, compute $a_F$ from (CGD.11), and set
+
+$$
+r_*=[2d\{\log(12dN)-2\log a_F\}]^{1/2},\qquad
+J=\sigma_Jr_*,\qquad G=r_*.
+\tag{CGD.18}
+$$
+
+For $\sigma_J=0,N=1$, choose any $J_0>0$, set $J=J_0$ and $G=r_*$.
+These choices give $p_{\mathrm{bad}}\le a_F^2/2$. If their derived
+$\beta_F<1$ and (CGD.8) holds, all conclusions (CGD.15)--(CGD.17) follow.
+The unchanged reference instance satisfies these inequalities for both its
+existing count and row normalization choices.
+
+For a configured anisotropic/affine quadratic force $F(x)=-Ax+b$, $A=A^{\mathsf T}$,
+$L_F=\|A\|_{2\to2}$ and $B_F=|b|$ give the same certificate. For a configured
+potential
+
+$$
+U(x)=\tfrac12x^{\mathsf T}Ax-b\cdot x+
+\sum_{\ell=1}^d a_\ell[1-\cos(k_\ell x_\ell)],
+\quad A=A^{\mathsf T},
+$$
+
+the profile bounds are $B_F=|b|$ and
+$L_F\le\|A\|_{2\to2}+\max_\ell|a_\ell|k_\ell^2$.
+For $\lambda\ge0$ and the nonconvex potential
+$U(x)=\lambda|x|^2/2-A_0\sum_\ell\log\cosh(kx_\ell)$,
+the force is $-\lambda x+A_0k\tanh(kx)$, with $B_F=0$ and
+$L_F\le\lambda+|A_0|k^2$. Each example concerns that force **if it is the
+configured force**; it does not authorize changing a run. Their finite-QSD
+and primitive rates are discharged precisely where their calculated profiles
+pass the displayed inequalities. Global convexity and uniqueness of a landscape
+minimum are not additional premises.
+:::
+
+:::{prf:proof}
+For a standard $d$-Gaussian, $|\xi|>r$ implies at least one coordinate exceeds
+$r/\sqrt d$ in absolute value. The elementary exponential Gaussian tail bound
+and a union bound give
+$1-G_d(r)\le2d\exp[-r^2/(2d)]$. Each of the three terms in (CGD.13) is
+therefore at most $a_F^2/6$ at (CGD.18); in the singleton zero-jitter case
+only two terms are present. This proves the discarded-mass inequality.
+
+For the reference, $L_F=1,B_F=0,J_0=0.1$ and
+$\sigma_h^2=0.02^2q^2+0.02^2$. Substitution in (CGD.11) and (CGD.18)
+gives the explicit $J,G$. To verify the row inequality without depending on
+a rounded Gaussian tail, note that $B_1(J_0)<4.12$, $A<2.265$ and
+$0.02\le\sigma_h<0.021$. Integrating the standard Gaussian density on the
+subinterval $[L_D-\sigma_h,L_D]$ gives coordinate survival probability at least
+$(2\pi)^{-1/2}\exp[-14.25^2/2]>e^{-103}$. Also $G_3(1)>0.1$, by integrating
+the minimum Gaussian density over the unit ball. Hence $-\log a_F<312$,
+$r_*<62$ and $J<6.2$. The count derivative margin is
+$1-0.02^2[1+4(0.3)(4)e^{-1/2}]>0$.
+For row normalization it is
+$1-0.02^2[1+16(0.3)(4)(2\sqrt3+J)]>0.925$ by these bounds.
+Both coercivity margins were already verified above. Logarithmic diagnostic
+evaluation gives $\log a_F\simeq-259.0643$, $J\simeq5.6232$,
+$G\simeq56.2322$, and the two first-drift margins approximately $0.99844$
+and $0.92981$. These decimal evaluations are supplementary; the inequalities
+above prove closure independently of floating-point rounding.
+The remaining examples follow by differentiating their original displayed
+forces and evaluating the operator norms; $|\cos|\le1$ and
+$0<\operatorname{sech}^2\le1$ give the stated global profiles.
+$\square$
+:::
+
+:::{prf:remark} Quantitative scope and numerical evaluation
+:label: rem-cgd-primitive-limitations
+
+The evaluator `fragile.fractalai.theory.qsd_certificate.viscous_qsd_primitive_certificate`
+implements (CGD.8)--(CGD.18) in natural logarithms. Positive quantities can be
+far below floating-point range; retain their logarithms rather than rounding
+them to zero. Its floating calculations are not rigorous interval enclosures
+and do not verify the analytic force profile or the canonical kernel contract.
+
+The new conclusion is a finite-$N$ certificate for the existing real-coordinate,
+fixed-step, capped, terminal-box killed gas. It does not prove population-uniform
+mixing or joint LSI, stationary chaos, an unbounded conservative invariant law,
+history-donor or geometry-feedback dynamics, or numerical-kernel transfer.
+For $N>1$ the two-update upper-density argument requires existing positive clone
+jitter; the earlier quadratic qualitative QSD theorem does not. A nonsmooth or
+superlinear force with infinite $L_F$, a nonpositive B2 margin, or a row
+first-drift margin failing at the necessary tail radius lies outside this
+certificate. Such a failure does not prove nonconvergence of that gas.
+The derivative and noise inequalities are sufficient, not necessary.
+
+The constants can be extremely pessimistic: the pattern count, simultaneous
+Gaussian events, row derivative bound and minimum-density target comparison
+accumulate losses with $N$, small noise or narrow bandwidth. Equal or nearly
+equal fitness is not excluded here; the proof bounds pattern probabilities
+above by one and never divides by an acceptance probability. The finite Fock
+spectral degeneracy question remains separate.
 :::
 
 :::{prf:theorem} Population-independent marginal QSD tails and survival
@@ -1098,7 +1603,8 @@ two-sided global bounds are conclusions of the nonlinear smoothing theorem.
 :::{prf:proof}
 Formula (CGD.4) contains product probabilities and Gaussian densities in
 dimension $dN$, and no positive $N$-uniform lower bound is supplied. The
-eigenfunction ratio is separately identified spectral data. A minorization
+new primitive eigenfunction bound (CGD.15) is finite-$N$ and still has no
+positive population-uniform lower bound. A minorization
 controls Markov entropy contraction; it supplies no derivative form for the
 invariant measure. The nonlinear map in (CGD.2) can have critical points;
 a bounded upper Jacobian used for a density lower bound is not a lower bound

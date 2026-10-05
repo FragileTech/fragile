@@ -1,7 +1,15 @@
 # The Keystone Principle and the Contractive Nature of Cloning
 
 :::{div} feynman-prose
-The selection probabilities in the keystone argument can vary across a landscape. [Structural landscape convergence](06a_structural_landscape_convergence.md) records that regional dependence and shows where the resulting terms enter the composition with kinetics. This preserves the same corrective-selection mechanism while exposing which properties of the landscape its quantitative bound needs.
+Selection probabilities can vary across a landscape.
+[Structural landscape convergence](06a_structural_landscape_convergence.md)
+records that dependence and follows the selection terms into the signed
+balance with kinetics. Its Sections 16.3–16.4 also prove population-independent
+alive-law rates through two-update mixing in their conservative, nonviscous,
+death-disabled regimes. The bounded-reward result relaxes to the exact
+finite-swarm stationary law; the unbounded-reward result retains the sampling
+floor when comparing with the stationary population law. The separately
+proved survivor-conditioned QSD rate retains its dependence on $N$.
 :::
 
 (sec-cloning-tldr)=
@@ -21,12 +29,32 @@ independent death events give the separate exponential bound on one-step
 extinction probability. A safe region in the environment supplies locations;
 its occupancy supplies the probability estimate.
 
-The constants are uniform in $N$ when the measurement, selection, target-error,
-and barrier bounds used to construct them are uniform in $N$.
-{doc}`06_convergence` combines the cloning and kinetic estimates for the finite
-particle chain. {doc}`09_propagation_chaos` treats the mean-field approximation,
-and {doc}`15_kl_convergence` gives the functional-inequality and entropy proofs
-for their specified laws and generators.
+For the canonical transition implemented by the Rust gas,
+{prf:ref}`thm-w2-finite-n-conditioned-convergence` proves geometric convergence
+of the full swarm law conditioned on at least one walker remaining alive.
+Its limit is a unique quasi-stationary distribution, and the theorem also
+controls the Wasserstein distance for a walker sampled uniformly from the
+surviving alive population. The proof uses the stated force, noise, and
+two-update density bounds. It includes complete fitness ties and zero live
+cloning acceptance: kinetic noise still smooths the law in those cases.
+Its rate constants depend on the fixed population size.
+
+Pressure and component constants are uniform in $N$ when their measurement,
+selection, target-error, and barrier inputs are uniform in $N$. Pressure alone
+supplies no convergence rate. The two-update coupling in
+{prf:ref}`thm-slcw-finite-uniform-law` supplies a proved alternative: under its
+bounded-reward, force-center, current-frame, nonviscous, death-disabled
+hypotheses, the alive-sampled law relaxes to its exact finite-$N$ stationary
+law in total variation, and the random empirical-measure law relaxes in
+Wasserstein distance, with a rate independent of $N$ and no error floor.
+{prf:ref}`cor-slcw-finite-positive-exponents` gives an explicit interval of
+weak, positive selection strengths. The proof includes complete fitness ties. For
+unbounded raw reward, {prf:ref}`thm-slcw-alive-uniform-law` gives a
+population-independent time rate toward the stationary population law and
+retains a finite-sampling floor that vanishes as $N$ grows.
+{doc}`09_propagation_chaos` treats the mean-field approximation, and
+{doc}`15_kl_convergence` gives the functional-inequality and entropy proofs for
+their specified laws and generators.
 
 Prerequisites: {doc}`01_fragile_gas_framework`, {doc}`02_euclidean_gas`, and
 {doc}`04_single_particle`.
@@ -53,8 +81,19 @@ inequality records exactly this weighted quantity.
 This chapter develops the measurement, selection, variance, and boundary
 calculations needed for that estimate. Each drift result retains its own
 hypotheses. In particular, a bound on internal variance is a bound on the spread
-of one swarm; convergence of probability laws requires the additional coupling
-or mixing estimates in the convergence chapters.
+of one swarm. To prove convergence of probability laws, we must also control
+how the transition mixes different entering laws. For the fixed canonical
+kernel, {prf:ref}`thm-w2-finite-n-conditioned-convergence` supplies this control
+through kinetic smoothing, with the actual survival normalization retained.
+The resulting finite-population conclusion includes symmetric fitness regions;
+a population-independent rate is separately proved by
+{prf:ref}`thm-slcw-finite-uniform-law` in the bounded-reward conservative regime
+with the stated force-center bound, weak positive selection, current-frame
+measurements, nonviscous kinetics, and deaths disabled. Its two-update mixing
+coupling controls the alive-sampled and random empirical-measure laws without
+requiring a signed quadratic contraction at every step. The unbounded-reward
+population comparison in {prf:ref}`thm-slcw-alive-uniform-law` retains its
+vanishing sampling floor.
 :::
 
 :::{prf:remark} Absorption and the law conditioned on survival
@@ -109,23 +148,25 @@ The fundamental unit of the system is the walker ({prf:ref}`def-walker`), and a 
 
 1.  A **walker** is a tuple $(x, s)$ ({prf:ref}`def-walker`), where $x \in \mathcal{X}$ is its position in a state space and $s \in \{0, 1\}$ is its survival status. For the Euclidean Gas ({prf:ref}`alg-euclidean-gas`), this is extended to include a velocity component, making the **full state** of a single walker a tuple $(x, v, s) \in \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\}$. We refer to $(x,v)$ as the **kinematic state**.
 
-2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an N-tuple of walker  states:
+2.  A **swarm ({prf:ref}`def-swarm-and-state-space`) configuration**, $S$, is an unordered multiset of $N$ walker states, represented by an array modulo permutations:
 
 
 
 $$
-S := \left( (x_1, v_1, s_1), (x_2, v_2, s_2), \dots, (x_N, v_N, s_N) \right)
+S := \left[\left( (x_1, v_1, s_1), (x_2, v_2, s_2), \dots, (x_N, v_N, s_N) \right)\right]_{\mathfrak S_N}
 
 $$
 
-3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\Sigma_N$, is the Cartesian product of the per-walker ({prf:ref}`def-walker`) state spaces:
+3.  The **single-swarm ({prf:ref}`def-swarm-and-state-space`) state space**, denoted $\Sigma_N$, is the permutation quotient of the representative product:
 
 
 
 $$
-\Sigma_N := \left( \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\} \right)^N.
+\Sigma_N := \left( \mathbb{R}^d \times \mathbb{R}^d \times \{0, 1\} \right)^N/\mathfrak S_N.
 
 $$
+
+Indices enumerate atoms of a representative and attached random choices. Scalar observables, empirical transport costs, and update laws are invariant under every reordering. For vector computations one chooses representatives and a transport coupling as in {prf:ref}`def-swarm-and-state-space`.
 
 Referenced by {prf:ref}`def-barycentres-and-centered-vectors`, {prf:ref}`def-coupled-state-space`, and {prf:ref}`def-swarm-aggregation-operator`.
 :::
@@ -151,12 +192,12 @@ This defines a coupling with the correct marginals; optimality or contraction mu
 The **coupled state space** for the Euclidean Gas ({prf:ref}`alg-euclidean-gas`) is the Cartesian product $\Sigma_N \times \Sigma_N$, where $\Sigma_N$ is defined in {prf:ref}`def-single-swarm-space`. An element of this space is an ordered pair of swarm configurations, $(S_1, S_2)$, where:
 
 $$
-S_1 = \left( (x_{1,1}, v_{1,1}, s_{1,1}), \dots, (x_{1,N}, v_{1,N}, s_{1,N}) \right) \in \Sigma_N,
+S_1 = \left[\left( (x_{1,1}, v_{1,1}, s_{1,1}), \dots, (x_{1,N}, v_{1,N}, s_{1,N}) \right)\right]_{\mathfrak S_N} \in \Sigma_N,
 
 $$
 
 $$
-S_2 = \left( (x_{2,1}, v_{2,1}, s_{2,1}), \dots, (x_{2,N}, v_{2,N}, s_{2,N}) \right) \in \Sigma_N.
+S_2 = \left[\left( (x_{2,1}, v_{2,1}, s_{2,1}), \dots, (x_{2,N}, v_{2,N}, s_{2,N}) \right)\right]_{\mathfrak S_N} \in \Sigma_N.
 
 $$
 
@@ -172,7 +213,7 @@ The core of the hypocoercive analysis is not the absolute state of the swarms, b
 :::{prf:definition} State Difference Vectors
 :label: def-state-difference-vectors
 
-For any element $(S_1, S_2) \in \Sigma_N \times \Sigma_N$, we define the **state difference vectors** for each walker ({prf:ref}`def-walker`) index $i \in \{1, \ldots, N\}$ as follows:
+For any element $(S_1,S_2)\in\Sigma_N\times\Sigma_N$, choose an explicitly stated transport coupling of their empirical measures. A difference vector belongs to a matched pair of atoms, not to an intrinsic walker identity. For a permutation coupling, first reorder the second representative by that permutation and write its matched atom index as $i$. The **state difference vectors** along this coupling are then:
 
 1.  The **position difference vector** for walker  $i$ is:
 
@@ -192,7 +233,7 @@ $$
 
 $$
 
-The entire drift analysis will be formulated in terms of the norms and inner products of these $2N$ difference vectors. The objective is to show that, in expectation, the magnitudes of these vectors decrease over time, driving the two swarm ({prf:ref}`def-swarm-and-state-space`) trajectories together.
+For a general transport plan $\Pi$, including unequal alive counts, use $\Delta x_{ij}=x_{1,i}-x_{2,j}$ and $\Delta v_{ij}=v_{1,i}-v_{2,j}$ on each supported pair and integrate quadratic quantities with weights $\Pi_{ij}$. The intrinsic inter-swarm distance minimizes over admissible plans. A chosen-plan estimate is a coupling bound, and its output plan supplies an upper bound on the optimal output distance. Reordering either representative transports its plan and random choices without changing these scalar quantities or the marginal update laws.
 
 Referenced by {prf:ref}`def-location-error-component`.
 :::
@@ -247,7 +288,7 @@ d(x, \partial \mathcal{X}_{\text{valid}}) & \text{if } x \in \mathcal{X}_{\text{
 
 $$
 
-is $C^{\infty}$-smooth on $U$. Here $d(\cdot, \cdot)$ denotes the Euclidean distance. For any $x \in U \cap \mathcal{X}_{\text{valid}}$, we have $\rho(x) = \|x - \pi(x)\| > 0$, and $\nabla \rho(x)$ is the outward-pointing unit normal vector at the closest boundary point.
+is $C^{\infty}$-smooth on $U$. Here $d(\cdot, \cdot)$ denotes the Euclidean distance. For any $x \in U \cap \mathcal{X}_{\text{valid}}$, we have $\rho(x) = \|x - \pi(x)\| > 0$, and $\nabla \rho(x)$ is the inward-pointing unit normal vector at the closest boundary point, because $\rho$ is positive inside the domain.
 
 **Explicit construction of the tubular neighborhood width:** By compactness of $\partial \mathcal{X}_{\text{valid}}$ and smoothness, there exists $\delta_0 > 0$ such that $U := \{x \in \mathbb{R}^d : d(x, \partial \mathcal{X}_{\text{valid}}) < \delta_0\}$ is a smooth tubular neighborhood. We will use $\delta < \delta_0/3$ in the sequel to ensure all relevant regions lie within $U$.
 
@@ -294,7 +335,7 @@ $$
 
 We verify $\varphi \in C^{\infty}(\mathcal{X}_{\text{valid}})$ by analyzing the composition structure.
 
-For any $x \in \mathcal{X}_{\text{valid}}$ with $\rho(x) < 3\delta < \delta_0$, we have $x \in U$, so $\rho(x)$ is $C^{\infty}$ near $x$. Since $\rho(x) > 0$ for all $x \in \mathcal{X}_{\text{valid}}$, the function $1/\rho(x)$ is $C^{\infty}$ on all of $\mathcal{X}_{\text{valid}}$. The composition $\psi(\rho(x)/\delta)$ is $C^{\infty}$ since both $\psi$ and $\rho$ are $C^{\infty}$.
+For any $x \in \mathcal{X}_{\text{valid}}$ with $\rho(x) < 3\delta < \delta_0$, we have $x \in U$, so $\rho(x)$ is $C^{\infty}$ near $x$. Its strict positivity makes $1/\rho(x)$ smooth on this collar. Thus the displayed expression for $\varphi$ is smooth there. Away from the collar, define $\varphi=1/\delta$ directly; smoothness of the distance function in the interior is not required.
 
 For $x$ with $\rho(x) \geq 3\delta$, we have $\rho(x)/\delta \geq 3 > 2$, so $\psi(\rho(x)/\delta) = 0$ identically in a neighborhood of $x$. Thus $\varphi(x) = 1/\delta$ (constant) in this region, which is trivially $C^{\infty}$.
 
@@ -673,129 +714,28 @@ The first step in our causal chain is to connect the state of the coupled system
 :::{prf:lemma} Structural Positional Error and Internal Variance
 :label: lem-sx-implies-variance
 
-Let $k_1 := |\mathcal{A}(S_1)|$ and $k_2 := |\mathcal{A}(S_2)|$ denote the numbers of alive walkers in each swarm ({prf:ref}`def-swarm-and-state-space`). Define:
-
-- $V_{\text{x,struct}}$ as the positional component of the structural error between the two swarms' **alive-walker ({prf:ref}`def-walker`) distributions**
-- $\text{Var}_k(x) := \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \|\delta_{x,k,i}\|^2$ as the **physical internal positional variance** of the **alive walkers** in swarm  $k$ (note: this is $k_{\text{alive}}$-normalized, representing the actual spread of alive walkers, distinct from the Lyapunov variance component $V_{Var,x}$ which is $N$-normalized)
-
-Then:
-
+Let both swarms have nonempty alive sets, of arbitrary sizes $k_1,k_2\ge1$. Let $\widetilde\mu_s$ be the probability empirical law of alive positions centered at their own alive barycenter, and put
 $$
-V_{\text{x,struct}} \le 2(\text{Var}_1(x) + \text{Var}_2(x))
-
+\operatorname{Var}_s(x)=\int |u|^2\,d\widetilde\mu_s(u),\qquad
+V_{\mathrm{x,struct}}=W_2^2(\widetilde\mu_1,\widetilde\mu_2).
 $$
-
-Consequently, if $V_{\text{x,struct}} > R^2_{\text{spread}}$ for some threshold $R_{\text{spread}}$, then at least one swarm ({prf:ref}`def-swarm-and-state-space`) $k$ must have an internal variance $\text{Var}_k(x) > R^2_{\text{spread}} / 4$.
+Then the population-independent estimate is
+$$
+V_{\mathrm{x,struct}}\le\operatorname{Var}_1(x)+\operatorname{Var}_2(x).
+$$
+Consequently $V_{\mathrm{x,struct}}>R_{\mathrm{spread}}^2$ implies that at least one swarm has $\operatorname{Var}_s(x)>R_{\mathrm{spread}}^2/2$. These are alive-probability variances, not the $N$-normalized Lyapunov variance components.
 :::
 :::{prf:proof}
-**Proof.**
-
-The proof is in two parts. First, we rigorously establish the primary inequality by analyzing the optimal transport structure and using a carefully constructed sub-optimal coupling. Second, we demonstrate the consequence using a proof by contradiction.
-
-**Part 1: Rigorous Proof of the Main Inequality**
-
-Let $\tilde{\mu}_1$ and $\tilde{\mu}_2$ denote the centered empirical measures of the alive walkers in swarms $S_1$ and $S_2$:
-
-$$
-\tilde{\mu}_k = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} \delta_{\delta_{x,k,i}}
-
-$$
-
-where $\delta_{x,k,i} = x_{k,i} - \mu_{x,k}$ are the centered position vectors and $\mu_{x,k} = \frac{1}{k_{\text{alive}}} \sum_{i \in \mathcal{A}(S_k)} x_{k,i}$ is the positional barycenter.
-
-The structural positional error is defined as the squared Wasserstein distance:
-
-$$
-V_{\text{x,struct}} := W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) = \inf_{\gamma \in \Gamma(\tilde{\mu}_1, \tilde{\mu}_2)} \int \|\delta_{x,1} - \delta_{x,2}\|^2 \, d\gamma(\delta_{x,1}, \delta_{x,2})
-
-$$
-
-where $\Gamma(\tilde{\mu}_1, \tilde{\mu}_2)$ is the set of couplings (joint probability measures with marginals $\tilde{\mu}_1$ and $\tilde{\mu}_2$).
-
-**Step 1.1: Construction of a sub-optimal coupling.**
-
-We construct a specific coupling $\gamma_{\text{id}}$ to obtain an upper bound. Let $m := \min(k_1, k_2)$ where $k_1 = |\mathcal{A}(S_1)|$ and $k_2 = |\mathcal{A}(S_2)|$.
-
-Without loss of generality, relabel the walkers in each swarm by their indices $1, 2, \ldots, k_1$ and $1, 2, \ldots, k_2$. Define the **identity-plus-remainder coupling** $\gamma_{\text{id}}$ as follows:
-
-- For $i \leq m$: couple walker $i$ in swarm 1 with walker $i$ in swarm 2 with mass $1/\max(k_1, k_2)$.
-- For the excess walkers in the larger swarm: couple each with an arbitrary uniform distribution over the other swarm.
-
-The precise construction depends on the relative sizes, but the key property is that this coupling costs at most the sum of:
-1. The average squared centered norm in swarm 1: $\frac{1}{k_1} \sum_{i \in \mathcal{A}(S_1)} \|\delta_{x,1,i}\|^2$
-2. The average squared centered norm in swarm 2: $\frac{1}{k_2} \sum_{i \in \mathcal{A}(S_2)} \|\delta_{x,2,i}\|^2$
-
-**Step 1.2: Bounding the cost of the identity coupling (equal sizes).**
-
-First consider the case $k_1 = k_2 = k$. The identity coupling matches walker $i$ to walker $i$. Its cost is:
-
-$$
-\int \|\delta_{x,1} - \delta_{x,2}\|^2 \, d\gamma_{\text{id}} = \frac{1}{k} \sum_{i=1}^k \|\delta_{x,1,i} - \delta_{x,2,i}\|^2
-
-$$
-
-Using the elementary inequality $\|a - b\|^2 \leq 2\|a\|^2 + 2\|b\|^2$ for any $a, b \in \mathbb{R}^d$ (which follows from $\|a-b\|^2 = \|a\|^2 - 2\langle a, b \rangle + \|b\|^2 \leq \|a\|^2 + \|b\|^2 + |\langle a, b \rangle|^2 \leq \|a\|^2 + \|b\|^2 + \|a\|^2 + \|b\|^2$ by Cauchy-Schwarz and the polarization identity):
-
-$$
-\|\delta_{x,1,i} - \delta_{x,2,i}\|^2 \leq 2\|\delta_{x,1,i}\|^2 + 2\|\delta_{x,2,i}\|^2
-
-$$
-
-Summing over all $i$ and dividing by $k$:
-
+The product measure $\gamma=\widetilde\mu_1\otimes\widetilde\mu_2$ is an admissible transport coupling for all nonzero alive counts, including unequal counts. Centering gives $\int u\,d\widetilde\mu_1=\int v\,d\widetilde\mu_2=0$. Thus
 $$
 \begin{aligned}
-\frac{1}{k} \sum_{i=1}^k \|\delta_{x,1,i} - \delta_{x,2,i}\|^2 &\leq \frac{2}{k} \sum_{i=1}^k \|\delta_{x,1,i}\|^2 + \frac{2}{k} \sum_{i=1}^k \|\delta_{x,2,i}\|^2 \\
-&= 2\text{Var}_1(x) + 2\text{Var}_2(x)
+\int |u-v|^2\,d\gamma(u,v)
+&=\int |u|^2\,d\widetilde\mu_1(u)+\int |v|^2\,d\widetilde\mu_2(v)
+-2\left(\int u\,d\widetilde\mu_1\right)\cdot\left(\int v\,d\widetilde\mu_2\right)\\
+&=\operatorname{Var}_1(x)+\operatorname{Var}_2(x).
 \end{aligned}
-
 $$
-
-**Step 1.3: Extension to unequal sizes.**
-
-For unequal sizes $k_1 \neq k_2$, a more careful analysis is required. Consider a coupling that matches $\min(k_1, k_2)$ pairs and distributes the excess mass. By the triangle inequality for Wasserstein distances and properties of Dirac measures, one can show that the cost is still bounded by $2(\text{Var}_1(x) + \text{Var}_2(x))$.
-
-Specifically, for any centered measure $\tilde{\mu}$, we have $W_2^2(\tilde{\mu}, \delta_0) = \int \|\delta_x\|^2 \, d\tilde{\mu}(\delta_x) = \text{Var}(x)$ where $\delta_0$ is the Dirac measure at the origin. Using the triangle inequality:
-
-$$
-W_2(\tilde{\mu}_1, \tilde{\mu}_2) \leq W_2(\tilde{\mu}_1, \delta_0) + W_2(\delta_0, \tilde{\mu}_2) = \sqrt{\text{Var}_1(x)} + \sqrt{\text{Var}_2(x)}
-
-$$
-
-Squaring both sides and using $(a + b)^2 \leq 2a^2 + 2b^2$:
-
-$$
-W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \leq \left(\sqrt{\text{Var}_1(x)} + \sqrt{\text{Var}_2(x)}\right)^2 \leq 2\text{Var}_1(x) + 2\text{Var}_2(x)
-
-$$
-
-**Step 1.4: Conclusion of Part 1.**
-
-Since the Wasserstein distance is the infimum over all couplings and we've constructed a coupling with cost at most $2(\text{Var}_1(x) + \text{Var}_2(x))$:
-
-$$
-V_{\text{x,struct}} = W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \leq 2(\text{Var}_1(x) + \text{Var}_2(x))
-
-$$
-
-This establishes the main inequality rigorously.
-
-**Part 2: Proof of the Consequence**
-
-We prove the implication $V_{\text{x,struct}} > R^2_{\text{spread}} \implies \exists k \in \{1,2\} : \text{Var}_k(x) > R^2_{\text{spread}}/4$ by contrapositive.
-
-**Contrapositive statement:** If $\text{Var}_1(x) \leq R^2_{\text{spread}}/4$ and $\text{Var}_2(x) \leq R^2_{\text{spread}}/4$, then $V_{\text{x,struct}} \leq R^2_{\text{spread}}$.
-
-**Proof of contrapositive:** Assume $\text{Var}_1(x) \leq R^2_{\text{spread}}/4$ and $\text{Var}_2(x) \leq R^2_{\text{spread}}/4$. By the inequality established in Part 1:
-
-$$
-V_{\text{x,struct}} \leq 2(\text{Var}_1(x) + \text{Var}_2(x)) \leq 2\left(\frac{R^2_{\text{spread}}}{4} + \frac{R^2_{\text{spread}}}{4}\right) = 2 \cdot \frac{R^2_{\text{spread}}}{2} = R^2_{\text{spread}}
-
-$$
-
-This proves the contrapositive statement. By logical equivalence, the implication follows: if $V_{\text{x,struct}} > R^2_{\text{spread}}$, then at least one swarm must satisfy $\text{Var}_k(x) > R^2_{\text{spread}}/4$.
-
-**Q.E.D.**
+Taking the infimum over admissible couplings proves the first inequality. If both variances were at most $R_{\mathrm{spread}}^2/2$, their sum and hence the structural error would be at most $R_{\mathrm{spread}}^2$, proving the consequence by contrapositive. The construction uses probability measures and is invariant under independent permutations of the two populations. $\square$
 :::
 
 ### 3.3. The Full Synergistic Lyapunov Function
@@ -1025,7 +965,7 @@ For the Lyapunov function to be a valid measure of the total system error, its k
 ::::{prf:lemma} Coercivity of the Hypocoercive Lyapunov Components
 :label: lem-V-coercive
 
-The location component $V_{\text{loc}}$ and the structural component $V_{\text{struct}}$ are positive-definite quadratic forms, and are therefore coercive, if the hypocoercive parameters satisfy:
+The physical hypocoercive quadratic cost is positive definite, and the location and structural components are coercive in their respective barycenter and optimal-transport metrics, if the hypocoercive parameters satisfy:
 
 $$
 b^2 < 4\lambda_v
@@ -1034,11 +974,20 @@ $$
 
 This condition ensures that there exist constants $\lambda_1, \lambda_2 > 0$ such that:
 *   $V_{\text{loc}} \ge \lambda_1 (\|\Delta\mu_x\|^2 + \|\Delta\mu_v\|^2)$
-  *   $V_{\text{struct}} \ge \lambda_2 \frac{1}{N}\sum_i (\|\Delta\delta_{x,i}\|^2 + \|\Delta\delta_{v,i}\|^2)$
+*   $V_{\text{struct}} \ge \lambda_2 W_2^2(\tilde\mu_1,\tilde\mu_2)$, where $W_2$ uses the physical Euclidean position--velocity cost on the alive centered empirical measures.
+
+Here $\lambda_1=\lambda_2=\lambda_{\min}$ is the smallest eigenvalue displayed below. For equal alive counts $k$, the Euclidean term is
+$$
+W_2^2(\tilde\mu_1,\tilde\mu_2)
+=\min_{\sigma\in\mathfrak S_k}\frac1k\sum_{i=1}^k
+ \left(\|\delta_{x,1,i}-\delta_{x,2,\sigma(i)}\|^2
+       +\|\delta_{v,1,i}-\delta_{v,2,\sigma(i)}\|^2\right).
+$$
+Any supplied matching of the two alive supports provides an admissible coupling and hence an upper bound on this optimal cost. It cannot replace the optimal cost in the coercive lower bound. Indices enumerate empirical atoms for computation; reordering them does not change either swarm. For unequal alive counts, retain the infimum over couplings of their uniform centered empirical measures.
 :::{prf:proof}
 **Proof.**
 
-We prove the coercivity of both the location and structural components by verifying that the associated quadratic forms are positive-definite under the stated condition.
+We verify that the physical quadratic cost is positive definite under the stated condition, apply its lower bound to the barycenter difference, and then minimize the same bound over centered transport couplings.
 
 **Part 1: Positive-definiteness of general hypocoercive quadratic forms.**
 
@@ -1166,18 +1115,21 @@ V_{\text{struct}} \geq \lambda_2 \cdot W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)
 
 $$
 
-where $\lambda_2 = \lambda_{\min} > 0$. The standard $W_2$ ({prf:ref}`lem-polishness-and-w2`) distance between centered empirical measures satisfies:
+where $\lambda_2 = \lambda_{\min} > 0$. For equal alive counts $k$, the standard $W_2$ ({prf:ref}`lem-polishness-and-w2`) distance between centered empirical measures satisfies:
 
 $$
-W_2^2(\tilde{\mu}_1, \tilde{\mu}_2) \geq \frac{1}{N} \sum_{i=1}^N \inf_{\sigma \in S_N} \left(\|\delta_{x,1,i} - \delta_{x,2,\sigma(i)}\|^2 + \|\delta_{v,1,i} - \delta_{v,2,\sigma(i)}\|^2\right)
+W_2^2(\tilde{\mu}_1, \tilde{\mu}_2)
+=\min_{\sigma\in\mathfrak S_k}\frac1k\sum_{i=1}^k
+ \left(\|\delta_{x,1,i}-\delta_{x,2,\sigma(i)}\|^2
+       +\|\delta_{v,1,i}-\delta_{v,2,\sigma(i)}\|^2\right).
 
 $$
 
-where the infimum is over permutations $\sigma \in S_N$. This provides the desired bound on the sum of centered coordinate differences.
+Indeed, a coupling of these two uniform $k$-point measures is a doubly stochastic matrix divided by $k$. A linear cost attains its minimum at a permutation matrix. Any supplied matching therefore gives an upper bound on $W_2^2$, rather than a lower bound. Independent reorderings of the support arrays reindex the coupling matrix and leave its cost unchanged. For unequal alive counts the same pointwise coercivity estimate applies directly to every coupling, so the lower bound in terms of $W_2^2$ is unchanged.
 
 **Conclusion:**
 
-Under the condition $b^2 < 4\lambda_v$, both $V_{\text{loc}}$ and $V_{\text{struct}}$ are positive-definite quadratic forms with explicit coercivity constants $\lambda_1, \lambda_2 > 0$ given by the minimum eigenvalue of the hypocoercive matrix.
+Under the condition $b^2 < 4\lambda_v$, the location component is coercive in physical barycenter displacement and the structural component is coercive in centered Euclidean Wasserstein distance, with $\lambda_1=\lambda_2=\lambda_{\min}>0$. The structural component vanishes for identical centered measures, irrespective of the storage order of their empirical atoms.
 
 **Q.E.D.**
 :::
@@ -2027,32 +1979,45 @@ This chapter has formally defined the complete $\Psi_clone$ operator, from initi
 2.  The deterministic cascade of operators that process raw measurements into a final, N-dimensional **fitness potential vector**, $\mathbf{V}_{\text{fit}}$.
 3.  The final **stochastic gate** that uses this fitness vector to select a companion, calculate a score, and make the clone-or-persist decision, ultimately defining the crucial **total cloning probability**, $p_i$.
 
-With every component of the cloning mechdanism now formally defined in its logical place, we are fully equipped for the subsequent analysis. The following chapters will prove the core stability property of this pipeline: its ability to robustly and intelligently convert a large system-level error into a powerful, corrective, and contractive force.
+:::{div} feynman-prose
+With the cloning mechanism defined, we can quantify its pressure under the
+stated measurement and error-coverage hypotheses. Contraction then requires
+the signed estimates for the full update, including the accepted donors and
+the other stages of the dynamics.
+:::
 
 (sec-cloning-geometry)=
 ## 6. The Geometry of Error: From System Error to a Guaranteed Geometric Structure
 
 ### 6.1. Introduction
 
-This chapter establishes the first and most fundamental link in the Keystone causal chain: the rigorous connection between a large **Intra-Swarm Error ($V_{\text{Var}}$)** and the microscopic geometric configuration of the swarm. The ultimate goal of the Keystone Principle (Sections 5-8) is to prove that the cloning operator, $\Psi_clone$, acts as a powerful contractive force on the **positional variance component, $V_{\text{Var},x}$**, of our synergistic Lyapunov function. The first step in that proof is to demonstrate that a large **positional variance ($V_{\text{Var},x}$)** is not an abstract, system-wide statistical property, but rather an unstable condition that forces at least one of the swarms into a specific, non-uniform, and *quantifiable* **phase-space geometric structure**.
+:::{div} feynman-prose
+Imagine two clouds of walkers with a large combined positional variance. At
+least one cloud must be spread out. The first lemma makes that observation
+precise, including the normalization by the total number of walker slots.
 
-Proving the existence and properties of this geometric structure is the essential prerequisite for the entire stability analysis of the cloning operator. Without it, we cannot demonstrate that the algorithm has a meaningful internal signal to measure or a specific population of walkers to target for corrective action. A large **$V_{\text{Var},x}$** implies that at least one swarm is internally "puffed up" *spatially*. This chapter will prove that this positional dispersion is a sufficient condition to create a detectable structure in the full **phase space**, which the `d_alg`-based measurement pipeline can reliably perceive.
+We then ask where that spread is carried. When cluster diameters are small
+enough relative to the entering variance, a definite fraction of alive walkers
+belongs to the configured high-error set. This is a population statement.
+Walkers in that set may still have nearby companions inside their own clusters.
 
-Our analytical strategy is built on an **$\varepsilon$-dichotomy**. The interaction range $\varepsilon$ acts as the algorithm's perceptual lens, and the nature of the geometric error the system is sensitive to changes with this scale. We will prove that a large $V_{\text{Var}}$ forces the creation of a "high-error" population of walkers in one of the swarms, where the nature of this error falls into one of two exhaustive regimes:
-
-*   For **large $\varepsilon$ (Mean-Field Regime)**, the system is sensitive to the swarm's global configuration. We will prove that a large internal variance forces a non-vanishing fraction of the swarm to become **global phase-space outliers**.
-*   For **small $\varepsilon$ (Local-Interaction Regime)**, the system is sensitive to local variations in density. We will prove that a large internal variance forces a non-vanishing fraction of the swarm to reside in regions of **low local phase-space density** (or, more formally, to belong to geometrically isolated clusters).
-
-This chapter's goal is to prove that a large **positional variance ($V_{\text{Var},x}$)** guarantees the existence of a substantial and structurally significant **high-error population (`H_k`)** within at least one of the swarms. We will establish that this "high-error" population is both:
-
-1.  **Substantial:** It constitutes a non-vanishing, N-uniform fraction of the swarm.
-2.  **Structurally Significant:** Its members possess distinct **phase-space properties** (e.g., kinematic isolation) that are detectable by the measurement pipeline defined in Section 5.
-
-These two properties, proven herein from first principles, will serve as the foundational input for Section 7, where we will prove that the algorithm's measurement pipeline can reliably detect this **phase-space structure** and transduce it into a usable corrective signal.
+To pass from geometry to selection, we need further information: the actual
+distances sampled, the chance of sampling favorable comparisons, and the
+resulting fitness differences. The cross-group separation lemma therefore
+states its center and radius margin explicitly. The later measurement-averaged
+proof uses near-neighbor counts and favorable measurement events directly.
+These inputs let us follow each claim into the pressure estimate and then the
+signed drift calculation.
+:::
 
 ### 6.2. From Total Positional Variance ($V_{\text{Var},x}$) to Single-Swarm Positional Variance
 
-The first step in the Keystone analysis is to connect the relevant component of the synergistic Lyapunov function to the state of a single swarm. As this document aims to prove the contractive nature of cloning on **positional error**, the Keystone mechanism is triggered specifically by the **positional variance component, $V_{\text{Var},x}$**. The following lemma provides the simple but necessary guarantee that if this $V_{\text{Var},x}$ term is large, then at least one of the two swarms must have a large internal positional variance.
+:::{div} feynman-prose
+The positional observable is a sum of two nonnegative contributions. If the
+sum exceeds a threshold, one contribution exceeds half that threshold. The
+lemma keeps the alive-set sum normalized by $N$; converting it to variance per
+alive walker requires the corresponding alive fraction.
+:::
 
 :::{prf:lemma} Large $V_{\text{Var},x}$ Implies Large Single-Swarm Positional Variance
 :label: lem-V_Varx-implies-variance
@@ -2098,13 +2063,26 @@ The result $V_{Var,x} \le R_{total\_var,x}^2$ directly contradicts our premise. 
 **Q.E.D.**
 :::
 
-This lemma establishes a direct and crucial link: if the **$V_{\text{Var},x}$ component** of the total Lyapunov function is large, we are guaranteed to have at least one swarm with **high internal positional variance**. This swarm, with its guaranteed spatial dispersion, now becomes the primary object of our analysis. The subsequent sections will prove that this condition of high positional variance is sufficient to generate a detectable **phase-space structure** and, ultimately, a corrective cloning response.
+:::{div} feynman-prose
+We now have a swarm whose positional spread needs accounting for. The next
+steps identify error-bearing populations under their stated diameter and
+clustering hypotheses. A selection response additionally needs an actual
+measurement and fitness comparison on those populations.
+:::
 
 ### 6.3 Canonical Definitions: The High-Error and Low-Error Partition
 
-The preceding section established that a large $V_{\text{Var},x}$ guarantees that at least one swarm has a large internal positional variance (`Var_x`). While this spatial dispersion is the *trigger* for our analysis, the algorithm's measurement pipeline perceives the swarm's structure through the **phase-space metric `d_alg`**. For the resulting signal to be meaningful, the geometric partition of the swarm into "high-error" and "low-error" sets must be based on properties that this pipeline can actually detect.
+:::{div} feynman-prose
+The configured partition first forms clusters in the comparison distance.
+It retains every cluster below the minimum valid size, then adds valid clusters
+whose centers carry the prescribed share of between-cluster energy. This
+construction defines the high-error labels used below.
 
-Therefore, this section formally defines these sets based on the swarm's full **phase-space configuration**. We will partition the swarm based on two distinct phase-space measures: global kinematic dispersion and local phase-space density. These definitions create the crucial link between the state of the swarm and the signals measured by the algorithm. The remainder of the Keystone analysis will then be dedicated to proving that high *positional* variance is a sufficient condition to force a non-trivial number of walkers into these *phase-space* defined error sets.
+The label describes the role of a walker in this geometric accounting. Its
+realized fitness is determined later by its sampled measurements and the
+fitness pipeline. Keep the two classifications separate when following the
+selection proof.
+:::
 
 :::{prf:definition} The Unified High-Error and Low-Error Sets
 :label: def-unified-high-low-error-sets
@@ -2157,19 +2135,37 @@ $$
 Referenced by {prf:ref}`def-fitness-potential-operator` and {prf:ref}`def-geometric-partition`.
 :::
 
-**Interpretation:** The unified high-error set $H_k(\epsilon)$ represents the population of walkers identified as the primary source of geometric error **in phase space**, where the *nature* of that error—being a global kinematic outlier versus belonging to an outlier cluster in phase space—is determined by the algorithm's perceptual scale $\varepsilon$. The subsequent sections will prove that this set is guaranteed to be both substantial in size and structurally distinct when the swarm's **positional variance** is large.
+:::{div} feynman-prose
+Changing the clustering scale changes the partition itself. The population
+bound follows that actual construction, including its invalid clusters. A
+large retained population and a positive distance margin between the two
+groups are separate conclusions with separate hypotheses.
+:::
 
 ### 6.4. From Structural Error to a Guaranteed High-Error Population Fraction
 
-Before we can prove that the algorithm correctly identifies the walkers in the **Unified High-Error Set** (defined in Section 6.3) as "unfit," we must first rigorously establish that this set is not empty or vanishingly small when the system error is large. For the Keystone Lemma to be N-uniform—a non-negotiable requirement for mean-field scalability—the source of the error must be a collective phenomenon, not an artifact of a few "rogue" walkers.
+:::{div} feynman-prose
+A diameter bound limits how much variance a single walker can carry. Combining
+that limit with a lower bound on retained energy gives a lower bound on the
+number of retained walkers. For the actual cluster partition, we must also
+account for energy inside every cluster before estimating the energy between
+their centers.
 
-Therefore, this section's central goal is to prove that a large internal positional variance (`Var_x`) is a macroscopic event that necessarily implicates a substantial, `N`-independent fraction of the swarm. We will prove that when the system error is large, a non-vanishing fraction of the population must belong to the high-error set. This result provides the first of two critical population guarantees required for the main proof, establishing that there is always a large, strategically important sub-population for the cloning mechanism to target.
-
-The introduction of the $\varepsilon$-dependent phase-space kernel requires a nuanced analytical strategy, as the nature of the geometric error the system is sensitive to changes with the interaction scale $\varepsilon$. Our proof is therefore built on an **$\varepsilon$-dichotomy**: in the **large-$\varepsilon$ (Mean-Field) regime**, error is defined by global phase-space outliers, while in the **small-$\varepsilon$ (Local-Interaction) regime**, error is defined by walkers belonging to outlier clusters in phase space. The subsequent subsections will provide rigorous, N-uniform proofs for each regime. We will first prove a foundational lemma relating a swarm's **total hypocoercive variance** to its **local phase-space clustering**, and then use this result to establish the main theorems for both the mean-field and local-interaction cases.
+The packing and global-outlier results describe related geometric counts.
+The global-outlier subset is specified separately from the unified cluster
+set. Section 6.4.3 proves the population bound for the configured cluster
+construction itself, including every invalid cluster.
+:::
 
 #### 6.4.1. The Phase-Space Packing Lemma: Hypocoercive Variance Limits Local Phase-Space Clustering
 
-Before analyzing the specific regimes of the $\varepsilon$-dichotomy, we establish a precise, quantitative relationship between a swarm's global dispersion in phase space, as measured by its **total hypocoercive variance**, and its local phase-space clustering structure. This lemma generalizes the classical packing argument to phase space, proving that a swarm cannot be simultaneously spread out in the hypocoercive norm while being highly clustered under the algorithmic distance metric `d_alg`. This result is the foundational geometric constraint upon which both regimes of our analysis will depend.
+:::{div} feynman-prose
+Variance is an average of squared pairwise distances. If many pairs are close,
+their contribution to that average is small; the remaining pairs are limited
+by the entering diameter bound. This gives the packing estimate below, with
+the stated comparison between velocity weights. It counts pairs and leaves
+the later population and selection questions to their own estimates.
+:::
 
 :::{prf:lemma} The Phase-Space Packing Lemma
 :label: lem-phase-space-packing
@@ -2181,7 +2177,7 @@ $$
 
 $$
 
-For any chosen proximity threshold $d_{\text{close}} > 0$, let $N_{\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\text{alg}}(i, j) < d_{\text{close}}$, where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ is the algorithmic phase-space distance.
+For a proximity threshold $0<d_{\text{close}}<D_{\text{valid}}$, let $N_{\text{close}}$ be the number of unique pairs $(i, j)$ with $i<j$ and $d_{\text{alg}}(i, j) < d_{\text{close}}$, where $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ is the algorithmic phase-space distance.
 
 The fraction of such "close pairs in phase space", $f_{\text{close}} = N_{\text{close}} / \binom{k}{2}$, is bounded above by a function of the swarm ({prf:ref}`def-swarm-and-state-space`)'s hypocoercive variance. Specifically, assuming $\lambda_v \le \lambda_{\text{alg}}$ and defining the phase-space diameter $D_{\text{valid}}^2 := D_x^2 + \lambda_{\text{alg}} D_v^2$ where $D_x$ and $D_v$ are the spatial and velocity domain diameters, there exists a continuous, monotonically decreasing function such that:
 
@@ -2323,13 +2319,19 @@ This completes the proof.
 **Q.E.D.**
 :::
 
-#### 6.4.2 The Mean-Field Regime: A Non-Vanishing Fraction of Global Outliers
+#### 6.4.2. An auxiliary population bound for global outliers
 
-This subsection analyzes the system's behavior in the **large-$\varepsilon$ (mean-field) regime**, where the interaction range $\varepsilon$ is larger than the swarm's phase-space diameter, $D_{\text{swarm}} := \max_{i,j \in \mathcal{A}_k} d_{\text{alg}}(i, j)$. As per {prf:ref}`def-unified-high-low-error-sets`, in this regime the **Unified High-Error Set $H_k(\varepsilon)$ is identical to the global kinematic outlier set `O_k`**. Therefore, to prove that a high-variance swarm has a non-vanishing high-error fraction in this regime, we must prove that the fractional size of `O_k` is bounded below.
+:::{div} feynman-prose
+For a separately specified subset carrying a fixed fraction of the global
+centered energy, the same diameter argument bounds its population from below.
+The result is helpful whenever that subset is used explicitly. The cluster
+set in Section 6.3 follows its own construction and has its own population
+bound in Section 6.4.3.
 
-We prove that a large internal hypocoercive variance (`Var_h`) is a sufficient condition to guarantee that a significant, `N`-independent fraction of the population must belong to the **global phase-space outliers**. This proof establishes a fundamental geometric property of phase-space point clouds and provides the first half of our $\varepsilon$-dichotomy.
-
-To connect this analysis back to the positional variance component of the Lyapunov function, we first establish a simple but crucial relationship.
+First observe that adding a nonnegative velocity variance can only increase
+the hypocoercive variance. This connects a positional threshold with the
+energy used in the auxiliary estimate.
+:::
 
 :::{prf:lemma} Positional Variance as a Lower Bound for Hypocoercive Variance
 :label: lem-var-x-implies-var-h
@@ -2366,756 +2368,281 @@ The second claim follows directly: if $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$, 
 **Q.E.D.**
 :::
 
-This lemma establishes the crucial bridge: the analysis in Section 6.2 guaranteed a large positional variance `Var_x`, and this lemma proves that such a condition is sufficient to guarantee a large hypocoercive variance `Var_h`, which is the relevant measure for the phase-space outlier set `O_k`. We can now proceed with the main result.
+:::{div} feynman-prose
+The positional lower bound also bounds the energy that includes velocity.
+For a subset retaining the stated fraction of that energy, counting walkers
+now amounts to dividing retained energy by the largest permitted contribution
+of one walker.
+:::
 
-:::{prf:lemma} N-Uniform Lower Bound on the Outlier Fraction
+:::{prf:lemma} Population bound for a subset carrying global centered energy
 :label: lem-outlier-fraction-lower-bound
 
-Let $O_k$ be the **global kinematic outlier set** for a swarm ({prf:ref}`def-swarm-and-state-space`) `k` with `k >= 2` alive walkers, as defined in Section 6.3, with structural parameter $\varepsilon_O \in (0, 1)$.
-
-If the swarm 's internal hypocoercive variance is large, such that $\mathrm{Var}_h(S_k) > R^2_h$ for some threshold $R^2_h > 0$, then the fraction of *alive* walkers in the outlier set is bounded below by a positive constant that is independent of `N`. Specifically:
+For $k\ge2$ alive walkers, put $q_i=(x_i,\sqrt{\lambda_v}v_i)$ with
+$\lambda_v>0$ and $\bar q=k^{-1}\sum_iq_i$. Let $D_x,D_v$ be proved
+pairwise diameter bounds for these entering alive coordinates, and set
+$D_h^2=D_x^2+\lambda_vD_v^2>0$. Fix $\varepsilon_O\in(0,1)$ and let
+$O_k\subseteq\mathcal A_k$ be any specified subset satisfying the actual
+energy-capture condition
 
 $$
-\frac{|O_k|}{k} \ge \frac{(1-\varepsilon_O) R^2_h}{D_h^2} =: f_O > 0
-
+\sum_{i\in O_k}|q_i-\bar q|^2
+\ge(1-\varepsilon_O)\sum_{i\in\mathcal A_k}|q_i-\bar q|^2.
 $$
 
-where $D_h^2 := D_x^2 + \lambda_v D_v^2$ is the squared **hypocoercive diameter** of the valid domain, with $D_x := \sup_{x_1, x_2 \in \mathcal{X}_{\text{valid}}} \|x_1 - x_2\|$ being the positional domain diameter and $D_v$ being the velocity domain diameter.
+If $\operatorname{Var}_{\mathcal A_k}(q)>R_h^2>0$, then
+
+$$
+\frac{|O_k|}{k}>
+\frac{(1-\varepsilon_O)R_h^2}{D_h^2}=:f_O>0.
+$$
+
+The subset and its capture condition are auxiliary to the actual cluster
+construction of {prf:ref}`def-unified-high-low-error-sets`.
+Population uniformity requires the same diameter and capture constants.
 :::
+
 :::{prf:proof}
-
-**Proof.**
-
-The proof establishes the lower bound by relating the total hypocoercive variance of the swarm to the maximum possible contribution of any single walker in phase space (using the packing argument from {prf:ref}`lem-phase-space-packing`), which is a fixed geometric property of the environment.
-
-**1. Recall Definitions and Outlier Set Property:**
-*   The sum of squared hypocoercive norms of the centered phase-space vectors for the `k` alive walkers is:
-
+The identity
+$q_i-\bar q=k^{-1}\sum_j(q_i-q_j)$ gives
+$|q_i-\bar q|\le D_h$ by the triangle inequality. Hence
 
 $$
-T_k = \sum_{j \in \mathcal{A}_k} \left(\|\delta_{x,k,j}\|^2 + \lambda_v \|\delta_{v,k,j}\|^2\right) = k \cdot \mathrm{Var}_h(S_k)
-
+(1-\varepsilon_O)kR_h^2
+<(1-\varepsilon_O)k\operatorname{Var}_{\mathcal A_k}(q)
+\le\sum_{i\in O_k}|q_i-\bar q|^2
+\le |O_k|D_h^2.
 $$
 
-*   By the definition of the global kinematic outlier set $O_k$ (Section 6.3), the sum of squared hypocoercive norms over this subset is bounded below by a fixed fraction of the total sum:
-
-
-$$
-\sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \ge (1-\varepsilon_O) T_k = (1-\varepsilon_O) k \cdot \mathrm{Var}_h(S_k)
-
-$$
-
-**2. Establish a Uniform Upper Bound on Single-Walker Contribution:**
-*   For any single alive walker `i`, its centered phase-space state is $(\delta_{x,k,i}, \delta_{v,k,i}) = (x_{k,i} - \mu_{x,k}, v_{k,i} - \mu_{v,k})$.
-*   The walker's position $x_{k,i}$ must lie within the valid domain $\mathcal{X}_{\text{valid}}$. If $\mathcal{X}_{\text{valid}}$ is convex (a standard assumption), the center of mass $\mu_{x,k}$ must also lie within $\mathcal{X}_{\text{valid}}$. Therefore, $\|\delta_{x,k,i}\| \le D_x$, where $D_x$ is the positional domain diameter.
-*   Similarly, the velocity $v_{k,i}$ is bounded by the velocity domain diameter: $\|\delta_{v,k,i}\| \le D_v$.
-*   Therefore, the squared hypocoercive norm of any centered phase-space vector is uniformly bounded:
-
-
-$$
-\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2 \le D_x^2 + \lambda_v D_v^2 = D_h^2
-
-$$
-
-    This bound is a geometric property of the environment and is independent of the number of walkers `N` or `k`.
-
-**3. Bound the Sum over the Outlier Set:**
-*   The sum of squared hypocoercive norms over the outlier set can also be bounded above by multiplying the number of walkers in the set, $|O_k|$, by the maximum possible value of any single term:
-
-
-$$
-\sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \le |O_k| \cdot \sup_{j \in O_k} \left(\|\delta_{x,k,j}\|^2 + \lambda_v \|\delta_{v,k,j}\|^2\right) \le |O_k| \cdot D_h^2
-
-$$
-
-**4. Combine Bounds and Finalize:**
-*   We now have both a lower and an upper bound for the same quantity. Combining them yields:
-
-
-$$
-(1-\varepsilon_O) k \cdot \mathrm{Var}_h(S_k) \le \sum_{i \in O_k} \left(\|\delta_{x,k,i}\|^2 + \lambda_v \|\delta_{v,k,i}\|^2\right) \le |O_k| \cdot D_h^2
-
-$$
-
-*   We are given the premise that the hypocoercive variance is large: $\mathrm{Var}_h(S_k) > R^2_h$. Substituting this into the left-hand side gives:
-
-
-$$
-(1-\varepsilon_O) k \cdot R^2_h < |O_k| \cdot D_h^2
-
-$$
-
-*   Rearranging to find a bound on the fraction of outliers relative to the number of *alive* walkers `k`, we get:
-
-
-$$
-\frac{|O_k|}{k} > \frac{(1-\varepsilon_O) R^2_h}{D_h^2}
-
-$$
-
-*   The resulting lower bound, $f_O := (1-\varepsilon_O) R^2_h / D_h^2$, is a positive constant constructed entirely from `N`-independent parameters. This completes the proof that a large hypocoercive variance guarantees a non-vanishing fraction of global phase-space outliers among the alive population.
-
-**Q.E.D.**
+Divide by $kD_h^2$. The estimate uses only the pairwise diameter of the
+entering alive points and requires no convexity of the valid domain.
+$\square$
 :::
-:::{admonition} Note on N-Uniformity
-:class: note
-
-The lemma proves that the fraction of *alive* walkers in the outlier set, `|O_k|/k`, is bounded below by the N-uniform constant `f_O`. All subsequent proofs that rely on a guaranteed fraction of high-error walkers (such as the proof of the Unfit-High-Error Overlap) will operate on the alive set. Therefore, this bound is precisely what is needed for the N-uniformity of the Keystone Lemma. The fraction relative to the total swarm size `N`, `|O_k|/N`, is also bounded below by `f_O` multiplied by the minimum alive fraction `k_min/N`, but the bound relative to `k` is the more direct and useful result.
+:::{div} feynman-prose
+The count here is relative to the alive population. To express the same subset
+as a fraction of all $N$ slots, multiply by the entering alive fraction. That
+fraction needs its own positive lower bound when a later theorem requires
+positive mass normalized by $N$.
 :::
 
-#### 6.4.3. The Local-Interaction Regime: High-Error Fraction via Clustering
+#### 6.4.3. A population bound for the actual cluster construction
 
-This subsection analyzes the system's behavior in the **small-$\varepsilon$ (local-interaction) regime**, where the interaction range $\varepsilon$ is smaller than or equal to the swarm's phase-space diameter, $D_{\text{swarm}} := \max_{i,j \in \mathcal{A}_k} d_{\text{alg}}(i, j)$. As per {prf:ref}`def-unified-high-low-error-sets`, in this regime the **Unified High-Error Set $H_k(\varepsilon)$ is identical to the phase-space clustering-based outlier set $C_k(\varepsilon)$**. Therefore, to prove that a high-variance swarm has a non-vanishing high-error fraction in this regime, we must prove that the fractional size of the outlier clusters is bounded below.
-
-In this regime, the concept of a "global outlier" becomes less meaningful. The system's error is instead driven by the meso-scale structure of the swarm in phase space—the formation of distinct sub-populations or clusters. The clustering-based definition captures this geometric structure by first partitioning the swarm into phase-space clusters (using the algorithmic distance `d_alg`), and then identifying the "outlier clusters" that are the primary contributors to the swarm's global hypocoercive variance.
-
-:::{admonition} A Note on Positional Analysis as a Proxy for Phase-Space Structure
-:class: note
-
-The following proof establishes the existence of a high-error population based on analysis of the swarm's **positional geometry**. While {prf:ref}`def-unified-high-low-error-sets` specifies that clustering should be performed in phase space (using `d_alg`), and that outlier clusters are identified by their contribution to the **hypocoercive variance** (which includes both position and velocity), the proof below operates primarily in positional space.
-
-This is a deliberate analytical simplification made for tractability, and it is mathematically justified by the structure of our argument. The Keystone analysis is triggered by a large **positional variance ($V_{\text{Var},x}$)**—this positional dispersion is the primary driver of the system's geometric error. The proof demonstrates that this positional condition alone is **sufficient** to guarantee a non-vanishing high-error fraction, regardless of the velocity structure.
-
-A rigorous phase-space proof would be more complex but would yield a similar (and potentially stronger) result. The positional analysis provides a conservative lower bound: if positional dispersion alone guarantees the result, then the presence of additional velocity structure can only strengthen the conclusion. This approach ensures that the proof is robust and provides the N-uniform guarantee required for the Keystone Principle.
-:::
-
-With the clustering-based definition from Section 6.3 established, we can now prove the main result for this regime.
-
-:::{prf:lemma} N-Uniform Lower Bound on the Outlier-Cluster Fraction
+:::{prf:lemma} Cluster outlier fraction with vector variance and invalid clusters retained
 :label: lem-outlier-cluster-fraction-lower-bound
 
-Let the high-error set $H_k(\varepsilon)$ be defined via the phase-space clustering-based approach (as $C_k(\varepsilon)$ in {prf:ref}`def-unified-high-low-error-sets`) for the local-interaction regime, with maximum cluster diameter $D_{\mathrm{diam}}(\varepsilon) = c_d \cdot \varepsilon$ where $c_d > 0$ is a fixed constant.
+Use every cluster $G$ in {prf:ref}`def-unified-high-low-error-sets`, including
+invalid clusters. This lemma uses that definition's unsquashed distance
+$d_{\rm alg}(i,j)^2=|x_i-x_j|^2+\lambda_{\rm alg}|v_i-v_j|^2$,
+$\lambda_{\rm alg}>0$, and assumes its cluster diameters are at most $D$.
+Let $\lambda_v>0$, set $C_\lambda=\max\{1,\lambda_v/\lambda_{\rm alg}\}$,
+and write $q_i=(x_i,\sqrt{\lambda_v}v_i)$. Suppose the entering alive
+positions and velocities have finite pairwise diameter bounds $D_x,D_v$.
+Put $D_h^2=D_x^2+\lambda_vD_v^2>0$.
 
-For any choice of $c_d$ and variance threshold $R^2_{\text{var}}$ satisfying $c_d · \epsilon < 2\sqrt{R^2_{\text{var}}}$, there exists a positive constant $f_H(\epsilon) > 0$, independent of `N` and `k`, such that:
-
-If the swarm ({prf:ref}`def-swarm-and-state-space`)'s internal positional variance is large, $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$, then the fraction of *alive* walkers in the high-error set is bounded below:
+Suppose $\operatorname{Var}_{\mathcal A}(x)>R_{\rm var}^2$ and
+$R_{\rm var}^2>C_\lambda D^2/2$. For the high-error set $H$ defined by
+retaining all invalid clusters and the configured fraction $1-\varepsilon_O$
+of valid-cluster hypocoercive contributions, one has
 
 $$
-\frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
-
+\frac{|H|}{k}>f_{H,\rm cl}:=
+\frac{(1-\varepsilon_O)(R_{\rm var}^2-C_\lambda D^2/2)}{D_h^2}>0.
 $$
 
+The bound is uniform in $N$ and $k$ on families with these same diameter,
+threshold, and configured metric constants. For a saturated comparison,
+a corresponding cluster-diameter bound in the physical $q$ norm must be
+established by its inverse modulus or its actual physical cluster diameters
+before using this statement.
 :::
+
 :::{prf:proof}
-
-**Proof.**
-
-The proof is constructive. We use the Law of Total Variance to show that a large global variance forces a large variance *between* the cluster centers. We then apply the same logic used in the mean-field regime ({prf:ref}`lem-outlier-fraction-lower-bound`) to this set of cluster centers to prove that a non-vanishing fraction of the population must reside in these outlier clusters.
-
-**1. Decomposing the Total Variance.**
-The Law of Total Variance provides an exact identity for the swarm's variance based on the cluster partition `{G_1, ..., G_M}`. Let $\mu$ be the global center of mass of the `k` alive walkers, $\mu_m$ be the center of mass of cluster `G_m`, and `|G_m|` be the number of walkers in it. The total sum of squared deviations can be decomposed as:
+For each cluster of size $n_G$, the pairwise vector identity gives
 
 $$
-k \cdot \mathrm{Var}_k(x) = \sum_{m=1}^M \sum_{i \in G_m} \|x_i - \mu\|^2 = \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) + \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2
-
+\operatorname{Var}_{G}(q)
+=\frac1{2n_G^2}\sum_{i,j\in G}|q_i-q_j|^2
+\le\frac{C_\lambda D^2}{2},
 $$
 
-The first term is the "within-cluster" sum of squares, and the second is the size-weighted "between-cluster" sum of squares.
-
-**2. A Uniform Upper Bound on the Within-Cluster Variance.**
-By the definition of our clustering algorithm, the diameter of any cluster `G_m` is at most $D_diam(\varepsilon)$. The maximum possible internal variance for any set of points with a given diameter is achieved when the points are at the extremes of an interval, which gives $\text{Var}(G_m) \leq (D_diam(\varepsilon)/2)^{2}$. This provides a uniform, N-independent upper bound for the within-cluster variance of any cluster.
-The total within-cluster sum of squares is therefore bounded:
+because $|q_i-q_j|^2\le C_\lambda d_{\rm alg}(i,j)^2$.
+Decomposition about each cluster mean $\bar q_G$ yields
 
 $$
-\sum_{m=1}^M |G_m|\mathrm{Var}(G_m) \le \sum_{m=1}^M |G_m| \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2 = k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2
-
+\operatorname{Var}_{\mathcal A}(q)
+=\sum_G\frac{n_G}{k}\operatorname{Var}_{G}(q)+B,
+\qquad B=\sum_G\frac{n_G}{k}|\bar q_G-\bar q|^2.
 $$
 
-**3. A Uniform Lower Bound on the Between-Cluster Variance.**
-We can now find a lower bound for the between-cluster sum of squares. Rearranging the identity from Step 1 and using our premise `Var_k(x) > R^{2}_var`:
-
-$$
-\sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 = k \cdot \mathrm{Var}_k(x) - \sum_{m=1}^M |G_m|\mathrm{Var}(G_m) > k \cdot R^2_{\mathrm{var}} - k \left(\frac{D_{\mathrm{diam}}(\epsilon)}{2}\right)^2
-
-$$
-
-Let's define a new positive, N-uniform constant $R_{\mathrm{means}}^{2} := R_{\mathrm{var}}^{2} - (D_{\mathrm{diam}}(\varepsilon)/2)^{2}$. The premise of this lemma requires that we choose $D_{\mathrm{diam}}(\varepsilon)$ small enough to ensure $R_{\mathrm{means}}^{2} > 0$. With this, we have a guaranteed lower bound on the size-weighted variance of the cluster means:
-
-$$
-\frac{1}{k}\sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > R^2_{\mathrm{means}} > 0
-
-$$
-
-**4. Applying the Outlier Argument to the Cluster Centers.**
-We have now reduced the problem to one that is formally identical to the mean-field case. We have a set of `M` "meta-particles" (the cluster centers $\mu_m$) with associated weights (`|G_m|`) whose size-weighted variance is guaranteed to be large.
-
-By the definition of the high-error set $H_k(\varepsilon)$, it is the union of all walkers in the "outlier clusters" `O_M`. These are the clusters whose weighted contribution to the between-cluster variance sums to at least $(1-\varepsilon_O)$ of the total.
-
-$$
-\sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \ge (1-\varepsilon_O) \sum_{m=1}^M |G_m|\|\mu_m - \mu\|^2 > (1-\varepsilon_O) k \cdot R^2_{\mathrm{means}}
-
-$$
-
-At the same time, we can find an upper bound for this sum. The maximum squared distance of any cluster mean from the global mean is bounded by `D_valid^{2}`.
-
-$$
-\sum_{m \in O_M} |G_m|\|\mu_m - \mu\|^2 \le \sum_{m \in O_M} |G_m|D_{\mathrm{valid}}^2 = D_{\mathrm{valid}}^2 \sum_{m \in O_M} |G_m|
-
-$$
-
-The term $\sum_{m\in O_M} |G_m|$ is, by definition, the total number of walkers in the high-error set, $|H_k(\varepsilon)|$. Combining the inequalities:
-
-$$
-(1-\varepsilon_O) k \cdot R^2_{\mathrm{means}} < |H_k(\epsilon)| \cdot D_{\mathrm{valid}}^2
-
-$$
-
-**5. Conclusion.**
-Rearranging the final inequality gives the desired N-uniform lower bound on the high-error fraction:
-
-$$
-\frac{|H_k(\epsilon)|}{k} > \frac{(1-\varepsilon_O) R^2_{\mathrm{means}}}{D_{\mathrm{valid}}^2} = \frac{(1-\varepsilon_O) \left(R^2_{\mathrm{var}} - (D_{\mathrm{diam}}(\epsilon)/2)^2\right)}{D_{\mathrm{valid}}^2}
-
-$$
-
-We define the right-hand side as our N-uniform constant $f_H(\varepsilon)$. It is strictly positive by our choice of $D_diam(\varepsilon)$, and it is constructed entirely from N-independent system parameters ($\varepsilon_O$, `R^{2}_var`, `D_diam`, `D_valid`). This completes the N-uniform proof.
-
-**Q.E.D.**
+Since $\operatorname{Var}_{\mathcal A}(q)\ge
+\operatorname{Var}_{\mathcal A}(x)>R_{\rm var}^2$,
+$B>R_{\rm var}^2-C_\lambda D^2/2$.
+Write $B=B_{\rm invalid}+B_{\rm valid}$. The actual outlier rule gives
+$B_H\ge B_{\rm invalid}+(1-\varepsilon_O)B_{\rm valid}
+\ge(1-\varepsilon_O)B$. This includes the case in which no cluster is
+valid. Any two convex averages of the alive $q_i$ are at distance at most
+$D_h$, since their difference is an average of pairwise differences.
+Thus $|\bar q_G-\bar q|^2\le D_h^2$ and
+$B_H\le D_h^2|H|/k$. Combine these bounds and divide by $D_h^2$.
+$\square$
 :::
 
-#### 6.4.4 Synthesis: A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction
+#### 6.4.4. From the normalized positional observable to a population bound
 
-The preceding subsections have rigorously established, via an $\varepsilon$-dichotomy, that a large internal hypocoercive variance is a sufficient condition to guarantee that a non-vanishing, N-uniform fraction of the swarm has a "high-error" phase-space configuration. We now unify these results into a single, powerful corollary for the **Unified High-Error Set**, as defined in Section 6.3.
-
-This corollary provides the final, synthesized result of our geometric analysis. It proves that a large **total intra-swarm positional variance ($V_{\text{Var},x}$)** is sufficient to guarantee that a non-vanishing fraction of at least one of the swarms belongs to this high-error set, providing the clean, unified input required for the subsequent analysis. This supplies a geometric input to the selection estimate. Its connection to the actual positional drift is given by the donor-displacement identity in {prf:ref}`lem-keystone-contraction-alive`.
-
-:::{prf:corollary} A Large Intra-Swarm Positional Variance Guarantees a Non-Vanishing High-Error Fraction
+:::{prf:corollary} High-error population under the cluster variance conditions
 :label: cor-vvarx-to-high-error-fraction
 
-For any fixed interaction range $\varepsilon > 0$, there exists a positional variance threshold $R^2_{\text{total\_var},x} > 0$ and a corresponding N-uniform constant $f_H(\epsilon) > 0$ such that:
-
-If the total intra-swarm ({prf:ref}`def-swarm-and-state-space`) positional variance is large, $V_{\text{Var},x} > R^2_{\text{total\_var},x}$, then the fraction of *alive* walkers in the unified high-error set of at least one of the swarms, $k \in {1, 2}$, is bounded below:
+For two nonextinct swarms let $k_s=|\mathcal A_s|$ and
 
 $$
-\frac{|H_k(\epsilon)|}{k} \ge f_H(\epsilon) > 0
-
+V_{\mathrm{Var},x}=\sum_{s=1}^2\frac{k_s}{N}
+\operatorname{Var}_{\mathcal A_s}(x).
 $$
 
-Referenced by {prf:ref}`def-geometric-partition`.
+Suppose both entering swarms obey the diameter and configured-cluster
+conditions of {prf:ref}`lem-outlier-cluster-fraction-lower-bound` with common
+constants and $R_{\rm var}^2>C_\lambda D^2/2$. If
+$V_{\mathrm{Var},x}>2R_{\rm var}^2$, at least one swarm satisfies
+$|H_s|/k_s>f_{H,\rm cl}>0$. This concerns its alive-population count;
+its fixed-$N$ mass is $(k_s/N)(|H_s|/k_s)$.
 :::
+
 :::{prf:proof}
-
-**Proof.**
-
-This corollary is a direct synthesis of the lemmas established in this chapter.
-
-**1. From Total Positional Variance to Single-Swarm Positional Variance:**
-By **{prf:ref}`lem-V_Varx-implies-variance`** (labeled $lem-V_{\text{Var}}x-implies-variance$), if the total intra-swarm positional variance is large, $V_{\text{Var},x} > R^2_{\text{total\_var},x}$, then at least one of the two swarms, say swarm `k`, must have a large internal positional variance:
-
-$$
-\mathrm{Var}_x(S_k) > \frac{R^2_{\text{total\_var},x}}{2}
-
-$$
-
-We define the threshold $R^2_{\text{var}} := R^2_{\text{total\_var},x} / 2$.
-
-**2. From Positional Variance to Hypocoercive Variance:**
-Since the hypocoercive variance satisfies $\mathrm{Var}_h(S_k) = \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k) \ge \mathrm{Var}_x(S_k)$ (as established in {prf:ref}`lem-var-x-implies-var-h`), the condition $\mathrm{Var}_x(S_k) > R^2_{\text{var}}$ is sufficient to guarantee that the total hypocoercive variance is also large:
-
-$$
-\mathrm{Var}_h(S_k) > R^2_{\text{var}}
-
-$$
-
-This satisfies the necessary premise for the lemmas governing both regimes of the $\varepsilon$-dichotomy.
-
-**3. From Hypocoercive Variance to a High-Error Fraction:**
-With the condition $\mathrm{Var}_h(S_k) > R^2_{\text{var}}$ met, we can now invoke the results of the $\varepsilon$-dichotomy analysis:
-
-*   **If the swarm is in the large-$\varepsilon$ regime** (where $\varepsilon > D_swarm$): By {prf:ref}`def-unified-high-low-error-sets`, $H_k(\epsilon) = O_k$ in this regime. **{prf:ref}`lem-outlier-fraction-lower-bound`** guarantees that the fraction of walkers in the global kinematic outlier set is bounded below by a positive, N-uniform constant: $|H_k(\epsilon)|/k \ge f_O > 0$.
-
-*   **If the swarm is in the small-$\varepsilon$ regime** (where $\varepsilon \leq D_swarm$): By , $H_k(\epsilon) = C_k(\epsilon)$ (the clustering-based outlier set) in this regime. **{prf:ref}`lem-outlier-cluster-fraction-lower-bound`** guarantees that the fraction of walkers in the outlier clusters is bounded below by a positive, N-uniform constant: $|H_k(\epsilon)|/k \ge f_{H,\text{cluster}}(\epsilon) > 0$.
-
-**4. Define the Unified Lower Bound:**
-We can define a single, unified lower bound $f_H(\epsilon)$ that is valid for all regimes by taking the minimum of the bounds from the two cases:
-
-$$
-f_H(\epsilon) := \min(f_O, f_{H,\text{cluster}}(\epsilon))
-
-$$
-
-Since both $f_O$ and $f_{H,\text{cluster}}(\epsilon)$ are strictly positive, N-uniform constants, their minimum $f_H(\epsilon)$ is also a strictly positive, N-uniform constant.
-
-**5. Conclusion:**
-We have rigorously shown that for any $\varepsilon > 0$, if the total intra-swarm positional variance $V_{\text{Var},x}$ is sufficiently large, then at least one swarm `k` is guaranteed to have a large hypocoercive variance, which in turn guarantees that the fraction of alive walkers in its unified high-error set $H_k(\epsilon)$ is bounded below by the positive, N-uniform constant $f_H(\epsilon)$. This establishes the direct causal link from the Lyapunov function's positional variance component to the guaranteed existence of a substantial high-error population.
-
-**Q.E.D.**
-:::
-:::{admonition} A Note on the Unified Definition
-:class: note
-
-The piecewise definition of the Unified High-Error Set used in this proof is sufficient for the logical argument, as any given swarm state falls into exactly one of the two regimes based on the relationship between $\varepsilon$ and the swarm's phase-space diameter. The two definitions—global kinematic outliers (`O_k`) for the mean-field regime and clustering-based outliers ($C_k(\varepsilon)$) for the local-interaction regime—capture fundamentally different geometric phenomena in phase space, but both are rigorously shown to contain a non-vanishing, N-uniform fraction of the swarm when the positional variance is large.
+At least one summand exceeds $R_{\rm var}^2$. Since $k_s/N\le1$, its
+alive positional variance exceeds $R_{\rm var}^2$, so $k_s\ge2$ and the
+cluster lemma applies. The stated count bound and normalization follow.
+$\square$
 :::
 
-### 6.5. Microscopic Signature: Geometric Properties of the Partition
+### 6.5. Geometric separation with an explicit cluster margin
 
-The preceding section established a critical macroscopic result: a high-variance swarm is guaranteed to contain a substantial, N-uniform "high-error" population. We proved that when $\mathrm{Var}(x) > R^2_{\mathrm{var}}$, a non-vanishing fraction $f_H(\epsilon) > 0$ of the swarm's walkers must belong to the unified high-error set $H_k(\epsilon)$.
+:::{div} feynman-prose
+Picture two small clouds of walkers. The clouds can be far apart while each
+walker has nearby companions inside its own cloud. A measurement sees the
+companion that was actually sampled. Center separation therefore supplies a
+distance bound for cross-cloud pairs; the sampling law determines how often
+those pairs occur.
 
-However, knowing that this set is *large* is not sufficient for the subsequent analysis. The effectiveness of the cloning mechanism depends not merely on the *size* of the high-error population, but on its *geometric arrangement* relative to the low-error population. This section completes the transition from a macroscopic property—the guaranteed size of the partition—to a microscopic one: the specific spatial configuration of walkers within each set.
+The margin below subtracts both cluster radii from their center separation,
+then converts the remaining physical distance to the comparison distance.
+This is the distance available even for the closest cross-group pair. The
+same-group companion count is checked separately, with each walker's own
+label excluded.
+:::
 
-The question we must answer is: **How are walkers in $H_k(\epsilon)$ geometrically distributed compared to those in $L_k(\epsilon)$?** This geometric characterization is the missing link required for Section 7, where we will prove that the `GreedyPairing` algorithm can reliably identify high-error walkers. That proof will depend fundamentally on demonstrating that walkers in the high-error set are systematically more *isolated* from their companions than those in the low-error set, making them distinguishable through distance-based measurements.
-
-**The Central Challenge: The Velocity Contamination Problem.** The most critical challenge in proving this geometric separation is that our premise—high positional variance $\mathrm{Var}(x) > R^2_{\mathrm{var}}$—involves only the positional component of the state, while our conclusion must hold in the full **algorithmic phase space** $d_{\text{alg}}(i,j)^2 = \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$, which includes both position and velocity. This creates a fundamental vulnerability: could an adversarial velocity configuration break the geometric separation that positional variance guarantees?
-
-Consider the most pathological scenario:
-- **High-error walkers** (positionally far from the center) could all have **identical velocities**: $\|v_i - v_j\| \approx 0$ for all $i, j \in H_k(\epsilon)$
-- **Low-error walkers** (positionally close to the center) could have **maximally divergent velocities**: $\|v_l - v_m\| \approx D_v$ for all $l, m \in L_k(\epsilon)$
-
-Under this configuration, the velocity term $\lambda_{\text{alg}} \|v_i - v_j\|^2$ contributes negligibly to the phase-space distance between high-error pairs, while contributing maximally to the distance between low-error pairs. This could potentially violate the required separation $D_H(\epsilon) > R_L(\epsilon)$, breaking the entire geometric argument.
-
-**Our Strategy:** The proofs in this section are specifically constructed to defeat this velocity pathology. Using the same $\epsilon$-dichotomy framework established in Section 6.4, we will prove that in both the mean-field and local-interaction regimes, the high-error and low-error sets possess fundamentally different geometric signatures that hold **even under the worst-case velocity configuration**: high-error walkers remain isolated, while low-error walkers remain clustered. The algebraic conditions derived in Sections 6.5.2 and 6.5.3 are not arbitrary tuning parameters but rather mathematically necessary conditions that ensure the positional signal dominates the velocity noise.
-
-#### 6.5.1. Main Lemma: Statement of Geometric Separation
-
-:::{prf:lemma} Geometric Separation of the Partition
+:::{prf:lemma} Geometric separation from the actual centers, radii, and companion masses
 :label: lem-geometric-separation-of-partition
 
-Let $H_k(\epsilon)$ and $L_k(\epsilon)$ be the unified high-error and low-error sets for swarm ({prf:ref}`def-swarm-and-state-space`) $k$ as defined in {prf:ref}`def-unified-high-low-error-sets`. Assume the swarm's internal positional variance is large: $\mathrm{Var}(x) > R^2_{\mathrm{var}}$.
+Keep the unchanged cluster partition and nonempty groups $H,L$ of
+{prf:ref}`def-unified-high-low-error-sets`. Let $d_{\rm alg}$ be the
+comparison distance used for these groups, and assume the entering family
+has a proved constant $m_x>0$ with
+$d_{\rm alg}(i,j)\ge m_x|x_i-x_j|$.
+For the unsquashed distance in that definition, $m_x=1$. For the configured
+squashed comparison on a bounded entering alive region,
+{prf:ref}`lem-keystone-complete-coverage-constants` proves its own $m_x$.
 
-Then there exist N-uniform, $\epsilon$-dependent constants $D_H(\epsilon) > R_L(\epsilon) > 0$ and a fractional constant $f_c > 0$ such that:
-
-**Part 1 (Separation Between Sets):** For any walker ({prf:ref}`def-walker`) $i \in H_k(\epsilon)$ from a high-error cluster and any walker $j \in L_k(\epsilon)$ from a low-error cluster, their algorithmic distance ({prf:ref}`def-alg-distance`) is bounded below:
-
-$$
-d_{\text{alg}}(i, j) \ge D_H(\epsilon)
-
-$$
-
-**Part 2 (Clustering of Low-Error Walkers):** For any walker ({prf:ref}`def-walker`) $j \in L_k(\epsilon)$, there exists a non-empty subset of companion walkers $C_j \subset L_k(\epsilon) \setminus \{j\}$ of minimum size $|C_j| \ge f_c k$ such that all members of this cluster are within a small algorithmic radius:
-
-$$
-d_{\text{alg}}(j, \ell) \le R_L(\epsilon) \quad \text{for all } \ell \in C_j
+For each cluster set
+$\mu_{x,G}=|G|^{-1}\sum_{i\in G}x_i$ and
+$\rho_G=\max_{i\in G}|x_i-\mu_{x,G}|$. Define
 
 $$
+s_{HL}=\min_{G\subset H,\,G'\subset L}|\mu_{x,G}-\mu_{x,G'}|,
+\quad \rho_H=\max_{G\subset H}\rho_G,
+\quad \rho_L=\max_{G\subset L}\rho_G.
+$$
 
-The separation property $D_H(\epsilon) > R_L(\epsilon)$ ensures that the geometric signatures of the two sets are fundamentally distinct and non-overlapping **in the algorithmic phase space**.
+Choose a common $R_L>0$ bounding the actual algorithmic diameter of every
+low-error cluster, and suppose the directly verified margin is
 
-**Note:** This lemma does **not** claim that high-error walkers are isolated from each other. Walkers within the same high-error cluster may be close ($d_{\text{alg}} \le D_{\text{diam}}(\epsilon) = R_L(\epsilon)$). The key property is the separation **between** the high-error and low-error populations.
+$$
+D_H:=m_x(s_{HL}-\rho_H-\rho_L)>R_L.
+$$
+
+Then every $i\in H,j\in L$ satisfies $d_{\rm alg}(i,j)\ge D_H>R_L$.
+For every $j\in L$, its own cluster supplies $|G_j|-1$ distinct eligible
+companions in $L$ at distance at most $R_L$.
+Since every low-error cluster is valid under the unchanged construction,
+$|G_j|\ge\max(5,\lceil0.05k\rceil)$ and
+$|G_j|-1\ge0.04k$. Thus one may use $f_c=0.04$ in the companion-count
+conclusion. Population-uniform separation requires common bounds for
+$m_x,R_L,s_{HL},\rho_H,\rho_L$ and a common positive displayed margin.
 :::
 
-:::{admonition} The Velocity Contamination Problem and How We Solve It
-:class: important
+:::{prf:proof}
+For $i\in G\subset H$ and $j\in G'\subset L$, the triangle inequality gives
 
-{prf:ref}`lem-geometric-separation-of-partition` establishes a causal link from a premise based on **positional variance (`Var(x)`)** to a conclusion about geometric separation in the full **algorithmic phase-space (`d_alg`)**. This is a highly non-trivial claim because the algorithmic distance $d_{\text{alg}}(i, j)^2 := \|x_i - x_j\|^2 + \lambda_{\text{alg}} \|v_i - v_j\|^2$ includes both position and velocity components.
+$$
+|x_i-x_j|\ge|\mu_{x,G}-\mu_{x,G'}|
+-|x_i-\mu_{x,G}|-|x_j-\mu_{x,G'}|
+\ge s_{HL}-\rho_H-\rho_L.
+$$
 
-**The Pathological Scenario:** The adversarial velocity configuration described above could break this connection:
-- High-error walkers with identical velocities would have their phase-space distances *reduced* (no velocity contribution)
-- Low-error walkers with maximally divergent velocities would have their phase-space distances *inflated* (maximum velocity contribution)
-- This could cause $d_{\text{alg}}(\text{high-error pair}) < d_{\text{alg}}(\text{low-error pair})$, violating the separation property
-
-**How Both Proofs Solve This:**
-- **Mean-Field Regime (Section 6.5.2):** Uses the parameter $\varepsilon_O$ to bound the fraction of walkers that can exhibit pathological velocity clustering. The algebraic condition derived in Step 6 is specifically designed to ensure that even when high-error walkers have identical velocities, their positional separation is sufficient to maintain phase-space isolation.
-
-- **Local-Interaction Regime (Section 6.5.3):** Uses worst-case velocity noise bounds in both the phase-space radius calculation ($R_L$ assumes maximum velocity divergence within clusters) and the isolation distance calculation ($D_H$ uses only positional separation, which holds regardless of velocity structure).
-
-Both approaches guarantee that the positional signal dominates the velocity noise, ensuring the `GreedyPairing` algorithm from Section 5 can reliably distinguish high-error from low-error walkers. The unified conditions in Section 6.5.4 ensure this guarantee holds across all regimes and parameter choices.
+Multiply by the proved comparison constant $m_x$ to get the cross-group
+separation. Within a low-error cluster, every distinct pair has distance
+at most its actual diameter and hence at most $R_L$. For its companion
+count, $n\ge5$ implies $n-1\ge(4/5)n$, and $n\ge0.05k$ gives
+$n-1\ge0.04k$. These are actual eligible companions, with self excluded.
+$\square$
 :::
 
-#### 6.5.2. Unified Proof via Clustering-Based Geometric Separation
+:::{prf:remark} What aggregate cluster energy implies
+:label: rem-cluster-energy-and-separation
 
-:::{prf:proof} Proof of Geometric Separation (All Regimes)
-
-**Objective:** Using the unified clustering-based definition from Section 6.3, we will prove that high-error clusters are geometrically isolated from low-error clusters in the algorithmic phase-space metric $d_{\text{alg}}$, starting from the premise $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$. This proof applies uniformly across all interaction regimes.
-
-**Proof Strategy: Clustering-Based Separation**
-
-The unified definition partitions walkers into clusters $\{G_1, \ldots, G_M\}$ with maximum diameter $D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon$ in the algorithmic phase-space metric. High-error clusters are those whose centers contribute significantly to the between-cluster hypocoercive variance. We will prove:
-
-1. **Within-cluster cohesion**: Walkers within any cluster (especially low-error clusters) remain close in phase space by construction ($d_{\text{alg}} \le D_{\text{diam}}(\epsilon)$)
-2. **Between-cluster separation**: High-error cluster centers are far from low-error cluster centers in phase space
-3. **Geometric separation**: These properties combine to ensure $D_H(\epsilon) > R_L(\epsilon)$
-
-The proof uses the reverse triangle inequality with explicit verification that the resulting bounds are positive and meaningful, ensuring rigorous separation between high-error and low-error populations.
-
-**Step 1: Establish Clustering Properties**
-
-By {prf:ref}`def-unified-high-low-error-sets`, the alive set $\mathcal{A}_k$ is partitioned into clusters $\{G_1, \ldots, G_M\}$ where each cluster satisfies:
+For physical cluster diameter $D_{x,G}$,
 
 $$
-\text{diam}(G_m) := \max_{i,j \in G_m} d_{\text{alg}}(i, j) \le D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon
-
+\rho_G\le D_{x,G},\qquad
+\operatorname{Var}_{G}(x)\le D_{x,G}^2/2.
 $$
 
-This immediately gives us the **low-error clustering radius**. For any walker $j \in L_k(\epsilon)$ belonging to a valid low-error cluster $G_\ell$ (with $|G_\ell| \ge k_{\min}$), all other walkers in that cluster satisfy:
-
-$$
-d_{\text{alg}}(j, m) \le D_{\text{diam}}(\epsilon) \quad \text{for all } m \in G_\ell
-
-$$
-
-We define:
-
-$$
-R_L(\epsilon) := D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon
-
-$$
-
-**Step 2: Bridge to Hypocoercive Variance**
-
-As established in Section 6.4.2, the premise $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$ guarantees:
-
-$$
-\mathrm{Var}_h(S_k) = \mathrm{Var}_x(S_k) + \lambda_v \mathrm{Var}_v(S_k) \ge \mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}
-
-$$
-
-**Step 3: Decompose Variance via Law of Total Variance**
-
-The hypocoercive variance can be decomposed into within-cluster and between-cluster components. For the positional component:
-
-$$
-k \cdot \mathrm{Var}_x(S_k) = \sum_{m=1}^M \sum_{i \in G_m} \|x_i - \mu_x\|^2 = \underbrace{\sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m)}_{\text{within-cluster}} + \underbrace{\sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2}_{\text{between-cluster}}
-
-$$
-
-where $\mu_{x,m}$ is the positional center of mass of cluster $G_m$.
-
-**Step 4: Bound Within-Cluster Variance**
-
-Since each cluster has algorithmic diameter at most $D_{\text{diam}}(\epsilon)$, the positional diameter is bounded:
-
-$$
-\max_{i,j \in G_m} \|x_i - x_j\| \le \max_{i,j \in G_m} d_{\text{alg}}(i,j) \le D_{\text{diam}}(\epsilon)
-
-$$
-
-Therefore, the maximum internal positional variance of any cluster satisfies:
-
-$$
-\mathrm{Var}_x(G_m) \le \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
-
-$$
-
-The total within-cluster sum of squares is bounded:
-
-$$
-\sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m) \le k \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
-
-$$
-
-**Step 5: Lower Bound on Between-Cluster Variance**
-
-Rearranging the variance decomposition and using $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$:
-
-$$
-\sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2 = k \cdot \mathrm{Var}_x(S_k) - \sum_{m=1}^M |G_m| \mathrm{Var}_x(G_m) > k \cdot R^2_{\mathrm{var}} - k \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
-
-$$
-
-Define the **minimum cluster mean separation threshold**:
-
-$$
-R^2_{\mathrm{means}} := R^2_{\mathrm{var}} - \left(\frac{D_{\text{diam}}(\epsilon)}{2}\right)^2
-
-$$
-
-For this to be positive, we require the **admissibility condition**:
-
-$$
-D_{\text{diam}}(\epsilon) = c_d \cdot \epsilon < 2\sqrt{R^2_{\mathrm{var}}}
-
-$$
-
-Under this condition:
-
-$$
-\frac{1}{k} \sum_{m=1}^M |G_m| \|\mu_{x,m} - \mu_x\|^2 > R^2_{\mathrm{means}} > 0
-
-$$
-
-**Step 6: Apply Outlier Analysis to Cluster Centers**
-
-By {prf:ref}`def-unified-high-low-error-sets`, valid outlier clusters (with $|G_m| \ge k_{\min}$) satisfy:
-
-$$
-\sum_{m \in O_M} |G_m| \|\mu_{x,m} - \mu_x\|^2 \ge (1-\varepsilon_O) \sum_{\substack{m: |G_m| \ge k_{\min}}} |G_m| \|\mu_{x,m} - \mu_x\|^2
-
-$$
-
-Let $H_k(\epsilon) = \bigcup_{m \in O_M} G_m$ be the union of valid outlier clusters, and let $L_k(\epsilon)$ be the union of valid low-error clusters.
-
-For any high-error cluster $G_h \in O_M$ and any low-error cluster $G_\ell \notin O_M$ (with both having $|G_h|, |G_\ell| \ge k_{\min}$), we derive a lower bound on the positional separation of their centers.
-
-**Step 7: Derive Minimum Cluster Mean Separation**
-
-Using the averaging argument from the outlier analysis: if the minimum positional distance from any outlier cluster center to the global center is $r_h$, then:
-
-$$
-\sum_{m \in O_M} |G_m| \|\mu_{x,m} - \mu_x\|^2 \ge |H_k(\epsilon)| \cdot r_h^2
-
-$$
-
-Combined with Step 6 and using $|H_k(\epsilon)| \le k$:
-
-$$
-r_h^2 \ge (1-\varepsilon_O) R^2_{\mathrm{means}}
-
-$$
-
-Therefore:
-
-$$
-\|\mu_{x,h} - \mu_x\| \ge \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} \quad \text{for all } G_h \in O_M
-
-$$
-
-Similarly, for low-error clusters:
-
-$$
-\|\mu_{x,\ell} - \mu_x\| \le \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}}
-
-$$
-
-**Step 8: Prove Separation Between High-Error and Low-Error Sets**
-
-We now establish that walkers from high-error clusters are separated from walkers in low-error clusters. For any walker $i \in H_k(\epsilon)$ (in outlier cluster $G_h$), we consider two cases:
-
-**Case 1 (Within High-Error Set):** If $j \in H_k(\epsilon)$ and belongs to the same cluster $j \in G_h$, then by the cluster diameter bound:
-
-$$
-d_{\text{alg}}(i,j) \le D_{\text{diam}}(\epsilon) = R_L(\epsilon)
-
-$$
-
-This case shows that walkers within the same high-error cluster are **not** isolated from each other. This is a critical observation: we do not claim universal isolation for high-error walkers.
-
-**Case 2 (Between Different Sets):** If $j \in L_k(\epsilon)$ (low-error cluster $G_\ell$), we use positional separation of cluster centers. By the reverse triangle inequality in position space:
-
-$$
-\|x_i - x_j\| \ge \|\mu_{x,h} - \mu_{x,j'}\| - \|x_i - \mu_{x,h}\| - \|x_j - \mu_{x,j'}\|
-
-$$
-
-where $G_{j'}$ is the cluster containing $j$. This application of the reverse triangle inequality is valid when the separation between cluster centers dominates the within-cluster radii, which we now verify.
-
-Using our established bounds:
-- $\|\mu_{x,h} - \mu_{x,j'}\| \ge \|\mu_{x,h} - \mu_x\| - \|\mu_{x,j'} - \mu_x\|$ (reverse triangle inequality)
-- $\|x_i - \mu_{x,h}\| \le D_{\text{diam}}(\epsilon)/2$ (radius bound within cluster)
-- $\|x_j - \mu_{x,j'}\| \le D_{\text{diam}}(\epsilon)/2$ (radius bound within cluster)
-
-**Verification of Positivity:** For the bound to be meaningful, we must verify that:
-
-$$
-\|\mu_{x,h} - \mu_{x,j'}\| > \|x_i - \mu_{x,h}\| + \|x_j - \mu_{x,j'}\|
-
-$$
-
-From Steps 6-7, we have:
-- $\|\mu_{x,h} - \mu_{x,j'}\| \geq \|\mu_{x,h} - \mu_x\| - \|\mu_{x,j'} - \mu_x\| \geq \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}}$
-- $\|x_i - \mu_{x,h}\| + \|x_j - \mu_{x,j'}\| \leq D_{\mathrm{diam}}(\epsilon)$
-
-Therefore, positivity requires:
-
-$$
-\sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}} > D_{\mathrm{diam}}(\epsilon)
-
-$$
-
-This condition will be guaranteed by the admissibility constraints derived in Step 9 below. Proceeding under this guarantee, we obtain:
-
-$$
-\|x_i - x_j\| \ge \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{|L_k(\epsilon)|}} - D_{\text{diam}}(\epsilon)
-
-$$
-
-Since $d_{\text{alg}}(i,j) \ge \|x_i - x_j\|$, we define the **high-error isolation distance**:
-
-$$
-D_H(\epsilon) := \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}} k}{k(1-f_H(\epsilon))}} - D_{\text{diam}}(\epsilon)
-
-$$
-
-where $f_H(\epsilon)$ is the N-uniform lower bound on the high-error fraction from Section 6.4. Simplifying:
-
-$$
-D_H(\epsilon) := \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon
-
-$$
-
-:::{admonition} Mathematical Rigour Note
-:class: note
-
-The application of the reverse triangle inequality in Step 8 deserves careful examination. For three points $a, b, c$ in a metric space, the reverse triangle inequality states:
-
-$$
-\|a - c\| \geq \|a - b\| - \|b - c\|
-
-$$
-
-In our application with $a = x_i$, $b = \mu_{x,h}$, and $c = x_j$, this becomes:
-
-$$
-\|x_i - x_j\| \geq \|x_i - \mu_{x,h}\| - \|\mu_{x,h} - x_j\|
-
-$$
-
-However, to obtain a useful **lower bound**, we need the term $\|\mu_{x,h} - x_j\|$ to be expressible in terms of quantities we can control. Using the triangle inequality $\|\mu_{x,h} - x_j\| \leq \|\mu_{x,h} - \mu_{x,j'}\| + \|\mu_{x,j'} - x_j\|$, we substitute to get:
-
-$$
-\|x_i - x_j\| \geq \|x_i - \mu_{x,h}\| - (\|\mu_{x,h} - \mu_{x,j'}\| + \|\mu_{x,j'} - x_j\|)
-
-$$
-
-Rearranging yields the form used in the proof:
-
-$$
-\|x_i - x_j\| \geq \|\mu_{x,h} - \mu_{x,j'}\| - \|x_i - \mu_{x,h}\| - \|x_j - \mu_{x,j'}\|
-
-$$
-
-This is mathematically valid. The subtlety is that this bound is only **meaningful** (i.e., positive) when the between-cluster separation $\|\mu_{x,h} - \mu_{x,j'}\|$ dominates the sum of within-cluster radii. This is precisely what the positivity verification establishes, and what the admissibility constraints in Step 9 guarantee. The approach is standard in clustering-based geometric analysis where one must verify that cluster-level separation dominates local fluctuations.
+The first bound follows from
+$x_i-\mu_{x,G}=|G|^{-1}\sum_{j\in G}(x_i-x_j)$ and the triangle inequality;
+the second follows from the pairwise vector variance identity.
+A radius bound $D_{x,G}/2$ or variance bound $D_{x,G}^2/4$ requires
+additional geometric hypotheses in general dimension.
+
+A positive lower bound on total between-cluster variance forces at least one
+cluster center to be far from the global center. It gives no positive lower
+bound on the minimum radius of every center in a prescribed group and does
+not establish the displayed cross-center margin. Such a margin must be
+verified separately. The group population bound above likewise establishes
+neither a signed measurement gap nor a fitness ordering.
 :::
 
-**Step 9: Verify Separation Condition $D_H(\epsilon) > R_L(\epsilon)$**
+### 6.6. Geometry used by the measurement-averaged proof
 
-For geometric separation, we require:
+:::{div} feynman-prose
+The measurement-averaged proof follows a different observable: it counts
+favorable comparisons together with the error carried by their recipients.
+Nearby walkers can receive different measurements from independently sampled
+companions, even when their marginal measurement distributions agree.
 
-$$
-\sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon > c_d \cdot \epsilon
-
-$$
-
-Simplifying:
-
-$$
-\sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} > \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} + 2c_d \cdot \epsilon
-
-$$
-
-This condition is satisfied when:
-
-$$
-\varepsilon_O < \frac{(1-f_H(\epsilon)) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}{R^2_{\mathrm{means}} + f_H(\epsilon) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}
-
-$$
-
-provided that $\sqrt{R^2_{\mathrm{means}}} > 2c_d \cdot \epsilon$, which follows from choosing:
-
-$$
-R^2_{\mathrm{var}} > \left(\frac{D_{\text{diam}}(\epsilon)}{2} + 2c_d \cdot \epsilon\right)^2 = \left(\frac{c_d \cdot \epsilon}{2} + 2c_d \cdot \epsilon\right)^2 = \left(\frac{5c_d \cdot \epsilon}{2}\right)^2
-
-$$
-
-**Conclusion:**
-
-Under the admissibility conditions:
-1. $c_d \cdot \epsilon < 2\sqrt{R^2_{\mathrm{var}}}$ (ensures positive between-cluster variance)
-2. $R^2_{\mathrm{var}} > (5c_d \cdot \epsilon / 2)^2$ (ensures sufficient separation for the bound)
-3. $\varepsilon_O$ satisfying the bound above (restricts outlier contamination)
-
-**Verification:** These three conditions jointly guarantee the positivity requirement from Step 8. Specifically, conditions (2) and (3) together ensure:
-
-$$
-\sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} > c_d \cdot \epsilon = D_{\mathrm{diam}}(\epsilon)
-
-$$
-
-which validates the application of the reverse triangle inequality for deriving meaningful separation bounds between high-error and low-error walkers.
-
-we have rigorously established phase-space constants $D_H(\epsilon)$ and $R_L(\epsilon) = c_d \cdot \epsilon$ with $D_H(\epsilon) > R_L(\epsilon)$. This proves:
-
-- **Separation Between Sets (Part 1)**: Every walker in a high-error cluster is separated from every walker in a low-error cluster by at least $D_H(\epsilon)$ in the algorithmic phase-space metric
-- **Clustering of Low-Error Walkers (Part 2)**: Every walker in a valid low-error cluster has companions within algorithmic radius $R_L(\epsilon) = c_d \cdot \epsilon$
-
-**Important Clarification:** We do **not** claim that all high-error walkers are isolated from each other. Walkers within the same high-error cluster may have distances as small as $R_L(\epsilon)$. The key property is the guaranteed separation **between** the high-error and low-error populations, which enables the algorithm to distinguish these populations statistically.
-
-The clustering-based approach provides a unified proof that avoids the flawed reverse triangle inequality and applies consistently across all interaction regimes.
-
-**Q.E.D.**
+The probability calculation includes realizations with equal fitness. Those
+realizations contribute zero acceptance, while the proved favorable events
+contribute positive acceptance. Their combined expectation is the pressure
+entering the complete signed update calculation.
 :::
 
-#### 6.5.3. Summary of Geometric Separation Constants
+:::{prf:remark} Dependency of the complete coverage estimate
+:label: rem-cloning-geometry-coverage-route
 
-The unified clustering-based proof in Section 6.5.2 established N-uniform geometric separation constants that apply across all interaction regimes. We now summarize these constants and the admissibility conditions required for their validity.
+The complete measurement-averaged route in
+{prf:ref}`lem-keystone-near-neighbor-pressure`,
+{prf:ref}`thm-keystone-complete-error-coverage`, and
+{prf:ref}`thm-keystone-discharged-averaged-pressure` uses the entering feature
+variance, near-neighbor counts, and actual favorable measurement events.
+Its proof includes every original geometric cluster, equal-fitness events,
+shared sampled normalizers, and the finite-population self-exclusion term.
+It requires neither the cross-group separation margin of
+{prf:ref}`lem-geometric-separation-of-partition` nor a positive gap between
+the means of the fixed high-error and low-error groups.
 
-#### 6.5.3.1. Unified Geometric Separation Constants
-
-The clustering-based proof established the following state-independent constants:
-
-$$
-\begin{aligned}
-D_H(\epsilon) &:= \sqrt{(1-\varepsilon_O) R^2_{\mathrm{means}}} - \sqrt{\frac{\varepsilon_O R^2_{\mathrm{means}}}{1-f_H(\epsilon)}} - c_d \cdot \epsilon \\
-R_L(\epsilon) &:= c_d \cdot \epsilon
-\end{aligned}
-
-$$
-
-where:
-- $R^2_{\mathrm{means}} := R^2_{\mathrm{var}} - (c_d \cdot \epsilon / 2)^2$ is the guaranteed between-cluster variance
-- $c_d > 0$ is the cluster diameter constant (typically $c_d = 2$)
-- $\varepsilon_O \in (0,1)$ is the outlier structural parameter (typically $\varepsilon_O = 0.1$)
-- $f_H(\epsilon) > 0$ is the N-uniform lower bound on the high-error fraction from Section 6.4
-
-These constants depend only on the primitive parameters $R^2_{\mathrm{var}}$, $\varepsilon_O$, $c_d$, $\epsilon$, and $f_H(\epsilon)$, and are manifestly N-uniform.
-
-#### 6.5.3.2. Admissibility Conditions for Geometric Separation
-
-1. **Positive Between-Cluster Variance** (Equation (1)):
-
-$$
-c_d \cdot \epsilon < 2\sqrt{R^2_{\mathrm{var}}}
-
-$$
-
-This ensures that $R^2_{\mathrm{means}} > 0$, guaranteeing non-trivial variance between cluster centers.
-
-2. **Sufficient Separation for Isolation** (Equation (2)):
-
-$$
-R^2_{\mathrm{var}} > \left(\frac{5c_d \cdot \epsilon}{2}\right)^2
-
-$$
-
-This ensures that $\sqrt{R^2_{\mathrm{means}}} > 2c_d \cdot \epsilon$, which is required for the separation condition.
-
-3. **Outlier Parameter Constraint** (Equation (3)):
-
-$$
-\varepsilon_O < \frac{(1-f_H(\epsilon)) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}{R^2_{\mathrm{means}} + f_H(\epsilon) \left(\sqrt{R^2_{\mathrm{means}}} - 2c_d \cdot \epsilon\right)^2}
-
-$$
-
-This restricts the maximum allowable outlier contamination to ensure that positional signal dominates.
-
-Together, these conditions ensure the strict separation property $D_H(\epsilon) > R_L(\epsilon)$ for all swarm configurations with $\mathrm{Var}_x(S_k) > R^2_{\mathrm{var}}$.
-
-#### 6.5.3.3. Conclusion of the Proof of {prf:ref}`lem-geometric-separation-of-partition`
-
-We have now rigorously established the existence of **state-independent, N-uniform constants** $D_H(\varepsilon)$ and $R_L(\varepsilon)$ in the **`d_alg` phase-space metric** that satisfy the claims of :
-
-1.  For any swarm state `S_k` with `Var_x(S_k) > R^{2}_var`, every walker `i` in the unified high-error set $H_k(\varepsilon)$ is guaranteed to be isolated from all other walkers `j` by a phase-space distance of at least $D_H(\varepsilon)$ in the `d_alg` metric.
-
-2.  Every walker in the low-error set $L_k(\varepsilon)$ is guaranteed to have a substantial sub-population of companions (of size at least `f_c k` for N-uniform `f_c > 0`) within a phase-space radius of $R_L(\varepsilon)$ in the `d_alg` metric.
-
-3.  The strict separation $D_H(\varepsilon) > R_L(\varepsilon)$ is guaranteed by the Unified Condition, which requires consistent selection of the system's primitive parameters (`R^{2}_var`, $\varepsilon_O$, `f_O`, $D_diam(\varepsilon)$, $\lambda_v$, $\lambda_alg$, `D_x`, `D_v`).
-
-These uniform bounds are constructed entirely from fundamental system constants and are independent of the swarm size `N`, the number of alive walkers `k`, and the specific swarm configuration `S`.
-
-**This completes the proof of {prf:ref}`lem-geometric-separation-of-partition` (Geometric Separation of the Partition).**
-
-**Q.E.D.**
-
-### 6.6. Section summary
-
-This chapter has established the first and most fundamental link in the Keystone causal chain: the rigorous, N-uniform connection between a macroscopic system error and a guaranteed microscopic geometric structure. We have proven that a large intra-swarm positional variance ($V_{\text{Var},x}$) is an unstable condition that forces a predictable and detectable pattern onto the swarm's configuration.
-
-**Defeating the Velocity Pathology:**
-
-The central technical achievement of this chapter, beyond establishing the high-error fraction, is the rigorous defeat of the velocity contamination problem. We have proven that high positional variance is a sufficient condition for phase-space separation, even under the most adversarial velocity configuration:
-
-- Sections 6.5.2 and 6.5.3 explicitly constructed constants $D_H(\epsilon)$ and $R_L(\epsilon)$ under worst-case velocity assumptions
-- Section 6.5.4 unified these into a single set of parameter conditions that guarantee separation across all regimes
-- The algebraic conditions on $\varepsilon_O$ and $D_{\mathrm{diam}}(\epsilon)$ are not arbitrary tuning parameters but rather mathematically necessary conditions to ensure the positional signal dominates velocity noise
-
-This ensures that the algorithmic distance metric $d_{\text{alg}}$, which includes both position and velocity components, reliably perceives the geometric structure induced by positional variance alone. Without this guarantee, the entire Keystone mechanism would fail: high-error walkers could be kinematically clustered despite being positionally dispersed, breaking the corrective feedback loop.
-
-The logical argument forged in this chapter proceeded in two main parts:
-
-1.  **From Macroscopic Error to a Substantial High-Error Population:** We began by showing that a large $V_{\text{Var},x}$ guarantees that at least one swarm must have a large internal positional variance (`Var_x`). The analysis in Section 6.4 then proved, via a robust $\varepsilon$-dichotomy, that this condition is sufficient to guarantee that a non-vanishing, N-uniform fraction of the swarm's walkers, $f_H(\varepsilon)$, must belong to the **Unified High-Error Set $H_k(\varepsilon)$**.
-
-2.  **From Population Statistics to Microscopic Geometry:** The chapter's final and most critical result, the **Geometric Separation of the Partition ({prf:ref}`lem-geometric-separation-of-partition`)**, proved that this high-error population possesses a distinct and measurable geometric signature. We have rigorously shown that the high-error set $H_k(\varepsilon)$ is forced into a state of **phase-space isolation**, while the low-error set $L_k(\varepsilon)$ is confined to **dense phase-space clusters**.
-
-The strict separation $D_H(\varepsilon) > R_L(\varepsilon)$, guaranteed by the Unified Condition derived in Section 6.5.4, ensures that these two geometric signatures are fundamentally distinct and non-overlapping in the **algorithmic phase space (`d_alg`)**. This proven separation is the "missing link" that connects the abstract concept of system error to a concrete, physical property that the swarm's own measurement pipeline can perceive. It provides the precise, exploitable structure that the `GreedyPairing` algorithm can reliably detect, a fact that will be the cornerstone of the proof of intelligent signal generation in the next chapter.
+The alternative realized-target route in {prf:ref}`lem-quantitative-keystone`
+requires its stated comparison and target-error bounds at the same conditional
+stage. Either pressure estimate enters the signed complete-update accounting
+before a convergence rate can be concluded.
+:::
 
 (sec-cloning-fitness)=
 ## 7. The Corrective Nature of Fitness: From Signal Generation to Intelligent Adaptation
@@ -3123,7 +2650,12 @@ The strict separation $D_H(\varepsilon) > R_L(\varepsilon)$, guaranteed by the U
 ### 7.1. From distances to a selection signal
 
 :::{div} feynman-prose
-A distance measurement becomes useful to selection through several nonlinear operations. We first quantify its variance under the actual pairing law, then follow rescaling and the fitness product. The proofs distinguish a realized fitness vector from averages over random pairings.
+A distance measurement becomes a selection signal through standardization,
+rescaling, and the fitness product. At each step, ask which quantity is being
+controlled: variance of one realized vector, variance averaged over measurement
+draws, or a signed comparison between two populations. Each answers a different
+question. The proofs keep the actual measurement law and the realized shared
+normalizer throughout.
 :::
 
 ### 7.2.1 Guaranteed Measurement Variance from Geometric Structure
@@ -3161,130 +2693,125 @@ within-group variance and $f_Hf_L(\mu_H-\mu_L)^2$, proving the result.
 This calculation retains all correlations created by the pairing.
 :::
 
-#### 7.2.2. Proposition: Satisfiability of the Signal-to-Noise Condition
+#### 7.2.2. Variance bounds for the configured rescaling
 
-The analysis in the subsequent sections rests on a key statistical lemma ({prf:ref}`lem-variance-to-gap`), which provides the bridge from a guaranteed total signal variance to a guaranteed separation between subpopulation means. The validity of this lemma is conditional; it requires that the signal variance generated by a high-error state must be strictly greater than the maximum possible "internal noise" variance that can be generated by any configuration of values within the same range.
+:::{div} feynman-prose
+Centering subtracts the same number from every measurement, so it preserves
+their pairwise differences. Dividing by a shared standardizer scales those
+differences together. The configured rescaling then determines how much of
+each difference reaches the output.
 
-This section provides the formal proof that this condition, which we call the **Signal-to-Noise Condition**, is not an unstated assumption but a satisfiable criterion that can be met by a valid choice of the algorithm's user-defined parameters. We prove this by introducing a **Signal Gain** parameter, $\gamma$, which acts as a sensitivity knob for the algorithm. This proves that the system is fundamentally "learnable": the signal generated by geometric error can always be amplified sufficiently to overcome the worst-case statistical noise, ensuring that a true difference between the high-error and low-error populations is always detectable.
-
-:::{prf:proposition} **(Satisfiability of the Signal-to-Noise Condition via Signal Gain)**
-:label: prop-satisfiability-of-snr-gamma
-
-Let the rescaled diversity values be defined as $d'_i = g_A(\gamma · z_{d,i}) + \eta$, where $\gamma > 0$ is a user-defined **Signal Gain** parameter and `g_A` is any function satisfying the **Axiom of a Well-Behaved Rescale Function ({prf:ref}`def-canonical-logistic-rescale-function-example`)** (see {prf:ref}`def-logistic-rescale` for the canonical choice).
-
-For any system in a high-error state (`Var(x) > R^{2}_{\mathrm{var}}`) that generates a non-zero raw distance signal ($\kappa_{\mathrm{meas}}(d) > 0$), there exists a sufficiently large choice of $\gamma$ that satisfies the **Signal-to-Noise Condition**:
-
-$$
-\kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')
-
-$$
-
-where `Var_max(d')` is the maximum possible variance of the rescaled values, and $\kappa_{\mathrm{var}}(d')$ is the guaranteed lower bound on the variance of the rescaled values in the high-error state.
+For the logistic map, sensitivity decreases near saturation. The proposition
+therefore uses the minimum derivative on the attained score interval, and
+keeps the output's variance ceiling in the same estimate. Its lower bound can
+be positive while remaining below that ceiling.
 :::
+
+:::{prf:proposition} Variance propagation under a fixed shared standardization
+:label: prop-fixed-rescale-variance-bound
+
+Fix a realized measurement vector $y=(y_1,\ldots,y_k)\in[a,b]^k$,
+$k\ge2$, and use its actual common mean $\bar y$ and standardizer $s(y)$.
+Assume $0<s_{\min}\le s(y)\le s_{\max}<\infty$ on the specified family.
+Put $z_i=(y_i-\bar y)/s(y)$ and $Z=(b-a)/s_{\min}$. Let the configured
+rescaling $g$ be continuously differentiable and nondecreasing on $[-Z,Z]$,
+and define
+
+$$
+m_g=\min_{|z|\le Z}g'(z)\ge0,\qquad
+M_g=\max_{|z|\le Z}g'(z)<\infty,\qquad
+R_g=g(Z)-g(-Z).
+$$
+
+For $d'_i=g(z_i)+\eta$, with the configured constant offset $\eta$, the
+empirical variances, normalized by $k$, satisfy
+
+$$
+\boxed{
+\frac{m_g^2}{s_{\max}^2}\operatorname{Var}(y)
+\le\operatorname{Var}(d')
+\le\min\left\{
+\frac{M_g^2}{s_{\min}^2}\operatorname{Var}(y),\frac{R_g^2}{4}
+\right\}.}
+$$
+
+For the canonical logistic map $g(z)=2/(1+e^{-z})$ and fixed finite $Z$,
+$m_g=2e^{-Z}/(1+e^{-Z})^2>0$ and $M_g\le1/2$. Thus a realized positive
+variance has a realized positive propagated lower bound. If $y$ is random
+and the same deterministic interval and standardizer bounds hold for every
+realization, these inequalities may be averaged over its actual joint law.
+The averaged lower bound concerns $\mathbb E\operatorname{Var}(d')$.
+:::
+
 :::{prf:proof}
-
-**Proof.**
-
-The proof strategy is to show that the guaranteed signal variance of the rescaled values, $\kappa_{\mathrm{var}}(d')$, scales with $\gamma^{2}$ in the small-signal limit, while the maximum possible noise, `Var_max(d')`, remains a fixed constant independent of $\gamma$. This algebraic advantage allows $\gamma$ to be chosen to ensure the signal always dominates the noise.
-
-**1. The Noise Term (`Var_max(d')`): A Fixed, $\gamma$-Independent Constant.**
-
-The **Axiom of a Well-Behaved Rescale Function** requires `g_A` to have a bounded range, which we denote `(g_{A,\min}, g_{A,\max})`. Consequently, the rescaled values $d'_i = g_A(\gamma · z_{d,i}) + \eta$ are always contained within the fixed interval $(g_{A,\min} + \eta, g_{A,\max} + \eta)$.
-
-The maximum possible variance for any set of values on this interval is given by Popoviciu's inequality:
+Every $y_i$ and $\bar y$ lies in $[a,b]$, so $|z_i|\le Z$. Shared
+centering and scaling give $z_i-z_j=(y_i-y_j)/s(y)$. Integration of $g'$
+on the segment between these scores yields
 
 $$
-\operatorname{Var}_{\max}(d') := \frac{1}{4}(\max(d') - \min(d'))^2 = \frac{1}{4}(g_{A,\max} - g_{A,\min})^2
-
+\frac{m_g}{s_{\max}}|y_i-y_j|
+\le |d'_i-d'_j|
+\le\frac{M_g}{s_{\min}}|y_i-y_j|.
 $$
 
-This value is a constant determined solely by the choice of the rescale function `g_A`; it does not depend on the Signal Gain $\gamma$. For the **Canonical Logistic Rescale function**, `g_A(z) = 2/(1+e^{-z})`, the range is `(0, 2)`, yielding a fixed maximum noise of `Var_max(d') = 1`.
+Square, sum over all ordered pairs, and use
+$\operatorname{Var}(u)=(2k^2)^{-1}\sum_{i,j}(u_i-u_j)^2$ for each vector.
+The output values lie in $[g(-Z)+\eta,g(Z)+\eta]$. For a uniform empirical
+sample $X$ from an interval $[c,d]$, averaging
+$(X-c)(d-X)\ge0$ gives
+$\operatorname{Var}(X)\le(d-\mathbb EX)(\mathbb EX-c)\le(d-c)^2/4$.
+This proves the range upper bound.
 
-Our goal is to prove that we can choose $\gamma$ such that the guaranteed signal variance $\kappa_{\mathrm{var}}(d')$ is greater than this fixed constant.
-
-**2. The Signal Term ($\kappa_{\mathrm{var}}(d')$): Amplification by $\gamma$.**
-
-The signal originates from the raw distance measurements `d`, propagates to the standardized scores `z_d`, and is then amplified.
-
-*   **Raw and Standardized Signal:** From {prf:ref}`thm-geometry-guarantees-variance`, a high-error state guarantees $\text{Var}(d) \geq \kappa_{\mathrm{meas}}(d) > 0$. The Z-scores $z_d = (d - \mu_d) / \sigma'_d$ have a variance $\text{Var}(z_d) = \text{Var}(d) / (\sigma'_d)^{2}$. Since the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`) $\sigma'_d$ is uniformly bounded above by $\sigma'_{\max}$ ({prf:ref}`def-max-patched-std`), the Z-score variance has a uniform lower bound:
-
-
-$$
-\operatorname{Var}(z_d) \ge \frac{\kappa_{\mathrm{meas}}(d)}{(\sigma'_{\max})^2} =: \kappa_{\mathrm{var}}(z) > 0
-
-$$
-
-*   **Signal Amplification:** The input to the rescale function is $u_i = \gamma z_{d,i}$. The variance of this amplified signal is $\text{Var}(u) = \gamma^{2}\text{Var}(z_d) \geq \gamma^{2}\kappa_{\mathrm{var}}(z)$.
-
-*   **Rescaled Signal ($\kappa_{\mathrm{var}}(d')$):** The rescaled values are $d' = g_A(u) + \eta$. For any differentiable function, a first-order Taylor expansion around the mean $\mu_u$ gives $g_A(u_i) \approx g_A(\mu_u) + g'_A(\mu_u)(u_i - \mu_u)$. The variance is then approximated by:
-
-
-$$
-\operatorname{Var}(d') = \operatorname{Var}(g_A(u)) \approx (g'_A(\mu_u))^2 \operatorname{Var}(u)
-
-$$
-
-    This approximation becomes exact in the limit of small variance relative to the curvature of `g_A`. A more rigorous treatment using the Mean Value Theorem shows that the variance of the output is bounded below by the variance of the input multiplied by the squared infimum of the derivative.
-
-
-$$
-\operatorname{Var}(d') \ge (\inf_{c \in Z_{\mathrm{eff}}} g'_A(c))^2 \operatorname{Var}(u)
-
-$$
-
-    where `Z_eff` is the effective range of inputs. Let `g'_{\min} > 0` be the uniform lower bound on the derivative (guaranteed to exist on any compact operational range by the axiom). The guaranteed variance of the rescaled values is thus bounded below by a term proportional to $\gamma^{2}$:
-
-
-$$
-\kappa_{\mathrm{var}}(d') \ge (g'_{\min})^2 \cdot \gamma^2 \kappa_{\mathrm{var}}(z)
-
-$$
-
-**3. Proving Satisfiability.**
-
-The Signal-to-Noise Condition is $\kappa_{\mathrm{var}}(d') > \operatorname{Var}_{\max}(d')$. Substituting our results from the steps above:
-
-$$
-(g'_{\min})^2 \cdot \gamma^2 \kappa_{\mathrm{var}}(z) > \frac{1}{4}(g_{A,\max} - g_{A,\min})^2
-
-$$
-
-Solving for the Signal Gain $\gamma$:
-
-$$
-\gamma > \frac{g_{A,\max} - g_{A,\min}}{2 \cdot g'_{\min} \cdot \sqrt{\kappa_{\mathrm{var}}(z)}}
-
-$$
-
-Since $\kappa_{\mathrm{var}}(z)$ is a fixed positive constant for a given $\varepsilon$, and `g_A`'s properties (`g_{A,max}`, `g_{A,min}`, `g'_{min}`) are fixed, the right-hand side is a fixed, positive real number. This proves that there always exists a sufficiently large choice of $\gamma$ that satisfies the condition.
-
-**Conclusion:** The Signal-to-Noise Condition is not a restrictive assumption on the environment but is a design criterion that can always be satisfied by appropriately tuning the algorithm's sensitivity $\gamma$. This holds for any valid rescale function, including the Canonical choice.
-
-**Q.E.D.**
+The logistic derivative is
+$g'(z)=2e^{-z}/(1+e^{-z})^2=(2\cosh^2(z/2))^{-1}$; it is even and
+decreases with $|z|$, giving the displayed minimum and upper bound.
+Every inequality was proved for the same realized vector and normalizer,
+so the stated deterministic bounds permit outer expectation. $\square$
 :::
-:::{admonition} Design Implications: The Role of the Signal Gain ($\gamma$)
-:class: note
 
-The introduction of the $\gamma$ parameter is a crucial step in ensuring the mathematical robustness of the framework. It formalizes the concept of the algorithm's **sensitivity**.
+:::{prf:remark} Attainable variance and parameter dependence
+:label: rem-fixed-rescale-attainable-variance
 
-*   $\gamma$ acts as a tuning knob that determines how strongly the system reacts to the standardized signals it measures. A low $\gamma$ will map a wide range of Z-scores to a narrow band of rescaled values, making the system very stable but potentially slow to adapt. A high $\gamma$ will amplify small differences in Z-scores, making the system highly responsive.
+For a bounded configured output interval of width $R$, every valid variance
+lower bound satisfies
+$\kappa\le\operatorname{Var}(d')\le R^2/4$; an expected lower bound likewise
+satisfies $\kappa\le\mathbb E\operatorname{Var}(d')\le R^2/4$.
+The condition $\kappa>R^2/4$ therefore has no admissible realization or law.
 
-*   This proposition proves that for the system's "intelligence" to be guaranteed (i.e., for the proofs in the subsequent sections to hold), $\gamma$ must be chosen to be above a certain threshold. This threshold depends on the intrinsic signal strength of the problem ($\kappa_{\mathrm{meas}}$) and the properties of the chosen rescale function.
-
-*   Therefore, the requirement for a sufficiently large $\gamma$ should be considered a foundational property for any well-posed Fragile Gas instantiation. It is recommended to add $\gamma$ to the list of **Algorithmic Dynamics Axioms (Section 4)**, with the condition $\gamma > 0$, noting that its value must be chosen large enough to satisfy the inequality derived herein.
+All constants above belong to the fixed configured rescaling and its attained
+score interval. If a configuration already uses $g(\gamma z)$ with $\gamma>0$, its derivative
+lower bound is $\gamma\min_{|u|\le\gamma Z}g'(u)$, which depends on $\gamma$.
+For the logistic map this minimum decreases through saturation as $\gamma Z$
+grows. The output range still has width at most $2$ and its variance is at
+most $1$. The proof introduces no gain parameter into the algorithm.
+Identical empirical value distributions in two groups remain identical under
+the same realized scalar rescaling.
 :::
 
 ### 7.3. Signal Propagation Through the Pipeline
 
-The preceding theorem ({prf:ref}`thm-geometry-guarantees-variance`) established that a swarm in a high-error state, possessing the geometric structure proven in Section 6, is guaranteed to generate a raw distance measurement signal with a non-vanishing expected variance, $\mathbb{E}[\operatorname{Var}(d)] \geq \kappa_{\mathrm{meas}}(\varepsilon) > 0$. This section proves that the deterministic pipeline defined in Section 5 is a robust signal processor, capable of transforming this raw statistical signal into a concrete, usable gap in the final rescaled values.
+:::{div} feynman-prose
+Keep one measurement realization in view. A positive empirical variance means
+that some pair of measurements differs. The standardization step uses a common
+mean and denominator, so that difference survives centering exactly. A positive
+derivative bound for the configured rescaling then preserves it quantitatively.
 
-The proof will follow the signal's journey in two stages:
-1.  First, we prove that a guaranteed variance in any set of raw values implies the existence of a guaranteed *gap* between at least two of those values.
-2.  Second, we prove that this raw gap robustly propagates through the standardization and rescale operators to become a guaranteed *rescaled gap*.
+When measurements are random, {prf:ref}`thm-geometry-guarantees-variance`
+bounds the expected empirical variance under its marginal-gap hypothesis.
+An averaged bound permits individual realizations in which every measurement
+ties. The deterministic lemmas below apply to the realized vector;
+{prf:ref}`prop-fixed-rescale-variance-bound` states how their variance estimates
+pass through expectation.
+:::
 
 #### 7.3.1. From Raw Variance to a Guaranteed Raw Gap
 
-The first step in the signal integrity proof is to show that the statistical property of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, has a direct, concrete consequence: it forces a measurable separation between the raw values of at least two walkers.
+:::{div} feynman-prose
+For a fixed list of measurements, variance is built from squared differences.
+If the variance is bounded below, the largest pairwise difference must be
+large enough to account for it. The next lemma makes that statement for the
+same realized list.
+:::
 
 :::{prf:lemma} From Bounded Variance to a Guaranteed Gap
 :label: lem-variance-to-gap
@@ -3341,32 +2868,50 @@ Rearranging the inequality $\kappa \le \frac{1}{2} \Delta_{\max}^2$ gives $\Delt
 **Q.E.D.**
 :::
 
-This lemma provides the first crucial step in the signal processing analysis: it converts the abstract statistical guarantee of variance, now proven in {prf:ref}`thm-geometry-guarantees-variance`, into the concrete existence of at least two specific walkers with measurably different raw distance values.
+:::{div} feynman-prose
+The distinct pair can depend on the measurement draw. When only an averaged
+variance lower bound is available, the pairwise identity controls the expected
+squared largest gap. It supplies no positive gap in a draw where all
+measurements coincide.
+:::
 
 #### 7.3.2. From a Raw Gap to a Guaranteed Rescaled Gap
 
-A raw gap in the measurement values is not sufficient on its own to guarantee an adaptive signal. The standardization process, which involves dividing the raw values by the swarm's standard deviation, could potentially shrink this gap to an arbitrarily small value, effectively destroying the signal. This section proves that this is not the case by establishing uniform, N-independent bounds on the behavior of the pipeline's key components. We will show that any non-zero raw gap is reliably transformed into a non-zero rescaled gap, proving the integrity of the signal as it propagates through the pipeline.
+:::{div} feynman-prose
+For the realized pair, two constants control the output gap: an upper bound
+on the shared standardizer and a positive lower bound on the rescaling
+derivative. Both belong to the fixed configuration and its proved operational
+interval. With these bounds, the same pair retains a quantitative gap after
+rescaling.
+:::
 
 #### 7.3.2.1. Uniform Bounds on Pipeline Components
 
-To prove that the signal propagation is robust, we must first establish that the core components of the pipeline operate within a predictable, well-behaved range that is independent of the swarm's specific configuration or size.
-
-The first component we must bound is the denominator of the standardization formula. The following definition establishes a uniform upper bound on the patched standard deviation (see {prf:ref}`def-patched-std-dev-function`).
+:::{div} feynman-prose
+First bound the denominator. The raw measurement interval limits its empirical
+variance, which in turn limits the configured patched standardizer. These
+bounds refer to the stated measurement family and must remain common across
+population sizes when a population-uniform estimate is needed.
+:::
 
 :::{prf:definition} Maximum Patched Standard Deviation
 :label: def-max-patched-std
 
-Let $V_{\max}$ be the uniform upper bound on a raw measurement's absolute value (either $V_{\max}^{(R)}$ for rewards or $D_{\text{valid}}$ for distances). The **maximum patched standard deviation**, $\sigma'_{\max}$, is the maximum value that the patched standard deviation function can attain over its entire possible input domain.
+On a specified entering family, let $V_{\max}<\infty$ be a proved uniform upper bound on the complete raw measurement's absolute value (reward or distance). A bound for the objective alone does not bound an additional diverging reward penalty. The **maximum patched standard deviation**, $\sigma'_{\max}$, is the maximum of the configured patched standardizer over the variance interval $[0,V_{\max}^2]$ admitted by this family.
 
 $$
 \sigma'_{\max} := \sup_{0 \le V \le V_{\max}^2} \sigma'_{\mathrm{patch}}(V)
 
 $$
 
-As the raw variance `Var({vᵢ})` is uniformly bounded by `V_max^{2}` and the function $\sigma'_patch(V)$ is continuous and monotonic, the Extreme Value Theorem guarantees that this maximum is attained at the right endpoint of the interval: $\sigma'_max = \sigma'_patch(V_max^{2})$. It is therefore a finite, positive constant determined only by the fixed system parameters, providing a state-independent upper bound for any standard deviation computed by the algorithm.
+For every realized vector in this family, $\operatorname{Var}(v)\le V_{\max}^2$. Since the configured function $\sigma'_{\mathrm{patch}}$ is continuous and nondecreasing, its maximum on this interval is $\sigma'_{\mathrm{patch}}(V_{\max}^2)$. This finite positive bound is determined by the fixed regularizer and the proved family bound $V_{\max}$; it is uniform on this entering family.
 :::
 
-Next, we must prove that the rescale function `g_A` is sufficiently sensitive to preserve a standardized gap. This requires showing that its derivative is uniformly bounded below by a positive constant over its entire operational domain.
+:::{div} feynman-prose
+Next bound the sensitivity on the scores that can actually occur. A positive
+derivative everywhere on a fixed compact interval has a positive minimum
+there. Enlarging the interval or changing the rescaling changes that minimum.
+:::
 
 :::{prf:lemma} Positive Derivative Bound for the Rescale Function
 :label: lem-rescale-derivative-lower-bound
@@ -3396,19 +2941,23 @@ where $Z_{\text{supp}} := \left[ -2V_{\max}/\sigma'_{\min,\text{patch}}, 2V_{\ma
 
 #### 7.3.2.2. The Main Propagation Lemma
 
-With the uniform bounds on the pipeline's components now established, we can prove the main result of this section: a guaranteed raw measurement gap is reliably transformed into a guaranteed rescaled value gap.
+:::{div} feynman-prose
+Now follow the same pair through both operations. Because its measurements
+share a normalizer, their difference is divided by precisely the same
+denominator. The derivative bound controls the remaining rescaling step.
+:::
 
 :::{prf:lemma} From Raw Measurement Gap to Rescaled Value Gap
 :label: lem-raw-gap-to-rescaled-gap
 
-Let the system parameters be fixed. There exists a function $\kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}})$ such that for *any* swarm ({prf:ref}`def-swarm-and-state-space`) state `S` with $k \geq 2$ alive walkers, if the raw measurement values contain a gap $|vₐ - vᵦ| \geq \kappa_{\mathrm{raw}} > 0$, then the corresponding rescaled values are guaranteed to have a gap:
+Fix the configured canonical logistic rescaling and an entering family whose complete realized raw measurement vectors satisfy $|v_i|\le V_{\max}<\infty$, with the proved common standardizer bounds $0<\sigma'_{\min,\mathrm{patch}}\le\sigma'\le\sigma'_{\max}$. For each such realized vector with $k\ge2$, a raw gap $|v_a-v_b|\ge\kappa_{\mathrm{raw}}>0$ gives the following rescaled gap:
 
 $$
 |g_A(z_a) - g_A(z_b)| \ge \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) > 0
 
 $$
 
-The function $\kappa_{\mathrm{rescaled}}$ is independent of the swarm ({prf:ref}`def-swarm-and-state-space`) state `S` and its size `k`, and is defined as:
+On this specified entering family, the function $\kappa_{\mathrm{rescaled}}$ is independent of the realized swarm state and its size $k$, and is defined as:
 
 $$
 \kappa_{\mathrm{rescaled}}(\kappa_{\mathrm{raw}}) := \frac{g'_{\min}}{\sigma'_{\max}} \cdot \kappa_{\mathrm{raw}}
@@ -3460,18 +3009,24 @@ $$
 
 $$
 
-Since `g'_min` and $\sigma'_max$ are positive, N-uniform constants, the function $\kappa_rescaled(\kappa_raw)$ provides a strictly positive, N-uniform lower bound for any $\kappa_raw > 0$. This completes the proof that a raw measurement gap robustly propagates to a guaranteed rescaled value gap.
+The two constants are positive and common to the specified entering family. The resulting lower bound is population independent when the same family bounds hold across population sizes. It applies to each realized pair with the stated raw gap.
 
 **Q.E.D.**
 :::
 
-#### 7.3.3 Conclusion: A Guaranteed Signal from Error to Rescaled Value
+#### 7.3.3. What the propagation estimates establish
 
-This section has forged a central link in the signal integrity proof. We have demonstrated that the measurement pipeline is a reliable signal processor whose behavior is uniformly bounded, independent of the swarm's size or specific configuration. By combining the lemmas, we have established a direct, N-uniform causal chain:
+:::{div} feynman-prose
+A realized variance lower bound supplies a pair of distinct measurements,
+and the gap lemma follows that pair through standardization and rescaling.
+An expected variance lower bound supplies an expected squared gap, while
+allowing complete ties in some realizations.
 
-`Guaranteed Raw Variance (from` {prf:ref}`thm-geometry-guarantees-variance``)` → `Guaranteed Raw Gap` → `Guaranteed Rescaled Gap`
-
-With this result, we have proven that a high-error state, which is guaranteed by {prf:ref}`thm-geometry-guarantees-variance` to produce a non-trivial raw measurement variance, always produces a non-trivial signal that survives the standardization and rescaling process. The final and most critical step, addressed in the next section, is to prove that the signals from the reward and diversity channels cannot pathologically cancel each other out in the final fitness calculation.
+Neither comparison identifies which geometric population has higher mean
+fitness. That question needs a within-group variance bound, an orientation,
+and control of the reward–diversity product. The next sections keep those
+requirements explicit.
+:::
 
 ### 7.4. Population comparisons
 
@@ -3479,149 +3034,143 @@ With this result, we have proven that a high-error state, which is guaranteed by
 Total variation in measurements can come from differences within each group or from differences between their means. The variance decomposition below separates these contributions. To determine which population is favored by selection, we also need the sign of the gap and the effect of the nonlinear fitness map.
 :::
 
-#### 7.4.1 The Macroscopic Signal Separation Lemma
+#### 7.4.1. Separation after accounting for within-group variance
 
-The analysis in the preceding sections, culminating in {prf:ref}`thm-geometry-guarantees-variance`, establishes that a high-error swarm state is guaranteed to generate a raw measurement signal with a non-vanishing expected empirical variance. The next crucial step is to prove that this macroscopic statistical signal—a property of the entire population—forces a macroscopic separation between the means of the geometrically-defined high-error and low-error subpopulations.
+:::{div} feynman-prose
+Imagine that each group contains the same two values. The whole population
+varies, yet both group means agree: all its variance lives inside the groups.
+To infer a mean gap, we must account for that internal spread separately.
 
-The following lemma provides this fundamental link. It proves, from first principles, that a sufficiently large variance within a population partitioned into two substantial subsets necessitates a statistically significant separation between the means of those subsets.
+When a proved within-group ceiling lies below the total variance floor, the
+difference between the group means must account for the remainder. The
+identity below measures the size of that difference. Its sign still has to
+come from the measurement geometry or a direct fitness comparison. For random
+measurements, the corollary quantifies a gap event under the actual conditional
+law, including draws where the gap vanishes.
+:::
 
-:::{prf:lemma} **(From Total Variance to Mean Separation)**
+:::{prf:lemma} Group mean separation from a within-group variance bound
 :label: lem-variance-to-mean-separation
 
-Let $\mathcal{V} = \{v_i\}_{i=1}^k$ be a set of $k \ge 2$ real numbers, with each element $v_i$ contained in the compact interval $[V_{\min}, V_{\max}]$. Let $\mathcal{V}$ be partitioned into two disjoint, non-empty subsets, $H$ and $L$, with corresponding means $\mu_H$ and $\mu_L$. Let their fractional population sizes, $f_H = |H|/k$ and $f_L = |L|/k$, be bounded below by a strictly positive constant $f_{\min} \in (0, 1/2]$, such that $f_H \ge f_{\min}$ and $f_L \ge f_{\min}$.
-
-If the empirical variance of the total set, $\operatorname{Var}(\mathcal{V})$, is bounded below by a strictly positive constant $\kappa_{\mathrm{var}} > 0$, then the squared difference between the subset means is bounded below by:
-
-$$
-(\mu_H - \mu_L)^2 \ge \frac{1}{f_H f_L} \left( \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}} \right)
+Let $v_1,\ldots,v_k\in[a,b]$, $k\ge2$, and let $H,L$ be a fixed partition
+into two nonempty groups. Write $f_H=|H|/k$, $f_L=|L|/k$, their empirical
+means as $\mu_H,\mu_L$, and their within-group empirical variances as
+$s_H^2,s_L^2$. Define
 
 $$
-
-where $\operatorname{Var}_{\mathrm{max}} := \frac{1}{4}(V_{\max} - V_{\min})^2$ is the maximum possible variance for any set of values on the interval.
-
-Consequently, if the guaranteed variance $\kappa_{\mathrm{var}}$ is sufficiently large to satisfy the **Signal-to-Noise Condition**, $\kappa_{\mathrm{var}} > \operatorname{Var}_{\mathrm{max}}$, then the mean separation is guaranteed to be positive:
-
-$$
-|\mu_H - \mu_L| \ge \frac{1}{\sqrt{f_H f_L}} \sqrt{\kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}}} > 0
-
+s^2=\frac1k\sum_i(v_i-\bar v)^2,\qquad
+s_{\rm within}^2=f_Hs_H^2+f_Ls_L^2.
 $$
 
+Then
+
+$$
+\boxed{s^2=s_{\rm within}^2+f_Hf_L(\mu_L-\mu_H)^2.}
+$$
+
+Suppose that bounds for this same realized vector give
+$s^2\ge\kappa$ and $s_{\rm within}^2\le B_{\rm within}$. If
+$\kappa>B_{\rm within}$, then
+
+$$
+|\mu_L-\mu_H|\ge
+\sqrt{\frac{\kappa-B_{\rm within}}{f_Hf_L}}>0.
+$$
+
+If $\mu_L\ge\mu_H$ has additionally been established for the specified
+measurement law and groups, the same lower bound holds for the signed
+difference $\mu_L-\mu_H$. A sufficient within-group bound is
+
+$$
+B_{\rm within}=
+\frac{f_Hr_H^2+f_Lr_L^2}{4},
+$$
+
+when the actual values in $H,L$ lie in intervals of widths $r_H,r_L$.
+The intervals and orientation are separate hypotheses, verified on the
+same vector and conditional stage as the selection estimate.
 :::
+
 :::{prf:proof}
-
-**Proof.**
-
-The proof is based on the decomposition of the total variance provided by the Law of Total Variance. We will establish a precise identity relating the total variance to the difference in subset means, find a sharp upper bound on the confounding variance term, and combine these results to derive the desired lower bound.
-
-**Step 1: The Law of Total Variance.**
-Let $\mu_{\mathcal{V}}$ be the mean of the entire set $\mathcal{V}$. The total empirical variance, $\operatorname{Var}(\mathcal{V}) := \frac{1}{k}\sum_{i \in \mathcal{V}} (v_i - \mu_{\mathcal{V}})^2$, can be decomposed into two components: the between-group variance ($\operatorname{Var}_B$) and the within-group variance ($\operatorname{Var}_W$).
+For $i\in H$, expand
+$v_i-\bar v=(v_i-\mu_H)+(\mu_H-\bar v)$. The centered deviations sum to
+zero, so the cross terms vanish. Repeat in $L$ and divide by $k$ to get
 
 $$
-\operatorname{Var}(\mathcal{V}) = \operatorname{Var}_B(\mathcal{V}) + \operatorname{Var}_W(\mathcal{V})
-
+s^2=f_Hs_H^2+f_Ls_L^2
++f_H(\mu_H-\bar v)^2+f_L(\mu_L-\bar v)^2.
 $$
 
-The **within-group variance** is the weighted average of the variances of the subsets:
-
-$$
-\operatorname{Var}_W(\mathcal{V}) := f_H \operatorname{Var}(H) + f_L \operatorname{Var}(L)
-
-$$
-
-The **between-group variance** is the variance of the subset means around the total mean:
-
-$$
-\operatorname{Var}_B(\mathcal{V}) := f_H(\mu_H - \mu_{\mathcal{V}})^2 + f_L(\mu_L - \mu_{\mathcal{V}})^2
-
-$$
-
-**Step 2: Relating Between-Group Variance to the Mean Separation.**
-We will now prove that the between-group variance is directly proportional to $(\mu_H - \mu_L)^2$. The total mean is the weighted average of the subset means: $\mu_{\mathcal{V}} = f_H \mu_H + f_L \mu_L$. Substituting this into the definition of $\operatorname{Var}_B(\mathcal{V})$:
-
-$$
-\begin{aligned}
-\mu_H - \mu_{\mathcal{V}} &= \mu_H - (f_H \mu_H + f_L \mu_L) = (1-f_H)\mu_H - f_L \mu_L = f_L \mu_H - f_L \mu_L = f_L(\mu_H - \mu_L) \\
-\mu_L - \mu_{\mathcal{V}} &= \mu_L - (f_H \mu_H + f_L \mu_L) = -f_H \mu_H + (1-f_L)\mu_L = -f_H \mu_H + f_H \mu_L = -f_H(\mu_H - \mu_L)
-\end{aligned}
-
-$$
-
-Substituting these expressions back into the formula for $\operatorname{Var}_B(\mathcal{V})$ yields:
-
-$$
-\begin{aligned}
-\operatorname{Var}_B(\mathcal{V}) &= f_H (f_L(\mu_H - \mu_L))^2 + f_L (-f_H(\mu_H - \mu_L))^2 \\
-&= f_H f_L^2 (\mu_H - \mu_L)^2 + f_L f_H^2 (\mu_H - \mu_L)^2 \\
-&= (f_H f_L^2 + f_L f_H^2)(\mu_H - \mu_L)^2 \\
-&= f_H f_L (f_L + f_H)(\mu_H - \mu_L)^2
-\end{aligned}
-
-$$
-
-Since $f_H + f_L = 1$, we arrive at the exact identity:
-
-$$
-\operatorname{Var}_B(\mathcal{V}) = f_H f_L (\mu_H - \mu_L)^2
-
-$$
-
-**Step 3: A Uniform Upper Bound on the Within-Group Variance.**
-The within-group variance, $\operatorname{Var}_W(\mathcal{V}) = f_H \operatorname{Var}(H) + f_L \operatorname{Var}(L)$, represents the noise that can mask the signal from the mean separation. We seek a sharp, state-independent upper bound. For any set of numbers on a compact interval $[a, b]$, the maximum possible variance is given by Popoviciu's inequality:
-
-$$
-\operatorname{Var}(S) \le \frac{1}{4}(\max(S) - \min(S))^2
-
-$$
-
-Since for any subset $S \subseteq \mathcal{V}$, its elements are contained in $[V_{\min}, V_{\max}]$, we have $\operatorname{Var}(H) \le \frac{1}{4}(V_{\max} - V_{\min})^2$ and $\operatorname{Var}(L) \le \frac{1}{4}(V_{\max} - V_{\min})^2$.
-Let $\operatorname{Var}_{\mathrm{max}} := \frac{1}{4}(V_{\max} - V_{\min})^2$. The within-group variance is therefore uniformly bounded above:
-
-$$
-\operatorname{Var}_W(\mathcal{V}) \le f_H \operatorname{Var}_{\mathrm{max}} + f_L \operatorname{Var}_{\mathrm{max}} = (f_H+f_L)\operatorname{Var}_{\mathrm{max}} = \operatorname{Var}_{\mathrm{max}}
-
-$$
-
-This upper bound is sharp; it is attained if both subsets consist of values located only at the endpoints of the interval.
-
-**Step 4: Assembling the Final Inequality.**
-We rearrange the Law of Total Variance from Step 1:
-
-$$
-\operatorname{Var}_B(\mathcal{V}) = \operatorname{Var}(\mathcal{V}) - \operatorname{Var}_W(\mathcal{V})
-
-$$
-
-We substitute our identity for $\operatorname{Var}_B(\mathcal{V})$ from Step 2. Then, we use our premise, $\operatorname{Var}(\mathcal{V}) \ge \kappa_{\mathrm{var}}$, and our upper bound for the within-group variance from Step 3:
-
-$$
-f_H f_L (\mu_H - \mu_L)^2 \ge \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}}
-
-$$
-
-Since the fractional sizes $f_H$ and $f_L$ are strictly positive, dividing by their product preserves the inequality:
-
-$$
-(\mu_H - \mu_L)^2 \ge \frac{1}{f_H f_L} \left( \kappa_{\mathrm{var}} - \operatorname{Var}_{\mathrm{max}} \right)
-
-$$
-
-This proves the main inequality of the lemma. The final conclusion follows directly. If $\kappa_{\mathrm{var}} > \operatorname{Var}_{\mathrm{max}}$, the right-hand side is strictly positive. Taking the square root gives the lower bound on $|\mu_H - \mu_L|$. The pre-factor $1/\sqrt{f_H f_L}$ is well-defined and uniformly bounded above because the premises guarantee $f_H, f_L \ge f_{\min} > 0$. The entire lower bound is therefore a strictly positive constant.
-
-**Q.E.D.**
+Since $\bar v=f_H\mu_H+f_L\mu_L$ and $f_H+f_L=1$, the last two terms
+sum to $f_Hf_L(\mu_L-\mu_H)^2$. Subtract the established within-group upper
+bound from the total lower bound and take the square root. The additional
+orientation gives the signed inequality. Applying the interval-variance
+calculation in {prf:ref}`prop-fixed-rescale-variance-bound` separately in
+$H$ and $L$ gives their weighted width bound. $\square$
 :::
-:::{admonition} Remark on the Role of {prf:ref}`lem-variance-to-gap`
-:class: note
 
-This lemma serves as the rigorous bridge between the macroscopic statistical properties of the measurement signal and the structural separation of its constituent subpopulations. Its primary function within the Keystone Principle's proof is to translate the guarantee of a non-vanishing total variance (the conclusion of {prf:ref}`thm-geometry-guarantees-variance`) into a guaranteed, non-vanishing separation between the means of the high-error and low-error sets.
+:::{prf:corollary} Averaged separation and its event probability
+:label: cor-averaged-group-separation
 
-The **Signal-to-Noise Condition**, $\kappa_{\mathrm{var}} > \operatorname{Var}_{\mathrm{max}}$, emerges from this analysis as a fundamental criterion for the system's "learnability." It formalizes the requirement that the signal generated by the system's geometric error must be strong enough to overcome the maximal possible statistical noise that could be generated by adversarial value configurations within the subpopulations.
+Keep the partition and fractions above fixed before drawing a random vector
+$v\in[a,b]^k$, and let $\mathcal G$ denote the entering information on which
+its measurement law is conditioned. Suppose, almost surely in $\mathcal G$,
 
-*   $\kappa_{\mathrm{var}}$ represents the **Signal**: the total statistical heterogeneity that is guaranteed to be present in a high-error swarm.
-*   $\operatorname{Var}_{\mathrm{max}}$ represents the **Worst-Case Internal Noise**: the maximum possible variance that can exist *within* subpopulations, which can act to mask a true difference in their means.
+$$
+\mathbb E[s^2\mid\mathcal G]\ge\kappa,\qquad
+\mathbb E[s_{\rm within}^2\mid\mathcal G]\le B_{\rm within}<\kappa.
+$$
 
-The lemma proves that if the signal is strictly greater than the worst-case internal noise, a separation between the subpopulation means is a mathematical necessity.
+Put $Q=(\kappa-B_{\rm within})/(f_Hf_L)$ and $R=b-a$. Then
+$0<Q\le R^2$ and
 
-Consequently, for the proof of the **Stability Condition for Intelligent Adaptation** to proceed, it is necessary to demonstrate that the parameters of the Fragile Gas can be chosen such that the guaranteed measurement variance, $\kappa_{\mathrm{meas}}(\epsilon)$, satisfies this Signal-to-Noise condition. This establishes a verifiable, quantitative requirement for a well-posed system.
+$$
+\mathbb E[(\mu_L-\mu_H)^2\mid\mathcal G]\ge Q.
+$$
+
+For every $t$ with $0<t<\sqrt Q$,
+
+$$
+\Pr\{|\mu_L-\mu_H|>t\mid\mathcal G\}
+\ge\frac{Q-t^2}{R^2-t^2}>0.
+$$
+
+If $\mu_L-\mu_H\ge0$ conditionally almost surely, this is a lower bound
+on the probability of a positive signed gap. Without that orientation it
+controls the magnitude event. Selection probabilities must be evaluated
+on the actual event before averaging; the conclusion gives no positive
+gap in every measurement realization.
+:::
+
+:::{prf:proof}
+Take conditional expectation of the exact variance identity. Each realized
+group mean lies in $[a,b]$, so $|\mu_L-\mu_H|\le R$, which also proves
+$Q\le R^2$. With $\Delta=\mu_L-\mu_H$,
+
+$$
+\mathbb E[\Delta^2\mid\mathcal G]
+\le t^2+(R^2-t^2)\Pr\{|\Delta|>t\mid\mathcal G\}.
+$$
+
+Combine this upper bound with $\mathbb E[\Delta^2\mid\mathcal G]\ge Q$
+and divide by $R^2-t^2>0$. Conditional nonnegative orientation identifies
+the magnitude event with $\{\Delta>t\}$. $\square$
+:::
+
+:::{prf:remark} Feasible separation and the symmetric counterexample
+:label: rem-group-separation-feasibility
+
+For equal-sized groups $H=\{2/5,3/5\}$ and $L=\{7/5,8/5\}$,
+$s^2=13/50$, $s_{\rm within}^2=1/100$, and
+$\mu_L-\mu_H=1$. Thus $\kappa=13/50>B_{\rm within}=1/100$ is feasible,
+and the lemma gives the exact gap $1$.
+
+For $H=L=\{1/2,3/2\}$, understood as two disjoint groups of labels with
+the same value multiset, $s^2=s_{\rm within}^2=1/4$ and the group gap is
+zero. Positive total variance alone supplies no group separation.
+The global interval bound $(b-a)^2/4$ remains a valid upper bound on total
+variance; its role in group separation must be replaced by a separately
+proved within-group bound, together with the required orientation.
 :::
 
 #### 7.4.2. Log-fitness and arithmetic fitness
@@ -3637,7 +3186,7 @@ two averages and quantify the extra information needed to pass between them.
 :::{prf:theorem} Exact log-fitness comparison and a sufficient parameter bound
 :label: thm-derivation-of-stability-condition
 
-For the product fitness $V=(d')^\beta(r')^\alpha$, define, under the specified
+For positive factors $d',r'$ and fixed exponents $\alpha,\beta\ge0$, use the product fitness $V=(d')^\beta(r')^\alpha$ and define, under the specified
 population and measurement law,
 
 $$
@@ -3717,7 +3266,8 @@ mean gap by itself need not imply a positive logarithmic mean gap.
 :::{prf:lemma} Upper logarithmic gap and a coupling refinement
 :label: lem-log-gap-upper-bound
 
-For $X,Y\in[a,b]$ and $|\mathbb EX-\mathbb EY|\leq\kappa\leq b-a$,
+For $X,Y\in[a,b]$ with $0<a<b$, use $\ell,c$ from
+{prf:ref}`lem-log-gap-lower-bound`. If $|\mathbb EX-\mathbb EY|\leq\kappa\leq b-a$,
 
 $$
 |\mathbb E\log X-\mathbb E\log Y|
@@ -3726,8 +3276,8 @@ $$
 $$
 
 The maximum occurs at the projection of $1/c-\kappa$ onto
-$[a,b-\kappa]$. For any coupling with $\mathbb E|X-Y|\leq K$, the sharper
-available estimate is
+$[a,b-\kappa]$. For any coupling with $\mathbb E|X-Y|\leq K$, the coupling
+estimate is
 
 $$
 |\mathbb E\log X-\mathbb E\log Y|\leq\log(1+K/a).
@@ -3762,7 +3312,7 @@ The global support bound $\log(b/a)$ is attained by opposite endpoint values.
 :::{prf:proposition} Corrective diversity signal
 :label: prop-corrective-signal-bound
 
-Suppose $d'\in[\eta,M]$ and its population means satisfy
+Suppose $d'\in[\eta,M]$ with $0<\eta<M$ and its population means satisfy
 $\mu_{d',L}-\mu_{d',H}\geq\kappa_{d'}\geq0$. Then
 
 $$
@@ -3784,7 +3334,7 @@ Its ordered-coupling refinement gives the second bound.
 :::{prf:proposition} Global reward contribution bound
 :label: prop-adversarial-signal-bound-naive
 
-If $r'\in[\eta,M]$, then
+If $r'\in[\eta,M]$ with $0<\eta\le M$, then
 $|\mathbb E_H\log r'-\mathbb E_L\log r'|\leq\log(M/\eta)$.
 :::
 
@@ -3811,8 +3361,8 @@ from $|r_i-r_j|\leq L_R\|z_i-z_j\|$.
 :label: prop-log-reward-gap-axiom-bound
 
 Under {prf:ref}`prop-raw-reward-mean-gap-bound`, suppose the shared patched
-standard deviation is at least $\sigma_{\min}>0$ and the rescaling is
-$L_g$-Lipschitz. Set $K_r=L_gB_r/\sigma_{\min}$. Then
+standard deviation is at least $\sigma_{\min}>0$, the rescaling is
+$L_g$-Lipschitz, and $r'\ge\eta>0$. Set $K_r=L_gB_r/\sigma_{\min}$. Then
 
 $$
 |\mathbb E_H\log r'-\mathbb E_L\log r'|
@@ -3833,7 +3383,7 @@ product law and apply the coupling bound in {prf:ref}`lem-log-gap-upper-bound`.
 :::{prf:theorem} A quantitative sufficient condition for a log-fitness gap
 :label: thm-stability-condition-final-corrected
 
-With $D_*$ chosen from {prf:ref}`prop-corrective-signal-bound` and
+For fixed $\alpha,\beta\ge0$, with $D_*$ chosen from {prf:ref}`prop-corrective-signal-bound` and
 $A_*\geq0$ chosen from either reward bound above, suppose
 $\delta_{\log}:=\beta D_*-\alpha A_*>0$. Then
 
@@ -3841,7 +3391,7 @@ $$
 \mathbb E_L\log V-\mathbb E_H\log V\geq\delta_{\log}.
 $$
 
-For fitness in $[v_*,v^*]$, an arithmetic mean gap follows if additionally
+For fitness in $[v_*,v^*]$ with $0<v_*\le v^*<\infty$, an arithmetic mean gap follows if additionally
 $\delta:=\delta_{\log}-\operatorname{Var}_H(V)/(2v_*^2)>0$:
 
 $$
@@ -3943,24 +3493,39 @@ from $I_{11}$.
 
 :::{div} feynman-prose
 The logarithmic estimates retain the full extremal-distribution argument.
-Their lower bounds can be negative, which is useful information when a proposed
-parameter regime has too much within-population fluctuation. When an arithmetic
-fitness gap has been established for the realized groups, the variance and
-overlap bounds above supply explicit population estimates. Section 8 combines
-these with the actual companion probabilities and the error carried by the
-selected labels.
+Their lower bounds can be negative when the stated fluctuation bounds leave
+the group ordering undetermined. A positive arithmetic fitness gap for the
+realized groups supplies the population and overlap estimates above. The
+realized-target proof in Section 8 then checks probability and error on the
+same labels. Its measurement-averaged proof instead estimates favorable
+comparisons and complete error coverage directly, retaining equal-fitness
+events and the finite-population correction.
 :::
 
 (sec-cloning-keystone)=
 ## 8. The N-Uniform Quantitative Keystone Lemma
 
 :::{div} feynman-prose
-The Keystone estimate combines two inputs: cloning probability on a target set, and positional error carried by that set. The preceding sections provide geometric, measurement, and fitness bounds that can verify those inputs. The theorem states them for the actual law and the same family of coupled states, so the constants can be followed into the drift calculation.
+The Keystone pressure counts accepted-copy opportunities, weighted by the
+recipient's structural error. A realized-target proof needs positive
+acceptance on each target label and enough error on those same labels. A
+measurement-averaged proof counts favorable events before averaging and keeps
+all tie events in the calculation.
+
+Both estimate pressure. To establish contraction, the drift proof also checks
+where the accepted donors are, together with jitter, barycenter motion, and
+the other stages of the update.
 :::
 
 ### 8.1 The Quantitative Keystone Lemma and Proof Strategy
 
-We begin by formally stating the main theorem. This lemma provides the quantitative link between the system's error and its corrective response, which will be the primary tool for the drift analysis in the subsequent sections. The lemma considers the summed cloning probability from both swarms, $(p_{1,i} + p_{2,i})$, to capture the total corrective pressure. The proof will demonstrate that even when only one swarm is in a high-error state, the cloning pressure from that single swarm is sufficient to ensure the inequality holds.
+:::{div} feynman-prose
+Suppose one swarm supplies a verified probability lower bound on its target
+labels, and those labels carry the required error. Its contribution alone
+lower-bounds the nonnegative sum over the two swarms. The next lemma records
+this multiplication with both hypotheses evaluated for the same configurations
+and selection law.
+:::
 
 :::{prf:lemma} The N-Uniform Quantitative Keystone Lemma
 :label: lem-quantitative-keystone
@@ -4414,14 +3979,14 @@ For other fixed exponents, include the derivative of the configured powered rewa
 :label: thm-keystone-averaged-error-capture
 
 
-Apply (3.AP5) in both swarms. Put its value equal to zero on any row whose cluster is not certified by the displayed geometry, without changing the cluster partition. For $i\in I_{11}$, let $\pi_i=\pi_{1,i}+\pi_{2,i}$ and $e_i=|\Delta\delta_{x,i}|^2$. Then
+Choose a permutation coupling of the two complete $N$-atom empirical swarms and write paired representatives for that coupling. The index $i$ identifies a pair in this representation; it assigns no intrinsic identity to an atom. Here $I_{11}$ denotes the pairs whose two atoms are alive. Apply (3.AP5) in both swarms. Put its value equal to zero on any row whose cluster is not certified by the displayed geometry, without changing the cluster partition. For $i\in I_{11}$, let $\pi_i=\pi_{1,i}+\pi_{2,i}$ and $e_i=|\Delta\delta_{x,i}|^2$. Then
 $$
 \boxed{\mathbb E\!\left[\frac1N\sum_{i\in I_{11}}
  (p_{1,i}+p_{2,i})e_i\,\middle|\,S_1,S_2\right]
 \ge\frac1N\sum_{i\in I_{11}}\pi_i e_i.}
 \tag{3.AP7}
 $$
-**Proof.** The geometric errors are fixed by the entering states, so this averaging introduces no covariance assumption. Let $\mathcal P$ be the common refinement of the existing geometric partitions and the common-alive label set, and let $\pi_B=\min_{i\in B}\pi_i$. The right side has the proved lower bound
+**Proof.** The geometric errors are fixed by the entering states and the chosen comparison coupling, so this averaging introduces no covariance assumption. Let $\mathcal P$ be the common refinement of the existing geometric partitions on the alive-alive pairs, and let $\pi_B=\min_{i\in B}\pi_i$. The right side has the proved lower bound
 $$
 \sum_{B\in\mathcal P}\pi_B\frac{|B|}{N}
 \left(\left|\overline{\Delta\delta_x}_B\right|^2
@@ -4449,7 +4014,7 @@ V_{\rm struct}\le(1+\eta)\frac1N\sum_i e_i
 +\left(\lambda_v+\frac{b^2}{4\eta}\right)
  \frac1N\sum_i|\Delta\delta_{v,i}|^2.
 $$
-This follows by using the comparison-label pairing as a transport plan and applying Young's inequality to its cross term. Substitution into (3.AP9) produces the Keystone inequality with coefficient $p_* /(1+\eta)$ and the explicitly retained uncovered-error and velocity remainders. If every entering velocity has norm at most $V_{\max}$, its displayed mean squared centered discrepancy is at most $4V_{\max}^2$: centering is an orthogonal projection in the empirical $L^2$ norm, and $|v_{1,i}-v_{2,i}|\le2V_{\max}$. The positional pressure estimate cannot absorb a velocity-only discrepancy without that remainder. For unequal alive pools the original alive-normalization and common-label residual must likewise be retained; (3.AP7)--(3.AP9) themselves apply without an alive-fraction floor.
+This follows by using the chosen admissible comparison coupling as a transport plan and applying Young's inequality to its cross term. Substitution into (3.AP9) produces the Keystone inequality with coefficient $p_* /(1+\eta)$ and the explicitly retained uncovered-error and velocity remainders. If every entering velocity has norm at most $V_{\max}$, its displayed mean squared centered discrepancy is at most $4V_{\max}^2$: centering is an orthogonal projection in the empirical $L^2$ norm, and $|v_{1,i}-v_{2,i}|\le2V_{\max}$. The positional pressure estimate cannot absorb a velocity-only discrepancy without that remainder. For unequal alive pools the alive normalization and residual from pairs outside $I_{11}$ must likewise be retained; (3.AP7)--(3.AP9) themselves apply without an alive-fraction floor. Reindexing either representative reindexes the coupling and its paired quantities; these estimates concern empirical measures and the specified coupling.
 
 
 A zero certificate is distinct from zero actual activity. A coarse cluster, an insufficient reward contrast, or a small eligible mass can make (3.AP5) uninformative while the actual algorithm continues to clone. The exact uncovered error in (3.AP9) retains these cases; it is not replaced by an assumed favorable fraction. $\square$
@@ -4586,7 +4151,7 @@ Thus its actual acceptance is at least $a_0$. Sum over the restricted cloning do
 :::{prf:theorem} Complete geometric-cluster error coverage at every population size
 :label: thm-keystone-complete-error-coverage
 
-Use the actual kernel and constants of {prf:ref}`lem-keystone-complete-coverage-constants`, and suppose the entering alive feature variance is $\mathsf V_z\ge v_0$. Fix any comparison labels $I\subseteq\mathcal A$, nonnegative entering error weights $e_i\le E_{\max}$, and normalization $N\ge k$. Put
+Use the actual kernel and constants of {prf:ref}`lem-keystone-complete-coverage-constants`, and suppose the entering alive feature variance is $\mathsf V_z\ge v_0$. Fix any subset $I\subseteq\mathcal A$ of atoms in an admissible comparison coupling, nonnegative entering error weights $e_i\le E_{\max}$, and normalization $N\ge k$. Put
 $$
 W=\frac1N\sum_{i\in I}e_i.
 $$
@@ -4838,7 +4403,15 @@ signed terms and chosen full-kernel coupling in
 
 ### 8.6. Assembly of the Keystone estimate
 
-The target-set assembly below uses the two bounds stated in {prf:ref}`lem-quantitative-keystone`: probability on the same target labels and error captured by those labels. The direct averaged route in {prf:ref}`thm-keystone-discharged-averaged-pressure` proves its own probability and complete-coverage estimates for the actual kernel, without assuming these target-set premises. Its finite-population correction and structural velocity/status terms are explicit. The application in {prf:ref}`cor-keystone-canonical-balanced-structural` has zero offset.
+:::{div} feynman-prose
+The target-set assembly uses probability and error bounds on the same labels.
+The direct averaged route in
+{prf:ref}`thm-keystone-discharged-averaged-pressure` proves its event probability
+and complete-coverage estimates for the actual kernel. Its finite-population
+correction and structural velocity/status terms remain in the result. The
+specified balanced-cloud application in
+{prf:ref}`cor-keystone-canonical-balanced-structural` has zero offset.
+:::
 
 :::{prf:proof}
 **Proof of the N-Uniform Quantitative Keystone Lemma ({prf:ref}`lem-quantitative-keystone`).**
@@ -4861,7 +4434,7 @@ E_w \ge \frac{1}{N}\sum_{i \in I_{\text{target}}} p_{1,i}\|\Delta\delta_{x,i}\|^
 
 $$
 
-We focus on the cloning probability `p_1,i` because swarm 1 is the high-variance swarm for which our guarantees on the unfit and high-error sets hold.
+Swarm 1 is the swarm supplying the target-wise comparison and error-capture estimates in the theorem hypotheses.
 
 **3. Apply the target-wise probability bound.**
 By {prf:ref}`cor-cloning-pressure-target-set`, $p_{1,i}\geq p_u$ for every
@@ -4994,9 +4567,10 @@ The residual is part of the result; the bound supplies positive corrective
 activity when the structural error exceeds $g_{\max}/\chi$.
 
 The next sections compare this selection estimate with the actual position and velocity
-updates. The boundary estimate uses its own favorable-companion and
-integrability conditions. Keeping these inputs distinct makes the final
-composition proof a check on the same transition kernel throughout.
+updates. Accepted copying can move a recipient inward or outward, so the
+signed donor terms are part of that calculation. The boundary estimate uses
+its own favorable-companion and integrability conditions. The final
+composition proof checks these inputs for the same transition kernel.
 :::
 
 (sec-cloning-operator)=
@@ -6917,7 +6491,13 @@ W_b(S_1, S_2) := \frac{1}{N} \sum_{i \in \mathcal{A}(S_1)} \varphi_{\text{barrie
 
 $$
 
-where $\varphi_{\text{barrier}}: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq 0}$ is the smooth barrier function satisfying:
+where $\varphi_{\text{barrier}}: \mathcal{X}_{\text{valid}} \to \mathbb{R}_{\geq 0}$ is a smooth barrier function satisfying the following conditions. Using the distance and smooth cutoff from {prf:ref}`prop-barrier-existence`, a zero-interior-penalty choice is
+
+$$
+\varphi_{\text{barrier}}(x)=\psi\left(2\rho(x)/\delta\right)\left(1/\rho(x)-1/\delta\right),\qquad \delta_{\text{safe}}=\delta.
+$$
+
+The cutoff vanishes for $\rho\geq\delta$, and its support has $1/\rho-1/\delta\geq0$. Near the boundary it equals one, giving reciprocal growth. This construction specifies the proof observable; any reward penalty used by a transition must be identified separately.
 
 1. **Interior safety:** $\varphi_{\text{barrier}}(x) = 0$ for $x$ in the safe interior region (distance $> \delta_{\text{safe}}$ from boundary)
 
@@ -6947,7 +6527,7 @@ This graduated penalty ensures that danger is detected before catastrophic bound
 Recall from the reward function definition (Section 5.6) that the raw reward for walker $i$ includes the boundary barrier:
 
 $$
-r_i = g_A(x_i) = R_{\text{pos}}(x_i) - \varphi_{\text{barrier}}(x_i) - c_{v\_reg} \|v_i\|^2
+r_i = R_{\text{pos}}(x_i) - \varphi_{\text{barrier}}(x_i) - c_{v\_reg} \|v_i\|^2
 
 $$
 
@@ -7043,6 +6623,10 @@ probability at least $p_*>0$. Suppose also that the expected post-cloning
 barrier of any cloned alive walker is at most $J<\infty$, and that of any
 revived walker is at most $R<\infty$. The bounds must refer to the actual
 selection and boundary conventions of the transition under study.
+The drift calculation applies to any declared nonnegative observable
+$\varphi$ with these conditional integral and exposed-selection bounds.
+When using a diverging boundary barrier, its additional regularity and
+growth properties are those stated in {prf:ref}`def-boundary-potential-cloning`.
 Then, with $k_1,k_2$ alive counts and $D_s=N-k_s$,
 
 $$
@@ -7885,6 +7469,23 @@ chain it bounds the unnormalized surviving moment. A conditioned moment is
 obtained by dividing by $Q^n1$, and therefore also requires survival control.
 :::
 
+:::{prf:corollary} Population-uniform completed-update error envelope
+:label: cor-population-uniform-completed-error
+
+Assume the component estimates of {prf:ref}`thm-synergistic-foster-lyapunov-preview` hold for a family of populations with common positive rates and weights, and a common finite offset $C_*$. Set $\rho=1-\kappa_*\in[0,1)$ and $F_*=C_*/\kappa_*$. The empirical phase-space transport error satisfies
+$$
+Q^n V_W\le Q^n V_{\mathrm{total}}
+\le \rho^n V_{\mathrm{total}}+F_*(1-\rho^n).
+$$
+Every coefficient and the floor $F_*$ is independent of $N$. If $V_{\mathrm{total}}\ge F_*$, the displayed envelope decreases with each complete update; if $C_*=0$, it decreases geometrically to zero. It applies to empirical probabilities and the declared transition coupling, with mandatory revival and the kinetic stage in their prescribed order. For the killed chain it is a surviving-moment bound; conditioning additionally retains the survival probability.
+
+When Keystone pressure is used to supply a sharper drift coefficient, its outgoing selection contribution must be combined with the actual incoming donor flux, component energy, velocity remainder, and kinetic drift. The pressure estimate alone is not substituted for a signed error drift.
+:::
+
+:::{prf:proof}
+The defining nonnegative decomposition gives $V_W\le V_{\mathrm{total}}$. Positivity of the transition operator and the iterated estimate in the preceding theorem give the stated inequality. The envelope equals $F_*+\rho^n(V_{\mathrm{total}}-F_*)$, proving its monotonicity under the stated initial condition. Its constants inherit population uniformity from the component rates, offsets, and weights. The exact signed selection and collision contributions are retained in (3.AC1) and (3.AC7)--(3.AC9); revival copies eligible live coordinates before these completed-update estimates are applied.
+:::
+
 :::{prf:corollary} Positional and velocity inputs in the weighted composition
 :label: cor-cloning-weighted-assembly-input
 
@@ -8051,15 +7652,73 @@ as distinct mathematical results. The additional hypotheses for QSD convergence
 are treated in {doc}`06_convergence`.
 :::
 
+:::{prf:remark} Completed convergence theorem for the canonical killed gas
+:label: rem-cloning-completed-finite-n-convergence
+
+For the actual canonical terminal-box kernel, extinction occurs at zero
+alive rows, and a singleton swarm uses its declared self-companion convention.
+Under the primitive force, noise, and two-update density conditions of
+{prf:ref}`thm-w2-finite-n-conditioned-convergence`, its survival-conditioned
+full marked law converges geometrically to a unique finite-population QSD.
+The same theorem proves a Wasserstein rate for a walker sampled uniformly
+from the surviving alive population. The unchanged reference instance is
+covered by {prf:ref}`cor-w2-reference-fitness-degeneracy`.
+
+These completed estimates include equal realized fitness and zero live
+cloning acceptance. They use kinetic smoothing and the actual survival
+normalization, rather than a positive fitness-gap premise. Their constants
+depend on the fixed population size. The population-independent pressure
+estimate is a distinct result. The conservative nonviscous theorem
+{prf:ref}`thm-slcw-finite-uniform-law` proves an exact population-independent
+alive-law rate through finite-component coupling and two-update kinetic
+mixing, in its explicit bounded-reward weak-selection regime. Its primitive
+positive-exponent interval is {prf:ref}`cor-slcw-finite-positive-exponents`.
+For the unbounded raw reward, {prf:ref}`thm-slcw-alive-uniform-law`
+gives the population-law rate with its vanishing finite-particle error.
+Both proofs allow complete fitness ties and retain their separate force,
+noise and conservative-state hypotheses. The signed drift estimates give
+another route when their full-update balances close.
+The coarse cap-charged kinetic test is unavailable at the canonical step
+and curvature by {prf:ref}`cor-slc-coarse-cap-kinetic-obstruction`.
+
+The alternative stopping convention in {prf:ref}`def-cemetery-state`,
+which kills populations below two alive rows, defines a different killed
+kernel. Its block theorem is applied with its own convention.
+:::
+
 #### 12.5.2. Following the estimates into the next chapters
 
 :::{div} feynman-prose
-The component inequalities provide quantitative information about the update:
-how much selected positional error is removed, how collisions affect velocity,
-and how replacement and revival affect the boundary observable. Uniform
-constants make these bounds useful for a family of particle systems. A
-mean-field limit additionally needs control of the interaction law and the
-sampling error.
+The Keystone inequality measures cloning activity on paired atoms carrying
+positional error. An accepted copy may bring that recipient closer to the
+center or move it farther away; its donor's location determines the signed
+contribution. The exact drift estimates keep that contribution, the cloning
+jitter, and the barycenter motion. Collisions and revival have their own
+velocity and boundary terms.
+
+For the fixed canonical terminal-box kernel,
+{prf:ref}`thm-w2-finite-n-conditioned-convergence` completes a convergence proof
+using its force, noise, and two-update density hypotheses. Conditioned on at
+least one alive row, the full marked swarm law approaches its unique QSD
+geometrically, and a uniformly sampled alive walker's law converges in
+Wasserstein distance. The smoothing comes from the kinetic update, so
+equal-fitness proposals with zero live cloning acceptance remain in the proof.
+The reference instance is covered by
+{prf:ref}`cor-w2-reference-fitness-degeneracy`. Its constants depend on $N$.
+
+Population-independent relaxation is also proved through two-update mixing
+in {prf:ref}`thm-slcw-finite-uniform-law`, with the positive selection interval
+of {prf:ref}`cor-slcw-finite-positive-exponents`. Its bounded-reward,
+force-center, current-frame, nonviscous, death-disabled regime gives exact
+finite-swarm alive-law and empirical-measure-law rates without an error floor.
+For unbounded raw reward, {prf:ref}`thm-slcw-alive-uniform-law` retains a
+vanishing sampling floor when comparing with the stationary population law.
+These theorems include fitness ties and do not require a signed quadratic
+contraction at each update. The original dense-viscous preset retains its
+separate population-independent rate gap; the coarse cap-charged kinetic
+estimate is unavailable there by
+{prf:ref}`cor-slc-coarse-cap-kinetic-obstruction`. A mean-field limit additionally
+needs control of the interaction law and the sampling error.
 
 {doc}`05_kinetic_contraction` develops the kinetic estimates, and
 {doc}`06_convergence` proves the composition and finite-particle QSD results

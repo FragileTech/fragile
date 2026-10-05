@@ -1,5 +1,11 @@
 # Changelog
 
+- Extend native Rust validation through Chapters 10–12 with source-specific
+  entropy/Fisher, mass–shape/transport and exchangeability checks. Tighten
+  separable nonconvex LSI constants through coordinate tensorization and retain
+  independent native trajectory ensembles, whole-trajectory uncertainty, full
+  permutation replays and lossless archives for later analyses.
+
 - Add a shared-prefix threshold to Graph in the LLM, Arcade, and Optimization labs. Frozen ancestry is archived outside the active population, shown in green, and retained for trajectory reconstruction.
 
 - Fix CI checkpoint-version expectations for geometry schema 5 and update mobile browser tests to open Settings and interaction modes through Menu and Tools.

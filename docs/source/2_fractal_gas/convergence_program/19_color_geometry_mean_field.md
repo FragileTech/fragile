@@ -969,3 +969,33 @@ dynamics and sampling are specified. The finite-horizon particle limit
 does not by itself control shrinking-bandwidth tests, Delaunay changes,
 curvature, or first variations of the geometry action.
 :::
+
+:::{prf:remark} New native estimates and the remaining stationary and geometric targets
+:label: rem-cg-mf-native-partial-discharge
+
+The unchanged reference count kernel now has the population-independent
+actual B2 force and derivative budgets of
+{prf:ref}`thm-native-stationary-reference-b2-budget`. The complete signed
+two-kick ledger is {prf:ref}`prop-native-stationary-two-kick-ledger`; its
+unsigned stability test does not certify contraction at the reference
+parameters. The proved complete-step modified LSI
+{prf:ref}`thm-native-stationary-discrete-mlsi` includes the actual status
+transitions of the Doob law, with a finite-population coefficient. The
+population-uniform stationary conjecture retains its signed coercivity,
+phase and uniform functional-inequality obligations.
+
+For both dense viscous normalizations, native conditional spatial sampling,
+finite-time coverage and survival are proved in
+{prf:ref}`thm-native-jg-spatial-sampling` and
+{prf:ref}`cor-native-jg-coverage-schedule`. The existing same-sample full-kernel
+density-corrected instrument is consistent without a full-law LSI by
+{prf:ref}`thm-native-jg-density-correction`. Protected native cells, the
+fixed absolute-ridge metric and local cell quadrature with a retessellation
+bound are established in {prf:ref}`thm-native-jg-absolute-metric` and
+{prf:ref}`thm-native-jg-cell-quadrature`. These discharge their stated
+finite-time spatial portions of the geometric conjecture. The actual
+sparse graph still requires its differential row moments; other metric
+branches, numerical payload comparison, gauge-weighted integration,
+fluctuation-scale errors and native density-action first variations retain
+the explicit obligations in {prf:ref}`rem-native-jg-residual`.
+:::

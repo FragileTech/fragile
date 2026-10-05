@@ -1,0 +1,7 @@
+{
+  "samples": 256,
+  "steps": 128,
+  "compact": false,
+  "seed": 202610041,
+  "archive_chunk_steps": 32
+}
