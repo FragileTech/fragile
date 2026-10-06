@@ -16,7 +16,7 @@ from scipy.optimize import minimize_scalar
 from scipy.special import ndtr
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/06_convergence.md"
 SCOPE = (
     "Numerical algebra on explicitly supplied analytic models. This checks the whole displayed "

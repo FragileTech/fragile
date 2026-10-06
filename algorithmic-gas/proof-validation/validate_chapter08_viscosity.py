@@ -22,7 +22,7 @@ def main():
         raise ValueError(message)
     batches, comparisons, failed, updates = [], 0, 0, 0
     source = (
-        Path(__file__).parents[2]
+        Path(__file__).parents[1]
         / "docs/source/2_fractal_gas/convergence_program/08_mean_field.md"
     )
     profiles = {}

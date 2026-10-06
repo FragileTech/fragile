@@ -60,7 +60,7 @@ def certificate():
             "passed": all(e["passed"] for e in endpoints),
         })
     source = (
-        Path(__file__).resolve().parents[2]
+        Path(__file__).resolve().parents[1]
         / "docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md"
     )
     return {

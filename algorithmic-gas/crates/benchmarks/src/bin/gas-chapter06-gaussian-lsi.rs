@@ -56,7 +56,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut output = ArchiveStore::new(&args[1])?;
     output.save_json("gaussian-lsi-source",&json!({"runner":include_str!("gas-chapter06-gaussian-lsi.rs"),
-        "chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),
+        "chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),
         "binary_sha256":sha256_file(&std::env::current_exe()?)?,"input_index_sha256":sha256_file(&input.root().join("archive-index.json"))?,
         "checkpoint":checkpoint,"native_steps_added":0,
         "scope":"Gaussian LSI rho=1/sigma² conditional on complete pre-final-noise preparation, tested on a bounded N-normalized candidate observable; no stationary/QSD or alive-status LSI claim."}))?;

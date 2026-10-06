@@ -36,7 +36,7 @@ fn flag(args: &mut Vec<String>, name: &str) -> bool {
 fn root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .unwrap()
         .to_path_buf()
 }
@@ -198,7 +198,7 @@ fn main() -> Result<(), Error> {
     let mut inventories = vec![];
     for &number in chapters {
         let inventory = read_json(workspace.join(format!(
-            "algorithmic-gas/proof-validation/chapter{number:02}_inventory.json"
+            "proof-validation/chapter{number:02}_inventory.json"
         )))?;
         let relative = inventory["source"].as_str().ok_or("missing source")?;
         let path = workspace.join(relative);
@@ -212,12 +212,12 @@ fn main() -> Result<(), Error> {
     }
     let mut code = vec![];
     native_sources(
-        &workspace.join("algorithmic-gas/crates/algorithmic-gas/src"),
+        &workspace.join("crates/algorithmic-gas/src"),
         &workspace,
         &mut code,
     )?;
     native_sources(
-        &workspace.join("algorithmic-gas/crates/benchmarks/src"),
+        &workspace.join("crates/benchmarks/src"),
         &workspace,
         &mut code,
     )?;
@@ -229,7 +229,7 @@ fn main() -> Result<(), Error> {
         "crates/benchmarks/src/convergence_experiments_chapter06.rs",
         "crates/benchmarks/src/bin/gas-proof-experiments.rs",
     ] {
-        let path = workspace.join("algorithmic-gas").join(relative);
+        let path = workspace.join(relative);
         if path.exists() {
             code.push(json!({"path":relative,"sha256":sha256_file(&path)?,"text":fs::read_to_string(path)?}));
         }

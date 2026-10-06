@@ -1,5 +1,11 @@
 # Changelog
 
+- Move the complete Volume 2 book and research corpus, the Algorithmic Gas Rust
+  workspace, and the Rust-backed Euclidean Gas/QFT browser laboratory into the
+  extraction-ready `algorithmic-gas/` repository boundary. Keep the Python
+  FractalAI/QFT implementation and the C++ Arcade, Control, LLM, and Optimization
+  applications in this repository.
+
 - Extend native Rust validation through Chapters 10–12 with source-specific
   entropy/Fisher, mass–shape/transport and exchangeability checks. Tighten
   separable nonconvex LSI constants through coordinate tensorization and retain

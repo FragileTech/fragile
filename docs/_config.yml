@@ -105,15 +105,11 @@ sphinx:
     - sphinx_proof
     - fragile_proof_types
     - fragile_proofs
-    - fragile_redirects
-    - fragile_gas_demos
     - sphinx_tippy  # Hover preview tooltips for cross-references
     - sphinxcontrib.bibtex  # Bibliography and citation support
   local_extensions          :   # A list of local extensions to load by sphinx specified by "name: path" items
     fragile_proof_types: .
     fragile_proofs: .
-    fragile_redirects: .
-    fragile_gas_demos: .
   recursive_update          : false # A boolean indicating whether to overwrite the Sphinx config (true) or recursively update (false)
   config                    : # key-value pairs to directly over-ride the Sphinx configuration
     numfig                    : true
@@ -135,7 +131,7 @@ sphinx:
     tippy_enable_doitips      : true   # DOI link hover previews
     tippy_enable_mathjax      : true   # Math rendering in tooltips
     # sphinxcontrib-bibtex configuration
-    bibtex_bibfiles           : ['references.bib', 'source/2_fractal_gas/references.bib']
+    bibtex_bibfiles           : ['references.bib']
     bibtex_default_style      : 'alpha'
     bibtex_reference_style    : 'author_year'
     # Suppress duplicate citation warnings and MyST directive option warnings

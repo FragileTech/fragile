@@ -1,0 +1,22 @@
+{
+  "name": "algorithmic-gas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build-euclidean-gas.mjs",
+    "build:lectures": "node tools/build-lecture-assets.mjs",
+    "build:partvi-index": "node tools/build-partvi-index.mjs",
+    "test": "npm run test:wasm && npm run test:lectures && npm run test:qft",
+    "test:wasm": "node tests/euclidean-gas/wasm.test.mjs && node tests/euclidean-gas/geometry3d.test.mjs",
+    "test:lectures": "node tests/euclidean-gas/lecture-foundations.test.mjs && node tests/euclidean-gas/lecture-convergence.test.mjs && node tests/euclidean-gas/lecture-entropy.test.mjs && node tests/euclidean-gas/lecture-host.test.mjs && node tests/euclidean-gas/lecture-theory-regression.test.mjs && node tests/euclidean-gas/lecture-fractal.test.mjs && node tests/euclidean-gas/lecture-qft.test.mjs",
+    "test:qft": "node --test tests/euclidean-gas/qft-simulator.test.mjs",
+    "test:browser": "node tests/euclidean-gas/sandbox-browser.mjs && node tests/euclidean-gas/lecture-browser.mjs && node tests/euclidean-gas/qft-simulator-browser.mjs"
+  },
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "devDependencies": {
+    "playwright": "1.58.2",
+    "prettier": "3.6.2"
+  }
+}

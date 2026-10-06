@@ -29,7 +29,7 @@ fn chapter_two_estimates_bind_exact_source_and_keep_numerical_evidence() {
             .collect::<Vec<_>>();
         assert!(failed.is_empty(), "failed evidence: {failed:#?}");
         let source = include_str!(
-            "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+            "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
         );
         for e in &suite.evidence {
             assert!(source.contains(&e.source_formula));
@@ -75,7 +75,7 @@ fn replica_configuration_rejects_unusable_uncertainty_estimates() {
 #[test]
 fn chapter_two_display_delimiters_never_capture_prose() {
     let source = include_str!(
-        "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+        "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
     );
     let lines = source.lines().collect::<Vec<_>>();
     let delimiters = lines

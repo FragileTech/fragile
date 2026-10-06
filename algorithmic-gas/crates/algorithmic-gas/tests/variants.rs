@@ -235,7 +235,7 @@ fn book_only_variants_are_a_capability_error_not_a_configuration() {
 fn book_labels_are_defined_in_the_variants_chapter_when_it_exists() {
     let chapter = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../../docs/source/2_fractal_gas/1_the_algorithm/04_gas_variants.md"
+        "/../../docs/source/2_fractal_gas/1_the_algorithm/04_gas_variants.md"
     );
     // The crate is also built outside the book's repository.
     let Ok(text) = std::fs::read_to_string(chapter) else {

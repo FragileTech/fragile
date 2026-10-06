@@ -419,13 +419,13 @@ fn native_metric_companion_and_variance_diagnostics_obey_their_scopes() {
             assert_eq!(json, serde_json::to_value(restored).unwrap());
             let chapters = [
                 include_str!(
-                    "../../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
+                    "../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
                 ),
                 include_str!(
-                    "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+                    "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
                 ),
                 include_str!(
-                    "../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md"
+                    "../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md"
                 ),
             ];
             for label in report.checks.iter().flat_map(|c| c.source_labels.iter()) {

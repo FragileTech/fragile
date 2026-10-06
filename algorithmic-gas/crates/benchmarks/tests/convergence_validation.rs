@@ -8,12 +8,12 @@ use std::collections::BTreeSet;
 fn inventory_covers_each_source_label_and_retains_hypotheses() {
     let docs = [
         include_str!(
-            "../../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
+            "../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
         ),
         include_str!(
-            "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+            "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
         ),
-        include_str!("../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md"),
+        include_str!("../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md"),
     ];
     for (chapter, source) in inventory().unwrap().iter().zip(docs) {
         let inventoried: BTreeSet<_> = chapter["formal_items"]

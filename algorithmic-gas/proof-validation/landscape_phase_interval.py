@@ -193,7 +193,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     report = certificate(json.loads(args.fixtures.read_text()))
     source = (
-        Path(__file__).resolve().parents[2]
+        Path(__file__).resolve().parents[1]
         / "docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md"
     )
     report["source_label"] = "cor-slc-exact-jitter-regional-refinement"

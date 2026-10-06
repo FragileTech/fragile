@@ -17,19 +17,12 @@
 
 ## Theory-Driven Development Focus
 - New deep learning algorithms should follow `docs/source/1_agent` and integrate with `src/fragile/core/` (layers, losses, optimizers), keeping notation and units aligned with the book.
-- Production-grade Fractal Gas work extends `src/fragile/fractalai/` (especially `core/` modules like `euclidean_gas.py`, `cloning.py`, `kinetic_operator.py`, `fractal_set.py`, `history.py`) and should stay faithful to `docs/source/2_fractal_gas`.
+- Production-grade Python Fractal Gas work extends `src/fragile/fractalai/` (especially `core/` modules like `euclidean_gas.py`, `cloning.py`, `kinetic_operator.py`, `fractal_set.py`, `history.py`). The Rust implementation and Volume 2 specification are maintained independently in `FragileTech/algorithmic-gas`.
 
 ## Current Implementation Principles
 - Favor vectorized Torch ops with standard shapes: swarm state `[N, d]`, history arrays `[n_recorded, N, ...]`.
 - Keep algorithm components modular (companion selection, fitness, cloning, kinetics) and configured via `param`/`PanelModel`.
-- Preserve trace structures: `RunHistory` (Pydantic) for serialized runs and `FractalSet` for CST/IG/IA graph construction with scalar node attributes per Volume 2.
-
-## Volume 2 Proof Standards
-- Ground Fractal Gas claims in explicit analytic hypotheses, local lemmas, and established mathematical literature. Verify the hypotheses of every cited theorem.
-- Keep the algorithm fixed. Distinguish finite-particle killed chains, their quasi-stationary laws, conservative invariant measures, mean-field limits, and continuum models.
-- State additional analytic conditions in theorem statements. Label unresolved results as conjectures and propagate those conditions to every dependent result.
-- Keep complete proofs in the main chapters. Formal definitions, hypotheses, and proofs must remain visible in Expert Mode.
-- For unbounded spaces, establish moment and tail bounds through the confining envelope or proved Safe Harbor estimates; do not replace confinement by compact support.
+- Preserve trace structures: `RunHistory` (Pydantic) for serialized runs and `FractalSet` for CST/IG/IA graph construction with scalar node attributes.
 
 ## Documentation Workflow & Style
 - The Jupyter Book lives in `docs/source/`; follow `docs/CLAUDE.md` for heading/label conventions, Feynman prose rules, admonition classes, notation, and cross-references.
@@ -48,7 +41,7 @@ Use `uv run` directly (no Hatch) to invoke tooling:
 - `uv run ruff check .` runs ruff check; `uv run ruff format --diff .` shows format diff only.
 - `uv run ruff check --fix-only --unsafe-fixes . && uv run ruff format .` applies ruff fixes + formatting.
 - `uv run mypy --install-types --non-interactive src/fragile tests` runs mypy.
-- `make docs` builds the `/docs/` portal, the two-volume Theory site, and the independent Lab guide (ensure project-file copies into `docs/source/project/` are up to date).
+- `make docs` builds the `/docs/` portal, the Volume 1 Theory site, and the independent Lab guide (ensure project-file copies into `docs/source/project/` are up to date).
 - `make docs-theory` and `make docs-lab` build the two documentation sites independently.
 - `uv run python3 -m http.server --directory docs/_build/html` serves the assembled documentation portal.
 - `uv run jupyter-book config sphinx docs/ --overwrite && uv run sphinx-build -b html docs/ docs/_build/theory-direct` builds the Theory source with Sphinx directly.

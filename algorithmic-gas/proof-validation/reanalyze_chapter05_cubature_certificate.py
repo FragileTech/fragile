@@ -77,7 +77,7 @@ def main():
         * (ca * (math.exp(split_norm * h_max) + math.exp(generator_norm * h_max)) * m2 + 2 * cq)
     )
     source = (
-        Path(__file__).resolve().parents[2]
+        Path(__file__).resolve().parents[1]
         / "docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
     )
     formula = r"""|\mathbb E f(Z_T^{h})-\mathbb E f(Z_T)|\le C_{\rm weak}h^2,

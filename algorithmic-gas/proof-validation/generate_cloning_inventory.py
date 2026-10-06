@@ -15,7 +15,7 @@ from estimate_catalog import (
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[2]
+    root = Path(__file__).resolve().parents[1]
     source = Path("docs/source/2_fractal_gas/convergence_program/03_cloning.md")
     raw = (root / source).read_text()
     lines = raw.splitlines()
@@ -303,7 +303,7 @@ def main() -> None:
     out["inventory_method"] = (
         "Retain each exact formal statement once; hypotheses_ref points to that statement. Record every display and inline expression once, including proof expressions; formal items list their expression IDs. Unlabeled proofs have source ranges and do not increase formal claim counts. A SHA256 ties all ranges to the retained source; rerun this generator after source edits. Curated hints cover an initial subset; the runtime report records actual diagnostic source references and scopes. Neither hint availability nor a source reference establishes a complete theorem."
     )
-    path = root / "algorithmic-gas/proof-validation/chapter03_inventory.json"
+    path = root / "proof-validation/chapter03_inventory.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(out, indent=2, ensure_ascii=False) + "\n")
     print(

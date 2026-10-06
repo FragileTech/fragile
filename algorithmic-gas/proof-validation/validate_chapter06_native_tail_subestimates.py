@@ -11,7 +11,7 @@ from scipy.special import ndtr
 from scipy.stats import chi2, ncx2
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/06_convergence.md"
 BARRIER = r"\mathbb E[W_b'\mid\mathscr G]" + "\n" + r"\le B_d:=d\Lambda(a)q^{d-1}"
 STATE = r"U_{d,s}(m)=\sum_{j=1}^d u_s(m_j)\prod_{\ell\ne j}p_s(m_\ell)"

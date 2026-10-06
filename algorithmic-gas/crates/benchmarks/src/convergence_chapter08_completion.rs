@@ -4,7 +4,7 @@ use algorithmic_gas::{GasError, Population, Result};
 use serde::{Deserialize, Serialize};
 
 pub const SOURCE: &str =
-    include_str!("../../../../docs/source/2_fractal_gas/convergence_program/08_mean_field.md");
+    include_str!("../../../docs/source/2_fractal_gas/convergence_program/08_mean_field.md");
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Comparison {

@@ -240,7 +240,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let source = root.join("crates/benchmarks/src/convergence_chapter10_completion.rs");
-    let book = root.join("../docs/source/2_fractal_gas/convergence_program/10_kl_hypocoercive.md");
+    let book = root.join("docs/source/2_fractal_gas/convergence_program/10_kl_hypocoercive.md");
     let report = json!({"schema_version":1,"chapter":10,"cases":cases,"comparisons":check_count,"comparisons_failed":failed,"Gaussian_trajectories":81,"Gaussian_RK4_steps":810000,"nonquadratic_density_cases":72,"native_updates":0,"scope":"Identified continuous kinetic Gaussian density evolution; nonquadratic Gibbs-relative mixed-gradient generator identities; specified full killed jump and discrete QSD kernel; exact scalar forcing/defect recurrences. No empirical atomic KL or native QSD/LSI claim.","provenance":{"module_sha256":sha256_file(&source)?,"chapter_sha256":sha256_file(&book)?,"executable_sha256":sha256_file(&std::env::current_exe()?)?}});
     fs::write(
         store.root().join("report.json"),

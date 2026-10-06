@@ -58,7 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     out.save_json("source", &json!({
         "runner": include_str!("gas-native-horizon-variance.rs"),
         "observables": include_str!("../convergence_chapter08_completion.rs"),
-        "chapter09": include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
+        "chapter09": include_str!("../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
         "binary_sha256": sha256_file(&std::env::current_exe()?)?,
         "new_native_updates": 0,
         "statistical_unit": "one independently seeded complete native trajectory, within fixed profile/dimension/N/zone/side. Left and right are never combined.",

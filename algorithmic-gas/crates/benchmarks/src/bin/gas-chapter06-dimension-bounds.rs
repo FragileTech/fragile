@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             &mut native_sources,
         )?;
         store.save_json("native-source-provenance",&json!({"core_sources":native_sources,"benchmark_library":include_str!("../lib.rs"),"cargo_lock":fs::read_to_string(workspace.join("Cargo.lock"))?,"runtime":"Native Rust f64 selected-cloning kernel; source snapshot retained with complete operator/noise records."}))?;
-        store.save_json("dimension-probe-source",&json!({"config":config,"module":include_str!("../convergence_barrier_dimension.rs"),"native_wrapper":include_str!("../convergence_experiments_chapter06.rs"),"chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),"scope":"Fresh selected-cloning native kernel; own independent seeds and complete raw records."}))?;
+        store.save_json("dimension-probe-source",&json!({"config":config,"module":include_str!("../convergence_barrier_dimension.rs"),"native_wrapper":include_str!("../convergence_experiments_chapter06.rs"),"chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),"scope":"Fresh selected-cloning native kernel; own independent seeds and complete raw records."}))?;
         let report = futures_lite::future::block_on(run_dimension_probes(&config, &mut store))?;
         store.save_json("dimension-probe-report", &report)?;
         store.finish("complete")?;

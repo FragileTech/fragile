@@ -82,8 +82,8 @@ Each prepared-state bound uses analytic interior/tail Gaussian density envelopes
     snapshots = {}
     for name, source in [
         ("proof-snapshot.md", proof_path),
-        ("barrier-api-snapshot.rs", Path("algorithmic-gas/crates/benchmarks/src/convergence_barrier_dimension.rs")),
-        ("structural-tails-snapshot.rs", Path("algorithmic-gas/crates/benchmarks/src/convergence_structural_tails.rs")),
+        ("barrier-api-snapshot.rs", Path("crates/benchmarks/src/convergence_barrier_dimension.rs")),
+        ("structural-tails-snapshot.rs", Path("crates/benchmarks/src/convergence_structural_tails.rs")),
     ]:
         target = directory / name
         target.write_bytes(source.read_bytes())

@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 
-DEFAULT_VOLUMES = ("1_agent", "2_fractal_gas")
+DEFAULT_VOLUMES = ("1_agent",)
 
 
 def parse_args() -> argparse.Namespace:

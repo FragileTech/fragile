@@ -28,7 +28,7 @@ pub fn append_remaining_framework(suite: &mut EstimateSuite) -> Result<()> {
 }
 
 const SOURCE: &str = include_str!(
-    "../../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
+    "../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
 );
 
 fn require(condition: bool, message: &str) -> Result<()> {

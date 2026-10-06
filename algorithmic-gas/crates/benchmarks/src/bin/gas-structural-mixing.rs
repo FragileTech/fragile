@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if args.len() > 2 {
         return Err("Usage: gas-structural-mixing [OUTPUT_JSON] [PRIMITIVES_JSON]".into());
     }
-    let source=std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md");
+    let source=std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md");
     let cases = if args.len() == 2 {
         let inputs: serde_json::Value = serde_json::from_slice(&std::fs::read(&args[1])?)?;
         let kinetic: KineticParameters = serde_json::from_value(inputs["kinetic"].clone())?;

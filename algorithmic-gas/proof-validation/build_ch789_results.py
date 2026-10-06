@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
-PACKAGE = ROOT / "algorithmic-gas"
+ROOT = Path(__file__).resolve().parents[1]
+PACKAGE = ROOT
 PROOF = PACKAGE / "proof-validation"
 
 
@@ -138,7 +138,7 @@ def main():
             for p in sorted(set(source_paths))
         ],
         "catalog": {
-            "path": "algorithmic-gas/proof-validation/chapters07-09-results.md",
+            "path": "proof-validation/chapters07-09-results.md",
             "sha256": sha(PROOF / "chapters07-09-results.md"),
         },
         "counting_scope": (

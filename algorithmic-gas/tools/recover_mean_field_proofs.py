@@ -14,7 +14,7 @@ import tarfile
 
 BASELINE = "b416d3a98112b360e6ae7f6655fb47497916cfcb"
 PREFIX = "docs/source/3_fractal_gas/convergence_program/"
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[1]
 OUTPUT = REPO / "algorithmic-gas" / "proof-recovery"
 
 

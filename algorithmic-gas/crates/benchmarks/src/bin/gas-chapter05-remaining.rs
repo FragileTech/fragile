@@ -32,7 +32,7 @@ fn estimate(values: &[f64]) -> (f64, f64) {
 }
 fn source_expression(tag: &str) -> String {
     let source = include_str!(
-        "../../../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
+        "../../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
     );
     source
         .split("$$")
@@ -311,7 +311,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     }
     let failed = comparisons.iter().filter(|r| r["passed"] != true).count();
     let source =
-        Path::new("../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md");
+        Path::new("docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md");
     let report = json!({"chapter":5,"title":"Remaining native conditional moment and continuum algebra checks","new_native_steps":0,"source_path":source,"current_source_sha256":sha256_file(source)?,"input_indexes":sources,"artifacts":artifacts,"observations":observations,"comparisons":comparisons,"skipped":skipped,"summary":{"retained_steps":observations.len(),"independent_archive_replicas":artifacts.len(),"comparisons":comparisons.len(),"comparisons_failed":failed},"closure":{"conditional_native_positional_moments":"Exact per-state conditional expectations validated with retained unrestricted Gaussian innovations.","continuum_transfer":"Canonical repeated radial cap remains gated; algebraic generator checks do not imply native rates.","regional_source_pressure":"Existing Keystone pressure is retained with its signed donor/barycenter/collision/force/cap residual; no unconditional residual upper bound for current positive-fitness unbounded Rastrigin has been established.","phase_transfer":"No empirical phase transitions are substituted for proved discrepancy transfer."}});
     fs::write(&args[0], serde_json::to_vec_pretty(&report)?)?;
     eprintln!(

@@ -8,7 +8,7 @@ import operator
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"
 
 

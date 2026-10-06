@@ -111,7 +111,7 @@ fn sasaki_actual_component_and_composite_checks_cover_unequal_alive_counts() {
             .any(|c| c.name == "structural_indirect_split_sasaki")
     );
     let chapter = include_str!(
-        "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+        "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
     );
     for check in report.checks.iter().filter(|c| c.id.starts_with("sasaki_")) {
         for label in &check.source_labels {

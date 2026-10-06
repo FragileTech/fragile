@@ -4,7 +4,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeSet;
 
 const SOURCE: &str =
-    include_str!("../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md");
+    include_str!("../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md");
 const SOURCE_PATH: &str = "docs/source/2_fractal_gas/convergence_program/06_convergence.md";
 type Matrix = [[f64; 2]; 2];
 

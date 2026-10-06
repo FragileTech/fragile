@@ -87,7 +87,7 @@ def certificate():
             "contracts": closes,
         })
     source = (
-        Path(__file__).resolve().parents[2]
+        Path(__file__).resolve().parents[1]
         / "docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md"
     )
     return {

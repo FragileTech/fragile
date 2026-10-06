@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     store.save_json("execution-source", &json!({
         "runner":include_str!("gas-chapter10-landscape-matched.rs"),
         "module":include_str!("../convergence_chapter10_completion.rs"),
-        "chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/10_kl_hypocoercive.md"),
+        "chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/10_kl_hypocoercive.md"),
         "inventory":include_str!("../../../../proof-validation/chapter10_inventory.json"),
         "binary_sha256":sha256_file(&std::env::current_exe()?)?,
         "scope":"Exact Rastrigin force U=sum[x²+10(1-cos(2pi x))] and native velocity diffusion D=1/2, temperature theta=D/gamma. Continuous conservative reference only; native cap/cloning/position diffusion/killing are not assigned this Gibbs law."}))?;

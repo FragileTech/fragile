@@ -391,7 +391,7 @@ fn stage(recorded: &RecordedStep<f64>, name: &str, field: &str) -> Result<Vec<f6
 
 fn source_equation(tag: &str) -> String {
     let source = include_str!(
-        "../../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
+        "../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
     );
     let end_tag = source
         .find(&format!("\\tag{{{tag}}}"))

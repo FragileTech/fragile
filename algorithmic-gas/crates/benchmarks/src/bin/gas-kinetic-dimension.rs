@@ -26,7 +26,7 @@ fn main() -> Result<(), Error> {
         let omega = args[1].parse::<f64>()?;
         let mut certificate = dimension::sector_curvature_profile(0.04, 1., omega)?;
         let source = Path::new(env!("CARGO_MANIFEST_DIR")).join(
-            "../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md",
+            "../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md",
         );
         certificate["source_path"] = json!(source);
         certificate["source_sha256"] = json!(sha256_file(&source)?);
@@ -62,12 +62,12 @@ fn main() -> Result<(), Error> {
     let mut store = ArchiveStore::new(&args[0])?;
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .unwrap();
     let mut implementation = vec![];
     for path in [
-        "algorithmic-gas/crates/algorithmic-gas/src",
-        "algorithmic-gas/crates/benchmarks/src",
+        "crates/algorithmic-gas/src",
+        "crates/benchmarks/src",
     ] {
         snapshot(&workspace.join(path), workspace, &mut implementation)?;
     }
@@ -81,7 +81,7 @@ fn main() -> Result<(), Error> {
             json!({"path":path,"sha256":sha256_file(&file)?,"text":fs::read_to_string(file)?}),
         );
     }
-    let provenance=store.save_json("dimension/provenance",&json!({"implementation":implementation,"source_snapshots":sources,"configuration":cfg,"command":std::env::args().collect::<Vec<_>>(),"executable_sha256":sha256_file(&std::env::current_exe()?)?,"Cargo_lock":fs::read_to_string(workspace.join("algorithmic-gas/Cargo.lock"))?}))?;
+    let provenance=store.save_json("dimension/provenance",&json!({"implementation":implementation,"source_snapshots":sources,"configuration":cfg,"command":std::env::args().collect::<Vec<_>>(),"executable_sha256":sha256_file(&std::env::current_exe()?)?,"Cargo_lock":fs::read_to_string(workspace.join("Cargo.lock"))?}))?;
     let mut report = match futures_lite::future::block_on(dimension::run(&cfg, &mut store)) {
         Ok(r) => r,
         Err(e) => {

@@ -164,8 +164,8 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
-    root = Path(__file__).resolve().parents[2]
-    inventory_path = root / "algorithmic-gas/proof-validation/chapter09_inventory.json"
+    root = Path(__file__).resolve().parents[1]
+    inventory_path = root / "proof-validation/chapter09_inventory.json"
     inventory = json.loads(inventory_path.read_text())
     source = root / inventory["source_path"]
     if sha(source) != inventory["source_sha256"]:

@@ -5,12 +5,12 @@ import json
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 LEDGER = (
     ROOT
-    / "algorithmic-gas/outputs/convergence/chapters04-06-experiments/completion-20261004/statement-ledger.json"
+    / "outputs/convergence/chapters04-06-experiments/completion-20261004/statement-ledger.json"
 )
-OUTPUT = ROOT / "algorithmic-gas/proof-validation/chapter04-statement-results.md"
+OUTPUT = ROOT / "proof-validation/chapter04-statement-results.md"
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/04_wasserstein_contraction.md"
 
 
@@ -79,11 +79,11 @@ def main() -> None:
         "",
         "The [corrected original-run presentation]("
         + str(
-            ROOT / "algorithmic-gas/outputs/convergence/chapter04-full-corrected-presentation.json"
+            ROOT / "outputs/convergence/chapter04-full-corrected-presentation.json"
         )
         + ")",
         "and [reference force audit]("
-        + str(ROOT / "algorithmic-gas/outputs/convergence/chapter04-full-reference-audit.json")
+        + str(ROOT / "outputs/convergence/chapter04-full-reference-audit.json")
         + ")",
         "retain the exact per-timestep predicates and continuous-trajectory applicability corrections.",
         "Their derived status does not overwrite the original experiment report or raw native archives.",

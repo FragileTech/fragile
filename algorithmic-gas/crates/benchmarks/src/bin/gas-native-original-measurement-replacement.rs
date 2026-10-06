@@ -244,13 +244,13 @@ async fn run(input: &str, output: &str) -> Result<(), Error> {
     let native = ArchiveStore::open(input)?;
     let mut store = ArchiveStore::new(output)?;
     let book = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md");
+        .join("../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md");
     store.save_json("execution-source",&json!({"runner":include_str!("gas-native-original-measurement-replacement.rs"),
         "coupling_primitives_parent_snapshot":include_str!("gas-native-measurement-replacement.rs"),
         "native_fitness":include_str!("../../../algorithmic-gas/src/fitness.rs"),
         "native_cloning":include_str!("../../../algorithmic-gas/src/cloning.rs"),
         "native_donor":include_str!("../../../algorithmic-gas/src/donor.rs"),
-        "source":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
+        "source":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
         "source_sha256":sha256_file(&book)?,"executable_sha256":sha256_file(&std::env::current_exe()?)?,
         "input_index_sha256":sha256_file(&Path::new(input).join("archive-index.json"))?,
         "scope":"Original archived parameters and original native clonedonors/native accept seed-step; independent new original-law measurement draw. Public-stage counterfactuals only, zero new complete engine updates."}))?;

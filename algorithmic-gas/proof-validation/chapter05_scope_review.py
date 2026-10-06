@@ -17,7 +17,7 @@ def main():
     original = args.input.read_bytes()
     report = json.loads(original)
     source_path = Path(
-        "../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
+        "docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
     )
     source_bytes = source_path.read_bytes()
     source = source_bytes.decode()

@@ -57,7 +57,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut output = ArchiveStore::new(&args[1])?;
     let source = include_str!(
-        "../../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"
+        "../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"
     );
     output.save_json("independent-execution-source",&json!({"runner":include_str!("gas-population-independent-review.rs"),"chapter":source,"native_kinetic":include_str!("../../../algorithmic-gas/src/kinetic.rs"),"binary_sha256":sha256_file(&std::env::current_exe()?)?,"input_index_sha256":sha256_file(&input.root().join("archive-index.json"))?,"new_native_updates":0}))?;
     let mut groups: BTreeMap<String, Group> = BTreeMap::new();

@@ -18,7 +18,7 @@ import numpy as np
 from scipy.special import ndtr
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"
 INVENTORY = Path(__file__).with_name("chapter09_inventory.json")
 SCOPE = (

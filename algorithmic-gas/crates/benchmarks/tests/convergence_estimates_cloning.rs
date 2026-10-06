@@ -24,7 +24,7 @@ fn native_laws_and_directed_certificates_satisfy_bound_checks() {
         .collect();
     assert!(failed.is_empty(), "failed evidence: {failed:#?}");
     let source =
-        include_str!("../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
+        include_str!("../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
     for item in &suite.evidence {
         assert!(
             source.contains(&item.source_formula),

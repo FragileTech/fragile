@@ -22,18 +22,28 @@ def cell(value):
     return str(value).replace("|", "\\|").replace("\n", " ")
 
 
+def resolve_input(root: Path, original: str) -> Path:
+    """Resolve current paths and retained reports written before extraction."""
+    path = Path(original)
+    if path.is_absolute():
+        return path
+    candidate = root / path
+    if candidate.exists() or not path.parts or path.parts[0] != "algorithmic-gas":
+        return candidate
+    return root.joinpath(*path.parts[1:])
+
+
 def plot_decay(report, destination, workspace_root=None):
     """Plot measured errors against the independently checked stored envelopes."""
     import matplotlib.pyplot as plt
 
-    root = workspace_root or Path(__file__).resolve().parents[2]
+    root = workspace_root or Path(__file__).resolve().parents[1]
     inputs = []
     for original in report["input_reports"]:
         path = Path(original)
         if path.name not in {"decay-shared.json", "decay-independent.json"}:
             continue
-        if not path.is_absolute():
-            path = root / "algorithmic-gas" / path
+        path = resolve_input(root, original)
         inputs.append(json.loads(path.read_text()))
     for randomness, profile, name in (
         ("shared", "linear_quadratic_noiseless", "quadratic-contraction.png"),
@@ -87,7 +97,7 @@ def plot_decay(report, destination, workspace_root=None):
 
 def summarize(report, destination, workspace_root=None):
     """Preserve failures, unavailable inputs and exact expression-level coverage."""
-    root = workspace_root or Path(__file__).resolve().parents[2]
+    root = workspace_root or Path(__file__).resolve().parents[1]
     destination.mkdir(parents=True, exist_ok=True)
     if report.get("new_engine_steps") != 0:
         msg = "Stored-run validation must retain an explicit zero fresh-step count"
@@ -103,9 +113,7 @@ def summarize(report, destination, workspace_root=None):
         source_hashes[coverage["source"]] = current
     input_hashes = {}
     for original in report["input_reports"]:
-        path = Path(original)
-        if not path.is_absolute():
-            path = root / "algorithmic-gas" / path
+        path = resolve_input(root, original)
         input_hashes[original] = digest(path)
     comparisons = []
     missing = []

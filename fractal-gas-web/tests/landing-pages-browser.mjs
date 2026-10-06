@@ -84,10 +84,6 @@ try {
           ),
         ["arcade.html", "lab/", "optimization/", "llm/"],
       );
-      assert.equal(
-        await page.locator('.site-header nav a[href="euclidean-gas/"]').count(),
-        1,
-      );
       if (
         process.env.CAPTURE_LANDING_SCREENSHOTS === "1" &&
         javaScriptEnabled &&
@@ -126,7 +122,6 @@ try {
     "arcade.html",
     "lab/",
     "optimization/",
-    "euclidean-gas/",
     "llm/",
   ]) {
     assert.equal((await page.goto(new URL(route, base).href)).status(), 200);

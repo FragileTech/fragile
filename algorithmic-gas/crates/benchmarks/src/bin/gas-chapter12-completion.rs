@@ -847,7 +847,7 @@ async fn run(input: &str, output: &str, reps: usize, draws: usize) -> Result<(),
     store.save_json("all-checks", &json!(checks))?;
     store.finish(if failed == 0 { "complete" } else { "failed" })?;
     let verification = store.verify(true)?;
-    let report = json!({"status":if failed==0{"complete"}else{"failed"},"chapter":12,"cases":cases,"fresh_full_native_updates":native_updates,"independent_index_lists":sampled,"checks":checks.len(),"failed":failed,"reference_laws":"Exact finite Bernoulli bounded joint tilts, strictly positive rank-one killed chain QSDs, and conservative Gaussian product OU/LSI laws; never treated as native interacting QSD.","source_sha256":sha256_file(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../docs/source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md").as_path())?,"verification":verification});
+    let report = json!({"status":if failed==0{"complete"}else{"failed"},"chapter":12,"cases":cases,"fresh_full_native_updates":native_updates,"independent_index_lists":sampled,"checks":checks.len(),"failed":failed,"reference_laws":"Exact finite Bernoulli bounded joint tilts, strictly positive rank-one killed chain QSDs, and conservative Gaussian product OU/LSI laws; never treated as native interacting QSD.","source_sha256":sha256_file(Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md").as_path())?,"verification":verification});
     fs::write(
         Path::new(output).join("report.json"),
         serde_json::to_vec_pretty(&report)?,

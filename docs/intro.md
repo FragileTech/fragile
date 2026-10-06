@@ -1,13 +1,13 @@
 ---
-title: "Lectures on Algorithmic Geometrodynamics"
-subtitle: "A Two-Volume Study of Bounded Intelligence and Interacting Particles"
+title: "Fragile Mechanics"
+subtitle: "On Geometry, Thermodynamics, and Bounded Intelligence"
 author: "Guillem Duran-Ballester"
 ---
 
 (sec-algorithmic-geometrodynamics)=
-# Lectures on Algorithmic Geometrodynamics
+# Fragile Mechanics
 
-**A Two-Volume Study of Bounded Intelligence and Interacting Particles**
+**On Geometry, Thermodynamics, and Bounded Intelligence**
 
 by *Guillem Duran-Ballester and Sergio Hernández Cerezo*
 
@@ -19,24 +19,19 @@ computation. It must decide what to represent, how to predict, and where to spen
 its next step of search. These lectures study mathematical models of those
 choices and the geometry used to describe them.
 
-**Volume I, Fragile Mechanics**, develops an agent architecture through
-representation, belief dynamics, control, and runtime diagnostics.
-**Volume II, The Fractal Gas**, develops interacting-particle algorithms, their
-convergence analysis, and geometric constructions from their histories.
-
-You can begin with the question that interests you. The agent chapters explain
-how representations and control fit together. The particle chapters start from
-an explicit update rule and ask what can be established about the resulting
-population. Each volume has its own definitions, reading guide, and detailed
-mathematical arguments.
+The central question is practical: how can an agent remain intelligible when
+its information and computational resources are bounded? The answer developed
+here combines structured representations, belief dynamics, control, geometric
+models, and runtime diagnostics. Each piece gives us something concrete to
+inspect when the agent succeeds—or fails.
 :::
 
-- {doc}`Volume I: Fragile Mechanics <source/1_agent/intro_agent>`
-- {doc}`Volume II: The Fractal Gas <source/2_fractal_gas/intro_fractal_gas>`
+- {doc}`Begin Fragile Mechanics <source/1_agent/intro_agent>`
 
 :::{div} feynman-prose
 The hands-on <a href="../lab/">Control Laboratory guide</a> is a separate documentation site
-with its own navigation. It accompanies the lectures; it is not a third volume.
+with its own navigation. It accompanies the lectures and connects the theory to
+implementation exercises.
 :::
 
 (sec-what-is-ag)=
@@ -45,40 +40,31 @@ with its own navigation. It accompanies the lectures; it is not a third volume.
 :::{div} feynman-prose
 A geometry tells us which states are close and what it costs to move between
 them. For an agent, those choices affect representation, prediction, and control.
-For a swarm, they affect companion selection, motion, and the interpretation of
-its recorded interactions. The term *algorithmic geometrodynamics* names the
-study of these relationships between computation, dynamics, and geometry.
+The term *algorithmic geometrodynamics* names the study of these relationships
+between computation, dynamics, and geometry.
 
-A concrete example is the separation between moving a walker and copying one.
-Motion transports an existing state. Cloning changes the population allocated
-to that state. A mathematical description of the swarm must account for both.
-Likewise, an agent's belief update can change both the location of a hypothesis
-and the probability assigned to it. Transport and information geometry provide
-ways to express these changes precisely.
+Here is the picture to keep in mind. An observation arrives, but the agent
+cannot preserve every detail. It must compress the observation into a useful
+state, update what it believes, and choose an action. The geometry determines
+which changes count as small; the information budget limits what can be kept;
+the controller decides how to spend the next step. These are different jobs,
+and the architecture keeps them separate enough to test.
 :::
 
 The book contains definitions, model-specific theorems, proposed constructions,
 and numerical studies. Each claim has the scope of its stated assumptions.
 Connections with field theory require the variables, dynamics, and limiting
-regime specified in the relevant chapter. The Fractal Gas
-{doc}`introduction <source/2_fractal_gas/intro_fractal_gas>` distinguishes
-finite-particle relaxation, mean-field approximation, and geometric continuum
-limits before presenting those connections.
+regime specified in the relevant chapter.
 
-(sec-two-volumes)=
-## The two volumes
+(sec-book-at-a-glance)=
+## The book at a glance
 
-(sec-vol1-overview)=
-### Volume I: Fragile Mechanics
-
-*On Geometry, Thermodynamics, and Bounded Intelligence*
-
-Volume I develops a proposed architecture for agents under partial observability
-and finite capacity. Its components include a structured latent representation,
-a world model, belief updates, a critic, a policy, and runtime monitoring. The
-**Sieve** organizes diagnostics and interventions around conditions such as
-stability, capacity, and grounding; the associated analyses state the conditions
-under which each diagnostic or intervention applies.
+Fragile Mechanics develops a proposed architecture for agents under partial
+observability and finite capacity. Its components include a structured latent
+representation, a world model, belief updates, a critic, a policy, and runtime
+monitoring. The **Sieve** organizes diagnostics and interventions around
+conditions such as stability, capacity, and grounding; the associated analyses
+state the conditions under which each diagnostic or intervention applies.
 
 ::::{div} feynman-added
 | Topic | Entry point |
@@ -95,51 +81,20 @@ under which each diagnostic or intervention applies.
 | Encoder, world model, and planning implementation | {doc}`Implementation <source/1_agent/11_implementation/01_encoder>` |
 ::::
 
-The {doc}`volume introduction <source/1_agent/intro_agent>` provides the full map.
+The {doc}`book introduction <source/1_agent/intro_agent>` provides the full map.
 Its {doc}`FAQ <source/1_agent/10_appendices/04_faq>`,
 {doc}`derivations <source/1_agent/10_appendices/01_derivations>`, and
 {doc}`loss reference <source/1_agent/10_appendices/06_losses>` support detailed
 reading and implementation.
-
-(sec-vol2-overview)=
-### Volume II: The Fractal Gas
-
-*Interacting Particles, Convergence, and Emergent Geometry*
-
-Volume II starts with populations of walkers that select companions, compute
-fitness, clone, and undergo kinetic motion. The analysis follows the specified
-transition kernel through operator estimates, conditional relaxation,
-mean-field limits, and stronger entropy or regularity bounds. Later chapters
-construct the Fractal Set from walker histories and examine geometric and field
-models associated with that record.
-
-::::{div} feynman-added
-| Part | Subject | Central task |
-|---|---|---|
-| {doc}`I <source/2_fractal_gas/parts/01_foundations>` | Algorithms and foundations | Define the framework, Euclidean and latent variants, and single-particle dynamics |
-| {doc}`II <source/2_fractal_gas/parts/02_convergence>` | Finite-particle convergence | Combine cloning, Wasserstein, and kinetic estimates for the full update |
-| {doc}`III <source/2_fractal_gas/parts/03_mean_field>` | Mean-field limits and equilibrium | Relate population laws, marginals, quasi-stationarity, and exchangeability |
-| {doc}`IV <source/2_fractal_gas/parts/04_entropy_regularity>` | Entropy, regularity, and bounds | Establish stronger estimates with explicit parameter and population dependence |
-| {doc}`V <source/2_fractal_gas/parts/05_continuum>` | Fractal Set and continuum limits | Construct the discrete record and examine conditions for geometric limits |
-| {doc}`VI <source/2_fractal_gas/parts/06_fields>` | Fields and emergent physics | Develop field constructions and their conditional physical interpretations |
-| {doc}`VII <source/2_fractal_gas/parts/07_experiments>` | Computation and experiments | Define observables, inspect simulations, and perform calibration |
-| {doc}`Reference <source/2_fractal_gas/parts/08_reference>` | FAQ and literature | Locate explanations, historical sources, and related studies |
-::::
-
-The {doc}`volume introduction <source/2_fractal_gas/intro_fractal_gas>` explains
-the dependencies between these parts. The analytic arguments appear as chapters
-in the main reading sequence.
 
 (sec-how-to-read-lectures)=
 (sec-reading-paths)=
 ## Choose a reading path
 
 :::{div} feynman-prose
-Start with a model you can describe operationally. For the agent, trace one
-observation through the representation, belief update, and action. For the gas,
-trace one swarm update through companion selection, cloning, and motion. Once
-you know what changes in a step, the estimates have something concrete to refer
-to.
+Start with a process you can describe operationally: trace one observation
+through the representation, belief update, and action. Once you know what
+changes in a step, the equations have something concrete to refer to.
 
 The **Full Mode** view includes explanatory prose and examples. **Expert Mode**
 hides the marked explanatory additions so you can concentrate on definitions,
@@ -149,44 +104,22 @@ statements, and proofs. The mathematical hypotheses are the same in both views.
 ::::{div} feynman-added
 | Your interest | Suggested route |
 |---|---|
-| Agent architecture | Volume I foundations, architecture, control, and runtime diagnostics; then the implementation chapters |
-| Optimization and sampling | Volume II algorithm introduction and Euclidean model; then finite-particle convergence and parameter constraints |
-| Probability and analysis | Volume II Parts I–IV, keeping track of the state space, conditioning, metric, and order of limits |
-| Geometry and fields | Volume I geometry and multi-agent chapters; Volume II Parts V–VI together with their analytic prerequisites |
-| Numerical assessment | Volume II Part VII, returning to the definitions of the measured quantities and the hypotheses of the comparison |
+| Agent architecture | Foundations, architecture, control, and runtime diagnostics; then the implementation chapters |
+| Probability and information | Foundations, belief dynamics, WFR geometry, and the information bounds |
+| Geometry and fields | Metric law, WFR geometry, boundary interfaces, and multi-agent gauge theory |
+| Building and testing agents | Architecture overview, implementation chapters, the Sieve, and the Control Laboratory guide |
+| Economics and consensus | Multi-agent foundations followed by Proof of Useful Work |
 ::::
 
 (sec-quick-links)=
 ### Direct entry points
 
 - {doc}`Agent architecture overview <source/1_agent/03_architecture/00_architecture_at_a_glance>`
+- {doc}`Runtime diagnostics <source/1_agent/02_sieve/01_diagnostics>`
 - {doc}`Wasserstein–Fisher–Rao geometry <source/1_agent/05_geometry/02_wfr_geometry>`
-- {doc}`Fractal Gas algorithm introduction <source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition>`
-- {doc}`Finite-particle convergence <source/2_fractal_gas/convergence_program/06_convergence>`
-- {doc}`Fractal Set construction <source/2_fractal_gas/2_fractal_set/01_fractal_set>`
-- {doc}`Computation and experiments <source/2_fractal_gas/parts/07_experiments>`
-
-(sec-volume-connections)=
-## Using the volumes together
-
-:::{div} feynman-prose
-One possible integration uses the agent's learned representation as the space
-in which a swarm searches. The agent supplies a model, a metric, or a score; the
-swarm produces candidate trajectories and measurements. Those outputs can then
-inform planning or learning.
-
-This connection has mathematical consequences. A changing learned metric changes
-the swarm's transition rule. A model-generated trajectory carries the errors of
-that model. To apply a convergence result to the combined system, identify which
-quantities are held fixed, which are updated, and whether the estimates remain
-valid during those updates.
-:::
-
-Volume I supplies the agent's representation and control setting. Volume II
-supplies particle models whose assumptions can be checked in that setting.
-A result established for a fixed Euclidean transition kernel applies to an
-adaptive latent-space implementation only when the required hypotheses are
-verified for that implementation.
+- {doc}`Boundary interfaces <source/1_agent/06_fields/01_boundary_interface>`
+- {doc}`Multi-agent gauge theory <source/1_agent/08_multiagent/01_gauge_theory>`
+- {doc}`Implementation <source/1_agent/11_implementation/01_encoder>`
 
 (sec-key-results)=
 ## Following a mathematical claim
@@ -194,37 +127,37 @@ verified for that implementation.
 The linked chapters contain the formal statements and arguments. To assess a
 claim, identify four things:
 
-1. **The object.** Determine whether the claim concerns an agent, an entire
-   swarm, a one-particle marginal, an empirical measure, or a continuum field.
-2. **The hypotheses.** Locate assumptions about the transition rule, boundary,
-   noise, regularity, survival, and parameter regime.
-3. **The conclusion.** Record the precise topology, metric, rate, or observable
+1. **The object.** Determine whether the claim concerns a representation, a
+   belief, a policy, a diagnostic, or an interacting collection of agents.
+2. **The hypotheses.** Locate assumptions about capacity, regularity, geometry,
+   observability, stability, and the operating regime.
+3. **The conclusion.** Record the precise quantity, metric, rate, or observable
    controlled by the result.
 4. **The dependencies.** Follow the estimates used in the proof and check their
    scope before transferring the conclusion to another model.
 
-For the Fractal Gas, convergence at fixed population size, propagation of chaos,
-and convergence of geometric operators are distinct statements. Uniformity in
-population size or time requires its own estimates. Conditional results retain
-their hypotheses, and conjectural physical identifications require further
-argument and empirical assessment.
+:::{div} feynman-prose
+The important habit is to carry the assumptions with the result. A statement
+about a fixed metric does not automatically describe a metric that is learning
+at the same time. A capacity bound does not by itself guarantee good control.
+When the model changes, ask which part of the argument survives.
+:::
 
 (sec-landing-faq)=
 ### Common questions
 
 **Where should I start if I want the proofs?**
 
-For particle dynamics, begin with
-{doc}`Volume II foundations <source/2_fractal_gas/parts/01_foundations>` and
-{doc}`finite-particle convergence <source/2_fractal_gas/parts/02_convergence>`.
-For agent geometry, begin with the definitions supporting the
+Begin with the definitions in {doc}`foundations <source/1_agent/01_foundations/01_definitions>`,
+then follow the prerequisites of the result you care about. For agent geometry,
+start with the definitions supporting the
 {doc}`metric law <source/1_agent/05_geometry/01_metric_law>` and
 {doc}`WFR geometry <source/1_agent/05_geometry/02_wfr_geometry>`.
 
 **How does the agent relate to reinforcement learning?**
 
-Volume I formulates representation, belief dynamics, and control together with
-capacity and geometric constraints. Its
+Fragile Mechanics formulates representation, belief dynamics, and control
+together with capacity and geometric constraints. Its
 {doc}`introduction <source/1_agent/intro_agent>` discusses comparisons and limits
 connecting this formulation to reinforcement-learning models.
 
@@ -232,33 +165,21 @@ connecting this formulation to reinforcement-learning models.
 
 Their scope depends on the specified construction and argument. A symmetry or a
 geometric observable must be defined before its dynamics or physical
-interpretation can be assessed. Volume II's
-{doc}`field chapters <source/2_fractal_gas/parts/06_fields>` should be read with
-their continuum conditions and mathematical status in view.
+interpretation can be assessed. Read each identification with its mathematical
+conditions and stated status in view.
 
 **Where are detailed objections and limitations discussed?**
 
-Consult the {doc}`Fragile Mechanics FAQ <source/1_agent/10_appendices/04_faq>` and
-the {doc}`Fractal Gas FAQ <source/2_fractal_gas/reference/faq>`, then follow the
-references to the relevant definitions and results.
+Consult the {doc}`Fragile Mechanics FAQ <source/1_agent/10_appendices/04_faq>`,
+then follow its references to the relevant definitions and results.
 
 (sec-llm-exploration)=
 ## Downloads and assisted reading
 
-The **Download prompt** menu exports a volume for offline reading or use as
-context in an assistant. Its choices are:
-
-::::{div} feynman-added
-| Setting | Choices |
-|---|---|
-| Volume | **Vol 1 - Agent** (Fragile Mechanics) or **Vol 2 - Fractal Gas** |
-| Proofs | **With proofs** or **Without proofs** |
-| Format | **Markdown** (`.md`) or **Text** (`.txt`) |
-::::
-
-Choose **With proofs** when following an argument. The shorter export is suited
-to orientation and locating topics; consult the chapter or full export when the
-proof is needed. File sizes depend on the generated version.
+The **Download prompt** menu exports the book for offline reading or use as
+context in an assistant. Choose **With proofs** when following an argument. The
+shorter export is suited to orientation and locating topics; consult the chapter
+or full export when the proof is needed.
 
 :::{div} feynman-prose
 An assistant is easiest to check when you give it a bounded task. Supply the
@@ -268,13 +189,10 @@ answer so that you can compare the explanation with the statement.
 
 For example:
 
-- “Explain one Fractal Gas update using the definitions in this chapter.”
-- “Which hypotheses are used when the cloning and kinetic estimates are
-  combined?”
-- “Distinguish the finite-particle QSD from the mean-field stationary law.”
-- “Identify the geometric and sampling assumptions in this continuum result.”
-- “For this calibration report, separate the fixed inputs from the quantities
-  being compared.”
+- “Trace one observation through the representation, belief update, and action.”
+- “Which assumptions are used in this stability argument?”
+- “Distinguish the geometric definition from its physical interpretation.”
+- “For this diagnostic, identify the measured quantity and the intervention.”
 :::
 
 (sec-landing-citation)=
@@ -295,7 +213,7 @@ The DOI and citation below identify the project's published record.
 **BibTeX:**
 ```bibtex
 @book{duranballester2025lag,
-  author    = {Duran Ballester, Guillem and Hernández Cerezo, Sergio },
+  author    = {Duran Ballester, Guillem and Hernández Cerezo, Sergio},
   title     = {Lectures on Algorithmic Geometrodynamics},
   year      = {2025},
   publisher = {Zenodo},

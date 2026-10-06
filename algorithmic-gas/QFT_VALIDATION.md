@@ -40,7 +40,7 @@ A full-step increment is the sum of its recorded stage increments. Its variance 
 
 ### Explicit field equations of the executed algorithm
 
-The [field-equations chapter](../docs/source/2_fractal_gas/3_fitness_manifold/04_field_equations.md) derives the finite-step transition by composing the actual donor laws, historical rescoring, clone gates, restitution, BAOAB primitives, boundaries and history admission. Its complete marked empirical field retains every row and its source identity; spatial moments inherit explicit source and flux equations from that transition.
+The [field-equations chapter](docs/source/2_fractal_gas/3_fitness_manifold/04_field_equations.md) derives the finite-step transition by composing the actual donor laws, historical rescoring, clone gates, restitution, BAOAB primitives, boundaries and history admission. Its complete marked empirical field retains every row and its source identity; spatial moments inherit explicit source and flux equations from that transition.
 
 For a primitive row change $(x,v,a)\mapsto(y,w,b)$, with eligibility marks $a,b$, its density and momentum contributions satisfy
 
@@ -267,7 +267,7 @@ The following checks have completed for this implementation:
 - Field and QFT work: targeted native recorded-observable, geometry, complete paired-run and checkpoint-evidence checks exercise the new readouts. Their exact cases remain in the named test suites below.
 - Benchmark all-targets Clippy with warnings denied.
 
-The workspace sweep passed 301 tests. The strengthened field checks pass nine field-equation tests, four stage-coverage tests and one metric-ensemble test. The native control sweep passed 258 Part V–VI seeded defaults and 1,455 individual control endpoints; the continuation follow-up passed 72 cases. Compiled and browser checks passed all 128 demos, evidence replay and all chapter embeds. The Theory build and portal assembly passed. The [lecture validation record](../fractal-gas-web/web/euclidean-gas/lecture/VALIDATION.md) gives the coverage. No claim of accelerator runtime parity follows from CPU/WASM checks.
+The workspace sweep passed 301 tests. The strengthened field checks pass nine field-equation tests, four stage-coverage tests and one metric-ensemble test. The native control sweep passed 258 Part V–VI seeded defaults and 1,455 individual control endpoints; the continuation follow-up passed 72 cases. Compiled and browser checks passed all 128 demos, evidence replay and all chapter embeds. The Theory build and portal assembly passed. The [lecture validation record](web/euclidean-gas/lecture/VALIDATION.md) gives the coverage. No claim of accelerator runtime parity follows from CPU/WASM checks.
 
 The applicable suites are `lecture_early`, `lecture_source_identity`, `lecture_field_geometry`, `lecture_fractal_observables`, `partvi_run_observables`, `lecture_qft_protocols`, `lecture_qft_evidence` and `lecture_registry`. Exact identities use numerical residuals; fitted physical hypotheses retain held-out errors and explicit interpretation limits.
 
@@ -384,7 +384,7 @@ viscous Euclidean and Euclidean runs with the standard channel set and fits rate
 the `algorithmic_gas_benchmarks::spectroscopy` runner, the `gas-spectroscopy` binary and the
 wasm bindings drive the same code from a session, a command line and a browser
 (`crates/benchmarks/tests/spectroscopy_session.rs`, `crates/benchmarks/tests/spectroscopy_cli.rs`,
-`fractal-gas-web/tests/euclidean-gas/qft-simulator-browser.mjs`). Statements below about what
+`tests/euclidean-gas/qft-simulator-browser.mjs`). Statements below about what
 the subsystem does are statements about the frozen contract unless they cite a test or a fixture.
 
 ### What is fitted, and when it may be called a mass

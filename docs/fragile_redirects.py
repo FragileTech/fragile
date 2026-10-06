@@ -1,4 +1,4 @@
-"""Emit compatibility pages for the Volume 2 source migration."""
+"""Emit compatibility pages for documentation source migrations."""
 
 from __future__ import annotations
 

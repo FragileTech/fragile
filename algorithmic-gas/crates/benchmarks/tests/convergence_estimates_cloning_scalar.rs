@@ -35,7 +35,7 @@ fn scalar_proof_identities_retain_exact_quotes_and_actual_hypotheses() {
         .collect::<Vec<_>>();
     assert!(failed.is_empty(), "scalar numerical failures: {failed:#?}");
     let source =
-        include_str!("../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
+        include_str!("../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
     for record in &suite.evidence {
         assert!(source.contains(&record.source_formula));
         assert!(!record.checks.is_empty());

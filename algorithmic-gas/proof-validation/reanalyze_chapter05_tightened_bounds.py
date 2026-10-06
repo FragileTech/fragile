@@ -47,7 +47,7 @@ def main():
     coefficient_bytes = args.coefficient_json.read_bytes()
     coefficients = json.loads(coefficient_bytes)
     chapter = (
-        Path(__file__).resolve().parents[2]
+        Path(__file__).resolve().parents[1]
         / "docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
     )
     source_bytes = chapter.read_bytes()

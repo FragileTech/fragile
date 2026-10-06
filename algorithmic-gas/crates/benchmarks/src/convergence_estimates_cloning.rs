@@ -17,7 +17,7 @@ use num_traits::{One, Signed, ToPrimitive, Zero};
 use serde_json::{Value, json};
 
 const SOURCE: &str =
-    include_str!("../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
+    include_str!("../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
 const SCOPE: &str = "The retained finite witness and its stated hypotheses: native laws, independent couplings, auxiliary finite operators and analytic interval certificates are identified in the inputs. No terminal survival conditioning or global contraction is inferred.";
 
 fn expression(label: &str, needle: &str) -> Result<String> {

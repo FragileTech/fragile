@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     out.save_json("poisson-source",&json!({"runner":include_str!("gas-chapter07-poisson.rs"),
         "formula_module":include_str!("../convergence_chapter07_completion.rs"),
         "rng":include_str!("../../../algorithmic-gas/src/random.rs"),
-        "chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/07_discrete_qsd.md"),
+        "chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/07_discrete_qsd.md"),
         "binary_sha256":sha256_file(&std::env::current_exe()?)?,"new_native_updates":0,
         "scope":"Specified homogeneous PPP reference, with native Rust RandomStream randomness. No native Fractal Gas PPP hypothesis inferred."}))?;
     let replicates = 8192usize;

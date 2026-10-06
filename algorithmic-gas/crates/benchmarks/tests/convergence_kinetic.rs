@@ -195,7 +195,7 @@ fn native_conditional_experiments_match_chapter_two_and_retain_the_obstruction()
                 serde_json::from_str(&json).unwrap();
             assert_eq!(report, restored);
             let chapter = include_str!(
-                "../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
+                "../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md"
             );
             for constant in &report.source_mapped_constants {
                 let label = constant.source.split('#').next_back().unwrap();

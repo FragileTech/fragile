@@ -12,7 +12,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const SOURCE: &str = include_str!(
-    "../../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
+    "../../../docs/source/2_fractal_gas/convergence_program/01_fragile_gas_framework.md"
 );
 const SCOPE: &str = "Chapter 1 scalar identity witness on retained finite inputs. Native Global statistics are evaluated before taking expectations. Auxiliary Hermite formulas retain their own scope; no complete-swarm contraction or universal analytic hypothesis follows from these finite checks.";
 

@@ -16,8 +16,8 @@ from scipy.optimize import brentq
 
 
 def main():
-    workspace = Path(__file__).resolve().parents[2]
-    source = workspace / "src/fragile/fractalai/theory/landscape_phase.py"
+    workspace = Path(__file__).resolve().parents[1]
+    source = workspace / "proof-validation/reference/landscape_phase.py"
     text = source.read_text()
     names = {
         "RastriginRegionalProfile",
@@ -122,7 +122,7 @@ def main():
         "cases": cases,
         "profile": asdict(namespace["rastrigin_regional_profile"](-2, 2)),
     }
-    target = workspace / "algorithmic-gas/crates/benchmarks/fixtures/landscape-phase-python.json"
+    target = workspace / "crates/benchmarks/fixtures/landscape-phase-python.json"
     target.parent.mkdir(exist_ok=True)
     target.write_text(json.dumps(result, indent=2) + "\n")
     print(target)

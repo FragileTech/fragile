@@ -6,7 +6,7 @@ use serde_json::{Value, json};
 
 const PATH: &str = "docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md";
 const SOURCE: &str = include_str!(
-    "../../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
+    "../../../docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md"
 );
 
 fn formula(marker: &str) -> &'static str {

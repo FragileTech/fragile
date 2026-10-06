@@ -30,20 +30,20 @@ fn main() -> Result<(), Error> {
     }
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .unwrap();
     let mut store = ArchiveStore::new(&args[0])?;
     let mut code = vec![];
     for directory in [
-        "algorithmic-gas/crates/algorithmic-gas/src",
-        "algorithmic-gas/crates/benchmarks/src",
+        "crates/algorithmic-gas/src",
+        "crates/benchmarks/src",
     ] {
         snapshots(&workspace.join(directory), workspace, &mut code)?;
     }
     let source_path =
         workspace.join("docs/source/2_fractal_gas/convergence_program/05_kinetic_contraction.md");
-    let inventory = workspace.join("algorithmic-gas/proof-validation/chapter05_inventory.json");
-    let provenance = store.save_json("cubature/provenance", &json!({"command":std::env::args().collect::<Vec<_>>(),"executable_sha256":sha256_file(&std::env::current_exe()?)?,"implementation":code,"Cargo_lock":fs::read_to_string(workspace.join("algorithmic-gas/Cargo.lock"))?,"chapter_source":{"path":source_path.strip_prefix(workspace)?.to_string_lossy(),"sha256":sha256_file(&source_path)?,"text":fs::read_to_string(&source_path)?,"inventory":serde_json::from_str::<Value>(&fs::read_to_string(inventory)?)?},"method":"96-node degree-two Gaussian cubature, not Monte Carlo sampling"}))?;
+    let inventory = workspace.join("proof-validation/chapter05_inventory.json");
+    let provenance = store.save_json("cubature/provenance", &json!({"command":std::env::args().collect::<Vec<_>>(),"executable_sha256":sha256_file(&std::env::current_exe()?)?,"implementation":code,"Cargo_lock":fs::read_to_string(workspace.join("Cargo.lock"))?,"chapter_source":{"path":source_path.strip_prefix(workspace)?.to_string_lossy(),"sha256":sha256_file(&source_path)?,"text":fs::read_to_string(&source_path)?,"inventory":serde_json::from_str::<Value>(&fs::read_to_string(inventory)?)?},"method":"96-node degree-two Gaussian cubature, not Monte Carlo sampling"}))?;
     let mut report = match futures_lite::future::block_on(run_cubature(&mut store)) {
         Ok(report) => report,
         Err(error) => {

@@ -110,7 +110,7 @@ configuration remains an analytic obligation.
 
 ## Proofs and reusable APIs
 
-- [Regional rate, tail remainder and full nonlinear kinetic proofs](../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-regional-error-rates)
+- [Regional rate, tail remainder and full nonlinear kinetic proofs](../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-regional-error-rates)
 - [Chapter 4 regional profiles and sharper reward/moment bounds](chapter04-tightening.md)
 - [Chapter 6 Gaussian and arbitrary-coupling tail APIs](chapter06-structural-tails.md)
 - [Regional composition and force-rate Rust API](../crates/benchmarks/src/convergence_structural_rates.rs)

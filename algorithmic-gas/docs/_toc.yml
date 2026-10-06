@@ -1,0 +1,135 @@
+format: jb-book
+root: source/2_fractal_gas/intro_fractal_gas
+parts:
+- caption: Fractal Gas
+  chapters:
+  - file: source/2_fractal_gas/parts/01_foundations
+    title: Part I — Algorithms and Foundations
+    sections:
+    - file: source/2_fractal_gas/1_the_algorithm/01_algorithm_intuition
+    - file: source/2_fractal_gas/1_the_algorithm/04_gas_variants
+    - file: source/2_fractal_gas/convergence_program/20_complete_native_parameters
+    - file: source/2_fractal_gas/convergence_program/01_fragile_gas_framework
+    - file: source/2_fractal_gas/convergence_program/02_euclidean_gas
+    - file: source/2_fractal_gas/convergence_program/04_single_particle
+    - file: source/2_fractal_gas/1_the_algorithm/02_fractal_gas_latent
+  - file: source/2_fractal_gas/architecture/01_algorithmic_gas
+    title: Architecture
+  - file: source/2_fractal_gas/parts/02_convergence
+    title: Part II — Finite-Particle Convergence
+    sections:
+    - file: source/2_fractal_gas/convergence_program/03_cloning
+    - file: source/2_fractal_gas/convergence_program/04_wasserstein_contraction
+    - file: source/2_fractal_gas/convergence_program/05_kinetic_contraction
+    - file: source/2_fractal_gas/convergence_program/06_convergence
+    - file: source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence
+    - file: source/2_fractal_gas/convergence_program/18_coupled_gas_discharge
+    - file: source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled
+  - file: source/2_fractal_gas/parts/03_mean_field
+    title: Part III — Mean-Field Limits and Equilibrium
+    sections:
+    - file: source/2_fractal_gas/convergence_program/08_mean_field
+    - file: source/2_fractal_gas/convergence_program/09_propagation_chaos
+    - file: source/2_fractal_gas/convergence_program/19_color_geometry_mean_field
+    - file: source/2_fractal_gas/convergence_program/27_einstein_hilbert_bounds
+    - file: source/2_fractal_gas/convergence_program/21_native_stationary_control
+    - file: source/2_fractal_gas/convergence_program/26_native_stationary_laws
+    - file: source/2_fractal_gas/convergence_program/28_native_phase_concentration
+    - file: source/2_fractal_gas/convergence_program/29_native_sparse_geometry
+    - file: source/2_fractal_gas/convergence_program/30_native_stationary_concentration
+    - file: source/2_fractal_gas/convergence_program/31_native_geometry_averaging
+    - file: source/2_fractal_gas/convergence_program/32_native_marked_geometry
+    - file: source/2_fractal_gas/convergence_program/33_native_smeared_color_fluctuations
+    - file: source/2_fractal_gas/convergence_program/34_native_quantitative_stationary_chaos
+    - file: source/2_fractal_gas/convergence_program/35_native_uniform_qsd_eigenfunction
+    - file: source/2_fractal_gas/convergence_program/38_native_joint_bridge_entropy
+    - file: source/2_fractal_gas/convergence_program/36_native_stationary_color_innovations
+    - file: source/2_fractal_gas/convergence_program/37_native_quantitative_marked_geometry
+    - file: source/2_fractal_gas/convergence_program/39_native_stationary_spacetime_covariance
+    - file: source/2_fractal_gas/convergence_program/40_native_full_stationary_fluctuations
+    - file: source/2_fractal_gas/convergence_program/41_native_joint_population_time_limit
+    - file: source/2_fractal_gas/convergence_program/42_native_population_color_fluctuations
+    - file: source/2_fractal_gas/convergence_program/43_native_harmonic_population_color_limit
+    - file: source/2_fractal_gas/convergence_program/44_native_stationary_population_linearization
+    - file: source/2_fractal_gas/convergence_program/45_native_harmonic_spatial_scaling
+    - file: source/2_fractal_gas/convergence_program/46_native_stationary_preparation_bracket
+    - file: source/2_fractal_gas/convergence_program/47_native_measured_preparation_response
+    - file: source/2_fractal_gas/convergence_program/48_native_marked_action_fluctuations
+    - file: source/2_fractal_gas/convergence_program/49_native_spatial_position_fluctuations
+    - file: source/2_fractal_gas/convergence_program/07_discrete_qsd
+    - file: source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory
+  - file: source/2_fractal_gas/parts/04_entropy_regularity
+    title: Part IV — Entropy, Regularity, and Bounds
+    sections:
+    - file: source/2_fractal_gas/convergence_program/10_kl_hypocoercive
+    - file: source/2_fractal_gas/convergence_program/11_hk_convergence
+    - file: source/2_fractal_gas/convergence_program/14_a_geometric_gas_c3_regularity
+    - file: source/2_fractal_gas/convergence_program/14_b_geometric_gas_cinf_regularity_full
+    - file: source/2_fractal_gas/convergence_program/15_kl_convergence
+    - file: source/2_fractal_gas/convergence_program/17_geometric_gas
+    - file: source/2_fractal_gas/convergence_program/13_quantitative_error_bounds
+    - file: source/2_fractal_gas/1_the_algorithm/03_parameter_constraints
+  - file: source/2_fractal_gas/parts/05_continuum
+    title: Part V — Fractal Set and Continuum Limits
+    sections:
+    - file: source/2_fractal_gas/2_fractal_set/01_fractal_set
+    - file: source/2_fractal_gas/3_fitness_manifold/01_emergent_geometry
+    - file: source/2_fractal_gas/3_fitness_manifold/02_scutoid_spacetime
+    - file: source/2_fractal_gas/convergence_program/16_continuum_discharge
+    - file: source/2_fractal_gas/convergence_program/22_native_joint_geometry
+    - file: source/2_fractal_gas/2_fractal_set/02_causal_set_theory
+  - file: source/2_fractal_gas/parts/06_fields
+    title: Part VI — Fields and Emergent Physics
+    sections:
+    - file: source/2_fractal_gas/2_fractal_set/03_lattice_qft
+    - file: source/2_fractal_gas/2_fractal_set/04_standard_model
+    - file: source/2_fractal_gas/convergence_program/23_native_gauge_fluctuations
+    - file: source/2_fractal_gas/convergence_program/24_native_determinant_amplitude
+    - file: source/2_fractal_gas/convergence_program/25_native_gauge_process
+    - file: source/2_fractal_gas/convergence_program/27_native_time_generator
+    - file: source/2_fractal_gas/2_fractal_set/05_yang_mills_noether
+    - file: source/2_fractal_gas/2_fractal_set/10_native_connection_variation
+    - file: source/2_fractal_gas/2_fractal_set/15_native_conditional_action
+    - file: source/2_fractal_gas/2_fractal_set/16_native_projector_connection
+    - file: source/2_fractal_gas/2_fractal_set/11_native_physical_time
+    - file: source/2_fractal_gas/2_fractal_set/12_native_locality_covariance
+    - file: source/2_fractal_gas/2_fractal_set/13_native_spectral_gap
+    - file: source/2_fractal_gas/2_fractal_set/14_native_transfer_sector
+    - file: source/2_fractal_gas/2_fractal_set/17_native_gauge_sectors
+    - file: source/2_fractal_gas/2_fractal_set/18_native_color_time_reconstruction
+    - file: source/2_fractal_gas/2_fractal_set/19_native_spatial_projector_connection
+    - file: source/2_fractal_gas/2_fractal_set/20_native_spatial_wilson_tails
+    - file: source/2_fractal_gas/2_fractal_set/21_native_spatial_action_variation
+    - file: source/2_fractal_gas/2_fractal_set/22_native_two_face_gauge_time
+    - file: source/2_fractal_gas/2_fractal_set/23_native_two_walker_color_reconstruction
+    - file: source/2_fractal_gas/2_fractal_set/24_native_population_color_reconstruction
+    - file: source/2_fractal_gas/2_fractal_set/25_native_action_score_identification
+    - file: source/2_fractal_gas/2_fractal_set/26_native_interacting_color_clock_test
+    - file: source/2_fractal_gas/2_fractal_set/27_native_interacting_positive_color_reconstruction
+    - file: source/2_fractal_gas/2_fractal_set/28_native_scalar_orbit_physical_gap
+    - file: source/2_fractal_gas/2_fractal_set/29_native_b2_color_reconstruction
+    - file: source/2_fractal_gas/2_fractal_set/08_twistor_formulation
+    - file: source/2_fractal_gas/3_fitness_manifold/03_curvature_gravity
+    - file: source/2_fractal_gas/3_fitness_manifold/04_field_equations
+    - file: source/2_fractal_gas/3_fitness_manifold/10_native_metric_variation
+    - file: source/2_fractal_gas/3_fitness_manifold/11_native_coupled_metric_action
+    - file: source/2_fractal_gas/3_fitness_manifold/12_native_absolute_metric_response
+    - file: source/2_fractal_gas/3_fitness_manifold/13_native_absolute_metric_history_response
+    - file: source/2_fractal_gas/3_fitness_manifold/05_holography
+    - file: source/2_fractal_gas/3_fitness_manifold/06_cosmology
+    - file: source/2_fractal_gas/partvi_experiments
+  - file: source/2_fractal_gas/parts/07_experiments
+    title: Part VII — Computation and Experiments
+    sections:
+    - file: source/2_fractal_gas/3_fitness_manifold/09_measurement
+    - file: source/2_fractal_gas/3_fitness_manifold/07_computational_proxies
+    - file: source/2_fractal_gas/3_fitness_manifold/08_voronoi_wilson_loops
+    - file: source/2_fractal_gas/2_fractal_set/06_empirical_validation
+    - file: source/2_fractal_gas/2_fractal_set/08_qft_calibration_notebook
+    - file: source/2_fractal_gas/2_fractal_set/07_qft_calibration_report
+    - file: source/2_fractal_gas/2_fractal_set/09_qft_calibration
+  - file: source/2_fractal_gas/parts/08_reference
+    title: Reference Material
+    sections:
+    - file: source/2_fractal_gas/reference/faq
+    - file: source/2_fractal_gas/reference/literature

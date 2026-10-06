@@ -252,26 +252,26 @@ fn main() -> Result<(), Error> {
     let mut store = ArchiveStore::new(&args[0])?;
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .unwrap();
     let mut sources = vec![];
     for relative in [
         "docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md",
         "docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md",
-        "algorithmic-gas/crates/benchmarks/src/bin/gas-landscape-phase-probes.rs",
-        "algorithmic-gas/crates/benchmarks/src/convergence_landscape_phase.rs",
-        "algorithmic-gas/crates/algorithmic-gas/src/kinetic.rs",
-        "algorithmic-gas/crates/algorithmic-gas/src/cloning.rs",
-        "algorithmic-gas/crates/algorithmic-gas/src/engine.rs",
-        "algorithmic-gas/crates/algorithmic-gas/src/fitness.rs",
-        "algorithmic-gas/crates/benchmarks/src/lib.rs",
+        "crates/benchmarks/src/bin/gas-landscape-phase-probes.rs",
+        "crates/benchmarks/src/convergence_landscape_phase.rs",
+        "crates/algorithmic-gas/src/kinetic.rs",
+        "crates/algorithmic-gas/src/cloning.rs",
+        "crates/algorithmic-gas/src/engine.rs",
+        "crates/algorithmic-gas/src/fitness.rs",
+        "crates/benchmarks/src/lib.rs",
     ] {
         let path = workspace.join(relative);
         sources.push(
             json!({"path":relative,"sha256":sha256_file(&path)?,"text":fs::read_to_string(path)?}),
         );
     }
-    let provenance=store.save_json("kur/provenance",&json!({"sources":sources,"executable_sha256":sha256_file(&std::env::current_exe()?)?,"command":std::env::args().collect::<Vec<_>>(),"samples":samples,"Cargo_lock":fs::read_to_string(workspace.join("algorithmic-gas/Cargo.lock"))?}))?;
+    let provenance=store.save_json("kur/provenance",&json!({"sources":sources,"executable_sha256":sha256_file(&std::env::current_exe()?)?,"command":std::env::args().collect::<Vec<_>>(),"samples":samples,"Cargo_lock":fs::read_to_string(workspace.join("Cargo.lock"))?}))?;
     let mut report = futures_lite::future::block_on(run(&mut store, samples))?;
     report["provenance_archive"] = json!(provenance);
     fs::write(

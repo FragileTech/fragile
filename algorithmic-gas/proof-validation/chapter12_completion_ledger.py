@@ -32,7 +32,7 @@ def main() -> None:
     output = args.empty_output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     assert not any(output.iterdir()), "Existing datasets are immutable"
-    repo = Path(__file__).resolve().parents[2]
+    repo = Path(__file__).resolve().parents[1]
     inventory_path = Path(__file__).with_name("chapter12_inventory.json")
     inventory = json.loads(inventory_path.read_text())
     source = repo / inventory["source_path"]

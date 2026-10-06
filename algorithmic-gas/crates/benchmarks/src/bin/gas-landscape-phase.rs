@@ -7,7 +7,7 @@ use serde_json::{Value, json};
 use std::{collections::BTreeMap, fs, path::Path};
 fn source_statement(label: &str) -> String {
     let s = include_str!(
-        "../../../../../docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md"
+        "../../../../docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md"
     );
     statement(s, label)
 }
@@ -185,9 +185,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .filter(|r| r["applicable"] == true && r["passed"] != true)
             .count();
     let source = Path::new(env!("CARGO_MANIFEST_DIR")).join(
-        "../../../docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md",
+        "../../docs/source/2_fractal_gas/convergence_program/18a_keystone_uniform_coupled.md",
     );
-    let refined_source=Path::new(env!("CARGO_MANIFEST_DIR")).join("../../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md");
+    let refined_source=Path::new(env!("CARGO_MANIFEST_DIR")).join("../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md");
     let refined_binding = json!({"source_path":refined_source,"source_sha256":sha256_file(&refined_source)?,"source_labels":["cor-slc-exact-jitter-regional-refinement"],"source_quotes":[statement(&fs::read_to_string(&refined_source)?,"cor-slc-exact-jitter-regional-refinement")]});
     let out = json!({"empirical_KUR_comparisons":empirical,"refined_current_source":refined_binding,"native_steps":0,"source_path":source,"source_sha256":sha256_file(&source)?,"source_labels":["thm-kur-evaluated-regional-bound","lem-klq-rastrigin-profiles"],"source_quotes":[source_statement("thm-kur-evaluated-regional-bound"),source_statement("lem-klq-rastrigin-profiles")],"python_fixture_path":a[0],"python_fixture_sha256":sha256_file(Path::new(&a[0]))?,"retained_frames_path":a[1],"retained_frames_sha256":sha256_file(Path::new(&a[1]))?,"profile":profile,"comparisons":comparisons,"profile_comparisons":profile_checks,"frames":rows,"summary":{"fixture_comparisons":comparisons.len()+profile_checks.len(),"comparisons_failed":failed,"retained_source_frames":rows.len(),"applicable_frames":rows.iter().filter(|x|x["source_bound_applicable_to_recorded_frame"]==true).count()},"scope":"Existing structural landscape KUR.1/KUR.2 parameterization. No phase-probability fit, closed-core iteration or population-uniform whole-swarm trapping is inferred."});
     fs::write(&a[2], serde_json::to_vec_pretty(&out)?)?;

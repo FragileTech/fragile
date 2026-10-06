@@ -1,0 +1,48 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: '1.95.0'
+          targets: wasm32-unknown-unknown
+      - run: pip install -r docs/requirements.txt
+      - run: cargo install wasm-bindgen-cli --version 0.2.114 --locked
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: python docs/build_prompt_downloads.py
+      - run: jupyter-book build docs/ --config "$GITHUB_WORKSPACE/docs/_config.yml" --toc "$GITHUB_WORKSPACE/docs/_toc.yml" --path-output docs/_build/site
+      - name: Assemble site
+        run: |
+          mkdir -p site/docs
+          cp -a web/. site/
+          cp -a docs/_build/site/html/. site/docs/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
+        id: deployment

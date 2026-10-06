@@ -109,8 +109,8 @@ reconstructs the native coefficients and 18,432 retained root-bound predictions
 at 80-digit precision. All 19,080 comparisons pass; separate regressions check
 accepted Gaussian jitter, normalized collision energy and rejection of the
 incorrect unrooted excess rate.
-The complete proofs are in [Chapter 2](../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md)
-and [Chapter 6a Section 20](../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-global-selected-moments).
+The complete proofs are in [Chapter 2](../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md)
+and [Chapter 6a Section 20](../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-global-selected-moments).
 
 ## Error decrease and scope
 

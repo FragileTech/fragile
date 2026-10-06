@@ -58,7 +58,7 @@ class ReferenceStagesReader(AllStepsReader):
 
 
 def source_evaluator(repository):
-    path = repository / "src/fragile/fractalai/theory/qsd_certificate.py"
+    path = repository / "proof-validation/reference/qsd_certificate.py"
     spec = importlib.util.spec_from_file_location("chapter04_existing_qsd_evaluator", path)
     module = importlib.util.module_from_spec(spec)
     sys.modules[spec.name] = module
@@ -581,7 +581,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("dataset", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[2])
+    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--cbor-skipper", type=Path, required=True)
     args = parser.parse_args()
     result = run(args.dataset, args.output, args.repository, args.cbor_skipper)

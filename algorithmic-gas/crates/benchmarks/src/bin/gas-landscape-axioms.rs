@@ -18,15 +18,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut store = ArchiveStore::new(&args[0])?;
     let workspace = Path::new(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .unwrap();
     let mut sources = vec![];
     for name in [
         "docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md",
-        "algorithmic-gas/crates/benchmarks/src/convergence_landscape_axioms.rs",
-        "algorithmic-gas/crates/benchmarks/src/bin/gas-landscape-axioms.rs",
-        "algorithmic-gas/crates/benchmarks/src/benchmark.rs",
-        "algorithmic-gas/crates/benchmarks/src/classics.rs",
+        "crates/benchmarks/src/convergence_landscape_axioms.rs",
+        "crates/benchmarks/src/bin/gas-landscape-axioms.rs",
+        "crates/benchmarks/src/benchmark.rs",
+        "crates/benchmarks/src/classics.rs",
     ] {
         let p = workspace.join(name);
         sources.push(json!({"path":name,"sha256":sha256_file(&p)?,"text":fs::read_to_string(p)?}));

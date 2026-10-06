@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "docs/source/2_fractal_gas/convergence_program/06_convergence.md"
 RAW_FORMULA = (
     r"\widehat D_h^2(\mathscr G_1)"

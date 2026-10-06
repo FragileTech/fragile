@@ -53,7 +53,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let mut out = ArchiveStore::new(&args[0])?;
     out.save_json("chapter07-source",&json!({
-        "chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/07_discrete_qsd.md"),
+        "chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/07_discrete_qsd.md"),
         "inventory":include_str!("../../../../proof-validation/chapter07_inventory.json"),
         "module":include_str!("../convergence_chapter07_completion.rs"),"runner":include_str!("gas-chapter07-completion.rs"),
         "native_kinetic":include_str!("../../../algorithmic-gas/src/kinetic.rs"),

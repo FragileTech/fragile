@@ -7,7 +7,6 @@
 
     const VOLUMES = [
         { id: '1_agent', label: 'Vol 1 - Agent' },
-        { id: '2_fractal_gas', label: 'Vol 2 - Fractal Gas' },
     ];
 
     const PROOFS = [

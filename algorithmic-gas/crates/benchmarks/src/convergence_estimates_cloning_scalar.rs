@@ -19,7 +19,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const SOURCE: &str =
-    include_str!("../../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
+    include_str!("../../../docs/source/2_fractal_gas/convergence_program/03_cloning.md");
 const SCOPE: &str = "Chapter 3 exact finite-input diagnostic. Coordinates, cluster memberships, realized measurement vectors and conditional companion laws are retained. Quantitative hypotheses are computed on these inputs; finite checks do not certify an unsampled family or a complete-swarm rate. Phase-space comparisons use a positive quadratic form and retain velocity contributions.";
 
 fn error(message: &str) -> GasError {

@@ -138,7 +138,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut output = ArchiveStore::new(&args[0])?;
     output.save_json("chapter09-source",&json!({"module":include_str!("../convergence_chapter09_completion.rs"),
   "runner":include_str!("gas-chapter09-completion.rs"),
-  "chapter09":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
+  "chapter09":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
   "binary_sha256":sha256_file(&std::env::current_exe()?)?,"new_native_steps":0}))?;
     let mut profiles = vec![];
     let mut checks = vec![];

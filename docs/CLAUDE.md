@@ -31,11 +31,11 @@
 
 ## Book Organization and Mathematical Revisions
 
-The published book has two volumes: Fragile Mechanics (`source/1_agent`) and
-Fractal Gas (`source/2_fractal_gas`). The TOC defines the publication set and
-reading order; research archives and migration records are excluded from exports.
-Fractal Gas develops algorithms, finite-particle convergence, mean-field limits,
-entropy and regularity, continuum constructions, fields, and experiments.
+This repository publishes Fragile Mechanics (`source/1_agent`) as a standalone
+Volume 1 book. The TOC defines the publication set and reading order; research
+archives and migration records are excluded from exports. Volume 2, its Rust
+implementation, and its research material live in the separate
+`FragileTech/algorithmic-gas` repository.
 
 Mathematical revisions explicitly requested by the user may replace or remove
 prose and formal claims. In that case the additive-only Feynman rules below do

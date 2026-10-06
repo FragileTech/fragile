@@ -375,7 +375,7 @@ def run(dataset, output, repository):
     output.mkdir(parents=True)
     report_path = dataset / "chapter04-report.json"
     raw = json.loads(report_path.read_text())
-    inventory_path = repository / "algorithmic-gas/proof-validation/chapter04_inventory.json"
+    inventory_path = repository / "proof-validation/chapter04_inventory.json"
     inventory = json.loads(inventory_path.read_text())
     source_path = repository / inventory["source_path"]
     require(
@@ -714,7 +714,7 @@ def run(dataset, output, repository):
     # Existing numerical evidence is linked, not relabelled as stronger proof.
     tightening_path = (
         repository
-        / "algorithmic-gas/outputs/convergence/chapters04-06-experiments/tightening-20261004/chapter04/report.json"
+        / "outputs/convergence/chapters04-06-experiments/tightening-20261004/chapter04/report.json"
     )
     tightening = json.loads(tightening_path.read_text())
     evidence = [
@@ -808,7 +808,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("dataset", type=Path)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[2])
+    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
     result = run(args.dataset, args.output, args.repository)
     print(json.dumps(result["summary"], indent=2))

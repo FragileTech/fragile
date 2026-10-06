@@ -2,7 +2,7 @@
 use algorithmic_gas::{GasError, Result};
 use serde::{Deserialize, Serialize};
 pub const SOURCE: &str = include_str!(
-    "../../../../docs/source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md"
+    "../../../docs/source/2_fractal_gas/convergence_program/12_qsd_exchangeability_theory.md"
 );
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct Comparison {

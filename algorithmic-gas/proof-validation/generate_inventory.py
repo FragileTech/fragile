@@ -14,7 +14,7 @@ from estimate_catalog import (
 )
 
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = {"definition", "assumption", "axiom", "lemma", "theorem", "corollary", "proposition"}
 OPEN = re.compile(r"^\s*(:{3,}|`{3,})\{prf:(\w+)\}\s*(.*)$")
 ANY_OPEN = re.compile(r"^\s*(:{3,})\s*\{[^}]+\}")
@@ -563,7 +563,7 @@ def attach_implementation_diagnostics(result):
     """Link implemented checks without declaring their outcomes validated."""
     labels = {claim["source_label"] for claim in result["formal_items"]}
     checks = []
-    framework = ROOT / "algorithmic-gas/crates/benchmarks/src/convergence_framework.rs"
+    framework = ROOT / "crates/benchmarks/src/convergence_framework.rs"
     if framework.exists():
         content = framework.read_text()
         pattern = r'BoundCheck::upper\s*\(\s*"([^"]+)"\s*,\s*&\[(.*?)\]'
@@ -578,7 +578,7 @@ def attach_implementation_diagnostics(result):
                     "implementation_line": content.count("\n", 0, match.start()) + 1,
                     "status": "implemented_check_outcome_is_in_run_report",
                 })
-    coefficients = ROOT / "algorithmic-gas/crates/benchmarks/src/convergence_coefficients.rs"
+    coefficients = ROOT / "crates/benchmarks/src/convergence_coefficients.rs"
     if coefficients.exists():
         content = coefficients.read_text()
         pattern = r'check\s*\(\s*report,\s*"([^"]+)"\s*,\s*&\[(.*?)\]'
@@ -594,7 +594,7 @@ def attach_implementation_diagnostics(result):
                     "status": "implemented_check_outcome_is_in_run_report",
                 })
     if result["chapter"] == 2:
-        kinetic = ROOT / "algorithmic-gas/crates/benchmarks/src/convergence_kinetic.rs"
+        kinetic = ROOT / "crates/benchmarks/src/convergence_kinetic.rs"
         content = kinetic.read_text() if kinetic.exists() else ""
         specifications = [
             ("thermostat_innovation_mean", "def-eg-baoab-canonical"),
@@ -1260,7 +1260,7 @@ def main():
         attach_implementation_diagnostics(result)
         out = (
             ROOT
-            / "algorithmic-gas/proof-validation"
+            / "proof-validation"
             / f"chapter{result['chapter']:02d}_inventory.json"
         )
         out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n")

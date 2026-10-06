@@ -30,7 +30,7 @@ def main():
         raise ValueError(msg)
     inventory_path = Path(__file__).with_name("chapter10_inventory.json")
     inv = json.loads(inventory_path.read_text())
-    repository = inventory_path.parents[2]
+    repository = inventory_path.parents[1]
     source = repository / inv["source_path"]
     if digest(source) != inv["source_sha256"]:
         msg = "Exact current chapter source inventory required"

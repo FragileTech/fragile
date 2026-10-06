@@ -515,7 +515,7 @@ checkpoint, configuration and checksum. Physical-time rates use each run's actua
 timestep. The weak-selection profile has positive exponents `1e-5` and cloning
 bandwidth 3 on an unbounded conservative state space.
 
-[Section 20](../../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-global-selected-moments)
+[Section 20](../docs/source/2_fractal_gas/convergence_program/06a_structural_landscape_convergence.md#sec-slc-global-selected-moments)
 proves its normalized moment and tail rate, including the actual selected-source
 incoming load and finite donor history. The closure is checked from global
 feature, fitness and force envelopes; sampled moments are measurements of the

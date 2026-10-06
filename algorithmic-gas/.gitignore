@@ -1,5 +1,10 @@
 /target/
 /pkg/
 /artifacts/
+/node_modules/
+/docs/_build/
+/outputs/
+/web/euclidean-gas/engine/
+/web/euclidean-gas/vendor/
 !crates/benchmarks/src/bin/
 !crates/benchmarks/src/bin/*.rs

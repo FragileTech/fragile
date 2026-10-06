@@ -21,7 +21,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const SOURCE: &str =
-    include_str!("../../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md");
+    include_str!("../../../docs/source/2_fractal_gas/convergence_program/02_euclidean_gas.md");
 const SCOPE: &str = "Chapter 2 formula diagnostic on explicitly retained finite inputs. Deterministic checks and independent-replica six-standard-error comparisons are distinguished. This does not certify an unsampled global hypothesis or invent complete-swarm contraction.";
 
 fn error(message: &str) -> GasError {

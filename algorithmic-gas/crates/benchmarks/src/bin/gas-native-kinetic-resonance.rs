@@ -32,7 +32,7 @@ async fn run(path: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut store = ArchiveStore::new(path)?;
     store.save_json("execution-source", &json!({"runner":include_str!("gas-native-kinetic-resonance.rs"),
         "native_kinetic":include_str!("../../../algorithmic-gas/src/kinetic.rs"),
-        "chapter":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
+        "chapter":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/09_propagation_chaos.md"),
         "binary_sha256":sha256_file(&std::env::current_exe()?)?,
         "scope":"Exact native quadratic h=2 resonant conditional velocity identity, not a global mixing experiment. Full marked population, probability-normalized errors."}))?;
     let mut cases = vec![];

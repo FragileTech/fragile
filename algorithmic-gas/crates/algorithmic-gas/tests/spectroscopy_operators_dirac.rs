@@ -1627,8 +1627,8 @@ fn book_labels_name_the_defining_statements_of_the_fractal_set_chapters() {
     // declared labels can be checked.
     let chapters = ["09_qft_calibration.md", "04_standard_model.md"].map(|file| {
         let path = format!(
-            "{}/../../../docs/source/2_fractal_gas/2_fractal_set/{file}",
-            env!("CARGO_MANIFEST_DIR")
+            "{}/../../docs/source/2_fractal_gas/2_fractal_set/{file}",
+            env!("CARGO_MANIFEST_DIR"),
         );
         std::fs::read_to_string(path)
     });

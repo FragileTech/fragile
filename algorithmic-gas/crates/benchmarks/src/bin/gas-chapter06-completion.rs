@@ -75,7 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "module":include_str!("../convergence_chapter06_completion.rs"),
         "runner":include_str!("gas-chapter06-completion.rs"),
         "native_parameter_bridge":include_str!("../convergence_landscape_phase.rs"),
-        "chapter06":include_str!("../../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),
+        "chapter06":include_str!("../../../../docs/source/2_fractal_gas/convergence_program/06_convergence.md"),
         "binary_sha256":sha256_file(&std::env::current_exe()?)?,
         "input_index_sha256":sha256_file(&input.root().join("archive-index.json"))?,
         "input_dataset":input.root(),"new_native_steps":0,

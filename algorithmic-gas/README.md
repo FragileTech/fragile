@@ -1,6 +1,6 @@
 # Algorithmic Gas
 
-An independent Rust implementation of the Volume 2 [architecture specification](../docs/source/2_fractal_gas/architecture/01_algorithmic_gas.md). It does not modify or wrap the Python Atari, robotics or Euclidean engines, or the C++ Optimization Lab.
+An independent Rust implementation of the Volume 2 [architecture specification](docs/source/2_fractal_gas/architecture/01_algorithmic_gas.md). It does not modify or wrap the Python Atari, robotics or Euclidean engines, or the C++ Optimization Lab.
 
 CPU and WASM CPU support both `f32` and `f64`. Accelerator adapters use **host-orchestrated Burn batches**: objective/gradient evaluation, pair reductions, noise factors and kinetic arithmetic can execute on the selected device; sampling decisions, fitness statistics/maps, cloning and random-number generation run on the host. Transfers are explicit and counted. There is no automatic CPU fallback or precision reduction.
 
@@ -528,7 +528,7 @@ written equal to that reference cannot be told from an unstated one.
 
 The browser route is `/euclidean-gas/qft.html`, the third page of the
 Algorithmic Gas section beside the Lab and the Lectures. Its sources are
-`../fractal-gas-web/web/euclidean-gas/qft/` (`worker.js`, `model.js`, `views.js`,
+`web/euclidean-gas/qft/` (`worker.js`, `model.js`, `views.js`,
 `main.js`, `style.css`) and its five tabs are setup, run, correlators, rates and
 fits, and physics comparison. The page runs the same Rust through
 `crates/wasm/src/spectroscopy_bindings.rs`: the `SpectroscopyExperiment` class
@@ -541,7 +541,7 @@ JavaScript adds nothing to a value. JavaScript performs no
 science — no sampling, no statistics, no fitting; an undefined number stays a
 gap in a line, availability reasons and notes are printed verbatim, and a rate
 is never relabelled a mass. The
-[page contract](../fractal-gas-web/web/euclidean-gas/qft/README.md) states the
+[page contract](web/euclidean-gas/qft/README.md) states the
 rules and the test that enforces them.
 
 ## Project layout
@@ -551,7 +551,7 @@ rules and the test that enforces them.
 | `crates/algorithmic-gas` | Public data contracts, selection, fitness, cloning, kinetics, noise, tessellation geometry, private Burn adapters, transactional engine and checkpoints |
 | `crates/benchmarks` | Objective catalog (classic tensor-graph objectives with analytic gradients, pure-Rust COCO BBOB suite), initialization, native runner and end-to-end tests |
 | `crates/wasm` | Asynchronous browser bindings and precision-preserving binary checkpoints |
-| `../fractal-gas-web/web/euclidean-gas` | Independent worker, controls, 2D/3D population views, objective surface, convergence plot and walker inspector |
+| `web/euclidean-gas` | Independent worker, controls, 2D/3D population views, objective surface, convergence plot and walker inspector |
 
 Burn 0.21.0 is pinned and remains behind `ComputeBackend` / `ExecutionContext`. No public signature exposes a Burn tensor. `Real` is sealed to `f32` and `f64`; one precision applies to all numerical fields, rewards, random innovations and arithmetic within a run. Configuration values are converted once at their use sites; unrepresentable nonzero model parameters are rejected rather than replaced with dtype-dependent defaults. Indices use `u32`, with checked `i32` limits for the initial backend adapters.
 
@@ -668,17 +668,17 @@ From the repository root:
 ```sh
 rustup target add --toolchain 1.95.0 wasm32-unknown-unknown
 cargo install wasm-bindgen-cli --version 0.2.114 --locked
-make algorithmic-gas-web
-make algorithmic-gas-lab
+make web
+make serve
 ```
 
 Open `http://127.0.0.1:8770/euclidean-gas/`. The lab starts paused with 256 walkers, seed 7, 2D Rastrigin and WASM CPU `f32`. It runs in a Web Worker with asynchronous initialization and bounded step batches. Controls expose independent donor laws, multiple distance companions, objective direction, metrics, fitness, boundaries, noise and kinetics. The inspector shows raw rewards, pre-clone fitness, donor identities and clone decisions. The population has three views: a 2D projection, a 3D spatial view of any three coordinates, and a 3D landscape whose height is the asinh-scaled objective over the sampled surface with contour lines. Hidden coordinates are fixed by slice sliders (from the best or the selected walker). Walkers are coloured by raw reward or pre-clone fitness; overlays show distance companions, clone donors and 30-step trails that break at cloning events. Lennard–Jones runs add an atom viewer for the selected walker.
 
-The benchmark list is the engine's objective catalog (`benchmark_catalog()`): Sphere, Quadratic Well, Mexican Hat, Rastrigin, EggHolder, Styblinski–Tang, Rosenbrock, Easom, Holder Table, Lennard–Jones, Constant, Stochastic Gaussian, Mixture of Gaussians, the 24 COCO BBOB functions (dimensions 2, 3, 5, 10, 20, 40; instances 1–1000) and the unit lecture quadratic. Classic objectives are tensor graphs with analytic gradients and run on every backend. BBOB is a pure-Rust port of COCO 2.8.2 that reproduces the reference instances; it is evaluated on the host in `f64` for every backend, its gradient is a central difference costing `2d` evaluations, and the inspector reports both (`host_reward_evaluations`, `host_gradient_evaluations`). Differences from the C++ Optimization Lab: EggHolder and Holder Table gradients are analytic with a finite regularisation at cusps; Lennard–Jones clamps squared pair distances at `1e-4` instead of returning infinity; the lab's `quadratic` (α = 0.1) is `quadratic_well`, while `quadratic` remains the unit well of the lecture experiments; mixture components are seeded only. Stochastic Gaussian noise is addressed by seed, population version, stage and walker, so checkpoints replay it exactly. Reference values are regenerated with `python3 fractal-gas-web/tests/euclidean-gas/generate_objective_goldens.py` after `make optimization-native`.
+The benchmark list is the engine's objective catalog (`benchmark_catalog()`): Sphere, Quadratic Well, Mexican Hat, Rastrigin, EggHolder, Styblinski–Tang, Rosenbrock, Easom, Holder Table, Lennard–Jones, Constant, Stochastic Gaussian, Mixture of Gaussians, the 24 COCO BBOB functions (dimensions 2, 3, 5, 10, 20, 40; instances 1–1000) and the unit lecture quadratic. Classic objectives are tensor graphs with analytic gradients and run on every backend. BBOB is a pure-Rust port of COCO 2.8.2 that reproduces the reference instances; it is evaluated on the host in `f64` for every backend, its gradient is a central difference costing `2d` evaluations, and the inspector reports both (`host_reward_evaluations`, `host_gradient_evaluations`). Differences from the C++ Optimization Lab: EggHolder and Holder Table gradients are analytic with a finite regularisation at cusps; Lennard–Jones clamps squared pair distances at `1e-4` instead of returning infinity; the lab's `quadratic` (α = 0.1) is `quadratic_well`, while `quadratic` remains the unit well of the lecture experiments; mixture components are seeded only. Stochastic Gaussian noise is addressed by seed, population version, stage and walker, so checkpoints replay it exactly. The checked-in reference values are standalone inputs. Their optional regeneration bridge remains in `FragileTech/fragile/tools/algorithmic_gas_compat/`, beside the C++ Optimization Lab it invokes.
 
 Configuration/results export as JSON. Checkpoints export as binary `.agc` files or save explicitly in IndexedDB; restore recreates the selected precision/profile. IndexedDB quota/private-mode failures are reported. Plot traces restart at the restored frame and are not checkpoint state. WebGPU requires a secure context (localhost or HTTPS), an available adapter, supported operations and sufficient memory. `f64` selects WASM CPU explicitly; WebGPU never silently narrows it. The current WASM CPU build is single-threaded; a future shared-memory build needs browser isolation headers and a thread-pool adapter.
 
-Both CPU and WebGPU bundles are generated under ignored `engine/` directories; third-party rendering files under ignored `vendor/`. `WASM_BINDGEN=/path/to/wasm-bindgen` overrides the pinned CLI location. `node fractal-gas-web/tools/build-euclidean-gas.mjs --cpu-only` builds only the CPU profile. CI builds both; deployment assembly publishes this lab separately from existing labs.
+Both CPU and WebGPU bundles are generated under ignored `engine/` directories; third-party rendering files under ignored `vendor/`. `WASM_BINDGEN=/path/to/wasm-bindgen` overrides the pinned CLI location. `node tools/build-euclidean-gas.mjs --cpu-only` builds only the CPU profile. CI builds both; deployment assembly publishes this lab separately from existing labs.
 
 ### Lecture sessions and recorded stages
 
@@ -722,8 +722,8 @@ cargo check -p algorithmic-gas-benchmarks --features cuda --locked
 cargo check -p algorithmic-gas-wasm --target wasm32-unknown-unknown --features webgpu --locked
 
 # From the repository root, after building WASM:
-npm --prefix fractal-gas-web run test:euclidean-gas
-make algorithmic-gas-browser-test  # sandbox views; needs `make algorithmic-gas-lab` running
+npm run test:wasm
+make browser-test  # sandbox views; needs `make serve` running
 ```
 
 Tessellation tests cover the empty-circumsphere property and Euler relation in 2D and 3D, cospherical lattices, degenerate swarms, Voronoi volume closure in clip and periodic boxes, facet reciprocity, flat and conformally flat curvature, Regge curvature of a sphere, serial/parallel bit equality, checkpoint resume of the Einstein–Hilbert gas, and agreement with the Python reference estimators. Contract tests cover shapes, scalar precision, matching laws, separate streams, multi-companion reduction, frozen cloning, historical identities/rescoring, boundary timing, degenerate fitness, cosine zeros, anisotropic covariance, thermostat scaling, extraction, custom hooks, opaque state, replay and failure paths. GPU feature checks verify compilation, not runtime on every vendor. Long-run statistical equivalence, GPU numerical conformance and full performance sweeps remain required before claiming accelerator parity or speedup.
@@ -833,7 +833,7 @@ retains its measured residual and interpretation limits.
 [QFT_VALIDATION.md](QFT_VALIDATION.md) records the validated identities, measured
 prediction failures and current test coverage. The
 [Part VI contracts](crates/algorithmic-gas/src/physics/partvi_contracts.json) state
-what each experiment measures. The [lecture guide](../docs/source/2_fractal_gas/partvi_experiments.md)
+what each experiment measures. The [lecture guide](docs/source/2_fractal_gas/partvi_experiments.md)
 provides the chapter context.
 
 ### Elite walkers

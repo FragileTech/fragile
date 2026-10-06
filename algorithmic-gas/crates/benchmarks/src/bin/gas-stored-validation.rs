@@ -64,7 +64,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .ancestors()
-        .nth(3)
+        .nth(2)
         .ok_or("workspace root missing")?
         .to_path_buf();
     let mut results = vec![];
@@ -78,7 +78,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         };
         let inventory: Value =
             serde_json::from_reader(BufReader::new(fs::File::open(root.join(format!(
-                "algorithmic-gas/proof-validation/chapter{number:02}_inventory.json"
+                "proof-validation/chapter{number:02}_inventory.json"
             )))?))?;
         let source = fs::read_to_string(
             root.join(

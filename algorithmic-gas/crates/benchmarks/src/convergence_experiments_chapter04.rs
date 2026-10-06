@@ -19,7 +19,7 @@ use serde_json::{Value, json};
 use std::collections::BTreeMap;
 
 const SOURCE: &str = include_str!(
-    "../../../../docs/source/2_fractal_gas/convergence_program/04_wasserstein_contraction.md"
+    "../../../docs/source/2_fractal_gas/convergence_program/04_wasserstein_contraction.md"
 );
 fn error(s: impl Into<String>) -> GasError {
     GasError::Configuration(s.into())

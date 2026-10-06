@@ -98,9 +98,9 @@ def run(repository, root):
     inputs = [(pressure_path, pressure), (geometry_path, geometry), (primitive_path, primitive)]
     original_paths = [
         repository
-        / "algorithmic-gas/outputs/convergence/chapters04-06-experiments/full-20261004/chapter04/chapter04-report.json",
+        / "outputs/convergence/chapters04-06-experiments/full-20261004/chapter04/chapter04-report.json",
         repository
-        / "algorithmic-gas/outputs/convergence/chapters04-06-experiments/tightening-20261004/chapter04/report.json",
+        / "outputs/convergence/chapters04-06-experiments/tightening-20261004/chapter04/report.json",
     ]
     for path in original_paths:
         inputs.append((path, json.loads(path.read_text())))
@@ -231,7 +231,7 @@ def run(repository, root):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("root", type=Path)
-    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[2])
+    parser.add_argument("--repository", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
     result = run(args.repository, args.root)
     print(json.dumps(result["summary"], indent=2))
