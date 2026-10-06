@@ -15,11 +15,12 @@ series are written as the shortest decimal that round-trips the float32 value.
 Every float32 series is checked here against a float64 masked mean of the
 exported per-pair and per-triplet values.
 
-Usage: uv run python algorithmic-gas/tools/export_qft_fixtures.py
+Usage: uv run python tools/algorithmic_gas_compat/export_qft_fixtures.py --output /tmp/gas-fixtures
 """
 
 from __future__ import annotations
 
+import argparse
 from dataclasses import replace
 import inspect
 import json
@@ -60,7 +61,6 @@ from fragile.physics.qft_utils.statistics import CorrelatorStatistics, series_st
 
 REPO = Path(__file__).resolve().parents[2]
 PROVENANCE_ROOT = "src/fragile/physics"
-OUTPUT = Path(__file__).resolve().parents[1] / "crates/algorithmic-gas/tests/fixtures/qft"
 SCHEMA_VERSION = 1
 FRAMES = 12
 DIMENSION = 3
@@ -517,7 +517,7 @@ def series_block(
         baryon,
         "operator_baryon_series[valid_t] = sums",
         "float32 there; the baryon_*_f64 records apply the same masked mean to triplets.b in "
-        "float64 (frame_mean of algorithmic-gas/tools/export_qft_fixtures.py), null on a "
+        "float64 (frame_mean of tools/algorithmic_gas_compat/export_qft_fixtures.py), null on a "
         "zero-count frame",
     )
     for name, values in (
@@ -903,7 +903,7 @@ def build_case(name: str, description: str, seed: int, window: tuple) -> dict:
         "schema_version": SCHEMA_VERSION,
         "name": name,
         "description": description,
-        "generator": "algorithmic-gas/tools/export_qft_fixtures.py",
+        "generator": "tools/algorithmic_gas_compat/export_qft_fixtures.py",
         "seed": seed,
         "shape": {"frames": FRAMES, "walkers": inputs["alive"].shape[1], "dimension": DIMENSION},
         "involutive": involutive,
@@ -951,8 +951,11 @@ def build_case(name: str, description: str, seed: int, window: tuple) -> dict:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True, help="Fixture output directory")
+    output = parser.parse_args().output
     torch.set_num_threads(1)
-    OUTPUT.mkdir(parents=True, exist_ok=True)
+    output.mkdir(parents=True, exist_ok=True)
     cases = [
         build_case(
             "non_involutive",
@@ -978,14 +981,14 @@ def main() -> None:
     for case in cases:
         text = json.dumps(case, allow_nan=False, separators=(",", ":")) + "\n"
         size = len(text.encode())
-        (OUTPUT / f"{case['name']}.json").write_text(text)
+        (output / f"{case['name']}.json").write_text(text)
         print(f"{case['name']}: {size} bytes")
         for block in ("series", "electroweak"):
             print(f"  {block} float32 roundoff {case[block]['float32_roundoff']:.3e}")
         if "exchange_cancellation" in case:
             print("  " + json.dumps(case["exchange_cancellation"], indent=1).replace("\n", "\n  "))
         assert size < MAX_BYTES, (case["name"], size)
-    print(f"wrote {len(cases)} fixtures to {OUTPUT}")
+    print(f"wrote {len(cases)} fixtures to {output}")
 
 
 if __name__ == "__main__":

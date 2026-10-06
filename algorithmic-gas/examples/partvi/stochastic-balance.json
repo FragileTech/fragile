@@ -1,9 +1,0 @@
-{
-  "id": "VI-22",
-  "seed": 7,
-  "steps": 96,
-  "parameters": {
-    "replicas": 32,
-    "horizon": 4
-  }
-}

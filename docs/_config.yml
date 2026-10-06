@@ -54,7 +54,7 @@ html:
   use_multitoc_numbering    : true   # Continuous numbering across parts/chapters
   extra_footer              : ""  # Will be displayed underneath the footer.
   home_page_in_navbar       : true  # Whether to include your home page in the left Navigation Bar
-  baseurl                   : "https://fragiletech.github.io/fragile/docs/theory/"  # Canonical URL for the two-volume lectures.
+  baseurl                   : "https://fragiletech.github.io/fragile/docs/theory/"  # Canonical URL for Volume 1.
   analytics:
     google_analytics_id     : ""  # A GA id that can be used to track book views.
     plausible_analytics_url : https://plausible.io/js/script.js

@@ -18,11 +18,12 @@ evaluates these fixtures with ``RidgeScale::Absolute``, the convention they were
 with, and pins the departure of the shipped default from them separately. Regenerating
 the fixtures does not change that: the convention is the reference's, not this script's.
 
-Usage: uv run python algorithmic-gas/tools/export_tessellation_fixtures.py
+Usage: uv run python tools/algorithmic_gas_compat/export_tessellation_fixtures.py --output /tmp/gas-fixtures
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 from pathlib import Path
 
@@ -33,9 +34,6 @@ from fragile.physics.fractal_gas.kinetic_operator import KineticOperator
 from fragile.physics.geometry.delaunai import build_delaunay_edges, compute_delaunay_data
 
 
-OUTPUT = (
-    Path(__file__).resolve().parents[1] / "crates/algorithmic-gas/tests/fixtures/tessellation"
-)
 WEIGHT_MODES = [
     "uniform",
     "inverse_distance",
@@ -116,7 +114,10 @@ def degenerate_case(name: str, positions: list[list[float]]) -> dict:
 
 
 def main() -> None:
-    OUTPUT.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output", type=Path, required=True, help="Fixture output directory")
+    output = parser.parse_args().output
+    output.mkdir(parents=True, exist_ok=True)
     cases = [
         geometry_case("cloud_2d", 60, 2, seed=20260918, length_scale=1.0),
         geometry_case("cloud_3d", 80, 3, seed=20260919, length_scale=0.7),
@@ -131,9 +132,9 @@ def main() -> None:
         degenerate_case("duplicates_2d", duplicates),
     ]
     for case in cases:
-        (OUTPUT / f"{case['name']}.json").write_text(json.dumps(case))
-    (OUTPUT / "degenerate.json").write_text(json.dumps(degenerate))
-    print(f"wrote {len(cases) + 1} fixtures to {OUTPUT}")
+        (output / f"{case['name']}.json").write_text(json.dumps(case))
+    (output / "degenerate.json").write_text(json.dumps(degenerate))
+    print(f"wrote {len(cases) + 1} fixtures to {output}")
 
 
 if __name__ == "__main__":

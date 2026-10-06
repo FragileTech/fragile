@@ -78,8 +78,11 @@ Key arguments:
 ## Documentation
 
 The [documentation portal](https://fragiletech.github.io/fragile/docs/) links to the
-two-volume [Theory lectures](https://fragiletech.github.io/fragile/docs/theory/) and
+Volume 1 [Theory lectures](https://fragiletech.github.io/fragile/docs/theory/) and
 the independent [Control Laboratory guide](https://fragiletech.github.io/fragile/docs/lab/).
+Volume 2, the Rust workspace, and the Euclidean Gas/QFT browser laboratory live in
+the separate [Algorithmic Gas repository](https://github.com/FragileTech/algorithmic-gas).
+Both repositories build independently.
 
 ```bash
 make docs    # build the portal, Theory, and Lab sites

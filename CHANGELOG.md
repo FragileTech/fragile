@@ -1,5 +1,12 @@
 # Changelog
 
+- Keep Algorithmic Gas book, simulator, and static assets out of the Fragile Pages
+  deployment bundle, and identify the remaining Theory site as Volume 1.
+
+- Extract Algorithmic Gas into the independent `FragileTech/algorithmic-gas`
+  repository with its owned history. Remove the embedded checkout and make optional
+  fixture exporters accept explicit output directories.
+
 - Move the complete Volume 2 book and research corpus, the Algorithmic Gas Rust
   workspace, and the Rust-backed Euclidean Gas/QFT browser laboratory into the
   extraction-ready `algorithmic-gas/` repository boundary. Keep the Python

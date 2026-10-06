@@ -1,9 +1,0 @@
-{
-  "id": "VI-32",
-  "seed": 7,
-  "steps": 96,
-  "parameters": {
-    "bins": 4,
-    "lag": 2
-  }
-}

@@ -102,7 +102,7 @@ prompt:
 	@python3 docs/build_prompt_downloads.py
 	@echo "✓ Prompts generated in prompts/"
 
-# Build the two-volume lectures without the independent laboratory guide.
+# Build Volume 1 without the independent laboratory guide.
 docs-theory:
 	$(MAKE) prompt
 	rm -rf docs/_build/theory-site

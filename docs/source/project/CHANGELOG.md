@@ -1,16 +1,228 @@
 # Changelog
 
+- Keep Algorithmic Gas book, simulator, and static assets out of the Fragile Pages
+  deployment bundle, and identify the remaining Theory site as Volume 1.
+
+- Extract Algorithmic Gas into the independent `FragileTech/algorithmic-gas`
+  repository with its owned history. Remove the embedded checkout and make optional
+  fixture exporters accept explicit output directories.
+
+- Move the complete Volume 2 book and research corpus, the Algorithmic Gas Rust
+  workspace, and the Rust-backed Euclidean Gas/QFT browser laboratory into the
+  extraction-ready `algorithmic-gas/` repository boundary. Keep the Python
+  FractalAI/QFT implementation and the C++ Arcade, Control, LLM, and Optimization
+  applications in this repository.
+
 - Extend native Rust validation through Chapters 10–12 with source-specific
   entropy/Fisher, mass–shape/transport and exchangeability checks. Tighten
   separable nonconvex LSI constants through coordinate tensorization and retain
   independent native trajectory ensembles, whole-trajectory uncertainty, full
   permutation replays and lossless archives for later analyses.
 
-- Add a shared-prefix threshold to Graph in the LLM, Arcade, and Optimization labs. Frozen ancestry is archived outside the active population, shown in green, and retained for trajectory reconstruction.
+- Extend Rust validation to Chapters 7–9 with independently sampled Poisson
+  clouds, complete marked mean-field updates, native kinetic resonance,
+  population-independent component and fluctuation constants, and measured
+  population scaling. Preserve full stages, rooted component draws, innovations,
+  source snapshots and reusable compressed data. Prove explicit dimension
+  dependence of finite-horizon moments and extend the canonical chaos reward
+  hypotheses to confining nonquadratic landscapes.
+
+- Complete retained-stage kinetic moment comparisons and source-scoped chapter
+  ledgers; repair transient positional and native joint-density bounds. Add a
+  global nonquadratic landscape-axiom certificate, population-independent
+  weak-selection moment and tail rates, and lossless native parameter sweeps.
+
+- Make convergence bounds dimension-explicit and extend the Rust validation
+  registers to regional landscape axioms, nonquadratic force moduli, slow zones,
+  Gaussian excursions and unbounded reward tails. Add complete regional error
+  and native force-perturbation proofs, independent interval certificates for
+  Rastrigin within-well rates, and reusable native nonconvex experiment archives.
+  Keep all errors population-normalized and test theorem applicability separately
+  from observed transport decay.
+
+- Add fresh native Rust experiments for Chapters 4–6: paired cloning clouds,
+  dense viscous reference runs, normalized permutation-invariant capped kinetic
+  contraction, exact-SDE timestep refinement and independent killed-chain
+  ensembles. Retain lossless stage/noise archives, resumable checkpoints,
+  checksums, source snapshots and saved-data re-analysis.
+  Resolve quadratic timestep errors with exact Gaussian cubature and an explicit
+  population-independent weak-error prefactor. Repair the continuum location
+  metric, macroforce closure, generator-transfer and boundary-corrector
+  hypotheses, and propagate them to the convergence composition.
+
+- Add parallel chapter 4–6 analyses of retained Rust experiments, with source
+  expression inventories, reconstructed rate and moment predictions, strict
+  applicability gates and input provenance. Use exact Gaussian quadratic
+  uncertainty for the saved small-ensemble linear controls, and align Chapter 5
+  cap, timestep and thermostat-law statements with the actual native kernel.
+
+- Complete the Chapter 3 source-expression validation gate and add independent
+  native measurements of Keystone feedback, conditional cloning moments,
+  collision dissipation, boundary bounds and complete weighted proposal drift.
+  Retain predictions, residual uncertainty and population-independent bounds.
+
+- Complete default harmonic kinetic contraction on positional-shape classes,
+  a signed nonconstant inward-velocity family and its actual alive-law
+  terminal transfer. Prove preserved source-boundary envelopes, complete
+  full-dead feedback and exact delayed signed law/moment accounts; retain
+  the remaining unrestricted active default convergence obligation.
+  Complete the full recipient-jitter first-provider consumer, conditional
+  noisy-cap derivative deficit and centered first-force operator bound;
+  the default positional margin passes under its proved velocity budgets.
+  Prove actual mean-cap matrix sectors and a signed first-provider/cap
+  auxiliary margin; bound mixed extinction and empirical-position losses
+  through full Gaussian source plans and each own survival denominator.
+  Retain the complete second-provider and full alive-law proof obligations.
+
+- Prove default harmonic velocity burn and full-Gaussian provider feedback,
+  noncommuting count/cap principal contraction, actual finite marked
+  consistency and uniform-time empirical-provider budgets under own survival.
+  Retain the separate signed preparation and full-law convergence obligation.
+
+- Prove complete native stationary functional fluctuations and original unbounded-source response. Derive full interacting downstream population linearization and covariance, actual two-copy clone/Haar and sampled-normalizer brackets and complete conditional-entering Gaussian innovations with strictly positive covariance trace, uniform weighted-color time limits, and hard-threshold harmonic color Gaussian laws with strictly positive covariance on every joint population/time schedule. Reconstruct full native color histories with exact population-uniform gaps and a positive interacting full stationary family with its complete color-clock classification and exact scalar-orbit history spectrum; derive same-record stationary phase/graph scaling with critical marked action, nondegenerate complete spatial-action history with native retessellation and every-schedule joint time limits, and fixed-phase divergence; classify the native weighted Yang–Mills equation and source variations, and exhibit actual positive-viscosity color-only reflection and regional CAR tests with explicit parameter regimes. Derive the literal coupled Einstein–Hilbert kernel/action response, its actual relative-rank moment obstruction, and uncut bounded-action, spectral-interface and full-history thermal/source/ridge and viscosity/curl force-score responses for the existing absolute metric. Update the proof difficulty assessment to credit these results.
+
+- Complete the actual row-normalized raw-reward surviving alive-law extension with an N-independent relaxation rate and an explicit vanishing uniform-time particle floor. Prove both true row denominator interfaces with uncapped correlated OU velocities, source-box weak continuity and exact recent-survival normalization; cover both alive sampling orders and separately surviving two-swarm laws. Sharpen the count surviving floor without a dead-moment cutoff, and prove default-box alive coverage plus reference-viscosity frozen-provider gaps. Repair the complete-map cap contraction and enlarge its positive count-viscosity interval while retaining the separate nonlinear default-law obligation.
+
+- Extend the native proof programme with quantitative full marked stationary chaos and commuting limits, primitive population-uniform QSD eigenfunction/history comparison, full-state block entropy and L2 estimates, stationary terminal color martingales, quantitative marked geometry and literal hard-mask bounds, separated-root and alive-normalized space/time covariance, actual zero-final-noise spatial projector curvature and uncut compact-chart Wilson limits. Characterize the zero-threshold origin divergence and retain each result's exact algorithm, readout and parameter regime.
+
+- Prove preparation-exact Rastrigin survival and inverse-alive bounds for both dense normalizations, certify the finite Gaussian integrals, and retain every gate, Haar and unbounded noise contribution. Derive the complete rejected/surviving entropy identity with population-uniform conditioning cost, and extend physical mean-field and stationary population-orbit invariance to the unchanged native Rastrigin force. Compute the discounted central-discovery clock at every population, complete seed offspring law, positive-volume joint-core producer and exact correlated joint-energy ledger. Bound actual sampled mean fitness by 1.614 and derive signed Gaussian source pressure with exact revival. Quantify the finite-population two-update source producer and uniform initial joint prices; compute exact component-Haar orbital, death and extinction charges. Reduce global eigenfunction comparison to full-state reached-phase oscillation and retain continued source quality and entropy production as separate obligations.
+
+- Prove population-uniform active harmonic alive-law mixing at the original nonresonant timestep with an explicit positive selection interval. With active selection and positive count viscosity, prove a unique population stationary law and actual finite-swarm alive Wasserstein relaxation with an explicit vanishing uniform-time particle floor. Establish exact positive-viscosity invariant-law relaxation with cloning disabled, joint active count-viscous smoothing, active-cloning fourth-moment drift at the original count viscosity, and finite-future survival-weight ratios with sharp alive-law conditioning bounds. Complete actual survivor-conditioned alive empirical-law and sampled-law Wasserstein relaxation, including the unchanged raw quadratic reward, with N-independent rates and explicit vanishing particle floors in a nonempty small-positive-viscosity/selection and fixed-large-box regime. Retain the original ν=0.3/L=2 and exact finite-QSD mixing extensions explicitly.
+
+- Preserve frozen velocities exactly in elastic identity collisions. Add quantitative Einstein–Hilbert centered cloning moments, population-uniform center and spread fluctuations, native fitness-tail and selection-continuity estimates, both Boris/OU transition budgets, reversible dissipation, signed cycle martingale bounds, native curvature balance and neighborhood-marked population estimates. Validate the formulas with native Rust stage records, exhaustive matching calculations, independent checkpoint replicas and extended shape/geometry simulations. Correct geometry regularization and execution-totality claims; retain the unresolved full graph-dependent population limit.
+
+- Complete population-uniform alive-law convergence in an explicit conservative weak-selection regime: prove exact finite-swarm invariant-law mixing through sampled global fitness, finite accepted-component coupling and two-update Gaussian bridges, with population-independent alive-sampled TV and empirical-law Wasserstein rates. Upgrade the unbounded-reward mean-field result to physical Wasserstein distance with its explicit vanishing particle floor, and verify nonempty primitive parameter profiles.
+
+- Add native Rust validation for the first three convergence chapters, with exhaustive source inventories, continuity and drift coefficients, exact transport and cloning moments, independent kinetic/cloning/reset ensembles, parameter matrices, and logarithmic Keystone rates. Correct Sasaki measurement and optimal-transport coercivity bounds, enforce permutation-invariant empirical observables, repair boundary-smoothing normalization and rescale constants, and validate scheduled revival from live donors even with unrestricted retained dead positions. Prove population-independent empirical standardization bounds and decreasing native measurement error; test paired complete-update alive-law error trajectories, fixed contraction rates, noise floors and empirical temporal decay. Preserve full marked transport as a separate diagnostic and support reanalysis of retained native trajectories.
+
+- Extend the coupled gas through the original alive-centered Keystone and regional landscape method: retain actual normalizers, donor/revival flux, shared Haar, both viscous kicks, cap and terminal conditioning. Compute population-uniform row, moment, inverse-alive and regional Rastrigin bounds with unrestricted Gaussian jitter; separate centroid and between-phase geometry, evaluate actual phase crossings and QSD killing corrections, and prove exact symmetry-orbit weights.
+
+- Advance the Volume II proof programme with complete native parameter records, population-independent B2 force bounds, discrete marked-law entropy, finite-time geometry and survival, same-sample graph consistency, population-uniform reference determinant amplitude and nonzero limiting centered innovations, conditional gauge and metric variations, filled-ground physical-time positivity, native locality budgets and exact implemented spectral/dispersion bounds. Characterize the full tagged determinant's failing square-root scaling and retain explicit stationary, physical correspondence and uniform-gap obligations. Extend this with uniform spatial survivor inequalities, invariant stationary population-law limits, a causal nonzero gauge innovation process with exact bracket, the actual capped B2 conditional action and correlated face-action limit, and complete native transfer decay. Prove the actual interacting count kernel's full-record time-reversal cycle, while retaining the separate physical gauge-sector reconstruction obligation. Derive a positive active-cloning marked stationary-chaos regime, native non-Abelian projector transport and noncommuting curvature, a complete scaled native jump-diffusion/gauge-process limit, and reflection/transfer tests inside the actual projector observable dictionary. Prove the unchanged reference's native sparse Delaunay/Poisson geometry, local spatial likelihood and score, exact ridge and row-floor regimes, and predictive leakage of the actual common-SU(3) color quotient for every configured threshold. Derive conditional empirical same-record geometry concentration and the actual conformal-curvature/allocated-density limits. Prove population-uniform full marked stationary variance and unconditional entropy/transport estimates in the derived active-cloning count regime. Derive shared-force marked spatial limits and native smeared color CLTs, and classify the actual centroid-history reflection regimes with a positive strided physical reconstruction and exact uniform centroid gap.
+
+- Repair the Volume II cloning signal proof: replace the unattainable global-variance condition with within-group variance bounds and explicit orientation, prove conditional measurement-event bounds, retain vector cluster geometry and invalid-cluster contributions, and propagate the complete averaged Keystone estimate with its velocity and finite-population remainders into Wasserstein control. Complete finite-population survival-conditioned TV and alive-marginal Wasserstein convergence through primitive kernel estimates, verify the unchanged reference analytically, and prove the obstruction to the coarse cap-charged kinetic test at the canonical step size. Complete terminal-mark and singleton-revival full-array counterexamples, and an active near-tie counterexample for the prescribed labeled coupling, to the respective global quadratic estimates with a vanishing residual. Distinguish those costs from optimal alive empirical transport and alive-sampled marginal laws; prove actual Rastrigin one-update alive-transport expansion and separate phase-local contraction from convergence in law.
+
+- Derive primitive-parameter QSD eigenfunction and conditioned mixing/entropy bounds using the actual two-update viscous gas. Extend the finite-population certificate to analytic forces with calculated global derivative profiles for both Gaussian normalizations, verify the unchanged reference, and add logarithmic evaluation with independent stage-map and Perron checks. Preserve the force, gate, unbounded innovations and existing terminal/cap conventions.
+
+- Define the recorded color–geometry viscous gas with a full parameter register, exact stage masks and the implemented thresholded covariance pseudo-inverse. Prove coupled kinetic moments, finite-population QSD/entropy, population-independent QSD marginal tails and fixed-step population limits for both existing Gaussian normalizations, and the filled-ground/parity/gauge-sector spectrum of the existing finite Hamiltonian. Add a passive native geometry observer, numerical diagnostics and independent occupation-spectrum, viscous-balance and observer-noninterference tests; retain explicit conjectures for uniform stationary control and continuum physical identification. Repair labelled-proof index metadata so the two-volume book renders with the installed proof extension, with a native Sphinx regression test.
+
+- Document the remaining Volume 2 Yang–Mills and quantum-gravity proof steps, with source-linked theorem dependencies, continuum-control requirements, and the three-space-plus-algorithmic-time reconstruction programme.
+
+- Prove separate one-step bounds for the component-Haar collision and for substituting Python's ordered donor-star collision into the declared Volume 2 update. Derive the last-writer collision matrix, population-independent velocity bounds, and a priority-decorated mean-field map with explicit one-step variance and bias constants for that collision substitution.
+
+- Audit the Volume 2 one-step estimates: evaluate every reward-dependent cloning and marked-revival term by finite accepted plans, specify the edge bound for paired label clusters, and state the canonical collision kernel used by the proofs.
+
+- Compose the signed Keystone cloning pressure with exact collision moments, both kinetic force kicks and the velocity-cap cross term in one full-update quadratic estimate. Trace regional raw reward bands through shared fitness normalization, accepted donor flux and the same full-update inequality.
+
+- Bound common-donor insertion, acceptance mismatch and barycenter corrections using the existing Keystone geometry; derive phase-centered kinetic covariance and explicit capped-kernel Fisher estimates with unbounded-domain moment budgets.
+
+- Derive the signed nonlinear entropy and fitness-refresh balances around stationary phases, retain regional and within-cell defects, and quantify their finite-population entropy-drift transfer including survival conditioning.
+
+- Prove the exact kinetic resonance obstruction to survival-conditioned TV attraction, retaining active cloning and all noises, and distinguish it from valid weak mean-field evolution.
+
+- Prove uniform survival-conditioned alive-fraction bounds, explicit normalized-alive mean-field errors, general canonical box QSD existence, and quantitative stationary population-map invariance without modifying the algorithm.
+
+- Derive an explicit extinction horizon and noncommuting population/time limits for the unchanged unconditioned terminal-box gas, keeping conservative and survival-conditioned limits separate.
+
+- Audit the full mean-field feedback closure, derive uniform sigmoid sensitivity and explicit finite-population exit windows, and prove the unsigned-selection and multiple-phase obstructions to unsupported long-time claims.
+
+- Derive reward-selection entropy self-confinement with zero-trap certificates, population-independent joint positional entropy bounds, geometric tail probabilities and the exact nonlinear reference-production balance.
+
+- Extend the closed active-cloning limit to unbounded raw quadratic-growth reward using weighted total variation, exact Gaussian moment budgets and a dependency-preserving uniform-time error estimate.
+
+- Close an explicit active-cloning mean-field regime with actual collision feedback, a positive selection interval, population-independent TV relaxation, vanishing uniform-time particle errors, stationary chaos and commuting long-time/population limits.
+
+- Prove stationary and joint long-time mean-field bounds, an evaluated active-cloning regeneration regime, moment-localized phase convergence, and explicit stationary phase-weight formulas.
+
+- Add structural landscape convergence proofs parameterized by basin, passage, reward and tail profiles, including selection-based unbounded confinement, explicit active-cloning mean-field trajectory bounds, structural TV and crossing certificates, reward-geometry confinement with optional trap intervals, phase-local full-law residual criteria, finite-resolution convergence decisions, population-independent Keystone pressure, exact signed full-update drift, explicit quadratic consistency and vanishing uniform-time particle-error budgets, and symbolic/rational validation.
+
+- Enable homogeneous GAS populations through the Optimization API, with staged walker transfers, private tabu/covariance state, and equal-budget population-versus-single-swarm benchmark runners.
+
+- Add Fractal Populations: configurable parallel Wave swarms with per-member settings, modular elite exchange, shared global elites and optimization basins, a shared evaluation budget, and an Optimization population workspace with recording/playback. Native snapshot, Control, and reference-backed LLM adapters use staged full-state imports; imported replay roots use Control checkpoint version 4.
+
+- Build the native Optimization Lab reference alongside WebAssembly in the Pages deployment job so adaptive and boundary parity checks can run before publishing.
+
+- Add opt-in Optimization Lab covariance overlays for CMA-ES/BIPOP and same-swarm Fractal estimators, learned field/drift arrows, source-captured movement arrows, 2D/3D and higher-dimensional projections, and geometry-aware recording replay.
+
+- Add live fractal boundary handling choices: no repair, periodic wrapping, and libcmaes boundary repair. Apply the shared mapping across all six adapters, defer planner changes safely, and retain legacy periodic settings and recordings.
+
+- Restore complete valid elite rows after every Wave movement step so the next clone always has donors, including when all proposals leave bounds. Keep evaluations and recorded movement unchanged; publish corrected population metrics and preserve older Optimization recording imports.
+
+- Add a 20D population benchmark with million-evaluation caps, known-minimum target stopping, resumable results, and explicit native precision checks; reject FP64 fractal runs while their internal state remains FP32.
+
+- Add experimental cloning-guided perturbations across all six fractal optimizers: local selected-population geometry, bounded fitness drift, live controls, Euclidean kick/direct modes, and planner-safe model freezing. Preserve existing perturbations and older recording imports.
+
+- Replace adaptive fractal path-based scalar growth with bounded objective-percentile scales. Add live minimum/maximum controls, capped broad moves, normalized donor-difference moves, and focused rounds that respect user bounds; retain covariance geometry across scale edits and ignore legacy archived scale multipliers.
+
+- Add experimental adaptive fractal exploration across the six swarm optimizers, Euclidean kick/direct modes, live multi-run controls, basin archives, and a reproducible benchmark pilot. Preserve legacy seeded tests; record refinement provenance and document experimental limitations.
+
+- Add live Optimization Lab tuning for perturbations, swarm parameters, populations, and evaluation budgets, preserving run state and recording changes at application boundaries.
+
+- Run Arcade trajectory playback in an independent emulator while sampling continues, with fixed recordings, isolated failures, and a bounded share of the combined memory budget.
+
+- Add an Arcade trajectory player with best/selected walker ancestry, scrubbing, playback controls, direct Graph snapshot rendering, and Wave/planner replay from the initial state.
+
+- Add Arcade worker selection (Auto or 1–20), persisted 1–8 GiB combined WebAssembly budgets, growing wasm32 heaps, direct donor stepping, bounded Graph history, and runtime cleanup on reset.
+
+- Add an optional shared-prefix threshold to Graph in the LLM, Arcade, and Optimization labs. Frozen ancestry is archived outside the active population, shown in green, and retained for trajectory reconstruction.
+
+- Add generated fixed-target Xent games to LLM Lab, with opposite surprise objectives, target likelihood scoring during Fractal sampling, best-prefix retention, paired token-budget benchmarks, portable game settings and offline scoring evidence.
+
+- Correct the algorithmic spectroscopy against the eighty-defect audit of the reference pipeline and raise `SPECTROSCOPY_VERSION` to 2. A momentum mode now projects the connected element, so an additive convention on the observable no longer changes the rate and mode 0 of both phases is refused; the orientation of a score-directed pair and the column order of a score-ordered triplet are frozen with the element at its source frame and reapplied at every sink, so no rate carries the score decorrelation of the sink frame, and the two arms whose propagator that identity makes a duplicate of another channel's keep only their frame mean; the score gradient divides each companion difference by its own length and is a gradient again; a frame whose weighted score dispersion vanishes has no average and carries the weight zero; the generalized eigenvalue problem follows a fixed vector solved once at a reference lag instead of taking the largest eigenvalue at each lag, and a basis of two channels that measure one observable is refused; a fit under an active singular-value floor reports the rank it actually used as its degrees of freedom; and every analysed channel publishes what its resampling does not cover, including that a delete-one jackknife removes time origins and not observations, so beyond the block its error is a lower bound. The emergent metric's ridge and eigenvalue bounds are multiples of the displacement covariance scale, so the metric scales with the cloud again; an eigenvalue a clamp or a sign repair moved is recorded and refused under a strict policy instead of leaving an indefinite matrix positive; and a tessellation carried over by a schedule that does not refresh every step is stamped with its staleness, declined by the scale gating and checked on decode, so an archive written before the stamp cannot read as fresh.
+- Add an algorithmic spectroscopy subsystem to the Rust Algorithmic Gas: meson, vector, baryon, glueball, tensor, Dirac, electroweak, chirality and twistor operators, plus injected custom ones, evaluated on the recorded companion topology of sites, distance pairs, cloning pairs and triplets, with every documented definition kept as an explicit arm. A measurement streams short recorded chunks through an accumulator and retains operator series, source-frozen propagator moments and coverage; a pure, repeatable analysis forms connected correlators, block-resampled errors, effective masses, AIC window scans, multi-exponential fits with channel-agnostic scale-free priors and a prior-dominance diagnostic, joint group fits, GEVP levels, geodesic multiscale copies, a graph smoothing diagnostic, coupling scales and a reference comparison labelled a hypothesis mapping. Every variant can be measured: capabilities derived from the gas configuration make the channels of an unrecorded quantity unavailable with a reason instead of failing the run, an exchange-odd frame mean that cancels exactly on a mutual pairing falls back to the source-frozen propagator, an envelope that never enters a correlator is non-correlatable by type, and the fitted number is reported as the decay rate of the algorithm-time autocorrelation, which is a mass only under a positive self-adjoint transfer representation. Add the resumable spectroscopy session with re-analyzable CBOR evidence, the `gas-spectroscopy` runner and the wasm bindings that share its request, report schema and f64-only CPU precision rule. The subsystem runs end to end: a pipeline test measures Einstein–Hilbert, viscous Euclidean and Euclidean archives and fits rates on them, a session test shows that a longer run needs no more engine memory because one chunk is recorded at a time, a CLI test drives every subcommand, and a parity test checks the operators, the statistics and the window scan against exported fixtures of the Python reference.
+
+- Name the gas variants and register them: the Fractal Gas is the family, the Algorithmic Gas is the engine and never a variant, and the Euclidean, Viscous Euclidean, Einstein–Hilbert, Geometric, Latent Fractal and Environment gases are the registry entries, book-only ones marked unimplemented. Add `algorithmic_gas::variants` with each variant's title, book label, summary, reference instance and configuration constructor, move `GasConfig::euclidean` and `GasConfig::einstein_hilbert` into it behind unchanged public paths and wire names, add `GasConfig::viscous_euclidean` for the Gaussian-kernel viscous force the colour channels need, and add `RunConfig::euclidean`, `RunConfig::variant` and `gas-benchmark --variant NAME` with `--einstein-hilbert` kept as an alias.
+
+- Add the Volume 2 chapter "Variants of the Fractal Gas", which fixes this vocabulary, writes each variant as the twelve components of the step operator, and states variant by variant which theorems of the volume apply and which hypotheses are still owed.
+
+- Add the QFT Simulator page to the Algorithmic Gas section beside the Lab and the Lectures. It configures a variant, streams a recorded run in the compiled engine, and shows coverage, correlators, effective rates, fit diagnostics and the reference comparison in five tabs. JavaScript performs no science: every number comes from the wasm spectroscopy API, undefined values stay gaps, availability reasons and notes are printed verbatim, a rate is never relabelled a mass, and a test scans the page modules for arithmetic. A node test pins the page contract and a Playwright test drives the compiled engine in a real browser, from configuring a variant through streaming a run, re-analyzing it without advancing the gas, exporting the evidence and re-importing it to the identical report.
+
+- Add the Python bridge and fixture tooling for the spectroscopy parity tests: an exporter that builds prepared channel data from seeded synthetic tensors, runs the real Python operators and writes reference cases for a non-involutive topology, a mutual pairing and a masked population, each naming the function and line that produced every value. Correct the archive-to-history converter so that colour phase and force share one velocity through a declared history convention and the cloning scores are the unclipped, ungated scores.
+
+- Require alive cloning companions for every Python Euclidean Gas selection scheme, restrict selection calculations to survivors, fix single-survivor revival in pairing methods, and reject invalid custom donors before cloning.
+
+- Fix Rust elite reinjection after each completed step: elites still move normally, then the updated best-ever bank is copied back into the first population slots with refreshed geometry.
+- Add historical elite walkers to the Rust Algorithmic Gas, with transactional retention, checkpoint continuation and recorded reinjection. The Euclidean Gas Lab exposes the elite count and starts fresh runs with two elites; existing configurations retain zero.
 
 - Fix CI checkpoint-version expectations for geometry schema 5 and update mobile browser tests to open Settings and interaction modes through Menu and Tools.
 
 - Give the Control Lab environment most of the mobile screen, with compact run controls and on-demand tools, settings, and replay panels; preserve desktop layout and recording state across responsive changes.
+
+- Review the Rust Algorithmic Gas against its architecture specification. Selection: greedy Gaussian matching takes the specified ascending pivot order, with the random permutation as the explicit `pivot: "random"` law; kernel-weighted rows sampled without replacement are in draw order; an unmatched walker is a topology error instead of a zero diversity measurement; a disabled fitness channel is not evaluated. Recorded-run analyses (clone field balance, VI-02) use the executed acceptance law through `CloneDecision::acceptance_probability`, including the cloning period, and the atomic mean-field reference rejects gated cloning. Tessellation: exactly flat swarms are exactly rank deficient, collinear planar input is an error instead of an empty graph, the finite-difference Hessian uses the unequal-spacing stencil, and periodic wraps cannot land on the upper face. Robustness: checked Part V work budget on 32-bit targets, overflow-free velocity-cap prediction, float population products, archive byte accounting that includes recorded noise geometry, structurally compared jet spaces, browser seeds bounded by exact JavaScript integers. Efficiency: allocation-free pair tiles and local statistics, recording buffers moved into the archive, single-pass jet powers. Lecture sessions recompute their measurements on restore, matched-time step counts do not overshoot exact multiples, and across-run statistics are unbiased or undefined. `gas-benchmark` reports first-step and steady-state timing separately and keeps the committed archive when a step fails.
+
+- Add tessellation geometry to the Rust Algorithmic Gas: planar (Spade) and native exact-predicate 3D Delaunay with coincident-walker and rank-deficient handling, clip-box and periodic domains, dual Voronoi cells, and swappable metric, volume-element, edge-weight, curvature (conformal Laplacian and quadratic fit, Regge deficits in 2D and 3D, Voronoi proxies) and reward-allocation components, bit-identical in serial and Rayon-parallel execution. Add an engine geometry stage with clone-carried observation fields and a stage schedule, graph viscosity with Boris curl rotation, periodic cloning, `GasConfig::einstein_hilbert`, a geometry reward and point start in `RunConfig`, archive recording (`--record`, optional tessellation graph) in `gas-benchmark`, Python reference fixtures and a `RunArchive` to `RunHistory` converter. Checkpoint format 5.
+
+- Add 3D spatial and landscape population views to the Euclidean Gas Lab (surface with contours, slices, companion links, trails, atom viewer) beside the 2D projection, and bring its objectives to parity with the Optimization Lab: nine more classic tensor-graph objectives with analytic gradients and a pure-Rust port of the 24 COCO BBOB functions validated against COCO 2.8.2, served to the browser and the CLI from one Rust catalog.
+
+- Restore the original combined mean-field proof target, retain additive drift offsets, and repair full-slot moment and velocity-weight accounting in the cloning inputs.
+
+- Complete geometric coverage for the averaged Keystone estimate and certify unequal-fitness structural expansion with exact interval bounds and independent full Rust engine comparisons.
+
+- Derive measurement-averaged Keystone cluster pressure and complete signed cloning balances; verify a population-uniform structural-pressure family and independent full-engine measurement averages.
+
+- Repair Keystone donor flux with moving-barycenter identities, signed geometric-cluster bounds, canonical barycenter concentration, and component-average cancellation for revival. Prove bounded transport smoothing for the actual nonlinear BAOAB/cap update and verify the estimates with Rust execution.
+
+- Recover the mean-field proof sources and add reviewed exact geometric-cluster coupling balances, quantitative full-step bias and variance estimates, survival-aware entropy identities, finite-population entropy convergence, and independent Rust conditional-fluctuation checks.
+
+- Derive the canonical Euclidean Gas fixed-step population law and propagation of chaos from frozen weighted sampling and shared component collisions. Implement component Haar rotations, scheduled weighted revival, final position diffusion and smooth capping; add exact collision covariances, independent rooted population integration, Part III diagnostics and independently seeded validation. Repair cloning drift with exact reset bounds and prove finite-population QSD convergence for the actual kernel.
+
+- Add coupled Taylor sensitivity and exact companion-law averaging to IV-07, with production fitness comparisons, adaptive sampled accuracy windows, independent coefficient-resolution checks, and reward-landscape controls.
+
+- Validate complete field-equation recording coverage, preserve legitimate boundary extinction, distinguish field accounting from prediction checks, and test full covariance with exact quadrature, clone-gate enumeration and independent metric-active ensembles.
+
+- Derive the gas field equations from explicit donor, cloning and BAOAB primitives, including spatial sources/fluxes, anisotropic stress, conditional metric evolution and transient memory. Add Rust Fourier-field predictions and interactive clone/thermostat validation with immutable historical sources.
+
+- Execute all 128 Volume II demos through shared native/WASM Rust sessions, with recorded algorithm measurements, configured predictions, validated evidence replay, tracked geometry, continuation protocols, and control stress tests.
+
+- Derive transient field drift/covariance from complete algorithm states; measure historical-source fields, material metric increments, source-aware noise moments and stage balances, with explicit per-experiment provenance and independent validation.
+- Add 66 compiled Part VI workbenches with Rust/WASM calculation APIs, native `gas-physics` runs and sweeps, source-aware archive readouts, conditional trace likelihoods, held-out predictions, independent response and metric replicas, formula lookup, and a detailed lecture experiment guide.
+
+- Derive and implement finite-step Algorithmic Gas geometry and balances: packed general-dimensional fitness jets, efficient 3D curvature, exact global-statistics caching and local derivatives, spectral clipping, backend batch contractions, independent checkpoint replicas, thermostat fluctuations, stationary response/Fisher references, and reproducible research sweeps.
+
+- Audit and correct Part V experiments: stabilize metric eigenvalues and Spin(2) reconstruction, prevent overlapping spacetime cells, align geodesic quadrature, preserve archive and replica identities, and add exact transient and sampling-error predictions with independent numerical regressions.
+
+- Add 20 Part V lecture experiments with durable Rust walker archives, stage and lineage provenance, scalar reconstruction, adaptive O-stage geometry, Voronoi and spacetime cells, causal-order comparisons, and independently calibrated continuum statistics. Include archive import/export, interactive scene controls, and 20 computed chapter posters.
+
+- Align Volume II lecture experiments with their theoretical predictions: correct BAOAB pseudocode and alive-conditioned mixtures, use theorem-specific entropy and drift diagnostics, calibrate sampling uncertainty, resolve misleading spectral and density-ratio displays, and exercise survival and population comparisons with independent replicas.
 
 - Add 42 interactive Volume II lecture experiments with a persistent WASM worker, authentic cloning and BAOAB traces, mathematical reference models, seed replay, SVG/JSON exports, and lazy chapter embeds with computed posters. Add validated population fixtures and independent reward/potential controls to the Rust browser API.
 
@@ -274,3 +486,5 @@ Unreleased
 ------------------
 
 * First release on PyPI.
+
+- Replace cloning-guided perturbations with bounded signed clone-score fields and adaptive covariance of comparison vectors across all six fractal optimizers. Remove lineage gating and log-fitness regression; retain compatible geometry on degenerate evidence and keep live scale bounds separate.

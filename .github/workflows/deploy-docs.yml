@@ -111,6 +111,7 @@ jobs:
             fractal-gas-web/web
             !fractal-gas-web/web/lab/**
             !fractal-gas-web/web/optimization/**
+            !fractal-gas-web/web/euclidean-gas/**
           if-no-files-found: error
 
   # Build the lab explicitly, without emulator submodules or incidental outputs
@@ -281,6 +282,7 @@ jobs:
           test -s site/lab/vendor/three.core.js
           test -s site/lab/scenarios/racing.json
           test -s site/lab/branding/logo.png
+          python tools/check_pages_boundary.py site
           touch site/.nojekyll
 
       - name: Setup Pages

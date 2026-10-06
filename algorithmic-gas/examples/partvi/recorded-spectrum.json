@@ -1,9 +1,0 @@
-{
-  "id": "VI-36",
-  "seed": 7,
-  "steps": 96,
-  "parameters": {
-    "readout": "phase_space",
-    "channels": 3
-  }
-}

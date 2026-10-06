@@ -46,7 +46,7 @@ position jitter). Fields with no counterpart in the archive are zero-filled and
 listed under ``params["native_run"]["zero_filled"]``.
 
 Usage:
-    uv run python algorithmic-gas/tools/eh_archive_to_history.py run.json history.pt
+    uv run python tools/algorithmic_gas_compat/eh_archive_to_history.py run.json history.pt
 """
 
 from __future__ import annotations
@@ -70,7 +70,7 @@ KICK_INPUT_VELOCITY = (
 
 def _load(path: Path) -> dict:
     if path.suffix == ".json":
-        return json.loads(path.read_text())
+        return json.loads(path.read_text(encoding="utf-8"))
     try:
         import cbor2
     except ImportError as exc:  # pragma: no cover - optional dependency
@@ -243,7 +243,9 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
     def edges(graph: dict) -> torch.Tensor:
         offsets = torch.tensor(graph["graph"]["offsets"], dtype=torch.long)
         sources = torch.repeat_interleave(torch.arange(n), offsets[1:] - offsets[:-1])
-        return torch.stack([sources, torch.tensor(graph["graph"]["neighbors"], dtype=torch.long)], 1)
+        return torch.stack(
+            [sources, torch.tensor(graph["graph"]["neighbors"], dtype=torch.long)], 1
+        )
 
     recorded_steps = [s["report"]["step"] for s in steps]
     historical_distance = sum(
@@ -297,9 +299,7 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
         U_before=torch.cat([zeros[:1], -rewards_before]),
         U_after_clone=-rewards_final,
         U_final=torch.cat([zeros[:1], -rewards_final]),
-        n_alive=torch.tensor(
-            [n, *[s["report"]["eligible"] for s in steps]], dtype=torch.long
-        ),
+        n_alive=torch.tensor([n, *[s["report"]["eligible"] for s in steps]], dtype=torch.long),
         num_cloned=torch.tensor([s["report"]["clones"] for s in steps], dtype=torch.long),
         step_times=torch.zeros(len(steps), dtype=torch.float32),
         fitness=report(("pre_clone_fitness", "fitness")),
@@ -307,23 +307,17 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
         cloning_scores=stack(scores),
         cloning_probs=stack(probs),
         will_clone=stack(will_clone),
-        alive_mask=stack(
-            [torch.tensor(s["report"]["pre_clone_eligible"], dtype=torch.bool) for s in steps]
-        ),
-        companions_distance=stack(
-            [
-                _companions(s["report"]["distance_companions"], s["report"]["distance_sources"], n)
-                for s in steps
-            ]
-        ),
-        companions_clone=stack(
-            [
-                _companions(
-                    s["report"]["cloning_companions"], s["report"]["clone_plan"]["sources"], n
-                )
-                for s in steps
-            ]
-        ),
+        alive_mask=stack([
+            torch.tensor(s["report"]["pre_clone_eligible"], dtype=torch.bool) for s in steps
+        ]),
+        companions_distance=stack([
+            _companions(s["report"]["distance_companions"], s["report"]["distance_sources"], n)
+            for s in steps
+        ]),
+        companions_clone=stack([
+            _companions(s["report"]["cloning_companions"], s["report"]["clone_plan"]["sources"], n)
+            for s in steps
+        ]),
         clone_jitter=zeros_vec,
         clone_delta_x=x_clone_delta,
         clone_delta_v=stack(v_after) - stack(v_before),
@@ -344,12 +338,12 @@ def convert(archive: dict, curvature: str | None = None) -> RunHistory:
         force_friction=-friction * stack(v_after),
         force_total=force_total,
         noise=noise,
-        riemannian_volume_weights=stack(
-            [_field(s["final_population"], "geometry.volume_element", dtype) for s in steps]
-        ),
-        ricci_scalar_proxy=stack(
-            [_field(s["final_population"], curvature_field, dtype) for s in steps]
-        ),
+        riemannian_volume_weights=stack([
+            _field(s["final_population"], "geometry.volume_element", dtype) for s in steps
+        ]),
+        ricci_scalar_proxy=stack([
+            _field(s["final_population"], curvature_field, dtype) for s in steps
+        ]),
         diffusion_tensors_full=(
             stack([_field(s["final_population"], "geometry.diffusion", dtype) for s in steps])
             if "geometry.diffusion" in first["observations"]["fields"]

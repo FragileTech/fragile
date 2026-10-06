@@ -2,10 +2,11 @@
 
 Standard-library bridge over the native Optimization Lab library (COCO 2.8.2 +
 classic benchmarks). Requires `make optimization-native`. Writes
-algorithmic-gas/crates/benchmarks/tests/fixtures/objective-goldens.json and
-copies the upstream COCO test cases next to it.
+objective-goldens.json and copies the upstream COCO test cases into an
+explicitly supplied output directory (--output).
 """
 
+import argparse
 import ctypes
 import json
 import math
@@ -15,8 +16,12 @@ import shutil
 
 
 root = Path(__file__).resolve().parents[2]
-fixtures = root / "algorithmic-gas/crates/benchmarks/tests/fixtures"
-lib = ctypes.CDLL(str(root / "build-optimization-native/optimization/libfg_optimization.so"))
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--output", type=Path, required=True, help="Fixture output directory")
+fixtures = parser.parse_args().output
+lib = ctypes.CDLL(
+    str(root / "fractal-gas-web/build-optimization-native/optimization/libfg_optimization.so")
+)
 lib.fgo_catalog.restype = ctypes.c_char_p
 lib.fgo_error.restype = ctypes.c_char_p
 lib.fgo_create.argtypes = [ctypes.c_char_p]
@@ -52,7 +57,7 @@ def points_for(rng, d, low, high, outside):
     span = high - low
     interior = [[low + span * rng.random() for _ in range(d)] for _ in range(2)]
     corner = [high if rng.random() < 0.5 else low for _ in range(d)]
-    result = interior + [corner]
+    result = [*interior, corner]
     if outside:
         result.append([1.5 * (high if rng.random() < 0.5 else low) for _ in range(d)])
     return result
@@ -65,7 +70,12 @@ goldens = {"source": "fractal-gas-web native Optimization Lab (COCO 2.8.2)", "ca
 bbob = []
 for function in range(1, 25):
     # Upstream coco-fixtures.json already covers d=20/40 at instances 1, 2, 15.
-    for d, instances in ((2, (1, 2, 7, 15, 1000)), (5, (1, 2, 7, 15, 1000)), (20, (7, 1000)), (40, (1000,))):
+    for d, instances in (
+        (2, (1, 2, 7, 15, 1000)),
+        (5, (1, 2, 7, 15, 1000)),
+        (20, (7, 1000)),
+        (40, (1000,)),
+    ):
         for instance in instances:
             points = points_for(rng, d, -5.0, 5.0, outside=True)
             config = {"benchmark": f"bbob_{function}", "dimensions": d, "coco_instance": instance}
@@ -87,7 +97,10 @@ cases = [
     ({"benchmark": "quadratic"}, (2, 7)),
     ({"benchmark": "quadratic", "alpha": 2.5}, (3,)),
     ({"benchmark": "mexican_hat"}, (1, 2, 6)),
-    ({"benchmark": "mexican_hat", "lambda_h": 0.5, "vev": 300, "field_scale": 100, "tilt": 0.3}, (3,)),
+    (
+        {"benchmark": "mexican_hat", "lambda_h": 0.5, "vev": 300, "field_scale": 100, "tilt": 0.3},
+        (3,),
+    ),
     ({"benchmark": "rastrigin"}, (2, 7)),
     ({"benchmark": "eggholder"}, (2,)),
     ({"benchmark": "styblinski_tang"}, (2, 7)),
@@ -118,5 +131,7 @@ goldens["classics"] = classics
 
 fixtures.mkdir(parents=True, exist_ok=True)
 (fixtures / "objective-goldens.json").write_text(json.dumps(goldens, separators=(",", ":")) + "\n")
-shutil.copyfile(root / "tests/optimization/coco-fixtures.json", fixtures / "coco-fixtures.json")
+shutil.copyfile(
+    root / "fractal-gas-web/tests/optimization/coco-fixtures.json", fixtures / "coco-fixtures.json"
+)
 print(f"{len(bbob)} BBOB cases, {len(classics)} classic cases -> {fixtures}")
