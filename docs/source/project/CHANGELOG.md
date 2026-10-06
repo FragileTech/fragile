@@ -1,5 +1,8 @@
 # Changelog
 
+- Check out the deployment validator in the final Pages job before checking the
+  assembled artifact.
+
 - Keep Algorithmic Gas book, simulator, and static assets out of the Fragile Pages
   deployment bundle, and identify the remaining Theory site as Volume 1.
 

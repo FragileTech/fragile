@@ -208,6 +208,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-docs, build-wasm, build-lab, build-optimization, build-llm]
     steps:
+      - name: Checkout deployment validator
+        uses: actions/checkout@v4
+
       - name: Download web artifact
         uses: actions/download-artifact@v4
         with:
